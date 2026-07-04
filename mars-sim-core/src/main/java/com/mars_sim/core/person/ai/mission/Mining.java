@@ -7,11 +7,9 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import com.mars_sim.core.environment.MineralSite;
@@ -26,7 +24,6 @@ import com.mars_sim.core.mission.objectives.MiningObjective.MineralStats;
 import com.mars_sim.core.mission.task.CollectMinedMinerals;
 import com.mars_sim.core.mission.task.MineSite;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -40,7 +37,6 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * Mission for mining mineral concentrations at an explored site.
@@ -48,7 +44,6 @@ import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 public class Mining extends EVAMission
 	implements SiteMission {
 
-	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.PILOT);
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -227,7 +222,7 @@ public class Mining extends EVAMission
 				result = false;
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error in getting parts.");
+			logger.severe("Error in getting parts.", e);
 		}
 
 		return result;
@@ -368,14 +363,6 @@ public class Mining extends EVAMission
 	}
 
 	/**
-	 * Gets the Vehicle comparator that is based on largest cargo.
-	 */
-	@Override
-	protected  Comparator<Vehicle> getVehicleComparator() {
-		return new CargoRangeComparator();
-	}
-
-	/**
 	 * Checks if a person can perform a CollectMinedMinerals task.
 	 * 
 	 * @param member      the member to perform the task
@@ -473,7 +460,7 @@ public class Mining extends EVAMission
 				}
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error determining best mining site.");
+			logger.severe("Error determining best mining site.", e);
 		}
 
 		return result;
@@ -512,7 +499,7 @@ public class Mining extends EVAMission
 				}
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error determining best mining site.");
+			logger.severe("Error determining best mining site.", e);
 		}
 
 		return total;
@@ -588,11 +575,6 @@ public class Mining extends EVAMission
 		}
 
 		return null;
-	}
-
-	@Override
-	protected Set<JobType> getPreferredPersonJobs() {
-		return PREFERRED_JOBS;
 	}
 
 	@Override

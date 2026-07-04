@@ -11,8 +11,6 @@ import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.mars_sim.core.tool.RandomUtil;
-
 /**
  * The NaturalAttributeManager class manages a person's natural attributes.
  * There is only natural attribute manager for each person.
@@ -36,20 +34,6 @@ public class NaturalAttributeManager implements Serializable {
 				setAttribute(e.getKey(), e.getValue());
 			}	
 		}
-	}
-
-
-	/**
-	 * Modify an attribute.
-	 * 
-	 * @param attributeName the name of the attribute
-	 * @param modifier      a positive or negative random number ceiling 
-	 */
-	public void addAttributeModifier(NaturalAttributeType attributeName, int modifier) {
-		int random = RandomUtil.getRandomInt(Math.abs(modifier));
-		if (modifier < 0)
-			random *= -1;
-		setAttribute(attributeName, getAttribute(attributeName) + random);
 	}
 
 	/**

@@ -6,25 +6,35 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Comparator;
+import java.util.Set;
+
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Delivery;
-import com.mars_sim.core.person.ai.mission.DroneMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.vehicle.Drone;
+import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * A meta mission for the delivery mission.
  */
 public class DeliveryMeta extends AbstractMetaMission {
+
+	private static final Set<JobType> LEADER_JOBS = Set.of(JobType.TRADER);
+	private static final Set<JobType> WORKER_JOBS = Set.of(JobType.PILOT);
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(DeliveryMeta.class.getName());
@@ -38,9 +48,20 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 	DeliveryMeta() {
 		// Everyone can start Delivery ??
-		super(MissionType.DELIVERY, null);
+		super(MissionType.DELIVERY, 3, LEADER_JOBS, WORKER_JOBS);
+
+		setPreferredRobots(Set.of(RobotType.DELIVERYBOT));
+		setPreferredVehicle(Set.of(VehicleType.DELIVERY_DRONE));
 	}
 
+	/**
+	 * Get the Vehicle comparator that is based on largest cargo
+	 */
+	@Override
+	protected Comparator<Vehicle> getVehicleComparator() {
+		return new CargoRangeComparator();
+	}
+	
 	@Override
 	public Mission constructInstance(Person person, boolean needsReview) {
 		return new Delivery(person, needsReview);
@@ -54,8 +75,8 @@ public class DeliveryMeta extends AbstractMetaMission {
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 
-    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
-    		return missionProbability;
+    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
+    		return RatingScore.ZERO_RATING;
     	}
 		
 		RoleType roleType = person.getRole().getType();
@@ -97,7 +118,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		// Future: all drones offer the same range (unless it can be retrofitted/customized
 
 		// Check for the best delivery settlement within range.
-		Drone drone = DroneMission.getDroneWithGreatestRange(settlement, false);
+		var drone = selectVehicle(settlement);
 		if (drone == null) {
 			return RatingScore.ZERO_RATING;
 		}

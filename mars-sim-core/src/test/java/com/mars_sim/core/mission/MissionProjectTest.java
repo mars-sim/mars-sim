@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.EntityIdentifier;
@@ -68,7 +69,7 @@ class MissionProjectTest extends MarsSimUnitTest {
 	class TestMission extends MissionProject {
 
         public TestMission(String name, Person leader, int numSteps) {
-            super(name, MissionType.AREOLOGY, 1, 1, 1, leader);
+            super(name, MissionType.AREOLOGY, 1, leader);
          
             List<MissionStep> steps = new ArrayList<>();
             for(int i = 0; i < numSteps; i++) {
@@ -85,7 +86,7 @@ class MissionProjectTest extends MarsSimUnitTest {
 
     @Test
     void testCreation() {
-        Settlement home = buildSettlement("Home");
+        Settlement home = buildSettlement("Home", 5);
         Person leader = buildPerson("Leader", home);
         MissionProject mp = new TestMission(MISSION_NAME, leader, 0);
 
@@ -95,8 +96,9 @@ class MissionProjectTest extends MarsSimUnitTest {
     }
 
     @Test
+    @DisplayName("Test resource requirements for a mission")
     void testResources() {
-        Settlement home = buildSettlement("Home");
+        Settlement home = buildSettlement("Home", 5);
         Person leader = buildPerson("Leader", home);
         int numSteps = 3;
         TestMission mp = new TestMission(MISSION_NAME, leader, numSteps);

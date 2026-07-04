@@ -202,6 +202,56 @@ public class BotTaskManager extends TaskManager {
 		return true;
 	}
 	
+	
+	/**
+	 * Adds a new task for a robot in the mission. Task may be not assigned if the
+	 * robot has a malfunction.
+	 *
+	 * @param newTask  the new task to be assigned
+	 * @param allowSameTask is it allowed to execute the same task as previous
+	 * @return true if task can be performed.
+	 */
+	@Override
+	public boolean directlyAssignTask(Task newTask, boolean allowSameTask) {
+
+		String newTaskName = newTask.getName();
+		
+		// If robot is malfunctioning, it cannot perform task.
+		if (robot.getMalfunctionManager().hasMalfunction()) {
+			logger.info(robot, 20_000, "Malfunctioned and cannot be assigned with '" + newTaskName+ "'.");
+			return false;
+		}
+
+		if (!newTaskName.equalsIgnoreCase(Charge.NAME) 
+				&& !robot.getSystemCondition().getBattery().isBatteryAbove(20)) {
+			logger.info(robot, 20_000, "Battery below 20% and cannot be assigned with '" + newTaskName + "'.");
+			return false;
+		}
+
+		Task currentTask = getTask();
+		if (currentTask != null) {
+			if (!allowSameTask && currentTask.getName().equals(newTaskName)) {
+				// If the robot has been doing this task, 
+				// then there is no need of adding it.
+				return false;
+			}
+			
+			else if (currentTask.getName().equals(Charge.NAME)) {
+				logger.info(robot, 20_000, "Still charging and cannot be assigned with '" + newTaskName + "'.");
+				return false;
+			}
+		}
+
+		// Attempt to assign
+		if (!checkReplaceTask(newTask, allowSameTask)) {
+			logger.info(robot, 20_000, "Unable to directly assign '" + newTaskName + "'.");
+			return false;
+		}
+		
+		return true;
+	}
+	
+
 	public void reinit() {
 
 		robot = botMind.getRobot();

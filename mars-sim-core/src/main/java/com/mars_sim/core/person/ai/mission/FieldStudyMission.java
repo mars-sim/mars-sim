@@ -8,13 +8,11 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
@@ -32,16 +30,12 @@ import com.mars_sim.core.vehicle.Rover;
  */
 public abstract class FieldStudyMission extends EVAMission {
 
-	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.ASTROBIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** Mission phase. */
 	public static final MissionPhase RESEARCH_SITE = new MissionPhase("Mission.phase.researchingFieldSite");
 	private static final MissionStatus NO_ONGOING_SCIENTIFIC_STUDY = new MissionStatus("Mission.status.noStudy");
-
-	private static final int MIN_MEMEBRS = 2;
 
 	private FieldStudyObjectives objective;
 
@@ -73,7 +67,8 @@ public abstract class FieldStudyMission extends EVAMission {
 			addObjective(objective);
 
 			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson, MIN_MEMEBRS))
+			var meta = getMetaMission();
+			if (!recruitMembersForMission(startingPerson, meta.getMinimumMembers()))
 				return;
 
 			// Determine field site location.
@@ -215,36 +210,6 @@ public abstract class FieldStudyMission extends EVAMission {
 		addNavpoint(fieldSite, "Field Fesearch Site");
 	}
 
-	@Override
-	public double getMissionQualification(Worker member) {
-		double result = super.getMissionQualification(member);
-
-		if ((result > 0D) && (member instanceof Person person)) {
-
-			// Add modifier if person is a researcher on the same scientific study.
-			var study = objective.getStudy();
-			if (person.equals(study.getPrimaryResearcher())) {
-				result += 2D;
-
-				// Check if study's primary science.
-				if (objective.getScience() == study.getScience()) {
-					result += 1D;
-				}
-			}
-			else {
-				result += 1D;
-
-				// Check if study collaboration science
-				ScienceType collabScience = study.getContribution(person);
-				if (objective.getScience() == collabScience) {
-					result += 1D;
-				}
-			}
-		}
-
-		return result;
-	}
-
 	/**
 	 * Performs the research field site phase of the mission.
 	 * 
@@ -281,12 +246,6 @@ public abstract class FieldStudyMission extends EVAMission {
 	 */
 	protected boolean canResearchSite(Worker researcher) {
 		return ScientificStudyFieldWork.canResearchSite(researcher, getRover()); 
-	}
-	
-
-	@Override
-	protected Set<JobType> getPreferredPersonJobs() {
-		return PREFERRED_JOBS;
 	}
 
 	@Override

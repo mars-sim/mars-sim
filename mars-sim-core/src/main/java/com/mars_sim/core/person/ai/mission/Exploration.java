@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +20,6 @@ import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.mission.task.ExploreSite;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.ExplorationManager;
 import com.mars_sim.core.structure.ObjectiveType;
@@ -29,8 +27,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.comparators.LabRangeComparator;
 
 /**
  * The Exploration class is a mission to travel in a rover to several random
@@ -38,9 +34,6 @@ import com.mars_sim.core.vehicle.comparators.LabRangeComparator;
  */
 public class Exploration extends EVAMission
 	implements SiteMission {
-
-	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.ASTROBIOLOGIST, 
-			JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -295,14 +288,6 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Gets the Vehicle comparator that is based on largest cargo.
-	 */
-	@Override
-	protected  Comparator<Vehicle> getVehicleComparator() {
-		return new LabRangeComparator();
-	}
-
-	/**
 	 * Gets the estimated time spent at all exploration sites.
 	 *
 	 * @return time (millisols)
@@ -474,11 +459,6 @@ public class Exploration extends EVAMission
 	 */
 	public double getCurrentSiteTime() {
 		return currentSiteTime;
-	}
-	
-	@Override
-	protected Set<JobType> getPreferredPersonJobs() {
-		return PREFERRED_JOBS;
 	}
 
 	@Override

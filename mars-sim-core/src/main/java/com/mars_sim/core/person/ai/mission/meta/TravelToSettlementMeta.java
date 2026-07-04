@@ -6,20 +6,26 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.mission.TravelToSettlement;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.CrewRangeComparator;
 
 /**
  * A meta mission for the TravelToSettlement mission.
@@ -27,12 +33,23 @@ import com.mars_sim.core.vehicle.Vehicle;
 public class TravelToSettlementMeta extends AbstractMetaMission {
     
     private static final int EARLIEST_SOL_TRAVEL = 28;
+    private static final Set<JobType> WORKER_JOBS = Collections.emptySet();
+    private static final Set<JobType> LEADER_JOBS = Set.of(JobType.PILOT, JobType.POLITICIAN, JobType.REPORTER);
 
 	public TravelToSettlementMeta() {
-		// Anyone can start ??
-    	super(MissionType.TRAVEL_TO_SETTLEMENT, null);
+    	super(MissionType.TRAVEL_TO_SETTLEMENT, 8, LEADER_JOBS, WORKER_JOBS);
+
+        setPreferredVehicle(VehicleType.ROVER_TYPES);
     }
     
+	/**
+	 * Get the Vehicle comparator that is based on largest crew range
+	 */
+	@Override
+	protected Comparator<Vehicle> getVehicleComparator() {
+		return new CrewRangeComparator();
+	}
+
     @Override
     public Mission constructInstance(Person person, boolean needsReview) {
         return new TravelToSettlement(person, needsReview);
@@ -41,11 +58,11 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     @Override
     public RatingScore getProbability(Person person) {
 
-        RatingScore missionProbability = RatingScore.ZERO_RATING;
-    	if (getMarsTime().getMissionSol() < EARLIEST_SOL_TRAVEL) {
+    	if (!isTimeSuitable(EARLIEST_SOL_TRAVEL)) {
     		return RatingScore.ZERO_RATING;
     	}
     	
+        RatingScore missionProbability = RatingScore.ZERO_RATING;
         if (person.isInSettlement()) {
             // Check if mission is possible for person based on their
             // circumstance.
@@ -77,7 +94,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
-        Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, false);
+        var vehicle = selectVehicle(settlement);
         if (vehicle == null) {
             return RatingScore.ZERO_RATING;
         }
@@ -112,4 +129,21 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         return missionProbability;
     }
 
+    @Override
+	public double getWorkerSuitability(Worker member) {
+		double result = super.getWorkerSuitability(member);
+
+		if (member instanceof Person person) {
+			// If person has the "Driver" job, add 1 to their qualification.
+			if (person.getMind().getJobType() == JobType.PILOT) {
+				result += 1D;
+			}
+
+			if (person.getMind().getJobType() == JobType.POLITICIAN) {
+				result += 10D;
+			}
+        }
+
+		return result;
+	}
 }

@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,7 +47,6 @@ import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
 import com.mars_sim.core.vehicle.task.OperateVehicle;
 import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
@@ -82,7 +80,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private static final String VEHICLE_NOT_AT_SETTLEMENT = STATUS_VEHICLE_NOT_AT_SETTLEMENT.getName();
 	
 	// Static members
-	public static final int MIN_STAYING_MEMBERS = 1;
 	public static final int MIN_GOING_MEMBERS = 2;
 	/* How long do Worker have to complete departure */
 	private static final int DEPARTURE_DURATION = 250;
@@ -128,78 +125,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	public final Rover getRover() {
 		return (Rover) getVehicle();
-	}
-
-	/**
-	 * Gets a collection of available rovers at a settlement that are usable for
-	 * this mission.
-	 *
-	 * @param settlement the settlement to find vehicles.
-	 * @return list of available vehicles.
-	 * @throws MissionException if problem determining if vehicles are usable.
-	 */
-	@Override
-	protected Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
-		Collection<Vehicle> result = new ArrayList<>();
-		Collection<Vehicle> list = settlement.getParkedGaragedVehicles();
-		if (list.isEmpty())
-			return result;
-		for (Vehicle v : list) {
-			if (VehicleType.isRover(v.getVehicleType())
-					&& !v.haveStatusType(StatusType.MAINTENANCE)
-					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
-					&& v.isUsableVehicle()
-					&& !v.isReserved()) {
-				result.add(v);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the available vehicle at the settlement with the greatest range.
-	 *
-	 * @param settlement         the settlement to check.
-	 * @param allowMaintReserved allow vehicles that are reserved for maintenance.
-	 * @return vehicle or null if none available.
-	 * @throws Exception if error finding vehicles.
-	 */
-	public static Rover getVehicleWithGreatestRange(Settlement settlement, boolean allowMaintReserved) {
-		Rover result = null;
-
-		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
-			boolean usable = !vehicle.isReservedForMission();
-            usable = usable && (allowMaintReserved || !vehicle.isReserved());
-			usable = usable && vehicle.isVehicleReady();
-			usable = usable && (vehicle.isEmpty());
-
-			if (usable && (vehicle instanceof Rover rover)) {
-				if (result == null)
-					// so far, this is the first vehicle being picked
-					result = rover;
-				else if (vehicle.getEstimatedRange() > result.getEstimatedRange())
-					// This vehicle has a better range than the previously selected vehicle
-					result = rover;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks if vehicle is usable for this mission. (This method should be
-	 * overridden by children)
-	 *
-	 * @param newVehicle the vehicle to check
-	 * @return true if vehicle is usable.
-	 * @throws MissionException if problem determining if vehicle is usable.
-	 */
-	@Override
-	protected boolean isUsableVehicle(Vehicle newVehicle) {
-		boolean usable = super.isUsableVehicle(newVehicle);
-		if (!(newVehicle instanceof Rover))
-			usable = false;
-		return usable;
 	}
 
 	/**
@@ -1259,7 +1184,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 			
-			Vehicle v = (Vehicle)getRover();
+			Vehicle v = getRover();
 			
 			if (!v.haveStatusType(StatusType.OUT_OF_FUEL)
 					&& !v.haveStatusType(StatusType.OUT_OF_BATTERY_POWER)) {
@@ -1275,29 +1200,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			else {
 				logger.warning(getRover(), 10_000L, "Out of fuel/battery power. Quit assigning the driving task.");
 				return null;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks to see if at least one inhabitant a settlement is remaining there.
-	 *
-	 * @param settlement the settlement to check.
-	 * @param member     the mission member checking
-	 * @return true if at least one person left at settlement.
-	 */
-	protected static boolean atLeastOnePersonRemainingAtSettlement(Settlement settlement, Worker member) {
-		boolean result = false;
-
-		if (settlement != null) {
-			Iterator<Person> i = settlement.getIndoorPeople().iterator();
-			while (i.hasNext()) {
-				Person inhabitant = i.next();
-				if ((inhabitant != member) && !inhabitant.getMind().hasActiveMission()) {
-					result = true;
-				}
 			}
 		}
 
@@ -1467,49 +1369,5 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		
 		return timeLimit;
-	}
-
-	/**
-	 * Finds members for a mission, for RoverMissions all members must be at the same
-	 * settlement.
-	 * 
-	 * @param startingMember
-	 * @return
-	 */
-	protected boolean recruitMembersForMission(Worker startingMember, int minMembers) {
-		return recruitMembersForMission(startingMember, true, minMembers);
-	}
-
-	@Override
-	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement,
-										int minMembers) {
-		super.recruitMembersForMission(startingMember, sameSettlement, minMembers);
-
-		// Make sure there is at least one person left at the starting
-		// settlement.
-		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingMember)) {
-			// Remove last person added to the mission.
-			Person lastPerson = null;
-			for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {      
-				Worker member = i.next();
-				if (member instanceof Person p) {
-					lastPerson = p;
-					// Use Iterator's remove() method
-					i.remove();
-					// Adjust the work shift
-					removeMember(member);
-				}
-			 }
-			
-			 if (lastPerson != null) {
-				lastPerson.getMind().setMission(null);
-				if (getMembers().size() < minMembers) {
-					endMission(NOT_ENOUGH_MEMBERS);
-					return false;
-				} 
-			}
-		}
-
-		return true;
 	}
 }

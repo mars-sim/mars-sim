@@ -10,10 +10,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +26,6 @@ import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.EntityListenerManager;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
@@ -37,26 +34,24 @@ import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MissionObjective;
+import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.MetaMission;
+import com.mars_sim.core.mission.MissionBuilder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.mission.meta.AbstractMetaMission;
+import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.core.tool.RandomUtil;
 
 
 /**
@@ -66,33 +61,10 @@ import com.mars_sim.core.tool.RandomUtil;
  */
 public abstract class AbstractMission implements Mission, Temporal {
 
-	// Plain POJO to help score potential mission members
-	private static final class MemberScore {
-		Person candidate;
-		double score;
-
-		private MemberScore(Person candidate, double personValue) {
-			super();
-			this.candidate = candidate;
-			this.score = personValue;
-		}
-
-		public double getScore() {
-			return score;
-		}
-
-		@Override
-		public String toString() {
-			return "MemberScore [candidate=" + candidate + ", score=" + score + "]";
-		}
-	}
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(AbstractMission.class.getName());
-
-	private static final int MAX_CAP = 8;
 
 	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("completed", Stage.CLOSEDOWN);
 	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", Stage.CLOSEDOWN);
@@ -108,8 +80,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
 	
 	// Data members
-	/** The number of people that can be in the mission. */
-	private int missionCapacity;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
 	private int priority = 2;
 	
@@ -185,7 +155,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		members = new UnitSet<>();
 		done = false;
 		phaseDescription = "";
-		missionCapacity = MAX_CAP;
 		
 		signUp = new UnitSet<>();
 		
@@ -338,8 +307,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	private final void memberLeave(Worker member) {
 		// Added codes in reassigning a work shift
-		if (member.getUnitType() == UnitType.PERSON) {
-			Person person = (Person) member;
+		if (member instanceof Person person) {
 			
 			logger.info(person, "Removed from " + member.getMission() + ".");
 			
@@ -399,8 +367,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected void addMembers(Collection<Worker> newMembers, boolean allowRobots) {
 		for(Worker member : newMembers) {
-			if (member.getUnitType() == UnitType.PERSON) {
-				((Person) member).getMind().setMission(this);
+			if (member instanceof Person person) {
+				person.getMind().setMission(this);
 			}
 			else {
 				if (!allowRobots) {
@@ -627,18 +595,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		else if (REVIEWING.equals(getPhase())) {
-			requestReviewPhase(member);
+			requestReviewPhase();
 		}
-	}
-
-	/**
-	 * Gets the mission capacity for participating people.
-	 *
-	 * @return mission capacity
-	 */
-	@Override
-	public final int getMissionCapacity() {
-		return missionCapacity;
 	}
 
 	/**
@@ -647,8 +605,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param newCapacity the new mission capacity
 	 */
 	protected final void setMissionCapacity(int newCapacity) {
-		missionCapacity = newCapacity;
-		fireMissionUpdate(CAPACITY_EVENT, newCapacity);
+		// Fix later
 	}
 
 	/** 
@@ -679,25 +636,22 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	private void addMissionScore() {
 		for (Worker member : members) {
-			if (member.getUnitType() == UnitType.PERSON) {
-				Person person = (Person) member;
-
-				if (!person.isDeclaredDead()) {
-					if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
-						// Note : there is a minor penalty for those who are sick
-						// and thus unable to fully function during the mission
-						person.addMissionExperience(missionType, 2);
-					}
-					else if (person.equals(startingMember)) {
-						// The mission lead receive extra bonus
-						person.addMissionExperience(missionType, 6);
-						// Add a leadership point to the mission lead
-						person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.LEADERSHIP, 1);
-					}
-					else
-						person.addMissionExperience(missionType, 3);
+			if (member instanceof Person person && !person.isDeclaredDead()) {
+				if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
+					// Note : there is a minor penalty for those who are sick
+					// and thus unable to fully function during the mission
+					person.addMissionExperience(missionType, 2);
 				}
+				else if (person.equals(startingMember)) {
+					// The mission lead receive extra bonus
+					person.addMissionExperience(missionType, 6);
+					// Add a leadership point to the mission lead
+					person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.LEADERSHIP, 1);
+				}
+				else
+					person.addMissionExperience(missionType, 3);
 			}
+		
 		}
 	}
 
@@ -783,11 +737,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		fireMissionUpdate(END_MISSION_EVENT);
 	}
-	
+
 	/**
 	 * Checks if a worker has any issues in starting a new task.
 	 *
-	 * @param worker the person to assign to the task
+	 * @param worker the worker to assign to the task
 	 * @param newTask   the new task to be assigned
 	 * @return true if task can be performed.
 	 */
@@ -795,29 +749,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return assignTask(worker, newTask, false);
 	}
 	
-	/**
-	 * Checks if a person has any issues in starting a new task.
-	 *
-	 * @param person the person to assign to the task
-	 * @param newTask   the new task to be assigned
-	 * @return true if task can be performed.
-	 */
-	public boolean assignTask(Person person, Task newTask) {
-		return assignTask(person, newTask, false);
-	}
-	
-	/**
-	 * Adds a new task for a robot in the mission. Task may be not assigned if the
-	 * robot has a malfunction.
-	 *
-	 * @param robot the robot to assign to the task
-	 * @param newTask  the new task to be assigned
-	 * @return true if task can be performed.
-	 */
-	public boolean assignTask(Robot robot, Task newTask) {
-		return assignTask(robot, newTask, false);
-	}
-	
+
 	/**
 	 * Checks if a worker has any issues in starting a new task.
 	 *
@@ -827,39 +759,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @return true if task can be performed.
 	 */
 	public boolean assignTask(Worker worker, Task newTask, boolean allowSameTask) {
-		if (worker instanceof Person person) {
-			return assignTask(person, newTask, allowSameTask);
-		}
-		else if (worker instanceof Robot robot)  {
-			return assignTask(robot, newTask, allowSameTask);
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Checks if a person has any issues in starting a new task.
-	 *
-	 * @param person the person to assign to the task
-	 * @param newTask   the new task to be assigned
-	 * @param allowSameTask is it allowed to execute the same task as previous
-	 * @return true if task can be performed.
-	 */
-	public boolean assignTask(Person person, Task newTask, boolean allowSameTask) {
-		return TaskManager.assignTask(person, newTask, allowSameTask);
-	}
-	
-	/**
-	 * Adds a new task for a robot in the mission. Task may be not assigned if the
-	 * robot has a malfunction.
-	 *
-	 * @param robot the robot to assign to the task
-	 * @param newTask  the new task to be assigned
-		 * @param allowSameTask is it allowed to execute the same task as previous
-	 * @return true if task can be performed.
-	 */
-	public boolean assignTask(Robot robot, Task newTask, boolean allowSameTask) {
-		return TaskManager.assignTask(robot, newTask, allowSameTask);
+		return worker.getTaskManager().directlyAssignTask(newTask, allowSameTask);
 	}
 	
 	/**
@@ -872,14 +772,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private final boolean hasDangerousMedicalProblems() {
 		Person patient = null;
 		for (Worker member : members) {
-			if ((member.getUnitType() == UnitType.PERSON) 
-					&& ((Person) member).getPhysicalCondition().hasSeriousMedicalProblems()) {
-				patient = (Person) member;
+			if (member instanceof Person person && person.getPhysicalCondition().hasSeriousMedicalProblems()) {
+				patient = person;
 			}
 		}
 
 		if (patient != null) {
-			
 			if (this instanceof AbstractVehicleMission avm) {
 				// Generate historical event by calling AbstractVehicleMission's abortMission
 				avm.abortMission(MISSION_MEDICAL_EMERGENCY, HistoricalEventType.MISSION_MEDICAL_EMERGENCY);
@@ -902,8 +800,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected final boolean hasAnyPotentialMedicalProblems() {
 		for (Worker member : members) {
-			if ((member.getUnitType() == UnitType.PERSON) 
-				&& ((Person) member).getPhysicalCondition().computeFitnessLevel() < 2) {
+			if (member instanceof Person person && person.getPhysicalCondition().computeFitnessLevel() < 2) {
 				return true;
 			}
 		}
@@ -921,8 +818,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	public final boolean hasDangerousMedicalProblemsAllCrew() {
 		boolean result = true;
 		for (Worker member : members) {
-			if ((member.getUnitType() == UnitType.PERSON) 
-				&& !((Person) member).getPhysicalCondition().hasSeriousMedicalProblems()) {
+			if (member instanceof Person person && !person.getPhysicalCondition().hasSeriousMedicalProblems()) {
 				result = false;
 			}
 		}
@@ -951,223 +847,33 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * Recruits new members into the mission.
 	 *
 	 * @param startingMember the mission member starting the mission.
-	 * @param sameSettlement do members have to be at the same Settlement as the starting Member
 	 * @param minMembers Minimum number of members required
 	 */
-	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement, int minMembers) {
+	protected boolean recruitMembersForMission(Person startingMember, int minMembers) {
 
 		// Get all people qualified for the mission.
-		Collection<Person> possibles;
-		if (sameSettlement) {
-			possibles = startingMember.getAssociatedSettlement().getAllAssociatedPeople();
-		}
-		else {
-			possibles = unitManager.getPeople();
-		}
+		Collection<Person> possibles = startingMember.getAssociatedSettlement().getAllAssociatedPeople();
 
-		List<MemberScore> qualifiedPeople = new ArrayList<>();
-		for (Person person : possibles) {
-			if (isCapableOfMission(person)) {
-				// Determine the person's mission qualification.
-				double qualification = getMissionQualification(person) * 100D;
-
-				// Determine how much the recruiter likes the person.
-				double likability = 50D;
-				if (startingMember.getUnitType() == UnitType.PERSON) {
-					likability = RelationshipUtil.getOpinionOfPerson((Person) startingMember, person);
-				}
-
-				// Check if person is the best recruit.
-				double personValue = (qualification + likability) / 2D;
-				qualifiedPeople.add(new MemberScore(person, personValue));
-			}
-		}
-
-		int pop = startingMember.getAssociatedSettlement().getNumCitizens();
-		int max;
-		if (pop < 4)
-			max = 1;
-		else if (pop < 7)
-			max = 2;
-		else if (pop < 10)
-			max = 3;
-		else if (pop < 14)
-			max = 4;
-		else if (pop < 18)
-			max = 5;
-		else if (pop < 23)
-			max = 6;
-		else if (pop < 29)
-			max = 7;
-		else
-			max = 8;
-
-		// 50% tendency to have 1 less person
-		int rand = RandomUtil.getRandomInt(1);
-		if ((rand == 1) && (max >= 5)) {
-			max--;
-		}
-
-		// Max can not bigger than mission capacity
-		max = Math.min(max, missionCapacity);
-
-		// Recruit the most qualified and most liked people first.
-		qualifiedPeople.sort(Comparator.comparing(MemberScore::getScore, Comparator.reverseOrder()));
-		while (!qualifiedPeople.isEmpty() && (members.size() < max)) {
-
-			// Try to recruit best person available to the mission.
-			MemberScore next = qualifiedPeople.remove(0);
-			recruitPerson(startingMember, next.candidate);
-		}
-
-		List<Person> tourists = startingMember.getAssociatedSettlement().getTouristList();
-		
-		// Add a tourist to this mission
-		// It's preferable for missions with more than 3 members to add a tourist
-		if (!tourists.isEmpty() &&  minMembers > 3 && members.size() < minMembers) {
-			tourists.get(0).setMission(this);			
-		}
-		
-		if (members.size() < minMembers) {
+		var meta = getMetaMission();
+		var recruiter = new MissionBuilder(meta, startingMember);
+		var team = recruiter.recruitMembers(possibles);
+		if ((team.size() + 1) < minMembers) {
 			endMission(NOT_ENOUGH_MEMBERS);
 			return false;
 		}
-
+		team.forEach(w -> w.setMission(this));
 		return true;
-	}
-
-	/**
-	 * Attempts to recruit a new person into the mission.
-	 *
-	 * @param recruiter the mission member doing the recruiting.
-	 * @param recruitee the person being recruited.
-	 */
-	private void recruitPerson(Worker recruiter, Person recruitee) {
-		if (isCapableOfMission(recruitee)) {
-			// Get mission qualification modifier.
-			double qualification = getMissionQualification(recruitee) * 100D;
-			// Get the recruitee's social opinion of the recruiter.
-			double recruiterLikability = 50D;
-			if (recruiter.getUnitType() == UnitType.PERSON) {
-				recruiterLikability = RelationshipUtil.getOpinionOfPerson(recruitee, (Person) recruiter);
-			}
-
-			// Get the recruitee's average opinion of all the current mission members.
-			List<Person> people = new ArrayList<>();
-			Iterator<Worker> i = members.iterator();
-			while (i.hasNext()) {
-				Worker member = i.next();
-				if (member.getUnitType() == UnitType.PERSON) {
-					people.add((Person) member);
-				}
-			}
-			double groupLikability = RelationshipUtil.getAverageOpinionOfPeople(recruitee, people);
-
-			double recruitmentChance = (qualification + recruiterLikability + groupLikability) / 3D;
-			if (recruitmentChance > 100D) {
-				recruitmentChance = 100D;
-			} else if (recruitmentChance < 0D) {
-				recruitmentChance = 0D;
-			}
-
-			if (RandomUtil.lessThanRandPercent(recruitmentChance)) {
-				recruitee.setMission(this);
-
-				// NOTE: do not set his shift to ON_CALL until after the mission plan has been approved
-			}
-		}
-	}
-
-	/**
-	 * Checks to see if a member is capable of joining a mission.
-	 *
-	 * @param member the member to check.
-	 * @return true if member could join mission.
-	 */
-	protected boolean isCapableOfMission(Worker member) {
-		boolean result = false;
-
-		if (member == null) {
-			throw new IllegalArgumentException("member is null");
-		}
-
-		if (member.getUnitType() == UnitType.PERSON) {
-			Person person = (Person) member;
-
-			// Make sure person isn't already on a mission.
-			boolean onMission = (person.getMind().getMission() != null);
-
-			// Make sure person doesn't have any serious health problems.
-			boolean healthProblem = person.getPhysicalCondition().hasSeriousMedicalProblems();
-
-			// Check if person is qualified to join the mission.
-			boolean isQualified = (getMissionQualification(person) > 0D);
-
-			if (!onMission && !healthProblem && isQualified) {
-				result = true;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the mission qualification value for the member. Member is qualified in
-	 * joining the mission if the value is larger than 0. The larger the
-	 * qualification value, the more likely the member will be picked for the
-	 * mission.
-	 *
-	 * @param member the member to check.
-	 * @return mission qualification value.
-	 */
-	@Override
-	public double getMissionQualification(Worker member) {
-
-		double result = 0D;
-
-		if (member.getUnitType() == UnitType.PERSON) {
-			Person person = (Person) member;
-			result = Math.max(5,  person.getMissionExperience(missionType));
-
-			// Get base result for job modifier.
-			Set<JobType> prefered = getPreferredPersonJobs();
-			JobType job = person.getMind().getJobType();
-			double jobModifier;
-			if ((prefered != null) && prefered.contains(job)) {
-				jobModifier = 1D;
-			}
-			else {
-				jobModifier = 0.5D;
-			}
-
-			result = result + 2 * result * jobModifier;
-		}
-		else {
-			Robot robot = (Robot) member;
-
-			// Get base result for job modifier.
-			RobotJob job = robot.getBotMind().getRobotJob();
-			if (job != null) {
-				result = job.getJoinMissionProbabilityModifier(this.getClass());
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the preferred Job types.
-	 * 
-	 * @return
-	 */
-	protected Set<JobType> getPreferredPersonJobs() {
-		return Collections.emptySet();
 	}
 
 	@Override
 	public Set<ObjectiveType> getObjectiveSatisified() {
 		return Collections.emptySet();
 	}
+
+	protected int getMissionCapacity() {
+		return getMetaMission().getDefaultCapacity();
+	}
+
 	/**
 	 * Checks if the current phase has ended or not.
 	 *
@@ -1215,7 +921,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return true;
 	}
 
-
+	/**
+	 * Helper method to find related mata mission
+	 */
+	protected MetaMission getMetaMission() {
+		return MetaMissionUtil.getMetaMission(missionType);
+	}
+	
 	/**
 	 * Gets the current location of the mission.
 	 *
@@ -1245,11 +957,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Requests review for the mission.
-	 *
-	 * @param member the mission lead.
+	 * Requests review for the mission
 	 */
-	private void requestReviewPhase(Worker member) {
+	private void requestReviewPhase() {
 		if (plan == null) {
 			throw new IllegalStateException("No Mission plan");
 		}

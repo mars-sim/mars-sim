@@ -10,6 +10,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -26,16 +27,16 @@ import com.mars_sim.core.structure.Settlement;
  */
 public class ConstructionMissionMeta extends AbstractMetaMission {
     
-	/** default logger. */
-	// May add back private static final SimLogger logger = SimLogger.getLogger(ConstructionMissionMeta.class.getName());
+	private static final Set<JobType> LEADER_JOBS = Set.of(JobType.ARCHITECT, JobType.ENGINEER);
+	private static final Set<JobType> WORKER_JOBS = Set.of(JobType.ARCHITECT, JobType.ENGINEER, JobType.TECHNICIAN);
 
 	// Sites have a higher score than queued buildings
 	private static final int SITE_BASE = 200;
 	private static final int QUEUE_BASE = 50;
 		
     ConstructionMissionMeta() {
-    	super(MissionType.CONSTRUCTION, 
-				Set.of(JobType.ARCHITECT, JobType.ENGINEER));
+    	super(MissionType.CONSTRUCTION, 10, LEADER_JOBS, WORKER_JOBS);
+		setMinimumMembers(3);
     }
     
     @Override
@@ -51,8 +52,6 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
         }
 	
 		Settlement settlement = person.getSettlement();
-
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
 		
 		// Find people not on a mission and healthy		
 		long availablePeopleNum = settlement.getIndoorPeople().stream()
@@ -82,7 +81,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 				return RatingScore.ZERO_RATING;
 			}
 		}
-		missionProbability = new RatingScore(need);
+		var missionProbability = new RatingScore(need);
 
        	RoleType roleType = person.getRole().getType();
         double roleModifier = switch(roleType) {

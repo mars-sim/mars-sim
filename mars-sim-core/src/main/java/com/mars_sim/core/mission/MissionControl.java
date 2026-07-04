@@ -30,7 +30,6 @@ import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
 import com.mars_sim.core.person.ai.mission.PlanType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;

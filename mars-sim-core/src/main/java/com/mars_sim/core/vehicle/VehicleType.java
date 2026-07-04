@@ -7,18 +7,20 @@
  */
 package com.mars_sim.core.vehicle;
 
+import java.util.Set;
+
 import com.mars_sim.core.Named;
 
 import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.tool.Msg;
 
 public enum VehicleType implements Named {
-		
+			
+	// Note: these vehicle types must also match those in vehicles.xml.
 	LUV,DELIVERY_DRONE,CARGO_DRONE,PASSENGER_DRONE,EXPLORER_ROVER,TRANSPORT_ROVER,CARGO_ROVER;
-	
-	// Note: these vehicle types are also used in message.properties 
-	// they must also match those in vehicles.xml.
-	
+
+	public static final Set<VehicleType> ROVER_TYPES = Set.of(EXPLORER_ROVER, TRANSPORT_ROVER, CARGO_ROVER);
+
 	private String name;
 
 	private VehicleType() {
@@ -83,7 +85,7 @@ public enum VehicleType implements Named {
 	public static int getVehicleID(VehicleType type) {
 		return ResourceType.FIRST_VEHICLE_RESOURCE_ID + type.ordinal();
 	}
-	
+		
 	/**
 	 * Is this vehicle a rover ?
 	 * 
@@ -91,9 +93,7 @@ public enum VehicleType implements Named {
 	 * @return
 	 */
 	public static boolean isRover(VehicleType type) {
-		return (type == EXPLORER_ROVER
-				|| type == TRANSPORT_ROVER
-				|| type == CARGO_ROVER);
+		return ROVER_TYPES.contains(type);
 	}	
 	
 	/**

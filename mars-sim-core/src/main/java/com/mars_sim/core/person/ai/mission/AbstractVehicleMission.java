@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.mission;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +32,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.MissionBuilder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -57,7 +57,6 @@ import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleController;
 import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.core.vehicle.comparators.RangeComparator;
 import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
 import com.mars_sim.core.vehicle.task.LoadVehicleGarage;
 import com.mars_sim.core.vehicle.task.LoadVehicleMeta;
@@ -118,9 +117,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private int navIndex = 0;
 	// When was the last check on the remaining resources
 	private int lastResourceCheck = 0;
-	
-	/** Vehicle traveled distance at start of mission. */
-//	private double startingTravelledDistance = 0D;
+
 	/** Total traveled distance. */
 	private double distanceTravelled = 0D;
 	/** The estimated total distance for this mission. */
@@ -234,36 +231,22 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return true if vehicle is reserved, false if unable to.
 	 */
 	private final boolean reserveVehicle() {
-		Collection<Vehicle> vList = getAvailableVehicles(getStartingSettlement());
-		var best = vList.stream()
-			.filter(this::isUsableVehicle)
-			.sorted(getVehicleComparator().reversed())  // Reverse so we find the best one
-			.findFirst().orElse(null);
+		var builder = new MissionBuilder(getMetaMission(), getStartingPerson());
 
-		boolean result;
+		var best = builder.selectBestVehicle();
 		if (best != null) {
 			setVehicle(best);
-			result = true;
-		}
-		else {
-			// Question: how to allow a delay of 1/4 of a sol and check again if a vehicle is available ?
-			
-			// It is a waste to have gone through all the reviews of the mission plan, only to find that
-			// no vehicle is available
-			
-			endMission(NO_AVAILABLE_VEHICLE);
-			logger.warning(getStartingPerson(), "Could not reserve a vehicle for " + getName() + ".");
-			result = false;
+			return true;
 		}
 
-		return result;
-	}
+		// Question: how to allow a delay of 1/4 of a sol and check again if a vehicle is available ?
 		
-	/**
-	 * Gets a comparator of Vehicles for this mission. The default takes the Vehicle with the longest range.
-	 */
-	protected  Comparator<Vehicle> getVehicleComparator() {
-		return new RangeComparator();
+		// It is a waste to have gone through all the reviews of the mission plan, only to find that
+		// no vehicle is available
+		endMission(NO_AVAILABLE_VEHICLE);
+		logger.warning(getStartingPerson(), "Could not reserve a vehicle for " + getName() + ".");
+
+		return false;
 	}
 
 	/**
@@ -319,7 +302,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected void setVehicle(Vehicle newVehicle) {
 		if (newVehicle != null) {
 			vehicle = newVehicle;
-//			startingTravelledDistance = vehicle.getOdometerMileage();
 			claimVehicle(vehicle);
 		}
 		else {
@@ -367,29 +349,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		
 		fireMissionUpdate(VEHICLE_EVENT);
 	}
-
-	/**
-	 * Checks if vehicle is usable for this mission. (This method should be added to
-	 * by children)
-	 *
-	 * @param newVehicle the vehicle to check
-	 * @return true if vehicle is usable.
-	 * @throws IllegalArgumentException if newVehicle is null.
-	 * @throws MissionException         if problem checking vehicle is loadable.
-	 */
-	protected boolean isUsableVehicle(Vehicle vehicle) {
-		return vehicle.isVehicleReady() && vehicle.isEmpty();
-	}
-
-	/**
-	 * Gets a collection of available vehicles at a settlement that are usable for
-	 * this mission.
-	 *
-	 * @param settlement the settlement to find vehicles.
-	 * @return list of available vehicles.
-	 * @throws MissionException if problem determining if vehicles are usable.
-	 */
-	protected abstract Collection<Vehicle> getAvailableVehicles(Settlement settlement);
 
 	/**
 	 * Finalizes the mission.
@@ -772,13 +731,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 						logger.info(member, 20_000, "Not ready to be reassigned to operate " + vehicle.getName() + ".");	
 						
 						if (operateVehicleTask instanceof PilotDrone pd) {
-							pd.endTask();//clearDown();
+							pd.endTask();
 						} else if (operateVehicleTask instanceof DriveGroundVehicle dgv) {
-							dgv.endTask();//clearDown();
+							dgv.endTask();
 						}
 					}
 						
-//					lastOperator = member;
 					return;
 				}
 			}

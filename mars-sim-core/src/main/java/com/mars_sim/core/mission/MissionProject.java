@@ -9,7 +9,6 @@ package com.mars_sim.core.mission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +30,7 @@ import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.social.RelationshipUtil;
+import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Project;
 import com.mars_sim.core.project.ProjectStep;
@@ -87,13 +86,8 @@ public abstract class MissionProject implements Mission {
         }
     }
 
-    // Mission score for Worker
-    private static record Candidate(Worker worker, double score) {}
 	/** Default logger. */
     private static final SimLogger logger = SimLogger.getLogger(MissionProject.class.getName());
-
-    // Minimum settlement population after a mission
-    public static final int MIN_POP = 2;
    
 	public static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
     public static final MissionStatus LOW_SETTLEMENT_POPULATION = new MissionStatus("Mission.status.lowPopulation");
@@ -103,8 +97,6 @@ public abstract class MissionProject implements Mission {
 	private transient EntityListenerManager listeners;
 	
     private int priority;
-    private int minMembers;
-    private int maxMembers;
     
     private String missionCallSign;
     
@@ -119,11 +111,9 @@ public abstract class MissionProject implements Mission {
     private Set<Worker> signedUp = new UnitSet<>();
     private Set<MissionStatus> status = new HashSet<>();
 
-    protected MissionProject(String name, MissionType type, int priority, int minMembers, int maxMembers, Person leader) {
+    protected MissionProject(String name, MissionType type, int priority, Person leader) {
         this.type = type;
         this.priority = priority;
-        this.maxMembers = maxMembers;
-        this.minMembers = minMembers;
 
         var names = leader.getAssociatedSettlement().getMissionControl().generateNames(type);
         this.missionCallSign = names.callSign();
@@ -218,11 +208,6 @@ public abstract class MissionProject implements Mission {
     }
 
     @Override
-    public double getMissionQualification(Worker member) {
-        return 1.0;
-    }
-
-    @Override
     public Set<ObjectiveType> getObjectiveSatisified() {
         return Collections.emptySet();
     }
@@ -245,9 +230,7 @@ public abstract class MissionProject implements Mission {
         // Add the close down step
         control.addStep(new MissionCloseStep(this));
         
-        if (members.size() < minMembers) {
-            findMembers();
-        }
+        findMembers();
     }
 
     /**
@@ -274,25 +257,6 @@ public abstract class MissionProject implements Mission {
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 	}
 
-    /**
-	 * Checks to see if a member is capable of joining a mission.
-	 *
-	 * @param member the member to check.
-	 * @return true if member could join mission.
-	 */
-	private static boolean isCapableOfMission(Worker member) {
-		if (member instanceof Person p) {
-			// Make sure person isn't already on a mission.
-			boolean onMission = (p.getMind().getMission() != null);
-
-			// Make sure person doesn't have any serious health problems.
-			boolean healthProblem = p.getPhysicalCondition().hasSeriousMedicalProblems();
-
-			return (!onMission && !healthProblem);
-		}
-		return false;
-	}
-
     /** 
      * Finds new members based on the skills needed for the Mission steps.
      */
@@ -300,38 +264,15 @@ public abstract class MissionProject implements Mission {
     	// Get all people qualified for the mission.
 		Collection<Person> possibles = leader.getAssociatedSettlement().getIndoorPeople();
 
-		List<Candidate> qualifiedPeople = new ArrayList<>();
-		for(Person person : possibles) {
-			if (isCapableOfMission(person)) {
-				// Determine the person's mission qualification.
-				double qualification = getMissionQualification(person) * 100D;
-                if (qualification > 0) {
-
-                    // Determine how much the recruiter likes the person.
-                    double likability = RelationshipUtil.getOpinionOfPerson(leader, person);
-
-                    // Check if person is the best recruit.
-                    double personValue = (qualification + likability) / 2D;
-                    qualifiedPeople.add(new Candidate(person, personValue));
-                }
-			}
+        var meta = MetaMissionUtil.getMetaMission(getMissionType());
+		var recruiter = new MissionBuilder(meta, leader);
+		var team = recruiter.recruitMembers(possibles);
+		if ((team.size() + 1) < meta.getMinimumMembers()) {
+			abortMission(NOT_ENOUGH_MEMBERS);
 		}
-
-        // Check numbers
-        int needed = minMembers - members.size();
-        if (needed > qualifiedPeople.size()) {
-            abortMission(NOT_ENOUGH_MEMBERS);
-        }
-        else if ((possibles.size() - needed) < MIN_POP) {
-            abortMission(LOW_SETTLEMENT_POPULATION);
-        }
-		
-		// Recruit the most qualified and most liked people first.
-		qualifiedPeople.sort(Comparator.comparing(Candidate::score, Comparator.reverseOrder()));
-        for(int i = 0; i < needed; i++) {
-            Candidate choosen = qualifiedPeople.get(i);
-            choosen.worker.setMission(this);
-        }
+        else {
+		    team.forEach(w -> w.setMission(this));
+		}
 	}
     
     @Override
@@ -353,11 +294,6 @@ public abstract class MissionProject implements Mission {
     @Override
     public int getPriority() {
         return priority;
-    }
-
-    @Override
-    public int getMissionCapacity() {
-       return maxMembers;
     }
 
     @Override

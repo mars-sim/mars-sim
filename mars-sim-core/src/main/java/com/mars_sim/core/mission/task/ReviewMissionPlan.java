@@ -27,6 +27,7 @@ import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.person.ai.mission.SiteMission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
+import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -218,7 +219,11 @@ public class ReviewMissionPlan extends Task {
 		int relation = assessLeader(leader, reviewerSettlement);
 
 		// 3. Mission Qualification Score
-		double qual = m.getMissionQualification(person) * 0.4D;
+		double qual = 1D;
+		var meta = MetaMissionUtil.getMetaMission(m.getMissionType());
+		if (meta != null) {
+			qual = meta.getWorkerSuitability(person) * 0.4D;
+		}
 		
 		// 4. Settlement objective score, is the Mission type
 		// is preferred for the Objective

@@ -19,12 +19,9 @@ import com.mars_sim.core.goods.CommerceUtil;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.ShoppingItem;
-import com.mars_sim.core.person.ai.mission.DroneMission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.RoverMission;
+import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.vehicle.Drone;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -89,7 +86,8 @@ public class TradeCommand extends AbstractSettlementCommand {
 	private void outputDeals(Conversation context, Settlement settlement, StructuredResponse response) {
 
 		// Find some example vehicles
-		Drone drone = DroneMission.getDroneWithGreatestRange(settlement, true);
+		var deliveryMeta = MetaMissionUtil.getMetaMission(MissionType.DELIVERY);
+		var drone = deliveryMeta.selectVehicle(settlement);
 		if (drone != null) {
 			response.appendLabeledString("Drone Range", String.format(CommandHelper.KM_FORMAT,
 										drone.getRange()));
@@ -97,7 +95,8 @@ public class TradeCommand extends AbstractSettlementCommand {
 										drone.getBaseRange()));
 		}
 
-		Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, true);
+		var tradeMeta = MetaMissionUtil.getMetaMission(MissionType.TRADE);
+		var rover = tradeMeta.selectVehicle(settlement);
 		if (rover != null) {
 			response.appendLabeledString("Rover Range", String.format(CommandHelper.KM_FORMAT,
 										rover.getRange()));

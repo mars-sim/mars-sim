@@ -62,8 +62,6 @@ public class ConstructionMission extends AbstractMission {
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 2;
 	
-	private static final int MAX_PEOPLE = 10;
-	
 	private static final int CONSTRUCT_PERCENT_PROBABILITY = 50;
 	
 	/** Time (millisols) required to prepare construction site for stage. */
@@ -78,7 +76,7 @@ public class ConstructionMission extends AbstractMission {
 	 *
 	 * @param startingMember the mission member starting the mission.
 	 */
-	public ConstructionMission(Worker startingMember) {
+	public ConstructionMission(Person startingMember) {
 		// Use Mission constructor.
 		super(MissionType.CONSTRUCTION, startingMember);
 
@@ -86,11 +84,8 @@ public class ConstructionMission extends AbstractMission {
 			return;
 		}
 
-		// Sets the mission capacity.
-		setMissionCapacity(MAX_PEOPLE);
-
 		// Recruit additional members to mission.
-		if (!recruitMembersForMission(startingMember, true, MIN_PEOPLE)) {
+		if (!recruitMembersForMission(startingMember, MIN_PEOPLE)) {
 			return;
 		}
 
@@ -131,18 +126,15 @@ public class ConstructionMission extends AbstractMission {
 	public ConstructionMission(Collection<Worker> members, Settlement settlement,
 			ConstructionSite choosenSite,
 			List<GroundVehicle> vehicles) {
+		if (choosenSite == null) {
+			throw new IllegalArgumentException("Choosen site is missing");
+		}
 
 		// Use Mission constructor.
 		super(MissionType.CONSTRUCTION, (Worker) members.toArray()[0]);
 
 		// Add mission members.
 		addMembers(members, false);
-		
-		setMissionCapacity(MAX_PEOPLE);
-
-		if (choosenSite == null) {
-			throw new IllegalArgumentException("Choosen site is missing");
-		}
 
 		// site already selected
 		logger.info(settlement, "Case 2. new construction stageInfo could not be determined.");
@@ -240,9 +232,9 @@ public class ConstructionMission extends AbstractMission {
 						vehicle.storeItemResource(part, 1);
 					}
 					luvAttachmentParts.add(part);
-				} catch (Exception e) {
+				} catch (Exception _) {
 					Part p = ItemResourceUtil.findItemResource(part);
-					endMissionProblem(settlement, "Cannot retreive Part " + p.getName());
+					endMissionProblem(settlement, "Cannot retrieve part " + p.getName());
 				}
 			}
 			vehicleIndex++;

@@ -6,24 +6,36 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.MissionUtil;
 import com.mars_sim.core.person.ai.mission.RescueSalvageVehicle;
 import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * A meta mission for the RescueSalvageVehicle mission.
  */
 public class RescueSalvageVehicleMeta extends AbstractMetaMission {
    
+    private static final Set<JobType> LEADER_JOBS = Set.of(JobType.PILOT, JobType.ENGINEER);
+    private static final Set<JobType> WORKER_JOBS = Collections.emptySet();
+
     RescueSalvageVehicleMeta() {
-    	super(MissionType.RESCUE_SALVAGE_VEHICLE, null);
+    	super(MissionType.RESCUE_SALVAGE_VEHICLE, 2, LEADER_JOBS, WORKER_JOBS);
+
+        setPreferredVehicle(VehicleType.ROVER_TYPES);
     }
   
     @Override
@@ -43,7 +55,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
             Vehicle vehicleTarget = null;
 
             // Check if there are any beacon vehicles within range that need help.
-            Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
+            var vehicle = selectVehicle(settlement);
             if (vehicle != null) {
                 vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement,
                         vehicle.getEstimatedRange());
@@ -100,4 +112,22 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
 
         return missionProbability;
     }
+
+    
+	/**
+	 * Gets the mission qualification score.
+	 * 
+	 * @param member
+	 * @return the score
+	 */
+	@Override
+	public double getWorkerSuitability(Worker member) {
+		double result = super.getWorkerSuitability(member);
+
+		if (member instanceof Person person && person.getMind().getJobType() == JobType.PILOT) {
+			result += 1D;
+		}
+		
+		return result;
+	}
 }

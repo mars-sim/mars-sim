@@ -96,11 +96,6 @@ public class MockMission implements Mission {
     }
 
     @Override
-    public double getMissionQualification(Worker member) {
-        throw new UnsupportedOperationException("Unimplemented method 'getMissionQualification'");
-    }
-
-    @Override
     public Stage getStage() {
         
         throw new UnsupportedOperationException("Unimplemented method 'getStage'");
@@ -128,12 +123,6 @@ public class MockMission implements Mission {
     public int getPriority() {
         
         throw new UnsupportedOperationException("Unimplemented method 'getPriority'");
-    }
-
-    @Override
-    public int getMissionCapacity() {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'getMissionCapacity'");
     }
 
     @Override

@@ -6,54 +6,28 @@
  */
 package com.mars_sim.core.mission.predefined;
 
-import com.mars_sim.core.data.RatingScore;
+import java.util.Set;
+
+import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMission;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Skeleton implementation of the Meta Mission for a test drive
  */
-public class TestDriveMetaMission implements MetaMission {
+public class TestDriveMetaMission extends AbstractMetaMission {
 
-    @Override
-    public MissionType getType() {
-        return null;
-    }
+    public TestDriveMetaMission() {
+        super(MissionType.TEST_DRIVE, 2, Set.of(JobType.PILOT), Set.of(JobType.TECHNICIAN));
 
-    @Override
-    public String getName() {
-        return "Test Drive";
-    }
-
-    @Override
-    public double getLeaderSuitability(Person person) {
-        return person.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING)/ 100D;
+        setPreferredVehicle(VehicleType.ROVER_TYPES);
     }
 
     @Override
     public Mission constructInstance(Person person, boolean needsReview) {
         return new TestDriveMission("Test drive", person);
     }
-
-    @Override
-    public Mission constructInstance(Robot robot) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'constructInstance'");
-    }
-
-    @Override
-    public RatingScore getProbability(Person person) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getProbability'");
-    }
-
-    @Override
-    public double getProbability(Robot robot) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getProbability'");
-    }    
 }

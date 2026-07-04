@@ -7,8 +7,6 @@
 package com.mars_sim.core.robot.ai.job;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
@@ -20,17 +18,6 @@ public abstract class RobotJob implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** Probability penalty for starting a non-job-related mission. */
-	private static final double NON_JOB_MISSION_START_PENALTY = 0D;
-	/** Probability penalty for joining a non-job-related mission. */
-	private static final double NON_JOB_MISSION_JOIN_PENALTY = 0D;
-
-	// Domain members
-	/** List of missions to be started by a person with this job. */
-	protected List<Class<?>> jobMissionStarts;
-	/** List of missions to be joined by a person with this job. */
-	protected List<Class<?>> jobMissionJoins;
 	
 	/**
 	 * Constructor.
@@ -38,10 +25,7 @@ public abstract class RobotJob implements Serializable {
 	 * @param name the name of the job.
 	 */
 	protected RobotJob() {
-		jobMissionStarts = new ArrayList<Class<?>>();
-		jobMissionJoins = new ArrayList<Class<?>>();
 	}
-
 	
 	/**
 	 * Gets a robot's capability to perform this job.
@@ -50,32 +34,6 @@ public abstract class RobotJob implements Serializable {
 	 * @return capability (min 0.0).
 	 */
 	public abstract double getCapability(Robot robot);
-
-	/**
-	 * Gets the probability modifier for starting a non-job-related mission.
-	 * 
-	 * @param missionClass the mission class
-	 * @return modifier >= 0.0
-	 */
-	public double getStartMissionProbabilityModifier(Class<?> missionClass) {
-		double result = 1D;
-		if (!jobMissionStarts.contains(missionClass))
-			result = NON_JOB_MISSION_START_PENALTY;
-		return result;
-	}
-
-	/**
-	 * Gets the probability modifier for joining a non-job-related mission.
-	 * 
-	 * @param missionClass the mission class
-	 * @return modifier >= 0.0
-	 */
-	public double getJoinMissionProbabilityModifier(Class<?> missionClass) {
-		double result = 1D;
-		if (!jobMissionJoins.contains(missionClass))
-			result = NON_JOB_MISSION_JOIN_PENALTY;
-		return result;
-	}
 
 	/**
 	 * Gets the optimal number of this type of Robot a Settlement needs.

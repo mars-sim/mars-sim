@@ -6,21 +6,25 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Comparator;
 import java.util.Set;
 
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.LabRangeComparator;
 
 /**
  * A meta mission for the Exploration mission.
@@ -28,15 +32,30 @@ import com.mars_sim.core.vehicle.Rover;
 public class ExplorationMeta extends AbstractMetaMission {
 
 	private static final int MAX = 50;
-	
+
+	private static final Set<JobType> PREFERRED_WORKER_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.ASTROBIOLOGIST, 
+			JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);	
+
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 2;
 
 	private static final double VALUE = 20D;
 
 	ExplorationMeta() {
-		super(MissionType.EXPLORATION, 
-					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST));
+		super(MissionType.EXPLORATION, 4,
+					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST),
+					PREFERRED_WORKER_JOBS);
+		
+		setPreferredVehicle(VehicleType.ROVER_TYPES);
+	}
+
+	
+	/**
+	 * Gets the Vehicle comparator that is based on largest cargo.
+	 */
+	@Override
+	protected Comparator<Vehicle> getVehicleComparator() {
+		return new LabRangeComparator();
 	}
 
 	@Override
@@ -47,20 +66,17 @@ public class ExplorationMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
-    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
     		return RatingScore.ZERO_RATING;
     	}
-    	
+    	RatingScore missionProbability = RatingScore.ZERO_RATING;
 		Settlement settlement = person.getAssociatedSettlement();
 
         RoleType roleType = person.getRole().getType();
 
 		if (roleType.isCouncil()
-//				|| RoleType.CHIEF_OF_SCIENCE == roleType
 				|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 				|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
-//	 			|| RoleType.SCIENCE_SPECIALIST == roleType
 	 			|| RoleType.MISSION_SPECIALIST == roleType
 				|| RoleType.RESOURCE_SPECIALIST == roleType
 				) {
@@ -76,8 +92,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 			}
 
 			// Get available rover.
-			Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
-			
+			var rover = (Rover)selectVehicle(settlement);
 			if (rover == null) {
 				return RatingScore.ZERO_RATING;
 			}

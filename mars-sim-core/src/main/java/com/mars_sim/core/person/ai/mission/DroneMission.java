@@ -6,9 +6,6 @@
  */
 package com.mars_sim.core.person.ai.mission;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -19,7 +16,6 @@ import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.task.Charge;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -61,76 +57,6 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	 */
 	public final Drone getDrone() {
 		return (Drone) getVehicle();
-	}
-
-	/**
-	 * Gets a collection of available Drones at a settlement that are usable for
-	 * this mission.
-	 *
-	 * @param settlement the settlement to find vehicles.
-	 * @return list of available vehicles.
-	 */
-	@Override
-	protected Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
-		Collection<Vehicle> result = new ArrayList<>();
-		Collection<Drone> list = settlement.getParkedGaragedDrones();
-		if (list.isEmpty())
-			return result;
-		for (Drone v : list) {
-			if (!v.haveStatusType(StatusType.MAINTENANCE)
-					&& !v.getMalfunctionManager().hasMalfunction()
-					&& isUsableVehicle(v)
-					&& !v.isReserved()) {
-				result.add(v);
-			}
-		}
-		return result;
-	}
-	
-	/**
-	 * Gets a drone that is ready for use.
-	 *
-	 * @param settlement         the settlement to check.
-	 * @param allowMaintReserved allow vehicles that are reserved for maintenance.
-	 * @return vehicle or null if none available.
-	 * @throws Exception if error finding vehicles.
-	 */
-	public static Drone getDroneWithGreatestRange(Settlement settlement, boolean allowMaintReserved) {
-		Drone bestDrone = null;
-		double bestRange = 0D;
-
-		for (Drone drone : settlement.getParkedGaragedDrones()) {
-			boolean usable = !drone.isReservedForMission();
-            usable = usable && (allowMaintReserved || !drone.isReserved());
-			usable = usable && drone.isVehicleReady();
-			usable = usable && (drone.isEmpty());
-
-			if (usable) {
-				double range = drone.getRange();
-				if ((bestDrone == null) || (bestRange > range)) {
-					bestDrone = drone;
-					bestRange = range;
-				}
-			}
-		}
-
-		return bestDrone;
-	}
-
-	/**
-	 * Checks if vehicle is usable for this mission. (This method should be
-	 * overridden by children).
-	 *
-	 * @param newVehicle the vehicle to check
-	 * @return true if vehicle is usable.
-	 * @throws MissionException if problem determining if vehicle is usable.
-	 */
-	@Override
-	protected boolean isUsableVehicle(Vehicle newVehicle) {
-		boolean usable = super.isUsableVehicle(newVehicle);
-		if (!(newVehicle instanceof Drone))
-			usable = false;
-		return usable;
 	}
 
 	/**
@@ -360,22 +286,5 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	 */
 	protected boolean isInAGarage() {
 		return getVehicle().isInGarage();
-	}
-
-	@Override
-	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement, int minMembers) {
-		// Get a delivery bot qualified for the mission.
-		Iterator<Robot> r = getStartingSettlement().getAllAssociatedRobots().iterator();
-		while (r.hasNext()) {
-			Robot robot = r.next();
-			if (robot.getRobotType() == RobotType.DELIVERYBOT) {
-				addMember(robot);
-				break;
-			}
-		}
-
-		super.recruitMembersForMission(startingMember, sameSettlement, minMembers);
-
-		return true;
 	}
 }

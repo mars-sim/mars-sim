@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * A mission for trading between two settlements
@@ -64,8 +62,6 @@ public class Trade extends RoverMission implements CommerceMission {
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
 
-	public static final int MAX_MEMBERS = 2;
-
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TRADE_CENTER);
 
 	private TradeObjective objective;
@@ -81,7 +77,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
-	public Trade(Worker startingMember, boolean needsReview) {
+	public Trade(Person startingMember, boolean needsReview) {
 		// Use RoverMission constructor.
 		super(MissionType.TRADE, startingMember, null);
 
@@ -91,11 +87,6 @@ public class Trade extends RoverMission implements CommerceMission {
 		}
 
 		Settlement s = startingMember.getSettlement();
-		// Set the mission capacity.
-		if (getMissionCapacity() > MAX_MEMBERS) {
-			setMissionCapacity(MAX_MEMBERS);
-		}
-
 		outbound = true;
 
 		// Get trading settlement
@@ -111,7 +102,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		addObjective(objective);
 
 		// Recruit additional members to mission.
-		if (!isDone() && !recruitMembersForMission(startingMember, MAX_MEMBERS)) {
+		if (!isDone() && !recruitMembersForMission(startingMember, getMissionCapacity())) {
 			return;
 		}
 
@@ -136,12 +127,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		super(MissionType.TRADE, members.get(0), rover);
 
 		outbound = true;
-
-		// Sets the mission capacity.
-		if (getMissionCapacity() > MAX_MEMBERS) {
-			setMissionCapacity(MAX_MEMBERS);
-		}
-
+		
 		// Set mission destination.
 		addNavpoint(tradingSettlement);
 
@@ -529,14 +515,6 @@ public class Trade extends RoverMission implements CommerceMission {
 	protected Map<Integer, Number> getOptionalResourcesToLoad() {
 		Map<Integer, Number> result = super.getOptionalResourcesToLoad();
 		return objective.addResourcesToLoad(result, outbound);
-	}
-
-	/**
-	 * Get the Vehicle comparator that is based on largest cargo
-	 */
-	@Override
-	protected  Comparator<Vehicle> getVehicleComparator() {
-		return new CargoRangeComparator();
 	}
 
 	/**

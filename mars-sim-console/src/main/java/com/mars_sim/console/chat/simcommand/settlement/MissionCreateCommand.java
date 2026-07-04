@@ -13,11 +13,11 @@ import java.util.List;
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.predefined.TestDriveMetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.PlanType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
 

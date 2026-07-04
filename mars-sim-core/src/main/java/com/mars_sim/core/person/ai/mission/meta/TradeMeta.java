@@ -6,34 +6,52 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Comparator;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * A meta mission for the Trade mission.
  */
 public class TradeMeta extends AbstractMetaMission {
 	
+	private static final Set<JobType> LEADER_JOBS = Set.of(JobType.POLITICIAN, JobType.TRADER, JobType.REPORTER);
+	private static final Set<JobType> WORKER_JOBS = Set.of(JobType.PILOT);
+
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 4;
 
+	public static final int MAX_MEMBERS = 3;
+
 	TradeMeta() {
-		super(MissionType.TRADE, 
-				Set.of(JobType.POLITICIAN, JobType.TRADER, JobType.REPORTER));
+		super(MissionType.TRADE, MAX_MEMBERS, LEADER_JOBS, WORKER_JOBS);
+
+		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER));
+	}
+
+	
+	/**
+	 * Get the Vehicle comparator that is based on largest cargo
+	 */
+	@Override
+	protected Comparator<Vehicle> getVehicleComparator() {
+		return new CargoRangeComparator();
 	}
 
 	@Override
@@ -44,14 +62,12 @@ public class TradeMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
-
-		Settlement settlement = person.getAssociatedSettlement();
-		
-    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
-    		return missionProbability;
+    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
+    		return RatingScore.ZERO_RATING;
     	}
-		
+
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
+		Settlement settlement = person.getAssociatedSettlement();
 		// Check if person is in a settlement.
 		if (settlement != null) {
 	
@@ -89,7 +105,7 @@ public class TradeMeta extends AbstractMetaMission {
 	private RatingScore getSettlementProbability(Settlement settlement) {
 		
 		// Check for the best trade settlement within range.			
-		Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
+		var rover = selectVehicle(settlement);
 		if (rover == null) {
 			return RatingScore.ZERO_RATING;
 		}

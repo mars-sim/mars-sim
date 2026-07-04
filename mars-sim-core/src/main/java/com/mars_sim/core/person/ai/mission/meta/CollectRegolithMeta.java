@@ -6,12 +6,14 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Collections;
 import java.util.Set;
 
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.CollectRegolith;
@@ -19,11 +21,15 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * A meta mission for the CollectRegolith mission.
  */
 public class CollectRegolithMeta extends AbstractMetaMission {
+
+	private static final Set<JobType> PREFERRED_LEADER_JOBS = Set.of(JobType.ARCHITECT, JobType.CHEMIST);
+	private static final Set<JobType> PREFERRED_WORKER_JOBS = Collections.emptySet();
 
 	private static final int VALUE = 500;
 
@@ -31,7 +37,9 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	public static final int MIN_STARTING_SOL = 4;
 
 	CollectRegolithMeta() {
-		super(MissionType.COLLECT_REGOLITH, Set.of(JobType.ARCHITECT, JobType.CHEMIST));
+		super(MissionType.COLLECT_REGOLITH, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
+
+		setPreferredVehicle(VehicleType.ROVER_TYPES);
 	}
 
 	@Override
@@ -42,11 +50,11 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
-    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
     		return RatingScore.ZERO_RATING;
     	}
-    	
+
+    	RatingScore missionProbability = RatingScore.ZERO_RATING;
 		if (person.isInSettlement()) {
 
 			Settlement settlement = person.getSettlement();

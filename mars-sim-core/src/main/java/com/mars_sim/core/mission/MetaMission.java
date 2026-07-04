@@ -4,13 +4,15 @@
  * @version 3.2.0 2021-06-20
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.mission.meta;
+package com.mars_sim.core.mission;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * Interface for a meta mission, responsible for determining mission probability
@@ -23,22 +25,29 @@ public interface MetaMission {
 	/**
 	 * Type of Mission created by this Meta object
 	 */
-	public MissionType getType();
+	MissionType getType();
 
 	/**
 	 * Gets the associated mission name.
 	 * 
 	 * @return mission name string.
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * Checks the suitability for this Person to be the leader. It currently checks their Job.
 	 * 
-	 * @param person
-	 * @return
+	 * @param person Potential leader to assess
+	 * @return Score of suitability. zero means not suitable at all.
 	 */
-	public double getLeaderSuitability(Person person);
+	double getLeaderSuitability(Person person);
+
+	/**
+	 * Gauges the suitability of this worker joining a mission of this type.
+	 * @param w Worker
+	 * @return Score of qualification. zero means not suitable at all.
+	 */
+    double getWorkerSuitability(Worker w);
 
 	/**
 	 * Constructs an instance of the associated mission.
@@ -47,9 +56,7 @@ public interface MetaMission {
 	 * @param needsReview Mission must be reviewed
 	 * @return mission instance.
 	 */
-	public Mission constructInstance(Person person, boolean needsReview);
-
-	public Mission constructInstance(Robot robot);
+	Mission constructInstance(Person person, boolean needsReview);
 
 	/**
 	 * Gets the weighted probability value that the person might perform this
@@ -59,7 +66,23 @@ public interface MetaMission {
 	 * @param person the person to perform the mission.
 	 * @return Rating of this mission starting
 	 */
-	public RatingScore getProbability(Person person);
+	default RatingScore getProbability(Person person) {
+		return RatingScore.ZERO_RATING;
+	}
 
-	public double getProbability(Robot robot);
+	/**
+	 * Get the minimum number of members needed to perform a Mission of this style.
+	 */
+	int getMinimumMembers();
+
+	/**
+	 * Get the default maximum members in a mission of this style. It can be overridden locally within the actual Mission
+	 */
+    int getDefaultCapacity();
+
+	/**
+	 * Select the most suitable Vehicle for this mission.
+	 * @param settlement the settlement to search for vehicles.
+	 */
+	Vehicle selectVehicle(Settlement settlement);
 }

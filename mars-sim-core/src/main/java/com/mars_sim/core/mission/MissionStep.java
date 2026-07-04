@@ -8,7 +8,6 @@ package com.mars_sim.core.mission;
 
 
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -17,7 +16,6 @@ import com.mars_sim.core.project.ProjectStep;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -28,8 +26,6 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 public abstract class MissionStep extends ProjectStep {
 	private static final long serialVersionUID = 1L;
-
-	private static final SimLogger logger = SimLogger.getLogger(MissionStep.class.getName());
 
     private static UnitManager unitManager;
 
@@ -103,28 +99,7 @@ public abstract class MissionStep extends ProjectStep {
      * @param task Task allocated
      */
     protected boolean assignTask(Worker worker, Task task) {
-        boolean shouldAssignTask = false;
-
-        if (worker instanceof Robot r) {
-            boolean isRobotBatteryEnough = r.getSystemCondition().getBattery().isBatteryAbove(10);
-            boolean isRobotOperational = !r.getMalfunctionManager().hasMalfunction();
-            shouldAssignTask = (isRobotOperational && isRobotBatteryEnough);
-        }
-        else if (worker instanceof Person p) {
-            boolean isPersonUnfit = p.isSuperUnfit();
-            boolean isPhysicalEffortNotRequired = !task.isEffortDriven();
-            boolean isPersonHealthy = p.getPerformanceRating() != 0D;
-            shouldAssignTask = (isPhysicalEffortNotRequired || isPersonHealthy);
-
-    		if (isPersonUnfit)
-    			return false;
-        }
-
-        if (shouldAssignTask && !worker.getTaskManager().checkReplaceTask(task)) {
-            logger.warning(worker, "Unable to start " + task.getName());
-        }
-
-        return shouldAssignTask;
+        return worker.getTaskManager().directlyAssignTask(task, false);
     }
 
     protected static UnitManager getUnitManager() {

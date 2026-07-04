@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * A mission for delivery between two settlements
@@ -66,7 +64,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
-	public Delivery(Worker startingMember, boolean needsReview) {
+	public Delivery(Person startingMember, boolean needsReview) {
 		// Use DroneMission constructor.
 		super(MissionType.DELIVERY, startingMember, null);
 
@@ -96,7 +94,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 			addObjective(objective);
 			
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingMember, true, 2);
+			recruitMembersForMission(startingMember, 2);
 
 			if (!isDone()) {
 				// Set initial phase
@@ -389,14 +387,6 @@ public class Delivery extends DroneMission implements CommerceMission {
 
 	}
 
-	/**
-	 * Get the Vehicle comparator that is based on largest cargo
-	 */
-	@Override
-	protected  Comparator<Vehicle> getVehicleComparator() {
-		return new CargoRangeComparator();
-	}
-	
 	/**
 	 * Gets the settlement that the starting settlement is trading with.
 	 *
