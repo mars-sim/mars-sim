@@ -70,8 +70,10 @@ public class MissionControl implements ScheduledEventHandler {
 		this.owner = settlement;
         missionScores.add(minimumPassingScore);
 
+		owner.getPreferences().putValue(MissionLimitParameters.MISSION_CHECK_SOL, true);
+
         // Get time of next sol and schedule refresh; compensates for time zone
-        MarsTime startOfNextSol = Simulation.instance().getMasterClock().getMarsTime();
+        MarsTime startOfNextSol = getMarsTime();
 		startOfNextSol = startOfNextSol.advanceToNextMSol(settlement.getTimeZone().getMSolOffset());
         settlement.getFutureManager().addEvent(startOfNextSol, this);
     }
@@ -85,7 +87,7 @@ public class MissionControl implements ScheduledEventHandler {
 	 * @return Naming convention to apply
 	 */
 	public synchronized MissionNaming generateNames(MissionType type) {
-		int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
+		int missionSol = getMarsTime().getMissionSol();
 
 		String sortieString = missionSol + "-" + id;
 
@@ -294,9 +296,9 @@ public class MissionControl implements ScheduledEventHandler {
 
 		var activeMissionsByType = getActiveMissions().stream()
 				.collect(Collectors.groupingBy(Mission::getMissionType, Collectors.counting()));
-
+		var checkSol = paramMgr.getBooleanValue(MissionLimitParameters.MISSION_CHECK_SOL, true);
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
-			if (canAcceptMission(metaMission, paramMgr, activeMissionsByType)) {
+			if (canAcceptMission(metaMission, paramMgr, checkSol, activeMissionsByType)) {
 				var score = scoreMission(metaMission, leader, paramMgr);
 				if (score != null) {
 					potentials.add(score);
@@ -307,17 +309,28 @@ public class MissionControl implements ScheduledEventHandler {
 	}
 
 	/**
-	 * Checks if a mission can be accepted based on the maximum number of active missions of that type allowed by the settlement preferences.
+	 * Checks if a mission can be accepted based on the maximum number of active missions of that type allowed
+	 * by the settlement preferences. Also it check the sol threshold.
 	 * @param metaMission The mission type to check
 	 * @param paramMgr The parameter manager containing the settlement preferences
+	 * @param checkSol Whether to check the sol threshold for the mission
 	 * @param activeMissionsByType A map of active missions grouped by their type
 	 * @return true if the mission can be accepted, false otherwise
 	 */
-	private boolean canAcceptMission(MetaMission metaMission, ParameterManager paramMgr, Map<MissionType, Long> activeMissionsByType) {
+	private boolean canAcceptMission(MetaMission metaMission, ParameterManager paramMgr,
+					boolean checkSol, Map<MissionType, Long> activeMissionsByType) {
+		if (checkSol && getMarsTime().getMissionSol() < metaMission.getSolThreshold()) {
+			return false;
+		}
+		
 		int maxMissions = paramMgr.getIntValue(MissionLimitParameters.INSTANCE.getKey(metaMission.getType()),
 											Integer.MAX_VALUE);
 		int activeMissions = activeMissionsByType.getOrDefault(metaMission.getType(), 0L).intValue();
 		return activeMissions < maxMissions;
+	}
+
+	private MarsTime getMarsTime() {
+		return Simulation.instance().getMasterClock().getMarsTime();
 	}
 
 	/**

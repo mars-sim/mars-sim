@@ -47,6 +47,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 		setPreferredVehicle(Set.of(VehicleType.EXPLORER_ROVER));
 		setPopulationRatio(6);
+		setSolThreshold(2);
 	}
 
 	/**
@@ -61,8 +62,6 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
-		
-		if (!isTimeSuitable(2)) return RatingScore.ZERO_RATING;
 		
 		RoleType roleType = person.getRole().getType();
 		JobType jobType = person.getMind().getJobType();

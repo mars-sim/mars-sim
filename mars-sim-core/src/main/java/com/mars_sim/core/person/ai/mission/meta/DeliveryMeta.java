@@ -41,7 +41,7 @@ public class DeliveryMeta extends AbstractMetaMission {
     
     private static final int VALUE = 1;
 	/** Starting sol for this mission to commence. */
-	public static final int MIN_STARTING_SOL = 4;
+	private static final int MIN_STARTING_SOL = 4;
 	
     private static final double DIVISOR = 10;
 
@@ -53,6 +53,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		setPreferredRobots(Set.of(RobotType.DELIVERYBOT));
 		setPreferredVehicle(Set.of(VehicleType.DELIVERY_DRONE));
 		setPopulationRatio(6);
+		setSolThreshold(MIN_STARTING_SOL);
 	}
 
 	/**
@@ -76,10 +77,6 @@ public class DeliveryMeta extends AbstractMetaMission {
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 
-    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
-    		return RatingScore.ZERO_RATING;
-    	}
-		
 		RoleType roleType = person.getRole().getType();
 		if (RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
 				|| RoleType.MISSION_SPECIALIST == roleType

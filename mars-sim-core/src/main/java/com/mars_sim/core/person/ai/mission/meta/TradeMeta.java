@@ -35,7 +35,7 @@ public class TradeMeta extends AbstractMetaMission {
 	private static final Set<JobType> WORKER_JOBS = Set.of(JobType.PILOT);
 
 	/** Starting sol for this mission to commence. */
-	public static final int MIN_STARTING_SOL = 4;
+	private static final int MIN_STARTING_SOL = 4;
 
 	public static final int MAX_MEMBERS = 3;
 
@@ -44,6 +44,7 @@ public class TradeMeta extends AbstractMetaMission {
 
 		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER));
 		setPopulationRatio(10);
+		setSolThreshold(MIN_STARTING_SOL);
 	}
 
 	/**
@@ -61,11 +62,6 @@ public class TradeMeta extends AbstractMetaMission {
 
 	@Override
 	public RatingScore getProbability(Person person) {
-
-    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
-    		return RatingScore.ZERO_RATING;
-    	}
-
 		RatingScore missionProbability = RatingScore.ZERO_RATING;
 		Settlement settlement = person.getAssociatedSettlement();
 		// Check if person is in a settlement.

@@ -92,4 +92,10 @@ public interface MetaMission {
 	 * @return The maximum number of missions of this type that can be supported by the settlement
 	 */
     int getMaxMissions(int numCitizens);
+
+	/**
+	 * Get the minimum sol threshold for this mission. This is the minimum sol that must be reached before this mission can be created.
+	 * @return minimum sol threshold
+	 */
+    int getSolThreshold();
 }

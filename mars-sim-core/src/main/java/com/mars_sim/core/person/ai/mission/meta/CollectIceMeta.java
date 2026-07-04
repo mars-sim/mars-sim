@@ -33,13 +33,14 @@ public class CollectIceMeta extends AbstractMetaMission {
 	private static final int VALUE = 750;
 
 	/** Starting sol for this mission to commence. */
-	public static final int MIN_STARTING_SOL = 3;
+	private static final int MIN_STARTING_SOL = 3;
 	
 	CollectIceMeta() {
 		super(MissionType.COLLECT_ICE, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 
 		setPreferredVehicle(VehicleType.ROVER_TYPES);
 		setPopulationRatio(5);
+		setSolThreshold(MIN_STARTING_SOL);
 	}
 
 	@Override
@@ -50,56 +51,53 @@ public class CollectIceMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
-    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
+    	if (!person.isInSettlement()) {
     		return RatingScore.ZERO_RATING;
     	}
     	
-		if (person.isInSettlement()) {
+		Settlement settlement = person.getSettlement();
 
-			Settlement settlement = person.getSettlement();
+		RoleType roleType = person.getRole().getType();
+		if (roleType.isCouncil()
+				|| person.getMind().getJobType() == JobType.AREOLOGIST
+				|| person.getMind().getJobType() == JobType.CHEMIST
+				|| person.getMind().getJobType() == JobType.BOTANIST
+				|| person.getMind().getJobType() == JobType.CHEF
+				|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
+				|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
+				|| RoleType.MISSION_SPECIALIST == roleType
+				|| RoleType.RESOURCE_SPECIALIST == roleType
+				) {
 
-			RoleType roleType = person.getRole().getType();
-
-            if (roleType.isCouncil()
-            		|| person.getMind().getJobType() == JobType.AREOLOGIST
-        			|| person.getMind().getJobType() == JobType.CHEMIST
-        			|| person.getMind().getJobType() == JobType.BOTANIST
-        			|| person.getMind().getJobType() == JobType.CHEF
-					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
-					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
-					|| RoleType.MISSION_SPECIALIST == roleType
-					|| RoleType.RESOURCE_SPECIALIST == roleType
- 					) {
-
-	            // Check if there are enough barrel at the settlement for collecting ice.
-            	int stored = settlement.findNumContainersOfType(EquipmentType.BARREL);
-            	int needed = CollectIce.REQUIRED_BARRELS;
-	            if (stored < needed) {
-	            	BuildingManager.injectEquipmentDemand(EquipmentType.BARREL, settlement, stored, needed);
-	            	return RatingScore.ZERO_RATING;
-	            }
-	            
-				missionProbability = new RatingScore(1);
-	    		missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getIceDemandCache() / VALUE);
-
-				// Job modifier.
-	    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-
-				// If this town has a crop farm objective, divided by bonus
-				missionProbability.addModifier(GOODS, Math.min(1,
-							settlement.getGoodsManager().getCommerceFactor(CommerceType.CROP)/2));
-
-				// if introvert, score  0 to  50 --> -2 to 0
-				// if extrovert, score 50 to 100 -->  0 to 2
-				// Reduce probability if introvert
-				int extrovert = person.getExtrovertmodifier();
-				missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
-
-				missionProbability.applyRange(0D, LIMIT);
+			// Check if there are enough barrel at the settlement for collecting ice.
+			int stored = settlement.findNumContainersOfType(EquipmentType.BARREL);
+			int needed = CollectIce.REQUIRED_BARRELS;
+			if (stored < needed) {
+				BuildingManager.injectEquipmentDemand(EquipmentType.BARREL, settlement, stored, needed);
+				return RatingScore.ZERO_RATING;
 			}
+			
+			var missionProbability = new RatingScore(1);
+			missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getIceDemandCache() / VALUE);
+
+			// Job modifier.
+			missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+
+			// If this town has a crop farm objective, divided by bonus
+			missionProbability.addModifier(GOODS, Math.min(1,
+						settlement.getGoodsManager().getCommerceFactor(CommerceType.CROP)/2));
+
+			// if introvert, score  0 to  50 --> -2 to 0
+			// if extrovert, score 50 to 100 -->  0 to 2
+			// Reduce probability if introvert
+			int extrovert = person.getExtrovertmodifier();
+			missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
+
+			missionProbability.applyRange(0D, LIMIT);
+
+			return missionProbability;
 		}
 
-		return missionProbability;
+		return RatingScore.ZERO_RATING;
 	}
 }

@@ -21,6 +21,9 @@ public class MissionLimitParameters extends ParameterEnumCategory<MissionType> {
     public static final ParameterKey TOTAL_MISSIONS =
                     INSTANCE.addParameter("total", "Total Missions", ParameterValueType.INTEGER);
 
+    public static final ParameterKey MISSION_CHECK_SOL = INSTANCE.addParameter(
+                        "mission_sol","Mission start check Sol", ParameterValueType.BOOLEAN);
+
     private MissionLimitParameters() {
         super("MISSION_LIMIT", ParameterValueType.INTEGER, MissionType.class);     
     }

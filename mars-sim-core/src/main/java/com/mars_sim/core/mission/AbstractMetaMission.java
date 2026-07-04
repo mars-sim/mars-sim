@@ -51,6 +51,7 @@ public abstract class AbstractMetaMission implements MetaMission {
 	private Set<VehicleType> preferredVehicle = Collections.emptySet();  // Optional so empty by default
 	private int popRatio = 0;
 	private int popThreshold;
+	private int solThreshold = 0;
 	
 	/**
 	 * Creates a new Mission meta instance.
@@ -153,6 +154,23 @@ public abstract class AbstractMetaMission implements MetaMission {
 		return preferredWorkerJob;
 	}
 	
+	/**
+	 * Sets the minimum sol threshold for this mission. This is the minimum sol that must be reached before this mission can be created.
+	 * @param solThreshold Minimum sol threshold
+	 */
+	protected void setSolThreshold(int solThreshold) {
+		this.solThreshold = solThreshold;
+	}
+
+	/**
+	 * Gets the minimum sol threshold for this mission. This is the minimum sol that must be reached before this mission can be created.
+	 * @return Minimum sol threshold
+	 */
+	@Override
+	public int getSolThreshold() {
+		return solThreshold;
+	}
+
 	/** 
 	 * Gets the default capacity for a mission of this type.
 	 */
@@ -281,15 +299,6 @@ public abstract class AbstractMetaMission implements MetaMission {
 		return result;
 	}
 
-	/**
-	 * Is the time suitable for this mission. This may check the Mission sol in the clock or the time of day.
-	 * @param minimumSol Minimum sol for the mission to be suitable.
-	 * @return true if suitable; false otherwise.
-	 */
-	protected boolean isTimeSuitable(int minimumSol) {
-		return masterClock.getMarsTime().getMissionSol() >= minimumSol;
-	}
-	
     public static void initializeInstances(MasterClock mc) {
 		masterClock = mc;
     }

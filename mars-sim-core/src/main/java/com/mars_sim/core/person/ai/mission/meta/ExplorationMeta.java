@@ -37,7 +37,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 			JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);	
 
 	/** Starting sol for this mission to commence. */
-	public static final int MIN_STARTING_SOL = 2;
+	private static final int MIN_STARTING_SOL = 2;
 
 	private static final double VALUE = 20D;
 
@@ -48,6 +48,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 		
 		setPreferredVehicle(VehicleType.ROVER_TYPES);
 		setPopulationRatio(5);
+		setSolThreshold(MIN_STARTING_SOL);
 	}
 
 	
@@ -67,9 +68,6 @@ public class ExplorationMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
-    		return RatingScore.ZERO_RATING;
-    	}
     	RatingScore missionProbability = RatingScore.ZERO_RATING;
 		Settlement settlement = person.getAssociatedSettlement();
 
