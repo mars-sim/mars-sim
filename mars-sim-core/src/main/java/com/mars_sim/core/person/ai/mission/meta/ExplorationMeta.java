@@ -47,6 +47,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 					PREFERRED_WORKER_JOBS);
 		
 		setPreferredVehicle(VehicleType.ROVER_TYPES);
+		setPopulationRatio(5);
 	}
 
 	

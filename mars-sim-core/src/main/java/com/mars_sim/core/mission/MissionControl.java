@@ -346,4 +346,45 @@ public class MissionControl implements ScheduledEventHandler {
 	public void finishMission(boolean successful) {
 		metrics.recordValue(successful ? "Successful" : "Aborted", 1D, owner);
 	}
+
+	/**
+	 * Enables or disable a mission type.
+	 *  
+	 * @param mission
+	 * @param disable
+	 */
+	public void setMissionDisable(MissionType mission, boolean disable) {
+		owner.getPreferences().putValue(MissionWeightParameters.INSTANCE.getKey(mission), (disable ? 0D : 1D));
+	}
+	
+	/**
+	 * Checks if the mission is enabled.
+	 *
+	 * @param mission the type of the mission calling this method
+	 * @return probability value
+	 */
+	public boolean isMissionEnable(MissionType mission) {
+		return owner.getPreferences().getIntValue(MissionLimitParameters.INSTANCE.getKey(mission), 0) > 0;
+	}
+
+	/**
+	 * Population has changed in the settlement, so the mission control may need to update max. missions.
+	 */
+    public void populationChanged() {
+		var numCitizens = owner.getNumCitizens();
+		var preferences = owner.getPreferences();
+
+		for(var metaMission : MetaMissionUtil.getMetaMissions()) {
+			MissionType type = metaMission.getType();
+			var maxMissions = metaMission.getMaxMissions(numCitizens);
+
+			if (maxMissions > 0) {
+				preferences.putValue(MissionLimitParameters.INSTANCE.getKey(type), maxMissions);
+			}
+		}
+
+		// Set total mission limit
+		int optimalMissions = Math.max(1, (numCitizens/5));
+		preferences.putValue(MissionLimitParameters.TOTAL_MISSIONS, optimalMissions);
+    }
 }

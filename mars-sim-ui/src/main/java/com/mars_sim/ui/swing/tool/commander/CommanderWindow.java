@@ -1286,7 +1286,7 @@ public class CommanderWindow extends ContentPanel {
 		r1 = new JRadioButton(CANNOT_INITIATE);
 
 		// Set up initial conditions
-		if (settlement.isMissionEnable(MissionType.TRADE)) {
+		if (settlement.getMissionControl().isMissionEnable(MissionType.TRADE)) {
 			r0.setSelected(true);
 			r1.setSelected(false);
 		}
@@ -1387,10 +1387,10 @@ public class CommanderWindow extends ContentPanel {
 
 	        if (button == r0) {
 				logger.config("r0 selected");
-	        	settlement.setMissionDisable(MissionType.TRADE, false);
+	        	settlement.getMissionControl().setMissionDisable(MissionType.TRADE, false);
 	        } else if (button == r1) {
 	        	logger.config("r1 selected");
-	        	settlement.setMissionDisable(MissionType.TRADE, true);
+	        	settlement.getMissionControl().setMissionDisable(MissionType.TRADE, true);
 	        } else if (button == r2) {
 	        	logger.config("r2 selected");
 		        disableAllCheckedSettlement();

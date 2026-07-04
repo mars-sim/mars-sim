@@ -40,6 +40,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 		super(MissionType.COLLECT_REGOLITH, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 
 		setPreferredVehicle(VehicleType.ROVER_TYPES);
+		setPopulationRatio(5);
 	}
 
 	@Override

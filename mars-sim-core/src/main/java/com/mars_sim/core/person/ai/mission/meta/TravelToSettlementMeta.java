@@ -39,7 +39,9 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 	public TravelToSettlementMeta() {
     	super(MissionType.TRAVEL_TO_SETTLEMENT, 8, LEADER_JOBS, WORKER_JOBS);
 
-        setPreferredVehicle(VehicleType.ROVER_TYPES);
+        setPreferredVehicle(Set.of(VehicleType.TRANSPORT_ROVER, VehicleType.EXPLORER_ROVER));
+        setPopulationRatio(20);
+        setPopulationThreshold(20);
     }
     
 	/**

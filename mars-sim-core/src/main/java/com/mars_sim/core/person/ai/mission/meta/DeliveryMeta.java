@@ -52,6 +52,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 		setPreferredRobots(Set.of(RobotType.DELIVERYBOT));
 		setPreferredVehicle(Set.of(VehicleType.DELIVERY_DRONE));
+		setPopulationRatio(6);
 	}
 
 	/**

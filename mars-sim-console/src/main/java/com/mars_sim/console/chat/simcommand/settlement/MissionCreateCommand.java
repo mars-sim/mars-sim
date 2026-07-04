@@ -31,9 +31,11 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
+		var cntl = settlement.getMissionControl();
+
 		// Get the user to select the Mission
 		List<MetaMission> automissions = MetaMissionUtil.getMetaMissions().stream()
-						.filter(m -> settlement.isMissionEnable(m.getType()))
+						.filter(m -> cntl.isMissionEnable(m.getType()))
 						.toList();
 		
 		// Add the none auto missions

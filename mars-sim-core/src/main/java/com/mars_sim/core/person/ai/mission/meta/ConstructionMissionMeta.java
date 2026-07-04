@@ -37,6 +37,8 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
     ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 10, LEADER_JOBS, WORKER_JOBS);
 		setMinimumMembers(3);
+		setPopulationRatio(30);
+		setPopulationThreshold(20);
     }
     
     @Override

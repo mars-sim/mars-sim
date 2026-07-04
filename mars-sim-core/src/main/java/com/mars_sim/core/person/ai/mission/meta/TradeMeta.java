@@ -43,9 +43,9 @@ public class TradeMeta extends AbstractMetaMission {
 		super(MissionType.TRADE, MAX_MEMBERS, LEADER_JOBS, WORKER_JOBS);
 
 		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER));
+		setPopulationRatio(10);
 	}
 
-	
 	/**
 	 * Get the Vehicle comparator that is based on largest cargo
 	 */

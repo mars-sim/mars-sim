@@ -226,12 +226,12 @@ class MissionControlTest extends MarsSimUnitTest{
         clock.setMarsTime(clock.getMarsTime().addTime(4000));
         
         // Disable ice collection mission
-        settlement.setMissionDisable(MissionType.COLLECT_ICE, true);
+        missionControl.setMissionDisable(MissionType.COLLECT_ICE, true);
         var mission = missionControl.getNewMission(leader);
         assertNull(mission, "No ice mission possible");
 
         // Enable ice collection mission
-        settlement.setMissionDisable(MissionType.COLLECT_ICE, false);
+        missionControl.setMissionDisable(MissionType.COLLECT_ICE, false);
         mission = missionControl.getNewMission(leader);
         assertNotNull(mission, "Mission should be created");
         assertEquals(MissionType.COLLECT_ICE, mission.getMissionType(), "Mission type created");

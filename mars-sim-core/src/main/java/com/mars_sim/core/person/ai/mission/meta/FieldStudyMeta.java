@@ -46,6 +46,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 		this.scienceType = scienceType;
 
 		setPreferredVehicle(Set.of(VehicleType.EXPLORER_ROVER));
+		setPopulationRatio(6);
 	}
 
 	/**
