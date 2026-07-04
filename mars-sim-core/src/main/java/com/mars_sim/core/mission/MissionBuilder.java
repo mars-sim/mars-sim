@@ -111,6 +111,7 @@ public class MissionBuilder {
             	}
 
 				double recruitmentChance = (qualification + likability) / 2D;
+				recruitmentChance = Math.max(0D, Math.min(100D, recruitmentChance));
 				if (recruitmentChance > 0D) {
 					// Check if person is the best recruit.
 					qualified.add(new MemberScore(w, recruitmentChance));
