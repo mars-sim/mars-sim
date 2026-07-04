@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * A mission for trading between two settlements
@@ -517,14 +515,6 @@ public class Trade extends RoverMission implements CommerceMission {
 	protected Map<Integer, Number> getOptionalResourcesToLoad() {
 		Map<Integer, Number> result = super.getOptionalResourcesToLoad();
 		return objective.addResourcesToLoad(result, outbound);
-	}
-
-	/**
-	 * Get the Vehicle comparator that is based on largest cargo
-	 */
-	@Override
-	protected  Comparator<Vehicle> getVehicleComparator() {
-		return new CargoRangeComparator();
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package com.mars_sim.core.vehicle.comparators;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,9 +12,9 @@ import java.util.List;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
 
-public class ComparatorTest extends MarsSimUnitTest {
+class ComparatorTest extends MarsSimUnitTest {
     @Test
-    public void testLab() {
+    void testLab() {
         var s = buildSettlement("mock");
 
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
@@ -30,12 +31,14 @@ public class ComparatorTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testRange() {
+    void testRange() {
         var s = buildSettlement("mock");
 
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
         var e = buildRover(s, "Explorer", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
+
+        assertTrue(e.getRange() < c.getRange(), "Explorer has less range than Cargo");
 
         var v = new ArrayList<>(List.of(t,c,e));
 
@@ -47,12 +50,14 @@ public class ComparatorTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testCargo() {
+    void testCargo() {
         var s = buildSettlement("mock");
 
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
         var e = buildRover(s, "Explorer", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
+
+        assertTrue(e.getCargoCapacity() < c.getCargoCapacity(), "Explorer has less cargo capacity than Cargo");
 
         var v = new ArrayList<>(List.of(t,c,e));
 
@@ -63,13 +68,14 @@ public class ComparatorTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testCrew() {
+    void testCrew() {
         var s = buildSettlement("mock");
 
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
         var e = buildRover(s, "Explorer", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
 
+        assertTrue(c.getCrewCapacity() < t.getCrewCapacity(), "Cargo has less crew capacity than Transport");
         var v = new ArrayList<>(List.of(t,c,e));
 
         Collections.sort(v, new CrewRangeComparator());

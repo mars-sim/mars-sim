@@ -155,20 +155,7 @@ public class RescueSalvageVehicle extends RoverMission {
 
 		addObjectives(false, vehicleTarget, rescue);
 	}
-
-	@Override
-	protected boolean isUsableVehicle(Vehicle vehicle) {
-		// Filter off the vehicleTarget as the candidate vehicle to be used for rescue
-		if ((objective != null) && vehicle.equals(objective.getRecoverVehicle())
-			|| !(vehicle instanceof Rover)
-			|| vehicle.isReservedForMission()) {
-			return false;
-		}
-
-		return vehicle.isUsableVehicle();
-	}
-
-
+	
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
 	 * 

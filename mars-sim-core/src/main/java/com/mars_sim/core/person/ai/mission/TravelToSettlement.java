@@ -8,7 +8,6 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -24,8 +23,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.comparators.CrewRangeComparator;
 
 /**
  * The TravelToSettlement class is a mission to travel from one settlement to
@@ -327,14 +324,6 @@ public class TravelToSettlement extends RoverMission {
 		// Return the sum of the factors with modifiers.
 		return (relationshipFactor * RELATIONSHIP_MODIFIER) + (jobFactor * JOB_MODIFIER)
 				+ (crowdingFactor * CROWDING_MODIFIER) + (scienceAchievementFactor * SCIENCE_MODIFIER);
-	}
-
-	/**
-	 * Get the Vehicle comparator that is based on largest cargo
-	 */
-	@Override
-	protected  Comparator<Vehicle> getVehicleComparator() {
-		return new CrewRangeComparator();
 	}
 
 	@Override

@@ -6,11 +6,16 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Comparator;
+import java.util.Set;
+
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * Interface for a meta mission, responsible for determining mission probability
@@ -23,14 +28,14 @@ public interface MetaMission {
 	/**
 	 * Type of Mission created by this Meta object
 	 */
-	public MissionType getType();
+	MissionType getType();
 
 	/**
 	 * Gets the associated mission name.
 	 * 
 	 * @return mission name string.
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * Checks the suitability for this Person to be the leader. It currently checks their Job.
@@ -38,14 +43,14 @@ public interface MetaMission {
 	 * @param person Potential leader to assess
 	 * @return Score of suitability. zero means not suitable at all.
 	 */
-	public double getLeaderSuitability(Person person);
+	double getLeaderSuitability(Person person);
 
 	/**
 	 * Guage the suitability of this worker joining a mission of this type.
 	 * @param w Worker
 	 * @return Score of qualification. zero means not suitable at all.
 	 */
-    public double getWorkerSuitability(Worker w);
+    double getWorkerSuitability(Worker w);
 
 	/**
 	 * Constructs an instance of the associated mission.
@@ -54,7 +59,7 @@ public interface MetaMission {
 	 * @param needsReview Mission must be reviewed
 	 * @return mission instance.
 	 */
-	public Mission constructInstance(Person person, boolean needsReview);
+	Mission constructInstance(Person person, boolean needsReview);
 
 	/**
 	 * Gets the weighted probability value that the person might perform this
@@ -71,10 +76,16 @@ public interface MetaMission {
 	/**
 	 * Get the minimum number of members needed to perform a Mission of this style.
 	 */
-	public int getMinimumMembers();
+	int getMinimumMembers();
 
 	/**
 	 * Get the default maximum members in a mission of this style. It can be overridden locally within the actual Mission
 	 */
-    public int getDefaultCapacity();
+    int getDefaultCapacity();
+
+	/**
+	 * Select the most suitable Vehicle for this mission.
+	 * @param settlement the settlement to search for vehicles.
+	 */
+	Vehicle selectVehicle(Settlement settlement);
 }

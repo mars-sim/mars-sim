@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Comparator;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
@@ -24,6 +25,9 @@ import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Drone;
+import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * A meta mission for the delivery mission.
@@ -48,8 +52,17 @@ public class DeliveryMeta extends AbstractMetaMission {
 		super(MissionType.DELIVERY, 2,3, LEADER_JOBS, WORKER_JOBS);
 
 		setPreferredRobots(Set.of(RobotType.DELIVERYBOT));
+		setPreferredVehicle(Set.of(VehicleType.DELIVERY_DRONE));
 	}
 
+	/**
+	 * Get the Vehicle comparator that is based on largest cargo
+	 */
+	@Override
+	protected Comparator<Vehicle> getVehicleComparator() {
+		return new CargoRangeComparator();
+	}
+	
 	@Override
 	public Mission constructInstance(Person person, boolean needsReview) {
 		return new Delivery(person, needsReview);

@@ -6,9 +6,8 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +24,8 @@ import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.CrewRangeComparator;
 
 /**
  * A meta mission for the TravelToSettlement mission.
@@ -37,8 +38,18 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 
 	public TravelToSettlementMeta() {
     	super(MissionType.TRAVEL_TO_SETTLEMENT, 2,8, LEADER_JOBS, WORKER_JOBS);
+
+        setPreferredVehicle(Set.of(VehicleType.TRANSPORT_ROVER, VehicleType.EXPLORER_ROVER));
     }
     
+	/**
+	 * Get the Vehicle comparator that is based on largest crew range
+	 */
+	@Override
+	protected Comparator<Vehicle> getVehicleComparator() {
+		return new CrewRangeComparator();
+	}
+
     @Override
     public Mission constructInstance(Person person, boolean needsReview) {
         return new TravelToSettlement(person, needsReview);

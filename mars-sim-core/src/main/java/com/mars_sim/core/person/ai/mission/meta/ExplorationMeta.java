@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Comparator;
 import java.util.Set;
 
 import com.mars_sim.core.building.BuildingManager;
@@ -21,6 +22,9 @@ import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.LabRangeComparator;
 
 /**
  * A meta mission for the Exploration mission.
@@ -41,6 +45,17 @@ public class ExplorationMeta extends AbstractMetaMission {
 		super(MissionType.EXPLORATION, 2, 4,
 					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST),
 					PREFERRED_WORKER_JOBS);
+		
+		setPreferredVehicle(VehicleType.ROVER_TYPES);
+	}
+
+	
+	/**
+	 * Gets the Vehicle comparator that is based on largest cargo.
+	 */
+	@Override
+	protected Comparator<Vehicle> getVehicleComparator() {
+		return new LabRangeComparator();
 	}
 
 	@Override

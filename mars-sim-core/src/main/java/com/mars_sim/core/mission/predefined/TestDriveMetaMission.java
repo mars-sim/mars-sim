@@ -6,54 +6,28 @@
  */
 package com.mars_sim.core.mission.predefined;
 
+import java.util.Set;
+
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMission;
-import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.person.ai.mission.meta.AbstractMetaMission;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Skeleton implementation of the Meta Mission for a test drive
  */
-public class TestDriveMetaMission implements MetaMission {
+public class TestDriveMetaMission extends AbstractMetaMission {
 
-    @Override
-    public MissionType getType() {
-        return MissionType.TEST_DRIVE;
-    }
+    public TestDriveMetaMission() {
+        super(MissionType.TEST_DRIVE, 2, 2, Set.of(JobType.PILOT), Set.of(JobType.TECHNICIAN));
 
-    @Override
-    public String getName() {
-        return "Test Drive";
-    }
-
-    @Override
-    public double getLeaderSuitability(Person person) {
-        return person.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING)/ 100D;
+        setPreferredVehicle(VehicleType.ROVER_TYPES);
     }
 
     @Override
     public Mission constructInstance(Person person, boolean needsReview) {
         return new TestDriveMission("Test drive", person);
     }
-
-    @Override
-    public int getMinimumMembers() {
-        return 2;
-    }
-
-    @Override
-    public int getDefaultCapacity() {
-        return 2;
-    }
-
-    @Override
-    public double getWorkerSuitability(Worker w) {
-        if (w instanceof Person person) {
-            return person.getMind().getJobType() == JobType.TECHNICIAN ? 10.0 : 4.0;
-        }
-        return 0;
-    } 
 }

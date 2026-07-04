@@ -17,6 +17,7 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * This class is responsible for building a mission.
@@ -56,6 +57,15 @@ public class MissionBuilder {
 		var freePeople = home.getCitizens().stream().filter(p -> p.getMind().getMission() == null).count();
 		this.maxPeople = (int) Math.min(maxMembers, freePeople - MIN_REMAINING_MEMBERS);
     }
+
+	/**
+	 * Select the best vehicle for the mission.
+	 * @return Null if no suitable vehicle is available.
+	 */
+	public Vehicle selectBestVehicle() {
+		var home = startingMember.getAssociatedSettlement();
+		return mission.selectVehicle(home);
+	}
 
     /**
      * Attempts to recruit members for a potential mission from a collection of possible candidates.

@@ -3,6 +3,7 @@ package com.mars_sim.core.mission;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +17,9 @@ import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.test.MarsSimUnitTest;
+import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.RangeComparator;
 
 class MissionBuilderTest extends MarsSimUnitTest {
     @Test
@@ -78,6 +82,19 @@ class MissionBuilderTest extends MarsSimUnitTest {
 
     }
 
+    class VehicleMetaMission extends MockMetaMission {
+        VehicleMetaMission(int minMembers, int maxMembers, Set<JobType> leaderJobs, Set<JobType> workerJobs, Set<VehicleType> vehicles) {
+            super(minMembers, maxMembers, leaderJobs, workerJobs);
+
+            setPreferredVehicle(vehicles);
+        }
+
+        @Override
+        public Comparator<Vehicle> getVehicleComparator() {
+            return new RangeComparator();
+        }
+    }
+
     @Test
     @DisplayName("Test mission recruitment for Robots")
     void testRecruitRobots() {
@@ -111,4 +128,31 @@ class MissionBuilderTest extends MarsSimUnitTest {
         assertTrue(members.contains(r1), "Robot1 is a member");
     }   
 
+    @Test
+    @DisplayName("Test vehicle reservation selects the best home settlement rover")
+    void testReserveVehicle() {
+        var home = buildSettlement("home", 5);
+        buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
+        var leader = buildPerson("leader", home, JobType.TRADER, null, null);
+
+        var explorer = buildRover(home, "Explorer", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
+        var transport = buildRover(home, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
+        var cargo = buildRover(home, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
+
+        // Double check the expected range ordering of the rovers to ensure the test is valid
+        assertTrue(explorer.getRange() < transport.getRange(), "Explorer has less range than Transport");
+        assertTrue(transport.getRange() < cargo.getRange(), "Transport has less range than Cargo");
+
+        var meta = new VehicleMetaMission(2, 3, Set.of(JobType.TRADER), Set.of(JobType.PILOT), VehicleType.ROVER_TYPES);
+        var builder = new MissionBuilder(meta, leader);
+
+        var firstVehicle = builder.selectBestVehicle();
+        firstVehicle.setReservedForMission(true);
+        var secondVehicle = builder.selectBestVehicle();
+
+        assertEquals(cargo, firstVehicle, "Should choose the best rover available at the leader's settlement");
+        assertEquals(transport, secondVehicle, "Should skip the reserved explorer and choose the next best rover");
+    }
+
+    
 }

@@ -39,6 +39,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.mission.meta.AbstractMetaMission;
+import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -64,8 +65,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(AbstractMission.class.getName());
-
-	private static final int MAX_CAP = 8;
 
 	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("completed", Stage.CLOSEDOWN);
 	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", Stage.CLOSEDOWN);
@@ -855,7 +854,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Get all people qualified for the mission.
 		Collection<Person> possibles = startingMember.getAssociatedSettlement().getAllAssociatedPeople();
 
-		var meta = MetaMissionUtil.getMetaMission(getMissionType());
+		var meta = getMetaMission();
 		var recruiter = new MissionBuilder(meta, startingMember);
 		var team = recruiter.recruitMembers(possibles);
 		if ((team.size() + 1) < minMembers) {
@@ -872,8 +871,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	protected int getMissionCapacity() {
-		var meta = MetaMissionUtil.getMetaMission(getMissionType());
-		return meta.getDefaultCapacity();
+		return getMetaMission().getDefaultCapacity();
 	}
 
 	/**
@@ -923,7 +921,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return true;
 	}
 
-
+	/**
+	 * Helper method to find related mata mission
+	 */
+	protected MetaMission getMetaMission() {
+		return MetaMissionUtil.getMetaMission(missionType);
+	}
+	
 	/**
 	 * Gets the current location of the mission.
 	 *

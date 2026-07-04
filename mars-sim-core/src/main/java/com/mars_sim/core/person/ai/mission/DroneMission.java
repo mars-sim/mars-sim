@@ -6,9 +6,6 @@
  */
 package com.mars_sim.core.person.ai.mission;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -19,7 +16,6 @@ import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.task.Charge;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -64,30 +60,6 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Gets a collection of available Drones at a settlement that are usable for
-	 * this mission.
-	 *
-	 * @param settlement the settlement to find vehicles.
-	 * @return list of available vehicles.
-	 */
-	@Override
-	protected Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
-		Collection<Vehicle> result = new ArrayList<>();
-		Collection<Drone> list = settlement.getParkedGaragedDrones();
-		if (list.isEmpty())
-			return result;
-		for (Drone v : list) {
-			if (!v.haveStatusType(StatusType.MAINTENANCE)
-					&& !v.getMalfunctionManager().hasMalfunction()
-					&& isUsableVehicle(v)
-					&& !v.isReserved()) {
-				result.add(v);
-			}
-		}
-		return result;
-	}
-	
-	/**
 	 * Gets a drone that is ready for use.
 	 *
 	 * @param settlement         the settlement to check.
@@ -115,22 +87,6 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		}
 
 		return bestDrone;
-	}
-
-	/**
-	 * Checks if vehicle is usable for this mission. (This method should be
-	 * overridden by children).
-	 *
-	 * @param newVehicle the vehicle to check
-	 * @return true if vehicle is usable.
-	 * @throws MissionException if problem determining if vehicle is usable.
-	 */
-	@Override
-	protected boolean isUsableVehicle(Vehicle newVehicle) {
-		boolean usable = super.isUsableVehicle(newVehicle);
-		if (!(newVehicle instanceof Drone))
-			usable = false;
-		return usable;
 	}
 
 	/**

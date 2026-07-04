@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Comparator;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
@@ -22,6 +23,9 @@ import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * A meta mission for the Trade mission.
@@ -38,6 +42,17 @@ public class TradeMeta extends AbstractMetaMission {
 
 	TradeMeta() {
 		super(MissionType.TRADE, 2, MAX_MEMBERS, LEADER_JOBS, WORKER_JOBS);
+
+		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER));
+	}
+
+	
+	/**
+	 * Get the Vehicle comparator that is based on largest cargo
+	 */
+	@Override
+	protected Comparator<Vehicle> getVehicleComparator() {
+		return new CargoRangeComparator();
 	}
 
 	@Override

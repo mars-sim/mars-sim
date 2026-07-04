@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +30,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 import com.mars_sim.core.vehicle.task.LoadVehicleMeta;
 import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
 import com.mars_sim.core.vehicle.task.UnloadVehicleGarage;
@@ -325,14 +323,6 @@ public class EmergencySupply extends RoverMission {
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
 		return new HashMap<>();
-	}
-
-	/**
-	 * Get the Vehicle comparator that is based on largest cargo
-	 */
-	@Override
-	protected  Comparator<Vehicle> getVehicleComparator() {
-		return new CargoRangeComparator();
 	}
 	
 	@Override

@@ -13,7 +13,6 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
@@ -68,7 +67,7 @@ public abstract class FieldStudyMission extends EVAMission {
 			addObjective(objective);
 
 			// Recruit additional members to mission.
-			var meta = MetaMissionUtil.getMetaMission(missionType);
+			var meta = getMetaMission();
 			if (!recruitMembersForMission(startingPerson, meta.getMinimumMembers()))
 				return;
 

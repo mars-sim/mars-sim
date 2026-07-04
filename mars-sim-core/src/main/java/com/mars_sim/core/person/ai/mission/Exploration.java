@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,8 +27,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.comparators.LabRangeComparator;
 
 /**
  * The Exploration class is a mission to travel in a rover to several random
@@ -288,14 +285,6 @@ public class Exploration extends EVAMission
 		
 		currentSiteTime = 0D;
 		currentSite = null;
-	}
-
-	/**
-	 * Gets the Vehicle comparator that is based on largest cargo.
-	 */
-	@Override
-	protected  Comparator<Vehicle> getVehicleComparator() {
-		return new LabRangeComparator();
 	}
 
 	/**

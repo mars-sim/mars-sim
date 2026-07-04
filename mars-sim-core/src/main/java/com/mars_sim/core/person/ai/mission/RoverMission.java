@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,7 +47,6 @@ import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
 import com.mars_sim.core.vehicle.task.OperateVehicle;
 import com.mars_sim.core.vehicle.task.UnloadVehicleEVA;
@@ -131,32 +129,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Gets a collection of available rovers at a settlement that are usable for
-	 * this mission.
-	 *
-	 * @param settlement the settlement to find vehicles.
-	 * @return list of available vehicles.
-	 * @throws MissionException if problem determining if vehicles are usable.
-	 */
-	@Override
-	protected Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
-		Collection<Vehicle> result = new ArrayList<>();
-		Collection<Vehicle> list = settlement.getParkedGaragedVehicles();
-		if (list.isEmpty())
-			return result;
-		for (Vehicle v : list) {
-			if (VehicleType.isRover(v.getVehicleType())
-					&& !v.haveStatusType(StatusType.MAINTENANCE)
-					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
-					&& v.isUsableVehicle()
-					&& !v.isReserved()) {
-				result.add(v);
-			}
-		}
-		return result;
-	}
-
-	/**
 	 * Gets the available vehicle at the settlement with the greatest range.
 	 *
 	 * @param settlement         the settlement to check.
@@ -184,22 +156,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Checks if vehicle is usable for this mission. (This method should be
-	 * overridden by children)
-	 *
-	 * @param newVehicle the vehicle to check
-	 * @return true if vehicle is usable.
-	 * @throws MissionException if problem determining if vehicle is usable.
-	 */
-	@Override
-	protected boolean isUsableVehicle(Vehicle newVehicle) {
-		boolean usable = super.isUsableVehicle(newVehicle);
-		if (!(newVehicle instanceof Rover))
-			usable = false;
-		return usable;
 	}
 
 	/**

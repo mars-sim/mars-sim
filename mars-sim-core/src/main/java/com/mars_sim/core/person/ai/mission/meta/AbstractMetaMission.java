@@ -6,7 +6,9 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
@@ -22,12 +24,15 @@ import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.RangeComparator;
 
 /**
  * Default implementation of the MetaMission interface. Provides 
  * default implementations.
  */
-public class AbstractMetaMission implements MetaMission {
+public abstract class AbstractMetaMission implements MetaMission {
 
 	protected static final String GOODS = "goods";
 	protected static final String LEADER = "leader";
@@ -44,6 +49,7 @@ public class AbstractMetaMission implements MetaMission {
 	private Set<JobType> preferredLeaderJob;
 	private Set<JobType> preferredWorkerJob;
 	private Set<RobotType> preferredRobots = Collections.emptySet();  // Optional so empty by default
+	private Set<VehicleType> preferredVehicle = Collections.emptySet();  // Optional so empty by default
 	
 	/**
 	 * Creates a new Mission meta instance.
@@ -61,8 +67,57 @@ public class AbstractMetaMission implements MetaMission {
 		this.minimum = minimum;
 	}
 
+	/**
+	 * Sets the preferred robot types for this mission. This is optional and can be left empty.
+	 * By default no RobotTypes are preferred. If a RobotType is preferred then it will be given a higher suitability score.
+	 * @param preferredRobots Robots to prefer
+	 */
 	protected void setPreferredRobots(Set<RobotType> preferredRobots) {
 		this.preferredRobots = preferredRobots;
+	}
+
+	/**
+	 * Sets the preferred vehicle types for this mission. This is optional and can be left empty.
+	 * By default no VehicleTypes are preferred. If a VehicleType is preferred then it will be given a higher suitability score.
+	 * @param preferredVehicle Vehicle types to prefer
+	 */
+	protected void setPreferredVehicle(Set<VehicleType> preferredVehicle) {
+		this.preferredVehicle = preferredVehicle;
+	}
+
+	/**
+	 * By default the vehicle comparator is a RangeComparator. This can be overridden by subclasses to provide a different comparator.
+	 * @return Comparator for vehicles for this mission.
+	 */
+	protected Comparator<Vehicle> getVehicleComparator() {
+		return new RangeComparator();
+	}
+
+	/**
+	 * Select the most suitable Vehicle for this mission.
+	 * This will use the {@link #getVehicleComparator()} to rate the best vehicle from the settlement.
+	 * If no vehicles are available then null is returned.
+	 * @param settlement the settlement to search for vehicles.
+	 */
+	@Override
+	public Vehicle selectVehicle(Settlement settlement) {
+
+		if (preferredVehicle.isEmpty()) {
+			// No vehicle required for this mission.
+			return null;
+		}
+
+		// Get all vehicles of the correct type that are not reserved and are at the starting settlement.
+		Collection<Vehicle> vList = settlement.getAllAssociatedVehicles().stream()
+			.filter(v -> preferredVehicle.contains(v.getVehicleType()))
+			.filter(v -> !v.isReservedForMission())
+			.filter(Vehicle::isUsableVehicle)
+			.filter(v -> settlement.equals(v.getSettlement()))
+			.toList();
+		
+		return vList.stream()
+			.sorted(getVehicleComparator().reversed())
+			.findFirst().orElse(null);
 	}
 
 	@Override
@@ -195,4 +250,5 @@ public class AbstractMetaMission implements MetaMission {
     public static void initializeInstances(MasterClock mc) {
 		masterClock = mc;
     }
+
 }

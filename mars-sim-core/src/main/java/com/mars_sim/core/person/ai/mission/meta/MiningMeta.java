@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Comparator;
 import java.util.Set;
 
 import com.mars_sim.core.building.BuildingManager;
@@ -22,6 +23,9 @@ import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 
 /**
  * A meta mission for the Mining mission.
@@ -38,7 +42,17 @@ public class MiningMeta extends AbstractMetaMission {
 	
     MiningMeta() {
     	super(MissionType.MINING, 2,6, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
+
+		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER, VehicleType.EXPLORER_ROVER));
     }
+
+	/**
+	 * Gets the Vehicle comparator that is based on largest cargo.
+	 */
+	@Override
+	protected Comparator<Vehicle> getVehicleComparator() {
+		return new CargoRangeComparator();
+	}
 
     @Override
     public Mission constructInstance(Person person, boolean needsReview) {
@@ -56,9 +70,6 @@ public class MiningMeta extends AbstractMetaMission {
         if (person.isInSettlement()) {
 
         	Settlement settlement = person.getSettlement();
-
-    		if (settlement.isFirstSol())
-    			return missionProbability;
     		
             RoleType roleType = person.getRole().getType();
 
