@@ -106,6 +106,15 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets the percent of stored energy in the grid.
+	 * 
+	 * @return
+	 */
+	public double getPercentStoredEnergy() {
+		return totalEnergyStored / energyStorageCapacity * 100;
+	}
+	
+	/**
 	 * Displays the stored energy in kWh and its percent capacity.
 	 * 
 	 * @return
@@ -198,22 +207,22 @@ public class PowerGrid implements Serializable, Temporal {
 		// Determine total power load in the grid.
 		double powerLoad = updateTotalLoadPower();
 
-		double adjUsageRatio = computeAdjustablePowerSourceUsage();
-					
-		int rand = RandomUtil.getRandomInt((int)(50.0 * adjUsageRatio));
-		
-		if (rand == 0) {
-			// Note: this is just a temporary measure to force the adjustable power source to keep up production by default
-			for (Building b : manager.getBuildingSet(FunctionType.POWER_GENERATION)) {
-				for (PowerSource powerSource : b.getPowerGeneration().getPowerSources()) {
-					if (powerSource instanceof AdjustablePowerSource fps) {
-						if (fps.getUsageRatio() < 1) {
-							fps.increaseLoadCapacity();
-						}
-					}
-				}
-			}
-		}
+//		double adjUsageRatio = computeAdjustablePowerSourceUsage();
+//					
+//		int rand = RandomUtil.getRandomInt((int)(10.0 * adjUsageRatio));
+//		
+//		if (rand == 0) {
+//			// Note: this is just a temporary measure to force the adjustable power source to keep up production by default
+//			for (Building b : manager.getBuildingSet(FunctionType.POWER_GENERATION)) {
+//				for (PowerSource powerSource : b.getPowerGeneration().getPowerSources()) {
+//					if (powerSource instanceof AdjustablePowerSource fps) {
+//						if (fps.getUsageRatio() < 1) {
+//							fps.increaseLoadCapacity();
+//						}
+//					}
+//				}
+//			}
+//		}
 				
 		// Update overall grid efficiency.
 		updateEfficiency(time);
@@ -236,6 +245,7 @@ public class PowerGrid implements Serializable, Temporal {
 				double powerRatio = powerDiff / powerGen;
 				
 				if (powerRatio > 0.05) {
+					// Not only powerDiff > 0, the powerRatio needs to be above 5%
 					handleExcessPower(time, powerDiff);
 				}
 				else if (powerDiff < 0) {
@@ -335,10 +345,17 @@ public class PowerGrid implements Serializable, Temporal {
 		if (excess <= 0) {
 			return;
 		}
-		
+				
 //		May need for future debugging: 	logger.info("excess1: " + Math.round(excess * 10.0)/10.0);
 		
-		// 2. Switch from low power to full power mode on inhabitable buildings
+		// 2a. Store the excess power in batteries
+		
+		double percent = getPercentStoredEnergy();
+		if (RandomUtil.getRandomInt(100) <= 100 - percent) {
+			copeWithPowerSurplus((int)(100 - percent), excess, timeInHour);
+		}
+				
+		// 2b. Switch from low power to full power mode on inhabitable buildings
 		
 		// If power needs are still not met, turn on full power in each inhabitable
 		// building until required power reduction is met.
@@ -353,7 +370,15 @@ public class PowerGrid implements Serializable, Temporal {
 		
 //		May need for future debugging: 	logger.info("excess2: " + Math.round(excess * 10.0)/10.0);
 		
-		// 3. Turn on low power mode on non-inhabitable buildings
+		// 3a. Store the excess power in batteries
+		
+		percent = getPercentStoredEnergy();
+		if (RandomUtil.getRandomInt(100) <= 100 - percent) {
+			copeWithPowerSurplus((int)(100 - percent), excess, timeInHour);
+		}
+		
+		
+		// 3b. Turn on low power mode on non-inhabitable buildings
 		
 		// Switch from no power to low power in each non-inhabitable
 		// building until required power reduction is met.
@@ -367,6 +392,13 @@ public class PowerGrid implements Serializable, Temporal {
 		}
 		
 //		May need for future debugging: logger.info("excess3: " + Math.round(excess * 10.0)/10.0);
+		
+		// 4a. Store the excess power in batteries
+		
+		percent = getPercentStoredEnergy();
+		if (RandomUtil.getRandomInt(100) <= 100 - percent) {
+			copeWithPowerSurplus((int)(100 - percent), excess, timeInHour);
+		}			
 		
 		// 4. Turn off emergency power generators. Have excess power. No need of 
 		//    using methane power generators to produce electricity
@@ -400,8 +432,10 @@ public class PowerGrid implements Serializable, Temporal {
 
 		// 6. Store the excess power in batteries
 		
-		copeWithPowerSurplus(100, excess, timeInHour);
-			
+		percent = getPercentStoredEnergy();
+		if (RandomUtil.getRandomInt(100) <= 100 - percent) {
+			copeWithPowerSurplus((int)(100 - percent), excess, timeInHour);
+		}		
 		
 		// 7. Step down the capacity of the fission power plant by a small percent
 		double netPower7 = stepUpDownPower(false, excess);
@@ -463,7 +497,7 @@ public class PowerGrid implements Serializable, Temporal {
 			
 			double usageRatio = computeAdjustablePowerSourceUsage(); 
 	
-			int rand = RandomUtil.getRandomInt((int)(limit * 6 / usageRatio));
+			int rand = RandomUtil.getRandomInt((int)(limit * 1000 / usageRatio));
 			if (rand == 0) {
 				double netPower02 = stepUpDownPower(false, excessPower);
 				excessPower -= netPower02;
@@ -657,27 +691,15 @@ public class PowerGrid implements Serializable, Temporal {
 		while (neededPower > 0 && count < limit) { 
 			
 			count++;
-		
-			// 1. Retrieve power from the grid battery for the first time
-			double retrievedPower = retrievePowerGridBattery(timeInHour, neededPower);
-			
-			neededPower -= retrievedPower;
-			
-			// Update the total generated power with contribution from batteries
-			//setGeneratedPower(powerGenerated + retrievedPower);
-			
-			if (neededPower < 0) {
-				return;
-			}
 			
 	//		May need for future debugging: llogger.info("neededPower1: " + Math.round(neededPower * 10.0)/10.0)
 				
 			double usageRatio = computeAdjustablePowerSourceUsage(); 
 			
-			int rand = RandomUtil.getRandomInt((int)(limit / 40 * usageRatio));
+			int rand = RandomUtil.getRandomInt((int)(limit / 1000 * usageRatio));
 			if (rand == 0) {
 						
-				// 2. Increases the load capacity of fission reactors if available
+				// 1. Increases the load capacity of fission reactors if available
 				double fissionPower0 = stepUpDownPower(true, neededPower);
 		
 				neededPower -= fissionPower0;
@@ -688,6 +710,18 @@ public class PowerGrid implements Serializable, Temporal {
 				if (neededPower < 0) {
 					return;
 				}
+			}
+			
+			// 2. Retrieve power from the grid battery for the first time
+			double retrievedPower = retrievePowerGridBattery(timeInHour, neededPower);
+			
+			neededPower -= retrievedPower;
+			
+			// Update the total generated power with contribution from batteries
+			//setGeneratedPower(powerGenerated + retrievedPower);
+			
+			if (neededPower < 0) {
+				return;
 			}
 		}
 	}
