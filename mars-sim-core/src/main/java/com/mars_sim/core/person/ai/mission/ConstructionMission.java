@@ -232,7 +232,7 @@ public class ConstructionMission extends AbstractMission {
 						vehicle.storeItemResource(part, 1);
 					}
 					luvAttachmentParts.add(part);
-				} catch (Exception e) {
+				} catch (Exception _) {
 					Part p = ItemResourceUtil.findItemResource(part);
 					endMissionProblem(settlement, "Cannot retrieve part " + p.getName());
 				}

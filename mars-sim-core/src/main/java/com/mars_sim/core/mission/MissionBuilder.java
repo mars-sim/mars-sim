@@ -15,7 +15,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -80,12 +79,10 @@ public class MissionBuilder {
 		qualified.sort(Comparator.comparing(MemberScore::score, Comparator.reverseOrder()));
 		while (!qualified.isEmpty() && (recruitedMembers.size() < maxMembers)) {
 			// Try to recruit best worker available to the mission.
+			// Choose to join but must be a Robot or there must be room for more people in the mission.
 			MemberScore next = qualified.remove(0);
-			if (RandomUtil.lessThanRandPercent(next.score)) {
-				// Choose to join but must be a Robot or there must be room for more people in the mission.
-				if (next.candidate instanceof Robot || maxPeople-- > 0) {
-					recruitedMembers.add(next.candidate);
-				} 
+			if (next.candidate instanceof Robot || maxPeople-- > 0) {
+				recruitedMembers.add(next.candidate);
 			}
 		}
 		
@@ -111,7 +108,6 @@ public class MissionBuilder {
             	}
 
 				double recruitmentChance = (qualification + likability) / 2D;
-				recruitmentChance = Math.max(0D, Math.min(100D, recruitmentChance));
 				if (recruitmentChance > 0D) {
 					// Check if person is the best recruit.
 					qualified.add(new MemberScore(w, recruitmentChance));
