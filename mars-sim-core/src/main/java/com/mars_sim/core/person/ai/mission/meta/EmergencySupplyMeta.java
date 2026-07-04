@@ -11,6 +11,7 @@ import java.util.Set;
 import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.MissionType;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Meta mission for Emergency Supply missions
@@ -22,5 +23,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission{
 
     EmergencySupplyMeta() {
         super(MissionType.EMERGENCY_SUPPLY, 2, LEADER_JOBS, LEADER_JOBS);
+
+        setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER));
     }
 }

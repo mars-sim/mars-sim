@@ -22,6 +22,7 @@ import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * A meta mission for the RescueSalvageVehicle mission.
@@ -33,6 +34,8 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
 
     RescueSalvageVehicleMeta() {
     	super(MissionType.RESCUE_SALVAGE_VEHICLE, 2, LEADER_JOBS, WORKER_JOBS);
+
+        setPreferredVehicle(VehicleType.ROVER_TYPES);
     }
   
     @Override

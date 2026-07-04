@@ -21,6 +21,7 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * A meta mission for the CollectRegolith mission.
@@ -37,6 +38,8 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 
 	CollectRegolithMeta() {
 		super(MissionType.COLLECT_REGOLITH, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
+
+		setPreferredVehicle(VehicleType.ROVER_TYPES);
 	}
 
 	@Override

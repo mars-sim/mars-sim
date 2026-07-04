@@ -21,6 +21,7 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.VehicleType;
 
 public class FieldStudyMeta extends AbstractMetaMission {
 
@@ -43,6 +44,8 @@ public class FieldStudyMeta extends AbstractMetaMission {
 			ScienceType scienceType) {
 		super(type, 3, preferredLeaderJob, PREFERRED_WORKER_JOBS);
 		this.scienceType = scienceType;
+
+		setPreferredVehicle(Set.of(VehicleType.EXPLORER_ROVER));
 	}
 
 	/**

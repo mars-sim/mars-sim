@@ -39,7 +39,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 	public TravelToSettlementMeta() {
     	super(MissionType.TRAVEL_TO_SETTLEMENT, 8, LEADER_JOBS, WORKER_JOBS);
 
-        setPreferredVehicle(Set.of(VehicleType.TRANSPORT_ROVER, VehicleType.EXPLORER_ROVER));
+        setPreferredVehicle(VehicleType.ROVER_TYPES);
     }
     
 	/**
