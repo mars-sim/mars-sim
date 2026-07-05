@@ -195,7 +195,7 @@ public abstract class AbstractMetaMission implements MetaMission {
 	}
 
 	/**
-	 * Once over the threshold how many further concurrrent missiosn are allowed per number of citizens.
+	 * Once over the threshold how many further concurrent missions are allowed per number of citizens.
 	 * @param popRatio Number of citizens per additional mission.
 	 */
 	protected void setPopulationRatio(int popRatio) {
@@ -203,7 +203,7 @@ public abstract class AbstractMetaMission implements MetaMission {
 	}
 
 	/**
-	 * Define the minimum number of citizens before this misstion can be created.
+	 * Define the minimum number of citizens before this mission can be created.
 	 * @param popThreshold Lowest citizen size.
 	 */
 	protected void setPopulationThreshold(int popThreshold) {
