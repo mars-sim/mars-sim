@@ -331,7 +331,7 @@ public class Conversation implements UserOutbound {
 		String response = getInput(prompt);
 
 		int newLevel = -1;
-		if (!response.isBlank()) {
+		if (response != null && !response.isBlank()) {
 			try {
 				newLevel = Integer.parseInt(response);
 			}

@@ -7,14 +7,14 @@
 
 package com.mars_sim.console.chat.simcommand.settlement;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.core.mission.MetaMission;
-import com.mars_sim.core.mission.predefined.TestDriveMetaMission;
+import com.mars_sim.core.mission.MissionBuilder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.PlanType;
@@ -31,45 +31,29 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
-		var cntl = settlement.getMissionControl();
-
 		// Get the user to select the Mission
-		List<MetaMission> automissions = MetaMissionUtil.getMetaMissions().stream()
-						.filter(m -> cntl.isMissionEnable(m.getType()))
-						.toList();
-		
-		// Add the none auto missions
-		List<MetaMission> missions = new ArrayList<>(automissions);
-		missions.add(new TestDriveMetaMission());
+		List<MetaMission> automissions = MetaMissionUtil.getMetaMissions();
 
-		List<String> names = missions.stream().map(MetaMission::getName).toList();				
+		List<String> names = automissions.stream().map(MetaMission::getName).toList();				
 		int choice = CommandHelper.getOptionInput(context, names, "Pick a mission from above by entering a number");
 		if (choice < 0) {
 			return false;
 		}
-		MetaMission choosen = missions.get(choice);
+		var choosen = automissions.get(choice);
 
 		// Select leader
-		List<Person> leaders = settlement.getAllAssociatedPeople().stream()
-								.filter(p -> p.getMission() == null && p.isInSettlement())
-								.toList();
-		
-		// Create name and the suitability
-		List<String> pNames = leaders.stream()
-								.map(p -> p.getName() + ", suitability "
-										+ (choosen.getLeaderSuitability(p) > 0.5D ? "high" : "low"))
-								.toList();
-		int leaderNum = CommandHelper.getOptionInput(context, pNames, "Pick a leader from above by entering a number");
-		if (leaderNum < 0) {
+		var leader = selectLeader(choosen, settlement, context);
+		if (leader == null) {
+			context.println("No leader selected");
 			return false;
 		}
-		Person leader = leaders.get(leaderNum);
-
 		int reviewChoice = CommandHelper.getYesNoInput(context, "Request a review");
 		if (reviewChoice != CommandHelper.CANCEL) {
 			// Create mission
 			var doReview = (reviewChoice == CommandHelper.YES);
-			Mission newMission = choosen.constructInstance(leader, doReview);
+
+			var builder = new MissionBuilder(choosen, leader);
+			Mission newMission = builder.buildMission(doReview);
 			if (newMission.isDone()) {
 				context.println("Mission failed to start " + newMission.getMissionStatus());
 			}
@@ -92,5 +76,25 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 		}
 
 		return true;
+	}
+
+	private record LeaderScore(Person person, double score) {}
+
+	private Person selectLeader(MetaMission choosen, Settlement settlement, Conversation context	) {
+		List<LeaderScore> leaders = settlement.getAllAssociatedPeople().stream()
+								.filter(p -> p.getMission() == null && p.isInSettlement())
+								.map(p -> new LeaderScore(p, choosen.getLeaderSuitability(p)))
+								.filter(v -> v.score() > 0)
+								.sorted(Comparator.comparingDouble(LeaderScore::score))
+								.toList();
+
+		List<String> pNames = leaders.stream()
+								.map(s -> s.person().getName() + " (Score: " + String.format("%.2f", s.score()) + ")")
+								.toList();
+		int leaderNum = CommandHelper.getOptionInput(context, pNames, "Pick a leader from above by entering a number");
+		if (leaderNum < 0) {
+			return null;
+		}
+		return leaders.get(leaderNum).person();
 	}
 }

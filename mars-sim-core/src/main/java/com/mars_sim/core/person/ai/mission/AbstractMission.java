@@ -365,7 +365,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param newMembers Members to add
 	 * @param allowRobots Are Robots allowed
 	 */
-	protected void addMembers(Collection<Worker> newMembers, boolean allowRobots) {
+	protected void addMembers(Collection<? extends Worker> newMembers, boolean allowRobots) {
 		for(Worker member : newMembers) {
 			if (member instanceof Person person) {
 				person.getMind().setMission(this);

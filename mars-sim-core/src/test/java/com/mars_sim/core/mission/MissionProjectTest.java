@@ -9,6 +9,7 @@ package com.mars_sim.core.mission;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,7 @@ class MissionProjectTest extends MarsSimUnitTest {
 	class TestMission extends MissionProject {
 
         public TestMission(String name, Person leader, int numSteps) {
-            super(name, MissionType.AREOLOGY, 1, leader);
+            super(name, MissionType.AREOLOGY, 1, leader, Collections.emptyList());
          
             List<MissionStep> steps = new ArrayList<>();
             for(int i = 0; i < numSteps; i++) {

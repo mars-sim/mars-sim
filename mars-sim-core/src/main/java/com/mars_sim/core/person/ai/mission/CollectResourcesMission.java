@@ -18,6 +18,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.mission.task.CollectResources;
 import com.mars_sim.core.person.Person;
@@ -55,8 +56,6 @@ public abstract class CollectResourcesMission extends EVAMission
 	private static final int MAX_NUM_PRIMARY_SITES = 30;
 	/** The maximum number of sites under consideration. */
 	private static final int MAX_NUM_SECONDARY_SITES = 5;
-	/** Minimum number of people to do mission. */
-	private static final int MIN_PEOPLE = 2;
 
 	// Data members
 	/** The type of resource to collect. */
@@ -74,7 +73,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	/**
 	 * Constructor.
 	 *
-	 * @param startingPerson         The person starting the mission.
+	 * @param crew         The roster of crew members for the mission.
 	 * @param resourceID           The type of resource.
 	 * @param containerID          The type of container needed for the mission or
 	 *                               null if none.
@@ -82,21 +81,18 @@ public abstract class CollectResourcesMission extends EVAMission
 	 *                               mission.
 	 * @param numSites               The number of collection sites.
 	 * @param needsReview
-	 * @param minPeople              The minimum number of people for the mission.
-	 * @throws MissionException if problem constructing mission.
 	 */
-	protected CollectResourcesMission(MissionType missionType, Person startingPerson, int resourceID,
-			EquipmentType containerID, int containerNum, int numSites, boolean needsReview) {
+	protected CollectResourcesMission(MissionType missionType, MetaMission.Roster crew, int resourceID, EquipmentType containerID, int containerNum, int numSites, boolean needsReview) {
 
 		// Use RoverMission constructor
-		super(missionType, startingPerson, null, COLLECT_RESOURCES, CollectResources.LIGHT_LEVEL);
+		super(missionType, crew.leader(), (Rover)crew.vehicle(), COLLECT_RESOURCES, CollectResources.LIGHT_LEVEL);
 
 		// Problem starting mission
 		if (isDone()) {
 			return;
 		}
 		
-		Settlement s = startingPerson.getSettlement();
+		Settlement s = crew.leader().getSettlement();
 
 		if (s == null || isDone()) {
 			return;
@@ -105,33 +101,21 @@ public abstract class CollectResourcesMission extends EVAMission
 		this.resourceID = resourceID;
 		this.containerID = containerID;
 		
-		
-		// Recruit additional members to mission.
-		if (!recruitMembersForMission(startingPerson, MIN_PEOPLE)) {
-			logger.warning(getVehicle(), "Not enough members recruited for mission " 
-					+ getName() + ".");
-			endMission(NOT_ENOUGH_MEMBERS);
-			return;
-		}
-		
-		// Check vehicle
-		if (!hasVehicle()) {
-			endMission(NO_AVAILABLE_VEHICLE);
-			return;
-		}
-			
+		addMembers(crew.members(), false);
+
 		// Get the current location.
 		Coordinates startingLocation = s.getCoordinates();
-		double range = getVehicle().getEstimatedRange();
-		double timeLimit = getRover().getTotalTripTimeLimit(true);
+
+		var rover = getRover();
+		double range = rover.getEstimatedRange();
+		double timeLimit = rover.getTotalTripTimeLimit(true);
 
 		// Determining the actual traveling range.
 		double timeRange = getTripTimeRange(timeLimit, numSites, true);
 		if (timeRange < range)
 			range = timeRange;
 		if (range <= 0D) {
-			logger.warning(getVehicle(), "Zero range for mission " 
-					+ getName() + ".");
+			logger.warning(this, "Zero range for mission.");
 			endMission(NO_VEHICLE_WITHIN_RANGE);
 			return;
 		}
@@ -144,12 +128,12 @@ public abstract class CollectResourcesMission extends EVAMission
 			if (!isValidScore(totalSiteScore)) {
 				totalSiteScore = 0;
 				unorderedSites = null;
-				logger.warning(startingPerson, getName() + " attempt another collection site find");
+				logger.warning(crew.leader(), getName() + " attempt another collection site find");
 			}
 
 			// Mission might be aborted at determine site step
 			if (isDone()) {
-				logger.warning(startingPerson, getName() + " site searched & mission aborted");
+				logger.warning(crew.leader(), getName() + " site searched & mission aborted");
 				return;
 			}
 		}
@@ -163,7 +147,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		setObjectives(containerNum, orderSites.size());
 
 		// Check if vehicle can carry enough supplies for the mission.
-		if (hasVehicle() && !isVehicleLoadable()) {
+		if (!isVehicleLoadable()) {
 			endMission(CANNOT_LOAD_RESOURCES);
 		}
 
@@ -216,7 +200,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 	}
 
- 	private void setObjectives(int containerNum, double numberSites) {
+	private void setObjectives(int containerNum, double numberSites) {
 		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
 		int buffer = (int)(numMembers * 1.5);
 		int newContainerNum = Math.min(buffer, containerNum);
@@ -325,9 +309,6 @@ public abstract class CollectResourcesMission extends EVAMission
 	            			"Instructed to sleep in " + getVehicle() + " since fatigue is " + Math.round(fatigue) + ".");
 	        	}
         	}
-			
-        	// Do NOT return false or else it will end EVAMission for everyone
-//			return false;
 		}
 		
 		// If person can collect resources, start him/her on that task.

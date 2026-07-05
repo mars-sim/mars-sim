@@ -279,10 +279,28 @@ public class MissionControl implements ScheduledEventHandler {
 		RatingLog.logSelectedRating("missionstart", person.getName(), selectedMission, potentialMissions);
 
 		// Construct and return the mission
-		Mission mission = selectedMission.getMeta().constructInstance(person, true);
+		var builder = new MissionBuilder(selectedMission.getMeta(), person);
+		Mission mission = builder.buildMission(true);
 		person.getMind().getTaskManager().setMissionRatings(potentialMissions, selectedMission);
 
 		return mission;
+	}
+
+	/**
+	 * Get the MetaMissions that this control could currently support a Misison.
+	 * This check the sol threshold and the maximum number of missions of that type allowed by the settlement preferences.
+	 * @return MetaMissions that can be started.
+	 */
+	public List<MetaMission> getPossibleMissions() {
+		ParameterManager paramMgr = owner.getPreferences();
+		var checkSol = paramMgr.getBooleanValue(MissionLimitParameters.MISSION_CHECK_SOL, true);
+
+		var activeMissionsByType = getActiveMissions().stream()
+				.collect(Collectors.groupingBy(Mission::getMissionType, Collectors.counting()));
+		
+		return MetaMissionUtil.getMetaMissions().stream()
+				.filter(m -> canAcceptMission(m, paramMgr, checkSol, activeMissionsByType))
+				.toList();
 	}
 
 	/**
@@ -291,21 +309,12 @@ public class MissionControl implements ScheduledEventHandler {
 	 * @return List of scored potential missions for the person. The list may be empty if no suitable missions are found.
 	 */
 	private List<MissionRating> calculateMissionProbabilities(Person leader) {
-		List<MissionRating> potentials = new ArrayList<>();
 		ParameterManager paramMgr = owner.getPreferences();
 
-		var activeMissionsByType = getActiveMissions().stream()
-				.collect(Collectors.groupingBy(Mission::getMissionType, Collectors.counting()));
-		var checkSol = paramMgr.getBooleanValue(MissionLimitParameters.MISSION_CHECK_SOL, true);
-		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
-			if (canAcceptMission(metaMission, paramMgr, checkSol, activeMissionsByType)) {
-				var score = scoreMission(metaMission, leader, paramMgr);
-				if (score != null) {
-					potentials.add(score);
-				}
-			}
-		}
-		return potentials;
+		return getPossibleMissions().stream()
+				.map(m -> scoreMission(m, leader, paramMgr))
+				.filter(r -> r != null)
+				.toList();
 	}
 
 	/**
@@ -338,7 +347,7 @@ public class MissionControl implements ScheduledEventHandler {
 	 * The score is based on the base probability of the mission and modified by the settlement ratio for that type of mission.
 	 * @return MissionRating for the mission which includes the meta mission and the final score. Null if not suitable.
 	 */
-	private MissionRating scoreMission(MetaMission metaMission, Person person,ParameterManager paramMgr) {
+	private MissionRating scoreMission(MetaMission metaMission, Person person, ParameterManager paramMgr) {
 		var score = metaMission.getProbability(person);
 		if (score.getScore() <= 0) {
 			return null;
@@ -367,7 +376,14 @@ public class MissionControl implements ScheduledEventHandler {
 	 * @param disable
 	 */
 	public void setMissionDisable(MissionType mission, boolean disable) {
-		owner.getPreferences().putValue(MissionWeightParameters.INSTANCE.getKey(mission), (disable ? 0D : 1D));
+		if (disable) {
+			owner.getPreferences().putValue(MissionLimitParameters.INSTANCE.getKey(mission), 0);
+		}
+		else {
+			var metaMission = MetaMissionUtil.getMetaMission(mission);
+			var maxMissions = Math.max(metaMission.getMaxMissions(owner.getNumCitizens()), 1);
+			owner.getPreferences().putValue(MissionLimitParameters.INSTANCE.getKey(mission), maxMissions);
+		}
 	}
 	
 	/**

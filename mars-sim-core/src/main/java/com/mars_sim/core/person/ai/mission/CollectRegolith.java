@@ -14,7 +14,7 @@ import java.util.Set;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.Person;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.ObjectiveType;
@@ -41,13 +41,12 @@ public class CollectRegolith extends CollectResourcesMission {
 	/**
 	 * Constructor.
 	 *
-	 * @param startingPerson the person starting the mission.
-	 * @param needsReview Needs to be reviewed
-	 * @throws MissionException if problem constructing mission.
+	 * @param crew		 The roster of crew members for the mission.
+	 * @param needsReview	Does this mission need to be reviewed
 	 */
-	public CollectRegolith(Person startingPerson, boolean needsReview) {
+	public CollectRegolith(MetaMission.Roster crew, boolean needsReview) {
 		// Use CollectResourcesMission constructor.
-		super(MissionType.COLLECT_REGOLITH, startingPerson, ResourceUtil.REGOLITH_ID,
+		super(MissionType.COLLECT_REGOLITH, crew, ResourceUtil.REGOLITH_ID,
 				EquipmentType.LARGE_BAG, REQUIRED_LARGE_BAGS, NUM_SITES, needsReview);
 	}
 

@@ -30,7 +30,6 @@ import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Project;
 import com.mars_sim.core.project.ProjectStep;
@@ -111,7 +110,7 @@ public abstract class MissionProject implements Mission {
     private Set<Worker> signedUp = new UnitSet<>();
     private Set<MissionStatus> status = new HashSet<>();
 
-    protected MissionProject(String name, MissionType type, int priority, Person leader) {
+    protected MissionProject(String name, MissionType type, int priority, Person leader, Collection<? extends Worker> recruits) {
         this.type = type;
         this.priority = priority;
 
@@ -126,6 +125,9 @@ public abstract class MissionProject implements Mission {
         leader.setMission(this);
         this.log = new MissionLog();
         this.control = new MissionController(name);
+
+        // Inviite them in
+        recruits.forEach(r -> r.setMission(this));
     }
 
     @Override
@@ -229,8 +231,6 @@ public abstract class MissionProject implements Mission {
 
         // Add the close down step
         control.addStep(new MissionCloseStep(this));
-        
-        findMembers();
     }
 
     /**
@@ -255,24 +255,6 @@ public abstract class MissionProject implements Mission {
 		HistoricalEvent newEvent = new HistoricalEvent(type, this, getAssociatedSettlement(),
 														message, null, affected, null);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
-	}
-
-    /** 
-     * Finds new members based on the skills needed for the Mission steps.
-     */
-    private void findMembers() {
-    	// Get all people qualified for the mission.
-		Collection<Person> possibles = leader.getAssociatedSettlement().getIndoorPeople();
-
-        var meta = MetaMissionUtil.getMetaMission(getMissionType());
-		var recruiter = new MissionBuilder(meta, leader);
-		var team = recruiter.recruitMembers(possibles);
-		if ((team.size() + 1) < meta.getMinimumMembers()) {
-			abortMission(NOT_ENOUGH_MEMBERS);
-		}
-        else {
-		    team.forEach(w -> w.setMission(this));
-		}
 	}
     
     @Override

@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core.mission;
 
+import java.util.Collection;
+
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -21,6 +23,9 @@ import com.mars_sim.core.vehicle.Vehicle;
 public interface MetaMission {
 
     public static final double LIMIT = 100D;
+
+	// The roster for a potential mission
+	record Roster(Person leader, Collection<? extends Worker> members, Vehicle vehicle) {}
 	
 	/**
 	 * Type of Mission created by this Meta object
@@ -56,7 +61,21 @@ public interface MetaMission {
 	 * @param needsReview Mission must be reviewed
 	 * @return mission instance.
 	 */
-	Mission constructInstance(Person person, boolean needsReview);
+	@Deprecated(since = "Should be replaced with MissionFactory.constructInstance")
+	default Mission constructInstance(Person person, boolean needsReview) {
+		return null;
+	}
+
+	/**
+	 * Constructs an instance of the associated mission.
+	 * 
+	 * @param crew The crew for the mission, including leader and members
+	 * @param needsReview Mission must be reviewed
+	 * @return mission instance.
+	 */
+	default Mission constructInstance(Roster crew, boolean needsReview) {
+		return constructInstance(crew.leader(), needsReview);
+	}
 
 	/**
 	 * Gets the weighted probability value that the person might perform this
@@ -98,4 +117,5 @@ public interface MetaMission {
 	 * @return minimum sol threshold
 	 */
     int getSolThreshold();
+
 }

@@ -3,31 +3,20 @@ package com.mars_sim.core.mission;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.TestEntityListener;
 import com.mars_sim.core.building.construction.MockMission;
-import com.mars_sim.core.equipment.EquipmentFactory;
-import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.mission.CollectIce;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
-import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
 class MissionControlTest extends MarsSimUnitTest{
@@ -178,125 +167,69 @@ class MissionControlTest extends MarsSimUnitTest{
         assertEquals(2, listener.getEventsReceived(), "No additional mission removed event should be fired after listener is removed");
     }
 
-    @Test
-    void testNoMissionCreated() {
-        var settlement = buildSettlement("Test", true, 5);
-        var missionControl = new MissionControl(settlement);
-        var leader = buildPerson("Leader", settlement, RoleType.MISSION_SPECIALIST, JobType.PILOT);
-
-        // Advance 4 sols into the simulation
-        var clock = getSim().getMasterClock();
-        clock.setMarsTime(clock.getMarsTime().addTime(4000));
-
-        var mission = missionControl.getNewMission(leader);
-        assertNull(mission, "Mission should not be created");
-
-        var tm = leader.getMind().getTaskManager();
-        assertTrue(tm.getMissionProbCache().isEmpty(), "Mission probability cache should be empty after mission creation");
-        assertNull(tm.getSelectedMission(), "Selected mission should be set after mission creation");
-    }
-
-    @DisplayName("Test ice collection mission can be created when mission is disabled")
+    @DisplayName("Test ice collection mission can not be created when mission is disabled")
     @Test
     void testIceMissionDisabled() {
-        var settlement = buildIcePreRequisites();
-        var leader = buildPerson("Leader", settlement, RoleType.MISSION_SPECIALIST, JobType.PILOT);
+        var settlement = buildSettlement("Test");
+        var iceMeta = MetaMissionUtil.getMetaMission(MissionType.COLLECT_ICE);
     
         // Advance 4 sols into the simulation
         var clock = getSim().getMasterClock();
-        clock.setMarsTime(clock.getMarsTime().addTime(4000));
+        clock.setMarsTime(clock.getMarsTime().addTime(iceMeta.getSolThreshold() * 1000D));
         
-        // Disable ice collection mission
+        // Test on the first sol and should fail
         var missionControl = new MissionControl(settlement);
+        var missions = missionControl.getPossibleMissions();
+        assertTrue(missions.contains(iceMeta), "Missions should be created");
+
+        // Disable ice collection mission
         missionControl.setMissionDisable(MissionType.COLLECT_ICE, true);
-        var mission = missionControl.getNewMission(leader);
-        assertNull(mission, "No ice mission possible");
+        missions = missionControl.getPossibleMissions();
+        assertFalse(missions.contains(iceMeta), "Missions should not be created");
 
         // Enable ice collection mission
         missionControl.setMissionDisable(MissionType.COLLECT_ICE, false);
-        mission = missionControl.getNewMission(leader);
-        assertNotNull(mission, "Mission should be created");
-        assertEquals(MissionType.COLLECT_ICE, mission.getMissionType(), "Mission type created");
-
-        var tm = leader.getMind().getTaskManager();
-        assertEquals(1, tm.getMissionProbCache().size(), "Mission probability cache should be empty after mission creation");
-        assertEquals(MissionType.COLLECT_ICE, tm.getSelectedMission().getMeta().getType(), "Selected mission should be set after mission creation");
-    }
-
-    
-    private Settlement buildIcePreRequisites() {
-        var settlement = buildSettlement("Test", true, 5);
-
-        // Add workers
-        for(var p = 0; p < 4; p++) {
-            buildPerson("Worker" + p, settlement);
-        }
-
-        var r = buildRover(settlement, "Rover", new LocalPosition(0, 0), CARGO_ROVER);
-
-        // Build resoruces for collection ice mission
-        for(int i = 0; i < CollectIce.REQUIRED_BARRELS+1; i++) {
-            EquipmentFactory.createEquipment(EquipmentType.BARREL, settlement);
-        }
-
-        // Create enough suits with spares
-        for(int e = 0; e < settlement.getCitizens().size() + 2; e++) {
-            EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, settlement);
-        }
-
-        Map<Integer, Double> resources = Map.of(ResourceUtil.OXYGEN_ID, 100D,
-                                                ResourceUtil.FOOD_ID, 100D,
-                                                r.getFuelTypeID(), 100D,
-                                                ResourceUtil.WATER_ID, 100D);
-        loadSettlementAmounts(settlement, resources);  
-        
-        return settlement;
+        missions = missionControl.getPossibleMissions();
+        assertTrue(missions.contains(iceMeta), "Missions should be re-created");
     }
 
     @DisplayName("Test ice collection mission can be created when mission sol is advance")
     @Test
     void testIceMissionSolBased() {
-        var settlement = buildIcePreRequisites();
-        var leader = buildPerson("Leader", settlement, RoleType.MISSION_SPECIALIST, JobType.PILOT);
+        var settlement = buildSettlement("Test");
+        var iceMeta = MetaMissionUtil.getMetaMission(MissionType.COLLECT_ICE);
     
         // Test on the first sol and should fail
         var missionControl = new MissionControl(settlement);
-        var mission = missionControl.getNewMission(leader);
-        assertNull(mission, "Mission should not be created");
+        var missions = missionControl.getPossibleMissions();
+        assertFalse(missions.contains(iceMeta), "Missions should not be created");
 
         // Advance sol pass threshold
-        var meta = MetaMissionUtil.getMetaMission(MissionType.COLLECT_ICE);
         var clock = getSim().getMasterClock();
-        clock.setMarsTime(clock.getMarsTime().addTime(meta.getSolThreshold() * 1000D));
+        clock.setMarsTime(clock.getMarsTime().addTime(iceMeta.getSolThreshold() * 1000D));
 
         // Enable ice collection mission
-        mission = missionControl.getNewMission(leader);
-        assertNotNull(mission, "Mission should be created");
-        assertEquals(MissionType.COLLECT_ICE, mission.getMissionType(), "Mission type created");
-
-        var tm = leader.getMind().getTaskManager();
-        assertEquals(1, tm.getMissionProbCache().size(), "Mission probability cache should be empty after mission creation");
-        assertEquals(MissionType.COLLECT_ICE, tm.getSelectedMission().getMeta().getType(), "Selected mission should be set after mission creation");
+        missions = missionControl.getPossibleMissions();
+        assertTrue(missions.contains(iceMeta), "Missions should be created");
     }
 
     @DisplayName("Test ice collection mission can be created when sol check is disabled")
     @Test
     void testIceMissionNoSolCheck() {
-        var settlement = buildIcePreRequisites();
-        var leader = buildPerson("Leader", settlement, RoleType.MISSION_SPECIALIST, JobType.PILOT);
-    
+        var settlement = buildSettlement("Test");
+        var iceMeta = MetaMissionUtil.getMetaMission(MissionType.COLLECT_ICE);
+
         // Test on the first sol and should fail
         var missionControl = new MissionControl(settlement);
-        var mission = missionControl.getNewMission(leader);
-        assertNull(mission, "Mission should not be created");
+        var missions = missionControl.getPossibleMissions();
+        assertFalse(missions.contains(iceMeta), "Missions should not be created");
 
         // Disable sol check for ice collection mission
         settlement.getPreferences().putValue(MissionLimitParameters.MISSION_CHECK_SOL, false);
 
         // Enable ice collection mission
-        mission = missionControl.getNewMission(leader);
-        assertNotNull(mission, "Mission should be created");
-        assertEquals(MissionType.COLLECT_ICE, mission.getMissionType(), "Mission type created");
+        missions = missionControl.getPossibleMissions();
+        assertTrue(missions.contains(iceMeta), "Mission type created");
     }
 }
 

@@ -44,8 +44,8 @@ public class CollectIceMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Person person, boolean needsReview) {
-		return new CollectIce(person, needsReview);
+	public Mission constructInstance(Roster crew, boolean needsReview) {
+		return new CollectIce(crew, needsReview);
 	}
 
 	@Override

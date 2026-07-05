@@ -45,8 +45,8 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Person person, boolean needsReview) {
-		return new CollectRegolith(person, needsReview);
+	public Mission constructInstance(Roster crew, boolean needsReview) {
+		return new CollectRegolith(crew, needsReview);
 	}
 
 	@Override

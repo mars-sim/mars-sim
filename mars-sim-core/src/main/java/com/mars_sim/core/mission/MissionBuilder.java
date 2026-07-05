@@ -11,10 +11,13 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -31,6 +34,8 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 public class MissionBuilder {
 
+	private static final SimLogger logger = SimLogger.getLogger(MissionBuilder.class.getName());
+
 	private static final long MIN_REMAINING_MEMBERS = 2;
 
 	// Plain POJO to help score potential mission members
@@ -40,7 +45,13 @@ public class MissionBuilder {
     private Person startingMember;
 	private int maxMembers;
 	private int maxPeople;
+	private Collection<Person> possibles;
 
+	/**
+	 * Create a mission builder for a leader wanting to start a certain Mission type.
+	 * @param target the mission type to be started.
+	 * @param startingMember the person who will lead the mission.
+	 */
     public MissionBuilder(MetaMission target, Person startingMember) {
         this.mission = target;
         this.startingMember = startingMember;
@@ -49,11 +60,17 @@ public class MissionBuilder {
 		int settlementMax = home.getChainOfCommand().getMaxMissionMembers();
 		
 		// Max can not bigger than mission capacity
-		this.maxMembers = Math.min(target.getDefaultCapacity(), settlementMax) - 1; // Subtract 1 for the starting member
+		this.maxMembers = Math.min(target.getDefaultCapacity(), settlementMax);
 
 		// Count number not on a mission
 		var freePeople = home.getCitizens().stream().filter(p -> p.getMind().getMission() == null).count();
 		this.maxPeople = (int) Math.min(maxMembers, freePeople - MIN_REMAINING_MEMBERS);
+		
+		// Have to account for the leader as always Person
+		if (startingMember.getMission() == null) {
+			// Not yet assigned so reduce the maxPeople by 1
+			this.maxPeople--;
+		}
     }
 
 	/**
@@ -62,7 +79,12 @@ public class MissionBuilder {
 	 */
 	public Vehicle selectBestVehicle() {
 		var home = startingMember.getAssociatedSettlement();
-		return mission.selectVehicle(home);
+		var selected = mission.selectVehicle(home);
+
+		if (selected instanceof Crewable c) {
+			maxMembers = Math.min(maxMembers, c.getCrewCapacity());
+		}
+		return selected;
 	}
 
     /**
@@ -73,11 +95,12 @@ public class MissionBuilder {
     public List<Worker> recruitMembers(Collection<? extends Worker> possibles) {
 
 		List<MemberScore> qualified = ratePossibles(possibles);
+		int remainingMembers = maxMembers - 1; // -1 for the starting member
 
 		// Recruit the most qualified and most liked people first.
 		List<Worker> recruitedMembers = new ArrayList<>();
 		qualified.sort(Comparator.comparing(MemberScore::score, Comparator.reverseOrder()));
-		while (!qualified.isEmpty() && (recruitedMembers.size() < maxMembers)) {
+		while (!qualified.isEmpty() && (recruitedMembers.size() < remainingMembers)) {
 			// Try to recruit best worker available to the mission.
 			// Choose to join but must be a Robot or there must be room for more people in the mission.
 			MemberScore next = qualified.remove(0);
@@ -136,5 +159,31 @@ public class MissionBuilder {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Finally build the mission according to the parameters.
+	 * @param needsReview whether the mission requires a review.
+	 * @return the constructed mission instance, or null if construction failed.
+	 */
+	public Mission buildMission(boolean needsReview) {
+		var vehicle = selectBestVehicle();
+		if (vehicle == null) {
+			logger.warning("No suitable vehicle available for mission: " + mission.getName());
+			return null;
+		}
+
+		// Default to all people in the settlement if no possibles are provided.
+		if (possibles == null) {
+			possibles = startingMember.getAssociatedSettlement().getAllAssociatedPeople();
+		}
+		var members = recruitMembers(possibles);
+		if (members.size() + 1 < mission.getMinimumMembers()) {
+			logger.warning("Not enough members recruited for mission: " + mission.getName());
+			return null;
+		}
+
+		var crew = new MetaMission.Roster(startingMember, members, vehicle);
+		return mission.constructInstance(crew, needsReview);
 	}
 }

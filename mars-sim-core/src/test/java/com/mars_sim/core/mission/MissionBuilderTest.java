@@ -1,21 +1,30 @@
 package com.mars_sim.core.mission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.mars_sim.core.equipment.EquipmentFactory;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.mission.CollectIce;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
@@ -154,5 +163,60 @@ class MissionBuilderTest extends MarsSimUnitTest {
         assertEquals(transport, secondVehicle, "Should skip the reserved explorer and choose the next best rover");
     }
 
+    @DisplayName("Test ice collection mission can be created")
+    @Test
+    void testIceMissionSolBased() {
+        var settlement = buildIcePreRequisites();
+        var leader = buildPerson("Leader", settlement, RoleType.MISSION_SPECIALIST, JobType.PILOT);
     
+        // Test on the first sol and should fail
+        var missionControl = new MissionControl(settlement);
+        var mission = missionControl.getNewMission(leader);
+        assertNull(mission, "Mission should not be created");
+
+        // Advance sol pass threshold
+        var meta = MetaMissionUtil.getMetaMission(MissionType.COLLECT_ICE);
+        var clock = getSim().getMasterClock();
+        clock.setMarsTime(clock.getMarsTime().addTime(meta.getSolThreshold() * 1000D));
+
+        // Enable ice collection mission
+        MissionBuilder builder = new MissionBuilder(meta, leader);
+        mission = builder.buildMission(false);
+        assertNotNull(mission, "Mission should be created");
+        assertNull(mission.getPlan(), "Mission plan should be null since no review is requested");
+        assertEquals(MissionType.COLLECT_ICE, mission.getMissionType(), "Mission type created");
+
+        var tm = leader.getMind().getMission();
+        assertNotNull(tm, "Mission created and assigned");
+        assertEquals(tm, mission, "Selected mission should be Ice");
+    }
+    
+    private Settlement buildIcePreRequisites() {
+        var settlement = buildSettlement("Test", true, 5);
+
+        // Add workers
+        for(var p = 0; p < 4; p++) {
+            buildPerson("Worker" + p, settlement);
+        }
+
+        var r = buildRover(settlement, "Rover", new LocalPosition(0, 0), CARGO_ROVER);
+
+        // Build resoruces for collection ice mission
+        for(int i = 0; i < CollectIce.REQUIRED_BARRELS+1; i++) {
+            EquipmentFactory.createEquipment(EquipmentType.BARREL, settlement);
+        }
+
+        // Create enough suits with spares
+        for(int e = 0; e < settlement.getCitizens().size() + 2; e++) {
+            EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, settlement);
+        }
+
+        Map<Integer, Double> resources = Map.of(ResourceUtil.OXYGEN_ID, 100D,
+                                                ResourceUtil.FOOD_ID, 100D,
+                                                r.getFuelTypeID(), 100D,
+                                                ResourceUtil.WATER_ID, 100D);
+        loadSettlementAmounts(settlement, resources);  
+        
+        return settlement;
+    }
 }
