@@ -41,12 +41,13 @@ public class SettlementTableModel extends BaseSettlementModel implements Monitor
 	}
 
 	/**
-	 * This model has no switchable Settlment column.
+	 * This model has no switchable Settlement column.
 	 */
 	@Override
 	public int getSettlementColumn() {
 		return -1;
 	}
+	
 	/**
 	 * Sets the settlement filter for the settlement table.
 	 * 

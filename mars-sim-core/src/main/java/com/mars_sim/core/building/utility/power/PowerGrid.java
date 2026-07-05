@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PowerGrid.java
- * @date 2024-06-28
+ * @date 2026-07-05
  * @author Scott Davis
  */
 package com.mars_sim.core.building.utility.power;
@@ -67,9 +67,11 @@ public class PowerGrid implements Serializable, Temporal {
 		this.settlement = settlement;
 		manager = settlement.getBuildingManager();
 		powerGenerated = 0D;
-		totalEnergyStored = 0D;
-		energyStorageCapacity = 0D;
+		totalEnergyStored = 1D;
+		energyStorageCapacity = 1D;
 		powerLoad = 0D;
+		
+		updateTotalEnergyStorageCapacity();
 	}
 
 	/**
@@ -84,14 +86,13 @@ public class PowerGrid implements Serializable, Temporal {
 	/**
 	 * Sets the generated power in the grid.
 	 * 
-	 * @param newGeneratedPower the new generated power (kW).
+	 * @param newPower the new generated power (kW).
 	 */
-	private void setGeneratedPower(double newGeneratedPower) {
-		double p = Math.round(newGeneratedPower*1000.0)/1000.0;
-		
-		if (newGeneratedPower > 0D && !Double.isNaN(newGeneratedPower) && !Double.isInfinite(newGeneratedPower)
-				&& powerGenerated != p) {
-			powerGenerated = p;
+	private void setGeneratedPower(double newPower) {
+	
+		if (newPower > 0D && !Double.isNaN(newPower) && !Double.isInfinite(newPower)
+				&& powerGenerated != newPower) {
+			powerGenerated = newPower;
 			settlement.fireUnitUpdate(PowerGrid.GENERATED_POWER_EVENT);
 		}
 	}
@@ -120,14 +121,11 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @return
 	 */
 	public String displayStoredEnergy() {
-		double stored = totalEnergyStored;
-		if (stored < 0D || Double.isNaN(stored) || Double.isInfinite(stored))
-			return "";
-		
-		double percent = stored / energyStorageCapacity * 100;
+
+		double percent = totalEnergyStored / energyStorageCapacity * 100;
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append(Math.round(stored *10.0)/10.0)
+		sb.append(Math.round(totalEnergyStored *10.0)/10.0)
 		.append(" (")
 		.append(Math.round(percent *10.0)/10.0)
 		.append(" %)");
@@ -141,8 +139,12 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param newEnergyStored the new stored energy (kWh).
 	 */
 	public void setStoredEnergy(double newEnergyStored) {
-		if (totalEnergyStored != newEnergyStored) {
+		if (newEnergyStored > 0 && totalEnergyStored != newEnergyStored) {
 			totalEnergyStored = newEnergyStored;
+			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_EVENT);
+		}
+		else if (Double.isNaN(newEnergyStored) || Double.isInfinite(newEnergyStored)) {
+			totalEnergyStored = 0;
 			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_EVENT);
 		}
 	}
@@ -162,8 +164,12 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param newCap the new stored energy capacity (kWh).
 	 */
 	public void setStoredEnergyCapacity(double newCap) {
-		if (energyStorageCapacity != newCap) {
+		if (newCap > 0 && energyStorageCapacity != newCap) {
 			energyStorageCapacity = newCap;
+			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_CAPACITY_EVENT);
+		}
+		else if (Double.isNaN(newCap) || Double.isInfinite(newCap)) {
+			energyStorageCapacity = 0;
 			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_CAPACITY_EVENT);
 		}
 	} 
@@ -206,24 +212,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 		// Determine total power load in the grid.
 		double powerLoad = updateTotalLoadPower();
-
-//		double adjUsageRatio = computeAdjustablePowerSourceUsage();
-//					
-//		int rand = RandomUtil.getRandomInt((int)(10.0 * adjUsageRatio));
-//		
-//		if (rand == 0) {
-//			// Note: this is just a temporary measure to force the adjustable power source to keep up production by default
-//			for (Building b : manager.getBuildingSet(FunctionType.POWER_GENERATION)) {
-//				for (PowerSource powerSource : b.getPowerGeneration().getPowerSources()) {
-//					if (powerSource instanceof AdjustablePowerSource fps) {
-//						if (fps.getUsageRatio() < 1) {
-//							fps.increaseLoadCapacity();
-//						}
-//					}
-//				}
-//			}
-//		}
-				
+		
 		// Update overall grid efficiency.
 		updateEfficiency(time);
 		

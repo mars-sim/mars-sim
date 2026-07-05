@@ -22,6 +22,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  * The subclass defines which columns are to be rendered.
  * The model automatically monitors the Settlement for changes and updates the table as needed.
  */
+@SuppressWarnings("serial")
 public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement> {
 
     private static final int NAME_VAL = 0;
@@ -52,7 +53,8 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
     private List<Integer> resources;
 
     /**
-     * Create a generic building model with the specified columns.
+     * Creates a generic building model with the specified columns.
+     * 
      * @param resources The list of monitored resource IDs.
      * @param columns Columns to show.
      */
@@ -63,7 +65,8 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
     }
 
     /**
-     * Filter the inventory events when resources change
+     * Filters the inventory events when resources change.
+     * 
      * @param entity Receiving entity
      * @param eventType Event type
      */
@@ -81,8 +84,9 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
     }
 
     /**
-     * Get a cell value for the associated Building. Column index maps to the associated ColumnSpec where the id
+     * Gets a cell value for the associated Building. Column index maps to the associated ColumnSpec where the id
      * is used to determine the value to return.
+     * 
      * @param entity The Building entity.
      * @param valueIndex Column index.
      * @return Associated value.
