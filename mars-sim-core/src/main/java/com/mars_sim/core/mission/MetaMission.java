@@ -85,4 +85,17 @@ public interface MetaMission {
 	 * @param settlement the settlement to search for vehicles.
 	 */
 	Vehicle selectVehicle(Settlement settlement);
+
+	/**
+	 * Get the maximum number of missions of this type that can be supported by a settlement based on its population.
+	 * @param numCitizens The number of citizens in the settlement
+	 * @return The maximum number of missions of this type that can be supported by the settlement
+	 */
+    int getMaxMissions(int numCitizens);
+
+	/**
+	 * Get the minimum sol threshold for this mission. This is the minimum sol that must be reached before this mission can be created.
+	 * @return minimum sol threshold
+	 */
+    int getSolThreshold();
 }

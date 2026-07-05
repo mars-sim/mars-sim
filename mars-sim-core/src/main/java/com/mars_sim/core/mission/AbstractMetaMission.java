@@ -49,12 +49,17 @@ public abstract class AbstractMetaMission implements MetaMission {
 	private Set<JobType> preferredWorkerJob;
 	private Set<RobotType> preferredRobots = Collections.emptySet();  // Optional so empty by default
 	private Set<VehicleType> preferredVehicle = Collections.emptySet();  // Optional so empty by default
+	private int popRatio = 0;
+	private int popThreshold;
+	private int solThreshold = 0;
 	
 	/**
 	 * Creates a new Mission meta instance.
 	 * 
-	 * @param type 
+	 * @param type Type of mission
+	 * @param capacity Default maximum capacity for this mission type
 	 * @param preferredLeaderJob Jobs that a leader should have; null means no preference
+	 * @param preferredWorkerJob Jobs that a worker should have; null means no preference
 	 */
 	protected AbstractMetaMission(MissionType type, int capacity, Set<JobType> preferredLeaderJob, Set<JobType> preferredWorkerJob) {
 		super();
@@ -64,6 +69,10 @@ public abstract class AbstractMetaMission implements MetaMission {
 		this.name = type.getName();
 		this.capacity = capacity;
 		this.minimum = 2;
+
+		// These are defaults
+		this.popThreshold = capacity + 2;
+		this.popRatio = capacity + 4;
 	}
 
 	/**
@@ -145,6 +154,23 @@ public abstract class AbstractMetaMission implements MetaMission {
 		return preferredWorkerJob;
 	}
 	
+	/**
+	 * Sets the minimum sol threshold for this mission. This is the minimum sol that must be reached before this mission can be created.
+	 * @param solThreshold Minimum sol threshold
+	 */
+	protected void setSolThreshold(int solThreshold) {
+		this.solThreshold = solThreshold;
+	}
+
+	/**
+	 * Gets the minimum sol threshold for this mission. This is the minimum sol that must be reached before this mission can be created.
+	 * @return Minimum sol threshold
+	 */
+	@Override
+	public int getSolThreshold() {
+		return solThreshold;
+	}
+
 	/** 
 	 * Gets the default capacity for a mission of this type.
 	 */
@@ -166,6 +192,34 @@ public abstract class AbstractMetaMission implements MetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 		return RatingScore.ZERO_RATING;
+	}
+
+	/**
+	 * Once over the threshold how many further concurrent missions are allowed per number of citizens.
+	 * @param popRatio Number of citizens per additional mission.
+	 */
+	protected void setPopulationRatio(int popRatio) {
+		this.popRatio = popRatio;
+	}
+
+	/**
+	 * Define the minimum number of citizens before this mission can be created.
+	 * @param popThreshold Lowest citizen size.
+	 */
+	protected void setPopulationThreshold(int popThreshold) {
+		this.popThreshold = popThreshold;
+	}
+
+	/**
+	 * This calculates the maximum number of missions. The algorithm check the citizens is above the population threshold.
+	 * If it is then the number of missions is 1 plus the number of citizens above the threshold divided by the population ratio.
+	 */
+	@Override
+	public int getMaxMissions(int numCitizens) {
+		if (numCitizens >= popThreshold) {
+			return 1 + (int) Math.floor((numCitizens - popThreshold) / (double)popRatio);
+		}
+		return 0;
 	}
 
 	/**
@@ -245,15 +299,6 @@ public abstract class AbstractMetaMission implements MetaMission {
 		return result;
 	}
 
-	/**
-	 * Is the time suitable for this mission. This may check the Mission sol in the clock or the time of day.
-	 * @param minimumSol Minimum sol for the mission to be suitable.
-	 * @return true if suitable; false otherwise.
-	 */
-	protected boolean isTimeSuitable(int minimumSol) {
-		return masterClock.getMarsTime().getMissionSol() >= minimumSol;
-	}
-	
     public static void initializeInstances(MasterClock mc) {
 		masterClock = mc;
     }

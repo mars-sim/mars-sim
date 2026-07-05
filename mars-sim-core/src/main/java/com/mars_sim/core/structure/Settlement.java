@@ -77,9 +77,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
-import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
-import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.shift.ShiftManager;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
@@ -130,7 +127,6 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Shared preference key for Mission limits
 	 */
-	private static final int MAX_NUM_SOLS = 3;
 	private static final int RESOURCE_UPDATE_FREQ = 30;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
@@ -486,8 +482,6 @@ public class Settlement extends Unit implements Temporal,
 		
 		preferences.resetValues(sponsor.getPreferences());
 
-		// Do mission limits; all have a limit of 1 first
-		preferences.putValue(MissionLimitParameters.INSTANCE.getKey(MissionType.CONSTRUCTION), 1);
 		// Call weather to add this location
 		weather.addLocation(location);
 		// Construct the Exploration Manager.
@@ -1861,21 +1855,7 @@ public class Settlement extends Unit implements Temporal,
 			// Update the population factor
 			popFactor = Math.max(1, Math.log(Math.sqrt(numCitizens)));
 
-			// Update mission limit dependent upon population
-			setMissionLimit(MissionType.MINING, 0, 8);
-			setMissionLimit(MissionType.COLLECT_ICE, 1, 5);
-			setMissionLimit(MissionType.COLLECT_REGOLITH, 1, 5);
-			setMissionLimit(MissionType.EXPLORATION, 1, 5);
-			setMissionLimit(MissionType.AREOLOGY, 1, 6);
-			setMissionLimit(MissionType.BIOLOGY, 1, 6);
-			setMissionLimit(MissionType.METEOROLOGY, 1, 6);
-			setMissionLimit(MissionType.TRADE, 0, 10);
-			setMissionLimit(MissionType.TRAVEL_TO_SETTLEMENT, 0, 20);
-			setMissionLimit(MissionType.DELIVERY, 0, 6);
-
-			// Set total mission limit
-			int optimalMissions = Math.max(1, (numCitizens/5));
-			preferences.putValue(MissionLimitParameters.TOTAL_MISSIONS, optimalMissions);
+			missionControl.populationChanged();
 
 			// EVA capacity
 			int evaCapacity = (int)Math.ceil(numCitizens * EVA_PERCENTAGE);
@@ -1887,18 +1867,6 @@ public class Settlement extends Unit implements Temporal,
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Calculates the mission limit parameter based on the population and person ratio.
-	 * 
-	 * @param type Type of Mission to control
-	 * @param minMissions Minimum number of missions
-	 * @param personRatio Ratio of person to mission
-	 */
-	private void setMissionLimit(MissionType type, int minMissions, int personRatio) {
-		int optimalMissions = Math.max(minMissions, (numCitizens/personRatio));
-		preferences.putValue(MissionLimitParameters.INSTANCE.getKey(type), optimalMissions);
 	}
 
 	/**
@@ -2872,32 +2840,12 @@ public class Settlement extends Unit implements Temporal,
 		return waterConsumption.getAveragePerSol();
 	}
 
-	/**
-	 * Enables or disable a mission type.
-	 *  
-	 * @param mission
-	 * @param disable
-	 */
-	public void setMissionDisable(MissionType mission, boolean disable) {
-		preferences.putValue(MissionWeightParameters.INSTANCE.getKey(mission), (disable ? 0D : 1D));
-	}
-
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
 		allowTradeMissionSettlements.put(settlement.getIdentifier(), allowed);
 	}
 
 	public boolean isAllowedTradeMission(Settlement settlement) {
 		return allowTradeMissionSettlements.getOrDefault(settlement.getIdentifier(), Boolean.TRUE);
-	}
-
-	/**
-	 * Checks if the mission is enabled.
-	 *
-	 * @param mission the type of the mission calling this method
-	 * @return probability value
-	 */
-	public boolean isMissionEnable(MissionType mission) {
-		return preferences.getIntValue(MissionLimitParameters.INSTANCE.getKey(mission), 0) > 0;
 	}
 
 	/**

@@ -34,12 +34,14 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	private static final int VALUE = 500;
 
 	/** Starting sol for this mission to commence. */
-	public static final int MIN_STARTING_SOL = 4;
+	private static final int MIN_STARTING_SOL = 4;
 
 	CollectRegolithMeta() {
 		super(MissionType.COLLECT_REGOLITH, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 
 		setPreferredVehicle(VehicleType.ROVER_TYPES);
+		setPopulationRatio(5);
+		setSolThreshold(MIN_STARTING_SOL);
 	}
 
 	@Override
@@ -50,54 +52,51 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
+    	if (!person.isInSettlement()) {
     		return RatingScore.ZERO_RATING;
     	}
 
-    	RatingScore missionProbability = RatingScore.ZERO_RATING;
-		if (person.isInSettlement()) {
+		Settlement settlement = person.getSettlement();
 
-			Settlement settlement = person.getSettlement();
+		RoleType roleType = person.getRole().getType();
 
-			RoleType roleType = person.getRole().getType();
-
-	           if (roleType.isCouncil()
-	            		|| person.getMind().getJobType() == JobType.AREOLOGIST
-	        			|| person.getMind().getJobType() == JobType.CHEMIST
-						|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
-						|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
-						|| RoleType.MISSION_SPECIALIST == roleType
-						|| RoleType.RESOURCE_SPECIALIST == roleType
-	        		   ) {
+		if (roleType.isCouncil()
+					|| person.getMind().getJobType() == JobType.AREOLOGIST
+					|| person.getMind().getJobType() == JobType.CHEMIST
+					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
+					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
+					|| RoleType.MISSION_SPECIALIST == roleType
+					|| RoleType.RESOURCE_SPECIALIST == roleType
+					) {
 
 
-	        	// Check if there are enough large bag at the settlement for collecting regolith.
-	        	int stored = settlement.findNumContainersOfType(EquipmentType.LARGE_BAG);
-	            int needed = CollectRegolith.REQUIRED_LARGE_BAGS;
-		        if (stored < needed) {
-	        	   BuildingManager.injectEquipmentDemand(EquipmentType.LARGE_BAG, settlement, stored, needed);
-	        	   return RatingScore.ZERO_RATING;
-	        	}
-		            
-	    		missionProbability = new RatingScore(1);
-	    		missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getRegolithDemandCache() / VALUE);
-
-				// Job modifier.
-	    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-
-				// If this town has a manufacturing objective, divided by bonus
-				missionProbability.addModifier(GOODS, Math.min(1,
-								settlement.getGoodsManager().getCommerceFactor(CommerceType.MANUFACTURING)/2));
-
-				// if introvert, score  0 to  50 --> -2 to 0
-				// if extrovert, score 50 to 100 -->  0 to 2
-				// Increase probability if extrovert
-				int extrovert = person.getExtrovertmodifier();
-				missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
-				missionProbability.applyRange(0, LIMIT);
+			// Check if there are enough large bag at the settlement for collecting regolith.
+			int stored = settlement.findNumContainersOfType(EquipmentType.LARGE_BAG);
+			int needed = CollectRegolith.REQUIRED_LARGE_BAGS;
+			if (stored < needed) {
+				BuildingManager.injectEquipmentDemand(EquipmentType.LARGE_BAG, settlement, stored, needed);
+				return RatingScore.ZERO_RATING;
 			}
+				
+			var missionProbability = new RatingScore(1);
+			missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getRegolithDemandCache() / VALUE);
+
+			// Job modifier.
+			missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+
+			// If this town has a manufacturing objective, divided by bonus
+			missionProbability.addModifier(GOODS, Math.min(1,
+							settlement.getGoodsManager().getCommerceFactor(CommerceType.MANUFACTURING)/2));
+
+			// if introvert, score  0 to  50 --> -2 to 0
+			// if extrovert, score 50 to 100 -->  0 to 2
+			// Increase probability if extrovert
+			int extrovert = person.getExtrovertmodifier();
+			missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
+			missionProbability.applyRange(0, LIMIT);
+			return missionProbability;
 		}
 
-		return missionProbability;
+		return RatingScore.ZERO_RATING;
 	}
 }

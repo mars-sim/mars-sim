@@ -14,6 +14,13 @@ class MockMetaMission extends AbstractMetaMission {
         setMinimumMembers(minMembers);
     }
 
+    MockMetaMission(int minMembers, int maxMembers, Set<JobType> leaderJobs, Set<JobType> workerJobs,
+                    int populationRatio, int populationThreshold) {
+        this(minMembers, maxMembers, leaderJobs, workerJobs);
+        setPopulationRatio(populationRatio);
+        setPopulationThreshold(populationThreshold);
+    }
+
     @Override
     public Mission constructInstance(Person person, boolean needsReview) {
         return null;

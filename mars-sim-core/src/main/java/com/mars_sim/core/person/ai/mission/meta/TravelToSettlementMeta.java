@@ -39,7 +39,10 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 	public TravelToSettlementMeta() {
     	super(MissionType.TRAVEL_TO_SETTLEMENT, 8, LEADER_JOBS, WORKER_JOBS);
 
-        setPreferredVehicle(VehicleType.ROVER_TYPES);
+        setPreferredVehicle(Set.of(VehicleType.TRANSPORT_ROVER, VehicleType.EXPLORER_ROVER));
+        setPopulationRatio(20);
+        setPopulationThreshold(20);
+        setSolThreshold(EARLIEST_SOL_TRAVEL);
     }
     
 	/**
@@ -58,10 +61,6 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     @Override
     public RatingScore getProbability(Person person) {
 
-    	if (!isTimeSuitable(EARLIEST_SOL_TRAVEL)) {
-    		return RatingScore.ZERO_RATING;
-    	}
-    	
         RatingScore missionProbability = RatingScore.ZERO_RATING;
         if (person.isInSettlement()) {
             // Check if mission is possible for person based on their

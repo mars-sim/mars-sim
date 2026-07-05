@@ -36,7 +36,7 @@ public class MiningMeta extends AbstractMetaMission {
 	private static final Set<JobType> PREFERRED_WORKER_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.PILOT);
 
 	/** Starting sol for this mission to commence. */
-	public static final int MIN_STARTING_SOL = 4;
+	private static final int MIN_STARTING_SOL = 4;
 	/** The multiplier factor. */
 	private static final double FACTOR = 5.0;
 	
@@ -44,6 +44,8 @@ public class MiningMeta extends AbstractMetaMission {
     	super(MissionType.MINING, 6, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 
 		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER, VehicleType.EXPLORER_ROVER));
+		setPopulationRatio(8);
+		setSolThreshold(MIN_STARTING_SOL);
     }
 
 	/**
@@ -62,87 +64,83 @@ public class MiningMeta extends AbstractMetaMission {
     @Override
     public RatingScore getProbability(Person person) {
 
-    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
+    	if (!person.isInSettlement()) {
     		return RatingScore.ZERO_RATING;
     	}
     	
 		RatingScore missionProbability = RatingScore.ZERO_RATING;
 
-        if (person.isInSettlement()) {
+		Settlement settlement = person.getSettlement();
+		
+		RoleType roleType = person.getRole().getType();
 
-        	Settlement settlement = person.getSettlement();
-    		
-            RoleType roleType = person.getRole().getType();
+		if (roleType.isCouncil()
+				|| RoleType.CHIEF_OF_SCIENCE == roleType
+				|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
+				|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
+				|| RoleType.SCIENCE_SPECIALIST == roleType
+				|| RoleType.MISSION_SPECIALIST == roleType
+				|| RoleType.RESOURCE_SPECIALIST == roleType
+				) {
 
-            if (roleType.isCouncil()
-					|| RoleType.CHIEF_OF_SCIENCE == roleType
- 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
- 					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
- 		 			|| RoleType.SCIENCE_SPECIALIST == roleType
- 		 			|| RoleType.MISSION_SPECIALIST == roleType
- 					|| RoleType.RESOURCE_SPECIALIST == roleType
- 					) {
+			// Check if available light utility vehicles.
+			//boolean reservableLUV =
+			if (!Mining.isLUVAvailable(settlement))
+				return RatingScore.ZERO_RATING;
 
-	            // Check if available light utility vehicles.
-	            //boolean reservableLUV =
-	            if (!Mining.isLUVAvailable(settlement))
-	            	return RatingScore.ZERO_RATING;
-
-	            // Check if LUV attachment parts available.            
-	            if (!Mining.areAvailableAttachmentParts(settlement)) {
-	            	if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
-	            		BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID),
-	            				settlement, 1);
-	    			}
-	    			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
-	    				BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.BACKHOE_ID),
-	            				settlement, 1);
-	    			}
-    	
-	            	return RatingScore.ZERO_RATING;
-	            }
-
-	            // Check if there are enough bags at the settlement for collecting minerals.
-	        	int stored = settlement.findNumContainersOfType(EquipmentType.LARGE_BAG);
-	            int needed = Mining.NUMBER_OF_LARGE_BAGS;
-		        if (stored < needed) {
-	            	BuildingManager.injectEquipmentDemand(EquipmentType.LARGE_BAG, settlement, stored, needed);
-	            	return RatingScore.ZERO_RATING;
-	            }
-	            
-				missionProbability = new RatingScore(1D);
-	
-				// Get available rover.
-				var rover = (Rover)selectVehicle(settlement);
-
-				if (rover != null) {
-					// Find best mining site.
-					missionProbability.addModifier("miningmaturity",
-										Mining.getMatureMiningSitesTotalScore(rover, settlement) * FACTOR);
+			// Check if LUV attachment parts available.            
+			if (!Mining.areAvailableAttachmentParts(settlement)) {
+				if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
+					BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID),
+							settlement, 1);
 				}
+				if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
+					BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.BACKHOE_ID),
+							settlement, 1);
+				}
+	
+				return RatingScore.ZERO_RATING;
+			}
 
-	            // Crowding modifier
-	            int crowding = settlement.getIndoorPeopleCount()
-	                    - settlement.getPopulationCapacity();
-	            if (crowding > 0) {
-	                missionProbability.addModifier(OVER_CROWDING, (crowding + 1));
-	            }
+			// Check if there are enough bags at the settlement for collecting minerals.
+			int stored = settlement.findNumContainersOfType(EquipmentType.LARGE_BAG);
+			int needed = Mining.NUMBER_OF_LARGE_BAGS;
+			if (stored < needed) {
+				BuildingManager.injectEquipmentDemand(EquipmentType.LARGE_BAG, settlement, stored, needed);
+				return RatingScore.ZERO_RATING;
+			}
+			
+			missionProbability = new RatingScore(1D);
 
-	            // Job modifier.
-				missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-				missionProbability = applyCommerceAverage(missionProbability, settlement, CommerceType.TOURISM,
-													CommerceType.RESEARCH);
+			// Get available rover.
+			var rover = (Rover)selectVehicle(settlement);
+			if (rover != null) {
+				// Find best mining site.
+				missionProbability.addModifier("miningmaturity",
+									Mining.getMatureMiningSitesTotalScore(rover, settlement) * FACTOR);
+			}
+
+			// Crowding modifier
+			int crowding = settlement.getIndoorPeopleCount()
+					- settlement.getPopulationCapacity();
+			if (crowding > 0) {
+				missionProbability.addModifier(OVER_CROWDING, (crowding + 1));
+			}
+
+			// Job modifier.
+			missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+			missionProbability = applyCommerceAverage(missionProbability, settlement, CommerceType.TOURISM,
+												CommerceType.RESEARCH);
 
 
-				// if introvert, score  0 to  50 --> -2 to 0
-				// if extrovert, score 50 to 100 -->  0 to 2
-				// Reduce probability if introvert
-				int extrovert = person.getExtrovertmodifier();
-				missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
+			// if introvert, score  0 to  50 --> -2 to 0
+			// if extrovert, score 50 to 100 -->  0 to 2
+			// Reduce probability if introvert
+			int extrovert = person.getExtrovertmodifier();
+			missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
 
-				missionProbability.applyRange(0, LIMIT);
- 			}
-        }
+			missionProbability.applyRange(0, LIMIT);
+		}
 
         return missionProbability;
     }

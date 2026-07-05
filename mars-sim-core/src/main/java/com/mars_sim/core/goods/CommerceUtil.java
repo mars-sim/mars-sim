@@ -19,7 +19,6 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.core.person.ai.mission.meta.TradeMeta;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -93,7 +92,7 @@ public final class CommerceUtil {
 										Vehicle delivery) {
 		double possibleRange = delivery.getEstimatedRange() * .8D;
 
-		if (!startingSettlement.equals(tradingSettlement) && tradingSettlement.isMissionEnable(commerceType)) {
+		if (!startingSettlement.equals(tradingSettlement) && tradingSettlement.getMissionControl().isMissionEnable(commerceType)) {
 
 			boolean hasCurrentCommerce = hasCurrentCommerceMission(startingSettlement, tradingSettlement);
 
