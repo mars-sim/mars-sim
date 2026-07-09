@@ -29,7 +29,7 @@ class BatteryTest extends MarsSimUnitTest {
         assertEquals(0, listener.getEventsReceived(), "No events should have been fired yet");
 
         // Force  big change
-        var energy = b.getCurrentStoredEnergy();
+        var energy = b.getStoredEnergy();
         b.consumeEnergy(energy * 0.5, 0.1);
         b.timePassing(createPulse(10));
         assertEquals(1, listener.getEventsReceived(), "One event should have been fired");

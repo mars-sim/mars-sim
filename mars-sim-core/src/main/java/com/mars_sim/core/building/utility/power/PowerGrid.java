@@ -67,8 +67,8 @@ public class PowerGrid implements Serializable, Temporal {
 		this.settlement = settlement;
 		manager = settlement.getBuildingManager();
 		powerGenerated = 0D;
-		totalEnergyStored = 1D;
-		energyStorageCapacity = 1D;
+		totalEnergyStored = 0.01;
+		energyStorageCapacity = 0.01;
 		powerLoad = 0D;
 		
 		updateTotalEnergyStorageCapacity();
@@ -144,7 +144,7 @@ public class PowerGrid implements Serializable, Temporal {
 			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_EVENT);
 		}
 		else if (Double.isNaN(newEnergyStored) || Double.isInfinite(newEnergyStored)) {
-			totalEnergyStored = 0;
+			totalEnergyStored = 0.01;
 			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_EVENT);
 		}
 	}
@@ -169,7 +169,7 @@ public class PowerGrid implements Serializable, Temporal {
 			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_CAPACITY_EVENT);
 		}
 		else if (Double.isNaN(newCap) || Double.isInfinite(newCap)) {
-			energyStorageCapacity = 0;
+			energyStorageCapacity = 0.01;
 			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_CAPACITY_EVENT);
 		}
 	} 
@@ -237,6 +237,7 @@ public class PowerGrid implements Serializable, Temporal {
 					// Not only powerDiff > 0, the powerRatio needs to be above 5%
 					handleExcessPower(time, powerDiff);
 				}
+				
 				else if (powerDiff < 0) {
 					handleLackOfPower(time, powerDiff);
 				}
@@ -972,7 +973,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 */
 	private double updateTotalStoredEnergy() {
 		double store = manager.getBuildingSet(FunctionType.POWER_STORAGE).stream()
-								.mapToDouble(b -> b.getPowerStorage().getBattery().getCurrentStoredEnergy())
+								.mapToDouble(b -> b.getPowerStorage().getBattery().getStoredEnergy())
 								.sum();
 		setStoredEnergy(store);
 		
@@ -987,7 +988,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 */
 	private double updateTotalLoadPower() {
 		double power = manager.getBuildingSet(FunctionType.POWER_GENERATION).stream()
-				.mapToDouble(b -> b.getCurrentPowerLoad()) //getFullPowerLoad())
+				.mapToDouble(b -> b.getPowerLoad())
 				.sum();
 		// Note: need to check the required power in full power mode 
 		// so that the return value will show how much power needed
@@ -1059,7 +1060,7 @@ public class PowerGrid implements Serializable, Temporal {
 				return excessE;
 			
 			PowerStorage storage = b.getPowerStorage();
-			double stored = storage.getBattery().getCurrentStoredEnergy();
+			double stored = storage.getBattery().getStoredEnergy();
 			double cap = storage.getBattery().getEnergyStorageCapacity();
 			double diff = cap - stored;
 			double kWhAccepted = 0;

@@ -417,7 +417,7 @@ public abstract class OperateVehicle extends Task {
         
     	// NOTE: Need to consider if the battery still have power and not just fuel
 
-        double batteryEnergy = vehicle.getController().getBattery().getCurrentStoredEnergy();
+        double batteryEnergy = vehicle.getController().getBattery().getStoredEnergy();
            
         boolean batteryOnly = false;
         

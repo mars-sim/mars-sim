@@ -28,6 +28,7 @@ public class PowerStorage extends Function {
 	/** default logger. */
 	// May add back : private static final SimLogger logger = SimLogger.getLogger(PowerStorage.class.getName())
 
+	private static final int CABLE_GAUGE_SIZE = 20;
 	public static final double HOURS_PER_MILLISOL = 0.0247 ; 
 	public static final double PERCENT_BATTERY_RECONDITIONING_PER_CYCLE = .1; // [in %]
 
@@ -66,7 +67,7 @@ public class PowerStorage extends Function {
 
         int numModules = (int)(Math.ceil(energyStorageCapacity / ENERGY_PER_MODULE));
         
-        battery = new Battery(building, 20, numModules, ENERGY_PER_MODULE);
+        battery = new Battery(building, CABLE_GAUGE_SIZE, numModules, ENERGY_PER_MODULE);
 	}
 
 	/**
@@ -110,8 +111,23 @@ public class PowerStorage extends Function {
 		boolean valid = isValid(pulse);
 		if (valid) {
 	    	battery.timePassing(pulse);
+//	    	PowerMode mode = getBuilding().getPowerMode();
+//	    	if (mode == PowerMode.LOW_POWER) {
+//	    		PowerGeneration gen = getBuilding().getPowerGeneration();
+//	    		
+//	    	}
 		}
         return valid;
+	}
+	
+
+	/**
+	 * Gets the total resistance.
+	 * 
+	 * @return
+	 */
+	public double getTotalResistance() {
+		return rTotal;
 	}
 	
     /**
@@ -131,10 +147,5 @@ public class PowerStorage extends Function {
 	@Override
 	public double getFullPowerLoad() {
 		return 0;
-	}
-
-
-	public double getTotalResistance() {
-		return rTotal;
 	}
 }

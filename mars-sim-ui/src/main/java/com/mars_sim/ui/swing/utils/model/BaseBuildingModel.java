@@ -12,6 +12,7 @@ import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.utility.heating.Heating;
 import com.mars_sim.core.building.utility.power.PowerGrid;
+import com.mars_sim.core.building.utility.power.PowerMonitor;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 
@@ -41,7 +42,7 @@ public abstract class BaseBuildingModel extends AbstractEntityModel<Building> {
     protected static final EntityColumnSpec CATEGORY = new EntityColumnSpec(new ColumnSpec(CATEGORY_VAL, Msg.getString("building.category"), String.class),
                                 null);
     protected static final EntityColumnSpec PWR_MODE = new EntityColumnSpec(new ColumnSpec(PWR_MODE_VAL, Msg.getString("building.powermode"), String.class),
-                                Set.of(Building.POWER_MODE_EVENT));
+                                Set.of(PowerMonitor.POWER_MODE_EVENT));
     protected static final EntityColumnSpec PWR_REQ = new EntityColumnSpec(new ColumnSpec(PWR_REQ_VAL, Msg.getString("building.powerreq"), Double.class),
                                 Set.of(PowerGrid.POWER_LOAD_EVENT));   
     protected static final EntityColumnSpec PWR_GEN = new EntityColumnSpec(new ColumnSpec(PWR_GEN_VAL, Msg.getString("building.powergen"), Double.class),

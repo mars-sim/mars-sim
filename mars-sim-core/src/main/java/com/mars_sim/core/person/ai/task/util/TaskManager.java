@@ -19,18 +19,12 @@ import com.mars_sim.core.data.Rating;
 import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
-import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.ai.task.Charge;
 import com.mars_sim.core.science.task.RespondToStudyInvitation;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /*

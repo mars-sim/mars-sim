@@ -24,6 +24,8 @@ public class SystemCondition implements Serializable {
 	/** default logger. */
     // May add back: private static SimLogger logger = SimLogger.getLogger(SystemCondition.class.getName())
 
+    private static final int CABLE_GAUGE_SIZE = 80;
+    		
 	private static final int RECOMMENDED_LEVEL = 70;
 	
 	private static final double POWER_SAVE_CONSUMPTION = .1;
@@ -65,7 +67,7 @@ public class SystemCondition implements Serializable {
         
         int numModules = (int)(Math.ceil(energyStorageCapacity/ENERGY_PER_MODULE));
         
-        battery = new Battery(newRobot, 80, numModules, ENERGY_PER_MODULE);
+        battery = new Battery(newRobot, CABLE_GAUGE_SIZE, numModules, ENERGY_PER_MODULE);
        
         battery.initPower(spec.getLowPowerModePercent(), spec.getStandbyPowerConsumption());
     }

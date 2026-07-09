@@ -69,7 +69,7 @@ class BuildingPanelPowerStorage extends EntityTabPanel<Building> implements Temp
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelPowerStorage.cap"), capTF);
 		
 		// Create stored label.
-		var storedCache = storage.getBattery().getCurrentStoredEnergy();
+		var storedCache = storage.getBattery().getStoredEnergy();
 		storedTF = new JDoubleLabel(StyleManager.DECIMAL_KWH, storedCache);
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelPowerStorage.stored"), storedTF);
 	}
@@ -78,6 +78,6 @@ class BuildingPanelPowerStorage extends EntityTabPanel<Building> implements Temp
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
 		capTF.setValue(storage.getBattery().getEnergyStorageCapacity());
-		storedTF.setValue(storage.getBattery().getCurrentStoredEnergy());   
+		storedTF.setValue(storage.getBattery().getStoredEnergy());   
 	}
 }

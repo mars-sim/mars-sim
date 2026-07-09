@@ -362,20 +362,17 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 						yield generated;
 				}
 				case USED_VAL -> {
-						double used = 0D;
-						if (powerMode == PowerMode.FULL_POWER)
-							used = building.getFullPowerLoad();
-						else if (powerMode == PowerMode.LOW_POWER)
-							used = building.getLowPowerLoad();
+						double used = building.getPowerLoad();
 						yield used;
 				}
 				case STORED_VAL -> {
+						double stored = 0D;
 						PowerStorage ps = building.getPowerStorage();
 						if (ps != null) {
-							yield ps.getBattery().getCurrentStoredEnergy();
+							stored = ps.getBattery().getStoredEnergy();
 						}
 					
-						yield 0D;
+						yield stored;
 				}
 				default -> super.getEntityValue(building, valueIndex);
 			};

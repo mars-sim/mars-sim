@@ -32,6 +32,7 @@ import com.mars_sim.core.tool.RandomUtil;
 	 /** default logger. */
 	 private static SimLogger logger = SimLogger.getLogger(VehicleController.class.getName());
  
+	 private static final int CABLE_GAUGE_SIZE = 40;    
 	 /** The standard hovering height for a drone. */
 	 public static final int STANDARD_HOVERING_HEIGHT = (int) (Flyer.ELEVATION_ABOVE_GROUND * 1000);
 	 /** The standard stepping up height for a drone. */
@@ -108,7 +109,7 @@ import com.mars_sim.core.tool.RandomUtil;
 		 int numModule = vehicle.getVehicleSpec().getBatteryModule();
 		 double energyPerModule = vehicle.getVehicleSpec().getEnergyPerModule();
 		 
-		 battery = new Battery(vehicle, 40,numModule, energyPerModule);
+		 battery = new Battery(vehicle, CABLE_GAUGE_SIZE, numModule, energyPerModule);
 		 fuelTypeID = vehicle.getFuelTypeID();
 	 }
  
@@ -431,7 +432,7 @@ import com.mars_sim.core.tool.RandomUtil;
 								+ "energyByBattery -> energySuppliedByBattery: " 
 									+ DECIMAL3_WH.format(energyByBattery) + " -> "
 									+ DECIMAL3_WH.format(energySuppliedByBattery) + TWO_WHITESPACES
-								+ "Battery: " + DECIMAL3_KWH.format(battery.getCurrentStoredEnergy()));
+								+ "Battery: " + DECIMAL3_KWH.format(battery.getStoredEnergy()));
 						
 					 double[] result = propulsion.propelBatteryOnly("Scenario 1B1: Battery only.  ",
 							 aveForce, energySuppliedByBattery, secs, uMS, mass);
@@ -657,7 +658,7 @@ import com.mars_sim.core.tool.RandomUtil;
 	  */
 	 public double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
 		 // The amount of "fuel" covered by the energy in the battery 
-		 double batterydistance = vehicle.getController().getBattery().getCurrentStoredEnergy() 
+		 double batterydistance = vehicle.getController().getBattery().getStoredEnergy() 
 				 / vehicle.getEstimatedFuelConsumption();
 		 
 		 double amountFuel = (tripDistance - batterydistance) / fuelEconomy;

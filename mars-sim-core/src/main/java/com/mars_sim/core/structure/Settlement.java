@@ -1075,6 +1075,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private void timePassing(ClockPulse pulse, Collection<? extends Temporal> ownedUnits) {
 		for (Temporal t : ownedUnits) {
+			// Note that ownedUnits include robots and vehicles only
 			t.timePassing(pulse);
 		}
 	}

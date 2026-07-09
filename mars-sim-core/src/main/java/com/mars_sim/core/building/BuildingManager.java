@@ -83,7 +83,6 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Converse;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
-import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.Part;

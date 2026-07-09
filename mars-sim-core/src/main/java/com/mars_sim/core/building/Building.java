@@ -55,6 +55,7 @@ import com.mars_sim.core.building.task.MaintainBuilding;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerMode;
+import com.mars_sim.core.building.utility.power.PowerMonitor;
 import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.ItemHolder;
@@ -104,8 +105,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	// meteorite impact in an affected building
 	private static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
 	
-    public static final String POWER_MODE_EVENT = "power mode";
-
 	// Data members
 	/** The flag to track if the impact is immientnt for the current sol. */
 	boolean isImpactImminent = false;
@@ -117,8 +116,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private int zone;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	private int baseLevel;
-	/** The power priority number for this building. */
-	private int powerPriority;
+
 	
 	private double presetTemperature = 0; 
 	private double width;
@@ -127,9 +125,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private double floorArea;
 	private double areaFactor;
 	private double facing;
-	private double baseFullPowerLoad;
-	private double baseLowPowerLoad;
-	private double powerNeededForEVAHeater;
+
 	
 	/** Unique template id assigned for this building in settlement template xml. */
 	private String templateID;
@@ -139,6 +135,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
 
+	private PowerMonitor powerMonitor;
 	private EVA eva;
 	private LifeSupport lifeSupport;
 	private ThermalGeneration furnace;
@@ -147,7 +144,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private RoboticStation roboticStation;
 	private PowerGeneration generator;
 
-	private PowerMode powerModeCache;
 	private BuildingCategory category;
 	private ConstructionType constructionType;
 	/** The x and y location of this building. */
@@ -156,10 +152,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/** A map of functions for this building. */
 	private Map<FunctionType, Function> functionMap = new EnumMap<>(FunctionType.class);
 	
-	private static HistoricalEventManager eventManager;
-	
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-
 	/**
 	 * Factory method to create from a building template
 	 *
@@ -195,8 +187,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		this.width = bounds.getWidth();
 		this.length = bounds.getLength();
 
-		this.powerModeCache = PowerMode.FULL_POWER;
-
 		if (name.toLowerCase().contains(_HAB) || name.toLowerCase().contains(_HUB)) {
 			// For Habs and Hubs that have a circular footprint
 			this.floorArea = Math.PI * (.5 * length) * (.5 * length);
@@ -231,10 +221,12 @@ public class Building extends FixedUnit implements Malfunctionable,
 		baseLevel = buildingSpec.getBaseLevel();
 		setDescription(buildingSpec.getDescription());
 
+		int powerPriority = buildingSpec.getPowerPriority();
+		double baseFullPowerLoad = buildingSpec.getBaseFullPower();
+		double baseLowPowerLoad = buildingSpec.getBaseLowPower();
+		
 		// Get base power requirements.
-		powerPriority = buildingSpec.getPowerPriority();
-		baseFullPowerLoad = buildingSpec.getBaseFullPower();
-		baseLowPowerLoad = buildingSpec.getBaseLowPower();
+		powerMonitor = new PowerMonitor(this, powerPriority, baseFullPowerLoad, baseLowPowerLoad);
 
 		// Set room temperature
 		presetTemperature = buildingSpec.getPresetTemperature();
@@ -253,7 +245,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		malfunctionManager.addScopeString(buildingSpec.getName());
 		
 		// Add building type to the part scope
-		simulationConfig.getPartConfiguration().addScopes(buildingSpec.getName());
+		SimulationConfig.instance().getPartConfiguration().addScopes(buildingSpec.getName());
 				
 		// Add each function to the malfunction scope.
 		for (Function sfunction : getFunctions()) {
@@ -280,8 +272,13 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return category;
 	}
 
+	/**
+	 * Gets the power priority.
+	 * 
+	 * @return
+	 */
 	public int getPowerPriority() {
-		return powerPriority;
+		return powerMonitor.getPowerPriority();
 	}
 	
 	/**
@@ -674,17 +671,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return power in kW.
 	 */
 	public double getFullPowerLoad() {
-		double result = baseFullPowerLoad;
-
-		// Determine power required for each function.
-		for (Function function : getFunctions()) {
-			double power = function.getFullPowerLoad();
-			if (power > 0) {
-				result += power;
-			}
-		}
-
-		return result + powerNeededForEVAHeater;
+		return powerMonitor.getPowerNeededForEVAHeater();
 	}
 
 	/**
@@ -693,17 +680,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return power in kW.
 	 */
 	public double getLowPowerLoad() {
-		double result = baseLowPowerLoad;
-
-		// Determine power required for each function.
-		for (Function function : getFunctions()) {
-			double power = function.getLowPowerLoad(); // getCombinedPowerLoad();
-			if (power > 0) {
-				result += power;
-			}
-		}
-
-		return result;
+		return powerMonitor.getLowPowerLoad();
 	}
 	
 	/**
@@ -711,17 +688,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 *
 	 * @return power in kW.
 	 */
-	public double getCurrentPowerLoad() {
-		double result = 0;
-		
-		if (powerModeCache == PowerMode.FULL_POWER) {
-			result = getFullPowerLoad();
-		}
-		else if (powerModeCache == PowerMode.LOW_POWER) {
-			result = getLowPowerLoad();
-		}
-
-		return result;
+	public double getPowerLoad() {
+		return powerMonitor.getPowerLoad();
 	}
 	
 	/**
@@ -746,17 +714,14 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * Gets the building's power mode.
 	 */
 	public PowerMode getPowerMode() {
-		return powerModeCache;
+		return powerMonitor.getPowerMode();
 	}
 
 	/**
 	 * Sets the building's power mode.
 	 */
 	public void setPowerMode(PowerMode powerMode) {
-		if (powerModeCache != powerMode) {
-			powerModeCache = powerMode;
-			fireUnitUpdate(POWER_MODE_EVENT, this);
-		}
+		powerMonitor.setPowerMode(powerMode);
 	}
 
 	/**
@@ -1105,7 +1070,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return power (kW)
 	 */
 	public double getTotalPowerForEVA() {
-		return powerNeededForEVAHeater;
+		return powerMonitor.getPowerNeededForEVAHeater();
 	}
 
 	/**
@@ -1120,7 +1085,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		if (eva != null) {
 			num = eva.getAirlock().getOccupants123().size();
 			// Note: Assuming (.5) half of people are doing EVA ingress statistically
-			powerNeededForEVAHeater = num * EVA_HEATER_KW * .5D; 
+			powerMonitor.setPowerNeededForEVAHeater(num * EVA_HEATER_KW * .5D); 
 		}
 		return num;
 	}
@@ -1220,12 +1185,14 @@ public class Building extends FixedUnit implements Malfunctionable,
 		}
 
 		// Send time to each building function.
-		for (Function f : getFunctions())
-			// Not needed for now. Will need this for future work
+		for (Function f : getFunctions()) {
+			// Note: Needed at this point
+			// Will fine tune the need in each function in future
 			f.timePassing(pulse);
-
+		}
+		
 		// If powered up, active time passing.
-		if (powerModeCache == PowerMode.FULL_POWER)
+		if (PowerMode.FULL_POWER == getPowerMode())
 			malfunctionManager.activeTimePassing(pulse);
 
 		// Update malfunction manager.

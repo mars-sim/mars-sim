@@ -36,7 +36,6 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * The BuildingPanelPowerGen class is a building function panel representing 
  * the power production and use of a settlement building.
  */
-@SuppressWarnings("serial")
 class BuildingPanelPowerGen extends EntityTabPanel<Building>
 	implements TemporalComponent {
 

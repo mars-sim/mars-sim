@@ -519,7 +519,7 @@ public class Battery implements Serializable {
 	/** 
 	 * Returns the current amount of stored energy in kWh. 
 	 */
-	public double getCurrentStoredEnergy() {
+	public double getStoredEnergy() {
 		return kWhStored;
 	}
 	
