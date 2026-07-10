@@ -810,7 +810,7 @@ public class Farming extends Function {
 
 			// Determine the production level.
 			double productionLevel = 0D;
-			PowerMode powerMode = building.getPowerMode();
+			PowerMode powerMode = building.getPowerMonitor().getPowerMode();
 						
 			if (powerMode == PowerMode.FULL_POWER)
 				productionLevel = 1D;

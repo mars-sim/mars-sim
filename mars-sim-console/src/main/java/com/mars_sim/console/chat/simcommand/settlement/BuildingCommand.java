@@ -52,8 +52,8 @@ public class BuildingCommand extends AbstractSettlementCommand {
 
 			response.appendTableRow(building.getName(), 
 									building.getCategory().getName(), 
-									building.getPowerMode().getName(),
-									building.getFullPowerLoad(),
+									building.getPowerMonitor().getPowerMode().getName(),
+									building.getPowerMonitor().getFullPowerLoad(),
 									building.getHeatRequired(), 
 									building.getCurrentTemperature(),
 									building.getNumPeople(),

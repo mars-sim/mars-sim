@@ -35,7 +35,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 public abstract class AbstractEntityModel<T extends MonitorableEntity> extends AbstractTableModel
     implements EnhancedTableModel, EntityListener, EntityModel, StatefulComponent {
 
-    // Used to associate column index with column spec and event types to listen for
+	// Used to associate column index with column spec and event types to listen for
     public record EntityColumnSpec(ColumnSpec column, Set<String> eventTypes) {}
 
 	private List<T> entities = new ArrayList<>();

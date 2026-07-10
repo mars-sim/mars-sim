@@ -764,7 +764,7 @@ public class PowerGrid implements Serializable, Temporal {
 			// Check if this building matches this one criterion of calling this method 
 			if (hasLife == checkLifeSupport) {
 	
-				PowerMode thisOldPM = building.getPowerMode();
+				PowerMode thisOldPM = building.getPowerMonitor().getPowerMode();
 	
 				double power = 0;
 				
@@ -779,7 +779,7 @@ public class PowerGrid implements Serializable, Temporal {
 						if (oldPowerMode == PowerMode.FULL_POWER
 							&& newPowerMode == PowerMode.LOW_POWER) {
 							// power will be +ve
-							power = building.getFullPowerLoad() - building.getLowPowerLoad();
+							power = building.getPowerMonitor().getFullPowerLoad() - building.getPowerMonitor().getLowPowerLoad();
 														
 							powerToHandle -= power;
 
@@ -790,7 +790,7 @@ public class PowerGrid implements Serializable, Temporal {
 								netPower += power;
 								// In case of lacking power, +ve powerToHandle means it can handle the stepping up of power 					
 								// Switch from one power mode to another
-								building.setPowerMode(newPowerMode);
+								building.getPowerMonitor().setPowerMode(newPowerMode);
 							}
 					
 							else {
@@ -807,7 +807,7 @@ public class PowerGrid implements Serializable, Temporal {
 							if (!isGenerator) {
 													
 								// power will be +ve
-								power = building.getLowPowerLoad();
+								power = building.getPowerMonitor().getLowPowerLoad();
 								
 								powerToHandle -= power;
 				
@@ -817,7 +817,7 @@ public class PowerGrid implements Serializable, Temporal {
 									netPower += power;
 									// In case of lacking power, +ve powerToHandle means it can handle the stepping up of power 					
 									// Switch from one power mode to another
-									building.setPowerMode(newPowerMode);
+									building.getPowerMonitor().setPowerMode(newPowerMode);
 								}
 						
 								else {
@@ -835,7 +835,7 @@ public class PowerGrid implements Serializable, Temporal {
 						if (oldPowerMode == PowerMode.LOW_POWER
 							&& newPowerMode == PowerMode.FULL_POWER) {
 							// power will be +ve
-							power = building.getFullPowerLoad()	- building.getLowPowerLoad();
+							power = building.getPowerMonitor().getFullPowerLoad()	- building.getPowerMonitor().getLowPowerLoad();
 							
 							powerToHandle -= power;
 		
@@ -845,7 +845,7 @@ public class PowerGrid implements Serializable, Temporal {
 								netPower += power;
 								// In case of excess power, +ve powerToHandle means it can handle the stepping up of power 					
 								// Switch from one power mode to another
-								building.setPowerMode(newPowerMode);
+								building.getPowerMonitor().setPowerMode(newPowerMode);
 							}
 							
 							else {
@@ -857,7 +857,7 @@ public class PowerGrid implements Serializable, Temporal {
 						else if (oldPowerMode == PowerMode.NO_POWER
 							&& newPowerMode == PowerMode.LOW_POWER) {
 							// power will be +ve
-							power = building.getLowPowerLoad();
+							power = building.getPowerMonitor().getLowPowerLoad();
 							
 							powerToHandle -= power;
 		
@@ -867,7 +867,7 @@ public class PowerGrid implements Serializable, Temporal {
 								netPower += power;
 								// In case of lacking power, +ve powerToHandle means it can handle the stepping up of power 					
 								// Switch from one power mode to another
-								building.setPowerMode(newPowerMode);
+								building.getPowerMonitor().setPowerMode(newPowerMode);
 							}
 					
 							else {
@@ -988,7 +988,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 */
 	private double updateTotalLoadPower() {
 		double power = manager.getBuildingSet(FunctionType.POWER_GENERATION).stream()
-				.mapToDouble(b -> b.getPowerLoad())
+				.mapToDouble(b -> b.getPowerMonitor().getPowerLoad())
 				.sum();
 		// Note: need to check the required power in full power mode 
 		// so that the return value will show how much power needed
@@ -1031,11 +1031,7 @@ public class PowerGrid implements Serializable, Temporal {
 			generated = b.getPowerGeneration().getGeneratedPower();
 		}
 
-		double powerLoad = 0D;
-		if (mode == PowerMode.FULL_POWER)
-			powerLoad = b.getFullPowerLoad();
-		else if (mode == PowerMode.LOW_POWER)
-			powerLoad = b.getLowPowerLoad();
+		double powerLoad = b.getPowerMonitor().getPowerLoad();
 
 		return generated > powerLoad;
 	}

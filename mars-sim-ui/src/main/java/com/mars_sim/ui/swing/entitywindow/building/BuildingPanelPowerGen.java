@@ -113,7 +113,7 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 		
 		// Prepare power status label.
 		var building = getEntity();
-		powerModeCache = building.getPowerMode();
+		powerModeCache = building.getPowerMonitor().getPowerMode();
 		
 		powerModeLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerStatus"), //$NON-NLS-1$
 					powerModeCache.getName());
@@ -173,18 +173,14 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 		var building = getEntity();
 
 		// Update power status if necessary.
-		PowerMode mode = building.getPowerMode();
+		PowerMode mode = building.getPowerMonitor().getPowerMode();
 		if (powerModeCache != mode) {
 			powerModeCache = mode;
 			powerModeLabel.setText(mode.getName());
 		}
 
 		// Update power used if necessary.
-		double totalUsed = 0D;
-		if (powerModeCache == PowerMode.FULL_POWER) 
-			totalUsed = building.getFullPowerLoad();
-		else if (powerModeCache == PowerMode.LOW_POWER) 
-			totalUsed = building.getLowPowerLoad();
+		double totalUsed = building.getPowerMonitor().getPowerLoad();
 		totalUsedLabel.setValue(totalUsed);
 
 		if (generator == null)

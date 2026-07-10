@@ -666,31 +666,14 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	/**
-	 * Gets the total power load for full-power mode on all functions.
+	 * Gets the power Monitor.
 	 *
-	 * @return power in kW.
+	 * @return PowerMonitor
 	 */
-	public double getFullPowerLoad() {
-		return powerMonitor.getPowerNeededForEVAHeater();
-	}
-
-	/**
-	 * Gets the total low power load.
-	 *
-	 * @return power in kW.
-	 */
-	public double getLowPowerLoad() {
-		return powerMonitor.getLowPowerLoad();
+	public PowerMonitor getPowerMonitor() {
+		return powerMonitor;
 	}
 	
-	/**
-	 * Gets the total power load for current mode on all functions.
-	 *
-	 * @return power in kW.
-	 */
-	public double getPowerLoad() {
-		return powerMonitor.getPowerLoad();
-	}
 	
 	/**
 	 * Gets the power generated for full-power mode on all functions.
@@ -708,20 +691,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the building's power mode.
-	 */
-	public PowerMode getPowerMode() {
-		return powerMonitor.getPowerMode();
-	}
-
-	/**
-	 * Sets the building's power mode.
-	 */
-	public void setPowerMode(PowerMode powerMode) {
-		powerMonitor.setPowerMode(powerMode);
 	}
 
 	/**
@@ -1192,7 +1161,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		}
 		
 		// If powered up, active time passing.
-		if (PowerMode.FULL_POWER == getPowerMode())
+		if (PowerMode.FULL_POWER == getPowerMonitor().getPowerMode())
 			malfunctionManager.activeTimePassing(pulse);
 
 		// Update malfunction manager.

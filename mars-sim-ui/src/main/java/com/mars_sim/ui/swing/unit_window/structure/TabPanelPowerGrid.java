@@ -344,7 +344,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 
 		@Override
 		protected Object getEntityValue(Building building, int valueIndex) {
-			PowerMode powerMode = building.getPowerMode();
+			PowerMode powerMode = building.getPowerMonitor().getPowerMode();
 
 			return switch (valueIndex) {
 				case STATUS_VAL -> powerMode;
@@ -362,7 +362,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 						yield generated;
 				}
 				case USED_VAL -> {
-						double used = building.getPowerLoad();
+						double used = building.getPowerMonitor().getPowerLoad();
 						yield used;
 				}
 				case STORED_VAL -> {
@@ -384,7 +384,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		@Override
 		protected String getEntityDescription(Building building, int valueIndex) {
 			if (valueIndex == STATUS_VAL) {
-				return building.getPowerMode().getName();
+				return building.getPowerMonitor().getPowerMode().getName();
 			}
 			
 			return super.getEntityDescription(building, valueIndex);

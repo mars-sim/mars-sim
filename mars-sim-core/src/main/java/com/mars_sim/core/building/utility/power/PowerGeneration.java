@@ -190,7 +190,7 @@ public class PowerGeneration extends Function {
 				// Note: do NOT toggle it on and off here. // source.toggleON()
 				// Toggling on and off should be driven by needs in PowerGrid
 				
-				PowerMode powerMode = building.getPowerMode();
+				PowerMode powerMode = building.getPowerMonitor().getPowerMode();
 				if (powerMode == PowerMode.FULL_POWER
 						|| powerMode == PowerMode.LOW_POWER) {
 					// Note: for low power mode, do not set to half time

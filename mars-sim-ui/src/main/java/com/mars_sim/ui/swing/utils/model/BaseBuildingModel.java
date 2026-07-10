@@ -73,8 +73,8 @@ public abstract class BaseBuildingModel extends AbstractEntityModel<Building> {
             case SETTLEMENT_VAL -> entity.getSettlement().getName();
             case TYPE_VAL -> entity.getBuildingType();
             case CATEGORY_VAL -> entity.getCategory().getName();
-            case PWR_MODE_VAL -> entity.getPowerMode() != null ? entity.getPowerMode().getName() : null;
-			case PWR_REQ_VAL -> entity.getFullPowerLoad();
+            case PWR_MODE_VAL -> entity.getPowerMonitor().getPowerMode() != null ? entity.getPowerMonitor().getPowerMode().getName() : null;
+			case PWR_REQ_VAL -> entity.getPowerMonitor().getFullPowerLoad();
 			case PWR_GEN_VAL -> entity.getGeneratedPower();
             case TEMP_VAL -> entity.getCurrentTemperature();
             default -> null;
