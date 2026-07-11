@@ -7,15 +7,14 @@
 
 package com.mars_sim.ui.swing.tool.missionwizard;
 
-import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
+import com.mars_sim.ui.swing.utils.model.BaseSettlementModel;
+import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 
 /**
@@ -54,53 +53,54 @@ class DestinationSettlementPanel extends WizardItemStep<MissionDataBean,Settleme
 	}
 	
 	/**
-	 * A table model for settlements.
+	 * A table model for settlements based on the BaseSettlementModel.
 	 */
-    private static class SettlementTableModel extends AbstractWizardItemModel<Settlement> {
+    private static class SettlementTableModel extends BaseSettlementModel
+				implements WizardItemModel<Settlement> {
     	
     	/** default serial id. */
     	private static final long serialVersionUID = 1L;
-		private static final List<ColumnSpec> COLUMNS = List.of(
-				new ColumnSpec(Msg.getString("entity.name"), String.class),
-				new ColumnSpec("Distance (km)", Double.class, ColumnSpec.STYLE_DIGIT1),
-				new ColumnSpec(Msg.getString("settlement.population"), Integer.class),
-				new ColumnSpec("Pop. Capacity", Integer.class)
-		);
+
+		private static final int RANGE_VAL = 1001;
+		private static final EntityColumnSpec RANGE = new EntityColumnSpec(new ColumnSpec(RANGE_VAL, "Distance (km)", Double.class, ColumnSpec.STYLE_DIGIT1), null);
+		private static final int CAP_VAL = 1002;
+		private static final EntityColumnSpec POP_CAPACITY = new EntityColumnSpec(new ColumnSpec(CAP_VAL, "Pop. Capacity", Integer.class), null);
+
 		private MissionDataBean state;
 
     	/**
     	 * hidden constructor.
     	 */
     	private SettlementTableModel(MissionDataBean state) {
-    		super(COLUMNS);
+    		super(NAME, RANGE, POPULATION, POP_CAPACITY);
 
 			var baseSettlement = state.getStartingSettlement();
 			this.state = state;
 
 			var options = Simulation.instance().getUnitManager().getSettlements().stream()
 					.filter(s -> !s.equals(baseSettlement))
-					.sorted(Comparator.comparing(Settlement::getName))
 					.toList();
-			setItems(options);
+			setEntities(options);
+
+			enableListeners(true);
     	}
     	
 
 		@Override
-		protected Object getItemValue(Settlement settlement, int column) {
-			return switch(column) {
-				case 0 -> settlement.getName();
-				case 1 -> state.getStartingSettlement().getCoordinates().getDistance(settlement.getCoordinates());
-				case 2 -> settlement.getIndoorPeopleCount();
-				case 3 -> settlement.getPopulationCapacity();
-				default -> null;
+		protected Object getEntityValue(Settlement settlement, int columnVal) {
+			return switch(columnVal) {
+				case RANGE_VAL -> state.getStartingSettlement().getCoordinates().getDistance(settlement.getCoordinates());
+				case CAP_VAL -> settlement.getPopulationCapacity();
+				default -> super.getEntityValue(settlement, columnVal);
 			};
         }
     	
-
 		@Override
-		protected String isFailureCell(Settlement settlement, int column) {    		
-    		if (column == 1) {
+		public String isFailureCell(int row, int column) {
+			var colSpec = getColumnSpec(column);
+			if (colSpec.equals(RANGE.column())) {		
 				Settlement startingSettlement = state.getStartingSettlement();
+				var settlement = getItem(row);
 				double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
 				Vehicle v = state.getRover();
 				if (v == null) {
@@ -112,5 +112,10 @@ class DestinationSettlementPanel extends WizardItemStep<MissionDataBean,Settleme
     		
     		return null;
     	}
+
+		@Override
+		public Settlement getItem(int row) {
+			return (Settlement)getAssociatedEntity(row);
+		}
     }
 }

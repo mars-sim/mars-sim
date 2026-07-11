@@ -6,14 +6,11 @@
  */
 package com.mars_sim.ui.swing.tool.missionwizard;
 
-import java.util.Comparator;
 import java.util.List;
 
-import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
+import com.mars_sim.ui.swing.utils.model.BaseRobotModel;
+import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 
 /**
@@ -57,56 +54,39 @@ class BotsPanel extends WizardItemStep<MissionDataBean, Robot>
 	/**
 	 * Table model for people.
 	 */
-	private static class RobotTableModel extends AbstractWizardItemModel<Robot> {
+	private static class RobotTableModel extends BaseRobotModel
+				implements WizardItemModel<Robot> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private static final List<ColumnSpec> COLUMNS = List.of(
-				new ColumnSpec(Msg.getString("entity.name"), String.class),
-				new ColumnSpec(Msg.getString("robot.type"), String.class),
-				new ColumnSpec(Msg.getString("mission.singular"), String.class),
-				new ColumnSpec(Msg.getString("robot.performance"), Double.class, ColumnSpec.STYLE_PERCENTAGE)
-		);
-
 		/** Constructor. */
 		private RobotTableModel(MissionDataBean state) {
-			super(COLUMNS);
+			super(NAME, TYPE, MISSION, PERFORMANCE);
 
-			List<Robot> robots = state.getStartingSettlement().getAllAssociatedRobots().stream()
-					.sorted(Comparator.comparing(Robot::getName))
-					.toList();
-			setItems(robots);
+			var robots = state.getStartingSettlement().getAllAssociatedRobots();
+			setEntities(robots);
+			enableListeners(true);
+		}
+
+		@Override
+		public Robot getItem(int row) {
+			return (Robot) getAssociatedEntity(row);
 		}
 
 		/**
 		 * Failure is if the Person is already assigned to a mission.
 		 */
 		@Override
-		protected String isFailureCell(Robot item, int column) {
-			return (column == 3 && item.getBotMind().getMission() != null) ? MissionCreate.ALREADY_ON_MISSION : null;
-		}
-
-		/**
-		 * Gets the value for the cell at columnIndex and rowIndex.
-		 * 
-		 * @param item the item.
-		 * @param column the column index.
-		 * @return Rendered values
-		 */
-		@Override
-		protected Object getItemValue(Robot item, int column) {
-			return switch (column) {
-				case 0 -> item.getName();
-				case 1 -> item.getRobotType().getName();
-				case 2 -> {
-					Mission mission = item.getBotMind().getMission();
-					if (mission != null) yield mission.getName();
-					else yield null;
+		public String isFailureCell(int row, int column) {
+			var colSpec = getColumnSpec(column);
+			if (colSpec.equals(MISSION.column())) {
+				var item = getItem(row);
+				if (item.getMission() != null) {
+					return MissionCreate.ALREADY_ON_MISSION;
 				}
-				case 3 -> item.getPerformanceRating() * 100D;
-				default -> null;
-			}; 
+			}
+			return null;
 		}
 	}
 }

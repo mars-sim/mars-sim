@@ -7,15 +7,13 @@
 
 package com.mars_sim.ui.swing.tool.missionwizard;
 
-import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
-import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
+import com.mars_sim.ui.swing.utils.model.BaseVehicleModel;
+import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 
@@ -58,79 +56,53 @@ class RoverPanel extends WizardItemStep<MissionDataBean, Rover> {
 	/**
 	 * A table model for vehicles.
 	 */
-	private static class VehicleTableModel extends AbstractWizardItemModel<Rover> {
+	private static class VehicleTableModel extends BaseVehicleModel
+		implements WizardItemModel<Rover> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
-		private static final List<ColumnSpec> COLUMNS = List.of(
-				new ColumnSpec(Msg.getString("entity.name"), String.class),
-				new ColumnSpec(Msg.getString("vehicle.type"), String.class),
-				new ColumnSpec(Msg.getString("vehicle.range"), Double.class, ColumnSpec.STYLE_INTEGER),
-				new ColumnSpec("Capacity", Double.class, ColumnSpec.STYLE_INTEGER),
-				new ColumnSpec(Msg.getString("vehicle.status"), String.class),
-				new ColumnSpec("Reserved", Boolean.class),
-				new ColumnSpec(Msg.getString("mission.singular"), String.class),
-				new ColumnSpec("Crew", Integer.class),
-				new ColumnSpec("Has Lab", Boolean.class),
-				new ColumnSpec("Has Sickbay", Boolean.class)
-		);
-				
+	
 		/**
 		 * Constructor
 		 */
 		private VehicleTableModel(MissionDataBean state) {
-			super(COLUMNS);
+			super(NAME, TYPE, EST_RANGE, CARGO_CAPACITY, STATUS, RESERVED, MISSION,
+					CREW_CAPACITY, HAS_LAB);
 		
 			var startingSettlement = state.getStartingSettlement();
 			var r = startingSettlement.getParkedGaragedVehicles().stream()
 					.filter(Rover.class::isInstance)
-					.map(Rover.class::cast)
-					.sorted(Comparator.comparing(Rover::getName))
 					.toList();
-			setItems(r);
+			setEntities(r);
+			enableListeners(true);
 		}
 
-		/**	
-		 * Returns the value for the table cell.
-		 * @param vehicle the vehicle.
-		 * @param column the table column.
-		 * @return the cell value.
-		 */
 		@Override
-		protected Object getItemValue(Rover vehicle, int column) {
-			return switch(column) {
-				case 0 -> vehicle.getName();
-				case 1 -> vehicle.getVehicleSpec().getName();
-				case 2 -> vehicle.getEstimatedRange();
-				case 3 -> vehicle.getCargoCapacity();
-				case 4 -> vehicle.printStatusTypes();
-				case 5 -> vehicle.isReserved();
-				case 6 -> {
-					Mission mission = vehicle.getMission();
-					if (mission != null)
-						yield mission.getName();
-					else
-						yield "None";
-				}
-				case 7 -> vehicle.getCrewCapacity();
-				case 8 -> vehicle.hasLab();
-				case 9 -> vehicle.hasSickBay();
-				default -> null;
-			};
+		public Rover getItem(int row) {
+			return (Rover) getAssociatedEntity(row);
 		}
 
 		/**
 		 * Check for failure cells.
 		 */
 		@Override
-		protected String isFailureCell(Rover vehicle, int column) {
-			return switch(column) {
-				case 5 -> vehicle.isReserved() ? "Reserved" : null;
-				case 4 -> (vehicle.getPrimaryStatus() != StatusType.PARKED) 
-						&& (vehicle.getPrimaryStatus() != StatusType.GARAGED) ? MissionCreate.VEHICLE_WRONG_STATUS : null;
-				case 6 -> vehicle.getMission() != null ? MissionCreate.ALREADY_ON_MISSION : null;
-				default -> null;
-			};
+		public String isFailureCell(int row, int column) {
+			var colSpec = getColumnSpec(column);
+			var vehicle = getItem(row);
+
+			if (colSpec.equals(RESERVED.column())) {
+				return (vehicle.isReserved() ? "Reserved" : null);
+			}
+			else if (colSpec.equals(STATUS.column())) {
+				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) 
+						&& (vehicle.getPrimaryStatus() != StatusType.GARAGED))
+					return MissionCreate.VEHICLE_WRONG_STATUS;
+			}
+			else if (colSpec.equals(MISSION.column())) {
+				Mission mission = vehicle.getMission();
+				return (mission != null) ? MissionCreate.ALREADY_ON_MISSION : null;
+			}
+			return null;
 		}
 	}
 }

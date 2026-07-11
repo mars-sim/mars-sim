@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.utils.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -50,18 +51,24 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
                                 Set.of(PowerGrid.STORED_ENERGY_EVENT));
 
     // Resource columns
-    private List<Integer> resources;
+    private List<Integer> resources = new ArrayList<>();
 
     /**
      * Creates a generic building model with the specified columns.
      * 
-     * @param resources The list of monitored resource IDs.
      * @param columns Columns to show.
      */
-    protected BaseSettlementModel(List<Integer> resources, EntityColumnSpec... columns) {
-        super(ResourceColumnHelper.getColumns(resources, columns));
+    protected BaseSettlementModel(EntityColumnSpec... columns) {
+        super(columns);
+    }
 
-        this.resources = resources;
+    /**
+     * Add resource columns to the model. The resource columns are created for the specified list of resource IDs.
+     * @param resources Resource IDs to add
+     */
+    protected void addResourceColumns(List<Integer> resources) {
+        addColumns(InventoryColumnHelper.getResourceColumn(resources));
+        this.resources.addAll(resources);
     }
 
     /**
@@ -73,7 +80,7 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
     @Override
     public void entityUpdate(EntityEvent event) {
         if (event.getType().equals(EntityEventType.INVENTORY_RESOURCE_EVENT)) {
-            event = ResourceColumnHelper.convertResourceToEvent(event, resources);
+            event = InventoryColumnHelper.convertResourceToEvent(event, resources);
             if (event == null) {
                 // Not a monitored resource
                 return;
@@ -101,8 +108,7 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
             case POWER_GEN_VAL -> entity.getPowerGrid().getGeneratedPower();
             case POWER_LOAD_VAL -> entity.getPowerGrid().getPowerLoad();
             case ENERGY_STORED_VAL -> entity.getPowerGrid().displayStoredEnergy();
-            default -> (valueIndex >= ResourceColumnHelper.RESOURCE_VAL) ?
-                        entity.getSpecificAmountResourceStored(valueIndex - ResourceColumnHelper.RESOURCE_VAL) : null;
+            default -> InventoryColumnHelper.getValue(entity, valueIndex);
         };
     }
 }

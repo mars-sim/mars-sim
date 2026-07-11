@@ -7,6 +7,9 @@
 package com.mars_sim.core.person.ai.shift;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.time.MarsTime;
 
@@ -22,7 +25,7 @@ public class Shift implements ScheduledEventHandler {
     private String name;
     private boolean onDuty = false;
     private int targetPercentage;
-    private int members = 0;
+    private Set<ShiftSlot> members = new HashSet<>();
 
     /**
      * Creates an active Shift defined by a shared specification.
@@ -86,21 +89,21 @@ public class Shift implements ScheduledEventHandler {
     }
 
     public int getSlotNumber() {
-        return members;
+        return members.size();
     }
     
     /**
      * Increases how many shots have been allocated to the shift.
      */
-    void joinShift() {
-        members++;
+    void joinShift(ShiftSlot slot) {
+        members.add(slot);
     }
 
     /**
      * Leaves the shift.
      */
-    public void leaveShift() {
-        members--;
+    public void leaveShift(ShiftSlot slot) {
+        members.remove(slot);
     }
 
     /**
@@ -131,6 +134,9 @@ public class Shift implements ScheduledEventHandler {
     public int execute(MarsTime now) {
         // Flip the on duty flag
         onDuty = !onDuty;
+
+        // Tell members
+        members.forEach(slot -> slot.shiftChange());
 
         int duration = 0;
         if (onDuty) {

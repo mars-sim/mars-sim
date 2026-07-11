@@ -70,7 +70,7 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
 	protected static final EntityColumnSpec JOB = new EntityColumnSpec(new ColumnSpec(JOB_VAL, Msg.getString("person.job"), String.class),
                                                 Set.of(EntityEventType.JOB_EVENT));
 	protected static final EntityColumnSpec SHIFT = new EntityColumnSpec(new ColumnSpec(SHIFT_VAL, Msg.getString("person.shift"), String.class),
-                                                Set.of(EntityEventType.SHIFT_EVENT));
+                                                Set.of(ShiftSlot.SHIFT_EVENT));
       
     /**
      * Create a generic person model with the specified columns.

@@ -37,6 +37,14 @@ public enum EquipmentType implements Named {
 	}
 
 	/**
+	 * Get the unique resource id for this EquipmentType.
+	 * The resource id is used to reference the EquipmentType in the Inventory.
+	 */
+	public int getResourceID() {
+		return this.ordinal() + ResourceType.FIRST_EQUIPMENT_RESOURCE_ID;
+	}
+
+	/**
 	 * Obtains the type id (not the ordinal id) of the equipment.
 	 * 
 	 * @param name
@@ -88,6 +96,6 @@ public enum EquipmentType implements Named {
 	 * @return
 	 */
 	public static int getResourceID(EquipmentType type) {
-		return type.ordinal() + ResourceType.FIRST_EQUIPMENT_RESOURCE_ID;
+		return type.getResourceID();
 	}
 }

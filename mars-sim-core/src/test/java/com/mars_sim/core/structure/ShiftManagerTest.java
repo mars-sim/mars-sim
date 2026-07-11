@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.mars_sim.core.test.MarsSimUnitTest;
+import com.mars_sim.core.TestEntityListener;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.shift.Shift;
@@ -31,7 +32,7 @@ import com.mars_sim.core.time.MarsTime;
 /**
  * Test the internals of the ShiftMansger
  */
-public class ShiftManagerTest extends MarsSimUnitTest {
+class ShiftManagerTest extends MarsSimUnitTest {
 
 	private ShiftManager buildManager(Settlement owner, int [] endTimes, int [] allocations) {
         List<ShiftSpec> specs = new ArrayList<>();
@@ -181,11 +182,13 @@ public class ShiftManagerTest extends MarsSimUnitTest {
      * Checks that the OnDuty override flag works.
      */
     @Test
-    public void testOnCal() {
+    void testOnCal() {
         Settlement settlement = buildSettlement("mock");
         ScheduledEventManager futures = settlement.getFutureManager();
 
         Person worker = buildPerson("OnCall Worker", settlement);
+        var listener = new TestEntityListener(ShiftSlot.SHIFT_EVENT);
+        worker.addEntityListener(listener);
 
         int [] endTimes = {500, 1000};
         int [] allocations = {40, 20};
@@ -197,18 +200,23 @@ public class ShiftManagerTest extends MarsSimUnitTest {
 
         // Shift on duty standard
         testWorkStatus(futures, slot, shiftEnd, "Standard worker", WorkStatus.ON_DUTY, WorkStatus.OFF_DUTY);
+        assertEquals(2, listener.getEventsReceived(), "Events when person comes on/off shift");
 
         // Check OnCall
         slot.setOnCall(true);
+        assertEquals(3, listener.getEventsReceived(), "OnCall event fired");
         testWorkStatus(futures, slot, shiftEnd, "On-Call worker", WorkStatus.ON_CALL, WorkStatus.ON_CALL);
 
         // Check OnLeave & OnCall. On Call takes precedence
         slot.setOnLeave(1000);
+        assertEquals(4, listener.getEventsReceived(), "OnLeave event fired");
         testWorkStatus(futures, slot, shiftEnd, "On-Call & On-Leave worker", WorkStatus.ON_CALL, WorkStatus.ON_CALL);
 
         // Check OnLeave 
         slot.setOnCall(false);
+        assertEquals(5, listener.getEventsReceived(), "Off OnCall event fired");
         testWorkStatus(futures, slot, shiftEnd, "On-Leave worker", WorkStatus.ON_LEAVE, WorkStatus.ON_LEAVE);
+        assertEquals(5, listener.getEventsReceived(), "Still on leave so no events");
     }
 
     /**

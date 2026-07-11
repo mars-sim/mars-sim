@@ -7,13 +7,11 @@
 
 package com.mars_sim.ui.swing.tool.missionwizard;
 
-import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
-import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
+import com.mars_sim.ui.swing.utils.model.BaseConstructionSiteModel;
+import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 /**
  * A wizard panel for selecting settlers.
@@ -55,58 +53,39 @@ class ConstructionPanel extends WizardItemStep<MissionDataBean, ConstructionSite
 	/**
 	 * Table model for sites.
 	 */
-	private static class SiteTableModel extends AbstractWizardItemModel<ConstructionSite> {
+	private static class SiteTableModel extends BaseConstructionSiteModel
+				implements WizardItemModel<ConstructionSite> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private static final List<ColumnSpec> COLUMNS = List.of(
-				new ColumnSpec(Msg.getString("entity.name"), String.class),
-				new ColumnSpec(Msg.getString("building.singular"), String.class),
-				new ColumnSpec(Msg.getString("constructionsite.stage"), String.class),
-				new ColumnSpec(Msg.getString("mission.singular"), String.class)
-		);
-
 		/** Constructor. */
 		private SiteTableModel(MissionDataBean state) {
-			super(COLUMNS);
+			super(NAME, BUILDING, STAGE, MISSION);
 
-			List<ConstructionSite> people = state.getStartingSettlement().getConstructionManager().getConstructionSites().stream()
-					.sorted(Comparator.comparing(ConstructionSite::getName))
-					.toList();
-			setItems(people);
+			List<ConstructionSite> people = state.getStartingSettlement().getConstructionManager().getConstructionSites();
+			setEntities(people);
+			enableListeners(true);
+		}
+
+		@Override
+		public ConstructionSite getItem(int row) {
+			return (ConstructionSite) getAssociatedEntity(row);
 		}
 
 		/**
 		 * Failure is if the Person is already assigned to a mission.
 		 */
 		@Override
-		protected String isFailureCell(ConstructionSite item, int column) {
-			return switch (column) {
-				case 3 -> item.getWorkOnSite() != null ? MissionCreate.ALREADY_ON_MISSION : null;
-				default -> null;
-			};
-		}
-
-		/**
-		 * Gets the value for the cell at columnIndex and rowIndex.
-		 * 
-		 * @param item the item.
-		 * @param column the column index.
-		 * @return Rendered values
-		 */
-		@Override
-		protected Object getItemValue(ConstructionSite item, int column) {
-			return switch (column) {
-				case 0 -> item.getName();
-				case 1 -> item.getBuildingName();
-				case 2 -> item.getDescription();
-				case 3 -> {
-					var onSite = item.getWorkOnSite();
-					yield onSite != null ? onSite.getName() : null;
+		public String isFailureCell(int row, int column) {
+			var colSpec = getColumnSpec(column);
+			if (colSpec.equals(MISSION.column())) {
+				var item = getItem(row);
+				if (item.getWorkOnSite() != null) {
+					return MissionCreate.ALREADY_ON_MISSION;
 				}
-				default -> null;
-			}; 
+			}
+			return null;
 		}
 	}
 }

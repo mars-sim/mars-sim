@@ -38,6 +38,7 @@ public abstract class BaseRobotModel extends AbstractEntityModel<Robot> {
     protected static final EntityColumnSpec NAME = BaseWorkerModel.NAME;
     protected static final EntityColumnSpec TASK = BaseWorkerModel.TASK;
     protected static final EntityColumnSpec SETTLEMENT = BaseWorkerModel.SETTLEMENT;
+    protected static final EntityColumnSpec MISSION = BaseWorkerModel.MISSION;
     protected static final EntityColumnSpec TYPE = new EntityColumnSpec(new ColumnSpec(TYPE_VAL, Msg.getString("robot.type"),
                                                         String.class), null);
     protected static final EntityColumnSpec LOCATION = new EntityColumnSpec(new ColumnSpec(LOCATION_VAL, Msg.getString("entity.coordinates"),

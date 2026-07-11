@@ -31,8 +31,9 @@ public class VehicleTableModel extends BaseVehicleModel implements MonitorModel 
 													ResourceUtil.WATER_ID, ResourceUtil.FOOD_ID);
 	
 	public VehicleTableModel() {
-		super(RESOURCES, NAME, TYPE, SETTLEMENT, LOCATION, DESTINATION, DESTDIST, MISSION, DRIVER,
+		super(NAME, TYPE, SETTLEMENT, LOCATION, DESTINATION, DESTDIST, MISSION, DRIVER,
 				STATUS, BEACON, RESERVED, SPEED, MALFUNCTION, BATTERY, FUEL);
+		addResourceColumns(RESOURCES);
 	}
 
 	@Override
