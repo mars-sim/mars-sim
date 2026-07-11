@@ -16,6 +16,7 @@ import java.util.Map;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -55,7 +56,6 @@ public class RescueSalvageVehicle extends RoverMission {
 
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
-	private static final int MIN_GOING_MEMBERS = 2;
 
 	public static final double BASE_RESCUE_MISSION_WEIGHT = 100D;
 	private static final double RESCUE_RESOURCE_BUFFER = 1D;
@@ -71,12 +71,12 @@ public class RescueSalvageVehicle extends RoverMission {
 	/**
 	 * Constructor.
 	 * 
-	 * @param startingPerson the person starting the mission.
+	 * @param crew the roster of crew members for the mission.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public RescueSalvageVehicle(Person startingPerson, boolean needsReview) {
+	public RescueSalvageVehicle(MetaMission.Roster crew, boolean needsReview) {
 		// Use RoverMission constructor
-		super(MissionType.RESCUE_SALVAGE_VEHICLE, startingPerson, null);
+		super(MissionType.RESCUE_SALVAGE_VEHICLE, crew.leader(), (Rover) crew.vehicle());
 
 		setPriority(5);
 		
@@ -91,8 +91,9 @@ public class RescueSalvageVehicle extends RoverMission {
 				addNavpoint(vehicleTarget.getCoordinates(), vehicleTarget.getName());
 				addNavpoint(getStartingSettlement());
 
-				// Recruit additional members to mission.
-				if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS)) {
+				// Add selected members to mission.
+				addMembers(crew.members(), false);
+				if (isDone()) {
 					return;
 				}
 
@@ -106,11 +107,6 @@ public class RescueSalvageVehicle extends RoverMission {
 	}
 
 	private void addObjectives(boolean needsReview, Vehicle target, boolean isRescue) {
-		if (!hasVehicle()) {
-			endMission(NO_AVAILABLE_VEHICLE);
-			return;
-		}
-
 		// Need objective to calculate resources needed.
 		objective = new RescueVehicleObjective(target, isRescue);
 		addObjective(objective);
@@ -121,8 +117,6 @@ public class RescueSalvageVehicle extends RoverMission {
 			return;
 		}
 	
-
-
 		setInitialPhase(needsReview);
 	}
 	

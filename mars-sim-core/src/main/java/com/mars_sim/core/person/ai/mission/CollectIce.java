@@ -13,7 +13,7 @@ import java.util.Set;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.Person;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.ObjectiveType;
@@ -44,12 +44,13 @@ public class CollectIce extends CollectResourcesMission {
 	 * Constructor
 	 *
 	 * @param startingPerson the person starting the mission.
-	 * @param needsReview
-	 * @throws MissionException if problem constructing mission.
+	 * @param members        collection of mission members.
+	 * @param vehicle        the rover to use.
+	 * @param needsReview	Does this mission need to be reviewed
 	 */
-	public CollectIce(Person startingPerson, boolean needsReview) {
+	public CollectIce(MetaMission.Roster crew, boolean needsReview) {
 		// Use CollectResourcesMission constructor.
-		super(MissionType.COLLECT_ICE, startingPerson, ResourceUtil.ICE_ID,
+		super(MissionType.COLLECT_ICE, crew, ResourceUtil.ICE_ID,
 				EquipmentType.BARREL, REQUIRED_BARRELS, NUM_SITES, needsReview);
 	}
 
@@ -69,7 +70,7 @@ public class CollectIce extends CollectResourcesMission {
 				rover, iceCollectionSites);
 	}
 
-	@Override
+    @Override
 	protected double scoreLocation(TerrainElevation terrainElevation, Coordinates newLocation) {
 		return terrainElevation.obtainIceCollectionRate(newLocation);
 	}

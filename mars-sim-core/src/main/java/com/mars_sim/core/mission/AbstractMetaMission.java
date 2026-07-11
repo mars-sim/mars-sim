@@ -16,13 +16,11 @@ import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.comparators.RangeComparator;
@@ -39,8 +37,6 @@ public abstract class AbstractMetaMission implements MetaMission {
 	protected static final String OVER_CROWDING = "crowding";
 	protected static final String DEMAND_PROBABILITY = "demand";
 
-	private static MasterClock masterClock;
-
 	private String name;
 	private MissionType type;
 	private int minimum;
@@ -52,6 +48,7 @@ public abstract class AbstractMetaMission implements MetaMission {
 	private int popRatio = 0;
 	private int popThreshold;
 	private int solThreshold = 0;
+	private boolean automatic = true;
 	
 	/**
 	 * Creates a new Mission meta instance.
@@ -73,6 +70,18 @@ public abstract class AbstractMetaMission implements MetaMission {
 		// These are defaults
 		this.popThreshold = capacity + 2;
 		this.popRatio = capacity + 4;
+	}
+
+	/**
+	 * Can this meta create missions automatically without user intervention.
+	 */
+	@Override
+	public boolean isAutomatic() {
+		return automatic;
+	}
+
+	protected void setAutomatic(boolean automatic) {
+		this.automatic = automatic;
 	}
 
 	/**
@@ -99,6 +108,16 @@ public abstract class AbstractMetaMission implements MetaMission {
 	 */
 	protected void setPreferredVehicle(Set<VehicleType> preferredVehicle) {
 		this.preferredVehicle = preferredVehicle;
+	}
+
+	/**
+	 * Gets the preferred vehicle types for this mission. This is optional and can be left empty.
+	 * By default no VehicleTypes are preferred. If a VehicleType is preferred then it will be given a higher suitability score.
+	 * @return Vehicle types to prefer
+	 */
+	@Override
+	public Set<VehicleType> getPreferredVehicle() {
+		return preferredVehicle;
 	}
 
 	/**
@@ -182,16 +201,6 @@ public abstract class AbstractMetaMission implements MetaMission {
 	@Override
 	public int getMinimumMembers() {
 		return minimum;
-	}
-
-	@Override
-	public Mission constructInstance(Person person, boolean needsReview) {
-		throw new UnsupportedOperationException("Mission Meta "+ name + " does not support mission for Person.");
-	}
-
-	@Override
-	public RatingScore getProbability(Person person) {
-		return RatingScore.ZERO_RATING;
 	}
 
 	/**
@@ -298,9 +307,4 @@ public abstract class AbstractMetaMission implements MetaMission {
 
 		return result;
 	}
-
-    public static void initializeInstances(MasterClock mc) {
-		masterClock = mc;
-    }
-
 }

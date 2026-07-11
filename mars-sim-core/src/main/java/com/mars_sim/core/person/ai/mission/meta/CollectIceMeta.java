@@ -35,7 +35,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 	/** Starting sol for this mission to commence. */
 	private static final int MIN_STARTING_SOL = 3;
 	
-	CollectIceMeta() {
+	public CollectIceMeta() {
 		super(MissionType.COLLECT_ICE, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 
 		setPreferredVehicle(VehicleType.ROVER_TYPES);
@@ -43,9 +43,15 @@ public class CollectIceMeta extends AbstractMetaMission {
 		setSolThreshold(MIN_STARTING_SOL);
 	}
 
+	/**
+	 * Constructs a new instance of the CollectIce mission with the given crew and review status.
+	 * @param crew the roster of crew members for the mission.
+	 * @param needsReview whether the mission requires review before execution.
+	 * @return a new instance of the CollectIce mission.
+	 */
 	@Override
-	public Mission constructInstance(Person person, boolean needsReview) {
-		return new CollectIce(person, needsReview);
+	public Mission constructInstance(Roster crew, boolean needsReview) {
+		return new CollectIce(crew, needsReview);
 	}
 
 	@Override

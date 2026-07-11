@@ -19,6 +19,7 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.mission.objectives.MiningObjective.MineralStats;
 import com.mars_sim.core.mission.task.CollectMinedMinerals;
@@ -93,25 +94,27 @@ public class Mining extends EVAMission
 	/**
 	 * Constructor.
 	 * 
-	 * @param startingPerson the person starting the mission.
+	 * @param crew the roster of crew members for the mission.
 	 * @throws MissionException if error creating mission.
 	 */
-	public Mining(Person startingPerson, boolean needsReview) {
+	public Mining(MetaMission.Roster crew, boolean needsReview) {
 
 		// Use RoverMission constructor.
-		super(MissionType.MINING, startingPerson, null, MINING_SITE, MineSite.LIGHT_LEVEL);
+		super(MissionType.MINING, crew.leader(), (Rover) crew.vehicle(), MINING_SITE, MineSite.LIGHT_LEVEL);
 
 		if (!isDone()) {
-			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS))
+			// Add selected members to mission.
+			addMembers(crew.members(), false);
+			if (isDone()) {
 				return;
+			}
 			
 			Settlement s = getStartingSettlement();
 			
 			// Determine mining site.
 			var miningSite = determineBestMiningSite(getRover(), s);
 			if (miningSite == null) {
-				logger.severe(startingPerson, "Mining site could not be determined.");
+				logger.severe(crew.leader(), "Mining site could not be determined.");
 				endMission(MINING_SITE_NOT_BE_DETERMINED);
 				return;
 			}
@@ -144,7 +147,7 @@ public class Mining extends EVAMission
 		// Initialize data members.
 		miningSite.setReserved(true);
 		
-		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
+		int numMembers = getMembers().size();
 		int buffer = (int)(numMembers * 1.5);
 		int newContainerNum = Math.max(buffer, NUMBER_OF_LARGE_BAGS);
 		

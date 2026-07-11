@@ -39,7 +39,7 @@ public class TradeMeta extends AbstractMetaMission {
 
 	public static final int MAX_MEMBERS = 3;
 
-	TradeMeta() {
+	public TradeMeta() {
 		super(MissionType.TRADE, MAX_MEMBERS, LEADER_JOBS, WORKER_JOBS);
 
 		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER));
@@ -56,8 +56,8 @@ public class TradeMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Person person, boolean needsReview) {
-		return new Trade(person, needsReview);
+	public Mission constructInstance(Roster crew, boolean needsReview) {
+		return new Trade(crew, needsReview);
 	}
 
 	@Override

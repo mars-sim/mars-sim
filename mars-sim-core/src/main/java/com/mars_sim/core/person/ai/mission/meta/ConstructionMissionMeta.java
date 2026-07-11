@@ -34,16 +34,23 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	private static final int SITE_BASE = 200;
 	private static final int QUEUE_BASE = 50;
 		
-    ConstructionMissionMeta() {
+    public ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 10, LEADER_JOBS, WORKER_JOBS);
 		setMinimumMembers(3);
 		setPopulationRatio(30);
 		setPopulationThreshold(20);
     }
     
-    @Override
-    public Mission constructInstance(Person person, boolean needsReview) {
-        return new ConstructionMission(person);
+	/**
+	 * Constructs an instance of the associated mission.
+	 * 
+	 * @param crew The crew for the mission, including leader and members
+	 * @param needsReview Mission must be reviewed. Construction mission do not need reviewing.
+	 * @return mission instance.
+	 */
+	@Override
+	public Mission constructInstance(Roster crew, boolean needsReview) {
+        return new ConstructionMission(crew);
     }
 
     @Override

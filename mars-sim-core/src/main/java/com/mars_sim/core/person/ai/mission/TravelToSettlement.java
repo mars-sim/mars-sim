@@ -7,21 +7,11 @@
 
 package com.mars_sim.core.person.ai.mission;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.job.util.JobUtil;
-import com.mars_sim.core.person.ai.social.RelationshipUtil;
-import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.science.ScienceType;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 
 /**
@@ -33,75 +23,13 @@ public class TravelToSettlement extends RoverMission {
 	private static final long serialVersionUID = 1L;
 	
 	// Travel to settlement mission event type
-	public static final String DESTINATION_SETTLEMENT = "destination settlement";
-	
-	// Static members
-	public static final double BASE_MISSION_WEIGHT = 1D;
-
-	private static final double RELATIONSHIP_MODIFIER = 10D;
-
-	private static final double JOB_MODIFIER = 1D;
-
-	private static final double CROWDING_MODIFIER = 50D;
-
-	private static final double SCIENCE_MODIFIER = 1D;
-
-	private static final double RANGE_BUFFER = .8D;
+	public static final String DESTINATION_EVENT = "travelsettlement:destination";
 
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TRANSPORTATION_HUB, ObjectiveType.TOURISM);
 
 	// Data members
 	private Settlement destinationSettlement;
 
-	/**
-	 * Constructor with destination settlement randomly determined.
-	 * 
-	 * @param startingMember the mission member starting the mission.
-	 */
-	public TravelToSettlement(Person startingMember, boolean needsReview) {
-		// Use RoverMission constructor
-		super(MissionType.TRAVEL_TO_SETTLEMENT, startingMember, null);
-
-		Settlement s = getStartingSettlement();
-
-		if (!isDone() && s != null) {
-
-			// Choose destination settlement.
-			setDestinationSettlement(getRandomDestinationSettlement(startingMember, s));
-			if (destinationSettlement != null) {
-				addNavpoint(destinationSettlement);
-				setName(Msg.getString("mission.description.travelToSettlement.detail", // $NON-NLS-1$
-						destinationSettlement.getName())); 
-			}
-			else {
-				endMissionProblem(startingMember, "No destination");
-			}
-
-			// Check mission available space
-			if (!isDone()) {
-				int availableSpace = destinationSettlement.getPopulationCapacity()
-						- destinationSettlement.getNumCitizens();
-
-				if (availableSpace < getMissionCapacity()) {
-					setMissionCapacity(availableSpace);
-				}
-			}
-
-			// Recruit additional members to mission.
-			if (!isDone() && !recruitMembersForMission(startingMember, 2)) {
-				return;
-			}
-
-			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable()) {
-				endMission(CANNOT_LOAD_RESOURCES);
-				return;
-			}
-
-			// Set initial phase
-			setInitialPhase(needsReview);
-		}
-	}
 
 	/**
 	 * Travels to a settlement.
@@ -110,17 +38,17 @@ public class TravelToSettlement extends RoverMission {
 	 * @param destinationSettlement
 	 * @param rover
 	 */
-	public TravelToSettlement(Collection<Worker> members, 
-			Settlement destinationSettlement, Rover rover) {
+	public TravelToSettlement(MetaMission.Roster crew,  
+			Settlement destinationSettlement, boolean needsReview) {
 		// Use RoverMission constructor.
-		super(MissionType.TRAVEL_TO_SETTLEMENT, (Worker) members.toArray()[0], rover);
+		super(MissionType.TRAVEL_TO_SETTLEMENT, crew.leader(), (Rover) crew.vehicle());
 
 		// Set mission destination.
 		setDestinationSettlement(destinationSettlement);
 		addNavpoint(this.destinationSettlement);
 
 		// Add mission members.
-		addMembers(members, false);
+		addMembers(crew.members(), false);
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -128,7 +56,7 @@ public class TravelToSettlement extends RoverMission {
 			return;
 		}
 
-		setInitialPhase(false);
+		setInitialPhase(needsReview);
 	}
 
 	/**
@@ -160,7 +88,7 @@ public class TravelToSettlement extends RoverMission {
 	 */
 	private void setDestinationSettlement(Settlement destinationSettlement) {
 		this.destinationSettlement = destinationSettlement;
-		fireMissionUpdate(DESTINATION_SETTLEMENT);
+		fireMissionUpdate(DESTINATION_EVENT);
 	}
 
 	/**
@@ -170,160 +98,6 @@ public class TravelToSettlement extends RoverMission {
 	 */
 	public final Settlement getDestinationSettlement() {
 		return destinationSettlement;
-	}
-
-	/**
-	 * Determines a random destination settlement other than current one.
-	 * 
-	 * @param member             the mission member searching for a settlement.
-	 * @param startingSettlement the settlement the mission is starting at.
-	 * @return randomly determined settlement
-	 */
-	private Settlement getRandomDestinationSettlement(Worker member, Settlement startingSettlement) {
-
-		double range = getVehicle().getEstimatedRange();
-		Settlement result = null;
-
-		// Find all desirable destination settlements.
-		Map<Settlement, Double> desirableSettlements = getDestinationSettlements(member, startingSettlement, range);
-
-		// Randomly select a desirable settlement.
-		if (desirableSettlements.size() > 0) {
-			result = RandomUtil.getWeightedRandomObject(desirableSettlements);
-		}
-
-		return result;
-	}
-
-
-	/**
-	 * Gets all possible and desirable destination settlements.
-	 * 
-	 * @param member             the mission member searching for a settlement.
-	 * @param startingSettlement the settlement the mission is starting at.
-	 * @param range              the range (km) that can be travelled.
-	 * @return map of destination settlements.
-	 */
-	public static Map<Settlement, Double> getDestinationSettlements(Worker member, Settlement startingSettlement,
-			double range) {
-		Map<Settlement, Double> result = new HashMap<>();
-
-		// Find potential destination settlements within range and not current travel destination.
-		for(var potentialDestination : unitManager.getSettlements()) {
-			if (potentialDestination.equals(startingSettlement)) {
-				continue;
-			}
-			double distance = startingSettlement.getCoordinates().getDistance(potentialDestination.getCoordinates());
-			if ((distance <= (range * RANGE_BUFFER))
-						&& !isCurrentTravelDestination(startingSettlement, potentialDestination)) {
-
-				double desirability = getDestinationSettlementDesirability(member, startingSettlement, potentialDestination);
-				if (desirability > 0D)
-					result.put(potentialDestination, desirability);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks if a settlement is the destination of a current travel to settlement
-	 * mission.
-	 * 
-	 * @param startingSettlement the starting settlement.
-	 * @param endSettlement the destination settlement.
-	 * @return true if settlement is a travel destination.
-	 */
-	private static boolean isCurrentTravelDestination(Settlement startingSettlement, Settlement endSettlement) {
-
-		for(var m : startingSettlement.getMissionControl().getActiveMissions()) {
-			if (m instanceof TravelToSettlement ts) {
-				Settlement destination = ts.getDestinationSettlement();
-				if (endSettlement.equals(destination)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Gets the desirability of the destination settlement.
-	 * 
-	 * @param member                the mission member looking at the settlement.
-	 * @param startingSettlement    the settlement the member is already at.
-	 * @param destinationSettlement the new settlement.
-	 * @return negative or positive desirability weight value.
-	 */
-	private static double getDestinationSettlementDesirability(Worker member, Settlement startingSettlement,
-			Settlement destinationSettlement) {
-
-		// Determine relationship factor in destination settlement relative to
-		// starting settlement.
-		double relationshipFactor = 0D;
-
-		if (member instanceof Person person) {
-			double currentOpinion = RelationshipUtil.getAverageOpinionOfPeople(person,
-					startingSettlement.getAllAssociatedPeople());
-			double destinationOpinion = RelationshipUtil.getAverageOpinionOfPeople(person,
-					destinationSettlement.getAllAssociatedPeople());
-			relationshipFactor = (destinationOpinion - currentOpinion) / 100D;
-		}
-
-		// Determine job opportunities in destination settlement relative to
-		// starting settlement.
-		double jobFactor = 0D;
-		if (member instanceof Person person) {
-			JobType currentJob = person.getMind().getJobType();
-			double currentJobProspect = JobUtil.getJobProspect(person, currentJob, startingSettlement, true);
-			double destinationJobProspect;
-
-			if (person.getMind().getJobLock()) {
-				destinationJobProspect = JobUtil.getJobProspect(person, currentJob, destinationSettlement, false);
-			} else {
-				destinationJobProspect = JobUtil.getBestJobProspect(person, destinationSettlement, false);
-			}
-
-			if (destinationJobProspect > currentJobProspect) {
-				jobFactor = 1D;
-			} else if (destinationJobProspect < currentJobProspect) {
-				jobFactor = -1D;
-			}
-		}
-
-		// Determine available space in destination settlement relative to
-		// starting settlement.
-		int startingCrowding = startingSettlement.getPopulationCapacity()
-				- startingSettlement.getNumCitizens() - 1;
-		int destinationCrowding = destinationSettlement.getPopulationCapacity()
-				- destinationSettlement.getNumCitizens();
-		int crowdingFactor = destinationCrowding - startingCrowding;
-
-		// Determine science achievement factor for destination relative to starting
-		// settlement.
-		double totalScienceAchievementFactor = (destinationSettlement.getTotalScientificAchievement()
-				- startingSettlement.getTotalScientificAchievement()) / 10D;
-		double jobScienceAchievementFactor = 0D;
-
-		if (member instanceof Person person) {
-			ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJobType());
-			if (jobScience != null) {
-				double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
-				double destinationJobScienceAchievement = destinationSettlement.getScientificAchievement(jobScience);
-				jobScienceAchievementFactor = destinationJobScienceAchievement - startingJobScienceAchievement;
-			}
-		}
-
-		double scienceAchievementFactor = totalScienceAchievementFactor + jobScienceAchievementFactor;
-
-		if (destinationCrowding < RoverMission.MIN_GOING_MEMBERS) {
-			return 0;
-		}
-
-		// Return the sum of the factors with modifiers.
-		return (relationshipFactor * RELATIONSHIP_MODIFIER) + (jobFactor * JOB_MODIFIER)
-				+ (crowdingFactor * CROWDING_MODIFIER) + (scienceAchievementFactor * SCIENCE_MODIFIER);
 	}
 
 	@Override

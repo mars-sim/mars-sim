@@ -17,6 +17,7 @@ import com.mars_sim.core.building.function.Management;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.MetaMissionRegistry;
 import com.mars_sim.core.mission.MissionControl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
@@ -27,7 +28,6 @@ import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.person.ai.mission.SiteMission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -220,7 +220,7 @@ public class ReviewMissionPlan extends Task {
 
 		// 3. Mission Qualification Score
 		double qual = 1D;
-		var meta = MetaMissionUtil.getMetaMission(m.getMissionType());
+		var meta = MetaMissionRegistry.getMetaMission(m.getMissionType());
 		if (meta != null) {
 			qual = meta.getWorkerSuitability(person) * 0.4D;
 		}

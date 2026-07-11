@@ -12,17 +12,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
-
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.mission.MetaMission;
+import com.mars_sim.core.mission.MetaMissionRegistry;
 import com.mars_sim.core.mission.MissionProject;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -38,13 +40,18 @@ class TestDriveMissionTest extends MarsSimUnitTest {
     void testCreation() {
         Settlement home = buildSettlement("mock", true, 5);
         buildGarage(home.getBuildingManager(), new LocalPosition(0,0), BUILDING_LENGTH);
-        buildRover(home, "Rover 1", null, EXPLORER_ROVER);
+        var rover = buildRover(home, "Rover 1", null, EXPLORER_ROVER);
         Person leader = buildPerson("Leader", home);
-        var meta = MetaMissionUtil.getMetaMission(MissionType.TEST_DRIVE);
-        for(int i = 0; i < 1 + meta.getMinimumMembers(); i++) {
-            buildPerson("Support" + i, home);
+        var meta = MetaMissionRegistry.getMetaMission(MissionType.TEST_DRIVE);
+
+        List<Person> recruits = new ArrayList<>();
+        // Create other members; allow for the leader alreadsy counted
+        for(int i = 0; i < meta.getMinimumMembers() -1; i++) {
+            recruits.add(buildPerson("Support" + i, home));
         }
-        MissionVehicleProject mp = new TestDriveMission(MISSION_NAME, leader);
+
+        var roster = new MetaMission.Roster(leader, recruits, rover);
+        MissionVehicleProject mp = new TestDriveMission(MISSION_NAME, roster);
 
         // Check vehicle details
         assertFalse(mp.isDone(), "Mission active");

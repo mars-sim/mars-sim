@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -36,11 +37,11 @@ public class BiologyFieldStudy extends FieldStudyMission {
 	/**
 	 * Constructor.
 	 * 
-	 * @param startingPerson {@link Person} the person starting the mission.
+	 * @param crew the roster of crew members for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public BiologyFieldStudy(Person startingPerson, boolean needsReview) {
-		super(MissionType.BIOLOGY, startingPerson,
+	public BiologyFieldStudy(MetaMission.Roster crew, boolean needsReview) {
+		super(MissionType.BIOLOGY, crew,
 			  ScienceType.ASTROBIOLOGY, FIELD_SITE_TIME, needsReview);
 
 	}

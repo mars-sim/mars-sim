@@ -23,6 +23,7 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.objectives.ConstructionObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -74,27 +75,21 @@ public class ConstructionMission extends AbstractMission {
 	/**
 	 * Constructor 1 for Case 1: Determined by the need of the settlement.
 	 *
-	 * @param startingMember the mission member starting the mission.
+	 * @param  crew the roster of crew members for the mission.
 	 */
-	public ConstructionMission(Person startingMember) {
+	public ConstructionMission(MetaMission.Roster crew) {
 		// Use Mission constructor.
-		super(MissionType.CONSTRUCTION, startingMember);
+		super(MissionType.CONSTRUCTION, crew.leader());
 
 		if (isDone()) {
 			return;
 		}
+		addMembers(crew.members(), false);
 
-		// Recruit additional members to mission.
-		if (!recruitMembersForMission(startingMember, MIN_PEOPLE)) {
-			return;
-		}
+		var startingMember = crew.leader();
 
 		// Determine construction site and stage.
-		int constructionSkill = 1;
-		if (startingMember instanceof Person p) {
-			constructionSkill += p.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-			p.getMind().setMission(this); // THis has probably already been set
-		}
+		int constructionSkill = startingMember.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 
 		var home = startingMember.getAssociatedSettlement();
 		var site = home.getConstructionManager().getNextConstructionSite(constructionSkill);
@@ -106,9 +101,6 @@ public class ConstructionMission extends AbstractMission {
 		
 		// Need to set the description of this mission correctly
 		// e.g. Pouring the foundation, Building the frame, or Constructing the building
-
-		// Call missionManager to add this mission
-	    home.getMissionControl().addMission(this);
 	}
 
 	/**

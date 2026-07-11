@@ -36,7 +36,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	/** Starting sol for this mission to commence. */
 	private static final int MIN_STARTING_SOL = 4;
 
-	CollectRegolithMeta() {
+	public CollectRegolithMeta() {
 		super(MissionType.COLLECT_REGOLITH, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 
 		setPreferredVehicle(VehicleType.ROVER_TYPES);
@@ -45,8 +45,8 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Person person, boolean needsReview) {
-		return new CollectRegolith(person, needsReview);
+	public Mission constructInstance(Roster crew, boolean needsReview) {
+		return new CollectRegolith(crew, needsReview);
 	}
 
 	@Override

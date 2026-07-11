@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.Set;
 
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -20,14 +19,14 @@ import com.mars_sim.core.science.ScienceType;
  */
 public class AreologyFieldStudyMeta extends FieldStudyMeta {
 
-    AreologyFieldStudyMeta() {
+    public AreologyFieldStudyMeta() {
 		super(MissionType.AREOLOGY, 
 				Set.of(JobType.AREOLOGIST, JobType.CHEMIST, JobType.PHYSICIST, JobType.METEOROLOGIST, JobType.ASTROBIOLOGIST),
 				ScienceType.AREOLOGY);
 	}
 
     @Override
-    public Mission constructInstance(Person person, boolean needsReview) {
-        return new AreologyFieldStudy(person, needsReview);
+    public Mission constructInstance(Roster crew, boolean needsReview) {
+        return new AreologyFieldStudy(crew, needsReview);
     }
 }

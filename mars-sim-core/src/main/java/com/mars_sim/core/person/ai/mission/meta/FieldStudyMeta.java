@@ -23,7 +23,7 @@ import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.VehicleType;
 
-public class FieldStudyMeta extends AbstractMetaMission {
+public abstract class FieldStudyMeta extends AbstractMetaMission {
 
 	private static final Set<RoleType> PREFERRED_ROLES = Set.of(RoleType.CREW_SCIENTIST,
 							RoleType.CHIEF_OF_LOGISTIC_OPERATION, RoleType.LOGISTIC_SPECIALIST,
@@ -40,7 +40,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 	private static final int BASE_SCORE = 10;
 	private ScienceType scienceType;
 
-	public FieldStudyMeta(MissionType type, Set<JobType> preferredLeaderJob,
+	protected FieldStudyMeta(MissionType type, Set<JobType> preferredLeaderJob,
 			ScienceType scienceType) {
 		super(type, 3, preferredLeaderJob, PREFERRED_WORKER_JOBS);
 		this.scienceType = scienceType;

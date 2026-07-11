@@ -41,7 +41,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 
 	private static final double VALUE = 20D;
 
-	ExplorationMeta() {
+	public ExplorationMeta() {
 		super(MissionType.EXPLORATION, 4,
 					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST),
 					PREFERRED_WORKER_JOBS);
@@ -60,9 +60,15 @@ public class ExplorationMeta extends AbstractMetaMission {
 		return new LabRangeComparator();
 	}
 
+	/**
+	 * Constructs a new instance of the Exploration mission with the given crew and review status.
+	 * @param crew the roster of crew members for the mission.
+	 * @param needsReview whether the mission requires review before execution.
+	 * @return a new instance of the Exploration mission.
+	 */
 	@Override
-	public Mission constructInstance(Person person, boolean needsReview) {
-		return new Exploration(person, needsReview);
+	public Mission constructInstance(Roster crew, boolean needsReview) {
+		return new Exploration(crew, needsReview);
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public class MiningMeta extends AbstractMetaMission {
 	/** The multiplier factor. */
 	private static final double FACTOR = 5.0;
 	
-    MiningMeta() {
+    public MiningMeta() {
     	super(MissionType.MINING, 6, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 
 		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER, VehicleType.EXPLORER_ROVER));
@@ -57,8 +57,8 @@ public class MiningMeta extends AbstractMetaMission {
 	}
 
     @Override
-    public Mission constructInstance(Person person, boolean needsReview) {
-        return new Mining(person, needsReview);
+	public Mission constructInstance(Roster crew, boolean needsReview) {
+		return new Mining(crew, needsReview);
     }
 
     @Override

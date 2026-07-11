@@ -11,10 +11,10 @@ import java.util.List;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.mission.steps.MissionTravelStep;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.structure.Settlement;
@@ -28,11 +28,11 @@ public class TestDriveMission extends MissionVehicleProject{
     // Distance in the test drive before turning round
     public static final double TRAVEL_DIST = 50D;
 
-    public TestDriveMission(String name, Person leader) {
-        super(name, MissionType.TEST_DRIVE, 10, leader);
+    public TestDriveMission(String name, MetaMission.Roster crew) {
+        super(name, MissionType.TEST_DRIVE, 10, crew);
         
         if (!isDone()) {
-            Settlement base = leader.getAssociatedSettlement();
+            Settlement base = crew.leader().getAssociatedSettlement();
             Coordinates startingPlace = base.getCoordinates();
             Coordinates turningPoint = startingPlace.getNewLocation(new Direction(0), TRAVEL_DIST);
 

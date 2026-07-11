@@ -34,13 +34,9 @@ import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MissionObjective;
-import com.mars_sim.core.mission.AbstractMetaMission;
-import com.mars_sim.core.mission.MetaMission;
-import com.mars_sim.core.mission.MissionBuilder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -71,7 +67,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected static final MissionPhase REVIEWING = new MissionPhase("reviewing", Stage.PREPARATION);
 	private static final MissionPhase INIT_PHASE = new MissionPhase("initial", Stage.INITIAL);
 
-	protected static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
+	private static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
 	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
@@ -365,7 +361,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param newMembers Members to add
 	 * @param allowRobots Are Robots allowed
 	 */
-	protected void addMembers(Collection<Worker> newMembers, boolean allowRobots) {
+	protected void addMembers(Collection<? extends Worker> newMembers, boolean allowRobots) {
 		for(Worker member : newMembers) {
 			if (member instanceof Person person) {
 				person.getMind().setMission(this);
@@ -843,35 +839,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return hasDangerousMedicalProblemsAllCrew();
 	}
 
-	/**
-	 * Recruits new members into the mission.
-	 *
-	 * @param startingMember the mission member starting the mission.
-	 * @param minMembers Minimum number of members required
-	 */
-	protected boolean recruitMembersForMission(Person startingMember, int minMembers) {
-
-		// Get all people qualified for the mission.
-		Collection<Person> possibles = startingMember.getAssociatedSettlement().getAllAssociatedPeople();
-
-		var meta = getMetaMission();
-		var recruiter = new MissionBuilder(meta, startingMember);
-		var team = recruiter.recruitMembers(possibles);
-		if ((team.size() + 1) < minMembers) {
-			endMission(NOT_ENOUGH_MEMBERS);
-			return false;
-		}
-		team.forEach(w -> w.setMission(this));
-		return true;
-	}
-
 	@Override
 	public Set<ObjectiveType> getObjectiveSatisified() {
 		return Collections.emptySet();
-	}
-
-	protected int getMissionCapacity() {
-		return getMetaMission().getDefaultCapacity();
 	}
 
 	/**
@@ -921,13 +891,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return true;
 	}
 
-	/**
-	 * Helper method to find related mata mission
-	 */
-	protected MetaMission getMetaMission() {
-		return MetaMissionUtil.getMetaMission(missionType);
-	}
-	
 	/**
 	 * Gets the current location of the mission.
 	 *
@@ -1139,6 +1102,5 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		MissionLog.initialise(clock);
 		MissionUtil.initializeInstances(u);
-		AbstractMetaMission.initializeInstances(clock);
 	}
 }

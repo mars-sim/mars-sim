@@ -16,6 +16,7 @@ import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.mission.task.ExploreSite;
 import com.mars_sim.core.person.Person;
@@ -82,10 +83,10 @@ public class Exploration extends EVAMission
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public Exploration(Person startingPerson, boolean needsReview) {
+	public Exploration(MetaMission.Roster crew, boolean needsReview) {
 
 		// Use RoverMission constructor.
-		super(MISSION_TYPE, startingPerson, null,
+		super(MISSION_TYPE, crew.leader(), (Rover)crew.vehicle(),
 				EXPLORE_SITE, ExploreSite.LIGHT_LEVEL);
 		
 		this.objective = new ExplorationObjective();
@@ -96,20 +97,7 @@ public class Exploration extends EVAMission
 		if (s != null && !isDone()) {
 			explorationMgr = s.getExplorations();
 
-			// Recruit additional members to mission.
-			if (!recruitMembersForMission(startingPerson, MIN_GOING_MEMBERS)) {
-				logger.warning(getVehicle(), "Not enough members recruited for mission " 
-						+ getName() + ".");
-				endMission(NOT_ENOUGH_MEMBERS);
-				return;
-			}
-
-			// Determine exploration sites
-			if (!hasVehicle()) {
-				return;
-			}
-
-			int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+			int skill = crew.leader().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 
 			int sol = getMarsTime().getMissionSol();
 			var numSites = 2 + (int)(1.0 * sol / 20);
@@ -125,8 +113,14 @@ public class Exploration extends EVAMission
 			
 			initializeExplorationSites(sitesToClaim);
 
-			// Set initial mission phase.
-			setInitialPhase(needsReview);
+
+			// Add mission members.
+			if (!isDone()) {
+				addMembers(crew.members(), false);
+
+				// Set initial mission phase.
+				setInitialPhase(needsReview);
+			}
 		}
 	}
 
@@ -168,7 +162,7 @@ public class Exploration extends EVAMission
 	private void initializeExplorationSites(List<Coordinates> explorationSites) {
 		
 		// Initialize explored sites.
-		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
+		int numMembers = getMembers().size();
 		int buffer = (int)(numMembers * 1.5);
 		int newContainerNum = Math.max(buffer, REQUIRED_SPECIMEN_CONTAINERS);
 		

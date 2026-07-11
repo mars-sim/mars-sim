@@ -46,7 +46,7 @@ public class DeliveryMeta extends AbstractMetaMission {
     private static final double DIVISOR = 10;
 
 
-	DeliveryMeta() {
+	public DeliveryMeta() {
 		// Everyone can start Delivery ??
 		super(MissionType.DELIVERY, 3, LEADER_JOBS, WORKER_JOBS);
 
@@ -63,10 +63,16 @@ public class DeliveryMeta extends AbstractMetaMission {
 	protected Comparator<Vehicle> getVehicleComparator() {
 		return new CargoRangeComparator();
 	}
-	
+
+	/**
+	 * Constructs a new instance of the Delivery mission with the given crew and review status.
+	 * @param crew the roster of crew members for the mission.
+	 * @param needsReview whether the mission requires review before execution.
+	 * @return a new instance of the Delivery mission.
+	 */
 	@Override
-	public Mission constructInstance(Person person, boolean needsReview) {
-		return new Delivery(person, needsReview);
+	public Mission constructInstance(Roster crew, boolean needsReview) {
+		return new Delivery(crew, needsReview);
 	}
 
 	@Override
