@@ -69,8 +69,9 @@ public interface MetaMission {
 	 * @param crew The crew for the mission, including leader and members
 	 * @param needsReview Mission must be reviewed
 	 * @return mission instance.
+	 * @throws MissionCreationException If there is a problem creating the mission.
 	 */
-	Mission constructInstance(Roster crew, boolean needsReview);
+	Mission constructInstance(Roster crew, boolean needsReview) throws MissionCreationException;
 
 	/**
 	 * Gets the weighted probability value that the person might perform this

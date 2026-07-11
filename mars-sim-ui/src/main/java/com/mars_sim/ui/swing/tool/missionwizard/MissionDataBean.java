@@ -14,6 +14,7 @@ import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.BiologyFieldStudy;
@@ -83,6 +84,10 @@ class MissionDataBean {
 		if (botMembers != null)
 			mixedMembers.addAll(botMembers);
 
+		// Create the mission roster;this is for the new single constructor per Mission pattern
+		var roster = new MetaMission.Roster((Person)personMembers.get(0),
+										mixedMembers.subList(1, mixedMembers.size()-1), rover);
+
 	    Mission mission = null;
 	    switch (missionType) {
 			case MissionType.AREOLOGY ->
@@ -117,7 +122,7 @@ class MissionDataBean {
 					mission = new Trade(mixedMembers, destinationSettlement, rover,
 							sellGoods, buyGoods);
 			case MissionType.TRAVEL_TO_SETTLEMENT ->
-					mission = new TravelToSettlement(mixedMembers, destinationSettlement, rover);
+					mission = new TravelToSettlement(roster, destinationSettlement, false);
 			default -> throw new IllegalStateException("Mission type: " + type + " unknown");
 		}
 

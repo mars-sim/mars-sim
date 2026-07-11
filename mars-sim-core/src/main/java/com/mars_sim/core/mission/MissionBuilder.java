@@ -161,9 +161,12 @@ public class MissionBuilder {
 	}
 
 	private void logError(String key) {
-		var context = new MsgContext(key, null);
+		logError(new MsgContext(key, null));
+	}
+
+	private void logError(MsgContext context) {
 		messages.add(context);
-		logger.warning(mission.getName() + ": " + context.getMessage());
+		logger.warning(mission.getName() + ": " + context);
 	}
 	
 	/**
@@ -199,7 +202,12 @@ public class MissionBuilder {
 		}
 
 		var crew = new MetaMission.Roster(startingMember, members, vehicle);
-		return mission.constructInstance(crew, needsReview);
+		try {
+			return mission.constructInstance(crew, needsReview);
+		} catch (MissionCreationException e) {
+			logError(e.getContext());
+			return null;
+		}
 	}
 
 	/**
