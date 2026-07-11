@@ -79,7 +79,7 @@ class MissionBuilderTest extends MarsSimUnitTest {
     
     @Test
     @DisplayName("Test that build flags lack of members")
-    void testNuildNoMembers() {
+    void testBuildNoMembers() {
         var s = buildSettlement("test", 5);
         buildRecreation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var l = buildPerson("leader", s, JobType.TRADER, null, null);

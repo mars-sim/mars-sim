@@ -78,14 +78,12 @@ class MissionDataBean {
 	 */
     public Mission createMission() {
     	// Note: how to resolve the situation when rover is no longer available ?
-    	List<Worker> mixedMembers = new ArrayList<>();
-		if (personMembers != null)
-			mixedMembers.addAll(personMembers);
+    	List<Worker> mixedMembers = new ArrayList<>(personMembers);
 		if (botMembers != null)
 			mixedMembers.addAll(botMembers);
 
 		// Create the mission roster;this is for the new single constructor per Mission pattern
-		var roster = new MetaMission.Roster((Person)personMembers.get(0),
+		var roster = new MetaMission.Roster(personMembers.get(0),
 										mixedMembers.subList(1, mixedMembers.size()-1), rover);
 
 	    Mission mission = null;

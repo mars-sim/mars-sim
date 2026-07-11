@@ -116,10 +116,10 @@ public class Exploration extends EVAMission
 
 			// Add mission members.
 			if (!isDone()) {
-				addMembers(crew.members(), needsReview);
+				addMembers(crew.members(), false);
 
 				// Set initial mission phase.
-				setInitialPhase(false);
+				setInitialPhase(needsReview);
 			}
 		}
 	}
