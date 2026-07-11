@@ -32,7 +32,8 @@ public class SettlementTableModel extends BaseSettlementModel implements Monitor
 	 * simulation.
 	 */
 	public SettlementTableModel() {
-		super(RESOURCES, NAME, POPULATION, PARKED, MISSION, POWER_GEN, POWER_LOAD, ENERGY_STORED);
+		super(NAME, POPULATION, PARKED, MISSION, POWER_GEN, POWER_LOAD, ENERGY_STORED);
+		addResourceColumns(RESOURCES);
 	}
 
 	@Override

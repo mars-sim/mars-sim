@@ -6,7 +6,7 @@
  */
 package com.mars_sim.ui.swing.utils.model;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,26 +81,24 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     protected static final EntityColumnSpec FUEL = new EntityColumnSpec(new ColumnSpec(FUEL_VAL, "Fuel %", Double.class, ColumnSpec.STYLE_INTEGER), null);
     
     private Map<Vehicle, VehicleMission> vehicleToMission = new HashMap<>();
-    private List<Integer> resources = Collections.emptyList();
+    private List<Integer> resources = new ArrayList<>();
 
     /**
      * Create a generic vehicle model with the specified columns.
-     * @param resources List of resource IDs to create columns for.
-     * @param columns Columns to show.
-     */
-    protected BaseVehicleModel(List<Integer> resources,EntityColumnSpec... columns) {
-        super(ResourceColumnHelper.getColumns(resources, columns));
-        this.resources = resources;
-    }
-
-    /**
-     * Create a generic vehicle model with the specified columns and no resources
      * @param columns Columns to show.
      */
     protected BaseVehicleModel(EntityColumnSpec... columns) {
         super(columns);
     }
 
+    /**
+     * Add resource columns to the model. The resource columns are created for the specified list of resource IDs.
+     * @param resources Resource IDs to add
+     */
+    protected void addResourceColumns(List<Integer> resources) {
+        addColumns(InventoryColumnHelper.getResourceColumn(resources));
+        this.resources.addAll(resources);
+    }
 
     /**
      * Attachs listener to an associated Mission.
@@ -156,7 +154,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
             }
         }
         else if (event.getType().equals(EntityEventType.INVENTORY_RESOURCE_EVENT)) {
-            event = ResourceColumnHelper.convertResourceToEvent(event, resources);
+            event = InventoryColumnHelper.convertResourceToEvent(event, resources);
             if (event == null) {
                 // Not a monitored resource
                 return;
@@ -229,9 +227,8 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
 			}
 
             // Check for a resource column
-            default -> (valueIndex >= ResourceColumnHelper.RESOURCE_VAL) ?
-                        entity.getSpecificAmountResourceStored(valueIndex - ResourceColumnHelper.RESOURCE_VAL) : null;
-            };
+            default -> InventoryColumnHelper.getValue(entity, valueIndex);
+        };
     }
 
     @Override

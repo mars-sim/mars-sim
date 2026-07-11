@@ -7,13 +7,13 @@
 package com.mars_sim.ui.swing.utils.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -39,7 +39,7 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     public record EntityColumnSpec(ColumnSpec column, Set<String> eventTypes) {}
 
 	private List<T> entities = new ArrayList<>();
-    private ColumnSpec[] columns;
+    private List<ColumnSpec> columns = new ArrayList<>();
     private Map<String, List<Integer>> monitoredEvents = new HashMap<>();
 
     /**
@@ -47,27 +47,34 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
      * @param columns Columns to render
      */
     protected AbstractEntityModel(EntityColumnSpec[] columns) {
-        Set<Integer> valIds = new HashSet<>();
+        addColumns(columns);
+    }
+
+    /**
+     * Add columns to the model. The column spec and associated event types are provided in the EntityColumnSpec array.
+     * @param newColumns Array of new columns to add.
+     */
+    protected void addColumns(EntityColumnSpec[] newColumns) {
+        // Load exisitng value ids
+        var existingIds = columns.stream().map(ColumnSpec::id).collect(Collectors.toSet());
+        Set<Integer> valIds = new HashSet<>(existingIds);
 
         // Create the event map by extracting the event types against the index of the EntityColumnSpec
-        int idx = 0;
-        for (EntityColumnSpec ecs : columns) {
+        for (EntityColumnSpec ecs : newColumns) {
             if (ecs.eventTypes() != null) {
                 for (String eventType : ecs.eventTypes()) {
-                    monitoredEvents.computeIfAbsent(eventType, k -> new ArrayList<>()).add(idx);
+                    monitoredEvents.computeIfAbsent(eventType, k -> new ArrayList<>()).add(columns.size());
                 }
             }
-            idx++;
+            columns.add(ecs.column());
             
             valIds.add(ecs.column().id());
         }
 
         // Check all columns have unique Ids
-        if (valIds.size() != columns.length) {
+        if (valIds.size() != columns.size()) {
             throw new IllegalArgumentException("Column Ids must be unique");
         }
-
-        this.columns = Arrays.stream(columns).map(EntityColumnSpec::column).toArray(ColumnSpec[]::new);
     }
 
     /**
@@ -163,16 +170,17 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
 
     @Override
     public int getColumnCount() {
-        return columns.length;
+        return columns.size();
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        return columns[columnIndex].type();    }
+        return columns.get(columnIndex).type();
+    }
 
     @Override
     public String getColumnName(int columnIndex) {
-        return columns[columnIndex].name();
+        return columns.get(columnIndex).name();
     }
 
     @Override
@@ -182,7 +190,7 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
 
     @Override
     public ColumnSpec getColumnSpec(int modelIndex) {
-        return columns[modelIndex];
+        return columns.get(modelIndex);
     }
 
     /**

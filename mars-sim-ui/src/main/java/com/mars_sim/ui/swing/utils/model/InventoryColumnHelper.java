@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * ResourceColumnHelper.java
+ * InventoryColumnHelper.java
  * @date 2026-06-27
  * @author Barry Evans
  */
@@ -10,45 +10,51 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.equipment.EquipmentOwner;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.resource.AmountResource;
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.ItemResource;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.model.AbstractEntityModel.EntityColumnSpec;
 
 /**
- * A utility class to help with the creation of resource columns for a table model based onthe resource ids.
+ * A utility class to help with the creation of columns for a table model based on the resource ids.
+ * It supports AmountResource, ItemResource e.g. parts, Containers & EquipmentType.
  * It provides methods to create an array of EntityColumnSpec for the specified resources and columns,
  * and to convert an inbound event that references a change to an Inventory into a pseudo event that references the resource column.
  * 
  */
-public class ResourceColumnHelper {
+public class InventoryColumnHelper {
     private static final String RES_PREFIX = "res:";
 
     // Base value for resource columns. The actual column index is RESOURCE_VAL + resourceID
-    static final int RESOURCE_VAL = 1000;
+    static final int AMOUNT_VAL = 1000;
+    private static final Set<Integer> SUPPORTED_TYPES = Set.of(ResourceType.AMOUNT_RESOURCE, ResourceType.ITEM_RESOURCE,
+                                                                ResourceType.EQUIPMENT_RESOURCE);
 
-    private ResourceColumnHelper() {
+    private InventoryColumnHelper() {
         /* This utility class should not be instantiated */
     }
 
     /**
-     * Create an array of EntityColumnSpec for the specified resources and columns.
-     * Note this could be resued elsewhere.
+     * Create an array of EntityColumnSpec for the specified Resources.
      * @param resources Set of resource IDs to create columns for.
-     * @param columns Array of named columns.
-     * @return Array of EntityColumnSpec including both existing and resource columns.  
+     * @return Array of EntityColumnSpec covering the resource columns.  
      */
-    static EntityColumnSpec[] getColumns(List<Integer> resources, EntityColumnSpec[] columns) {
-        EntityColumnSpec[] resourceColumns = new EntityColumnSpec[resources.size() + columns.length];
-    
-        // Named columns first
-        System.arraycopy(columns, 0, resourceColumns, 0, columns.length);
+    static EntityColumnSpec[] getResourceColumn(List<Integer> resources) {
+        EntityColumnSpec[] resourceColumns = new EntityColumnSpec[resources.size()];
     
         // Then add the resource columns with the pseudo event type for each resource
-        int idx = columns.length;
+        int idx = 0;
         for(var resourceID : resources) {
-            var name =ResourceUtil.findAmountResourceName(resourceID);
-            var resColumn = new EntityColumnSpec(new ColumnSpec(RESOURCE_VAL + resourceID, name, Double.class, ColumnSpec.STYLE_INTEGER),
+            // Check supported resource type
+            if (!SUPPORTED_TYPES.contains(ResourceType.getType(resourceID))) {
+                throw new IllegalArgumentException("Unsupported resource type for resource ID: " + resourceID);
+            }
+
+            var name = ResourceType.getName(resourceID);
+            var resColumn = new EntityColumnSpec(new ColumnSpec(AMOUNT_VAL + resourceID, name, Double.class, ColumnSpec.STYLE_INTEGER),
                                 Set.of(RES_PREFIX + resourceID));
             resourceColumns[idx++] = resColumn;
         }
@@ -66,6 +72,7 @@ public class ResourceColumnHelper {
         var target = event.getTarget();
         int resourceID = switch (target) {
             case AmountResource ar -> ar.getID();
+            case ItemResource ir -> ir.getID();
             case Integer i -> i;
             default -> -1;
         };
@@ -77,5 +84,19 @@ public class ResourceColumnHelper {
             return null;
         }
         return new EntityEvent(event.getSource(), pseudoEventType, event.getTarget());
+    }
+
+
+    public static Object getValue(EquipmentOwner owner, int columnIndex) {
+        if (columnIndex >= AMOUNT_VAL) {
+            int resourceID = columnIndex - AMOUNT_VAL;
+            return switch (ResourceType.getType(resourceID)) {
+                case ResourceType.AMOUNT_RESOURCE -> owner.getSpecificAmountResourceStored(resourceID);
+                case ResourceType.ITEM_RESOURCE -> owner.getItemResourceStored(resourceID);
+                case ResourceType.EQUIPMENT_RESOURCE -> owner.findNumContainersOfType(EquipmentType.convertID2Type(resourceID));
+                default -> null;
+            };
+        }
+        return null;
     }
 }
