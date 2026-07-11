@@ -45,7 +45,8 @@ class TestDriveMissionTest extends MarsSimUnitTest {
         var meta = MetaMissionUtil.getMetaMission(MissionType.TEST_DRIVE);
 
         List<Person> recruits = new ArrayList<>();
-        for(int i = 0; i < 1 + meta.getMinimumMembers(); i++) {
+        // Create other members; allow for the leader alreadsy counted
+        for(int i = 0; i < meta.getMinimumMembers() -1; i++) {
             recruits.add(buildPerson("Support" + i, home));
         }
 

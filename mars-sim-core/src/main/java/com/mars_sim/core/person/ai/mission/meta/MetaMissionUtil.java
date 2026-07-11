@@ -20,6 +20,7 @@ public class MetaMissionUtil {
 	
 	// Static values.
 	private static List<MetaMission> metaMissions = null;
+	private static List<MetaMission> automaticMissions;
 
 	/**
 	 * Private constructor for utility class.
@@ -58,6 +59,8 @@ public class MetaMissionUtil {
 		newMissions.add(new TestDriveMetaMission());	
 
 		metaMissions = newMissions;
+
+		automaticMissions = metaMissions.stream().filter(MetaMission::isAutomatic).toList();
 	}
 
 	/**
@@ -89,5 +92,20 @@ public class MetaMissionUtil {
 
 		// Return copy of meta mission list.
 		return metaMissions;
+	}
+
+	/**
+	 * Gets a list of all meta missions that can be automatically created.
+	 * 
+	 * @return list of meta missions.
+	 */
+	public static List<MetaMission> getAutomaticMetaMissions() {
+
+		// Lazy initialize meta missions list if necessary.
+		if (metaMissions == null) {
+			initializeMetaMissions();
+		}
+
+		return automaticMissions;
 	}
 }

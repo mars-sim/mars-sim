@@ -39,8 +39,8 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     }
   
     @Override
-    public Mission constructInstance(Person person, boolean needsReview) {
-        return new RescueSalvageVehicle(person, needsReview);
+    public Mission constructInstance(Roster crew, boolean needsReview) {
+        return new RescueSalvageVehicle(crew, needsReview);
     }
 
     @Override

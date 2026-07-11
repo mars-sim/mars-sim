@@ -58,6 +58,42 @@ class MissionBuilderTest extends MarsSimUnitTest {
         assertTrue(members.contains(p1), "Pilot1 is a member");
         assertTrue(members.contains(p2), "Pilot2 is a member");
     }   
+    
+    @Test
+    @DisplayName("Test that build flags lack of vehicle")
+    void testBuildNoVehicle() {
+        var s = buildSettlement("test", 5);
+        buildRecreation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
+        var l = buildPerson("leader", s, JobType.TRADER, null, null);
+
+        var meta = new VehicleMetaMission(2, 3, Set.of(JobType.TRADER), Set.of(JobType.PILOT), VehicleType.ROVER_TYPES);
+        var recruitment = new MissionBuilder(meta, l);
+        var mission = recruitment.buildMission(false);
+
+        assertNull(mission, "Should not build a mission with too few vehicles");
+
+        var messages = recruitment.getMessages();
+        assertEquals(1, messages.size(), "Should have a message about too few vehicles");
+        assertEquals("mission.builder.noVehicle", messages.get(0).key(), "Should have the correct message key");
+    }
+    
+    @Test
+    @DisplayName("Test that build flags lack of members")
+    void testNuildNoMembers() {
+        var s = buildSettlement("test", 5);
+        buildRecreation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
+        var l = buildPerson("leader", s, JobType.TRADER, null, null);
+
+        var meta = new MockMetaMission(2, 2, Set.of(JobType.TRADER), Set.of(JobType.PILOT));
+        var recruitment = new MissionBuilder(meta, l);
+        var mission = recruitment.buildMission(false);
+
+        assertNull(mission, "Should not build a mission with too few members");
+
+        var messages = recruitment.getMessages();
+        assertEquals(1, messages.size(), "Should have a message about too few members");
+        assertEquals("mission.builder.notEnoughMembers", messages.get(0).key(), "Should have the correct message key");
+    }  
 
     @Test
     @DisplayName("Test that recruitment does not exceed the minimum number of people remaining in the settlement")

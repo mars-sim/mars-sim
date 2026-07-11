@@ -32,7 +32,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.mission.MissionBuilder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -167,14 +166,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		init(startingMember);
 
 		// Set the vehicle.
-		if (vehicle != null) {
-			setVehicle(vehicle);
-		}
-		
-		else if (reserveVehicle()) {
-			// Charge the vehicle
-			getVehicle().setCharging(true);
-		}
+		setVehicle(vehicle);
 	}
 	
 	/**
@@ -223,30 +215,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		Worker startingMember = getStartingPerson();
 		if (getVehicle() != null)
 			logger.info(startingMember, "Assessing " + getName() + " using " + getVehicle().getName() + ".");
-	}
-
-	/**
-	 * Reserves a vehicle for the mission if possible.
-	 *
-	 * @return true if vehicle is reserved, false if unable to.
-	 */
-	private final boolean reserveVehicle() {
-		var builder = new MissionBuilder(getMetaMission(), getStartingPerson());
-
-		var best = builder.selectBestVehicle();
-		if (best != null) {
-			setVehicle(best);
-			return true;
-		}
-
-		// Question: how to allow a delay of 1/4 of a sol and check again if a vehicle is available ?
-		
-		// It is a waste to have gone through all the reviews of the mission plan, only to find that
-		// no vehicle is available
-		endMission(NO_AVAILABLE_VEHICLE);
-		logger.warning(getStartingPerson(), "Could not reserve a vehicle for " + getName() + ".");
-
-		return false;
 	}
 
 	/**
@@ -395,7 +363,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return
 	 */
-	public boolean isDroneDone() {
+	private boolean isDroneDone() {
 		if (VehicleType.isDrone(vehicle.getVehicleType())
 				&& vehicle.isEmpty())
 			return true;
@@ -407,7 +375,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * 
 	 * @return
 	 */
-	public boolean isRoverDone() {
+	private boolean isRoverDone() {
 		if (VehicleType.isRover(vehicle.getVehicleType())
 				&& (((Rover)vehicle).getCrewNum() == 0
 				|| vehicle.isEmpty()))

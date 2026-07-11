@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.Set;
 
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -27,7 +26,7 @@ public class AreologyFieldStudyMeta extends FieldStudyMeta {
 	}
 
     @Override
-    public Mission constructInstance(Person person, boolean needsReview) {
-        return new AreologyFieldStudy(person, needsReview);
+    public Mission constructInstance(Roster crew, boolean needsReview) {
+        return new AreologyFieldStudy(crew, needsReview);
     }
 }

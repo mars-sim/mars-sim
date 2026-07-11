@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -37,13 +38,13 @@ public class AreologyFieldStudy extends FieldStudyMission {
 	/**
 	 * Constructor.
 	 * 
-	 * @param startingPerson {@link Person} the person starting the mission.
+	 * @param crew the roster of crew members for the mission.
 	 * @param needsReview
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public AreologyFieldStudy(Person startingPerson, boolean needsReview) {
+	public AreologyFieldStudy(MetaMission.Roster crew, boolean needsReview) {
 		
-		super(MissionType.AREOLOGY, startingPerson, 
+		super(MissionType.AREOLOGY, crew, 
 			  ScienceType.AREOLOGY, FIELD_SITE_TIME, needsReview);
 	}
 

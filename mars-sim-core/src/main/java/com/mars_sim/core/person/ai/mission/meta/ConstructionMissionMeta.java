@@ -41,9 +41,16 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 		setPopulationThreshold(20);
     }
     
-    @Override
-    public Mission constructInstance(Person person, boolean needsReview) {
-        return new ConstructionMission(person);
+	/**
+	 * Constructs an instance of the associated mission.
+	 * 
+	 * @param crew The crew for the mission, including leader and members
+	 * @param needsReview Mission must be reviewed. Construction mission do not need reviewing.
+	 * @return mission instance.
+	 */
+	@Override
+	public Mission constructInstance(Roster crew, boolean needsReview) {
+        return new ConstructionMission(crew);
     }
 
     @Override

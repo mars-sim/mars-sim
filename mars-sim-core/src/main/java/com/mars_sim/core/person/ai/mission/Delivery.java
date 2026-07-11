@@ -17,6 +17,7 @@ import com.mars_sim.core.goods.CommerceUtil;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.mission.task.NegotiateTrade;
 import com.mars_sim.core.person.Person;
@@ -62,20 +63,18 @@ public class Delivery extends DroneMission implements CommerceMission {
 	/**
 	 * Constructor. Started by DeliveryMeta.
 	 *
-	 * @param startingMember the mission member starting the settlement.
+	 * @param crew the roster of crew members for the mission.
 	 */
-	public Delivery(Person startingMember, boolean needsReview) {
+	public Delivery(MetaMission.Roster crew, boolean needsReview) {
 		// Use DroneMission constructor.
-		super(MissionType.DELIVERY, startingMember, null);
+		super(MissionType.DELIVERY, crew.leader(), (Drone)crew.vehicle());
 
 		// Problem starting Mission
 		if (isDone()) {
 			return;
 		}
 
-		Settlement s = startingMember.getSettlement();
-		// Set the mission capacity.
-		setMissionCapacity(MAX_MEMBERS);
+		Settlement s = crew.leader().getSettlement();
 
 		outbound = true;
 
@@ -93,8 +92,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 			objective = new TradeObjective(tradingSettlement, deal.getBuyingLoad(), deal.getSellingLoad(), deal.getProfit());
 			addObjective(objective);
 			
-			// Recruit additional members to mission.
-			recruitMembersForMission(startingMember, 2);
+			addMembers(crew.members(), true);
 
 			if (!isDone()) {
 				// Set initial phase

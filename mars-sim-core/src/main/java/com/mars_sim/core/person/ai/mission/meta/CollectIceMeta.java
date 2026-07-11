@@ -43,6 +43,12 @@ public class CollectIceMeta extends AbstractMetaMission {
 		setSolThreshold(MIN_STARTING_SOL);
 	}
 
+	/**
+	 * Constructs a new instance of the CollectIce mission with the given crew and review status.
+	 * @param crew the roster of crew members for the mission.
+	 * @param needsReview whether the mission requires review before execution.
+	 * @return a new instance of the CollectIce mission.
+	 */
 	@Override
 	public Mission constructInstance(Roster crew, boolean needsReview) {
 		return new CollectIce(crew, needsReview);

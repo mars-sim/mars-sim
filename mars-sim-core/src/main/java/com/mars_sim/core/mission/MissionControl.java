@@ -298,7 +298,7 @@ public class MissionControl implements ScheduledEventHandler {
 		var activeMissionsByType = getActiveMissions().stream()
 				.collect(Collectors.groupingBy(Mission::getMissionType, Collectors.counting()));
 		
-		return MetaMissionUtil.getMetaMissions().stream()
+		return MetaMissionUtil.getAutomaticMetaMissions().stream()
 				.filter(m -> canAcceptMission(m, paramMgr, checkSol, activeMissionsByType))
 				.toList();
 	}

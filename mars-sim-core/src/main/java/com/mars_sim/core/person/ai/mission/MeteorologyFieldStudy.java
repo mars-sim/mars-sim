@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -40,12 +41,12 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 	/**
 	 * Constructor.
 	 * 
-	 * @param startingPerson {@link Person} the person starting the mission.
+	 * @param crew the roster of crew members for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public MeteorologyFieldStudy(Person startingPerson, boolean needsReview) {
+	public MeteorologyFieldStudy(MetaMission.Roster crew, boolean needsReview) {
 		
-		super(MissionType.METEOROLOGY, startingPerson,
+		super(MissionType.METEOROLOGY, crew,
 			  ScienceType.METEOROLOGY, FIELD_SITE_TIME, needsReview);
 		
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX,

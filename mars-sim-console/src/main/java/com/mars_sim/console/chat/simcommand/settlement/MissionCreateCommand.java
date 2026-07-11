@@ -32,7 +32,7 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
 		// Get the user to select the Mission
-		List<MetaMission> automissions = MetaMissionUtil.getMetaMissions();
+		List<MetaMission> automissions = MetaMissionUtil.getAutomaticMetaMissions();
 
 		List<String> names = automissions.stream().map(MetaMission::getName).toList();				
 		int choice = CommandHelper.getOptionInput(context, names, "Pick a mission from above by entering a number");

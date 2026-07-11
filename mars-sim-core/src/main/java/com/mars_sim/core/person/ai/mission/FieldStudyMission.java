@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -42,22 +43,22 @@ public abstract class FieldStudyMission extends EVAMission {
 	/**
 	 * Constructor.
 	 * 
-	 * @param startingPerson {@link Person} the person starting the mission.
+	 * @param crew the roster of crew members for the mission.
 	 * @param needsReview
 	 * @throws MissionException if problem constructing mission.
 	 */
 	protected FieldStudyMission(MissionType missionType,
-								Person startingPerson,
+								MetaMission.Roster crew,
 								ScienceType science, double fieldSiteTime, boolean needsReview) {
 
 		// Use RoverMission constructor.
-		super(missionType, startingPerson, null, RESEARCH_SITE, ScientificStudyFieldWork.LIGHT_LEVEL);
+		super(missionType, crew.leader(), (Rover) crew.vehicle(), RESEARCH_SITE, ScientificStudyFieldWork.LIGHT_LEVEL);
 		
-		Settlement s = startingPerson.getSettlement();
+		Settlement s = crew.leader().getSettlement();
 
 		if (!isDone() && s != null) {
 			// Set the lead researcher and study.
-			var study = determineStudy(science, startingPerson);
+			var study = determineStudy(science, crew.leader());
 			if (study == null) {
 				endMission(NO_ONGOING_SCIENTIFIC_STUDY);
 				return;
@@ -66,10 +67,11 @@ public abstract class FieldStudyMission extends EVAMission {
 			objective = new FieldStudyObjectives(study, science, fieldSiteTime);
 			addObjective(objective);
 
-			// Recruit additional members to mission.
-			var meta = getMetaMission();
-			if (!recruitMembersForMission(startingPerson, meta.getMinimumMembers()))
+			// Add selected members to mission.
+			addMembers(crew.members(), false);
+			if (isDone()) {
 				return;
+			}
 
 			// Determine field site location.
 			if (hasVehicle()) {

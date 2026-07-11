@@ -2,7 +2,6 @@ package com.mars_sim.core.mission;
 
 import java.util.Set;
 
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -22,7 +21,7 @@ class MockMetaMission extends AbstractMetaMission {
     }
 
     @Override
-    public Mission constructInstance(Person person, boolean needsReview) {
-        return null;
+    public Mission constructInstance(Roster crew, boolean needsReview) {
+        throw new UnsupportedOperationException("Unimplemented method 'constructInstance'");
     }
 }

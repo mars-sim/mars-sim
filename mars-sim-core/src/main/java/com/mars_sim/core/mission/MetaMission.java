@@ -7,6 +7,7 @@
 package com.mars_sim.core.mission;
 
 import java.util.Collection;
+import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
@@ -15,6 +16,7 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Interface for a meta mission, responsible for determining mission probability
@@ -40,12 +42,19 @@ public interface MetaMission {
 	String getName();
 
 	/**
+	 * Can this meta automatically create a mission without user intervention?
+	 * If not, then the mission must be reviewed by the user before it can be created.
+	 * @return true if the meta can automatically create a mission.
+	 */
+	boolean isAutomatic();
+
+	/**
 	 * Checks the suitability for this Person to be the leader. It currently checks their Job.
 	 * 
-	 * @param person Potential leader to assess
+	 * @param leader Potential leader to assess
 	 * @return Score of suitability. zero means not suitable at all.
 	 */
-	double getLeaderSuitability(Person person);
+	double getLeaderSuitability(Person leader);
 
 	/**
 	 * Gauges the suitability of this worker joining a mission of this type.
@@ -57,35 +66,21 @@ public interface MetaMission {
 	/**
 	 * Constructs an instance of the associated mission.
 	 * 
-	 * @param person the person to perform the mission.
-	 * @param needsReview Mission must be reviewed
-	 * @return mission instance.
-	 */
-	@Deprecated(since = "Should be replaced with MissionFactory.constructInstance")
-	default Mission constructInstance(Person person, boolean needsReview) {
-		return null;
-	}
-
-	/**
-	 * Constructs an instance of the associated mission.
-	 * 
 	 * @param crew The crew for the mission, including leader and members
 	 * @param needsReview Mission must be reviewed
 	 * @return mission instance.
 	 */
-	default Mission constructInstance(Roster crew, boolean needsReview) {
-		return constructInstance(crew.leader(), needsReview);
-	}
+	Mission constructInstance(Roster crew, boolean needsReview);
 
 	/**
 	 * Gets the weighted probability value that the person might perform this
 	 * mission. A probability weight of zero means that the mission has no chance of
 	 * being performed by the person.
 	 * 
-	 * @param person the person to perform the mission.
+	 * @param leader the person to perform the mission.
 	 * @return Rating of this mission starting
 	 */
-	default RatingScore getProbability(Person person) {
+	default RatingScore getProbability(Person leader) {
 		return RatingScore.ZERO_RATING;
 	}
 
@@ -117,5 +112,12 @@ public interface MetaMission {
 	 * @return minimum sol threshold
 	 */
     int getSolThreshold();
+
+    /**
+     * Gets the preferred vehicle types for this mission. This is optional and can be left empty.
+     * By default no VehicleTypes are preferred. If a VehicleType is preferred then it will be given a higher suitability score.
+     * @return Vehicle types to prefer
+     */
+    Set<VehicleType> getPreferredVehicle();
 
 }

@@ -201,7 +201,7 @@ public abstract class CollectResourcesMission extends EVAMission
 	}
 
 	private void setObjectives(int containerNum, double numberSites) {
-		int numMembers = (getMissionCapacity() + getMembers().size()) / 2;
+		int numMembers = getMembers().size();
 		int buffer = (int)(numMembers * 1.5);
 		int newContainerNum = Math.min(buffer, containerNum);
 	

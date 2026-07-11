@@ -54,8 +54,8 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 	}
 
     @Override
-    public Mission constructInstance(Person person, boolean needsReview) {
-        return new TravelToSettlement(person, needsReview);
+    public Mission constructInstance(Roster crew, boolean needsReview) {
+        return new TravelToSettlement(crew, needsReview);
     }
 
     @Override

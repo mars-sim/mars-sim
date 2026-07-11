@@ -21,6 +21,7 @@ import com.mars_sim.core.goods.CommerceUtil;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.mission.task.NegotiateTrade;
@@ -75,18 +76,18 @@ public class Trade extends RoverMission implements CommerceMission {
 	/**
 	 * Constructor. Started by TradeMeta
 	 *
-	 * @param startingMember the mission member starting the settlement.
+	 * @param crew the roster of crew members for the mission.
 	 */
-	public Trade(Person startingMember, boolean needsReview) {
+	public Trade(MetaMission.Roster crew, boolean needsReview) {
 		// Use RoverMission constructor.
-		super(MissionType.TRADE, startingMember, null);
+		super(MissionType.TRADE, crew.leader(), (Rover) crew.vehicle());
 
 		// Problem setting up the mission
 		if (isDone()) {
 			return;
 		}
 
-		Settlement s = startingMember.getSettlement();
+		Settlement s = crew.leader().getSettlement();
 		outbound = true;
 
 		// Get trading settlement
@@ -101,8 +102,12 @@ public class Trade extends RoverMission implements CommerceMission {
 		objective = new TradeObjective(tradingSettlement, deal.getBuyingLoad(), deal.getSellingLoad(), deal.getProfit());
 		addObjective(objective);
 
-		// Recruit additional members to mission.
-		if (!isDone() && !recruitMembersForMission(startingMember, getMissionCapacity())) {
+		// Add selected members to mission.
+		if (!isDone()) {
+			addMembers(crew.members(), false);
+		}
+
+		if (isDone()) {
 			return;
 		}
 

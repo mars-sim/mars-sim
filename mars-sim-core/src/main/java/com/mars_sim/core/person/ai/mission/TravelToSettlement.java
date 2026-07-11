@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -56,44 +57,38 @@ public class TravelToSettlement extends RoverMission {
 	/**
 	 * Constructor with destination settlement randomly determined.
 	 * 
-	 * @param startingMember the mission member starting the mission.
+	 * @param crew the roster of crew members for the mission.
 	 */
-	public TravelToSettlement(Person startingMember, boolean needsReview) {
+	public TravelToSettlement(MetaMission.Roster crew, boolean needsReview) {
 		// Use RoverMission constructor
-		super(MissionType.TRAVEL_TO_SETTLEMENT, startingMember, null);
+		super(MissionType.TRAVEL_TO_SETTLEMENT, crew.leader(), (Rover) crew.vehicle());
 
 		Settlement s = getStartingSettlement();
 
 		if (!isDone() && s != null) {
 
 			// Choose destination settlement.
-			setDestinationSettlement(getRandomDestinationSettlement(startingMember, s));
+			setDestinationSettlement(getRandomDestinationSettlement(crew.leader(), s));
 			if (destinationSettlement != null) {
 				addNavpoint(destinationSettlement);
 				setName(Msg.getString("mission.description.travelToSettlement.detail", // $NON-NLS-1$
 						destinationSettlement.getName())); 
 			}
 			else {
-				endMissionProblem(startingMember, "No destination");
+				endMissionProblem(crew.leader(), "No destination");
 			}
 
-			// Check mission available space
+			// Add selected members to mission.
 			if (!isDone()) {
-				int availableSpace = destinationSettlement.getPopulationCapacity()
-						- destinationSettlement.getNumCitizens();
-
-				if (availableSpace < getMissionCapacity()) {
-					setMissionCapacity(availableSpace);
-				}
+				addMembers(crew.members(), false);
 			}
 
-			// Recruit additional members to mission.
-			if (!isDone() && !recruitMembersForMission(startingMember, 2)) {
+			if (isDone()) {
 				return;
 			}
 
 			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable()) {
+			if (!isVehicleLoadable()) {
 				endMission(CANNOT_LOAD_RESOURCES);
 				return;
 			}
