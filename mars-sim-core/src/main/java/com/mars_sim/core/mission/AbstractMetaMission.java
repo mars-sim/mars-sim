@@ -165,12 +165,19 @@ public abstract class AbstractMetaMission implements MetaMission {
 		return name;
 	}
 
-	protected Set<JobType> getPreferredLeaderJob() {
+	@Override
+	public Set<JobType> getPreferredLeaderJob() {
 		return preferredLeaderJob;
 	}
 
-	protected Set<JobType> getPreferredWorkerJobs() {
+	@Override
+	public Set<JobType> getPreferredWorkerJobs() {
 		return preferredWorkerJob;
+	}
+
+	@Override
+	public Set<RobotType> getPreferredRobots() {
+		return preferredRobots;
 	}
 	
 	/**
@@ -188,6 +195,15 @@ public abstract class AbstractMetaMission implements MetaMission {
 	@Override
 	public int getSolThreshold() {
 		return solThreshold;
+	}
+
+	/**
+	 * Gets the population threshold for this mission. This is the minimum number of citizens that must be present in a settlement before this mission can be created.
+	 * @return
+	 */
+	@Override
+	public int getPopThreshold() {
+		return popThreshold;
 	}
 
 	/** 

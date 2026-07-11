@@ -1,0 +1,62 @@
+{{<help-layout}}
+  {{$body}}
+    <div id="characteristics">
+      <h3>Characteristics</h3>
+      <table class="characteristics">
+        <tr><td>Mission Type:</td><td>{{mission.type.name}} ({{mission.type.shortCode}})</td></tr>
+        <tr><td>Automatic:</td><td>{{mission.automatic}}</td></tr>
+        <tr><td>Minimum Members:</td><td>{{mission.minimumMembers}}</td></tr>
+        <tr><td>Default Capacity:</td><td>{{mission.defaultCapacity}}</td></tr>
+        <tr><td>Sol Threshold:</td><td>{{mission.solThreshold}}</td></tr>
+        <tr><td>Population Threshold:</td><td>{{mission.popThreshold}}</td></tr>
+      </table>
+    </div>
+
+    {{#hasLeaderJobs}}
+    <div id="leader-jobs">
+      <h3>Preferred Leader Jobs</h3>
+      <ul>
+      {{#leaderJobs}}
+        <li>{{.}}</li>
+      {{/leaderJobs}}
+      </ul>
+    </div>
+    {{/hasLeaderJobs}}
+
+    {{#hasWorkerJobs}}
+    <div id="worker-jobs">
+      <h3>Preferred Worker Jobs</h3>
+      <ul>
+      {{#workerJobs}}
+        <li>{{.}}</li>
+      {{/workerJobs}}
+      </ul>
+    </div>
+    {{/hasWorkerJobs}}
+
+    {{#hasPreferredVehicles}}
+    <div id="vehicles">
+      <h3>Preferred Vehicles</h3>
+      <ul>
+      {{#preferredVehicles}}
+        <li>{{.}}</li>
+      {{/preferredVehicles}}
+      </ul>
+    </div>
+    {{/hasPreferredVehicles}}
+
+    {{#hasPreferredRobots}}
+    <div id="robots">
+      <h3>Preferred Robots</h3>
+      <ul>
+      {{#preferredRobots}}
+        <li>{{.}}</li>
+      {{/preferredRobots}}
+      </ul>
+    </div>
+    {{/hasPreferredRobots}}
+
+    </br>
+    <a class="backlink" href="index.html">Back to Mission Meta list</a>
+  {{/body}}
+{{/help-layout}}
