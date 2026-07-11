@@ -422,7 +422,6 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 		@Override
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 			// Should never be called as cells are not editable
-			throw new UnsupportedOperationException("Unimplemented method 'setValueAt'");
 		}
 
 		@Override
@@ -438,9 +437,12 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 		@Override
 		public void tableChanged(TableModelEvent e) {
 			// Have to remap the event to be from this model
-			var mappedE = new TableModelEvent(this, e.getFirstRow(), e.getLastRow(), e.getColumn()+1, e.getType());
+			if (e.getColumn() != TableModelEvent.ALL_COLUMNS) {
+				e = new TableModelEvent(this, e.getFirstRow(), e.getLastRow(), e.getColumn() + 1, e.getType());
+			}
+
 			for (TableModelListener l : listeners) {
-				l.tableChanged(mappedE);
+				l.tableChanged(e);
 			}
 		}
 	}

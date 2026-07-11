@@ -20,7 +20,7 @@ import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 /**
  * A wizard panel for selecting the scientific study for a science mission.
  * All studies that are at the starting settlement and match the science type are shown.
- * Only studies in the research phase with assigned researchers can be selected.
+ * Only studies in the research phase can be selected.
  */
 class SciencePanel extends WizardItemStep<MissionDataBean,ScientificStudy> {
     

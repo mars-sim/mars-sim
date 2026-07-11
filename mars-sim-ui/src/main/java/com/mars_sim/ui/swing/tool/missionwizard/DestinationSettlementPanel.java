@@ -53,7 +53,7 @@ class DestinationSettlementPanel extends WizardItemStep<MissionDataBean,Settleme
 	}
 	
 	/**
-	 * A table model for settlements base on tehBaseSettlementModel.
+	 * A table model for settlements based on the BaseSettlementModel.
 	 */
     private static class SettlementTableModel extends BaseSettlementModel
 				implements WizardItemModel<Settlement> {

@@ -37,7 +37,7 @@ public enum EquipmentType implements Named {
 	}
 
 	/**
-	 * Get the unique resoruce id for this EwquipmentType.
+	 * Get the unique resource id for this EquipmentType.
 	 * The resource id is used to reference the EquipmentType in the Inventory.
 	 */
 	public int getResourceID() {
