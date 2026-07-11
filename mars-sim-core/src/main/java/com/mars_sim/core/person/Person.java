@@ -693,7 +693,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		if (value) {
 			// Set work shift to OFF
 			if (shiftSlot != null)
-				shiftSlot.getShift().leaveShift();
+				shiftSlot.resignShift();
 	
 			// Relinquish his role
 			var roleType = role.getType();
@@ -724,7 +724,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		
 		// Set work shift to OFF
 		if (shiftSlot != null)
-			shiftSlot.getShift().leaveShift();
+			shiftSlot.resignShift();
 
 		// Relinquish his role
 		var roleType = role.getType();

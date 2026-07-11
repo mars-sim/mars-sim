@@ -9,11 +9,11 @@ package com.mars_sim.ui.swing.tool.missionwizard;
 
 import java.util.List;
 
-import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
-import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
+import com.mars_sim.ui.swing.utils.model.BaseVehicleModel;
+import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 
 /**
@@ -52,55 +52,45 @@ class LightUtilityVehiclePanel extends WizardItemStep<MissionDataBean,LightUtili
 	/**
 	 * A table model for vehicles.
 	 */
-	private static class VehicleTableModel extends AbstractWizardItemModel<LightUtilityVehicle> {
+	private static class VehicleTableModel extends BaseVehicleModel
+			implements WizardItemModel<LightUtilityVehicle> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
-		private static final List<ColumnSpec> COLUMNS = List.of(
-				new ColumnSpec(Msg.getString("entity.name"), String.class),
-				new ColumnSpec(Msg.getString("vehicle.status"), String.class),
-				new ColumnSpec(Msg.getString("mission.singular"), String.class)
-		);
 
 		/** hidden Constructor. */
 		private VehicleTableModel(MissionDataBean state) {
-			super(COLUMNS);
+			super(NAME, STATUS, MISSION);
 
 			var l = state.getStartingSettlement().getParkedGaragedVehicles().stream()
 						.filter(LightUtilityVehicle.class::isInstance)
 						.map(LightUtilityVehicle.class::cast)
 						.toList();
-			setItems(l);
-		}
-
-
-		@Override
-		protected Object getItemValue(LightUtilityVehicle vehicle, int column) {
-			return switch(column) {
-				case 0 -> vehicle.getName();
-				case 1 -> vehicle.printStatusTypes();
-				case 2 -> {
-							var m = vehicle.getMission();
-							yield (m != null ? m.getName() : "");
-				}
-				default -> null;
-			};
+			setEntities(l);
+			enableListeners(true);
 		}
 
 		@Override
-		protected String isFailureCell(LightUtilityVehicle vehicle, int column) {
-			String result = null;
+		public LightUtilityVehicle getItem(int row) {
+			return (LightUtilityVehicle) getAssociatedEntity(row);
+		}
 
-			if (column == 1) {
-				result = ((vehicle.getPrimaryStatus() != StatusType.PARKED)
-							&& (vehicle.getPrimaryStatus() != StatusType.GARAGED))
-						? MissionCreate.VEHICLE_WRONG_STATUS : null;
+		@Override
+		public String isFailureCell(int row, int column) {
+			var colSpec = getColumnSpec(column);
+			var vehicle = getItem(row);
+
+			if (colSpec.equals(STATUS.column())) {
+				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) 
+						&& (vehicle.getPrimaryStatus() != StatusType.GARAGED))
+					return MissionCreate.VEHICLE_WRONG_STATUS;
 			}
-			else if (column == 2) {
-				result = (vehicle.getMission() != null) ? MissionCreate.ALREADY_ON_MISSION: null;
+			else if (colSpec.equals(MISSION.column())) {
+				Mission mission = vehicle.getMission();
+				return (mission != null) ? MissionCreate.ALREADY_ON_MISSION : null;
 			}
 
-			return result;
+			return null;
 		}
 	}
 }

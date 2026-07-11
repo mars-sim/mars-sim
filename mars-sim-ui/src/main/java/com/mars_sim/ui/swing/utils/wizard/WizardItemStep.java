@@ -14,7 +14,9 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -28,7 +30,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
@@ -227,12 +230,31 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	 */
 	private List<I> getValidedSelection() {
 		var selectedUnits = new ArrayList<I>();
-		for (var rowModel : orderedSelection) {
-			if (!model.isFailureItem(rowModel)) {
-				selectedUnits.add(model.getItem(rowModel));
+		for (var rowSelected : orderedSelection) {
+			if (!isFailureItem(model, rowSelected)) {
+				selectedUnits.add(model.getItem(rowSelected));
 			}
 		}
 		return selectedUnits;
+	}
+
+	/**
+	 * Checks if row contains a failure cell.
+	 * 
+	 * @param model the item model.
+	 * @param row the row index.
+	 * @return true if row has failure cell.
+	 */
+	private boolean isFailureItem(WizardItemModel<I> model, int row) {
+		for (int x = 0; x < model.getColumnCount(); x++) {
+			String failure = model.isFailureCell(row, x);
+
+			// Stop on first failure
+			if (failure != null) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -272,6 +294,7 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	private static class FailureCellDecorator<I> implements TableCellRenderer {
 
 		private static final Border RED_BORDER = BorderFactory.createLineBorder(Color.RED, 2);
+		private static final Border NO_BORDER = BorderFactory.createEmptyBorder(2, 2, 2, 2);
 
 		// Private data members.
 		private WizardItemModel<I> model;
@@ -303,7 +326,7 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 			if (model.isFailureCell(rowModel, column) != null)
 				l.setBorder(RED_BORDER);
 			else
-				l.setBorder(null);
+				l.setBorder(NO_BORDER);
 
 			return l;
 		}
@@ -312,12 +335,14 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	/**
 	 * This is a proxy model that adds a selection column.
 	 */
-	private class SelectionColumnModel<T> extends AbstractTableModel implements WizardItemModel<T> {
+	private class SelectionColumnModel<T> implements TableModelListener, WizardItemModel<T> {
 		private static final ColumnSpec SELECTION_COL = new ColumnSpec("#", Integer.class);
 		private WizardItemModel<T> model;
+		private Set<TableModelListener> listeners = new HashSet<>();
 
 		private SelectionColumnModel(WizardItemModel<T> model) {
 			this.model = model;
+			model.addTableModelListener(this);
 		}
 
 		@Override
@@ -335,9 +360,8 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 			if (columnIndex == 0) {
 				var selectedIdx = orderedSelection.indexOf(rowIndex);
 				return selectedIdx >= 0 ? selectedIdx + 1 : null;
-			} else {
-				return model.getValueAt(rowIndex, columnIndex - 1);
 			}
+			return model.getValueAt(rowIndex, columnIndex - 1);
 		}
 
 		@Override
@@ -346,17 +370,11 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 		}
 
 		@Override
-		public boolean isFailureItem(int rowIndex) {
-			return model.isFailureItem(rowIndex);
-		}
-
-		@Override
 		public String isFailureCell(int rowIndex, int columnIndex) {
 			if (columnIndex == 0) {
 				return null;
-			} else {
-				return model.isFailureCell(rowIndex, columnIndex - 1);
 			}
+			return model.isFailureCell(rowIndex, columnIndex - 1);
 		}
 
 		@Override
@@ -368,9 +386,8 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 		public ColumnSpec getColumnSpec(int modelIndex) {
 			if (modelIndex == 0) {
 				return SELECTION_COL;
-			} else {
-				return model.getColumnSpec(modelIndex - 1);
 			}
+			return model.getColumnSpec(modelIndex - 1);
 		}
 
 		@Override
@@ -385,17 +402,45 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) {
 				return SELECTION_COL.name();
-			} else {
-				return model.getColumnName(columnIndex - 1);
 			}
+			return model.getColumnName(columnIndex - 1);
 		}
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			if (columnIndex == 0) {
 				return SELECTION_COL.type();
-			} else {
-				return model.getColumnClass(columnIndex - 1);
+			}
+			return model.getColumnClass(columnIndex - 1);
+		}
+
+		@Override
+		public boolean isCellEditable(int rowIndex, int columnIndex) {
+			return false;
+		}
+
+		@Override
+		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+			// Should never be called as cells are not editable
+			throw new UnsupportedOperationException("Unimplemented method 'setValueAt'");
+		}
+
+		@Override
+		public void addTableModelListener(TableModelListener l) {
+			listeners.add(l);
+		}
+
+		@Override
+		public void removeTableModelListener(TableModelListener l) {
+			listeners.remove(l);
+		}
+
+		@Override
+		public void tableChanged(TableModelEvent e) {
+			// Have to remap the event to be from this model
+			var mappedE = new TableModelEvent(this, e.getFirstRow(), e.getLastRow(), e.getColumn()+1, e.getType());
+			for (TableModelListener l : listeners) {
+				l.tableChanged(mappedE);
 			}
 		}
 	}

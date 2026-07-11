@@ -183,26 +183,6 @@ public abstract class AbstractWizardItemModel<T> extends AbstractTableModel
 	 * @return Rendered values
 	 */
 	protected abstract Object getItemValue(T item, int column);
-	
-	/**
-	 * Checks if row contains a failure cell.
-	 * 
-	 * @param row the row index.
-	 * @return true if row has failure cell.
-	 */
-	@Override
-	public boolean isFailureItem(int row) {
-		T item = items.get(row);
-		for (int x = 0; x < getColumnCount(); x++) {
-			String failure = isFailureCell(item, x);
-
-			// Stop on first failure
-			if (failure != null) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	/**
 	 * Checks if the cell at the specified row and column is in a failure state.

@@ -58,9 +58,6 @@ public class EntityEventType {
 
 	// For Cooking and PreparingDessert
 	public static final String FOOD_EVENT = "food event";
-	
-	// For work shift change
-	public static final String SHIFT_EVENT = "shift event";
 
 	// For Mind
 	public static final String JOB_EVENT = "job event";

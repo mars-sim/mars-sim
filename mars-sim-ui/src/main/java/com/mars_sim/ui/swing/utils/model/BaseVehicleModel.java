@@ -22,6 +22,8 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.MobileUnit;
+import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.components.ColumnSpec;
@@ -52,6 +54,11 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     private static final int MALFUNCTION_VAL = 13;
     private static final int BATTERY_VAL = 14;
     private static final int FUEL_VAL = 15;
+    private static final int ONBOARD_VAL = 16;
+    private static final int EST_RANGE_VAL = 17;
+    private static final int CARGO_CAP_VAL = 18;
+    private static final int CREW_CAP_VAL = 19;
+    private static final int HASLAB_VAL = 20;
 
     // Basic fixed properties of a Vehicle
     protected static final EntityColumnSpec NAME = new EntityColumnSpec(new ColumnSpec(NAME_VAL, Msg.getString("entity.name"), String.class), null);
@@ -79,7 +86,12 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
                             String.class), Set.of(MalfunctionManager.MALFUNCTION_EVENT));
     protected static final EntityColumnSpec BATTERY = new EntityColumnSpec(new ColumnSpec(BATTERY_VAL, "Battery", String.class), null);
     protected static final EntityColumnSpec FUEL = new EntityColumnSpec(new ColumnSpec(FUEL_VAL, "Fuel %", Double.class, ColumnSpec.STYLE_INTEGER), null);
-    
+    protected static final EntityColumnSpec ONBOARD = new EntityColumnSpec(new ColumnSpec(ONBOARD_VAL, "Onboard", Integer.class), null);
+    protected static final EntityColumnSpec EST_RANGE = new EntityColumnSpec(new ColumnSpec(EST_RANGE_VAL, Msg.getString("vehicle.range"), Double.class, ColumnSpec.STYLE_DIGIT1), null);
+    protected static final EntityColumnSpec CARGO_CAPACITY = new EntityColumnSpec(new ColumnSpec(CARGO_CAP_VAL, "Capacity", Double.class, ColumnSpec.STYLE_DIGIT1), null);
+    protected static final EntityColumnSpec CREW_CAPACITY = new EntityColumnSpec(new ColumnSpec(CREW_CAP_VAL, "Crew", Integer.class), null);
+    protected static final EntityColumnSpec HAS_LAB = new EntityColumnSpec(new ColumnSpec(HASLAB_VAL, "Has Lab", Boolean.class), null);
+
     private Map<Vehicle, VehicleMission> vehicleToMission = new HashMap<>();
     private List<Integer> resources = new ArrayList<>();
 
@@ -185,6 +197,26 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
             case DRIVER_VAL -> (entity.getOperator() != null ? entity.getOperator().getName() : null);
 			case BATTERY_VAL -> entity.getController().getBattery().getBatteryStatus().getName();
 			case FUEL_VAL -> entity.getFuelPercent();
+            case EST_RANGE_VAL -> entity.getEstimatedRange();
+            case CARGO_CAP_VAL -> entity.getCargoCapacity();
+            case HASLAB_VAL -> {
+                if (entity instanceof Rover r)
+                    yield r.hasLab();
+                else
+                    yield false;
+            }
+            case CREW_CAP_VAL -> {
+                if (entity instanceof Crewable r)
+                    yield r.getCrewCapacity();
+                else
+                    yield 0;
+                }
+            case ONBOARD_VAL -> {
+					if (entity instanceof Crewable r)
+						yield r.getCrewNum();
+					else
+						yield 0;
+				}
 
             case LOCATION_VAL -> {
 				if (entity.getMission() instanceof AbstractVehicleMission vm) {

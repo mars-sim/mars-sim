@@ -73,7 +73,7 @@ public class ShiftSlot implements ScheduledEventHandler {
       	}
       	
         else {
-        	shift.joinShift();
+        	shift.joinShift(this);
         }
     }
 
@@ -112,6 +112,8 @@ public class ShiftSlot implements ScheduledEventHandler {
     	
         boolean origOnCall = onCall;
         onCall = newOnCall;
+        worker.fireUnitUpdate(SHIFT_EVENT);
+
         return origOnCall;
     }
 
@@ -122,6 +124,8 @@ public class ShiftSlot implements ScheduledEventHandler {
      */
     public void setOnLeave(int duration) {
         onLeave = true;
+        worker.fireUnitUpdate(SHIFT_EVENT);
+
 
         // Scheduled end of leave
         worker.getAssociatedSettlement().getFutureManager().addEvent(duration, this);
@@ -159,9 +163,9 @@ public class ShiftSlot implements ScheduledEventHandler {
      	if (isGuest)
     		return;
     	
-        shift.leaveShift();
+        shift.leaveShift(this);
         shift = newShift;
-        shift.joinShift();
+        shift.joinShift(this);
 
         worker.fireUnitUpdate(SHIFT_EVENT);
     }
@@ -179,6 +183,7 @@ public class ShiftSlot implements ScheduledEventHandler {
     @Override
     public int execute(MarsTime now) {
         onLeave = false;
+        worker.fireUnitUpdate(SHIFT_EVENT);
         return 0;
     }
 
@@ -189,5 +194,21 @@ public class ShiftSlot implements ScheduledEventHandler {
      */
     public String getStatusDescription() {
         return shift.getName() + SEPARATOR + getStatus().getName();
+    }
+
+    /**
+     * The shift has changed. If direct on shift, i.e. not on call or leave then fire an event.
+     */
+    void shiftChange() {
+        if (!onCall && !onLeave) {
+            worker.fireUnitUpdate(SHIFT_EVENT);
+        }
+    }
+
+    /**
+     * Resigns from the current shift and do not join another.
+     */
+    public void resignShift() {
+        shift.leaveShift(this);
     }
 }
