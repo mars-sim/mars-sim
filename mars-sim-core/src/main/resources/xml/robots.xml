@@ -110,7 +110,7 @@
 		
 		<robot type="RepairBot" make="Standard"
 					standby-power-consumption="0.1" consumption-rate="0.45" low-power-mode="20">
-			<description>A robot that fix and repair parts and equipment.</description>
+			<description>A robot that fixes and repaire parts and equipment.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -127,7 +127,7 @@
 		
 		<robot type="RepairBot" make="Advanced"
 					standby-power-consumption="0.1" consumption-rate="0.4" low-power-mode="15">
-			<description>A robot that fix and repair parts and equipment.</description>
+			<description>A robot that fixes and repaire parts and equipment.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -144,7 +144,7 @@
 		
 		<robot type="ChefBot" make="Standard"
 					standby-power-consumption="0.1" consumption-rate="0.4" low-power-mode="20">
-			<description>A kitchen robot that prepare food, meals and dessert.</description>
+			<description>A kitchen robot that prepares food, meals and dessert.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -161,7 +161,7 @@
 
 		<robot type="ChefBot" make="Advanced"
 					standby-power-consumption="0.1" consumption-rate="0.35" low-power-mode="15">
-			<description>A kitchen robot that prepare food, meals and dessert.</description>
+			<description>A kitchen robot that prepares food, meals and dessert.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>

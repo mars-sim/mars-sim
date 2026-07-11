@@ -149,7 +149,7 @@ public class Charge extends Task {
 		SystemCondition sc = robot.getSystemCondition();
 		double batteryLevel = sc.getBattery().getBatteryPercent();
 		
-		if (getDuration() == DURATION) {
+		if (batteryLevel <= 0 || getDuration() == DURATION) {
 			// When this phase is being called for the first time
 			toCharge = true;
 		}

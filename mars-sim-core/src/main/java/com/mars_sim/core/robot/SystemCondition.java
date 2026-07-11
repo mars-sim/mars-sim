@@ -69,7 +69,9 @@ public class SystemCondition implements Serializable {
         
         battery = new Battery(newRobot, CABLE_GAUGE_SIZE, numModules, ENERGY_PER_MODULE);
        
-        battery.initPower(spec.getLowPowerModePercent(), spec.getStandbyPowerConsumption());
+        standbyPower = spec.getStandbyPowerConsumption();
+        		
+        battery.initPower(spec.getLowPowerModePercent(), standbyPower);
     }
 	
     /**
@@ -100,14 +102,14 @@ public class SystemCondition implements Serializable {
 
     		// Note: Avoid checking at < 10 or 1000 millisols
     		//       due to high cpu util during the change of a sol
-    		if (pulse.isNewIntMillisol() && msol >= 10 && msol < 995) {
+    		if (pulse.isNewIntMillisol() && msol >= 10 && msol < 995 && battery.getkWhStored() > 0) {
  
     	        // Consume a minute amount of energy even if a robot does not perform any tasks
-    	    	if (onPowerSave && battery.getkWhStored() > 0) {
+    	    	if (onPowerSave) {
     	    		battery.consumeEnergy(POWER_SAVE_CONSUMPTION * standbyPower, 
     	    				time * MarsTime.HOURS_PER_MILLISOL);
     	    	}
-    	    	else if (!battery.isCharging() && !robot.getTaskManager().hasTask() && battery.getkWhStored() > 0) {
+    	    	else if (!battery.isCharging() && !robot.getTaskManager().hasTask()) {
     	    		battery.consumeEnergy(standbyPower, 
     	    				time * MarsTime.HOURS_PER_MILLISOL);	
     			}

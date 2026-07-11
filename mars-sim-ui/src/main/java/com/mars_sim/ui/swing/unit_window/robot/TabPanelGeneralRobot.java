@@ -38,6 +38,7 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements TemporalComp
 	private JDoubleLabel degradPercent;
 	private JDoubleLabel maxCRating;
 	private JDoubleLabel cycles;
+	private JDoubleLabel temp;
 		
 	/**
 	 * Constructor.
@@ -74,8 +75,8 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements TemporalComp
 		JPanel dataPanel = new JPanel(new BorderLayout(10, 10));
 		topPanel.add(dataPanel, BorderLayout.SOUTH);
 		
-        dataPanel.setBorder(SwingHelper.createLabelBorder("Battery Condition"));
-		AttributePanel battPanel = new AttributePanel(10);
+        dataPanel.setBorder(SwingHelper.createLabelBorder("Battery Parameters"));
+		AttributePanel battPanel = new AttributePanel();
 		dataPanel.add(battPanel, BorderLayout.NORTH);
     
 		var battery = getEntity().getSystemCondition().getBattery();
@@ -102,10 +103,12 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements TemporalComp
 		battPanel.addLabelledItem("Degradation", degradPercent);
 		cycles = new JDoubleLabel(StyleManager.DECIMAL_PLACES2, battery.getNumCycles());
 		battPanel.addLabelledItem("Charge Cycles", cycles);
+		temp = new JDoubleLabel(StyleManager.DECIMAL_CELCIUS, battery.getInternalTemperature());
+		battPanel.addLabelledItem("Internal Temperature", temp);
 	}
 
 	/**
-	 * Battery is updated every frame
+	 * Updates the battery params.
 	 */
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
@@ -122,5 +125,6 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements TemporalComp
 		degradPercent.setValue(battery.getPercentDegrade());
 		maxCRating.setValue(battery.getMaxCRating());
 		cycles.setValue(battery.getNumCycles());
+		temp.setValue(battery.getInternalTemperature());
 	}
 }

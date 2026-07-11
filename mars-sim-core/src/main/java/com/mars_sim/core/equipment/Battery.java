@@ -193,10 +193,8 @@ public class Battery implements Serializable {
         
 		// At the start of sim, set to a random value
         kWhStored = energyStorageCapacity * (.5 + RandomUtil.getRandomDouble(.5));	
-		
-        updateLowPowerMode();
-        
-    	updateTerminalVoltage();
+
+        updateAmpHourStored();
 
 		status = BatteryStatus.fromValue(getBatteryPercent());
     }
@@ -305,6 +303,8 @@ public class Battery implements Serializable {
 //				+ "  possiblekWh: " + Math.round(possiblekWh * 1000.00)/1000.00
 //				+ "  availablekWh: " + Math.round(readykWh * 100_000.00)/100_000.00
 //				+ " - " + unit);
+		if (readykWh <= 0)
+			return 0;
 		
 		return readykWh;
 	}
@@ -317,6 +317,12 @@ public class Battery implements Serializable {
     public void timePassing(ClockPulse pulse) {
     	double time = pulse.getElapsed();
 
+    	// Note: this is just a temporary measure to avoid negative kWhStored
+    	// Will need to track down the cause of negative kWhStored
+    	if (kWhStored < 0) {
+    		kWhStored = 0;
+    	}
+    			
     	if (pulse.isNewSol()) {
     		if (RandomUtil.getRandomInt(3) == 1) 
     			reconditionBattery();
@@ -331,7 +337,7 @@ public class Battery implements Serializable {
 
     	internalTemperature -= time;
     	
-		if (internalTemperature > 0.5 * UPPER_LIMIT_TEMPERATURE && kWhStored > 0.1) {
+		if (internalTemperature > 0.5 * UPPER_LIMIT_TEMPERATURE && kWhStored > 0.2) {
 			double tempRatio = MathUtils.between(internalTemperature, INITIAL_TEMPERATURE, UPPER_LIMIT_TEMPERATURE) / UPPER_LIMIT_TEMPERATURE;
 			double timeFactor = time * tempRatio;
 			double deltaTemperature = applyForcedAirCooling(timeFactor);
@@ -348,8 +354,6 @@ public class Battery implements Serializable {
 			status = newStatus;
 			unit.fireUnitUpdate(BATTERY_EVENT);
 		}
-			
-        updateLowPowerMode();
     }
 
     /**
@@ -363,16 +367,23 @@ public class Battery implements Serializable {
     	double powerFlow = amp * amp * rTotal;
     	double cop = 3;
     	double powerAir = powerFlow * 0.75;
-    	double powerAct = powerAir * cop;
-    	double deltaTemperature = (powerAct - powerFlow) * HEAT_TRANSFER_COEFF_COOLING * SURFACE_AREA_HEAT_DISSIPATION;
+ 
     	// May add back for debugging: logger.severe(0, "delta power=" + (powerAct - powerFlow) + "  deltaTemperature=" + deltaTemperature)
     	// It will consume energy to cool the battery
-    	kWhStored -= powerAir;
-    	if (kWhStored < 0) {
-    		kWhStored = 0;
-    		ampHourStored = 0;	
+    	
+    	double diffkWh = kWhStored - powerAir;
+    	
+    	if (diffkWh < 0) {
+    		return 0;
     	}
- 
+    	
+    	kWhStored = diffkWh;
+
+        updateAmpHourStored();
+        
+       	double powerAct = powerAir * cop;
+    	double deltaTemperature = (powerAct - powerFlow) * HEAT_TRANSFER_COEFF_COOLING * SURFACE_AREA_HEAT_DISSIPATION;
+    	
     	return deltaTemperature;
     }
     
@@ -391,42 +402,67 @@ public class Battery implements Serializable {
     }
     
     /**
+     * Updates the temperature.
+     * 
+     * @param kWh
+     * @param hours
+     */
+    private void updateTemperature(double kWh, double hours) {
+    	double amp = 1000 * kWh / HIGHEST_MAX_VOLTAGE / hours;
+    
+    	internalTemperature += computeDeltaTemperature(amp);
+    	
+    	if (internalTemperature > UPPER_LIMIT_TEMPERATURE) {
+			internalTemperature = UPPER_LIMIT_TEMPERATURE;
+		}
+    }
+    
+    /**
      * Updates the Amp Hour stored capacity [in Ah].
      */
     private void updateAmpHourStored() {
     	ampHourStored = 1000 * kWhStored / HIGHEST_MAX_VOLTAGE; 
+//    	ampHourStored = 3600 / rTotal * (kWhStored / energyStorageCapacity * HIGHEST_MAX_VOLTAGE - terminalVoltage);
+		if (ampHourStored < 0)
+			ampHourStored = 0;
+		
+    	updateTerminalVoltage();
     }
     
     /**
      * Consumes energy from the battery. This will discharge the battery.
      * 
      * @param consumekWh amount of energy to consume [in kWh]
-     * @param time in hrs
+     * @param hours time in hrs
      * @return energy to be delivered [in kWh]
      */
-    public double consumeEnergy(double consumekWh, double time) {
+    public double consumeEnergy(double consumekWh, double hours) {
     	
-		double available = estimateEnergyToDeliver(consumekWh, time);
+		double readykWh = estimateEnergyToDeliver(consumekWh, hours);
 		// May add back for debugging : logger.info(unit, "kWh: " + Math.round(kWhStored * 100.0/100.0) + "  available: " + Math.round(available * 10000.0/10000.0) + "  consume: " + Math.round(consumekWh * 10000.0/1000.0))
-       	
+		
+		if (readykWh <= 0)
+			return 0;
+		
 		double previouskWhStored = kWhStored;
 		
-    	kWhStored -= available;
+		double diffkWh = kWhStored - readykWh;
+		
+		if (diffkWh < 0)
+			return 0;
+			
+		kWhStored = diffkWh;
     	
-    	double amp = 1000 * available / HIGHEST_MAX_VOLTAGE / time / MarsTime.HOURS_PER_MILLISOL;
+	    updateAmpHourStored();
     	
-    	internalTemperature += computeDeltaTemperature(amp);
-    	  	
-    	if ((previouskWhStored - kWhStored) / previouskWhStored > .2) {
+    	updateTemperature(readykWh, hours);
+    	
+    	if (readykWh / previouskWhStored > .2) {
     	    // If drawing too much energy at a time, it hurts the battery and degrade health
     	    degradeHealth();
     	}
     	
-	    cyclesDepleted += available / 3 / energyStorageCapacity;
-
-    	updateTerminalVoltage();
-    	       
-        updateAmpHourStored();
+	    cyclesDepleted += readykWh / 3 / energyStorageCapacity;
     	
     	if (kWhStored / maxCapNameplate < .02) {
     	    // Unlock the flag for reconditioning
@@ -437,7 +473,7 @@ public class Battery implements Serializable {
     		logger.warning(unit, 10_000L, "Battery almost out of power.");
     	}
     	
-        return available;
+        return readykWh;
     }
 
     /**
@@ -490,18 +526,10 @@ public class Battery implements Serializable {
     	double kWhAccepted = Math.min(kWhPumpedIn, maxChargeEnergy);
 		
     	kWhStored += kWhAccepted;
-
-    	double amp = 1000 * kWhAccepted / HIGHEST_MAX_VOLTAGE / hours;
     	
-    	internalTemperature += computeDeltaTemperature(amp);
-    	
-    	if (internalTemperature > UPPER_LIMIT_TEMPERATURE) {
-			internalTemperature = UPPER_LIMIT_TEMPERATURE;
-		}
+    	updateTemperature(kWhAccepted, hours);
 		
         updateAmpHourStored();
- 	
-		updateTerminalVoltage();
 		
     	return kWhAccepted;
     }
@@ -573,11 +601,10 @@ public class Battery implements Serializable {
         return systemLoad;
     }
 
-
     /**
-     * Discharge the battery of power
+     * Full discharge all the stored energy.
      */
-    public void discharge() {
+    public void dischargeAll() {
         kWhStored = 0;
     }
 
@@ -679,6 +706,9 @@ public class Battery implements Serializable {
 	private void updateTerminalVoltage() {
 		if (energyStorageCapacity > 0) {
 			terminalVoltage = kWhStored / energyStorageCapacity * HIGHEST_MAX_VOLTAGE - ampHourStored * rTotal / 3600;
+			
+			if (terminalVoltage < 0)
+				terminalVoltage = 0;
 		}
 		else {
 			terminalVoltage = 0;
@@ -687,6 +717,8 @@ public class Battery implements Serializable {
 			// terminalVoltage should not be greater than HIGHEST_MAX_VOLTAGE
     		terminalVoltage = HIGHEST_MAX_VOLTAGE;
 		}
+    	
+        updateLowPowerMode();
 	}
 	
 	/**
@@ -704,12 +736,12 @@ public class Battery implements Serializable {
     		
     	}
 
-    	updateAmpHourStored();
-    	
 		if (kWhStored > energyStorageCapacity) {
 			// kWhStored should not be greater than energyStorageCapacity
 			kWhStored = energyStorageCapacity;		
-		}
+		}		
+		   
+	    updateAmpHourStored();
 	}
 	
 	/**
@@ -743,8 +775,6 @@ public class Battery implements Serializable {
 	 */
 	public void reconditionBattery() {
 		
-		double kWh = kWhStored;
-		
 		if (!locked) {		
 			// Improve health
 			health = health * (1 + PERCENT_BATTERY_RECONDITIONING / 100);
@@ -753,12 +783,10 @@ public class Battery implements Serializable {
 			logger.info(unit, 0, "The battery has just been reconditioned.");
 		}
 		
-		if (kWh > energyStorageCapacity) {
+		if (kWhStored > energyStorageCapacity) {
 			// kWh should not be greater than energyStorageCapacity but
-			kWh = energyStorageCapacity;			
-		}	
-	
-		kWhStored = kWh;
+			kWhStored = energyStorageCapacity;			
+		}
 	}
 	
 	/**

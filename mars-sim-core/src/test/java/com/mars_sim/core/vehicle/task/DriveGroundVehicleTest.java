@@ -101,7 +101,7 @@ class DriveGroundVehicleTest extends MarsSimUnitTest {
         assertEquals(0.0D, v.getSpecificAmountResourceStored(v.getFuelTypeID()), "Fuel emptied");
 
         var b = v.getController().getBattery();
-        b.discharge();
+        b.dischargeAll();
 
         executeTask(p, task, 10);
 

@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -234,10 +235,13 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * @return
 	 */
 	public String printStatusModes() {
+		if (botModes.isEmpty())
+			return null;
 		StringBuilder builder = new StringBuilder();
 		builder.append(primaryMode.getName());
-
-		for (BotMode m : botModes) {
+		// Create a enum set copy of a set
+		EnumSet<BotMode> modes = EnumSet.copyOf(botModes);
+		for (BotMode m : modes) {
 			builder.append(", ").append(m.getName());
 		}
 		return builder.toString();

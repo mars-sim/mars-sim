@@ -193,13 +193,13 @@ public class ExperienceImpact implements Serializable {
 		    
         // Double energy expenditure if performing effort-driven task.
         if (effortDriven == PhysicalEffort.HIGH) {
-            energyTime *= 1.5D;
-        }
-        else if (effortDriven == PhysicalEffort.LOW) {
             energyTime *= 1.25D;
         }
+        else if (effortDriven == PhysicalEffort.LOW) {
+            energyTime *= 1D;
+        }
         else if (effortDriven == PhysicalEffort.NONE) {
-            energyTime *= .75D;
+            energyTime *= .5D;
         }
         
         // if the robot is not charging
