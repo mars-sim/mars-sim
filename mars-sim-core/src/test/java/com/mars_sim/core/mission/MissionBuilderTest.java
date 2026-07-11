@@ -19,7 +19,6 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.CollectIce;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -110,7 +109,7 @@ class MissionBuilderTest extends MarsSimUnitTest {
         possibles.add(buildPerson("worker", s, JobType.CHEF, null, null));
 
 
-        var meta = MetaMissionUtil.getMetaMission(MissionType.TRADE);
+        var meta = MetaMissionRegistry.getMetaMission(MissionType.TRADE);
         var recruitment = new MissionBuilder(meta, l);
         var members = recruitment.recruitMembers(possibles);
 
@@ -211,7 +210,7 @@ class MissionBuilderTest extends MarsSimUnitTest {
         assertNull(mission, "Mission should not be created");
 
         // Advance sol pass threshold
-        var meta = MetaMissionUtil.getMetaMission(MissionType.COLLECT_ICE);
+        var meta = MetaMissionRegistry.getMetaMission(MissionType.COLLECT_ICE);
         var clock = getSim().getMasterClock();
         clock.setMarsTime(clock.getMarsTime().addTime(meta.getSolThreshold() * 1000D));
 

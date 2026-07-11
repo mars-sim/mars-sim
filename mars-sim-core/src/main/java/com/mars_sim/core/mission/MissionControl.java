@@ -30,7 +30,6 @@ import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
 import com.mars_sim.core.person.ai.mission.PlanType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
@@ -298,7 +297,7 @@ public class MissionControl implements ScheduledEventHandler {
 		var activeMissionsByType = getActiveMissions().stream()
 				.collect(Collectors.groupingBy(Mission::getMissionType, Collectors.counting()));
 		
-		return MetaMissionUtil.getAutomaticMetaMissions().stream()
+		return MetaMissionRegistry.getAutomaticMetaMissions().stream()
 				.filter(m -> canAcceptMission(m, paramMgr, checkSol, activeMissionsByType))
 				.toList();
 	}
@@ -380,7 +379,7 @@ public class MissionControl implements ScheduledEventHandler {
 			owner.getPreferences().putValue(MissionLimitParameters.INSTANCE.getKey(mission), 0);
 		}
 		else {
-			var metaMission = MetaMissionUtil.getMetaMission(mission);
+			var metaMission = MetaMissionRegistry.getMetaMission(mission);
 			var maxMissions = Math.max(metaMission.getMaxMissions(owner.getNumCitizens()), 1);
 			owner.getPreferences().putValue(MissionLimitParameters.INSTANCE.getKey(mission), maxMissions);
 		}
@@ -403,7 +402,7 @@ public class MissionControl implements ScheduledEventHandler {
 		var numCitizens = owner.getNumCitizens();
 		var preferences = owner.getPreferences();
 
-		for(var metaMission : MetaMissionUtil.getMetaMissions()) {
+		for(var metaMission : MetaMissionRegistry.getMetaMissions()) {
 			MissionType type = metaMission.getType();
 			var maxMissions = metaMission.getMaxMissions(numCitizens);
 

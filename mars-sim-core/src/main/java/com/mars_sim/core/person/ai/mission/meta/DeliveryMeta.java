@@ -46,7 +46,7 @@ public class DeliveryMeta extends AbstractMetaMission {
     private static final double DIVISOR = 10;
 
 
-	DeliveryMeta() {
+	public DeliveryMeta() {
 		// Everyone can start Delivery ??
 		super(MissionType.DELIVERY, 3, LEADER_JOBS, WORKER_JOBS);
 

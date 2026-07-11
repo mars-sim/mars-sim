@@ -35,7 +35,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 	/** Starting sol for this mission to commence. */
 	private static final int MIN_STARTING_SOL = 3;
 	
-	CollectIceMeta() {
+	public CollectIceMeta() {
 		super(MissionType.COLLECT_ICE, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 
 		setPreferredVehicle(VehicleType.ROVER_TYPES);

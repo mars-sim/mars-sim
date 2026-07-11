@@ -14,11 +14,11 @@ import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.core.mission.MetaMission;
+import com.mars_sim.core.mission.MetaMissionRegistry;
 import com.mars_sim.core.mission.MissionBuilder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.PlanType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
 
 public class MissionCreateCommand extends AbstractSettlementCommand {
@@ -32,7 +32,7 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 	protected boolean execute(Conversation context, String input, Settlement settlement) {
 
 		// Get the user to select the Mission
-		List<MetaMission> automissions = MetaMissionUtil.getAutomaticMetaMissions();
+		List<MetaMission> automissions = MetaMissionRegistry.getAutomaticMetaMissions();
 
 		List<String> names = automissions.stream().map(MetaMission::getName).toList();				
 		int choice = CommandHelper.getOptionInput(context, names, "Pick a mission from above by entering a number");

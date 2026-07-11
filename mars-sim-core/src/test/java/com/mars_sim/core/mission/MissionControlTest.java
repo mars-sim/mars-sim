@@ -16,7 +16,6 @@ import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.PlanType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
 class MissionControlTest extends MarsSimUnitTest{
@@ -171,7 +170,7 @@ class MissionControlTest extends MarsSimUnitTest{
     @Test
     void testIceMissionDisabled() {
         var settlement = buildSettlement("Test");
-        var iceMeta = MetaMissionUtil.getMetaMission(MissionType.COLLECT_ICE);
+        var iceMeta = MetaMissionRegistry.getMetaMission(MissionType.COLLECT_ICE);
     
         // Advance 4 sols into the simulation
         var clock = getSim().getMasterClock();
@@ -197,7 +196,7 @@ class MissionControlTest extends MarsSimUnitTest{
     @Test
     void testIceMissionSolBased() {
         var settlement = buildSettlement("Test");
-        var iceMeta = MetaMissionUtil.getMetaMission(MissionType.COLLECT_ICE);
+        var iceMeta = MetaMissionRegistry.getMetaMission(MissionType.COLLECT_ICE);
     
         // Test on the first sol and should fail
         var missionControl = new MissionControl(settlement);
@@ -217,7 +216,7 @@ class MissionControlTest extends MarsSimUnitTest{
     @Test
     void testIceMissionNoSolCheck() {
         var settlement = buildSettlement("Test");
-        var iceMeta = MetaMissionUtil.getMetaMission(MissionType.COLLECT_ICE);
+        var iceMeta = MetaMissionRegistry.getMetaMission(MissionType.COLLECT_ICE);
 
         // Test on the first sol and should fail
         var missionControl = new MissionControl(settlement);

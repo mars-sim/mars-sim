@@ -34,11 +34,9 @@ import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MissionObjective;
-import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -893,13 +891,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return true;
 	}
 
-	/**
-	 * Helper method to find related mata mission
-	 */
-	protected MetaMission getMetaMission() {
-		return MetaMissionUtil.getMetaMission(missionType);
-	}
-	
 	/**
 	 * Gets the current location of the mission.
 	 *

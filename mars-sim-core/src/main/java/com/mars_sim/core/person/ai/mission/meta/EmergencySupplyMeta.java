@@ -22,7 +22,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission{
 
     private static final Set<JobType> LEADER_JOBS = JobType.LOADERS;
 
-    EmergencySupplyMeta() {
+    public EmergencySupplyMeta() {
         super(MissionType.EMERGENCY_SUPPLY, 2, LEADER_JOBS, LEADER_JOBS);
 
         setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER));

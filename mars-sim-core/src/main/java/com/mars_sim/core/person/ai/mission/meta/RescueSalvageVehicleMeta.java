@@ -32,7 +32,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     private static final Set<JobType> LEADER_JOBS = Set.of(JobType.PILOT, JobType.ENGINEER);
     private static final Set<JobType> WORKER_JOBS = Collections.emptySet();
 
-    RescueSalvageVehicleMeta() {
+    public RescueSalvageVehicleMeta() {
     	super(MissionType.RESCUE_SALVAGE_VEHICLE, 2, LEADER_JOBS, WORKER_JOBS);
 
         setPreferredVehicle(VehicleType.ROVER_TYPES);

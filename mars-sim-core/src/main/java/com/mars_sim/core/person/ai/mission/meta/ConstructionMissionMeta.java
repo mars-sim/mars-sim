@@ -34,7 +34,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	private static final int SITE_BASE = 200;
 	private static final int QUEUE_BASE = 50;
 		
-    ConstructionMissionMeta() {
+    public ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 10, LEADER_JOBS, WORKER_JOBS);
 		setMinimumMembers(3);
 		setPopulationRatio(30);

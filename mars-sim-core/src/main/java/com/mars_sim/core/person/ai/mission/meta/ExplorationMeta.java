@@ -41,7 +41,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 
 	private static final double VALUE = 20D;
 
-	ExplorationMeta() {
+	public ExplorationMeta() {
 		super(MissionType.EXPLORATION, 4,
 					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST),
 					PREFERRED_WORKER_JOBS);

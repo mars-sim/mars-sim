@@ -19,7 +19,7 @@ import com.mars_sim.core.science.ScienceType;
  */
 public class MeteorologyFieldStudyMeta extends FieldStudyMeta {
 
-    MeteorologyFieldStudyMeta() {
+    public MeteorologyFieldStudyMeta() {
     	super(MissionType.METEOROLOGY, 
     		 Set.of(JobType.METEOROLOGIST, JobType.PHYSICIST, JobType.CHEMIST, 
     				 JobType.ASTRONOMER, JobType.MATHEMATICIAN, JobType.COMPUTER_SCIENTIST, JobType.AREOLOGIST),

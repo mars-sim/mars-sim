@@ -18,7 +18,7 @@ import com.mars_sim.core.science.ScienceType;
  * A meta mission for the BiologyFieldStudy.
  */
 public class BiologyFieldStudyMeta extends FieldStudyMeta {
-    BiologyFieldStudyMeta() {
+    public BiologyFieldStudyMeta() {
 		super(MissionType.BIOLOGY, 
 				Set.of(JobType.ASTROBIOLOGIST, JobType.BOTANIST, JobType.CHEMIST),
 				ScienceType.ASTROBIOLOGY);
