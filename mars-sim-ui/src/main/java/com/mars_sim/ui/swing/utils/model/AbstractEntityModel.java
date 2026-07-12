@@ -107,13 +107,16 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
      */
     public void addEntity(T entity) {
         if (!entities.contains(entity)) {
-            entities.add(entity);
-            int index = entities.size() - 1;
-            if (!monitoredEvents.isEmpty()) {
-                enableListener(entity, true);
-            }
+            // Update in swing thread as table has sorting
+            SwingHelper.runInEDT(() -> {
+                entities.add(entity);
+                int index = entities.size() - 1;
+                if (!monitoredEvents.isEmpty()) {
+                    enableListener(entity, true);
+                }
 
-            SwingHelper.runInEDT(() -> fireTableRowsInserted(index, index));
+                fireTableRowsInserted(index, index);
+            });
         }
     }
 
@@ -122,11 +125,17 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
      * @param entity Entity to remove.
      */
     public void removeEntity(T entity) {
-        int index = entities.indexOf(entity);
-        if (index >= 0) {
-            entities.remove(index);
-            enableListener(entity, false);
-            SwingHelper.runInEDT(() -> fireTableRowsDeleted(index, index));
+        if (entities.indexOf(entity) >= 0) {
+            SwingHelper.runInEDT(() -> {
+                var index = entities.indexOf(entity);
+                if (index < 0) {
+                    // Entity has been removed in the meantime
+                    return;
+                }
+                entities.remove(index);
+                enableListener(entity, false);
+                fireTableRowsDeleted(index, index);
+            });
         }
     }
 
