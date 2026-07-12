@@ -166,7 +166,7 @@ public class MissionBuilder {
 
 	private void logError(MsgContext context) {
 		messages.add(context);
-		logger.warning(mission.getName() + ": " + context);
+		logger.warning(startingMember.getAssociatedSettlement(), mission.getName() + ": " + context.getMessage());
 	}
 	
 	/**

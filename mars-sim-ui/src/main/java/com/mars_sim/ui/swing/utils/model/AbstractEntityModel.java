@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.swing.table.AbstractTableModel;
@@ -37,6 +38,8 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
 
 	// Used to associate column index with column spec and event types to listen for
     public record EntityColumnSpec(ColumnSpec column, Set<String> eventTypes) {}
+
+    private static Logger logger = Logger.getLogger(AbstractEntityModel.class.getName());
 
 	private List<T> entities = new ArrayList<>();
     private List<ColumnSpec> columns = new ArrayList<>();
@@ -254,7 +257,14 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
             return null;
         }
         var entity = entities.get(rowIndex);
-        return getEntityValue(entity, spec.id());
+
+        // Add a safety check to ensure the entity is still valid.
+        try {
+            return getEntityValue(entity, spec.id());
+        } catch (Exception e) {
+            logger.severe("Error getting value for entity " + entity + " column " + spec.name() + " : " + e.getMessage());
+            return null;
+        }
     }
 
     /**
