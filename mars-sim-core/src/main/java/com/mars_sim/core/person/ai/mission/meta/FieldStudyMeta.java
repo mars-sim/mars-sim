@@ -15,7 +15,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.FieldStudyMission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
@@ -25,11 +24,6 @@ import com.mars_sim.core.vehicle.VehicleType;
 
 public abstract class FieldStudyMeta extends AbstractMetaMission {
 
-	private static final Set<RoleType> PREFERRED_ROLES = Set.of(RoleType.CREW_SCIENTIST,
-							RoleType.CHIEF_OF_LOGISTIC_OPERATION, RoleType.LOGISTIC_SPECIALIST,
-							RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST,
-							RoleType.CHIEF_OF_SUPPLY_RESOURCE, RoleType.RESOURCE_SPECIALIST,
-							RoleType.CHIEF_OF_MISSION_PLANNING, RoleType.MISSION_SPECIALIST);
 	private static final Set<JobType> PREFERRED_WORKER_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER,
 							JobType.ASTROBIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
@@ -63,13 +57,11 @@ public abstract class FieldStudyMeta extends AbstractMetaMission {
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 		
-		RoleType roleType = person.getRole().getType();
 		JobType jobType = person.getMind().getJobType();
 
 		if (FieldStudyMission.determineStudy(scienceType, person) == null
 			|| !person.isInSettlement()
-			|| (!getPreferredLeaderJob().contains(jobType)
-			&& !PREFERRED_ROLES.contains(roleType))) {
+			|| !getPreferredLeaderJob().contains(jobType)) {
 			return RatingScore.ZERO_RATING;
 		}
 		
@@ -131,13 +123,6 @@ public abstract class FieldStudyMeta extends AbstractMetaMission {
 				missionProbability = new RatingScore(COL_STUDY_BASE, newBase);
 			else
 				missionProbability.addBase(COL_STUDY_BASE, newBase);
-						
-			if (StudyStatus.INVITATION_PHASE == primaryStudy.getPhase())
-				missionProbability.addModifier(PROGRESS_BASE, 1.5);
-			else if (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
-				missionProbability.addModifier(PROGRESS_BASE, 2);
-			else if (StudyStatus.PAPER_PHASE == primaryStudy.getPhase())
-				missionProbability.addModifier(PROGRESS_BASE, 1.5);
 		}
 
 		if (missionProbability != null) {
