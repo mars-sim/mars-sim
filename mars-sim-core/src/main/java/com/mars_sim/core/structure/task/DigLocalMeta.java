@@ -42,8 +42,8 @@ public abstract class DigLocalMeta extends MetaTask
 		
 		private static final long serialVersionUID = 1L;
 		
-        public DigLocalTaskJob(DigLocalMeta owner, RatingScore score, int total) {
-            super(owner, owner.getName().replaceFirst("ging", ""), null, score);
+        public DigLocalTaskJob(DigLocalMeta ownerTask, Settlement owner, RatingScore score, int total) {
+            super(ownerTask, owner, ownerTask.getName().replaceFirst("ging", ""), null, score);
             setDemand(total);
             setEVA(true); // Enable the EVA based assessments
         }
@@ -135,7 +135,7 @@ public abstract class DigLocalMeta extends MetaTask
         result.addModifier("capacity", 1 + (capacity - MIN_CAPACITY));
 
         List<SettlementTask> resultList = new ArrayList<>();
-        resultList.add(new DigLocalTaskJob(this, result, maxEVA));
+        resultList.add(new DigLocalTaskJob(this, settlement, result, maxEVA));
         return resultList;
     }
 

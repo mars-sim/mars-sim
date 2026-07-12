@@ -37,8 +37,8 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 
 		private static final long serialVersionUID = 1L;
 
-        public UnloadJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScore score) {
-            super(owner, "Unload " + (eva ? "via EVA " : "") + "@ " + target.getName(), target, score);
+        public UnloadJob(SettlementMetaTask ownerTask, Settlement owner, Vehicle target, boolean eva, RatingScore score) {
+            super(ownerTask, owner, "Unload " + (eva ? "via EVA " : "") + "@ " + target.getName(), target, score);
             setEVA(eva);
         }
 
@@ -146,9 +146,9 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
                     // If in Garage already then boost score
                     score.addModifier(GARAGED_MODIFIER, 2);
                 }
-                return new UnloadJob(owner, vehicle, false, score);
+                return new UnloadJob(owner, settlement, vehicle, false, score);
             }
-            return new UnloadJob(owner, vehicle, true, score);    
+            return new UnloadJob(owner, settlement, vehicle, true, score);    
         }
 
         return null;

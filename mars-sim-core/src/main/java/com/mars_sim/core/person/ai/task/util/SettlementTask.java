@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.util;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
+import com.mars_sim.core.structure.Settlement;
 
 /**
  * This represents a TaskJob created by a SettlementMetaTask. 
@@ -19,6 +20,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
 	private static final long serialVersionUID = 1L;
 	
     private int demand;
+    private final Settlement owner;
     
     private SettlementMetaTask metaTask;
     private Entity focus;
@@ -31,14 +33,16 @@ public abstract class SettlementTask extends AbstractTaskJob {
      * that can be executed by any Citizen.
      * 
      * @param parent The meta task that defines the eventual Task.
+     * @param owner Settlement owning this shared task.
      * @param name Name to the potential task
      * @param focus Entity the focus of the work; maybe null
      * @param score The Rating score for this work
      */
-    protected SettlementTask(SettlementMetaTask parent, String name, Entity focus, RatingScore score) {
+    protected SettlementTask(SettlementMetaTask parent, Settlement owner, String name, Entity focus, RatingScore score) {
         super(name + (focus != null ? " @ " + focus.getName() : ""), score);
         
         this.demand = 1;
+        this.owner = owner;
         this.focus = focus;
         this.shortName = name;
         
@@ -131,12 +135,17 @@ public abstract class SettlementTask extends AbstractTaskJob {
         return focus;
     }
 
+    public Settlement getOwner() {
+        return owner;
+    }
+
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((metaTask == null) ? 0 : metaTask.hashCode());
+        result = prime * result + ((owner == null) ? 0 : owner.hashCode());
         result = prime * result + ((focus == null) ? 0 : focus.hashCode());
         return result;
     }
@@ -155,6 +164,11 @@ public abstract class SettlementTask extends AbstractTaskJob {
             if (other.metaTask != null)
                 return false;
         } else if (!metaTask.equals(other.metaTask))
+            return false;
+        if (owner == null) {
+            if (other.owner != null)
+                return false;
+        } else if (!owner.equals(other.owner))
             return false;
         if (needsEVA != other.needsEVA)
             return false;

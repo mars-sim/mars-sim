@@ -40,8 +40,8 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 
         private Farming farm;
 
-        public CropTaskJob(SettlementMetaTask owner, Farming farm, int demand, RatingScore score) {
-            super(owner, "Tend Crops", farm.getBuilding(), score);
+        public CropTaskJob(SettlementMetaTask ownerTask, Settlement owner, Farming farm, int demand, RatingScore score) {
+            super(ownerTask, owner, "Tend Crops", farm.getBuilding(), score);
             this.farm = farm;
 
             setDemand(demand);
@@ -135,7 +135,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
                 int workTask = farm.getNumNeedTending() / 2; // Each farmer can do 2 crop per visit
                 workTask = Math.min(workTask, b.getLifeSupport().getAvailableOccupancy());
                 workTask = Math.max(1, workTask);
-                tasks.add(new CropTaskJob(this, farm, workTask, score));
+                tasks.add(new CropTaskJob(this, settlement, farm, workTask, score));
             }
         }
 

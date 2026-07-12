@@ -40,8 +40,8 @@ public class CookMealMeta extends MetaTask
 
         private Cooking kitchen;
 
-        public CookMealJob(SettlementMetaTask owner, Cooking kitchen, int demand, RatingScore score) {
-            super(owner, "Cook Meal", kitchen.getBuilding(), score);
+        public CookMealJob(SettlementMetaTask ownerTask, Settlement owner, Cooking kitchen, int demand, RatingScore score) {
+            super(ownerTask, owner, "Cook Meal", kitchen.getBuilding(), score);
             this.kitchen = kitchen;
 
             setDemand(demand);
@@ -126,7 +126,7 @@ public class CookMealMeta extends MetaTask
 
                         rating.addModifier("meals", 1 + (mealShortfall/10D));
 
-                        results.add(new CookMealJob(this, kitchen, demand, rating));
+                        results.add(new CookMealJob(this, settlement, kitchen, demand, rating));
                     }
                 }
             }

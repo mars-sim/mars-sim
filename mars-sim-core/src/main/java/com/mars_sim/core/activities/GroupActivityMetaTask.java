@@ -29,9 +29,9 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
         private static final long serialVersionUID = 1L;
 		private GroupActivity activity;
 
-        protected GroupActivitySettlementTask(SettlementMetaTask parent, GroupActivity activity,
+        protected GroupActivitySettlementTask(SettlementMetaTask parent, Settlement owner, GroupActivity activity,
                                     RatingScore score, int attendees) {
-            super(parent, "Host " + activity.getDefinition().name(), activity.getMeetingPlace(), score);
+            super(parent, owner, "Host " + activity.getDefinition().name(), activity.getMeetingPlace(), score);
             this.activity = activity;
             setDemand(attendees);
             setScope(activity.getDefinition().scope());
@@ -67,7 +67,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
          for(var a : active) {
             var score = new RatingScore(a.getDefinition().score());
             int expected = (int) (settlement.getNumCitizens() * a.getDefinition().percentagePop());
-            results.add(new GroupActivitySettlementTask(this, a, score, expected));
+                results.add(new GroupActivitySettlementTask(this, settlement, a, score, expected));
          }
 
          return results;

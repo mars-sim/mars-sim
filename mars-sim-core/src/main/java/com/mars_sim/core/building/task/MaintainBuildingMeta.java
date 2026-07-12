@@ -44,8 +44,8 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 
 		private static final long serialVersionUID = 1L;
 
-        public MaintainTaskJob(SettlementMetaTask owner, Building target, boolean eva, RatingScore score) {
-			super(owner, "Building Maintenance" + (eva ? " via EVA" : ""), target, score);
+        public MaintainTaskJob(SettlementMetaTask ownerTask, Settlement owner, Building target, boolean eva, RatingScore score) {
+			super(ownerTask, owner, "Building Maintenance" + (eva ? " via EVA" : ""), target, score);
 			setEVA(eva);
         }
 
@@ -137,13 +137,13 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 					boolean habitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
 					
 					if (habitableBuilding) {
-						tasks.add(new MaintainTaskJob(this, building, false, score));
+						tasks.add(new MaintainTaskJob(this, settlement, building, false, score));
 					}
 					
 					else {
 						
 						if (partsPosted) {
-							tasks.add(new MaintainTaskJob(this, building, true, score));
+							tasks.add(new MaintainTaskJob(this, settlement, building, true, score));
 						}
 						
 						else {						
@@ -155,7 +155,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 								requireEVA = true;
 							}
 								
-							tasks.add(new MaintainTaskJob(this, building, requireEVA, score));
+							tasks.add(new MaintainTaskJob(this, settlement, building, requireEVA, score));
 						}
 					}
 				}

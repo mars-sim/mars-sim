@@ -44,8 +44,8 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 
 		private static final long serialVersionUID = 1L;
 
-        public AstronomicalTaskJob(SettlementMetaTask owner, ScientificStudy s, RatingScore score) {
-            super(owner, "Astronomy Observations", s, score);
+        public AstronomicalTaskJob(SettlementMetaTask ownerTask, Settlement owner, ScientificStudy s, RatingScore score) {
+            super(ownerTask, owner, "Astronomy Observations", s, score);
         }
 
         @Override
@@ -85,7 +85,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
             	// Suitable study so create tasks for each Observatory
                 RatingScore score = new RatingScore(100);
                 score = applyCommerceFactor(score, target, CommerceType.TOURISM);
-                result.add(new AstronomicalTaskJob(this, s, score));
+                result.add(new AstronomicalTaskJob(this, target, s, score));
             }      
         }
         return result;

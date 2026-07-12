@@ -39,8 +39,8 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
 		
 		private static final long serialVersionUID = 1L;
 
-		public ConsolidateTaskJob(SettlementMetaTask owner, RatingScore score) {
-			super(owner, "Consolidate Containers", null, score);
+        public ConsolidateTaskJob(SettlementMetaTask ownerTask, Settlement owner, RatingScore score) {
+            super(ownerTask, owner, "Consolidate Containers", null, score);
 		}
 
 		@Override
@@ -85,7 +85,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
             result = new ArrayList<>();
             RatingScore score = new RatingScore(DEFAULT_SCORE);
             assessPersonSuitability(score, person);
-            result.add(new ConsolidateTaskJob(this, score));
+            result.add(new ConsolidateTaskJob(this, person.getAssociatedSettlement(), score));
         }
         return result;
 	}
@@ -112,7 +112,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
         if (needsConsolidation(settlement, true)) {
             // Create a real list
             result = new ArrayList<>();
-            result.add(new ConsolidateTaskJob(this, new RatingScore(DEFAULT_SCORE)));
+            result.add(new ConsolidateTaskJob(this, settlement, new RatingScore(DEFAULT_SCORE)));
         }
         return result;
     }

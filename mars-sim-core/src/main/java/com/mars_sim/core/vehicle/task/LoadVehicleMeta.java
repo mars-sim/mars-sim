@@ -40,8 +40,8 @@ public class LoadVehicleMeta extends MetaTask
 
 		private Vehicle vehicle;
 		
-        private LoadJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScore score) {
-            super(owner, "Load " + (eva ? "via EVA " : ""), target, score);
+        private LoadJob(SettlementMetaTask ownerTask, Settlement owner, Vehicle target, boolean eva, RatingScore score) {
+            super(ownerTask, owner, "Load " + (eva ? "via EVA " : ""), target, score);
             vehicle = target;
             setEVA(eva);
         }
@@ -156,9 +156,9 @@ public class LoadVehicleMeta extends MetaTask
                 score.addModifier(GARAGED_MODIFIER, 2);
             }
             // Note: owner can be null
-            return new LoadJob(owner, vehicle, false, score);
+            return new LoadJob(owner, settlement, vehicle, false, score);
         }
-        return new LoadJob(owner, vehicle, true, score);
+        return new LoadJob(owner, settlement, vehicle, true, score);
     }
 
     /**

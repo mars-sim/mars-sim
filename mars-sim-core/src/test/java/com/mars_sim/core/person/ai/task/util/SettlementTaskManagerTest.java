@@ -25,8 +25,8 @@ class SettlementTaskManagerTest extends MarsSimUnitTest {
 
         private long when;
 
-        protected TestTask(SettlementMetaTask parent, String name, TaskScope scope) {
-            super(parent, name, null, DEFAULT_SCORE);
+        protected TestTask(SettlementMetaTask parent, Settlement owner, String name, TaskScope scope) {
+            super(parent, owner, name, null, DEFAULT_SCORE);
             setScope(scope);
             when = counter++;
         }
@@ -62,7 +62,7 @@ class SettlementTaskManagerTest extends MarsSimUnitTest {
         public List<SettlementTask> getSettlementTasks(Settlement settlement) {
             List<SettlementTask> tasks = new ArrayList<>();
             for(int i = 0; i < TASKS_PER_META; i++) {
-                tasks.add(new TestTask(this, getName() + i, getScope()));
+                tasks.add(new TestTask(this, settlement, getName() + i, getScope()));
             }
             return tasks;
         }
@@ -182,5 +182,18 @@ class SettlementTaskManagerTest extends MarsSimUnitTest {
 
         assertEquals(TASKS_PER_META, selected.size(), "Number of Suitable Settlement Tasks");
         assertEquals(2 * TASKS_PER_META, available1.size(), "Number of Total Settlement Tasks");
+    }
+
+    @Test
+    void testTaskOwnerIsSettlement() {
+        var s = buildSettlement("owner");
+        var manager = buildManager(s, SCOPE_METATTASKS);
+        var p = buildPerson("Worker", s);
+
+        manager.getTasks(p);
+        var available = manager.getAvailableTasks();
+
+        assertTrue(available.stream().allMatch(t -> ((SettlementTask) t).getOwner().equals(s)),
+                "All generated SettlementTasks should reference the manager settlement as owner");
     }
 }

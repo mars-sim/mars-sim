@@ -39,8 +39,8 @@ public class ReviewJobReassignmentMeta extends MetaTask
 		
 		private static final long serialVersionUID = 1L;
 
-        public ReviewJobTaskJob(SettlementMetaTask owner, RatingScore score, int jobAssignments) {
-            super(owner, "Review Job Assignment", null, score);
+		public ReviewJobTaskJob(SettlementMetaTask ownerTask, Settlement owner, RatingScore score, int jobAssignments) {
+			super(ownerTask, owner, "Review Job Assignment", null, score);
 			setDemand(jobAssignments);
         }
 
@@ -149,7 +149,7 @@ public class ReviewJobReassignmentMeta extends MetaTask
 			// Addmodifier based on the oldest request; 0.3 per day to a maximum of 3
 			score.addModifier("due", 1D + (0.33D * Math.min(3, oldestRequest)));
 
-			result.add(new ReviewJobTaskJob(this, score, numOfAssignments));
+			result.add(new ReviewJobTaskJob(this, settlement, score, numOfAssignments));
 		}
 		return result;
 	}

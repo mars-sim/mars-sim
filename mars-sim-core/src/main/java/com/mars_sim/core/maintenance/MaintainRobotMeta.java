@@ -40,8 +40,8 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 
 		private static final long serialVersionUID = 1L;
 
-        public MaintainRobotJob(SettlementMetaTask owner, Robot target, RatingScore score) {
-            super(owner, "Robot Maintenance", target, score);
+		public MaintainRobotJob(SettlementMetaTask ownerTask, Settlement owner, Robot target, RatingScore score) {
+			super(ownerTask, owner, "Robot Maintenance", target, score);
         }
 
 		/**
@@ -140,13 +140,13 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		}
 		
 		if (highestScore0.getScore() > 1) {
-			tasks.add(new MaintainRobotJob(this, badRobot0, highestScore0));
+			tasks.add(new MaintainRobotJob(this, settlement, badRobot0, highestScore0));
 		}
 		if (highestScore1.getScore() > 1) {
-			tasks.add(new MaintainRobotJob(this, badRobot1, highestScore1));
+			tasks.add(new MaintainRobotJob(this, settlement, badRobot1, highestScore1));
 		}
 		if (highestScore2.getScore() > 1) {
-			tasks.add(new MaintainRobotJob(this, badRobot2, highestScore2));
+			tasks.add(new MaintainRobotJob(this, settlement, badRobot2, highestScore2));
 		}
 		
 		// Reset them
@@ -189,13 +189,13 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		}
 		
 		if (highestScore0.getScore() > 1) {
-			tasks.add(new MaintainRobotJob(this, badRobot0, highestScore0));
+			tasks.add(new MaintainRobotJob(this, settlement, badRobot0, highestScore0));
 		}
 		if (highestScore1.getScore() > 1) {
-			tasks.add(new MaintainRobotJob(this, badRobot1, highestScore1));
+			tasks.add(new MaintainRobotJob(this, settlement, badRobot1, highestScore1));
 		}
 		if (highestScore2.getScore() > 1) {
-			tasks.add(new MaintainRobotJob(this, badRobot2, highestScore2));
+			tasks.add(new MaintainRobotJob(this, settlement, badRobot2, highestScore2));
 		}
 
 		return tasks;

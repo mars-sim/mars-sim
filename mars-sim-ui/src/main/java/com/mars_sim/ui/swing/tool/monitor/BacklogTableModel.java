@@ -6,7 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -31,8 +31,6 @@ import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 @SuppressWarnings("serial")
 public class BacklogTableModel extends AbstractMonitorModel
 					implements EntityListener, EntityModel {
-	// Represents a row in the table
-	private record BacklogEntry(Settlement owner, SettlementTask task) implements Serializable {}
 
 	private static final ColumnSpec[] COLUMNS;
 
@@ -64,7 +62,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 
 	private boolean monitorSettlement = false;
 	
-	private List<BacklogEntry> tasks = Collections.emptyList();
+	private List<SettlementTask> tasks = Collections.emptyList();
 
 	/**
 	 * Constructor.
@@ -100,7 +98,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 */
 	@Override
 	public Entity getAssociatedEntity(int row) {
-		return tasks.get(row).task().getFocus();
+		return tasks.get(row).getFocus();
 	}
 
 	/**
@@ -159,18 +157,17 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 * The SettlementTask does hold the Settlement reference so this is record in
 	 * the artificial BacklogEntry record.
 	 */
-	private List<BacklogEntry> getTasks() {
-		return getSelectedSettlements().stream()
-					.flatMap(s -> s.getTaskManager().getAvailableTasks().stream()
-					.map(e -> new BacklogEntry(s, e)))
-					.toList();
+	private List<SettlementTask> getTasks() {
+		List<SettlementTask> newTasks = new ArrayList<>();
+		getSelectedSettlements().forEach(s -> newTasks.addAll(s.getTaskManager().getAvailableTasks()));
+		return newTasks;
 	}
 
     /**
      * Resets tasks.
      */
-	private void resetTasks(List<BacklogEntry> newTasks) {
-		List<BacklogEntry> oldTasks = tasks;
+	private void resetTasks(List<SettlementTask> newTasks) {
+		List<SettlementTask> oldTasks = tasks;
 		tasks = newTasks;
 
 		// Find out how many rows have been added/deleted
@@ -203,7 +200,7 @@ public class BacklogTableModel extends AbstractMonitorModel
     public String getToolTipAt(int rowIndex, int columnIndex) {
 		String result = null;
 		if ((columnIndex == SCORE_COL) && (rowIndex < tasks.size())) {
-			SettlementTask selectedTask = tasks.get(rowIndex).task;
+			SettlementTask selectedTask = tasks.get(rowIndex);
 
 			StringBuilder builder = new StringBuilder();
 			builder.append("<html><b>Task:").append(selectedTask.getName()).append("</b><br>");
@@ -229,8 +226,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 			return null;
 		}
 
-		var selectedRow = tasks.get(rowIndex);
-		var selectedTask = selectedRow.task;
+		var selectedTask = tasks.get(rowIndex);
 		switch(columnIndex) {
 			case ENTITY_COL:
 				Entity des = selectedTask.getFocus();
@@ -238,7 +234,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 					return des.getName();
 				return null;
 			case SETTLEMENT_COL:
-				return selectedRow.owner.getName();
+				return selectedTask.getOwner().getName();
 			case DESC_COL:
 				return selectedTask.getShortName();
 			case EVA_COL:
