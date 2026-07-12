@@ -3,38 +3,65 @@
 		code="RKA" name="Roscosmos" corporation="false"
 					agenda="Health Hazards" gender-ratio="0.75">
 			<country name="Russia"/>
+			
 			<settlement-name name="Korolev" />
-			<settlement-name name="Kosmosdrome" />
-			<settlement-name name="Konstantin Point" />
-			<settlement-name name="Gorbachev" />
-			<settlement-name name="New Moscow" />
+			<settlement-name name="Gagarin" />
+			<settlement-name name="Konstantin" />
+			<settlement-name name="Ivanovsky" />
+			<settlement-name name="Winogradsky" />
+			
 			<settlement-name name="Chebyshev" />
 			<settlement-name name="Mendeleev" />
 			<settlement-name name="Kaspersky" />
-			<settlement-name name="Star City" />
+			<settlement-name name="Mechnikov" />
 			<settlement-name name="Munku-Sardyk" /> <!-- which means "eternal bald peak" in Russian -->
+			
 			<settlement-name name="Ropa" /> <!-- which means mountain in Russian -->	
 			<settlement-name name="Otechestvo" /> <!-- which means fatherland or in Russian -->
 			<settlement-name name="Rodina" /> <!-- which means homeland or motherland in Russian -->
 			<settlement-name name="Poligon" />
 			<settlement-name name="Chelomei" />
-			<settlement-name name="Tsiolkovsky" />
 			
+			<settlement-name name="Tsiolkovsky" />
+			<settlement-name name="Sakharov" />
+			<settlement-name name="Landau" />
+			<settlement-name name="Kapitsa" />
+			<settlement-name name="Lomonosov" />
 			
 			<rover-name name="Kliper" /> <!-- which means clipper in Russian -->
 			<rover-name name="Ropa" /> <!-- which means mountain or in Russian -->
 			<rover-name name="Chizhevsky" />
 			<rover-name name="Lomonosov" />
 			<rover-name name="Lvov" />
+			
 			<rover-name name="Obruchev" />
 			<rover-name name="Tatishchev" />
 			<rover-name name="Vernadsky" />
 			<rover-name name="Chikhachyov" />
 			<rover-name name="Dokuchaev" />
+			
 			<rover-name name="Karpinsky" />
 			<rover-name name="Middendorf" />
 			<rover-name name="Shirshov" />
 			<rover-name name="Shokalsky" />
 			<rover-name name="Tikhonov" />
+			
 			<rover-name name="Maleev" />
+			<rover-name name="Bukhanka" />
+			<rover-name name="Gelik" />
+			<rover-name name="Boomer" />
+			<rover-name name="gruzovik" />
+			
+			<rover-name name="Angara" />
+			<rover-name name="Volga" />
+			<rover-name name="Dnepr" />
+			<rover-name name="Yenisei" />
+			<rover-name name="Buran" />
+			
+			<rover-name name="Grom" />
+			<rover-name name="Rokot" />
+			<rover-name name="Karandashik" />
+			<rover-name name="Malyutka" />
+			<rover-name name="Popov" />
+			
 		</authority>

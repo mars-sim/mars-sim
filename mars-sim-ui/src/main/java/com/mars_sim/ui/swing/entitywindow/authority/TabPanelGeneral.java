@@ -98,6 +98,10 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 		// Country names
 		String cText = String.join(", ", ra.getCountries());
 		var countryList = SwingHelper.createTextBlock("Countries Supported", cText);
+		
+		// Note: in future display the flag icon of the country
+		// Use flag icons from https://en.wikipedia.org/wiki/List_of_government_space_agencies
+		
 		mainPanel.add(countryList);
 	}
 }
