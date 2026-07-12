@@ -1,0 +1,54 @@
+{{>detail-head}}
+
+## Characteristics
+
+| Attribute | Value |
+|--------:|:------|
+|Mission Type:|{{mission.type.name}} ({{mission.type.shortCode}})|
+|Automatic:|{{mission.automatic}}|
+|Minimum Members:|{{mission.minimumMembers}}|
+|Default Capacity:|{{mission.defaultCapacity}}|
+|Sol Threshold:|{{mission.solThreshold}}|
+|Population Threshold:|{{mission.popThreshold}}|
+
+## Preferred Leader Jobs
+{{#hasLeaderJobs}}
+{{#leaderJobs}}
+- {{.}}
+{{/leaderJobs}}
+{{/hasLeaderJobs}}
+{{^hasLeaderJobs}}
+None defined.
+{{/hasLeaderJobs}}
+
+## Preferred Worker Jobs
+{{#hasWorkerJobs}}
+{{#workerJobs}}
+- {{.}}
+{{/workerJobs}}
+{{/hasWorkerJobs}}
+{{^hasWorkerJobs}}
+None defined.
+{{/hasWorkerJobs}}
+
+## Preferred Vehicles
+{{#hasPreferredVehicles}}
+{{#preferredVehicles}}
+- {{.}}
+{{/preferredVehicles}}
+{{/hasPreferredVehicles}}
+{{^hasPreferredVehicles}}
+None defined.
+{{/hasPreferredVehicles}}
+
+## Preferred Robots
+{{#hasPreferredRobots}}
+{{#preferredRobots}}
+- {{.}}
+{{/preferredRobots}}
+{{/hasPreferredRobots}}
+{{^hasPreferredRobots}}
+None defined.
+{{/hasPreferredRobots}}
+
+{{>footer}}

@@ -11,9 +11,11 @@ import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
@@ -114,6 +116,12 @@ public interface MetaMission {
 	 */
     int getSolThreshold();
 
+	/**
+	 * Gets the population threshold for this mission. This is the minimum number of citizens that must be present in a settlement before this mission can be created.
+	 * @return
+	 */
+	int getPopThreshold();
+
     /**
      * Gets the preferred vehicle types for this mission. This is optional and can be left empty.
      * By default no VehicleTypes are preferred. If a VehicleType is preferred then it will be given a higher suitability score.
@@ -121,4 +129,21 @@ public interface MetaMission {
      */
     Set<VehicleType> getPreferredVehicle();
 
+	/**
+	 * Gets the preferred leader job types for this mission.
+	 * @return Preferred leader job types
+	 */
+	Set<JobType> getPreferredLeaderJob();
+
+	/**
+	 * Gets the preferred worker job types for this mission.
+	 * @return Preferred worker job types
+	 */
+    Set<JobType> getPreferredWorkerJobs();
+
+	/**
+	 * Gets the preferred robot types for this mission. This is optional and can be left empty.
+	 * @return Preferred robot types
+	 */
+	Set<RobotType> getPreferredRobots();
 }

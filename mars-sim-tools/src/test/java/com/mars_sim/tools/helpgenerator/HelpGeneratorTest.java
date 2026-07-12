@@ -22,6 +22,9 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.ScenarioConfig;
+import com.mars_sim.core.mission.MetaMission;
+import com.mars_sim.core.mission.MetaMissionRegistry;
+import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.RobotType;
 
@@ -87,6 +90,7 @@ class HelpGeneratorTest {
         assertTitledTable(content, "skills", "Skills", true);
         assertTitledTable(content, "attributes", "Attributes", true);
     }
+
 
     @Test
     void testVehicleHelp() throws IOException {
@@ -268,6 +272,24 @@ class HelpGeneratorTest {
         assertDIV(content, "missions");
         assertDIV(content, "buildings");
         assertDIV(content, "vehicles");
+    }
+
+    
+    @Test
+    void testMissionHelp() throws IOException {
+        var context = createGenerator();
+        
+        // Has both inputs and outputs
+        var spec = MetaMissionRegistry.getMetaMission(MissionType.DELIVERY);
+
+        var vg = new MissionGenerator(context);
+        var content = createDoc(vg, spec);
+
+        assertTitledTable(content, "characteristics", "Characteristics", false);
+        assertDIV(content, "robots");
+        assertDIV(content, "vehicles");
+        assertDIV(content, "worker-jobs");
+        assertDIV(content, "leader-jobs");
     }
 
     /**

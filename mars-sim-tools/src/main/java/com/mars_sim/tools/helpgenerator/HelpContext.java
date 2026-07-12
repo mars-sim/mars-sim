@@ -61,6 +61,7 @@ public class HelpContext {
 										CrewGenerator.TYPE_NAME,
 										CropGenerator.TYPE_NAME,
 										FoodGenerator.TYPE_NAME,
+										MissionGenerator.TYPE_NAME,
 										PartGenerator.TYPE_NAME,
 										ProcessGenerator.TYPE_NAME,
 										ResourceGenerator.TYPE_NAME,
@@ -298,6 +299,7 @@ public class HelpContext {
 			case CrewGenerator.TYPE_NAME -> new CrewGenerator(this);
 			case CropGenerator.TYPE_NAME -> new CropGenerator(this);
 			case FoodGenerator.TYPE_NAME -> new FoodGenerator(this);
+			case MissionGenerator.TYPE_NAME -> new MissionGenerator(this);
 			case MalfunctionGenerator.TYPE_NAME -> new MalfunctionGenerator(this);
 			case MealGenerator.TYPE_NAME -> new MealGenerator(this);
 			case ManifestGenerator.TYPE_NAME -> new ManifestGenerator(this);
