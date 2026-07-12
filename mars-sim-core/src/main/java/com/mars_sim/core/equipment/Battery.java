@@ -12,7 +12,6 @@ import java.io.Serializable;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -77,19 +76,27 @@ public class Battery implements Serializable {
 	/** The maximum continuous discharge rate (within the safety limit) that this battery can handle. */
 	private static final int MAX_C_RATING_DISCHARGING = 2;
 
+	
+	public static final int UTILIZATION_FACTOR = 10;
+	
+	public static final int INITIAL_TEMPERATURE = 22;
+	 
+	public static final int UPPER_LIMIT_TEMPERATURE = 60;
+	
+	public static final int HEAT_TRANSFER_COEFF_HEATING = 6;
+	
+	public static final int HEAT_TRANSFER_COEFF_COOLING = 12;
+	
+	public static final int SURFACE_AREA_HEAT_DISSIPATION = 20;
+	
+	public static final int RADIATOR_COOLING_CONSTANT = 300;
+	
+	public static final double CHARGE_FACTOR = 1.25;
+	
 	public static final double HOURS_PER_MILLISOL = 0.0247 ;
 	/** The percent of health improvement after reconditioning. */
 	public static final double PERCENT_BATTERY_RECONDITIONING = .1; // [in %]
-	 
-	public static final double UPPER_LIMIT_TEMPERATURE = 80;
-	
-	public static final double INITIAL_TEMPERATURE = 22;
-	
-	public static final double HEAT_TRANSFER_COEFF_HEATING = 6;
-	
-	public static final double HEAT_TRANSFER_COEFF_COOLING = 12;
-	
-	public static final double SURFACE_AREA_HEAT_DISSIPATION = 20;
+
 	
     // Data members
     /** Is the unit at low power mode ? */  
@@ -335,7 +342,23 @@ public class Battery implements Serializable {
     		}
 		}
 
-    	internalTemperature -= time;
+    	trackTemperature(time);
+    	
+        // Last notify
+		var newStatus = BatteryStatus.fromValue(getBatteryPercent());
+		if (newStatus != status) {
+			status = newStatus;
+			unit.fireUnitUpdate(BATTERY_EVENT);
+		}
+    }
+
+    /**
+     * Tracks the internal temperature.
+     * 
+     * @param time
+     */
+    private void trackTemperature(double time) {
+    	internalTemperature -= time / RADIATOR_COOLING_CONSTANT;
     	
 		if (internalTemperature > 0.5 * UPPER_LIMIT_TEMPERATURE && kWhStored > 0.2) {
 			double tempRatio = MathUtils.between(internalTemperature, INITIAL_TEMPERATURE, UPPER_LIMIT_TEMPERATURE) / UPPER_LIMIT_TEMPERATURE;
@@ -347,15 +370,8 @@ public class Battery implements Serializable {
     	if (internalTemperature < INITIAL_TEMPERATURE) {
     		internalTemperature = INITIAL_TEMPERATURE;
     	}
-    	
-        // Last notify
-		var newStatus = BatteryStatus.fromValue(getBatteryPercent());
-		if (newStatus != status) {
-			status = newStatus;
-			unit.fireUnitUpdate(BATTERY_EVENT);
-		}
     }
-
+    
     /**
      * Turns on active cooling.
      * 
@@ -366,7 +382,7 @@ public class Battery implements Serializable {
     	double amp = timeFactor * 5;
     	double powerFlow = amp * amp * rTotal;
     	double cop = 3;
-    	double powerAir = powerFlow * 0.75;
+    	double powerAir = powerFlow * 0.5;
  
     	// May add back for debugging: logger.severe(0, "delta power=" + (powerAct - powerFlow) + "  deltaTemperature=" + deltaTemperature)
     	// It will consume energy to cool the battery
@@ -382,9 +398,26 @@ public class Battery implements Serializable {
         updateAmpHourStored();
         
        	double powerAct = powerAir * cop;
+       	
     	double deltaTemperature = (powerAct - powerFlow) * HEAT_TRANSFER_COEFF_COOLING * SURFACE_AREA_HEAT_DISSIPATION;
     	
     	return deltaTemperature;
+    }
+    
+    /**
+     * Updates the temperature.
+     * 
+     * @param deltakWh
+     * @param hours
+     */
+    private void updateTemperature(double deltakWh, double hours) {
+    	double deltaAmp = 1000 * deltakWh / hours / HIGHEST_MAX_VOLTAGE;
+    
+    	internalTemperature += computeDeltaTemperature(deltaAmp);
+    	
+    	if (internalTemperature > UPPER_LIMIT_TEMPERATURE) {
+			internalTemperature = UPPER_LIMIT_TEMPERATURE;
+		}
     }
     
     /**
@@ -395,27 +428,12 @@ public class Battery implements Serializable {
      */
     private double computeDeltaTemperature(double amp) {
     	// Q = I^2 * R + I * constant
-    	double heatInternal = amp * amp * rTotal + amp * 0.0001;
+    	double heatInternal = amp * (amp * rTotal + 0.01);
     	// T = Q / 6 / 20;
     	return heatInternal / HEAT_TRANSFER_COEFF_HEATING / SURFACE_AREA_HEAT_DISSIPATION;
     	// May add back for debugging: logger.severe("heatInternal=" + heatInternal + "  deltaT=" + deltaT); return deltaT
     }
     
-    /**
-     * Updates the temperature.
-     * 
-     * @param kWh
-     * @param hours
-     */
-    private void updateTemperature(double kWh, double hours) {
-    	double amp = 1000 * kWh / HIGHEST_MAX_VOLTAGE / hours;
-    
-    	internalTemperature += computeDeltaTemperature(amp);
-    	
-    	if (internalTemperature > UPPER_LIMIT_TEMPERATURE) {
-			internalTemperature = UPPER_LIMIT_TEMPERATURE;
-		}
-    }
     
     /**
      * Updates the Amp Hour stored capacity [in Ah].
@@ -455,7 +473,7 @@ public class Battery implements Serializable {
     	
 	    updateAmpHourStored();
     	
-    	updateTemperature(readykWh, hours);
+    	updateTemperature(readykWh * UTILIZATION_FACTOR, hours);
     	
     	if (readykWh / previouskWhStored > .2) {
     	    // If drawing too much energy at a time, it hurts the battery and degrade health
@@ -526,10 +544,10 @@ public class Battery implements Serializable {
     	double kWhAccepted = Math.min(kWhPumpedIn, maxChargeEnergy);
 		
     	kWhStored += kWhAccepted;
-    	
-    	updateTemperature(kWhAccepted, hours);
 		
         updateAmpHourStored();
+        
+    	updateTemperature(kWhAccepted / CHARGE_FACTOR, hours);
 		
     	return kWhAccepted;
     }
