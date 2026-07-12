@@ -42,7 +42,7 @@ public enum ScienceType implements Named {
 	CHEMISTRY("CHE", SkillType.CHEMISTRY, JobType.CHEMIST),
 
 	/** Provides fundamental computing skill. */
-	COMPUTING ("COM", SkillType.COMPUTING, JobType.COMPUTER_SCIENTIST),
+	COMPUTING("COM", SkillType.COMPUTING, JobType.COMPUTER_SCIENTIST),
 
 	/** How to make stuff. */
 	ENGINEERING("ENG", SkillType.MATERIALS_SCIENCE, JobType.ENGINEER),

@@ -27,6 +27,26 @@
         <first-name value="Tommaso" gender="male" />
         <first-name value="Riccardo" gender="male" />
 
+        <first-name value="Giuseppe" gender="male" />
+        <first-name value="Giovanni" gender="male" />
+        <first-name value="Antonio" gender="male" />
+        <first-name value="Luigi" gender="male" />
+        <first-name value="Mario" gender="male" />
+        <first-name value="Salvatore" gender="male" />
+        <first-name value="Vincenzo" gender="male" />
+        <first-name value="Roberto" gender="male" />
+        <first-name value="Paolo" gender="male" />
+        <first-name value="Marco" gender="male" />
+        
+        <first-name value="Angelo" gender="male" />
+        <first-name value="Domenico" gender="male" />
+        <first-name value="Pietro" gender="male" />
+        <first-name value="Michele" gender="male" />
+        <first-name value="Franco" gender="male" />
+        <first-name value="Carlo" gender="male" />
+        <first-name value="Stefano" gender="male" />
+        
+        
         <first-name value="Sofia" gender="female" />
         <first-name value="Aurora" gender="female" />
         <first-name value="Giulia" gender="female" />
@@ -37,6 +57,29 @@
         <first-name value="Greta" gender="female" />
         <first-name value="Chiara" gender="female" />
         <first-name value="Anna" gender="female" />
+        
+        <first-name value="Maria" gender="female" />
+        <first-name value="Giuseppina" gender="female" />
+        <first-name value="Rosa" gender="female" />
+        <first-name value="Angela" gender="female" />
+        <first-name value="Giovanna" gender="female" />
+        <first-name value="Teresa" gender="female" />
+        <first-name value="Lucia" gender="female" />
+        <first-name value="Carmela" gender="female" />
+        <first-name value="Caterina" gender="female" />
+        <first-name value="Francesca" gender="female" />
+        
+        <first-name value="Antonietta" gender="female" />
+        <first-name value="Carla" gender="female" />
+        <first-name value="Elena" gender="female" />
+        <first-name value="Concetta" gender="female" />
+        <first-name value="Rita" gender="female" />
+        <first-name value="Margherita" gender="female" />
+        <first-name value="Franca" gender="female" />
+        <first-name value="Paola" gender="female" />
+
+        
+        
     </first-name-list>
     <last-name-list>
         <!-- 10 most common Italian surnames -->

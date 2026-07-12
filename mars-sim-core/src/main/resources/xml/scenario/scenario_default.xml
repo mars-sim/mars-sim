@@ -46,12 +46,12 @@
 			<location coordinates="40.4244 -105.8939" />
 		</settlement>
 	
-		<settlement name="Tian Cheng" template="Phase 3-ISRA" persons="16" robots="8" sponsor="ISRA">
+		<settlement name="New Taipei" template="Phase 3-ISRA" persons="16" robots="8" sponsor="ISRA">
 			<!-- previously, longitude="20.9156 E" coordinates="0.7777 " -->
 			<location coordinates="9.68 24.57" />	
 		</settlement>		
 				
-		<settlement name="New Pompeii" template="Phase 3-IN" persons="16" robots="8" sponsor="ISRO">
+		<settlement name="Bharatiya" template="Phase 3-IN" persons="16" robots="8" sponsor="ISRO">
 			<location coordinates="26.3650 -70.9710" />
 		</settlement>
 
@@ -95,6 +95,11 @@
 		
 	</initial-settlement-list>
 	<arriving-settlement-list>
+		<arriving-settlement name="New Dubai" template="Phase 0-AE" 
+			persons="2" robots="4" sponsor="UAESA" arrival-in-sols="4">
+			<location coordinates="13.5488 136.4239" />
+		</arriving-settlement>	
+	
 		<arriving-settlement name="Halley" template="Phase 1-IT" 
 			persons="8" robots="6" sponsor="ASI" arrival-in-sols="3">
 			<location coordinates="22.6532 37.0579" />				 
@@ -104,10 +109,11 @@
 			persons="4" robots="4" sponsor="SSA" arrival-in-sols="2">
 			<location coordinates="45.4157 -141.3300" />
 		</arriving-settlement>
+			
+		<arriving-settlement name="Descartes" template="Phase 2-FR" 
+			persons="16" robots="12" sponsor="CNES" arrival-in-sols="1">
+			<location coordinates="56.0878 171.9375" />				 
+		</arriving-settlement>
 		
-		<arriving-settlement name="New Dubai" template="Phase 0-AE" 
-			persons="2" robots="4" sponsor="UAESA" arrival-in-sols="1">
-			<location coordinates="13.5488 136.4239" />
-		</arriving-settlement>		
 	</arriving-settlement-list>
 </scenario-configuration>

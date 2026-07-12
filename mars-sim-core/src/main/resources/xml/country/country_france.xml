@@ -18,7 +18,7 @@
     <first-name-list>
         <first-name value="Adam" gender="male" />
         <first-name value="Gabriel" gender="male" />
-        <first-name value="Raphaël" gender="male" />
+        <first-name value="Raphael" gender="male" />
         <first-name value="Paul" gender="male" />
         <first-name value="Louis" gender="male" />
         <first-name value="Arthur" gender="male" />
@@ -27,29 +27,75 @@
         <first-name value="Jules" gender="male" />
         <first-name value="Mohammed" gender="male" />
 
+        <first-name value="Leo" gender="male" />
+        <first-name value="Noah" gender="male" />
+        <first-name value="Liam" gender="male" />
+        <first-name value="Mael" gender="male" />
+        <first-name value="Leon" gender="male" />
+        <first-name value="Lucas" gender="male" />
+        <first-name value="Hugo" gender="male" />
+        <first-name value="Marceau" gender="male" />
+        <first-name value="Gabin" gender="male" />
+        <first-name value="Malo" gender="male" />
+        
+        <first-name value="Basile" gender="male" />
+        <first-name value="Augustin" gender="male" />
+        <first-name value="Gaspard" gender="male" />
+
+
         <first-name value="Louise" gender="female" />
         <first-name value="Alice" gender="female" />
-        <first-name value="Chloé" gender="female" />
+        <first-name value="Chloe" gender="female" />
         <first-name value="Emma" gender="female" />
-        <first-name value="Inès" gender="female" />
+        <first-name value="Ines" gender="female" />
         <first-name value="Sarah" gender="female" />
         <first-name value="Jeanne" gender="female" />
         <first-name value="Anna" gender="female" />
-        <first-name value="Adèle" gender="female" />
+        <first-name value="Adele" gender="female" />
         <first-name value="Juliette" gender="female" />
+        
+        <first-name value="Jade" gender="female" />
+        <first-name value="Ambre" gender="female" />
+        <first-name value="Alba" gender="female" />
+        <first-name value="Rose" gender="female" />
+        <first-name value="Romy" gender="female" />
+        <first-name value="Agathe" gender="female" />
+        <first-name value="Romane" gender="female" />
+        <first-name value="Lily" gender="female" />
+        <first-name value="Lilly" gender="female" />
+        <first-name value="Elea" gender="female" />
+        
+        <first-name value="Mila" gender="female" />
+        <first-name value="Charlotte" gender="female" />
+        <first-name value="Olivia" gender="female" />
+        <first-name value="Alma" gender="female" />
+        
     </first-name-list>
     <last-name-list>
         <!-- 10 most common French surnames -->
 
-        <last-name value="Bernard" />
-        <last-name value="Dubois" />
-        <last-name value="Durand" />
-        <last-name value="Leroy" />
-        <last-name value="Martin" />
-        <last-name value="Moreau" />
-        <last-name value="Petit" />
-        <last-name value="Richard" />
-        <last-name value="Robert" />
-        <last-name value="Thomas" />
+        <last-name value="Bernard" />	<!-- Germanic origin meaning "brave bear" -->
+        <last-name value="Dubois" />	<!-- Topographical name meaning "from the woods" -->
+        <last-name value="Durand" />	<!-- From Latin Durandus, meaning "enduring" or "stubborn" -->
+        <last-name value="Leroy" />		<!-- Meaning "the king" -->
+        <last-name value="Martin" />	<!-- Derived from the Latin Martinus (God of War), popularized by Saint Martin of Tours -->
+        <last-name value="Moreau" />	<!-- Derived from Maurellus, often referring to someone with dark skin or hair -->
+        <last-name value="Petit" />		<!-- Meaning "small" or "youngest" -->
+        <last-name value="Richard" />	<!-- Germanic for "strong ruler" -->
+        <last-name value="Robert" />	<!-- Germanic for "bright fame" -->
+        <last-name value="Thomas" />	<!-- Biblical origin meaning "twin" -->
+        
+        <last-name value="Lefebvre" />	<!-- Occupational name for a blacksmith (faber) -->
+        <last-name value="Simon" />		<!-- Biblical origin meaning "God has heard" -->
+        <last-name value="Rousseau" />	<!-- Meaning "red-haired" or "reddish" -->
+        <last-name value="Faure" />		<!-- Occupational name for a blacksmith (variant of Fèvre) -->
+        
+        <last-name value="Michel" />	<!-- Biblical origin meaning "Who is like God?" -->
+        <last-name value="Lefevre" />	<!-- Another spelling for the blacksmith surname -->
+        <last-name value="Muller" />	<!-- Occupational name for a miller (common in Alsace/Moselle) -->
+        <last-name value="Blanc" />		<!-- Meaning "white," often referring to hair color or complexion -->
+        <last-name value="Roux" />		<!-- Meaning "red" or "red-haired" -->
+        <last-name value="Laurent" />	<!-- Derived from the laurel tree, symbolizing victory -->
+        
     </last-name-list>
 </country>

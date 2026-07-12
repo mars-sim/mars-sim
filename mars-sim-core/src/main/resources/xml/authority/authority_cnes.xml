@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="CNES" name="National Centre for Space Studies" corporation="false"
+					agenda="Space Accessibility" gender-ratio="0.78">
+		<!-- France has a share of female graduates in STEM fields 22%. 
+		On the other hand, the European Union (EU) overall has women 
+		comprising 52% of the STEM workforce, which is higher than the US (28%) and India (27%).
+		Globally, women constitute 35% of STEM graduates.
+		-->
+			<country name="France"/>
+			<settlement-name name="Laplace" />
+			<settlement-name name="Galileo" />
+			<settlement-name name="Coulomb" />
+			<settlement-name name="Berenice" />
+			<settlement-name name="Curie" />
+			<settlement-name name="Herschel" />		
+			<settlement-name name="Pasteur" />
+			<settlement-name name="Copernicus" />	
+			<settlement-name name="Jules Verne" />	
+			<settlement-name name="Ampere" />				
+			<settlement-name name="Poincare" />
+			<settlement-name name="Fourier" />			
+						
+			<rover-name name="Veronique" />  
+			<rover-name name="Jean-Francois" />  
+			<rover-name name="Jacques-Louis" />    
+			<rover-name name="Picard" />  
+			<rover-name name="Auger" />  
+			<rover-name name="Denisse" />  
+			<rover-name name="Gobelins" /> 
+			<rover-name name="Melies" /> 
+			<rover-name name="Charles" /> 
+			<rover-name name="Rozier" /> 
+			<rover-name name="Gay-Lussac" /> 
+			<rover-name name="Colbert" /> 			
+			<rover-name name="Diamant" /> 	
+			<rover-name name="Asterix" /> 	
+			<rover-name name="Astrium" /> 	
+			<rover-name name="Safran" /> 
+			<rover-name name="Ariane" /> 
+			<rover-name name="Dassault" /> 
+			<rover-name name="Aerospatiale" /> 
+			<rover-name name="Arago" /> 			
+			<rover-name name="Baptiste" /> 	
+			<rover-name name="Thales" /> 
+			<rover-name name="Airbus" /> 																	
+		</authority>
