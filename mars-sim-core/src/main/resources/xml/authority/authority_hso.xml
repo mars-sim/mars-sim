@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="HSO" name="Hungarian Space Research Office" corporation="false"
+					agenda="Economic Integration" gender-ratio="0.746">
+		<!-- Recent data from 2023 indicates that women account for only 25.4% of tertiary 
+			STEM students, the lowest share in the European Union.  Consequently, men comprise the remaining 74.6% -->
+			<country name="Hungry"/>
+			<settlement-name name="Von Neumann" />
+			<settlement-name name="Szilard" />
+			<settlement-name name="Wigner" />
+			<settlement-name name="Gabor" />
+			<settlement-name name="Szent-Gyorgyi" />
+			<settlement-name name="Jedlik" />		
+			<settlement-name name="Eotvos" />
+			<settlement-name name="Semmelweis" />
+			<settlement-name name="Balaton" />
+
+			<rover-name name="Giotto" />  
+			<rover-name name="Philae" />  
+			<rover-name name="Hera" />    
+			<rover-name name="Ramses" />  
+			<rover-name name="Argonaut" />  
+			<rover-name name="Karman" /> 
+			<rover-name name="Irinyi" />  
+			<rover-name name="Puskas" /> 
+			<rover-name name="Erdos" /> 
+			<rover-name name="Koda" /> 
+			<rover-name name="Vodochody" /> 
+			<rover-name name="Dunai" /> 
+			<rover-name name="Delfin" /> 			
+			<rover-name name="Ikarus" /> 	
+			<rover-name name="Csepel" /> 	
+
+			<rover-name name="Ganz" /> 			
+			<rover-name name="Pauger" /> 																			
+		</authority>

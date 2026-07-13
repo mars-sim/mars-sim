@@ -295,11 +295,12 @@
 		<template name="Phase 1-US"/>
 		<template name="Phase 1-UK"/>
 				
-		<!-- 11 Phase 2 templates -->	
+		<!-- 12 Phase 2 templates -->	
 		<template name="Phase 2-BO"/>	
 		<template name="Phase 2-CN"/>	
 		<template name="Phase 2-EU"/>
 		<template name="Phase 2-FR"/>
+		<template name="Phase 2-HU"/>
 		<template name="Phase 2-IN"/>	
 		
 		<template name="Phase 2-JP"/>

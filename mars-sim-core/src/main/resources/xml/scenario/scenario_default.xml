@@ -95,6 +95,12 @@
 		
 	</initial-settlement-list>
 	<arriving-settlement-list>
+	
+		<arriving-settlement name="New Madinah" template="Phase 1-SA" 
+			persons="4" robots="4" sponsor="SSA" arrival-in-sols="5">
+			<location coordinates="45.4157 -141.3300" />
+		</arriving-settlement>
+			
 		<arriving-settlement name="New Dubai" template="Phase 0-AE" 
 			persons="2" robots="4" sponsor="UAESA" arrival-in-sols="4">
 			<location coordinates="13.5488 136.4239" />
@@ -105,9 +111,9 @@
 			<location coordinates="22.6532 37.0579" />				 
 		</arriving-settlement>
 
-		<arriving-settlement name="New Madinah" template="Phase 1-SA" 
-			persons="4" robots="4" sponsor="SSA" arrival-in-sols="2">
-			<location coordinates="45.4157 -141.3300" />
+		<arriving-settlement name="Danube" template="Phase 2-HU" 
+			persons="8" robots="8" sponsor="HSO" arrival-in-sols="2">
+			<location coordinates="25.2143 95.2903" />
 		</arriving-settlement>
 			
 		<arriving-settlement name="Descartes" template="Phase 2-FR" 

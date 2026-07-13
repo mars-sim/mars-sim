@@ -587,11 +587,46 @@
 				<preference type="SCIENCE" name="SOCIOLOGY" modifier="6"/>
 			</capability>
 		</agenda>			
+		<agenda name="Economic Integration"
+				objective="Integrate aerospace industries deeper into global space supply chains"
+				findings="Identify pillars to move beyond basic research into creating continuous presence in spaceflight" 
+				data="Develop avenues to create measurable economic value and spin-off companies">
+			<capability description="Characterize manufacturing and resource production in relation to local economy">
+				<preference type="MISSION" name="TRADE" modifier="1.8"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.1"/>
+				<preference type="MISSION" name="MINING" modifier="1.4"/>				
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>	
+			</capability>
+			<capability description="Identify social factors in developing space economics">
+				<preference type="MISSION" name="DELIVERY" modifier="1.8"/>
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="TRADE" modifier="1.7"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="SOCIOLOGY" modifier="6"/>	
+			</capability>
+			<capability description="Measure the logistical flow of resources in interplanetary trades">
+				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="TRADE" modifier="2"/>
+				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="2.2"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
+				<preference type="MISSION" name="MINING" modifier="1.3"/>	
+				<preference type="SCIENCE" name="MATHEMATICS" modifier="6"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="5"/>
+			</capability>
+		</agenda>
 	</agendas>
-
+		
+	<!-- https://en.wikipedia.org/wiki/List_of_government_space_agencies 
+	-->
 	<!-- Reporting authorities are stored in separate files in the authority/ directory.
 	     Each authority is in a file named authority_<code>.xml where <code> matches
-	     the ReportingAuthorityType enum -->
+	     the ReportingAuthorityType enum 
+	-->
 	<authorities>
 		<authority code="ASI" />
 		<authority code="AEB" />
@@ -601,6 +636,7 @@
 		<authority code="CSA" />
 		<authority code="DLR" />
 		<authority code="ESA" />
+		<authority code="HSO" />
 		<authority code="ISRA" />
 		<authority code="ISRO" />
 		<authority code="JAXA" />
