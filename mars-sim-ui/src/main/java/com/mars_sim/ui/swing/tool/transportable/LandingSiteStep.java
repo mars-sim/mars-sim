@@ -60,7 +60,8 @@ public class LandingSiteStep extends WizardStep<TransportState> {
 
     /**
      * Creates the map pane with the map and click listener for selecting landing site.
-     * @param state Current qizard state.
+     * 
+     * @param state Current wizard state.
      * @param context UI context for accessing simulation and other resources.
      * @return New map pane.
      */

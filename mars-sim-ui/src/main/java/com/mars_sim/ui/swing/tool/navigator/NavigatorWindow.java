@@ -736,7 +736,7 @@ public class NavigatorWindow extends ContentPanel
 			root.add(layerNode);
 
 			if (nl.layer() instanceof FilteredMapLayer fl) {
-				for(var m : fl.getFilterDetails()) {
+				for (var m : fl.getFilterDetails()) {
 					var filterNode = new DefaultMutableTreeNode(new FilterNode(fl, m));
 					layerNode.add(filterNode);
 				}
@@ -774,7 +774,7 @@ public class NavigatorWindow extends ContentPanel
 			results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + LAYER_VISIBLE,
 							Boolean.toString(mapPanel.isLayerVisible(e.layer())));
 			if (e.layer() instanceof FilteredMapLayer fl) {
-				for(var f : fl.getFilterDetails()) {
+				for (var f : fl.getFilterDetails()) {
 					results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + f.name(),
 								Boolean.toString(fl.isFilterActive(f.name())));
 				}

@@ -143,7 +143,8 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 	}
 
 	/**
-	 * Create a quick lookup for mineral name to resource id.
+	 * Creates a quick lookup for mineral name to resource id.
+	 * 
 	 * @param mineralType Name of the mineral
 	 * @return Resource Id
 	 */
@@ -152,8 +153,8 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 	}
 
 	/**
-	 * Get the mineral conctrations within the map viewpoint. This ues the MineralMap to
-	 * locate the concentratinos but also applies a filter on minteral type displayed
+	 * Gets the mineral concentrations within the map viewpoint. This uses the MineralMap to
+	 * locate the concentrations but also applies a filter on mineral type displayed
 	 * 
 	 * @param center The center of the map viewpoint
 	 * @param arcAngle Arc of the viewpoint
@@ -165,7 +166,7 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 	}
 
 	/**
-	 * Render a Mineral concentration as a symbol on the map and a specific point.
+	 * Renders a Mineral concentration as a symbol on the map and a specific point.
 	 * 
 	 * @param f Concentration to render
 	 * @param location Location on the map display

@@ -110,16 +110,16 @@
 			persons="8" robots="6" sponsor="ASI" arrival-in-sols="3">
 			<location coordinates="22.6532 37.0579" />				 
 		</arriving-settlement>
-
-		<arriving-settlement name="Danube" template="Phase 2-HU" 
-			persons="8" robots="8" sponsor="HSO" arrival-in-sols="2">
-			<location coordinates="25.2143 95.2903" />
-		</arriving-settlement>
-			
+	
 		<arriving-settlement name="Descartes" template="Phase 2-FR" 
-			persons="16" robots="12" sponsor="CNES" arrival-in-sols="1">
+			persons="16" robots="12" sponsor="CNES" arrival-in-sols="2">
 			<location coordinates="56.0878 171.9375" />				 
 		</arriving-settlement>
 		
+		<arriving-settlement name="Danube" template="Phase 2-HU" 
+			persons="8" robots="8" sponsor="HSO" arrival-in-sols="1">
+			<location coordinates="25.2143 95.2903" />
+		</arriving-settlement>
+
 	</arriving-settlement-list>
 </scenario-configuration>
