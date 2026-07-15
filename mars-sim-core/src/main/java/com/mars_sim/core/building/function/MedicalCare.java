@@ -121,12 +121,12 @@ public class MedicalCare extends Function implements MedicalAid {
 			success = BuildingManager.addToActivitySpot(worker, building, FunctionType.MEDICAL_CARE);
 				
 			if (success)
-				logger.info(worker, 20_000, "Arrived at " + building.getName() + ".");
+				logger.info(worker, 10_000, "Arrived at " + building.getName() + ".");
 			else
-				logger.info(worker, 0, "Unable to be go to a medical building.");
+				logger.info(worker, 10_000, "Unable to be go to a medical building.");
 		}
 		else
-			logger.info(worker, 0, "Unable to find a medical building.");
+			logger.info(worker, 10_000, "Unable to find a medical building.");
 		
 	    return success;
     }
