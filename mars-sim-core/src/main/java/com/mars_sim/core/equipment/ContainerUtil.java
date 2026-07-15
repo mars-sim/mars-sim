@@ -72,15 +72,15 @@ public final class ContainerUtil {
 		case BARREL:
 			return 50D;
 		case BAG:
-			return 50D;
+			return 30D;
 		case LARGE_BAG:
-			return 100D;
+			return 60D;
 		case SPECIMEN_BOX:
-			return 50D;	
+			return 75D;	
 		case THERMAL_BOTTLE:
 			return .5;		
 		case WHEELBARROW:
-			return 100;					
+			return 200;					
 		default:
 			throw new IllegalArgumentException("'" + type + "' is not a container.");
 		}
