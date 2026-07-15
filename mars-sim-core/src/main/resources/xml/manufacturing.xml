@@ -1190,6 +1190,22 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
+	<process name="Make Towel" tech="1" skill="1" work-time="50" process-time="100"
+			power-required=".5">
+		<inputs>
+			<resource name="Cane fiber" amount="0.2">
+				<alternative name="Polyester fiber" amount="0.2" />
+				<alternative name="Soy fiber" amount="0.2" />
+			</resource>
+			<resource name="Polyurethane" amount="0.1" />
+			<resource name="Polyester resin" amount="1.0" />
+		</inputs>
+		<outputs>
+			<part name="Hand Towel" number="4" />
+			<part name="Utility Towel" number="12" />
+		</outputs>
+	</process>
+		
 	<process name="Make Liquid Cooling Garment" tech="2" skill="2" work-time="100" process-time="100"
 			power-required=".2">
 		<description> The Liquid Cooling and Ventilation Garment (LCVG) serves to regulate the transport 
@@ -3792,7 +3808,9 @@ Note: 1 kg of H2 is 14.13 liter
 	   In recent years the expanded polystyrene composites with 
 	   cellulose[39][40] and starch[41] have also been produced. 
 	 - Foaming Of polystyrene thermoplastic starch blends
-	8. thermal blanket
+	7. thermal blanket
+	8. hand towel and brush
+
 
 	-->
 

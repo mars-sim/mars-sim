@@ -870,6 +870,7 @@ public class PhysicalCondition implements Serializable {
 	
 	/**
 	 * Checks if a person is dehydrated.
+	 * 
 	 * @param factor 
 	 * @param time 
 	 */
@@ -880,7 +881,7 @@ public class PhysicalCondition implements Serializable {
 		// If the person's thirst at top level for a period then trigger dehydration
 		if (thirst > dehydrationTrigger && getProblemByType(ComplaintType.DEHYDRATION) == null) {
 			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
-			logger.info(person, "Dessicasted time has exp");
+			logger.info(person, "Thirst: " + Math.round(thirst * 10.0)/10.0);
 		}
 
 		// IF thirst at critical, person is dead
@@ -996,7 +997,7 @@ public class PhysicalCondition implements Serializable {
 		// If the person's hunger at top level for a period then trigger starvation
 		if (hunger > starvationTrigger && getProblemByType(ComplaintType.STARVATION) == null) {
 			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
-			logger.info(person, "Starvation time has expired");
+			logger.info(person, "Hunger: " + Math.round(hunger * 10.0)/10.0);
 		}
 
 		// IF hunger at critical, person is dead

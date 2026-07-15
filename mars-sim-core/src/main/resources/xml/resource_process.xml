@@ -621,7 +621,7 @@
 		<output resource="Hydrogen" rate="40.0"  />
 	</process> "Oxidative Dry Reforming of Methane (ODRM) to Produce Hydrogen" -->
 	
-	<process name="Steam Methane Reforming (SMR) to Produce Hydrogen" power-required="0.01" >
+	<process name="Steam Methane Reforming (SMR)" power-required="0.01" >
 	<description>
 
 		Methane steam reforming (MSR) is defined as a process that reacts methane with steam 
@@ -650,9 +650,9 @@
 		
 		<output resource="Carbon dioxide" rate="440.0" />
 		<output resource="Hydrogen" rate="60.0"  />
-	</process> <!-- "Steam Methane Reforming (SMR) to Produce Hydrogen" -->
+	</process> <!-- "Steam Methane Reforming (SMR)" -->
 
-	<process name="Dry Methane Reforming (DMR) to Produce Hydrogen" power-required="0.01" >
+	<process name="Dry Methane Reforming (DMR)" power-required="0.01" >
 	<description>
 
 		Dry methane reforming (DMR) or CO2 reforming is the third common form of reforming process.
