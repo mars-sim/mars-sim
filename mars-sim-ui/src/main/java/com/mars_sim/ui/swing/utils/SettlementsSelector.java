@@ -41,6 +41,7 @@ import com.mars_sim.ui.swing.components.SortedComboBoxModel;
  * It displays the selected item and provides a way to get the corresponding set of settlements for the current selection.
  * It also listens for new settlements being added and updates the selection options accordingly.
  */
+@SuppressWarnings("serial")
 public class SettlementsSelector extends JPanel {
     private static final String ALL = "All";
 
@@ -57,6 +58,7 @@ public class SettlementsSelector extends JPanel {
 
     /**
      * Constructor.
+     * 
      * @param unitMgr Unit manager to get settlements and listen for changes.
      * @param selected The name of the initially selected settlement or authority, or null for no selection.
      * @param showDescription Whether to show the description label.
@@ -161,7 +163,8 @@ public class SettlementsSelector extends JPanel {
     }
 
     /**
-     * A new Settlement has been added.
+     * Adds a new Settlement.
+     * 
      * @param s New settlement.
      */
     private void addNewSettlement(Settlement s) {
@@ -182,7 +185,8 @@ public class SettlementsSelector extends JPanel {
     }
 
     /**
-     * Get the actual selected item.
+     * Gets the actual selected item.
+     * 
      * @return The selected item, which can be a Settlement, Authority, or String (for "All").
      */
     public Object getSelectedItem() {
@@ -190,7 +194,9 @@ public class SettlementsSelector extends JPanel {
     }
 
     /**
-     * Get the set of settlements corresponding to the current selection. This will be a single settlement if a settlement is selected, all settlements under an authority if an authority is selected, or all settlements if "All" is selected.
+     * Gets the set of settlements corresponding to the current selection. 
+     * This will be a single settlement if a settlement is selected, all settlements under an authority if an authority is selected, or all settlements if "All" is selected.
+     * 
      * @return The set of settlements corresponding to the current selection.
      */
     public Set<Settlement> getSelectedSettlements() {
@@ -198,7 +204,8 @@ public class SettlementsSelector extends JPanel {
     }
 
 	/**
-	 * Add a listener that gets notified when the selection changes.
+	 * Adds a listener that gets notified when the selection changes.
+	 * 
 	 * @param actionCommand The action command to be used in the ActionEvent.
 	 * @param listener The listener to be notified.
 	 */
@@ -208,7 +215,8 @@ public class SettlementsSelector extends JPanel {
     }
 
 	/**
-	 * Get all valid settlements based on the current game mode.
+	 * Gets all valid settlements based on the current game mode.
+	 * 
 	 * @return
 	 */
 	private Collection<Settlement> getAllSettlements() {
@@ -241,6 +249,7 @@ public class SettlementsSelector extends JPanel {
 
     /**
 	 * This is a comparator that sorts in the following order:
+	 * 
 	 * 1) String
 	 * 2) Authority
 	 * 3) Settlement
@@ -320,7 +329,7 @@ public class SettlementsSelector extends JPanel {
 	}
 
     /**
-     * Unregister this component from any listeners
+     * Unregisters this component from any listeners
      */
     public void unregister() {
         unitMgr.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnitMapLayer.java
- * @date 2023-04-29
+ * @date 2026-07-14
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.map;
@@ -57,8 +57,8 @@ public class UnitMapLayer implements FilteredMapLayer {
 
 	private static final int LABEL_HORIZONTAL_OFFSET = 2;
 	
-	private static final String LABEL_SETTLEMENTS = "Settlements";
-	private static final String LABEL_VEHICLES = "Vehicles";
+	private static final String LABEL_SETTLEMENTS = "Settlement(s)";
+	private static final String LABEL_VEHICLES = "Vehicle(s)";
 	private static final String LAYER_NAME = "Units";
 
 	// Domain data
@@ -73,7 +73,6 @@ public class UnitMapLayer implements FilteredMapLayer {
 
 	private Collection<Settlement> unitsToDisplay;
 	private Set<String> displayedFilters = new HashSet<>();
-//	private List<MapFilter> mapFilters = new ArrayList<>();
 
 	/**
 	 * Constructor.
@@ -222,34 +221,28 @@ public class UnitMapLayer implements FilteredMapLayer {
 	@Override
 	public List<MapFilter> getFilterDetails() {
 		List<MapFilter> filters = new ArrayList<>();
-		if (isFilterActive(LABEL_SETTLEMENTS)) {
-			filters.add(new MapFilter(LAYER_NAME, LABEL_SETTLEMENTS, labelIcon));
-		}
-		if (isFilterActive(LABEL_VEHICLES)) {
-			filters.add(new MapFilter(LAYER_NAME, LABEL_VEHICLES, labelIcon));
-		}
+//		if (isFilterActive(LABEL_SETTLEMENTS)) {
+			filters.add(new MapFilter(LABEL_SETTLEMENTS, LABEL_SETTLEMENTS, labelIcon));
+//		}
+//		if (isFilterActive(LABEL_VEHICLES)) {
+			filters.add(new MapFilter(LABEL_VEHICLES, LABEL_VEHICLES, labelIcon));
+//		}
 		return filters;
 	}
 
 	@Override
 	public void displayFilter(String name, boolean display) {
-		if (name.equals(LAYER_NAME)
-			|| name.equals(LABEL_SETTLEMENTS)
-			|| name.equals(LABEL_VEHICLES)) {
+		if (display) {
+			displayedFilters.add(name);
 			displayLabel = display;
-			
-			if (display) {
-				displayedFilters.add(name);
-			}
-			else {
-				displayedFilters.remove(name);
-			}
+		}
+		else {
+			displayedFilters.remove(name);
 		}
 	}
 
 	@Override
 	public boolean isFilterActive(String filterName) {
-//		return (LABEL_FILTER.equals(filterName) && displayLabel);
-		return displayedFilters.contains(filterName) && displayLabel;
+		return displayedFilters.contains(filterName);
 	}
 }
