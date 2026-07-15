@@ -72,11 +72,11 @@ public final class ContainerUtil {
 		case BARREL:
 			return 50D;
 		case BAG:
-			return 30D;
+			return 40D;
 		case LARGE_BAG:
-			return 60D;
+			return 80D;
 		case SPECIMEN_BOX:
-			return 75D;	
+			return 100D;	
 		case THERMAL_BOTTLE:
 			return .5;		
 		case WHEELBARROW:
