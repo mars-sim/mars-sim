@@ -131,7 +131,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 			process-time="800"
 			power-required=".5">
 		<inputs>
-			<resource name="Cane Fiber" amount="25" />
+			<resource name="Cane fiber" amount="25" />
 			<resource name="crop waste" amount="25" />
 			<resource name="water" amount="10" />
 		</inputs>
@@ -1008,7 +1008,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="Mylar" amount="2.0" />
 			<resource name="Aluminum" amount="0.5" >
-				<alternative name="Aluminum oxide" amount="1.0"/>
+				<alternative name="Aluminum oxide" amount="0.943"/>
 			</resource>
 		</inputs>
 		<outputs>
@@ -1155,7 +1155,7 @@ Note: 1 kg of H2 is 14.13 liter
 			tooling="metalwork" power-required="0.2">
 		<inputs>
 			<resource name="Aluminum" amount="0.8" >
-				<alternative name="Aluminum oxide" amount="1.6"/>
+				<alternative name="Aluminum oxide" amount="1.512"/>
 			</resource>			
 			<part name="plastic sheet" number="2" />
 		</inputs>
@@ -1213,7 +1213,7 @@ Note: 1 kg of H2 is 14.13 liter
 			See technical papers at https://www.science.gov/topicpages/v/ventilation+garment+lcvg
 		</description>
 		<inputs>
-			<resource name="Cane Fiber" amount="0.2">
+			<resource name="Cane fiber" amount="0.2">
 				<alternative name="Polyester fiber" amount="0.2" />
 				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
@@ -1288,7 +1288,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make coveralls" tech="2" skill="2" work-time="200" process-time="50"
 			power-required=".2">
 		<inputs>
-			<resource name="Cane Fiber" amount="0.2">
+			<resource name="Cane fiber" amount="0.2">
 				<alternative name="Polyester Fiber" amount="0.2" />
 				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
@@ -1480,7 +1480,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make work gloves" tech="1" skill="1" work-time="50" process-time="50"
 			power-required=".05">
 		<inputs>
-			<resource name="Cane Fiber" amount="0.1">
+			<resource name="Cane fiber" amount="0.1">
 				<alternative name="Polyester Fiber" amount="0.1" />
 				<alternative name="Soy fiber" amount="0.1" />
 			</resource>
@@ -1489,6 +1489,20 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<part name="work gloves" number="2" />
+		</outputs>
+	</process>
+	
+	<process name="Make fiber cloth" tech="1" skill="1" work-time="10" process-time="50"
+			power-required=".05">
+		<inputs>
+			<resource name="Cane fiber" amount="0.5">
+				<alternative name="Polyester Fiber" amount="0.5" />
+				<alternative name="Soy fiber" amount="0.5" />
+				<alternative name="Nylon" amount="0.5" />
+			</resource>
+		</inputs>
+		<outputs>
+			<resource name="Fiber cloth" amount="0.5" />
 		</outputs>
 	</process>
 	
@@ -2285,6 +2299,25 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Make aluminum" tech="0" skill="0" work-time="5" process-time="10"
+			power-required="1.537">
+		<description>	
+			Aluminum is extracted from aluminum oxide (alumina) primarily through the Hall–Héroult 
+			process, an industrial electrolytic method invented in 1886 by Charles Martin Hall 
+			and Paul Héroult.
+			The chemical reactions involved are:
+				Al2O3 + 3C → 2Al + 3CO2
+		</description>
+		<inputs>
+			<resource name="aluminum oxide" amount="20.392" />
+			<resource name="Carbon" amount="3.603" />
+		</inputs>
+		<outputs>
+			<resource name="Carbon dioxide" amount="13.2" />
+			<resource name="aluminum" amount="10.79" />
+		</outputs>
+	</process>
+	
 	<!-- Produces a small spool of thin aluminum wire. -->
 	<process name="Draw aluminum wire" tech="1" skill="1" work-time="20" process-time="20"
 			power-required=".3">
@@ -2720,13 +2753,24 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum ingot" number="1" />
 		</outputs>
 	</process>
-
-
+	
 	<!-- Recycling iron scrap back into iron ingots. -->
 	<process name="Recycle iron scrap" tech="0" skill="0" work-time="2" process-time="5"
 			tooling="furnace" power-required=".5">
 		<inputs>
 			<part name="iron scrap" number="7" />
+		</inputs>
+		<outputs>
+			<part name="iron ingot" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="Make iron ingot" tech="0" skill="0" work-time="2" process-time="10"
+			tooling="furnace" power-required=".5">
+		<inputs>
+			<resource name="iron powder" amount="7" >
+				<alternative name="iron oxide" amount="10" />
+			</resource>
 		</inputs>
 		<outputs>
 			<part name="iron ingot" number="1" />
@@ -3204,14 +3248,14 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make activated charcoal" tech="2" skill="2" work-time="30" process-time="40"
-			tooling="chemical" power-required="0.1">
+	<process name="Make activated charcoal" tech="1" skill="1" work-time="5" process-time="10"
+			tooling="chemical" power-required="0.05">
 		<inputs>
-			<resource name="Carbon" amount="1" />
+			<resource name="Carbon" amount="5" />
 			<resource name="sodium hypochlorite" amount=".1" />
 		</inputs>
 		<outputs>
-			<resource name="activated charcoal" amount="1" />
+			<resource name="activated charcoal" amount="5" />
 		</outputs>
 	</process>
 
@@ -3233,15 +3277,15 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- 2015-05-22 Added manufacturing charcoal filter. -->
-	<process name="Make charcoal filter" tech="2" skill="1" work-time="50" process-time="50"
-			power-required=".2">
+	<process name="Make charcoal filter" tech="1" skill="1" work-time="5" process-time="15"
+			power-required=".1">
 		<inputs>
 			<resource name="activated charcoal" amount="1" />
 			<resource name="calcium carbonate" amount="1" />
 			<part name="fiberglass cloth" number="1" />
 		</inputs>
 		<outputs>
-			<part name="charcoal filter" number="1" />
+			<part name="charcoal filter" number="5" />
 		</outputs>
 	</process>
 
@@ -3381,7 +3425,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="nickel" amount=".1" />	
 			<resource name="iron powder" amount=".1" />		
 			<resource name="Aluminum" amount=".1"  >
-				<alternative name="Aluminum oxide" amount="0.2"/>
+				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>					
 			<resource name="glass" amount="4.2" />	
 			<resource name="oxygen" amount=".5" />				
@@ -3400,7 +3444,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="sodium carbonate" amount=".25" />
 			<resource name="Aluminum" amount=".5" >
-				<alternative name="Aluminum oxide" amount="1.0"/>
+				<alternative name="Aluminum oxide" amount="0.943"/>
 			</resource>
 			<resource name="nickel" amount=".025" />
 			<resource name="lithium" amount=".025" />
@@ -3422,7 +3466,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="sodium carbonate" amount=".25" />
 			<resource name="Aluminum" amount=".5"  >
-				<alternative name="Aluminum oxide" amount="1.0"/>
+				<alternative name="Aluminum oxide" amount="0.943"/>
 			</resource>
 			<resource name="nickel" amount=".025" />
 			<resource name="lithium" amount=".025" />
@@ -3533,7 +3577,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1">
 		<inputs>
 			<resource name="Aluminum" amount="0.1" >
-				<alternative name="Aluminum oxide" amount="0.2"/>
+				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>
 			<resource name="zinc" amount="0.1" />
 			<resource name="nickel" amount="0.1" />
@@ -3550,7 +3594,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1">
 		<inputs>
 			<resource name="Aluminum" amount="0.1" >
-				<alternative name="Aluminum oxide" amount="0.2"/>
+				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>
 			<resource name="zinc" amount="0.05" />
 			<resource name="nickel" amount="0.05" />
@@ -3571,7 +3615,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1">
 		<inputs>
 			<resource name="Aluminum" amount="0.2"  >
-				<alternative name="Aluminum oxide" amount="0.4"/>
+				<alternative name="Aluminum oxide" amount="0.378"/>
 			</resource>
 			<resource name="silicon" amount="1" />
 			<resource name="iron powder" amount="0.1" />
@@ -3589,7 +3633,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="iron powder" amount="0.2" />
 			<resource name="magnesium" amount="0.4" />
 			<resource name="Aluminum" amount="0.1"  >
-				<alternative name="Aluminum oxide" amount="0.2"/>
+				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>
 			<part name="plastic sheet" number="1" />
 			<part name="resistor" number="40" />
@@ -3609,7 +3653,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="copper" amount="0.2" />
 			<resource name="iron powder" amount="0.2" />
 			<resource name="Aluminum" amount="0.1"  >
-				<alternative name="Aluminum oxide" amount="0.2"/>
+				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>
 			<resource name="magnesium" amount=".2" />
 			<part name="steel sheet" number="1" />
@@ -3684,7 +3728,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="polystyrene" amount="9" />
 			<resource name="Aluminum" amount=".5" >
-				<alternative name="Aluminum oxide" amount="1.0"/>
+				<alternative name="Aluminum oxide" amount="0.943"/>
 			</resource>
 		</inputs>
 		<outputs>
@@ -3803,13 +3847,12 @@ Note: 1 kg of H2 is 14.13 liter
 	2. utility knife
 	3. kitchen knives set
 	4. water heater, from heating elements
-	5. laser headlights, laser diodes
-	6. foam polystyrene - commodity packaging...
+	5. foam polystyrene - commodity packaging...
 	   In recent years the expanded polystyrene composites with 
 	   cellulose[39][40] and starch[41] have also been produced. 
 	 - Foaming Of polystyrene thermoplastic starch blends
 	7. thermal blanket
-	8. hand towel and brush
+	8. hand brush
 
 
 	-->

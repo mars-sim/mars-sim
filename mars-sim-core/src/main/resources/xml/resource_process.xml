@@ -155,9 +155,9 @@
 		<input resource="Water" rate="36.0" />	
 
 		<output resource="Acetic acid" rate="120.0" />
-		<output resource="Carbon dioxide" rate="88.0" />
+		<output resource="Carbon dioxide" rate="88.0" waste="true" />
 		<output resource="Hydrogen" rate="8.0" />
-	</process>
+	</process> <!--"Glucose Fermentation"-->
 
 	<process name="Photo Fermentation by Chlorella" power-required="0.0" >
 		<description>
@@ -173,7 +173,7 @@
 		<input resource="Glucose" rate="180.0" />
 		<input resource="water" rate="108.0" />	
 
-		<output resource="Carbon dioxide" rate="264.0" />
+		<output resource="Carbon dioxide" rate="264.0" waste="true" />
 		<output resource="Hydrogen" rate="24.0" />
 	</process>
 
@@ -203,7 +203,7 @@
 		
 		<output resource="Glucose" rate="180.0" />
 
-	</process>
+	</process> <!--"Cellulolysis of Fiber into Glucose"-->
 
 	<process name="Methanogenesis by Archaea" power-required="0.0" >
 		<description>
@@ -264,8 +264,7 @@
 		
 		<output resource="Methanol" rate="128.0" />
 
-	</process> 
-		<!-- "Oxidation of Methane into Methanol by Methanotrophs" -->
+	</process> <!-- "Oxidation of Methane into Methanol by Methanotrophs" -->
 		
 	<process name="Sabatier RWGS Reactor" power-required="0.12" defaultOn="true">
 	<description> 
@@ -318,12 +317,12 @@
 
 	</description>
 	<!-- rate: the input/output resource rate [in kg/sol] -->
-		<input resource="carbon dioxide" rate="396" ambient="true" />
-		<input resource="hydrogen" rate="36" />
+		<input resource="carbon dioxide" rate="660" ambient="true" />
+		<input resource="hydrogen" rate="60" />
 		
-		<output resource="methane" rate="48" />
-		<output resource="carbon monoxide" rate="168" />
-		<output resource="water" rate="216" />
+		<output resource="methane" rate="80" />
+		<output resource="carbon monoxide" rate="280" waste="true" />
+		<output resource="water" rate="360" />
 	</process> <!-- "Sabatier RWGS Reactor" -->
 
 		
@@ -648,7 +647,7 @@
 		<input resource="Methane" rate="160.0" />
 		<input resource="Water" rate="360.0"  />				
 		
-		<output resource="Carbon dioxide" rate="440.0" />
+		<output resource="Carbon dioxide" rate="440.0" waste="true" />
 		<output resource="Hydrogen" rate="60.0"  />
 	</process> <!-- "Steam Methane Reforming (SMR)" -->
 
@@ -670,7 +669,7 @@
 		<input resource="Methane" rate="160.0" />
 		<input resource="Carbon dioxide" rate="440.0" ambient="true"  />				
 		
-		<output resource="Carbon monoxide" rate="560.0" />
+		<output resource="Carbon monoxide" rate="560.0" waste="true"/>
 		<output resource="Hydrogen" rate="40.0"  />
 	</process> <!-- "Dry Methane Reforming (DMR) to Produce Hydrogen" -->
 
@@ -696,7 +695,7 @@
 		<input resource="carbon monoxide" rate="28" ambient="false" />
 		<input resource="water" rate="18.0"  />				
 		
-		<output resource="carbon dioxide" rate="44.0" />
+		<output resource="carbon dioxide" rate="44.0" waste="true" />
 		<output resource="hydrogen" rate="2.0"  />
 	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
 
@@ -774,7 +773,7 @@
 		</description>
 		<input resource="carbon dioxide" rate="70.4" ambient="true" />
 		
-		<output resource="carbon monoxide" rate="22.4" />
+		<output resource="carbon monoxide" rate="22.4" waste="true" />
 		<output resource="oxygen" rate="25.6" />
 	</process> <!-- "Low Temperature Plasma CO2 Decomposition" -->
 	
@@ -803,7 +802,7 @@
 		<output resource="argon" rate="1.94"  />
 		<output resource="water" rate="0.03"  />
 		<output resource="carbon monoxide" rate=".058"  />
-		<output resource="carbon dioxide" rate="95.111" />
+		<output resource="carbon dioxide" rate="95.111" waste="true" />
 	</process> <!-- "Atmospheric Processing" -->
 	
 
@@ -1291,7 +1290,7 @@
 		<output resource="sulfur" rate="1.0" />
 		<output resource="calcium sulfate" rate="2.0" />
 		<output resource="calcium carbonate" rate="24.0" />
-		<output resource="carbon dioxide" rate="38.1" />
+		<output resource="carbon dioxide" rate="38.1" waste="true"  />
 		<output resource="brine water" rate="5.2" />
 	</process>
 
@@ -1674,7 +1673,7 @@
 		<input resource="calcium carbonate" rate="50.0"  />
 		
 		<output resource="lime" rate="27.8" />
-		<output resource="carbon dioxide" rate="21.8" />
+		<output resource="carbon dioxide" rate="21.8" waste="true" />
 	</process>
 
 	<!-- NASA's Regenerative ECLSS Water Recovery System (WRS)

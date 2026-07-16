@@ -317,7 +317,7 @@
 <!-- Salt resources -->
 	<resource name="Table salt" type="chemical" phase="solid" demand-multiplier="0.25" edible="true">
 		Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
-	<resource name="Rock salt" type="chemical" phase="solid" demand-multiplier="0.25">
+	<resource name="Rock salt" type="chemical" phase="solid" demand-multiplier="20.0">
 		Halite, commonly known as rock salt, is the mineral
 	 	form of sodium chloride (NaCl).</resource>
 	<resource name="Epsom salt" type="chemical" phase="solid" demand-multiplier="0.5"> 

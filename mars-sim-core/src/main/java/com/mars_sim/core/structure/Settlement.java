@@ -3116,14 +3116,14 @@ public class Settlement extends Unit implements Temporal,
 
 	/**
 	 * Obtains the specific capacity of remaining storage space for storing an amount resource.
-     * @apiNote This includes the stock capacity
+     * @apiNote This does NOT include the stock capacity
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
 	@Override
 	public double getRemainingSpecificCapacity(int resource) {
-		return eqmInventory.getRemainingCombinedCapacity(resource);
+		return eqmInventory.getRemainingSpecificCapacity(resource);
 	}
 			
 	/**

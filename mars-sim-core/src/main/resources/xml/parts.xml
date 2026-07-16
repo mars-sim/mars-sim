@@ -1299,15 +1299,15 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Charcoal filter" type="utility" mass="1">
+	<part name="Charcoal filter" type="utility" mass="0.5">
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="dining" probability="2" max-number="2" />
 			<entity name="living accommodation" probability="2" max-number="2" />
 			<entity name="eva" probability="3" max-number="2" />
 			<entity name="exercise" probability="1" max-number="1" />
-			<entity name="waste processing" probability="3" max-number="1" />
-			<entity name="resource processing" probability="3" max-number="1" />			
+			<entity name="waste processing" probability="3" max-number="3" />
+			<entity name="resource processing" probability="3" max-number="5" />			
 			<entity name="vehicle" probability="1" max-number="1" />
 			<entity name="medical care" probability="1" max-number="1" />
 		</maintenance-entity-list>
