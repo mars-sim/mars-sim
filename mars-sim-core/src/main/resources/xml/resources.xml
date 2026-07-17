@@ -25,10 +25,10 @@
 
 
 <!-- Vital Resources -->
-	<resource name="Food" type="derived" phase="solid" life-support="true" demand-multiplier="1.25" edible="true">
+	<resource name="Food" type="derived" phase="solid" life-support="true" demand-multiplier="0.75" edible="true">
 		Represents thermo-stabilized food that is not perishable.</resource>
-	<resource name="Water" type="compound" phase="liquid" life-support="true" demand-multiplier="1.25" >Potable water</resource>
-	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand-multiplier="0.5" />
+	<resource name="Water" type="compound" phase="liquid" life-support="true" demand-multiplier="0.75" >Potable water</resource>
+	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand-multiplier="1.05" />
 	<resource name="Carbon dioxide" type="compound" phase="gas" life-support="true"/>
 
 	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich underground permafrost</resource>
@@ -37,10 +37,10 @@
 		Brine water comes from melted mineral ice or from underground water reserve.</resource>
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
-	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand-multiplier="0.75" />
+	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand-multiplier="4.0" />
 
-	<resource name="Methane" type="compound" phase="gas" life-support="true" demand-multiplier="0.75" />
-	<resource name="Methanol" type="compound" phase="liquid" life-support="true" demand-multiplier=".5" >
+	<resource name="Methane" type="compound" phase="gas" life-support="true" demand-multiplier="0.95" />
+	<resource name="Methanol" type="compound" phase="liquid" life-support="true" demand-multiplier="0.75" >
 	  Methanol CH3OH can be used as a fuel source, solvent, pesticide, or 
 	  a chemical feedstock for production of a range of important industrial
 	  chemicals such as polyester. It appears as a colorless fairly volatile 
@@ -423,7 +423,7 @@
 		the production of ethylene.
 	</resource>		
 	
-	<resource name="Ethylene" type="chemical" phase="gas" demand-multiplier="2" >
+	<resource name="Ethylene" type="chemical" phase="gas" demand-multiplier="1.2" >
 		Ethylene is a colorless, flammable gas with a sweet and musky odor.
 		
 		It is a hydrocarbon with the chemical formula C2H4, also known as ethene.

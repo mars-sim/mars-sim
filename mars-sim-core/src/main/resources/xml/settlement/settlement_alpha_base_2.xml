@@ -282,10 +282,10 @@
     <initial-supplies>
  
     <vehicle type="Explorer Rover" number="2" />
-    <vehicle type="Long Range Explorer" number="1" />
+    <vehicle type="Long Range Explorer" number="2" />
     <vehicle type="Transport Rover" number="2" />
     <vehicle type="Cargo Rover" number="2" />
-    <vehicle type="Light Utility Vehicle" number="3" />
+    <vehicle type="Light Utility Vehicle" number="5" />
     <vehicle type="Delivery Drone" number="2" />
     <vehicle type="Cargo Drone" number="2" />
     

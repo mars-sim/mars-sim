@@ -218,6 +218,16 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 	}
 
 	/**
+	 * Gets the total millisols since the beginning of first landing.
+	 * 
+	 * @return
+	 */
+	public double getLandingMillisols() {
+		return (missionSol - 1) * 1000 + millisol;
+	}
+	
+	
+	/**
 	 * Returns the mission sol. Note: the first day of the mission is Sol 1.
 	 *
 	 * @return sol

@@ -516,7 +516,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isTier0Resource(int resource) {
 		return switch (resource) {
-			case OXYGEN_ID, ICE_ID, BRINE_WATER_ID, ROCK_SALT_ID, HYDROGEN_ID -> true;
+			case OXYGEN_ID, ICE_ID, BRINE_WATER_ID, ROCK_SALT_ID -> true;
 			default -> false;
 		};
 	}
@@ -529,7 +529,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isTier1Resource(int resource) {
 		return switch (resource) {
-			case WATER_ID -> true;
+			case WATER_ID, HYDROGEN_ID -> true;
 			default -> false;
 		};
 	}

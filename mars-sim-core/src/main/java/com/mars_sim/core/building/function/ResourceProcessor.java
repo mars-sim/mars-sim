@@ -17,7 +17,6 @@ import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.MarsTime;
 
 /**
  * The Abstract class that runs ResoruceProcesses as a building function.
@@ -31,6 +30,9 @@ public abstract class ResourceProcessor extends Function {
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 
+	/* Time in millisols. */
+	private double time;
+	
 	private double lowPowerProcessingLevel;
 
 	private List<ResourceProcess> processes;
@@ -92,8 +94,8 @@ public abstract class ResourceProcessor extends Function {
 			}
 
 			// Subtract value of require power.
-			double powerHrsRequiredPerSol = spec.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL * 1000D;
-			double powerValue = powerHrsRequiredPerSol * settlement.getPowerGrid().getPowerValue();
+			double powerHrsRequiredPerReaction = spec.getkWhRequired();
+			double powerValue = powerHrsRequiredPerReaction * settlement.getPowerGrid().getPowerValue();
 			processValue -= powerValue;
 
 			if (processValue < 0D) {
@@ -141,7 +143,8 @@ public abstract class ResourceProcessor extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-
+			time = pulse.getElapsed();
+			
 			double productionLevel = 0D;
 			if (getBuilding().getPowerMonitor().getPowerMode() == PowerMode.FULL_POWER)
 				productionLevel = 1D;
@@ -167,7 +170,7 @@ public abstract class ResourceProcessor extends Function {
 		double result = 0D;
 		for(ResourceProcess process : processes) {
 			if (process.isProcessRunning()) {
-				result += process.getPowerRequired();
+				result += process.getkWhRequired();
 			}
 		}
 		return result;

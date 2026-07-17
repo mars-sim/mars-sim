@@ -297,7 +297,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make triglyceride"
 			tech="1" skill="2"
 			work-time="5"
-			process-time="30" tooling="chemical"
+			process-time="10" tooling="chemical"
 			power-required=".1">
 		<description> 
 			May use palladium-gold catalysts, minimizing waste 
@@ -3697,8 +3697,8 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make aerogel tile" tech="3" skill="3" work-time="50" process-time="100"
-			power-required="1">
+	<process name="Make aerogel tile" tech="3" skill="3" work-time="20" process-time="80"
+			power-required=".75">
 		<description>Aerogel is a porous, translucent material that could allow sunlight 
 			to penetrate and be trapped, thus acting as a better insulator and having stronger 
 			tensile strengthe fiberglass composite. It's made by extracting liquid from silica gel to 
@@ -3723,8 +3723,8 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Manufacture insulation board" tech="2" skill="1" work-time="30" process-time="60"
-			power-required=".1">
+	<process name="Manufacture insulation board" tech="2" skill="1" work-time="20" process-time="60"
+			power-required=".5">
 		<inputs>
 			<resource name="polystyrene" amount="9" />
 			<resource name="Aluminum" amount=".5" >

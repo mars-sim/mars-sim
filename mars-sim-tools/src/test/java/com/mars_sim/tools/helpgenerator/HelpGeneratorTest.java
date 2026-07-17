@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.ScenarioConfig;
-import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MetaMissionRegistry;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.resource.ResourceUtil;

@@ -8,12 +8,14 @@ package com.mars_sim.core.resourceprocess;
 
 import java.util.Set;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -39,13 +41,15 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	private boolean workerAssigned = false;
-	private boolean runningProcess;
+	private boolean isRunning;
 	
+	private int levelOfEffort = 3;
 	/** The time accumulated [in millisols]. */
 	private double accumulatedTime;
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
-
+	private double dutyTime;
+	
 	private ResourceProcessAssessment assessment;
 
 	private boolean canToggle = false;
@@ -57,6 +61,9 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 	public static final ResourceProcessAssessment DEFAULT_ASSESSMENT = new ResourceProcessAssessment(0, 0, 0, false);
 	
+	public static final MasterClock masterClock = Simulation.instance().getMasterClock(); 
+	
+	
 	/**
 	 * Constructor.
 	 *
@@ -64,7 +71,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 */
 	public ResourceProcess(ResourceProcessEngine engine, Building building) {
 		this.processSpec = engine.getProcessSpec();
-		runningProcess = processSpec.getDefaultOn();
+		isRunning = processSpec.getDefaultOn();
 		currentProductionLevel = 1D;
 		this.canToggle = false;
 		this.engine = engine;
@@ -85,7 +92,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 	@Override
 	public String getEventDescription() {
-		return "Toggle " + (runningProcess ? "Off" : "On") + " - " + processSpec.getName();
+		return "Toggle " + (isRunning ? "Off" : "On") + " - " + processSpec.getName();
 	}
 
 	/**
@@ -112,7 +119,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @return true if process is running.
 	 */
 	public boolean isProcessRunning() {
-		return runningProcess;
+		return isRunning;
 	}
 
 	/**
@@ -122,7 +129,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @return true if process has inputs
 	 */
 	public ProcessState getState() {
-		if (runningProcess) {
+		if (isRunning) {
 			return ProcessState.RUNNING;
 		}
 		else if (assessment.inputsAvailable()) {
@@ -140,15 +147,15 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 */
 	public void setProcessRunning(boolean newRunning) {
 		// Record completion
-		if (runningProcess && !newRunning) {
+		if (isRunning && !newRunning) {
 			// Record the completion
 			building.getAssociatedSettlement().recordProcess(processSpec.getName(), "Resource", building);
 		}
 
-		this.runningProcess = newRunning;
+		this.isRunning = newRunning;
 
 		int delay = processSpec.getProcessTime();
-		if (!runningProcess) {
+		if (!isRunning) {
 			// Not running so half the time before it can be restarted
 			delay /= 2;
 		}
@@ -190,7 +197,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 			toggleRunningWorkTime = 0D;
 			canToggle = false;
 			
-			setProcessRunning(!runningProcess);
+			setProcessRunning(!isRunning);
 			
 			return true;
 		}
@@ -217,6 +224,25 @@ public class ResourceProcess implements ScheduledEventHandler {
 	public double getOutputScore() {
 		return assessment.outputScore();
 	}
+	
+	/**
+	 * Gets the percentage of duty time.
+	 * 
+	 * @return
+	 */
+	public double getPercentDuty() {
+		return dutyTime / masterClock.getMarsTime().getLandingMillisols() * 100; 
+	}
+	
+	/**
+	 * Sets the level of effort.
+	 * 
+	 * @param level
+	 */
+	public void setLevel(int level) {
+		levelOfEffort = level;
+	}
+	
 	
 	public void setAssessment(ResourceProcessAssessment assessment) {
 		this.assessment = assessment;
@@ -331,25 +357,31 @@ public class ResourceProcess implements ScheduledEventHandler {
 		if ((productionLevel < 0D) || (productionLevel > 1D) || (time < SMALL_AMOUNT))
 			return;
 
-		if (runningProcess) {
+		if (isRunning) {
+			
 			var host = building.getAssociatedSettlement();
+			
 			double newProdLevel = productionLevel;
-
+			// Set the current production level.
+			currentProductionLevel = newProdLevel * levelOfEffort / 5;
+			
 			accumulatedTime += time;
 
 			double newCheckPeriod = PROCESS_CHECK_FREQUENCY * time;
 			
 			if (accumulatedTime >= newCheckPeriod) {
 				// Compute the remaining accumulatedTime
-				accumulatedTime -= newCheckPeriod;
-	
+				accumulatedTime -= newCheckPeriod;	
+				// Increment the duty time here
+				dutyTime += time;
+				
 				double bottleneck = 1D;
 
 				// Input resources from inventory.
 				for (Integer resource : processSpec.getInputResources()) {
 					if (!processSpec.isAmbientInputResource(resource)) {
 						double fullRate = getBaseFullInputRate(resource);
-						double resourceRate = fullRate * newProdLevel;
+						double resourceRate = fullRate * currentProductionLevel;
 						double required = resourceRate * accumulatedTime;
 						if (required == 0D)
 							continue;
@@ -357,7 +389,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 						double stored = host.getSpecificAmountResourceStored(resource);
 						
 						// Get resource bottleneck
-						double desiredResourceAmount = fullRate * time;
+						double desiredResourceAmount = currentProductionLevel * time;
 						double proportionAvailable = 1D;
 						if (desiredResourceAmount > 0D)
 							proportionAvailable = stored / desiredResourceAmount;
@@ -388,12 +420,12 @@ public class ResourceProcess implements ScheduledEventHandler {
 				}
 
 				// Set the new production level and moderate the output resourceRate below
-				newProdLevel = Math.min(newProdLevel, bottleneck);
+				currentProductionLevel = Math.min(currentProductionLevel, bottleneck);
 				
 				// Output resources to inventory.
 				for (Integer resource : processSpec.getOutputResources()) {
 					double maxRate = getBaseFullOutputRate(resource);
-					double resourceRate = maxRate * newProdLevel;
+					double resourceRate = maxRate * currentProductionLevel;
 					double required = resourceRate * accumulatedTime;
 					double remainingCap = host.getRemainingCombinedCapacity(resource);
 					
@@ -419,9 +451,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 					}
 				}
 			}
-
-			// Set the current production level.
-			currentProductionLevel = newProdLevel;
 		}
 	}
 
@@ -453,15 +482,15 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	/**
-	 * Gets the amount of power required to run the process.
+	 * Gets the amount of energy required to run the process.
 	 *
-	 * @return power (kW).
+	 * @return energy (kWh).
 	 */
-	public double getPowerRequired() {
+	public double getkWhRequired() {
 		// No need of checking if (isProcessRunning()) since 
 		// ResourceProcessor::getCombinedPowerLoad will check 
 		// if a process is running
-		return processSpec.getPowerRequired() * getNumModules();
+		return processSpec.getkWhRequired() * getNumModules();
 	}
 
 	/**

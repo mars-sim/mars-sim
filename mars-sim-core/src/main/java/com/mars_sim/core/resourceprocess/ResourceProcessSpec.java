@@ -26,7 +26,7 @@ public class ResourceProcessSpec implements Serializable{
 
 	private boolean defaultOn;
 	private String name;
-	private double powerRequired;
+	private double kWhRequired;
 
 	private Map<Integer, Double> baseInputRates;
 	private Map<Integer, Double> baseOutputRates;
@@ -46,12 +46,12 @@ public class ResourceProcessSpec implements Serializable{
 	 * Constructor.
 	 * 
 	 * @param name
-	 * @param powerRequired
+	 * @param kWhRequired
 	 * @param processTime
 	 * @param workTime
 	 * @param defaultOn
 	 */
-	ResourceProcessSpec(String name, double powerRequired, int processTime, int workTime, boolean defaultOn) {
+	ResourceProcessSpec(String name, double kWhRequired, int processTime, int workTime, boolean defaultOn) {
 		this.defaultOn = defaultOn;
 		this.name = name;
 		this.baseInputRates = new HashMap<>();
@@ -60,7 +60,7 @@ public class ResourceProcessSpec implements Serializable{
 
 		this.wasteResources = new HashSet<>();
 		this.ambientResources = new HashSet<>();
-		this.powerRequired = powerRequired;
+		this.kWhRequired = kWhRequired;
 		this.processTime = processTime;
 		this.workTime = workTime;
 	}
@@ -71,6 +71,8 @@ public class ResourceProcessSpec implements Serializable{
 	 * @param resource the amount resource.
 	 * @param rate     base input resource rate (kg/millisol)
 	 * @param ambient  is resource from available from surroundings? (air)
+	 * 
+	 * @apiNote Already converted the RATE from kg/sol to rate to kg/millisol
 	 */
 	void addBaseInputResourceRate(Integer resource, double rate, boolean ambient) {
 		if (ambient) {
@@ -91,6 +93,8 @@ public class ResourceProcessSpec implements Serializable{
 	 * @param resource the amount resource.
 	 * @param rate     base output resource rate (kg/millisol)
 	 * @param waste    is resource waste material not to be stored?
+	 * 
+	 * @apiNote Already converted the RATE from kg/sol to rate to kg/millisol
 	 */
 	void addBaseOutputResourceRate(Integer resource, double rate, boolean waste) {
 		if (waste) {
@@ -174,12 +178,12 @@ public class ResourceProcessSpec implements Serializable{
 	}
 
 	/**
-	 * Gets the power required for this process.
+	 * Gets the kWh required for this process.
 	 * 
 	 * @return
 	 */
-	public double getPowerRequired() {
-		return powerRequired;
+	public double getkWhRequired() {
+		return kWhRequired;
 	}
 
 	/**

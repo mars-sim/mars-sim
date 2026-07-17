@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mission.MetaMission;
@@ -37,7 +36,7 @@ class TravelToSettlementMetaTest extends MarsSimUnitTest{
 
         var crew = createPreReqs(start);
 
-        // Create dest 1KM away
+        // Create dest 1 km away
         var end = buildSettlement("End", false,
                     start.getCoordinates().getNewLocation(new Direction(0), 1));
         buildAccommodation(end.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
@@ -48,6 +47,24 @@ class TravelToSettlementMetaTest extends MarsSimUnitTest{
         assertEquals(end, m.getDestinationSettlement(), "Destination should be correct");
     }
 
+    @Test
+    void testConstructInstanceTwo() throws MissionCreationException {
+        var start = buildSettlement("Start", false);
+        buildAccommodation(start.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
+
+        var crew = createPreReqs(start);
+
+        // Create dest 3 km away
+        var end = buildSettlement("End", false,
+                    start.getCoordinates().getNewLocation(new Direction(0), 3));
+        buildAccommodation(end.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
+
+        var meta = new TravelToSettlementMeta();
+        var m = (TravelToSettlement) meta.constructInstance(crew, false);
+
+        assertEquals(end, m.getDestinationSettlement(), "Destination should be correct");
+    }
+    
     private MetaMission.Roster createPreReqs(Settlement start) {
         var rover = buildRover(start, "Rover", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
 
