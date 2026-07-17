@@ -696,11 +696,11 @@
 		
 	</description>
 
-		<input resource="carbon monoxide" rate="56" ambient="false" />
-		<input resource="water" rate="36.0"  />				
+		<input resource="carbon monoxide" rate="224.0" ambient="false" />
+		<input resource="water" rate="144.0"  />				
 		
-		<output resource="carbon dioxide" rate="88.0" waste="true" />
-		<output resource="hydrogen" rate="4.0"  />
+		<output resource="carbon dioxide" rate="352.0" waste="true" />
+		<output resource="hydrogen" rate="16.0"  />
 	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
 
 
@@ -793,9 +793,9 @@
 		5. https://www.researchgate.net/publication/265608781_Decoupled_catalytic_hydrogen_evolution_from_a_molecular_metal_oxide_redox_mediator_in_water_splitting
 
 	</description> 
-		<input resource="water" rate="360" />
-		<output resource="hydrogen" rate="40" />
-		<output resource="oxygen" rate="320"  />
+		<input resource="water" rate="288" />
+		<output resource="hydrogen" rate="32" />
+		<output resource="oxygen" rate="256" />
 	</process> <!-- Oxygen Generator System (OGS) -->
 	
 	<process name="Low Temperature Plasma CO2 Decomposition" kWh-required="0.01" defaultOn="true">
