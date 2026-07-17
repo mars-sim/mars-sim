@@ -197,7 +197,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 	}
 
 	/**
-	 * Customise the power table's column details such as width and cell renderers.
+	 * Customises the power table's column details such as width and cell renderers.
 	 */
 	@Override
 	protected void setColumnDetails(TableColumnModel powerColumns) {
@@ -326,7 +326,8 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		private static final int GENERATED_VAL = 103;
 		private static final int USED_VAL = 104;
 		private static final int STORED_VAL = 105;
-
+		private static final int CAP_VAL = 106;
+		
 		private static final EntityColumnSpec STATUS = new EntityColumnSpec(
 						new ColumnSpec(STATUS_VAL, Msg.getString("TabPanelPowerGrid.column.s"), PowerMode.class), null);
 		private static final EntityColumnSpec PRIORITY = new EntityColumnSpec(
@@ -337,9 +338,11 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 						new ColumnSpec(USED_VAL, Msg.getString("TabPanelPowerGrid.column.used"), Double.class), null);
 		private static final EntityColumnSpec STORED = new EntityColumnSpec(
 						new ColumnSpec(STORED_VAL, Msg.getString("TabPanelPowerGrid.column.stored"), Double.class), null);
-
+		private static final EntityColumnSpec CAP = new EntityColumnSpec(
+						new ColumnSpec(CAP_VAL, Msg.getString("TabPanelPowerGrid.column.cap"), Double.class), null);
+		
 		private PowerTableModel() {
-			super(STATUS, PRIORITY, NAME, GENERATED, USED, STORED);
+			super(STATUS, PRIORITY, NAME, GENERATED, USED, STORED, CAP);
 		}
 
 		@Override
@@ -374,12 +377,21 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 					
 						yield stored;
 				}
+				case CAP_VAL -> {
+						double cap = 0D;
+						PowerStorage ps = building.getPowerStorage();
+						if (ps != null) {
+							cap = ps.getBattery().getEnergyStorageCapacity();
+						}
+					
+						yield cap;
+				}
 				default -> super.getEntityValue(building, valueIndex);
 			};
 		}
 
 		/**
-		 * Tooltip for status column to show the power mode name.
+		 * Gets tooltip for status column to show the power mode name.
 		 */
 		@Override
 		protected String getEntityDescription(Building building, int valueIndex) {

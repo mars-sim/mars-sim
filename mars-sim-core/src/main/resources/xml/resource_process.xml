@@ -896,7 +896,7 @@
 		<input resource="hydraulic fluid" rate="0.1" />			
 		<input resource="rock salt" rate="1.0" />
 		
-		<output resource="ice" rate="4000.0"  />
+		<output resource="ice" rate="5000.0"  />
 		
 	</process> <!-- "Excavate Ice" -->
 	

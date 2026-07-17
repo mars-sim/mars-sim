@@ -326,20 +326,17 @@ public class Battery implements Serializable {
 
     	// Note: this is just a temporary measure to avoid negative kWhStored
     	// Will need to track down the cause of negative kWhStored
-    	if (kWhStored < 0) {
-    		kWhStored = 0;
+    	if (kWhStored < 0.1) {
+    		kWhStored = 0.1;
     	}
     			
     	if (pulse.isNewSol()) {
-    		if (RandomUtil.getRandomInt(3) == 1) 
-    			reconditionBattery();
+    		reconditionBattery();
     	}
     	
     	else if (pulse.isNewHalfSol()) {
-    		if (RandomUtil.getRandomInt(3) == 1) {
-		        locked = false;
-		    	diagnoseBattery();
-    		}
+    		locked = false;
+    		diagnoseBattery();
 		}
 
     	trackTemperature(time);
@@ -439,6 +436,7 @@ public class Battery implements Serializable {
      * Updates the Amp Hour stored capacity [in Ah].
      */
     private void updateAmpHourStored() {
+
     	ampHourStored = 1000 * kWhStored / HIGHEST_MAX_VOLTAGE; 
 //    	ampHourStored = 3600 / rTotal * (kWhStored / energyStorageCapacity * HIGHEST_MAX_VOLTAGE - terminalVoltage);
 		if (ampHourStored < 0)
@@ -623,7 +621,7 @@ public class Battery implements Serializable {
      * Full discharge all the stored energy.
      */
     public void dischargeAll() {
-        kWhStored = 0;
+        kWhStored = 0.1;
     }
 
     /**
@@ -722,7 +720,7 @@ public class Battery implements Serializable {
 	 * Updates the terminal voltage of the battery.
 	 */
 	private void updateTerminalVoltage() {
-		if (energyStorageCapacity > 0) {
+		if (energyStorageCapacity > 0.1) {
 			terminalVoltage = kWhStored / energyStorageCapacity * HIGHEST_MAX_VOLTAGE - ampHourStored * rTotal / 3600;
 			
 			if (terminalVoltage < 0)
@@ -751,14 +749,19 @@ public class Battery implements Serializable {
     	if (energyStorageCapacity > maxCapNameplate) {
 			// energyStorageCapacity should not be greater than maxCapNameplate
     		energyStorageCapacity = maxCapNameplate;
-    		
+    	}
+    	else if (energyStorageCapacity < 0.1) {
+    		energyStorageCapacity = 0.1;
     	}
 
 		if (kWhStored > energyStorageCapacity) {
 			// kWhStored should not be greater than energyStorageCapacity
 			kWhStored = energyStorageCapacity;		
 		}		
-		   
+    	else if (kWhStored < 0.1) {
+    		kWhStored = 0.1;
+    	}
+		
 	    updateAmpHourStored();
 	}
 	
@@ -767,7 +770,9 @@ public class Battery implements Serializable {
 	 * Note: the degradation rate of the battery is % per 1000 milisols.
 	 */
 	public void degradeHealth() {
-    	health = health * (1 - percentBatteryDegrade/100);		
+    	health = health * (1 - percentBatteryDegrade/100);	
+		if (health < 0.1)
+			health = 0.1;
 	}
 	
 	/**
@@ -801,10 +806,7 @@ public class Battery implements Serializable {
 			logger.info(unit, 0, "The battery has just been reconditioned.");
 		}
 		
-		if (kWhStored > energyStorageCapacity) {
-			// kWh should not be greater than energyStorageCapacity but
-			kWhStored = energyStorageCapacity;			
-		}
+		diagnoseBattery();
 	}
 	
 	/**

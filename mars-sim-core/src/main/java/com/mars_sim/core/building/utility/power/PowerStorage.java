@@ -111,11 +111,6 @@ public class PowerStorage extends Function {
 		boolean valid = isValid(pulse);
 		if (valid) {
 	    	battery.timePassing(pulse);
-//	    	PowerMode mode = getBuilding().getPowerMode();
-//	    	if (mode == PowerMode.LOW_POWER) {
-//	    		PowerGeneration gen = getBuilding().getPowerGeneration();
-//	    		
-//	    	}
 		}
         return valid;
 	}
