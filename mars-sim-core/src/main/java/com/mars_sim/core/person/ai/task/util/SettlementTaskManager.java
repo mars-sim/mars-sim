@@ -9,7 +9,9 @@ package com.mars_sim.core.person.ai.task.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
@@ -33,67 +35,43 @@ public class SettlementTaskManager implements Serializable {
      * is removed from the parent SettlemetTaskmanager when it is created if there is no more demand.
      * This avoids it being re-used.
      */
-    class SettlementTaskProxy extends AbstractTaskJob  {
+    static class SettlementTaskProxy extends AbstractTaskJob  {
 
 		private static final long serialVersionUID = 1L;
         private SettlementTask source;
-        private SettlementTaskManager manager;
 
-        SettlementTaskProxy(SettlementTaskManager owner, SettlementTask source, RatingScore score) {
+        SettlementTaskProxy(SettlementTask source, RatingScore score) {
             super(source.getName(), score);
             this.source = source;
-            this.manager = owner;
-        }
-
-        /**
-         * A Worker has selected this to be work on so reduce the demand.
-         */
-        private void reduceDemand() {
-            // One demand taken, if none left remove from shared pool
-            if (source.reduceDemand()) {
-                manager.removeTask(source);
-            }
         }
 
         @Override
         public Task createTask(Person person) {
-            reduceDemand();
+            source.reduceDemand();
             return source.createTask(person);
         }
 
         @Override
         public Task createTask(Robot robot) {
-            reduceDemand();
+            source.reduceDemand();
             return source.createTask(robot);
         }
     }
 
+    private boolean tasksStale = true;
 
-    private boolean refreshTasks = true;
-
-    private int callCount;
+    private int callCount = 0;
     private int buildCount = 0;
-    private int executedCount = 0;
 
     private Settlement owner;
     
-    private transient List<SettlementTask> tasks;
-    public static final String BACKLOG_EVENT = "backlog event";
-    
+    private transient Map<SettlementMetaTask, List<SettlementTask>> tasks = new HashMap<>();
+    public static final String NEWTASK_EVENT = "new settlement task";
+    public static final String UPDATETASK_EVENT = "update settlement task";
+    public static final String REMOVETASK_EVENT = "remove settlement task";
+
     public SettlementTaskManager(Settlement owner) {
         this.owner = owner;
-    }
-    
-    /**
-     * Removes a shared SettlementTask from the pool.
-     * 
-     * @param source Item to remove.
-     */
-    void removeTask(SettlementTask source) {
-        executedCount++;
-        if (tasks != null) {
-            tasks.remove(source);
-        }
     }
 
     /**
@@ -109,35 +87,69 @@ public class SettlementTaskManager implements Serializable {
     /**
      * Gets the current cached Settlement Tasks. 
      * If there is no cache or marked as refresh then a list is created.
-     * 
-     * @return
      */
-    private List<SettlementTask> getTasks() {
-        if (refreshTasks || (tasks == null)) {
-            tasks = new ArrayList<>();
-            for (SettlementMetaTask mt : getMetaTasks()) {
-                tasks.addAll(mt.getSettlementTasks(owner));
-            }
-            refreshTasks = false;
+    private Map<SettlementMetaTask, List<SettlementTask>> getLatestTasks() {
+        if (tasksStale) {
+            getMetaTasks().forEach(mt -> 
+                calculateTasks(mt, tasks.computeIfAbsent(mt, k -> new ArrayList<>()))
+            );
+            tasksStale = false;
             buildCount++;
-
-            // Inform listeners
-            owner.fireUnitUpdate(SettlementTaskManager.BACKLOG_EVENT, owner);
         }
         callCount++;
         return tasks;
     }
 
     /**
+     * This is the main method to calculate the current list of SettlementTasks for a particular MetaTask.
+     * It will add new tasks, update existing tasks and remove any that are no longer needed.
+     * The changes trigger the correspnding entity event.
+     * The existing tasks list is updated in place.
+     * @param mt MetaTask to calculate the SettlementTasks for
+     * @param existingTasks The current list of SettlementTasks for this MetaTask
+     */
+    private void calculateTasks(SettlementMetaTask mt, List<SettlementTask> existingTasks) {
+        var newTasks = mt.getSettlementTasks(owner);
+
+        // Update or add new tasks to the list
+        for (SettlementTask newTask : newTasks) {
+            int found = existingTasks.indexOf(newTask);
+            if (found == -1) {
+                existingTasks.add(newTask);
+                owner.fireUnitUpdate(NEWTASK_EVENT, newTask);
+            }
+            else {
+                var existing = existingTasks.get(found);
+                if (existing.updateParameters(newTask)) {
+                    // Update item
+                    owner.fireUnitUpdate(UPDATETASK_EVENT, existing);
+                }
+            }
+        }
+
+        // Any to be removed
+        List<SettlementTask> toRemove = new ArrayList<>();
+        for (SettlementTask existing : existingTasks) {
+            // Should not need to remove if the demand is  0, but just in case
+            if (existing.getDemand() == 0 || !newTasks.contains(existing)) {
+                toRemove.add(existing);
+            }
+        }
+
+        if (!toRemove.isEmpty()) {
+            existingTasks.removeAll(toRemove);
+            toRemove.forEach(t -> owner.fireUnitUpdate(REMOVETASK_EVENT, t));
+        }
+    }
+
+    /**
      * Gets the currently available SettlementTasks. This list maybe be null.
-     * 
-     * @return
      */
     public List<SettlementTask> getAvailableTasks() {
     	if (tasks == null) {
     		return Collections.emptyList();
     	}
-        return tasks;
+        return tasks.values().stream().flatMap(List::stream).toList();
     }
     
     /**
@@ -149,14 +161,16 @@ public class SettlementTaskManager implements Serializable {
      */
     public List<TaskJob> getTasks(Robot r) {
         List<TaskJob> result = new ArrayList<>();
-        for(SettlementTask st : getTasks()) {
-            SettlementMetaTask mt = st.getMeta();
+        for(var stList : getLatestTasks().values()) {
+            for(var st : stList) {
+                SettlementMetaTask mt = st.getMeta();
 
-            // Check this type of Robot can do the Job
-            if (mt.getPreferredRobot().contains(r.getRobotType())) {
-                RatingScore score = mt.assessRobotSuitability(st, r);
-                if (score.getScore() > 0) {
-                    result.add(new SettlementTaskProxy(this, st, score));
+                // Check this type of Robot can do the Job
+                if (st.getDemand() > 0 && mt.getPreferredRobot().contains(r.getRobotType())) {
+                    RatingScore score = mt.assessRobotSuitability(st, r);
+                    if (score.getScore() > 0) {
+                        result.add(new SettlementTaskProxy(st, score));
+                    }
                 }
             }
         }
@@ -178,27 +192,22 @@ public class SettlementTaskManager implements Serializable {
         };
 
         List<TaskJob> result = new ArrayList<>();
-        for(SettlementTask st : getTasks()) {
-            // Check scope first to avoid scoring
-            var scope = st.getScope();
-            if (acceptable.contains(scope)) {
-                SettlementMetaTask mt = st.getMeta();
-                RatingScore score = mt.assessPersonSuitability(st, p);
-                if (score.getScore() > 0) {
-                    result.add(new SettlementTaskProxy(this, st, score));
+        for(var stList : getLatestTasks().values()) {
+            for(var st : stList) {
+                // Check scope first to avoid scoring
+                var scope = st.getScope();
+                if (st.getDemand() > 0 && acceptable.contains(scope)) {
+                    SettlementMetaTask mt = st.getMeta();
+                    RatingScore score = mt.assessPersonSuitability(st, p);
+                    if (score.getScore() > 0) {
+                        result.add(new SettlementTaskProxy(st, score));
+                    }
                 }
             }
         }
         return result;
     }
 
-    /**
-     * How many tasks have been executed out of the shared pool?
-     */
-    public int getExecutedCount() {
-        return executedCount;
-    }
-    
     /**
      * This is the reuse score of how many times a single Task list is reused by other Workers.
      */
@@ -210,6 +219,29 @@ public class SettlementTaskManager implements Serializable {
      * Time has progressed so mark the tasks to be refresh on the next demand.
      */
     public void timePassing() {
-        refreshTasks = true;
+        tasksStale = true;
+    }
+
+    /**
+     * Add teh transient task map
+     * @param in
+     * @throws java.io.IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        tasks = new HashMap<>();
+        tasksStale = true;
+    }
+
+    /**
+     * Remove a task from the active list.
+     * @param st Task to remove
+     */
+    void removeTask(SettlementTask st) {
+        var meta = st.getMeta();
+        var existing = tasks.get(meta);
+        existing.remove(st);
+        owner.fireUnitUpdate(REMOVETASK_EVENT, st);
     }
 }

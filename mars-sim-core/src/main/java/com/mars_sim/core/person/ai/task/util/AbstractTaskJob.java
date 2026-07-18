@@ -40,6 +40,10 @@ public abstract class AbstractTaskJob implements TaskJob {
         return score;
     }
 
+    protected void setScore(Rating score) {
+        this.score = score;
+    }
+
     @Override
     public String getName() {
         return name;

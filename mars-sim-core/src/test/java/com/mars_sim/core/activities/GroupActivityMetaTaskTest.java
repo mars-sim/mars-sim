@@ -19,14 +19,14 @@ import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.GroupActivityType;
 import com.mars_sim.core.time.EventSchedule;
 
-public class GroupActivityMetaTaskTest extends MarsSimUnitTest{
+class GroupActivityMetaTaskTest extends MarsSimUnitTest{
 
     private static final GroupActivityInfo ONE = new GroupActivityInfo("One", 10, 50,
                                 new EventSchedule(0, 0, 800), 1D, 100,
                                 TaskScope.NONWORK_HOUR, BuildingCategory.LIVING, GroupActivityInfo.DEFAULT_IMPACT);
 
     @Test
-    public void testGetSettlementTasks() {
+    void testGetSettlementTasks() {
         var s = buildSettlement("mock");
         buildPerson("P1", s);
         buildPerson("P2", s);
@@ -80,7 +80,7 @@ public class GroupActivityMetaTaskTest extends MarsSimUnitTest{
     }
 
     @Test
-    public void testPersonSuitability() {
+    void testPersonSuitability() {
         var s = buildSettlement("mock");
         buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
@@ -88,8 +88,11 @@ public class GroupActivityMetaTaskTest extends MarsSimUnitTest{
         var i = buildPerson("instigator", s);
         var p1 = buildPerson("p1", s);
         RelationshipUtil.changeOpinion(p1, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, Relation.MAX_OPINION);
+        RelationshipUtil.changeOpinion(p1, i, RelationshipType.FIRST_IMPRESSION , Relation.MAX_OPINION);
         var p2 = buildPerson("p2", s);
         RelationshipUtil.changeOpinion(p2, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, 0);
+        RelationshipUtil.changeOpinion(p2, i, RelationshipType.FIRST_IMPRESSION , 0);
+
         Person e;
         Person f;
         if (p1.getRelation().getOpinion(i).getAverage() < 
