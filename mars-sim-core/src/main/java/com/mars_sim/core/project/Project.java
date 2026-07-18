@@ -185,6 +185,14 @@ public class Project implements Serializable {
     }
 
     /**
+     * Gets the steps of the project.
+     * @return All steps defined
+     */
+    public List<ProjectStep> getSteps() {
+        return steps;
+    }
+
+    /**
      * Gets the remaining steps of the project.
      * 
      * @return

@@ -47,8 +47,7 @@ public class TestDriveMetaMission extends AbstractMetaMission {
     @Override
     public Mission constructInstance(Roster crew, boolean needsReview) {
 
-		var name = "Test drive";
-		var mission = new MissionVehicleProject(name, MissionType.TEST_DRIVE, 10, crew);
+		var mission = new MissionVehicleProject(null, MissionType.TEST_DRIVE, 10, crew);
 
 		Settlement base = crew.leader().getAssociatedSettlement();
         Coordinates startingPlace = base.getCoordinates();

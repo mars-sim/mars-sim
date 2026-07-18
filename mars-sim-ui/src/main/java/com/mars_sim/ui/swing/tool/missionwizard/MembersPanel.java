@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.mission.Delivery;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.model.BasePersonModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;

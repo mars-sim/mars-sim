@@ -19,6 +19,7 @@ import com.mars_sim.core.mission.objectives.ConstructionObjective;
 import com.mars_sim.core.mission.objectives.EmergencySupplyObjective;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
+import com.mars_sim.core.mission.objectives.LandmarkObjective;
 import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
 import com.mars_sim.core.mission.objectives.TradeObjective;
@@ -31,6 +32,7 @@ import com.mars_sim.ui.swing.entitywindow.mission.objectives.ConstructionPanel;
 import com.mars_sim.ui.swing.entitywindow.mission.objectives.EmergencySupplyPanel;
 import com.mars_sim.ui.swing.entitywindow.mission.objectives.ExplorationPanel;
 import com.mars_sim.ui.swing.entitywindow.mission.objectives.FieldStudyPanel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.LandmarkVisitPanel;
 import com.mars_sim.ui.swing.entitywindow.mission.objectives.MiningPanel;
 import com.mars_sim.ui.swing.entitywindow.mission.objectives.ObjectivesPanel;
 import com.mars_sim.ui.swing.entitywindow.mission.objectives.RescuePanel;
@@ -69,6 +71,7 @@ class TabPanelObjectives extends EntityTabPanel<Mission>
                 case ConstructionObjective co -> new ConstructionPanel(co, context);
                 case RescueVehicleObjective ro -> new RescuePanel(ro, context);
                 case EmergencySupplyObjective so -> new EmergencySupplyPanel(so, context);
+                case LandmarkObjective lo -> new LandmarkVisitPanel(lo, context);
                 default -> null;
             };
 

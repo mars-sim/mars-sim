@@ -110,4 +110,11 @@ public abstract class MissionStep extends ProjectStep {
         clock = mc;
         unitManager = um;
     }
+
+    /**
+     * Gets the objective for this step. By default this is null.
+     */
+    public MissionObjective getObjective() {
+        return null;
+    }
 }

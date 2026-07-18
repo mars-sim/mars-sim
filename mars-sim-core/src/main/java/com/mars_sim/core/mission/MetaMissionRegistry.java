@@ -9,6 +9,7 @@ package com.mars_sim.core.mission;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mars_sim.core.mission.predefined.LandmarkMetaMission;
 import com.mars_sim.core.mission.predefined.TestDriveMetaMission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.meta.AreologyFieldStudyMeta;
@@ -68,7 +69,8 @@ public class MetaMissionRegistry {
 		newMissions.add(new RescueSalvageVehicleMeta());
 		newMissions.add(new TradeMeta());
 		newMissions.add(new TravelToSettlementMeta());
-		newMissions.add(new TestDriveMetaMission());	
+		newMissions.add(new TestDriveMetaMission());
+		newMissions.add(new LandmarkMetaMission());	
 
 		metaMissions = newMissions;
 
