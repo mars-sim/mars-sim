@@ -72,74 +72,74 @@
     			   
     <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->
     <initial-supplies>
-    <vehicle type="Explorer Rover" number="2" />
-    <vehicle type="Light Utility Vehicle" number="1" />
-    <vehicle type="Delivery Drone" number="1" />
-
-    <!-- Standard Phase 0 allocation-->
-    <robot type="MakerBot-Standard" number="1"/>
-    <robot type="MedicBot-Standard" number="1"/>
-    <robot type="RepairBot-Standard" number="1"/>
-    <robot type="GardenBot-Standard" number="1"/>
-
-    <!-- Equipment -->
-    <equipment type="EVA Suit" number="8" />
-    
-    <!-- Containers-->
-	<equipment type="barrel" number="40" />
-	<equipment type="bag" number="40" />
-	<equipment type="gas canister" number="40" />		
-	<equipment type="large bag" number="40" />
-	<equipment type="specimen box" number="40" />
-    <equipment type="thermal bottle" number="8" />	
- 	<equipment type="wheelbarrow" number="12" />
-
-    <!-- Bins -->
-	<bin type="pot" number="20" />
-	<bin type="crate" number="20" />
-	<bin type="basket" number="20" />
-
-    <!-- Resources -->
-    <!-- type: the type of resource (see resources.txt) -->
-    <!-- amount: the amount of the resource (kg) -->
-
-    <!-- Mars Direct Mission Plan : 
-    (1). ERV - 
-    	(a). Payload imported from Earth - 
-    		 Consumables - Hydrogen : 3400 kg  
-    		 Feedstock - Hydrogen : 6300 kg 
-        (b). Produced on Mars : 
-        	 Water : 18900 kg 
-        	 Oxygen : 16080 kg 
-        	 Methane : 8400 kg 
-    (2). Hab -
-        (a). Payload imported from Earth - 
-             Consumables - Hydrogen : 7000 kg 
-    -->
-
-    <!-- Life Support Resources -->
-	<resource type="food" amount="720" />
-	<resource type="water" amount="3600" />
-	<resource type="oxygen" amount="1440" />
+	    <vehicle type="Explorer Rover" number="2" />
+	    <vehicle type="Light Utility Vehicle" number="1" />
+	    <vehicle type="Delivery Drone" number="1" />
 	
-
-    <!-- Crop -->
-    <!-- No starting crops for this template -->
-
-    <!-- Part packages (see part_packages.xml) -->
-    <!-- name: the part package name. -->
-    <!-- number: the number of packages. -->
-    <part-package name="Standard Part Package 1" number="1" />
-   
-	<!-- The resupply missions from Earth scheduled for this type of settlement. -->
+	    <!-- Standard Phase 0 allocation-->
+	    <robot type="MakerBot-Standard" number="1"/>
+	    <robot type="MedicBot-Standard" number="1"/>
+	    <robot type="RepairBot-Standard" number="1"/>
+	    <robot type="GardenBot-Standard" number="1"/>
+	
+	    <!-- Equipment -->
+	    <equipment type="EVA Suit" number="8" />
+	    
+	    <!-- Containers-->
+		<equipment type="barrel" number="40" />
+		<equipment type="bag" number="40" />
+		<equipment type="gas canister" number="40" />		
+		<equipment type="large bag" number="40" />
+		<equipment type="specimen box" number="40" />
+	    <equipment type="thermal bottle" number="8" />	
+	 	<equipment type="wheelbarrow" number="12" />
+	
+	    <!-- Bins -->
+		<bin type="pot" number="20" />
+		<bin type="crate" number="20" />
+		<bin type="basket" number="20" />
+	
+	    <!-- Resources -->
+	    <!-- type: the type of resource (see resources.txt) -->
+	    <!-- amount: the amount of the resource (kg) -->
+	
+	    <!-- Mars Direct Mission Plan : 
+	    (1). ERV - 
+	    	(a). Payload imported from Earth - 
+	    		 Consumables - Hydrogen : 3400 kg  
+	    		 Feedstock - Hydrogen : 6300 kg 
+	        (b). Produced on Mars : 
+	        	 Water : 18900 kg 
+	        	 Oxygen : 16080 kg 
+	        	 Methane : 8400 kg 
+	    (2). Hab -
+	        (a). Payload imported from Earth - 
+	             Consumables - Hydrogen : 7000 kg 
+	    -->
+	
+	    <!-- Life Support Resources -->
+		<resource type="food" amount="720" />
+		<resource type="water" amount="3600" />
+		<resource type="oxygen" amount="1440" />
+		
+	
+	    <!-- Crop -->
+	    <!-- No starting crops for this template -->
+	
+	    <!-- Part packages (see part_packages.xml) -->
+	    <!-- name: the part package name. -->
+	    <!-- number: the number of packages. -->
+	    <part-package name="Standard Part Package 1" number="1" />
+	   
+		<!-- The resupply missions from Earth scheduled for this type of settlement. -->
     </initial-supplies>
 
     <resupply>
         <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">
-            <schedule firstSol="2" frequency="80" /> 
+            <schedule firstSol="30" frequency="60" /> 
         </resupply-mission>
-        <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1">
-            <schedule firstSol="668"/>
+        <resupply-mission name="Phase 0 Delivery" manifest-name="Resupply for Phase 0">
+            <schedule firstSol="120"/>
         </resupply-mission>
     </resupply>
 </template>

@@ -157,7 +157,7 @@
             <schedule firstSol="2" frequency="80" />
         </resupply-mission>
         <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1">
-            <schedule firstSol="668" />
+            <schedule firstSol="120" />
         </resupply-mission>
     </resupply>
 </template>

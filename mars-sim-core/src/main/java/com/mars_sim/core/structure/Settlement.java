@@ -135,15 +135,19 @@ public class Settlement extends Unit implements Temporal,
 	private static final int REGOLITH_PROB_FACTOR = 20;
 	
 	private static final int MAX_PROB = 10_000;
+	
 	private static final int MIN_REGOLITH_RESERVE = 400; // per person
 	private static final int MIN_SAND_RESERVE = 400; // per person
+	public static final int MIN_WATER_RESERVE = 800; // per person
+	private static final int MIN_ICE_RESERVE = 800; // per person
+	private static final int MIN_HYDROGEN_RESERVE = 500; // per person
 	
 	private static final int REGOLITH_MAX = 10_000;
 	private static final int ICE_MAX = 10_000;
 	private static final int WATER_MAX = 10_000;
+	private static final int HYDROGEN_MAX = 10_000;
 
-	public static final int MIN_WATER_RESERVE = 800; // per person
-	private static final int MIN_ICE_RESERVE = 800; // per person
+
 
 	/** The settlement sampling resources. */
 	private static final int[] samplingResources;
@@ -2565,17 +2569,24 @@ public class Settlement extends Unit implements Temporal,
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
+		double hydrogenDemand = goodsManager.getDemandScoreWithID(ResourceUtil.HYDROGEN_ID);
+		if (hydrogenDemand > HYDROGEN_MAX)
+			hydrogenDemand = HYDROGEN_MAX;
+		if (hydrogenDemand < 1)
+			hydrogenDemand = 1;
+		
 		// Compare the available amount of water and ice reserve
 		double iceSupply = goodsManager.getSupplyScore(ResourceUtil.ICE_ID);
 		double waterSupply = goodsManager.getSupplyScore(ResourceUtil.WATER_ID);
 		double brineWaterSupply = goodsManager.getSupplyScore(ResourceUtil.BRINE_WATER_ID);
+		double hydrogenSupply = goodsManager.getSupplyScore(ResourceUtil.HYDROGEN_ID);
 		
-		int reserve = MIN_WATER_RESERVE + MIN_ICE_RESERVE;
+		int reserve = MIN_WATER_RESERVE + MIN_ICE_RESERVE + MIN_HYDROGEN_RESERVE;
 
 		// Note: Derive the probability per pop (regardless the size of the settlement)
 		
-		double totalSupply = iceSupply + waterSupply + brineWaterSupply;
-		double totalDemand = iceDemand + waterDemand + brineWaterDemand;
+		double totalSupply = iceSupply + waterSupply + brineWaterSupply + hydrogenSupply;
+		double totalDemand = iceDemand + waterDemand + brineWaterDemand + hydrogenDemand;
 		double surplus = totalSupply - reserve - totalDemand;
 		
 		// Note: the lower the collection rate, the higher probability it needs to have to prompt

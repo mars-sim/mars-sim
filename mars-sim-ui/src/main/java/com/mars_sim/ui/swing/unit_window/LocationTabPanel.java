@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -49,7 +50,6 @@ import eu.hansolo.steelseries.tools.LcdColor;
 /**
  * The LocationTabPanel is a tab panel for location information.
  */
-@SuppressWarnings("serial")
 public class LocationTabPanel extends EntityTabPanel<Unit> 
 	implements TemporalComponent {
 
@@ -109,61 +109,9 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 		// Create top panel
 		JPanel topPanel = new JPanel(new BorderLayout(5, 5));
 		topPanel.setBorder(SwingHelper.createEtchedBorder());
-		content.add(topPanel, BorderLayout.NORTH);
+		content.add(topPanel, BorderLayout.CENTER);
 
-		JPanel northPanel = new JPanel(new FlowLayout());
-		topPanel.add(northPanel, BorderLayout.SOUTH);
-
-		lcdLat = new DisplaySingle();
-		lcdLat.setLcdInfoFont(new Font("Verdana", 0, 32));
-		lcdLat.setLcdInfoString("Lat");
-		lcdLat.setLcdColor(LcdColor.BEIGE_LCD);
-		lcdLat.setGlowColor(Color.orange);
-		lcdLat.setDigitalFont(true);
-		lcdLat.setLcdDecimals(4);
-		lcdLat.setSize(LAT_LON_DIM);
-		lcdLat.setMaximumSize(LAT_LON_DIM);
-		lcdLat.setPreferredSize(LAT_LON_DIM);
-		lcdLat.setVisible(true);
-		northPanel.add(lcdLat);
-
-		// Create center map button
-		var locatorButton = new JButton(ImageLoader.getIconByName(NavigatorWindow.ICON));
-		locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1));
-		locatorButton.addActionListener(e -> displayMap());
-		locatorButton.setOpaque(false);
-		locatorButton.setToolTipText("Locate the unit on Mars Navigator");
-		locatorButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-		JPanel locatorPane = new JPanel(new FlowLayout());
-		locatorPane.add(locatorButton);
-		northPanel.add(locatorPane);
-
-		JPanel lcdPanel = new JPanel();
-		lcdLong = new DisplaySingle();
-		lcdLong.setLcdInfoFont(new Font("Verdana", 0, 32));
-		lcdLong.setLcdInfoString("Lon");
-		lcdLong.setLcdColor(LcdColor.BEIGE_LCD);
-		lcdLong.setGlowColor(Color.yellow);
-		lcdLong.setDigitalFont(true);
-		lcdLong.setLcdDecimals(4);
-		lcdLong.setSize(LAT_LON_DIM);
-		lcdLong.setMaximumSize(LAT_LON_DIM);
-		lcdLong.setPreferredSize(LAT_LON_DIM);
-		lcdLong.setVisible(true);
-		lcdPanel.add(lcdLong);
-		northPanel.add(lcdPanel);
-
-		// Update the LCDs
-		updateLCDs(locationCache);
-		
-		JPanel gaugePanel = new JPanel();
-		setupGauge(gaugePanel);
-		topPanel.add(gaugePanel, BorderLayout.CENTER);
-
-		// Update the elevation in the gauge
-		updateGauge(locationCache);
-		
+		// Create the banner text
 		bannerText = new DisplaySingle();
 		bannerText.setLcdInfoString("Last Known Position");
 		bannerText.setGlowColor(Color.ORANGE);
@@ -178,12 +126,67 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 		bannerText.setLcdText(locationStringCache);
 		// Pause the location lcd text the sim is pause
         bannerText.setLcdTextScrolling(true);
+        bannerText.setAlignmentX(Component.CENTER_ALIGNMENT);
 		topPanel.add(bannerText, BorderLayout.NORTH);
+		
+		JPanel latLonPanel = new JPanel(new FlowLayout());
+		latLonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		// Create the Lat display
+		lcdLat = new DisplaySingle();
+		lcdLat.setLcdInfoFont(new Font("Verdana", 0, 32));
+		lcdLat.setLcdInfoString("Lat");
+		lcdLat.setLcdColor(LcdColor.BEIGE_LCD);
+		lcdLat.setGlowColor(Color.orange);
+		lcdLat.setDigitalFont(true);
+		lcdLat.setLcdDecimals(4);
+		lcdLat.setSize(LAT_LON_DIM);
+		lcdLat.setMaximumSize(LAT_LON_DIM);
+		lcdLat.setPreferredSize(LAT_LON_DIM);
+		lcdLat.setVisible(true);
+		latLonPanel.add(lcdLat);
 
-		// Create data panel
+		// Create center map button
+		var locatorButton = new JButton(ImageLoader.getIconByName("action/locate"));
+		locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1));
+		locatorButton.addActionListener(e -> displayMap());
+		locatorButton.setOpaque(false);
+		locatorButton.setToolTipText("Locate this unit on Mars Navigator");
+		locatorButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+		JPanel locatorPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		locatorPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		locatorPane.add(locatorButton);
+		
+		latLonPanel.add(locatorPane);
+		topPanel.add(latLonPanel, BorderLayout.SOUTH);
+		
+		// Create the Lon display
+		JPanel lcdPanel = new JPanel();
+		lcdLong = new DisplaySingle();
+		lcdLong.setLcdInfoFont(new Font("Verdana", 0, 32));
+		lcdLong.setLcdInfoString("Lon");
+		lcdLong.setLcdColor(LcdColor.BEIGE_LCD);
+		lcdLong.setGlowColor(Color.yellow);
+		lcdLong.setDigitalFont(true);
+		lcdLong.setLcdDecimals(4);
+		lcdLong.setSize(LAT_LON_DIM);
+		lcdLong.setMaximumSize(LAT_LON_DIM);
+		lcdLong.setPreferredSize(LAT_LON_DIM);
+		lcdLong.setVisible(true);
+		lcdPanel.add(lcdLong);
+		latLonPanel.add(lcdPanel);
+		
+		// Create the gauge panel
+		JPanel gaugePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		gaugePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		setupGauge(gaugePanel);
+		topPanel.add(gaugePanel, BorderLayout.CENTER);
+		
+		// Create the Survey Data panel
 		var dataPanel = new AttributePanel();
-		content.add(dataPanel, BorderLayout.CENTER);
-        dataPanel.setBorder(SwingHelper.createLabelBorder("Location Data"));
+		content.add(dataPanel, BorderLayout.SOUTH);
+        dataPanel.setBorder(SwingHelper.createLabelBorder("Survey Data"));
         var unit = getEntity();
 		if (unit instanceof MobileUnit mu) {
 			if (mu instanceof Worker) {
@@ -200,6 +203,12 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 			areothermalLabel = dataPanel.addRow("Areothermal Score", "");
 		}
 
+		// Update the elevation in the gauge
+		updateGauge(locationCache);
+
+		// Update the LCDs
+		updateLCDs(locationCache);
+		
 		// Simulate a clock update to populate the fields
 		clockUpdate(null);
 	}
