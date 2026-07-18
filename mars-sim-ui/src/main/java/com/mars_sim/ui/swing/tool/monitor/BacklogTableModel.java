@@ -114,7 +114,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 			tasks.set(index, st);
 
 			// Just update the changed cells, i.e. parameters
-			fireTableCellUpdated(index, SCOPE_COL);
+			fireTableCellUpdated(index, SCORE_COL);
 			fireTableCellUpdated(index, DEMAND_COL);
 			fireTableCellUpdated(index, CREATED_COL);
 		}

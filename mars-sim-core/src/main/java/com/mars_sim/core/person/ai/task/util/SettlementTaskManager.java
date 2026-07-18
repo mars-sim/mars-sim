@@ -241,7 +241,9 @@ public class SettlementTaskManager implements Serializable {
     void removeTask(SettlementTask st) {
         var meta = st.getMeta();
         var existing = tasks.get(meta);
-        existing.remove(st);
-        owner.fireUnitUpdate(REMOVETASK_EVENT, st);
+        if (existing != null) {
+            existing.remove(st);
+            owner.fireUnitUpdate(REMOVETASK_EVENT, st);
+        }
     }
 }

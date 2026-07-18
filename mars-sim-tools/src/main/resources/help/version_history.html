@@ -21,6 +21,7 @@
     <LI>Refactor the Colony classes and move configurations to a dedicated XML file.</LI>
     <LI>Provide a single means to identify the type of a Resource ID.</LI>
     <LI>Make Rating an interface to promote safe/unmodified sharing.</LI>
+    <LI>Redesign SettlementTaskManager to maintain a persistent list of Task across clock pulses.</LI>
     <LI>The type and number of Robots is defined in the Supplies Manifest instead of explicitly in the ResupplyMission. This provides a consistent approach.</LI>
   </OL>
     
@@ -31,12 +32,14 @@
     <LI>Metric viewer now available in the UI.</LI>
     <LI>Beta: Add desktop notification for Events when the main window is in closed state.</LI>
     <LI>Improve filtering on the Event Viewer.</LI>
+    <LI>Backlog table in Monitor window shows the date tasks are created/updated.</LI>
   </OL>  
   
   <H4>C. FIXES :</H4>
   <OL>
     <LI>Fix Food table in Monitor Window not dynamically updating.</LI>
     <LI>Fix race condition when EntityPanel can fail if an EntityEvent is delivered during the construction.</LI>
+    <li>Prevent exception in monitor window when Backlog lists are updated frequently at high time ratio.</li>
   </OL>
 <br>
 

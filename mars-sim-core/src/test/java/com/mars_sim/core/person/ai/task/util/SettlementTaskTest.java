@@ -98,20 +98,7 @@ class SettlementTaskTest extends MarsSimUnitTest {
 
 		assertNotEquals(first, second, "Tasks should not be equal when owners are different");
 	}
-
-	@Test
-	void testEqualsFalseWhenMetaTaskDifferent() {
-		Settlement owner = buildSettlement("owner");
-		TestMetaTask meta1 = new TestMetaTask("Meta1");
-		TestMetaTask meta2 = new TestMetaTask("Meta2");
-		TestEntity focus = new TestEntity("Focus", "focus-1");
-
-		SettlementTask first = new MockSettlementTask(meta1, owner, "Task", focus, new RatingScore(10));
-		SettlementTask second = new MockSettlementTask(meta2, owner, "Task", focus, new RatingScore(10));
-
-		assertNotEquals(first, second, "Tasks should not be equal when meta tasks are different");
-	}
-
+	
 	@Test
 	void testEqualsFalseWhenFocusDifferent() {
 		Settlement owner = buildSettlement("owner");

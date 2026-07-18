@@ -49,7 +49,11 @@ public abstract class SettlementTask extends AbstractTaskJob {
         this.focus = focus;
         this.shortName = name;
         this.metaTask = parent;
-        this.scope = ((MetaTask)parent).getScope();
+        if (parent instanceof MetaTask mt) {
+            this.scope = mt.getScope();
+        } else {
+            this.scope = TaskScope.ANY_HOUR;
+        }
 
         // Easiest way to timestamp
         this.createdOn = Simulation.instance().getMasterClock().getMarsTime();
@@ -155,8 +159,8 @@ public abstract class SettlementTask extends AbstractTaskJob {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((metaTask == null) ? 0 : metaTask.hashCode());
-        result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+        result = prime * result + metaTask.hashCode();
+        result = prime * result + owner.hashCode();
         return result;
     }
 
@@ -170,15 +174,9 @@ public abstract class SettlementTask extends AbstractTaskJob {
         if (getClass() != obj.getClass())
             return false;
         SettlementTask other = (SettlementTask) obj;
-        if (metaTask == null) {
-            if (other.metaTask != null)
-                return false;
-        } else if (!metaTask.equals(other.metaTask))
+        if (!metaTask.equals(other.metaTask))
             return false;
-        if (owner == null) {
-            if (other.owner != null)
-                return false;
-        } else if (!owner.equals(other.owner))
+        if (!owner.equals(other.owner))
             return false;
         if (focus == null) {
             if (other.focus != null)
