@@ -63,6 +63,7 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID, MembersPanel.ID));		
 		MISSION_STEPS.put(MissionType.TRAVEL_TO_SETTLEMENT, List.of(TypePanel.ID, StartingSettlementPanel.ID,
 				RoverPanel.ID, DestinationSettlementPanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.TEST_DRIVE, List.of(TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID));
 		}
 
 	/**

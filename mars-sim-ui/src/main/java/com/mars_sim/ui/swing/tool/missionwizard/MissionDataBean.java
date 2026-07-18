@@ -9,12 +9,16 @@ package com.mars_sim.ui.swing.tool.missionwizard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MetaMission;
+import com.mars_sim.core.mission.MetaMissionRegistry;
+import com.mars_sim.core.mission.MissionCreationException;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.BiologyFieldStudy;
@@ -46,7 +50,9 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 class MissionDataBean {
 
-    private MissionType missionType;
+	private static Logger logger = LogManager.getLogManager().getLogger(MissionDataBean.class.getName());
+	
+	private MetaMission meta;
 	private String type = "";
 	private String description = "";
 	
@@ -84,49 +90,41 @@ class MissionDataBean {
 
 		// Create the mission roster;this is for the new single constructor per Mission pattern
 		var roster = new MetaMission.Roster(personMembers.get(0),
-										mixedMembers.subList(1, mixedMembers.size()-1), rover);
+										mixedMembers.subList(1, mixedMembers.size()), rover);
 
-	    Mission mission = null;
-	    switch (missionType) {
-			case MissionType.AREOLOGY ->
-					mission = new AreologyFieldStudy(mixedMembers, study,
-							rover, routePoints.get(0));
-			case MissionType.BIOLOGY ->
-					mission = new BiologyFieldStudy(mixedMembers, study,
-							rover, routePoints.get(0));
-			case MissionType.METEOROLOGY ->
-					mission = new MeteorologyFieldStudy(mixedMembers, study,
-							rover, routePoints.get(0));
-			case MissionType.CONSTRUCTION ->
-					mission = new ConstructionMission(mixedMembers, startingSettlement, constructionSite,
-							constructionVehicles);
-			case MissionType.COLLECT_ICE ->
-					mission = new CollectIce(mixedMembers, routePoints, rover);
-			case MissionType.COLLECT_REGOLITH ->
-					mission = new CollectRegolith(mixedMembers, routePoints, rover);
-			case MissionType.DELIVERY ->
-					mission = new Delivery(mixedMembers, destinationSettlement, drone,
-							sellGoods, buyGoods);
-			case MissionType.EMERGENCY_SUPPLY ->
-					mission = new EmergencySupply(mixedMembers, destinationSettlement,
-							sellGoods, rover);
-			case MissionType.EXPLORATION ->
-					mission = new Exploration(mixedMembers, routePoints, rover);
-			case MissionType.MINING ->
-					mission = new Mining(mixedMembers, miningSite, rover, luv);
-			case MissionType.RESCUE_SALVAGE_VEHICLE ->
-					mission = new RescueSalvageVehicle(mixedMembers, rescueVehicle, rover);
-			case MissionType.TRADE ->
-					mission = new Trade(mixedMembers, destinationSettlement, rover,
-							sellGoods, buyGoods);
-			case MissionType.TRAVEL_TO_SETTLEMENT ->
-					mission = new TravelToSettlement(roster, destinationSettlement, false);
-			default -> throw new IllegalStateException("Mission type: " + type + " unknown");
+	    try {
+			Mission mission = switch (meta.getType()) {
+				case MissionType.AREOLOGY -> new AreologyFieldStudy(mixedMembers, study,
+														rover, routePoints.get(0));
+				case MissionType.BIOLOGY -> new BiologyFieldStudy(mixedMembers, study,
+														rover, routePoints.get(0));
+				case MissionType.METEOROLOGY -> new MeteorologyFieldStudy(mixedMembers, study,
+														rover, routePoints.get(0));
+				case MissionType.CONSTRUCTION -> new ConstructionMission(mixedMembers, startingSettlement, constructionSite,
+														constructionVehicles);
+				case MissionType.COLLECT_ICE -> new CollectIce(mixedMembers, routePoints, rover);
+				case MissionType.COLLECT_REGOLITH -> new CollectRegolith(mixedMembers, routePoints, rover);
+				case MissionType.DELIVERY -> new Delivery(mixedMembers, destinationSettlement, drone,
+														sellGoods, buyGoods);
+				case MissionType.EMERGENCY_SUPPLY -> new EmergencySupply(mixedMembers, destinationSettlement,
+														sellGoods, rover);
+				case MissionType.EXPLORATION -> new Exploration(mixedMembers, routePoints, rover);
+				case MissionType.MINING -> new Mining(mixedMembers, miningSite, rover, luv);
+				case MissionType.RESCUE_SALVAGE_VEHICLE -> new RescueSalvageVehicle(mixedMembers, rescueVehicle, rover);
+				case MissionType.TRADE -> new Trade(mixedMembers, destinationSettlement, rover,
+														sellGoods, buyGoods);
+				case MissionType.TRAVEL_TO_SETTLEMENT -> new TravelToSettlement(roster, destinationSettlement, false);
+				case MissionType.TEST_DRIVE -> meta.constructInstance(roster, false);
+				default -> throw new IllegalStateException("Mission type: " + type + " unknown");
+			};
+
+			startingSettlement.getMissionControl().addMission(mission);
+
+			return mission;
+		} catch (MissionCreationException e) {
+			logger.severe("Error creating mission: " + e.getMessage());
+			return null;
 		}
-
-	    startingSettlement.getMissionControl().addMission(mission);
-
-		return mission;
 	}
 
 	/**
@@ -134,7 +132,14 @@ class MissionDataBean {
 	 * @return missionType enum.
 	 */
     public MissionType getMissionType() {
-		return missionType;
+		return meta.getType();
+	}
+
+	/**
+	 * Meta mission is the mission type object that contains the mission name and other information.
+	 */
+	public MetaMission getMetaMission() {
+		return meta;
 	}
 
 	/**
@@ -143,7 +148,7 @@ class MissionDataBean {
 	 * @param missionType the mission type enum.
 	 */
     public void setMissionType(MissionType missionType) {
-    	this.missionType = missionType;
+		this.meta = MetaMissionRegistry.getMetaMission(missionType);
     }
 
 	/**

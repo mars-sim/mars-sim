@@ -185,7 +185,7 @@ public class MissionVehicleProject extends MissionProject
      * @param plan Steps for the mission
      */
     @Override
-    protected void setSteps(List<MissionStep> plan) {
+    public void setSteps(List<MissionStep> plan) {
         route = plan.stream()
                         .filter(MissionTravelStep.class::isInstance)
                         .map (sc -> ((MissionTravelStep) sc).getDestination())
