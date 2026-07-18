@@ -22,7 +22,7 @@ public class CollectResourceObjective implements MissionObjective {
     private double siteGoal = 0.0;
 
 	/** The cumulative amount (kg) of resources collected per site */
-	private Map<Integer, Double> amountCollectedBySite = new HashMap<>();
+	private Map<String, Double> amountCollectedBySite = new HashMap<>();
 
 	/** The cumulative amount (kg) of resources collected across all sites. */
 	private Map<Integer, Double> cumulativeCollectedByID = new HashMap<>();
@@ -56,19 +56,19 @@ public class CollectResourceObjective implements MissionObjective {
      * 
      * @return
      */
-    public Map<Integer,Double> getCollectedAtSites() {
+    public Map<String, Double> getCollectedAtSites() {
         return amountCollectedBySite;
     }
 
     /**
      * Records the amount of resources collected at a specific site. This updates the perSite and perResource totals.
      * 
-     * @param siteIndex Index of the site where the resources were collected.
+     * @param site Site where the resources were collected.
      * @param resourceId  ID of the resource collected.
      * @param collected  Amount of resources collected (in kg).
      */
-    public void recordResourceCollected(int siteIndex, int resourceId, double collected) {
-        amountCollectedBySite.merge(siteIndex, collected, Double::sum);
+    public void recordResourceCollected(String site, int resourceId, double collected) {
+        amountCollectedBySite.merge(site, collected, Double::sum);
 
 		cumulativeCollectedByID.merge(resourceId, collected, Double::sum);
 
