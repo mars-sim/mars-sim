@@ -68,6 +68,8 @@ public abstract class CollectResourcesMission extends EVAMission
 	/** The type of container needed for the mission or null if none. */
 	private EquipmentType containerID;
 
+	private NavPoint currentSite;
+
 	private static TerrainElevation terrainElevation;
 	
 	/**
@@ -237,8 +239,10 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @return
 	 */
 	public double getCollectedAtCurrentSite() {
-		int siteIndex = getCurrentNavpointIndex(); 
-		return objective.getCollectedAtSites().getOrDefault(siteIndex, 0D);
+		if (currentSite == null) {
+			return 0D;
+		}
+		return objective.getCollectedAtSites().getOrDefault(currentSite.getName(), 0D);
 	}
 	
 	/**
@@ -248,9 +252,11 @@ public abstract class CollectResourcesMission extends EVAMission
 	 * @param samplesCollected
 	 */
 	public void recordResourceCollected(int resourceType, double samplesCollected) {
-		// Update amountCollectedBySite
-		int siteIndex = getCurrentNavpointIndex(); 
-		objective.recordResourceCollected(siteIndex, resourceType, samplesCollected);
+		if (currentSite == null) {
+			logger.warning(this, "No current site to record resource collection");
+			return;
+		}
+		objective.recordResourceCollected(currentSite.getName(), resourceType, samplesCollected);
 	}
 
 	@Override
@@ -330,6 +336,15 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 
 		return true;
+	}
+
+	/**
+	 * Signals the start of an EVA phase to do any housekeeping
+	 */
+	@Override
+	protected void phaseEVAStarted() {
+		currentSite = getCurrentNavpoint();
+		super.phaseEVAStarted();
 	}
 
 	/**

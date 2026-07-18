@@ -99,7 +99,7 @@ public class CollectResourcePanel extends JPanel implements EntityListener {
 
 		siteModel.clear();
 		objective.getCollectedAtSites().entrySet().stream()
-			.map(e -> "Site #" + Integer.toString(e.getKey()) + ": " + StyleManager.DECIMAL_KG.format(e.getValue()))
+			.map(e -> e.getKey() + ": " + StyleManager.DECIMAL_KG.format(e.getValue()))
 			.sorted()
 			.forEach(siteModel::addElement);
 	}

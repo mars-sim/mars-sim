@@ -101,6 +101,7 @@ abstract class EVAMission extends RoverMission {
 			logger.info(getVehicle(), "Continue to travel since sunrise is too late " + sunrise.getTruncatedDateTimeStamp());
 			addMissionLog(NOT_ENOUGH_SUNLIGHT, getStartingPerson().getName());
 			startTravellingPhase();
+			result = false;
 		}
 		else {
 			// Wait for sunrise
