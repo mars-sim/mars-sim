@@ -400,6 +400,10 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param newListener the listener to add.
 	 */
 	public final void addEntityManagerListener(UnitType source, EntityManagerListener newListener) {
+		if (newListener == null) {
+			logger.warning("Attempt to add a null listener for " + source);
+			return;
+		}
 		if (listeners == null) {
 			listeners = new EnumMap<>(UnitType.class);
 		}
