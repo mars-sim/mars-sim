@@ -38,8 +38,8 @@ public class ConstructBuildingMeta extends MetaTask implements SettlementMetaTas
         private ConstructionSite site;
 
 
-        public ConstructionTaskJob(SettlementMetaTask owner, ConstructionSite site, int demand, RatingScore score) {
-            super(owner, "Construct Building", site, score);
+        public ConstructionTaskJob(SettlementMetaTask ownerTask, Settlement owner, ConstructionSite site, int demand, RatingScore score) {
+            super(ownerTask, owner, "Construct Building", site, score);
             this.site = site;
 
             setDemand(demand);
@@ -102,7 +102,7 @@ public class ConstructBuildingMeta extends MetaTask implements SettlementMetaTas
                 int phasesLeft = 2 - cs.getRemainingPhases().size();
                 score.addModifier("progress", 1d + (phasesLeft * PHASE_WEIGHT)); // More completed, higher score
 
-                tasks.add(new ConstructionTaskJob(this, cs, 1, score));
+                tasks.add(new ConstructionTaskJob(this, settlement, cs, 1, score));
             }
 		}
         return tasks;

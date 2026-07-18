@@ -33,7 +33,6 @@ class BacklogCommand extends AbstractSettlementCommand {
 
         StructuredResponse response = new StructuredResponse();
         response.appendLabeledString("Reuse Ratio", String.format(CommandHelper.DOUBLE_FORMAT, stm.getReuseScore()));
-        response.appendLabelledDigit("Tasks Executed", stm.getExecutedCount());
 
         List<SettlementTask> tasks = stm.getAvailableTasks();
         if (tasks != null) {

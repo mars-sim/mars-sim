@@ -37,8 +37,8 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 
         private MissionPlanning plan;
 
-        public ReviewMissionPlanJob(SettlementMetaTask owner, MissionPlanning plan, RatingScore score) {
-			super(owner, "Review Mission", plan.getMission(), score);
+		public ReviewMissionPlanJob(SettlementMetaTask ownerTask, Settlement owner, MissionPlanning plan, RatingScore score) {
+			super(ownerTask, owner, "Review Mission", plan.getMission(), score);
             this.plan = plan;
         }
 
@@ -142,7 +142,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 				planAge = Math.min(planAge, MAX_AGE); // Limit the age of a review
 				score.addModifier("review.age", 1 + (planAge * SOL_DELAY_MODIFIER));
 
-				tasks.add(new ReviewMissionPlanJob(this, mp, score));
+				tasks.add(new ReviewMissionPlanJob(this, settlement, mp, score));
 			}
 		}
 	

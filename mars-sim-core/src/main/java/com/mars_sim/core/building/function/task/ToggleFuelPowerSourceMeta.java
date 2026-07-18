@@ -42,9 +42,9 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 
 		private FuelPowerSource powerSource;
 
-        public PowerTaskJob(SettlementMetaTask owner, Building building, FuelPowerSource powerSource,
+        public PowerTaskJob(SettlementMetaTask ownerTask, Settlement owner, Building building, FuelPowerSource powerSource,
                                     RatingScore score) {
-            super(owner, "Toggle " + powerSource.getType().getName(), building, score);
+            super(ownerTask, owner, "Toggle " + powerSource.getType().getName(), building, score);
 			this.powerSource = powerSource;
 		}
 
@@ -150,7 +150,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
             if (bestDiff > 0) {
                 RatingScore score = new RatingScore(FACTOR);
                 score.addModifier("best", bestDiff);
-                tasks.add(new PowerTaskJob(this, building, bestSource, score));
+                tasks.add(new PowerTaskJob(this, settlement, building, bestSource, score));
             }
         }
         

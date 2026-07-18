@@ -42,8 +42,8 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 	
         private AlgaeFarming pond;
 
-        public AlgaeTaskJob(SettlementMetaTask owner, AlgaeFarming pond, RatingScore score) {
-            super(owner, "Tend Algae Pond", pond.getBuilding(), score);
+        public AlgaeTaskJob(SettlementMetaTask ownerTask, Settlement owner, AlgaeFarming pond, RatingScore score) {
+            super(ownerTask, owner, "Tend Algae Pond", pond.getBuilding(), score);
             this.pond = pond;
         }
 
@@ -139,7 +139,7 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
             result.addBase("nutrient.ratio", defaultNRatio / nutrientRatio * 50);
       
             if (result.getScore() >= 1) {
-                tasks.add(new AlgaeTaskJob(this, pond, result));
+                tasks.add(new AlgaeTaskJob(this, settlement, pond, result));
             }
         }
 

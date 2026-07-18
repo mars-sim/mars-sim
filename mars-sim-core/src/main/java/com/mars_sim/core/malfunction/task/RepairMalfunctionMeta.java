@@ -47,9 +47,9 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 
 		private Malfunction mal;
 
-		public RepairTaskJob(SettlementMetaTask owner, Malfunctionable entity, Malfunction mal,
+		public RepairTaskJob(SettlementMetaTask ownerTask, Settlement owner, Malfunctionable entity, Malfunction mal,
 							 int demand, boolean eva, RatingScore score) {
-			super(owner, "Repair " + (eva ? "EVA " : "") + mal.getMalfunctionMeta().getName(), entity,
+			super(ownerTask, owner, "Repair " + (eva ? "EVA " : "") + mal.getMalfunctionMeta().getName(), entity,
 						score);
 			setDemand(demand);
 			setEVA(eva);
@@ -133,7 +133,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 				RepairTaskJob rtj = (RepairTaskJob) t;
 				RatingScore score = new RatingScore(rtj.getScore());
 				score.addModifier("inside", 3D); //Repairs in Vehicles are important
-				tasks.add(new RepairTaskJob(this, rtj.getProblem(), rtj.mal, rtj.getDemand(),
+				tasks.add(new RepairTaskJob(this, person.getAssociatedSettlement(), rtj.getProblem(), rtj.mal, rtj.getDemand(),
 											rtj.isEVA(), score));
 			}
 		}
@@ -233,7 +233,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 	    		score.addModifier("parts", 2);
 	    	}
 		
-			return new RepairTaskJob(this, entity, malfunction,
+			return new RepairTaskJob(this, (partsStore instanceof Settlement s ? s : null), entity, malfunction,
 									malfunction.numRepairerSlotsEmpty(workType),
 									(workType == MalfunctionRepairWork.EVA),
 									score);

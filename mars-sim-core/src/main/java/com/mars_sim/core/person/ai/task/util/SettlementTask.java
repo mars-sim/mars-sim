@@ -7,8 +7,11 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MarsTime;
 
 /**
  * This represents a TaskJob created by a SettlementMetaTask. 
@@ -18,34 +21,42 @@ public abstract class SettlementTask extends AbstractTaskJob {
 
 	private static final long serialVersionUID = 1L;
 	
-    private int demand;
+    private final Settlement owner;
     
-    private SettlementMetaTask metaTask;
-    private Entity focus;
+    private final SettlementMetaTask metaTask;
+    private final Entity focus;
     private String shortName;
     private boolean needsEVA = false;
     private TaskScope scope = TaskScope.ANY_HOUR;
+    private int demand;
+    private MarsTime createdOn;
 
     /**
      * Creates an abstract Settlement task for the backlog that relates to an Entity within a Settlement
      * that can be executed by any Citizen.
      * 
      * @param parent The meta task that defines the eventual Task.
+     * @param owner Settlement owning this shared task.
      * @param name Name to the potential task
      * @param focus Entity the focus of the work; maybe null
      * @param score The Rating score for this work
      */
-    protected SettlementTask(SettlementMetaTask parent, String name, Entity focus, RatingScore score) {
+    protected SettlementTask(SettlementMetaTask parent, Settlement owner, String name, Entity focus, RatingScore score) {
         super(name + (focus != null ? " @ " + focus.getName() : ""), score);
         
         this.demand = 1;
+        this.owner = owner;
         this.focus = focus;
         this.shortName = name;
-        
-        if (parent != null) {
-	        this.metaTask = parent;
-	        this.scope = ((MetaTask)parent).getScope();
+        this.metaTask = parent;
+        if (parent instanceof MetaTask mt) {
+            this.scope = mt.getScope();
+        } else {
+            this.scope = TaskScope.ANY_HOUR;
         }
+
+        // Easiest way to timestamp
+        this.createdOn = Simulation.instance().getMasterClock().getMarsTime();
     }
 
     /**
@@ -55,6 +66,13 @@ public abstract class SettlementTask extends AbstractTaskJob {
      */
     public String getShortName() {
         return shortName;
+    }
+
+    /**
+     * When was this task created.
+     */
+    public MarsTime getCreatedOn() {
+        return createdOn;
     }
 
     /**
@@ -108,9 +126,11 @@ public abstract class SettlementTask extends AbstractTaskJob {
      * 
      * @return True if no more demand is needed.
      */
-    boolean reduceDemand() {
+    void reduceDemand() {
         demand--;
-        return (demand == 0);
+        if (demand == 0) {
+            owner.getTaskManager().removeTask(this);
+        }
     }
 
     /**
@@ -131,13 +151,16 @@ public abstract class SettlementTask extends AbstractTaskJob {
         return focus;
     }
 
+    public Settlement getOwner() {
+        return owner;
+    }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((metaTask == null) ? 0 : metaTask.hashCode());
-        result = prime * result + ((focus == null) ? 0 : focus.hashCode());
+        result = prime * result + metaTask.hashCode();
+        result = prime * result + owner.hashCode();
         return result;
     }
 
@@ -151,12 +174,9 @@ public abstract class SettlementTask extends AbstractTaskJob {
         if (getClass() != obj.getClass())
             return false;
         SettlementTask other = (SettlementTask) obj;
-        if (metaTask == null) {
-            if (other.metaTask != null)
-                return false;
-        } else if (!metaTask.equals(other.metaTask))
+        if (!metaTask.equals(other.metaTask))
             return false;
-        if (needsEVA != other.needsEVA)
+        if (!owner.equals(other.owner))
             return false;
         if (focus == null) {
             if (other.focus != null)
@@ -164,5 +184,21 @@ public abstract class SettlementTask extends AbstractTaskJob {
         } else if (!focus.equals(other.focus))
             return false;
         return true;
+    }
+
+    /**
+     * Updates the parameters of this task based on another Task.
+     * Parameters cover the demand and score.
+     * @param newTask The new task to update from.
+     * @return True if parameters were updated
+     */
+    boolean updateParameters(SettlementTask newTask) {
+        if (demand != newTask.demand || getScore().getScore() != newTask.getScore().getScore()) {
+            demand = newTask.demand;
+            setScore(newTask.getScore());
+            createdOn = newTask.createdOn;
+            return true;
+        }
+        return false;
     }
 }

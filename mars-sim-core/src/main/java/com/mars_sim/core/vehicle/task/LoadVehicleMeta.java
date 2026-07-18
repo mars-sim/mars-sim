@@ -14,6 +14,7 @@ import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.task.util.AbstractTaskJob;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
@@ -33,48 +34,99 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 public class LoadVehicleMeta extends MetaTask 
     implements SettlementMetaTask {
-        
+
+    /**
+     * This is a job to load a vehicle by a Worker.
+     */
+    private static class IndividualJob extends AbstractTaskJob {
+
+		private static final long serialVersionUID = 1L;
+
+		private Vehicle vehicle;
+        private boolean eva;
+		
+        private IndividualJob(Vehicle target, boolean eva, RatingScore score) {
+            super("Load " + target.getName(), score);
+            vehicle = target;
+            this.eva = eva;
+        }
+
+        @Override
+        public Task createTask(Person person) {
+            return LoadVehicleMeta.createLoadTask(person, vehicle, eva);
+        }
+
+        @Override
+        public Task createTask(Robot robot) {
+            return LoadVehicleMeta.createLoadTask(robot, vehicle, eva);
+        }
+    }
+    
+    /**
+     * Load job that goes in the settlement backlog
+     */
     private static class LoadJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
 
 		private Vehicle vehicle;
 		
-        private LoadJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScore score) {
-            super(owner, "Load " + (eva ? "via EVA " : ""), target, score);
+        private LoadJob(SettlementMetaTask ownerTask, Settlement owner, Vehicle target, boolean eva, RatingScore score) {
+            super(ownerTask, owner, "Load Vehicle", target, score);
             vehicle = target;
             setEVA(eva);
         }
 
         @Override
         public Task createTask(Person person) {
-            if (!person.isInSettlement())
-            	return null;
-            if (isEVA()) {
-                return new LoadVehicleEVA(person, vehicle);
-            }
-	
-    		boolean hasGarage = vehicle.isInGarage(); 
-    		if (hasGarage)
-    			return new LoadVehicleGarage(person, vehicle);
-    			
-    		boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
-    				vehicle.getAssociatedSettlement(), vehicle);
-            
-    		if (garageTask)
-    			return new LoadVehicleGarage(person, vehicle);
-			
-    		return new LoadVehicleEVA(person, vehicle);
+            return LoadVehicleMeta.createLoadTask(person, vehicle, isEVA());
         }
 
         @Override
         public Task createTask(Robot robot) {
-            if (isEVA()) {
-				// Should not happen
-				throw new IllegalStateException("Robots can not do EVA load vehicle");
-			}
-            return new LoadVehicleGarage(robot, vehicle);
+            return LoadVehicleMeta.createLoadTask(robot, vehicle, isEVA());
         }
+    }
+
+    /**
+     * Creates a task for a person to load a vehicle. This is used by the person to create a task for itself.
+     * @param person Person that will be loading the vehicle
+     * @param vehicle Vehicle to be loaded
+     * @param eva Whether the load is via EVA or not
+     */
+    private static Task createLoadTask(Person person, Vehicle vehicle, boolean eva) {
+        if (!person.isInSettlement())
+            return null;
+        if (eva) {
+            return new LoadVehicleEVA(person, vehicle);
+        }
+
+        boolean hasGarage = vehicle.isInGarage(); 
+        if (hasGarage)
+            return new LoadVehicleGarage(person, vehicle);
+            
+        boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+                vehicle.getAssociatedSettlement(), vehicle);
+        
+        if (garageTask)
+            return new LoadVehicleGarage(person, vehicle);
+        
+        return new LoadVehicleEVA(person, vehicle);
+    }
+
+    /**
+     * Factory method for robot to load a vehicle. This is used by the robot to create a task for itself.
+     * @param robot Robot that will be loading the vehicle
+     * @param vehicle Vehicle to be loaded
+     * @param eva Whether the load is via EVA or not
+     * @return Task for the robot to load the vehicle
+     */
+    private static Task createLoadTask(Robot robot, Vehicle vehicle, boolean eva) {
+        if (eva) {
+            // Should not happen
+            throw new IllegalStateException("Robots can not do EVA load vehicle");
+        }
+        return new LoadVehicleGarage(robot, vehicle);
     }
 
     /** Task name */
@@ -125,9 +177,7 @@ public class LoadVehicleMeta extends MetaTask
 							settlement, vehicle);
 							
                     SettlementTask job = createLoadJob(vehicle, settlement, garageTask, this);
-                    if (job != null) {
-                        tasks.add(job);
-                    }
+                    tasks.add(job);
 				}
 			}
         }
@@ -149,18 +199,27 @@ public class LoadVehicleMeta extends MetaTask
 
         RatingScore score = new RatingScore(GARAGE_DEFAULT_SCORE);
         score = applyCommerceFactor(score, settlement, CommerceType.TRANSPORT);
-        boolean inGarageAlready = settlement.getBuildingManager().isInGarage(vehicle);
+        boolean inGarageAlready = isInsideLoad(settlement, vehicle);
         if (insideOnlyTasks || inGarageAlready) {
             if (inGarageAlready) {
                 // If in Garage already then boost score
                 score.addModifier(GARAGED_MODIFIER, 2);
             }
             // Note: owner can be null
-            return new LoadJob(owner, vehicle, false, score);
+            return new LoadJob(owner, settlement, vehicle, false, score);
         }
-        return new LoadJob(owner, vehicle, true, score);
+        return new LoadJob(owner, settlement, vehicle, true, score);
     }
 
+    /**
+     * Vehicle can be loaded inside
+     * @param settlement Settlement to check
+     * @param vehicle Vehicle to check
+     */
+    static boolean isInsideLoad(Settlement settlement, Vehicle vehicle) {
+        return settlement.getBuildingManager().isInGarage(vehicle);
+    }
+    
     /**
      * Creates the appropriate TaskJob to load a Vehicle. This considers whether the vehicle is 
      * already in a garage and whether there is garage space.
@@ -170,6 +229,6 @@ public class LoadVehicleMeta extends MetaTask
      */
     public static TaskJob createLoadJob(Vehicle vehicle, Settlement settlement) {
     	// Question: will a null SettlementTask be causing any issues ?
-        return createLoadJob(vehicle, settlement, false, null);
+        return new IndividualJob(vehicle, isInsideLoad(settlement, vehicle), new RatingScore(GARAGE_DEFAULT_SCORE));
     } 
 }

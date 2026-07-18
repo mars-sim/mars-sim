@@ -41,9 +41,9 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
 
         private int minSkill;
 
-        public ManufactureJob(SettlementMetaTask owner, Building target,
+        public ManufactureJob(SettlementMetaTask ownerTask, Settlement owner, Building target,
                            int minSkill, RatingScore score, int demand) {
-            super(owner, "Workshop Activity", target, score);
+            super(ownerTask, owner, "Workshop Activity", target, score);
             this.minSkill = minSkill;
             setDemand(demand);
         }
@@ -138,7 +138,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         if (demand > 0) {
             RatingScore score = new RatingScore(base);
             score = applyCommerceFactor(score, s, CommerceType.MANUFACTURING);
-            results.add(new ManufactureJob(this, w, lowestSkillNeeded, score, demand));
+            results.add(new ManufactureJob(this, s, w, lowestSkillNeeded, score, demand));
         }
     }
 

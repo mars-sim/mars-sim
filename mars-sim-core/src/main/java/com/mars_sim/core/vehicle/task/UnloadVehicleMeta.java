@@ -14,6 +14,7 @@ import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.task.util.AbstractTaskJob;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
@@ -33,40 +34,77 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 
-    private static class UnloadJob extends SettlementTask {
+    /**
+     * Inidividual's job to unload a vehicle.
+     */
+    private static class IndividualJob extends AbstractTaskJob {
+        private Vehicle vehicle;
+        private boolean eva;
 
-		private static final long serialVersionUID = 1L;
-
-        public UnloadJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScore score) {
-            super(owner, "Unload " + (eva ? "via EVA " : "") + "@ " + target.getName(), target, score);
-            setEVA(eva);
-        }
-
-        /**
-         * The vehicle being unloaded is the focus.
-         */
-        private Vehicle getVehicle() {
-            return (Vehicle) getFocus();
+        IndividualJob(Vehicle vehicle, boolean eva, RatingScore score) {
+            super("Unload " + (eva ? "via EVA " : "") + "@ " + vehicle.getName(), score);
+            this.vehicle = vehicle;
+            this.eva = eva;
         }
 
         @Override
         public Task createTask(Person person) {
-            if (isEVA()) {
-                return new UnloadVehicleEVA(person, getVehicle());
-            }
-            return new UnloadVehicleGarage(person, getVehicle());
+            return createUnloadTask(person, vehicle, eva);
         }
 
         @Override
         public Task createTask(Robot robot) {
-            if (isEVA()) {
-				// Should not happen
-				throw new IllegalStateException("Robots can not do EVA unload vehicle");
-			}
-            return new UnloadVehicleGarage(robot, getVehicle());
+            return createUnloadTask(robot, vehicle, eva);
+        }
+    }
+
+    private static class UnloadJob extends SettlementTask {
+
+		private static final long serialVersionUID = 1L;
+
+        public UnloadJob(SettlementMetaTask ownerTask, Settlement owner, Vehicle target, boolean eva, RatingScore score) {
+            super(ownerTask, owner, "Unload Vehicle", target, score);
+            setEVA(eva);
+        }
+
+        @Override
+        public Task createTask(Person person) {
+            return createUnloadTask(person, (Vehicle) getFocus(), isEVA());
+        }
+
+        @Override
+        public Task createTask(Robot robot) {
+            return createUnloadTask(robot, (Vehicle) getFocus(), isEVA());
         }
     }
     
+    /**
+     * Factory method to create corect unload task for a person.
+     * @param person Person to create task for
+     * @param vehicle Vehicle to unload
+     * @param eva True if task is to be done via EVA; false if in garage
+     */
+    private static Task createUnloadTask(Person person, Vehicle vehicle, boolean eva) {
+        if (eva) {
+            return new UnloadVehicleEVA(person, vehicle);
+        }
+        return new UnloadVehicleGarage(person, vehicle);
+    }
+
+    /**
+     * Factory method to create corect unload task for a robot.
+     * @param robot Robot to create task for
+     * @param vehicle Vehicle to unload
+     * @param eva True if task is to be done via EVA; false if in garage
+     */
+    private static Task createUnloadTask(Robot robot, Vehicle vehicle, boolean eva) {
+        if (eva) {
+			// Should not happen
+			throw new IllegalStateException("Robots can not do EVA unload vehicle");
+		}
+        return new UnloadVehicleGarage(robot, vehicle);
+    }
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.unloadVehicle"); //$NON-NLS-1$
@@ -137,18 +175,17 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
             RatingScore score = new RatingScore(BASE_SCORE);
             score.addBase("vehicle", (100D * remaining)/vehicle.getCargoCapacity());
 
-            // TODO Do not use CommerceFactor; just use size of load
             score = applyCommerceFactor(score, settlement, CommerceType.TRANSPORT);
 
-            boolean inGarageAlready = settlement.getBuildingManager().isInGarage(vehicle);
+            boolean inGarageAlready = LoadVehicleMeta.isInsideLoad(settlement, vehicle);
             if (insideOnlyTasks || inGarageAlready) {
                 if (inGarageAlready) {
                     // If in Garage already then boost score
                     score.addModifier(GARAGED_MODIFIER, 2);
                 }
-                return new UnloadJob(owner, vehicle, false, score);
+                return new UnloadJob(owner, settlement, vehicle, false, score);
             }
-            return new UnloadJob(owner, vehicle, true, score);    
+            return new UnloadJob(owner, settlement, vehicle, true, score);    
         }
 
         return null;
@@ -158,6 +195,6 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
      * Creates an appropriate Unload job for a vehicle.
      */
     public static TaskJob createUnloadJob(Settlement settlement, Vehicle vehicle) {
-        return createUnloadJob(settlement, vehicle, false, null);
+        return new IndividualJob(vehicle, LoadVehicleMeta.isInsideLoad(settlement, vehicle), new RatingScore(BASE_SCORE)); 
     }
 }

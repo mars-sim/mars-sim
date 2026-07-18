@@ -51,10 +51,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		
 		private ResourceProcess process;
 		
-        public ToggleOffJob(SettlementMetaTask mt, Building processBuilding,
+        public ToggleOffJob(SettlementMetaTask mt, Settlement owner, Building processBuilding,
 						ResourceProcess process,
 						RatingScore score) {
-			super(mt, "Toggle Off "
+			super(mt, owner, "Toggle Off "
 								+ process.getProcessName(), processBuilding, score);
 			this.process = process;
         }
@@ -92,9 +92,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		private ResourceProcessSpec process;
 		private boolean useWaste;
 
-        public ToggleOnJob(SettlementMetaTask mt, boolean useWaste,
+		public ToggleOnJob(SettlementMetaTask mt, Settlement owner, boolean useWaste,
 							ResourceProcessSpec process, RatingScore score) {
-			super(mt, "Toggle On " + process.getName(), null, score);
+			super(mt, owner, "Toggle On " + process.getName(), null, score);
 			this.process = process;
 			this.useWaste = useWaste;
         }
@@ -207,7 +207,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		// Shuffle the list random to vary which process to pick first
 		Collections.shuffle(processes);
-		
+		var settlement = building.getSettlement();
+
 		for (ResourceProcess process : processes) {
 			// Avoid process that can't be toggled or no point toggling
 			if (process.canToggle() && !process.isWorkerAssigned()) {
@@ -215,7 +216,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (process.isProcessRunning()) {
 					
 					if (process.getOverallScore() == 0D) {
-						results.add(new ToggleOffJob(this, building, process, new RatingScore(100)));
+						results.add(new ToggleOffJob(this, settlement, building, process, new RatingScore(100)));
 						return;
 					}
 					// Allow a running process to stop once a sol in order to reduce wear and tear
@@ -228,7 +229,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 						score.addModifier("toggleTime", 0.1 + elapsed / 2000);
 					
 						if (score.getScore() >= 100) { 
-							results.add(new ToggleOffJob(this, building, process, score));
+							results.add(new ToggleOffJob(this, settlement, building, process, score));
 							return;
 						}
 					}
@@ -283,7 +284,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 			if (score.getScore() >= 1) {
 				score.applyRange(0, MAX_SCORE);
-				results.add(new ToggleOnJob(this, isWaste, spec, score));
+				results.add(new ToggleOnJob(this, settlement, isWaste, spec, score));
 			}
 		}
 

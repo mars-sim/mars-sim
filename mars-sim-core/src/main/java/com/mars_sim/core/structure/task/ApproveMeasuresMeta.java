@@ -36,8 +36,8 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
 		private static final long serialVersionUID = 1L;
 		private ReviewGoal goal;
 
-        public ApproveMeasuresJob(SettlementMetaTask owner, RatingScore score, int demand, ReviewGoal goal) {
-			super(owner, getGoalName(goal), null, score);
+        public ApproveMeasuresJob(SettlementMetaTask ownerTask, Settlement owner, RatingScore score, int demand, ReviewGoal goal) {
+			super(ownerTask, owner, getGoalName(goal), null, score);
 			setDemand(demand);
 			this.goal = goal;
         }
@@ -128,20 +128,20 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
 //			int levelDiff = settlement.getRationing().getLevelDiff();
 //			if (levelDiff != 0) {
 				RatingScore score = new RatingScore("water.rationing", 5 * BASE_SCORE);
-				tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.WATER_RATIONING));
+				tasks.add(new ApproveMeasuresJob(this, settlement, score, 1, ReviewGoal.WATER_RATIONING));
 //			}
 		}
 		
 		boolean iceFlag = settlement.isIceApprovalDue();
 		if (iceFlag) {
 			RatingScore score = new RatingScore("ice.probability", 5 * BASE_SCORE);  
-			tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.ICE_RESOURCE));
+			tasks.add(new ApproveMeasuresJob(this, settlement, score, 1, ReviewGoal.ICE_RESOURCE));
 		}
 
 		boolean regFlag = settlement.isRegolithApprovalDue();
 		if (regFlag) {
 			RatingScore score = new RatingScore("regolith.probability", 5 * BASE_SCORE);  
-			tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.REGOLITH_RESOURCE));
+			tasks.add(new ApproveMeasuresJob(this, settlement, score, 1, ReviewGoal.REGOLITH_RESOURCE));
 		}
 		
 		return tasks;

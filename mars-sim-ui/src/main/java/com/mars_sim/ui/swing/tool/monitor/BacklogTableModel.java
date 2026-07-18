@@ -6,12 +6,10 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
@@ -19,10 +17,12 @@ import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * This class models how SettlementTasks are organized and displayed
@@ -31,15 +31,14 @@ import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 @SuppressWarnings("serial")
 public class BacklogTableModel extends AbstractMonitorModel
 					implements EntityListener, EntityModel {
-	// Represents a row in the table
-	private record BacklogEntry(Settlement owner, SettlementTask task) implements Serializable {}
-
+	
 	private static final ColumnSpec[] COLUMNS;
 
 	private static final int DESC_COL = 0;
 	private static final int SETTLEMENT_COL = DESC_COL+1;
 	private static final int ENTITY_COL = SETTLEMENT_COL+1;
-	private static final int EVA_COL = ENTITY_COL+1;
+	private static final int CREATED_COL = ENTITY_COL+1;
+	private static final int EVA_COL = CREATED_COL+1;
 	private static final int SCOPE_COL = EVA_COL+1;
 	private static final int DEMAND_COL = SCOPE_COL+1;
 	static final int SCORE_COL = DEMAND_COL+1;
@@ -53,18 +52,17 @@ public class BacklogTableModel extends AbstractMonitorModel
 
 	static {
 		COLUMNS = new ColumnSpec[SCORE_COL+1];
-		COLUMNS[ENTITY_COL] = new ColumnSpec("Entity", String.class);
-		COLUMNS[SETTLEMENT_COL] = new ColumnSpec("Settlement", String.class);
+		COLUMNS[ENTITY_COL] = new ColumnSpec(Msg.getString("entity.name"), String.class);
+		COLUMNS[SETTLEMENT_COL] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
 		COLUMNS[DESC_COL] = new ColumnSpec("Description", String.class);
+		COLUMNS[CREATED_COL]  = new ColumnSpec("Created", MarsTime.class);
 		COLUMNS[DEMAND_COL]  = new ColumnSpec("Demand", Integer.class);
 		COLUMNS[EVA_COL]  = new ColumnSpec("EVA", String.class);
 		COLUMNS[SCOPE_COL]  = new ColumnSpec("Scope", String.class);
 		COLUMNS[SCORE_COL] = new ColumnSpec("Score", Double.class, ColumnSpec.STYLE_DIGIT2);
 	}
-
-	private boolean monitorSettlement = false;
 	
-	private List<BacklogEntry> tasks = Collections.emptyList();
+	private List<SettlementTask> tasks = Collections.emptyList();
 
 	/**
 	 * Constructor.
@@ -83,15 +81,42 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 */
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (event.getTarget() instanceof Settlement settlement
-				&& event.getSource() instanceof Settlement) {
-			String eventType = event.getType();
-			if ((SettlementTaskManager.BACKLOG_EVENT.equals(eventType)) && getSelectedSettlements().contains(settlement)) {
-				var newTasks = getTasks();
-	
-				// Reset the Tasks asynchronously in the Swing Dispatcher to avoid sorting clashes
-				SwingUtilities.invokeLater(() -> resetTasks(newTasks));
+		if (event.getTarget() instanceof SettlementTask st
+				&& event.getSource() instanceof Settlement s
+				&& getSelectedSettlements().contains(s)) {
+			switch(event.getType()) {
+				case SettlementTaskManager.NEWTASK_EVENT -> SwingHelper.runInEDT(() -> addTask(st));
+				case SettlementTaskManager.REMOVETASK_EVENT -> SwingHelper.runInEDT(() -> removeTask(st));
+				case SettlementTaskManager.UPDATETASK_EVENT -> SwingHelper.runInEDT(() -> updateTask(st));
+				default -> {
+					// Ignore other events
+				}
 			}
+		}
+	}
+
+	private void addTask(SettlementTask st) {
+		tasks.add(st);
+		fireTableRowsInserted(tasks.size()-1, tasks.size()-1);
+	}
+
+	private void removeTask(SettlementTask st) {
+		int index = tasks.indexOf(st);
+		if (index != -1) {
+			tasks.remove(index);
+			fireTableRowsDeleted(index, index);
+		}
+	}
+
+	private void updateTask(SettlementTask st) {
+		int index = tasks.indexOf(st);
+		if (index != -1) {
+			tasks.set(index, st);
+
+			// Just update the changed cells, i.e. parameters
+			fireTableCellUpdated(index, SCORE_COL);
+			fireTableCellUpdated(index, DEMAND_COL);
+			fireTableCellUpdated(index, CREATED_COL);
 		}
 	}
 
@@ -100,7 +125,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 */
 	@Override
 	public Entity getAssociatedEntity(int row) {
-		return tasks.get(row).task().getFocus();
+		return tasks.get(row).getFocus();
 	}
 
 	/**
@@ -111,14 +136,11 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 */
 	@Override
     public void enableListeners(boolean activate) {
-		if (activate != monitorSettlement) {
-			if (activate) {
-				getSelectedSettlements().forEach(s -> s.addEntityListener(this));
-			}
-			else {
-				getSelectedSettlements().forEach(s -> s.removeEntityListener(this));
-			}
-			monitorSettlement = activate;
+		if (activate) {
+			getSelectedSettlements().forEach(s -> s.addEntityListener(this));
+		}
+		else {
+			getSelectedSettlements().forEach(s -> s.removeEntityListener(this));
 		}
 	}
 
@@ -147,9 +169,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 		fireTableDataChanged();
 			
 		// Add table as listener to each settlement.
-		if (monitorSettlement) {
-			selectedSettlements.forEach(s -> s.addEntityListener(this));
-		}
+		selectedSettlements.forEach(s -> s.addEntityListener(this));
 
 		return true;
     }
@@ -159,33 +179,10 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 * The SettlementTask does hold the Settlement reference so this is record in
 	 * the artificial BacklogEntry record.
 	 */
-	private List<BacklogEntry> getTasks() {
-		return getSelectedSettlements().stream()
-					.flatMap(s -> s.getTaskManager().getAvailableTasks().stream()
-					.map(e -> new BacklogEntry(s, e)))
-					.toList();
-	}
-
-    /**
-     * Resets tasks.
-     */
-	private void resetTasks(List<BacklogEntry> newTasks) {
-		List<BacklogEntry> oldTasks = tasks;
-		tasks = newTasks;
-
-		// Find out how many rows have been added/deleted
-		int delta = tasks.size() - oldTasks.size();
-		if (delta < 0) {
-			// Row deleted
-			fireTableRowsDeleted(tasks.size(), oldTasks.size()-1);
-		}
-		else if (delta > 0) {
-			// Rows added
-			fireTableRowsInserted(oldTasks.size(), tasks.size()-1);
-		}
-
-		if (!tasks.isEmpty())
-			fireTableRowsUpdated(0, tasks.size()-1);
+	private List<SettlementTask> getTasks() {
+		List<SettlementTask> newTasks = new ArrayList<>();
+		getSelectedSettlements().forEach(s -> newTasks.addAll(s.getTaskManager().getAvailableTasks()));
+		return newTasks;
 	}
 
 	@Override
@@ -203,7 +200,7 @@ public class BacklogTableModel extends AbstractMonitorModel
     public String getToolTipAt(int rowIndex, int columnIndex) {
 		String result = null;
 		if ((columnIndex == SCORE_COL) && (rowIndex < tasks.size())) {
-			SettlementTask selectedTask = tasks.get(rowIndex).task;
+			SettlementTask selectedTask = tasks.get(rowIndex);
 
 			StringBuilder builder = new StringBuilder();
 			builder.append("<html><b>Task:").append(selectedTask.getName()).append("</b><br>");
@@ -229,8 +226,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 			return null;
 		}
 
-		var selectedRow = tasks.get(rowIndex);
-		var selectedTask = selectedRow.task;
+		var selectedTask = tasks.get(rowIndex);
 		switch(columnIndex) {
 			case ENTITY_COL:
 				Entity des = selectedTask.getFocus();
@@ -238,7 +234,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 					return des.getName();
 				return null;
 			case SETTLEMENT_COL:
-				return selectedRow.owner.getName();
+				return selectedTask.getOwner().getName();
 			case DESC_COL:
 				return selectedTask.getShortName();
 			case EVA_COL:
@@ -249,6 +245,8 @@ public class BacklogTableModel extends AbstractMonitorModel
 					case NONWORK_HOUR -> OFF_DUTY_ONLY;
 					case WORK_HOUR -> ON_DUTY_ONLY;
 				};
+			case CREATED_COL:
+				return selectedTask.getCreatedOn();
 			case DEMAND_COL:
 				return selectedTask.getDemand();
 			case SCORE_COL:

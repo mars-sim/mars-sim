@@ -35,8 +35,8 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
 		
 		private static final long serialVersionUID = 1L;
 
-        public PlanTaskJob(SettlementMetaTask owner, RatingScore score) {
-            super(owner, "Plan Mission", null, score);
+        public PlanTaskJob(SettlementMetaTask ownerTask, Settlement owner, RatingScore score) {
+            super(ownerTask, owner, "Plan Mission", null, score);
         }
 
         @Override
@@ -78,7 +78,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
                                                 MissionLimitParameters.TOTAL_MISSIONS, 0);
         int shortfall = optimalMissions - settlementMissions;
         if (shortfall > 0) {
-            results.add(new PlanTaskJob(this, new RatingScore(shortfall * START_FACTOR)));
+            results.add(new PlanTaskJob(this, settlement, new RatingScore(shortfall * START_FACTOR)));
         }
         return results;
     }
