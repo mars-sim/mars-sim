@@ -35,7 +35,6 @@ import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Meta task for the ToggleResourceProcess task.
@@ -209,18 +208,28 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		Collections.shuffle(processes);
 		var settlement = building.getSettlement();
 
+		int count = 0;
+		
+		int size = processes.size();
+		
 		for (ResourceProcess process : processes) {
 			// Avoid process that can't be toggled or no point toggling
 			if (process.canToggle() && !process.isWorkerAssigned()) {
 
 				if (process.isProcessRunning()) {
 					
+					count++;
+					
 					if (process.getOverallScore() == 0D) {
 						results.add(new ToggleOffJob(this, settlement, building, process, new RatingScore(100)));
 						return;
 					}
-					// Allow a running process to stop once a sol in order to reduce wear and tear
-					else if (RandomUtil.getRandomInt(20) == 1) {
+					// Note: Allow a running process to stop once in a while in order to reduce wear and tear
+					// Reduce the likelihood of having to submit ToggleOffJob all the time
+					else if (count > size - 1) {
+
+						count = 0;
+						
 						var score = new RatingScore(0);
 
 						var elapsed = getMarsTime().getTimeDiff(process.getToggleDue());
@@ -403,25 +412,25 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (processSpec.isAmbientInputResource(resource)) {
-					// e.g. For CO2, limit the score
+					// Used mostly for CO2 only 
 					score += mrate / MEGA_HIGH_BIAS;
-				} else if (ResourceUtil.isTier1Resource(resource)) { 	// water, hydrogen
-					score += mrate * HIGH_BIAS;
-				} else if (ResourceUtil.isConstructionResource(resource)// cement, concrete, lime, brick
-					) { 		
-					score += mrate / MID_BIAS;
-				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil 
-					|| ResourceUtil.isTier3Resource(resource)) {  		// carbon dioxide
+				} else if (ResourceUtil.isRawMaterial(resource)   			// all ores, all minerals, sand)
+					|| ResourceUtil.isChemical(resource)) {					// polyester resin, ethylene, ethylene glycol, styrene, propylene 
+					score += mrate / MEGA_HIGH_BIAS;
+				} else if (ResourceUtil.isDerivedResource(resource) 		// glucose, leaves, soil 
+					|| ResourceUtil.isTier3Resource(resource)) {  			// oxygen
 					score += mrate / HIGH_BIAS;
-				} else if (ResourceUtil.isTier0Resource(resource) 		// oxygen, ice, brine water, rock salt
-					|| ResourceUtil.isInSitu(resource)					// all regolith types
-					|| ResourceUtil.isWasteProduct(resource)) { 		// CO, grey water, black water, * waste
+				} else if (ResourceUtil.isTier0Resource(resource) 			// ice, brine water, rock salt
+					|| ResourceUtil.isInSitu(resource)						// all regolith types
+					|| ResourceUtil.isWasteProduct(resource)) { 			// CO, grey water, black water, * waste
 					score += mrate / SUPER_HIGH_BIAS;
-				} if (ResourceUtil.isRawMaterial(resource)   			// all ores, all minerals, sand)
-					|| ResourceUtil.isChemical(resource)) {				// polyester resin, ethylene, ethylene glycol, styrene, propylene 
-					score += mrate / MEGA_HIGH_BIAS;
-				}
-				else {
+				} else if (ResourceUtil.isTier2Resource(resource)) { 		// water
+					score += mrate / LOW_BIAS;
+				} else if (ResourceUtil.isTier1Resource(resource)) { 		// hydrogen
+					score += mrate * HIGH_BIAS;
+				} else if (ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick	
+					score += mrate / MID_BIAS;
+				} else {
 					score += mrate;
 				}
 			}
@@ -459,25 +468,27 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
-					score += mrate * MID_BIAS;
-				} else if (ResourceUtil.isTier1Resource(resource) 		// water, hydrogen
-					|| ResourceUtil.isDerivedResource(resource) 		// glucose, leaves, soil
-					|| ResourceUtil.isCriticalResource(resource)		// glass
-					) {
-					score += mrate * HIGH_BIAS;
-				} else if (ResourceUtil.isTier0Resource(resource) 		// oxygen, ice, brine water, rock salt
-				    || ResourceUtil.isWasteProduct(resource)			// CO, grey/black water, compost, all waste, carbon monoxide
-				    || ResourceUtil.isChemical(resource)				// ethylene, ethylene glycol, styrene, propylene, polystyrene, polyethylene, polypropylene
-					) { 				
-					score += mrate * SUPER_HIGH_BIAS;
+					score += mrate * LOW_BIAS;
 				} else if (ResourceUtil.isRawMaterial(resource)			// all ores, all minerals, sand
-					|| ResourceUtil.isTier3Resource(resource)			// co2
+					|| ResourceUtil.isTier3Resource(resource)			// oxygen
 					|| ResourceUtil.isRawElement(resource)      		// carbon, iron powder, iron oxide
 					|| ResourceUtil.isInSitu(resource)					// all regolith types
 					|| ResourceUtil.isFuel(resource) 					// methane
 					|| ResourceUtil.isConstructionResource(resource)	// cement, concrete, lime, brick, gypsum plaster
 					) { 				
-						score += mrate * MEGA_HIGH_BIAS;					
+					score += mrate * MEGA_HIGH_BIAS;					
+				} else if (ResourceUtil.isTier0Resource(resource) 		// ice, brine water, rock salt
+					|| ResourceUtil.isWasteProduct(resource)			// CO, grey/black water, compost, all waste, carbon monoxide
+					|| ResourceUtil.isChemical(resource)				// ethylene, ethylene glycol, styrene, propylene, polystyrene, polyethylene, polypropylene
+					) { 				
+					score += mrate * SUPER_HIGH_BIAS;
+				} else if (ResourceUtil.isTier1Resource(resource) 		// hydrogen
+					|| ResourceUtil.isDerivedResource(resource) 		// glucose, leaves, soil
+					|| ResourceUtil.isCriticalResource(resource)		// glass
+					) {
+					score += mrate * HIGH_BIAS;
+				} else if (ResourceUtil.isTier2Resource(resource)) { 	// water
+					score += mrate * MID_BIAS;
 				} else
 					score += mrate;
 			}

@@ -8,14 +8,12 @@ package com.mars_sim.core.resourceprocess;
 
 import java.util.Set;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -44,11 +42,13 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private boolean isRunning;
 	
 	private int levelOfEffort = 3;
+	
 	/** The time accumulated [in millisols]. */
 	private double accumulatedTime;
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
 	private double dutyTime;
+	private double cumulativeMillisols;
 	
 	private ResourceProcessAssessment assessment;
 
@@ -60,9 +60,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private Building building;
 
 	public static final ResourceProcessAssessment DEFAULT_ASSESSMENT = new ResourceProcessAssessment(0, 0, 0, false);
-	
-	public static final MasterClock masterClock = Simulation.instance().getMasterClock(); 
-	
 	
 	/**
 	 * Constructor.
@@ -231,7 +228,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @return
 	 */
 	public double getPercentDuty() {
-		return dutyTime / masterClock.getMarsTime().getLandingMillisols() * 100; 
+		return dutyTime / cumulativeMillisols * 100; 
 	}
 	
 	/**
@@ -349,11 +346,14 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 *
 	 * @param pulse
 	 * @param productionLevel proportion of max process rate (0.0D - 1.0D)
+	 * @param cumulativeMillisols
 	 * @throws Exception if error processing resources.
 	 */
-	public void processResources(ClockPulse pulse, double productionLevel) {
+	public void processResources(ClockPulse pulse, double productionLevel, double cumulativeMillisols) {
 		double time = pulse.getElapsed();
 
+		this.cumulativeMillisols = cumulativeMillisols;
+		
 		if ((productionLevel < 0D) || (productionLevel > 1D) || (time < SMALL_AMOUNT))
 			return;
 
@@ -399,13 +399,13 @@ public class ResourceProcess implements ScheduledEventHandler {
 						// Retrieve the right amount
 						if (stored > SMALL_AMOUNT) {
 							if (required > stored) {
+								required = stored;
+								// Alter the amount required to whatever required amount
+								// and retrieve that amount
+								host.retrieveAmountResource(resource, required);							
 								// Halt the process now 
 								resourceProblem(resource, false, required, stored);
-
-								required = stored;
-								// Alter the amount required to whatever available stored amount
-								// and retrieve that amount
-								host.retrieveAmountResource(resource, required);
+								
 								break;
 							}
 							else
@@ -414,6 +414,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 						else {
 							// Halt the process now 
 							resourceProblem(resource, false, required, stored);
+							
 							break;
 						}
 					}
@@ -432,21 +433,24 @@ public class ResourceProcess implements ScheduledEventHandler {
 					// Store the right amount
 					if (remainingCap > SMALL_AMOUNT) {
 						if (required > remainingCap) {
+							required = remainingCap;
+							// Alter the amount required to whatever required amount
+							// and store that amount
+							host.storeAmountResource(resource, required);
 							// Halt the process now 
 							resourceProblem(resource, true, required, remainingCap);
-
-							required = remainingCap;
-							host.storeAmountResource(resource, required);
-
+							
 							break;
 						}
-						else
-							host.storeAmountResource(resource, required);
+						else {
+							host.storeAmountResource(resource, required);						
+						}
 						
 					}
 					else {
 						// Halt the process now 
 						resourceProblem(resource, true, required, remainingCap);
+						
 						break;
 					}
 				}
@@ -463,7 +467,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @param available
 	 */
 	private void resourceProblem(int resource, boolean capacity, double required, double available) {
-		logger.fine(building, 30_000,
+		logger.info(building, 10_000,
 					(capacity ? "No capacity '" : "Not enough '")
 					+ ResourceUtil.findAmountResourceName(resource)
 					+ "' for '" + processSpec.getName() + "'. Required: "

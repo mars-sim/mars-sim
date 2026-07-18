@@ -23,7 +23,6 @@ import com.mars_sim.core.person.ai.fav.Favorite;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
@@ -54,19 +53,17 @@ class TabPanelFavorite extends EntityTableTabPanel<Person> {
 	protected JPanel createInfoPanel() {
 		
 		JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
-		
-		// Prepare SpringLayout for info panel.
-		AttributePanel activityPanel = new AttributePanel(1);
-		mainPanel.add(activityPanel, BorderLayout.NORTH);
-		
-		Favorite fav = getEntity().getFavorite();
-		activityPanel.addTextField(Msg.getString("TabPanelFavorite.activity"), fav.getFavoriteActivity().getName(), null);
 
-				
+		Favorite fav = getEntity().getFavorite();
+
+		String activity = fav.getFavoriteActivity().getName();
+		var activityBlock = SwingHelper.createTextBlock(Msg.getString("TabPanelFavorite.activity"), activity);
+		mainPanel.add(activityBlock, BorderLayout.NORTH);
+
 		String dishes = fav.getFavoriteDishes().stream().collect(Collectors.joining(", "));	
 		var dishBlock = SwingHelper.createTextBlock(Msg.getString("TabPanelFavorite.dishes"), dishes);
-		
 		mainPanel.add(dishBlock, BorderLayout.CENTER);
+
 		return mainPanel;
 	}
 

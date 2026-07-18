@@ -52,7 +52,6 @@ class TabPanelThermal extends EntityTableTabPanel<Settlement>
 	
 	private static final String HEAT_ICON = "heat";
 
-	
 	private JCheckBox checkbox;
 	
 	private JDoubleLabel heatGenElectricLabel;
@@ -103,34 +102,40 @@ class TabPanelThermal extends EntityTableTabPanel<Settlement>
 
 		// Prepare total heat load label.
 		totHeatLoadLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, thermalSystem.getTotalHeatReq());
-		heatInfoPanel.addLabelledItem(Msg.getString("TabPanelThermalSystem.totalHeatLoad"), 
+		heatInfoPanel.addLabelledItem(
+				Msg.getString("TabPanelThermalSystem.totalHeatLoad"), //$NON-NLS-1$
 				totHeatLoadLabel,
 				Msg.getString("TabPanelThermalSystem.totalHeatLoad.tooltip")); //$NON-NLS-1$
 
 		// Prepare total heat gen label.
 		totHeatGenLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, thermalSystem.getTotalHeatGen());
-		heatInfoPanel.addLabelledItem(Msg.getString("TabPanelThermalSystem.totalHeatGen"), 
+		heatInfoPanel.addLabelledItem(
+				Msg.getString("TabPanelThermalSystem.totalHeatGen"), //$NON-NLS-1$
 					totHeatGenLabel,
 					Msg.getString("TabPanelThermalSystem.totalHeatGen.tooltip")); //$NON-NLS-1$
 
 		electricEffTF = new JDoubleLabel(StyleManager.DECIMAL_PERC, getAverageEfficiencyElectricHeat() * 100D);
-		heatInfoPanel.addLabelledItem(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency"),
+		heatInfoPanel.addLabelledItem(
+				Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency"),//$NON-NLS-1$
 					electricEffTF,
 					Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency.tooltip")); //$NON-NLS-1$
 
 		solarEffTF = new JDoubleLabel(StyleManager.DECIMAL_PERC, getAverageEfficiencySolarHeating() * 100D);
-		heatInfoPanel.addLabelledItem(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency"),
+		heatInfoPanel.addLabelledItem(
+				Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency"), //$NON-NLS-1$
 					solarEffTF,	Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency.tooltip")); //$NON-NLS-1$		
 
 		// Prepare degradation rate label.
 		double degradRate = SolarHeatingSource.DEGRADATION_RATE_PER_SOL;
-		heatInfoPanel.addTextField(Msg.getString("TabPanelThermalSystem.degradRate"),
+		heatInfoPanel.addTextField(
+				Msg.getString("TabPanelThermalSystem.degradRate"), //$NON-NLS-1$
 							StyleManager.DECIMAL_PERC.format(degradRate*100D),
 							Msg.getString("TabPanelThermalSystem.degradRate.tooltip")); //$NON-NLS-1$	
 
 		// Prepare power generated label.
 		powerGenLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, thermalSystem.getTotalPowerGen());
-		heatInfoPanel.addLabelledItem(Msg.getString("TabPanelThermalSystem.totalPowerGen"),
+		heatInfoPanel.addLabelledItem(
+				Msg.getString("TabPanelThermalSystem.totalPowerGen"), //$NON-NLS-1$
 					powerGenLabel,
 					Msg.getString("TabPanelThermalSystem.totalPowerGen.tooltip")); //$NON-NLS-1$
 
@@ -171,9 +176,11 @@ class TabPanelThermal extends EntityTableTabPanel<Settlement>
 	}
 
 	private static final JLabel generateHeatLabel(String key) {
-		JLabel label = new JLabel(Msg.getString("TabPanelThermalSystem." + key)); //$NON-NLS-1$
+		JLabel label = new JLabel(
+				Msg.getString("TabPanelThermalSystem." + key)); //$NON-NLS-1$
 		label.setFont(StyleManager.getLabelFont());
-		label.setToolTipText(Msg.getString("TabPanelThermalSystem." + key + ".tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+		label.setToolTipText(
+				Msg.getString("TabPanelThermalSystem." + key + ".tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
 		return label;
 	}
 

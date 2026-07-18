@@ -40,7 +40,6 @@ import com.mars_sim.ui.swing.entitywindow.structure.ResourceProcessPanel;
 /**
  * A tab panel for displaying all of the resource processes in a settlement.
  */
-@SuppressWarnings("serial")
 class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		implements ActionListener, TemporalComponent {
 	
@@ -51,9 +50,11 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 	private static final String[] LEVEL_NAMES = {"1", "2", "3", "4", "5"}; 
 	
 	private JComboBox<String> levelComboBox;
-
+	
+	private JLabel dutyCycleLabel;
+	
 	private int level;
-
+	
 	private ResourceProcessPanel processPanel;
 
 	/**
@@ -75,31 +76,38 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 	@Override
 	protected void buildUI(JPanel content) {
 		var settlement = getEntity();
+			
+		double sum = 0;
+		double size = 0;
 		BuildingManager mgr = settlement.getBuildingManager();
 		Map<Building, List<ResourceProcess>> processes = new HashMap<>();
 		for (Building building : mgr.getBuildings(FunctionType.RESOURCE_PROCESSING)) {
 			ResourceProcessing processing = building.getResourceProcessing();
+			size++;
+			sum += processing.getOverallPercentDuty();
 			processes.put(building, processing.getProcesses());
 		}
-
+		if (size == 0) 
+			size = 1;
+		double averagePercentDuty = sum / size;
+		
 		// Prepare process list panel
 		processPanel = new ResourceProcessPanel(processes, getContext());
 		processPanel.setPreferredSize(new Dimension(160, 120));
 		content.add(processPanel, BorderLayout.CENTER);
 		
 		// Create override check box panel.
-		JPanel topPanel = new JPanel(new GridLayout(1, 2, 0, 0));
+		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		content.add(topPanel, BorderLayout.NORTH);
 		
-		JPanel gridPanel = new JPanel(new GridLayout(1, 2));
+		JPanel gridPanel = new JPanel(new GridLayout(1, 3));
 		topPanel.add(gridPanel);
-		
+				
 		// Create level panel.
 		JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		levelPanel.setAlignmentY(Component.TOP_ALIGNMENT);
 		gridPanel.add(levelPanel);
 		
-		JLabel levelLabel = new JLabel("Level Of Effort :");
+		JLabel levelLabel = new JLabel("Effort Lvl:");
 		levelLabel.setToolTipText("How much effort devoted to producing output resources");
 		levelPanel.add(levelLabel);
 			
@@ -110,6 +118,13 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		levelComboBox.addActionListener(this);
         
 		levelPanel.add(levelComboBox);
+		
+		// Create duty cycle panel.
+		JPanel dutyCyclePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		gridPanel.add(dutyCyclePanel);
+		
+		dutyCycleLabel = new JLabel("Overall Duty Cycle: " + Math.round(averagePercentDuty*10.0)/10.0 + "%");
+		dutyCyclePanel.add(dutyCycleLabel);
 		
 		// Create override check box panel.
 		JPanel overrideCheckboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -158,5 +173,19 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
 		processPanel.update();
+		
+		double sum = 0;
+		double size = 0;
+		BuildingManager mgr = getEntity().getBuildingManager();
+		for (Building building : mgr.getBuildings(FunctionType.RESOURCE_PROCESSING)) {
+			ResourceProcessing processing = building.getResourceProcessing();
+			size++;
+			sum += processing.getOverallPercentDuty();
+		}
+		if (size == 0) 
+			size = 1;
+		double averagePercentDuty = sum / size;
+		
+		dutyCycleLabel.setText("Overall Duty Cycle: " + Math.round(averagePercentDuty*10.0)/10.0 + "%");
 	}
 }

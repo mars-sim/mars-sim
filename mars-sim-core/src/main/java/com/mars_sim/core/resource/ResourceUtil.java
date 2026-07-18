@@ -516,7 +516,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isTier0Resource(int resource) {
 		return switch (resource) {
-			case OXYGEN_ID, ICE_ID, BRINE_WATER_ID, ROCK_SALT_ID -> true;
+			case ICE_ID, BRINE_WATER_ID, ROCK_SALT_ID -> true;
 			default -> false;
 		};
 	}
@@ -529,11 +529,24 @@ public class ResourceUtil {
 	 */
 	public static boolean isTier1Resource(int resource) {
 		return switch (resource) {
-			case WATER_ID, HYDROGEN_ID -> true;
+			case HYDROGEN_ID -> true;
 			default -> false;
 		};
 	}
 
+	/**
+	 * Is this tier 2 resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isTier2Resource(int resource) {
+		return switch (resource) {
+			case WATER_ID -> true;
+			default -> false;
+		};
+	}
+	
 	
 	/**
 	 * Is this tier 3 resource ?
@@ -543,7 +556,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isTier3Resource(int resource) {
 		return switch (resource) {
-			case CO2_ID -> true;
+			case OXYGEN_ID -> true;
 			default -> false;
 		};
 	}

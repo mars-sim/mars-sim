@@ -30,12 +30,11 @@ public abstract class ResourceProcessor extends Function {
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 
-	/* Time in millisols. */
-	private double time;
-	
 	private double lowPowerProcessingLevel;
 
 	private List<ResourceProcess> processes;
+	
+	
 
 	/**
 	 * Constructor.
@@ -134,6 +133,24 @@ public abstract class ResourceProcessor extends Function {
 	}
 
 	/**
+	 * Gets the overall duty cycle percentage.
+	 * 
+	 * @return
+	 */
+	public double getOverallPercentDuty() {
+		double overall = 0;
+		int size = 0;
+		for (ResourceProcess rp: getProcesses()) {
+			size++;
+			overall += rp.getPercentDuty();
+		}
+		if (size == 0) 
+			size = 1;
+		
+		return overall / size;
+	}
+	
+	/**
 	 * Time passing for the building.
 	 *
 	 * @param accumulatedTime amount of time passing (in millisols)
@@ -142,10 +159,12 @@ public abstract class ResourceProcessor extends Function {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
+		
+		double cumulativeMillisols = masterClock.getMarsTime().getLandingMillisols();
+		
 		if (valid) {
-			time = pulse.getElapsed();
-			
 			double productionLevel = 0D;
+			
 			if (getBuilding().getPowerMonitor().getPowerMode() == PowerMode.FULL_POWER)
 				productionLevel = 1D;
 			else if (getBuilding().getPowerMonitor().getPowerMode() == PowerMode.LOW_POWER) {
@@ -154,7 +173,7 @@ public abstract class ResourceProcessor extends Function {
 			}
 			// Run each resource process.
 			for (ResourceProcess p : processes) {
-				p.processResources(pulse, productionLevel);
+				p.processResources(pulse, productionLevel, cumulativeMillisols);
 			}
 		}
 		return valid;
