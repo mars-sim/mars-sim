@@ -26,7 +26,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 	implements FilteredMapLayer {
 
 	/**
-	 * Map hotspot for any explroed sites visible
+	 * This class maps the hotspots for any explored sites visible.
 	 */
 	private class SiteHotspot extends MapHotspot {
 
@@ -62,25 +62,26 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 	public static final String RESERVED_FILTER = "Reserved";
 	public static final String UNEXPLORED_FILTER = "Unexplored"; 
 
-	private static Map<String,Icon> filterIcons = null;
+	private static Map<String, Icon> filterIcons = null;
 
 	// Domain members
 	private Component displayComponent;
 	private Icon navpointIconSelected;
 	private MineralSite selectedSite;
 	private SurfaceFeatures surfaceFeatures;
+	
 	private Set<String> filters = new HashSet<>();
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param displayComponent the display component.
+	 * @param panel the display component.
 	 */
-	public ExploredSiteMapLayer(MapPanel displayComponent) {
+	public ExploredSiteMapLayer(MapPanel panel) {
 		super("Explored Site");
 
 		// Initialize domain data.
-		this.displayComponent = displayComponent;
+		this.displayComponent = panel;
 		navpointIconSelected = ImageLoader.getIconByName(SELECTED_ICON_NAME);
 
 		filters.add(CLAIMED_FILTER);
@@ -88,7 +89,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 
 		selectedSite = null;
 
-		surfaceFeatures = displayComponent.getDesktop().getSimulation().getSurfaceFeatures();
+		surfaceFeatures = panel.getDesktop().getSimulation().getSurfaceFeatures();
 	}
 
 	/**
@@ -101,7 +102,8 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 	}
 
 	/**
-     * Return a list of features that are within the focus specified
+     * Returns a list of features that are within the focus specified.
+     * 
      * @param center Center of the viewpoint
      * @param arcAngle Angle of the viewpoint
      * @return
@@ -111,7 +113,8 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 	}
 	
 	/**
-     * Display a explored site on the map using a Graphic at a particular point.
+     * Displays a explored site on the map using a Graphic at a particular point.
+     * 
      * @param site Feature to display
      * @param location Location on the Graphic
      * @param g Graphic for drawing
@@ -122,7 +125,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
     protected MapHotspot displayFeature(MineralSite site, IntPoint location, Graphics2D g, boolean isColourful) {
 		Icon siteIcon = null;
 
-		// Work out the precendence of the site to select the icon
+		// Work out the precedence of the site to select the icon
 		if (site.equals(selectedSite)) {
 			siteIcon = navpointIconSelected; 
 		}
@@ -138,7 +141,7 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 				siteFilter = EXPLORED_FILTER;
 			}
 
-			// Check against fitlers
+			// Check against filters
 			if (!filters.contains(siteFilter)) {
 				return null;
 			}
@@ -163,10 +166,11 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 	}
 
 	/**
-	 * Get the details of the icons associated to different filters.
+	 * Gets the details of the icons associated to different filters.
+	 * 
 	 * @return
 	 */
-	private static final Map<String,Icon> getFilterIcons() {
+	private static final Map<String, Icon> getFilterIcons() {
 		if (filterIcons == null) {
 			filterIcons = new HashMap<>();
 			filterIcons.put(EXPLORED_FILTER,  ImageLoader.getIconByName("map/flag_smallgreen")); 
@@ -178,7 +182,8 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 	}
 
 	/**
-	 * Get a list of the filters the Explored layer supports.
+	 * Gets a list of the filters the Explored layer supports.
+	 * 
 	 * @return List of filters supported.
 	 */
 	@Override
@@ -189,7 +194,8 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 	}
 
 	/**
-	 * Update the state of a filter for explroed sites
+	 * Updates the state of a filter for explored sites.
+	 * 
 	 * @param name Name of the filter
 	 * @param display New display state of filter.
 	 */

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceProcessPanel.java
- * @date 2024-06-09
+ * @date 2026-07-16
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.entitywindow.structure;
@@ -49,13 +49,18 @@ public class ResourceProcessPanel extends JPanel {
 
     private static final String KG_SOL = " kg/sol";
 	private static final String BR = "<br>";
-	private static final String INPUTS = "&emsp;&emsp;&nbsp;Inputs:&emsp;";
-	private static final String OUTPUTS = "&emsp;&nbsp;&nbsp;Outputs:&emsp;";
-	private static final String SPACES = "&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;";
-	private static final String PROCESS = "&emsp;&nbsp;Process:&emsp;";
-	private static final String BUILDING_HEADER = "&emsp;&nbsp;Building:&emsp;";
-	private static final String POWER_REQ = "Power Req:&emsp;";
-	private static final String NOTE = "&emsp;<i>Note:  * denotes an ambient resource</i>";
+ 	private static final String NON_BREAKING_SPACE = "&nbsp;";
+	private static final String EN_SPACE = "&ensp;";
+ 	private static final String EM_SPACE = "&emsp;"; // typically twice as wide as EN_SPACE or four times as wide as NON_BREAKING_SPACE
+	private static final String TABS = EM_SPACE + EM_SPACE + EM_SPACE + EM_SPACE + EM_SPACE + EM_SPACE + EN_SPACE; //"&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;";
+	
+	private static final String INPUTS = EM_SPACE + EM_SPACE + NON_BREAKING_SPACE + "Inputs:" + EM_SPACE;
+	private static final String OUTPUTS = EM_SPACE + NON_BREAKING_SPACE + "Outputs:" + EM_SPACE;
+
+	private static final String PROCESS = EM_SPACE + NON_BREAKING_SPACE + "Process:" + EM_SPACE;
+	private static final String BUILDING_HEADER = EM_SPACE + NON_BREAKING_SPACE + "Building:" + EM_SPACE;
+	private static final String POWER_REQ = "Power Req:" + EM_SPACE;
+	private static final String NOTE = EM_SPACE + "<i>Note:  * denotes an ambient resource</i>";
 
     /**
      * Private table model to manage the Resource Processes. 
@@ -67,9 +72,11 @@ public class ResourceProcessPanel extends JPanel {
 		private static final int RUNNING_STATE = 0;
         private static final int BUILDING_NAME = 1;		
         private static final int PROCESS_NAME = 2;
-        private static final int INPUT_SCORE = 3;
-        private static final int OUTPUT_SCORE = 4;
-        private static final int SCORE = 5;
+        private static final int DUTY_PERCENT = 3;
+        private static final int INPUT_SCORE = 4;
+        private static final int OUTPUT_SCORE = 5;
+        private static final int SCORE = 6;
+
 
         private static final String BUILDING = Msg.getString("building.singular");
         private static final String BUILDING_TOOLTIP = Msg.getString("entity.doubleClick");
@@ -116,7 +123,7 @@ public class ResourceProcessPanel extends JPanel {
 
         @Override
 		public int getColumnCount() {
-        	return 6;
+        	return 7;
 		}
 
         @Override
@@ -129,7 +136,8 @@ public class ResourceProcessPanel extends JPanel {
             switch(columnIndex) {
                 case RUNNING_STATE: return ResourceProcess.ProcessState.class;
                 case BUILDING_NAME: return String.class;
-                case PROCESS_NAME: return String.class;                
+                case PROCESS_NAME: return String.class;
+                case DUTY_PERCENT: return Double.class; 
                 case INPUT_SCORE: return Double.class;
                 case OUTPUT_SCORE: return Double.class;
                 case SCORE: return Double.class;
@@ -144,6 +152,7 @@ public class ResourceProcessPanel extends JPanel {
                 case RUNNING_STATE: return "S";
                 case BUILDING_NAME: return BUILDING;
                 case PROCESS_NAME: return "Process";
+                case DUTY_PERCENT: return "Duty %";
                 case INPUT_SCORE: return "In";
                 case OUTPUT_SCORE: return "Out";
                 case SCORE: return "Score";
@@ -164,8 +173,9 @@ public class ResourceProcessPanel extends JPanel {
             ResourceProcess p = processes.get(row);
             switch(column) {
                 case RUNNING_STATE: return p.getState();
-                case BUILDING_NAME: return getBuilding(row).getName();           
+                case BUILDING_NAME: return getBuilding(row).getName();
                 case PROCESS_NAME: return p.getProcessName();
+                case DUTY_PERCENT: return getFormattedScore(p.getPercentDuty());
                 case INPUT_SCORE: return getFormattedScore(p.getInputScore());
                 case OUTPUT_SCORE: return getFormattedScore(p.getOutputScore());
                 case SCORE: return getFormattedScore(p.getOverallScore());
@@ -192,6 +202,15 @@ public class ResourceProcessPanel extends JPanel {
          */
         ResourceProcess getProcess(int rowIndex) {
             return processes.get(rowIndex);
+        }
+        
+        /**
+         * Gets a list of processes.
+         * 
+         * @return
+         */
+        List<ResourceProcess> getProcesses() {
+        	return processes;
         }
 
         /**
@@ -248,7 +267,7 @@ public class ResourceProcessPanel extends JPanel {
             // Future: Use another tool tip manager to align text to improve tooltip readability			
             result.append(PROCESS).append(process.getProcessName()).append(BR);
             result.append(BUILDING_HEADER).append(building.getName()).append(BR);
-            result.append(POWER_REQ).append(StyleManager.DECIMAL_KW.format(process.getPowerRequired()))
+            result.append(POWER_REQ).append(StyleManager.DECIMAL_KW.format(process.getkWhRequired()))
             .append(BR);
 
             result.append(INPUTS);
@@ -256,7 +275,7 @@ public class ResourceProcessPanel extends JPanel {
             boolean hasAmbient = false;
             for (Integer resource: process.getInputResources()) {
                 if (!firstItem) 
-                    result.append(SPACES);
+                    result.append(TABS);
                 double fullRate = process.getBaseFullInputRate(resource) * 1000D;
                 String rateString = StyleManager.DECIMAL_PLACES2.format(fullRate);
 
@@ -265,7 +284,7 @@ public class ResourceProcessPanel extends JPanel {
                     result.append("*");
                     hasAmbient = true;
                 }
-                result.append(" @ ").append(rateString).append(KG_SOL).append(BR);
+                result.append(" - ").append(rateString).append(KG_SOL).append(BR);
                 firstItem = false;    
             }
 
@@ -273,11 +292,11 @@ public class ResourceProcessPanel extends JPanel {
             firstItem = true;
             for (Integer resource : process.getOutputResources()) {
                 if (!firstItem)
-                    result.append(SPACES);
+                    result.append(TABS);
                 double fullRate = process.getBaseFullOutputRate(resource) * 1000D;
                 String rateString = StyleManager.DECIMAL_PLACES2.format(fullRate);
                 result.append(ResourceUtil.findAmountResource(resource).getName())
-                    .append(" @ ").append(rateString).append(KG_SOL).append(BR);
+                    .append(" - ").append(rateString).append(KG_SOL).append(BR);
                 firstItem = false;    
             }
             // Add a note to denote an ambient input resource
@@ -399,12 +418,13 @@ public class ResourceProcessPanel extends JPanel {
         TableColumnModel columnModel = pTable.getColumnModel();
         columnModel.getColumn(0).setCellRenderer(new RunningCellRenderer());
         columnModel.getColumn(0).setCellEditor(new RunningCellEditor());
-        columnModel.getColumn(0).setPreferredWidth(40);
+        columnModel.getColumn(0).setPreferredWidth(30);
         columnModel.getColumn(1).setPreferredWidth(90);
         columnModel.getColumn(2).setPreferredWidth(150);
-        columnModel.getColumn(3).setPreferredWidth(60);
-        columnModel.getColumn(4).setPreferredWidth(60);
-        columnModel.getColumn(5).setPreferredWidth(60);
+        columnModel.getColumn(3).setPreferredWidth(40);
+        columnModel.getColumn(4).setPreferredWidth(40);
+        columnModel.getColumn(5).setPreferredWidth(40);
+        columnModel.getColumn(6).setPreferredWidth(40);
         
         setLayout(new BorderLayout());
         add(scrollPanel, BorderLayout.CENTER);
@@ -412,6 +432,17 @@ public class ResourceProcessPanel extends JPanel {
         return pTable;
     }
 
+    /**
+     * Sets the level of Effort.
+     * 
+     * @param level
+     */
+    public void setLevelOfEffort(int level) {
+    	for (ResourceProcess p: resourceProcessTableModel.getProcesses()) {
+    		p.setLevel(level);
+    	}
+    }
+    
     /**
      * Updates the status of any resource processes.
      */

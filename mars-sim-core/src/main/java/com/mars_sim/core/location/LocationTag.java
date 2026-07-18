@@ -45,12 +45,18 @@ public class LocationTag implements Serializable {
 	public String getLocale() {
 		String result = UNKNOWN;
 		switch(unit.getLocationStateType()) {
-			case INSIDE_SETTLEMENT:
-				result = unit.getSettlement().getName();
-				break;
-			case INSIDE_VEHICLE:
-				result = unit.getVehicle().getName();
-				break;
+			case INSIDE_SETTLEMENT: {
+				var s = unit.getSettlement();
+				if (s != null) {
+					result = s.getName();
+				}
+			} break;
+			case INSIDE_VEHICLE: {
+				var v = unit.getVehicle();
+				if (v != null) {
+					result = v.getName();
+				}
+			} break;
 			case MARS_SURFACE: {
 				Settlement s = findSettlementVicinity();
 				if (s != null) {
@@ -81,7 +87,6 @@ public class LocationTag implements Serializable {
 					result = v + VICINITY;	
 				break;
 			default:
-				result = UNKNOWN;
 				break;
 		}
 
@@ -129,8 +134,9 @@ public class LocationTag implements Serializable {
 				}			
 				break;
 			case INSIDE_VEHICLE:
-				if (unit.isInVehicle()) {
-					result = unit.getVehicle().getName();
+				var v = unit.getVehicle();
+				if (v != null) {
+					result = v.getName();
 				}
 				break;
 			case MARS_SURFACE: {
@@ -139,9 +145,9 @@ public class LocationTag implements Serializable {
 					result = s.getName() + VICINITY;
 				}
 				else {
-					Vehicle v = findVehicleVicinity();
-					if (v != null)
-						result = v.getName() + VICINITY;
+					Vehicle vv = findVehicleVicinity();
+					if (vv != null)
+						result = vv.getName() + VICINITY;
 					else
 						result = MARS_SURFACE;
 				}
@@ -152,14 +158,12 @@ public class LocationTag implements Serializable {
 					result = w.getLocationTag().getImmediateLocation();
 				}
 			} break;
-			case SETTLEMENT_VICINITY:
-				result = unit.getPosition().getShortFormat();	
-				break;
-			case VEHICLE_VICINITY:
-				result = unit.getPosition().getShortFormat();	
+			case SETTLEMENT_VICINITY, VEHICLE_VICINITY:
+				var lp = unit.getPosition();
+				if (lp != null)
+					result = lp.getShortFormat();
 				break;
 			default:
-				result = UNKNOWN;
 				break;
 		}
 
@@ -201,25 +205,4 @@ public class LocationTag implements Serializable {
 		
 		return null;
 	}
-
-//	/**
-//	 * Checks if an unit is in the vicinity of a settlement.
-//	 *
-//	 * @return true if it is
-//	 */
-//	public boolean isInSettlementVicinity() {
-//		// Note: if v.getSettlement() is not null, it may or may not be inside a garage
-//		if ((unit instanceof Vehicle v)
-//				&& v.isInGarage()) {
-//			return false;
-//		}
-//		else if ((unit instanceof Person
-//				|| unit instanceof Equipment
-//				|| unit instanceof Robot)
-//				&& unit.getSettlement() != null) {
-//			return false;
-//		}
-//		
-//		return (CollectionUtils.findSettlement(unit.getCoordinates()) != null);
-//	}
 }

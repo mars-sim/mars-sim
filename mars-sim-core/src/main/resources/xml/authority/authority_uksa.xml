@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
 		code="UKSA" name="United Kingdom Space Agency" corporation="false"
-					agenda="Space Accessibility" gender-ratio="0.76">
+					agenda="Space Innovation" gender-ratio="0.76">
 			<country name="United Kingdom"/>
 			<!-- In the United Kingdom, women make up 24% of the STEM workforce, a 
 			figure that has increased from 21% in 2016, although this still represents 

@@ -116,7 +116,7 @@ public class ExamineBody extends MedicalAidTask {
 		boolean success = walkToDoctorStation(false);  
 
 		if (!success) {
-			logger.info(worker, "Tried to walk to Doctor's station unsuccessfully to examine " + deceasedPerson.getName() + ".");
+			logger.info(worker, 10_000, "Tried to walk to Doctor's station unsuccessfully to examine " + deceasedPerson.getName() + ".");
 			// Note: Avoid calling this to instantly send the doctor there.
 			// Check if the doctor is already at a medical activity spot	
 			success = MedicalCare.dispatchToMedical(worker);

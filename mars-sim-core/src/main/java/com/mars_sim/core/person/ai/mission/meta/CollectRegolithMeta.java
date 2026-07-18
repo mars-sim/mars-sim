@@ -78,6 +78,12 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 				return RatingScore.ZERO_RATING;
 			}
 				
+			// Get available rover.
+			var rover = selectVehicle(settlement);
+			if (rover == null) {
+				return RatingScore.ZERO_RATING;
+			}
+
 			var missionProbability = new RatingScore(1);
 			missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getRegolithDemandCache() / VALUE);
 

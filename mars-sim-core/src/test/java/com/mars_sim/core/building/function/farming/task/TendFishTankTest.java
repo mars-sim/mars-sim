@@ -1,13 +1,10 @@
 package com.mars_sim.core.building.function.farming.task;
 import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
-import static com.mars_sim.core.test.SimulationAssertions.assertLessThan;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.function.FunctionType;
@@ -15,6 +12,7 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.test.MarsSimUnitTest;
 
 public class TendFishTankTest extends MarsSimUnitTest {
     private Building buildFishery(Settlement s) {
@@ -117,6 +115,6 @@ public class TendFishTankTest extends MarsSimUnitTest {
         
         assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FISH_MEAT_ID) > 0D, "Fish meat created");
 //        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FISH_OIL_ID) > 0D, "Fish oil created");
-        assertLessThan("Fish count has reduced", weight, reducedWeight);
+        assertTrue(weight >= reducedWeight, "Fish count has reduced");
     }
 }

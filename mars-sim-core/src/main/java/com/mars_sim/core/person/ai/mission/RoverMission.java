@@ -264,12 +264,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 	
 	/**
-	 * Checks if a person should be ejected.
+	 * Creates an ejected list of people.
 	 * 
 	 * @param ejectedMembers
 	 * @param rover
 	 */
-	private void checkEjected(List<Person> ejectedMembers, Rover rover) {
+	private void createEjectedList(List<Person> ejectedMembers, Rover rover) {
 		for (Worker m : getMembers()) {
 			Person p = (Person) m;
 			if (!rover.isCrewmember(p)) {
@@ -313,14 +313,15 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		boolean canDepart = true;
 		
 		// Find who has not boarded after the duration is over
-		List<Person> ejectedMembers = new ArrayList<>();
+		List<Person> ejectedList = new ArrayList<>();
 		
-		checkEjected(ejectedMembers, r);
+		// Create an ejected list of people
+		createEjectedList(ejectedList, r);
 
 		// Eject the late arrival if enough members
-		if ((getMembers().size() - ejectedMembers.size()) >= MIN_GOING_MEMBERS) { 
+		if ((getMembers().size() - ejectedList.size()) >= MIN_GOING_MEMBERS) { 
 			
-			for (Person p : ejectedMembers) {
+			for (Person p : ejectedList) {
 				
 				outProcessMember(p, r, "Ejected");
 				
@@ -329,31 +330,35 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 		}
 		
-		// If the leader is not ejected, then the mission can be proceeded
-		if (ejectedMembers.contains(getStartingPerson())) {
+		// Note that if the leader is not ejected, then the mission can still be proceeded
+		
+		if (ejectedList.contains(getStartingPerson())) {
 
-			Person lead = (Person)member;
+			Person lead = (Person)member;		
+			// Note: Must remove the mission lead first or having ConcurrentModificationException (CME)
+			getMembers().remove(lead);
 			
-			outProcessMember(lead, r, MISSION_CANCELLED);
-			
-			// If the leader is ejected, then the mission must be cancelled
-			logger.info(lead, "The mission Lead " + getStartingPerson().getName() 
-					+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
-					+ ") got ejected from " + getName() + " and mission was cancelled.");
+			outProcessMember(lead, r, MISSION_CANCELLED);		
 			
 			Set<Worker> outProcessingMembers = getMembers();
-			// Must remove the mission lead first or having ConcurrentModificationException
-			outProcessingMembers.remove(lead);
-			// Remove all other members
+
+			// Note: even after the mission lead have been removed, outProcessingMembers still causes CME
 			for (Worker w : outProcessingMembers) {
-				
+				// Remove all other members
 				outProcessMember((Person)w, r, MISSION_CANCELLED);
 
 				logger.info(w, getName() + " was cancelled since the mission lead got ejected.");
 			}
-			
+
+			// If the leader is ejected, then the mission must be cancelled
+			logger.info(lead, "The mission Lead " + getStartingPerson().getName() 
+					+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
+					+ ") got ejected from " + getName() + " and mission was cancelled.");
+		
 			Set<Person> outCrew = r.getCrew();
+			
 			outCrew.remove(lead);
+			
 			// Just in case anyone still inside the vehicle
 			for (Person p : outCrew) {
 				
@@ -361,6 +366,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 				logger.info(p, getName() + " was cancelled since the mission lead got ejected.");
 			}
+
 			
 			MissionStatus status = MissionStatus.createResourceStatus(MISSION_LEAD_NO_SHOW.getName());
 			abortMission(status, HistoricalEventType.MISSION_LEAD_NO_SHOW);

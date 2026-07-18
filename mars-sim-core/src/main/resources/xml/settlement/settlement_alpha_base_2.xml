@@ -268,8 +268,8 @@
     <building-package name="Storage Set 2"/>
    	<building-package name="ERV Set 1"/>
    	<building-package name="ERV Set 2"/>
-   	<building-package name="ERV Set 3"/>   	  	
-   	<building-package name="Air Set 1 - 1x4"/>
+   	<building-package name="ERV Set 3"/>
+   	<building-package name="Air Set 1 - 1x5"/>
     <building-package name="Sabatier Set 1 - 1x4"/>
 	<building-package name="Syngas Set 1 - 1x1"/>
 	<building-package name="Solar Thermal Set 1 - 1x9"/>
@@ -277,15 +277,15 @@
 	<building-package name="Kilo Set 1 - 1x2"/>
 	<building-package name="MD1 Set 1 - 1x2"/>
 	<building-package name="MD4 Set 1 - 1x2"/>
-  	<building-package name="Brine Water Well Set 1 - 1x3"/>	 	
+  	<building-package name="Brine Water Well Set 1 - 1x4"/>	 	
  
     <initial-supplies>
  
     <vehicle type="Explorer Rover" number="2" />
-    <vehicle type="Long Range Explorer" number="1" />
+    <vehicle type="Long Range Explorer" number="2" />
     <vehicle type="Transport Rover" number="2" />
     <vehicle type="Cargo Rover" number="2" />
-    <vehicle type="Light Utility Vehicle" number="3" />
+    <vehicle type="Light Utility Vehicle" number="5" />
     <vehicle type="Delivery Drone" number="2" />
     <vehicle type="Cargo Drone" number="2" />
     
@@ -313,7 +313,8 @@
 	<resource type="food" amount="4320" />
 	<resource type="water" amount="7200" />
 	<resource type="oxygen" amount="5760" />
-
+	
+    <part-package name="Tech Part Package 0" number="1" />
     <part-package name="Standard Part Package 1" number="6" />
  
     </initial-supplies>

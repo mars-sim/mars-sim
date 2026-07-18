@@ -46,8 +46,9 @@ class EquipmentInventoryTest extends MarsSimUnitTest {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
 		int co2 = ResourceUtil.CO2_ID;
 		int rock = ResourceUtil.ROCK_SAMPLES_ID;
+		double cap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
 		double co2Mass = CAPACITY_AMOUNT/10; // 100 kg
-		double rockMass = CAPACITY_AMOUNT/20; // 50 kg
+		double rockMass = cap;
 		
 		// Store some CO2 directly and then a Bag containing rocks
 		inv.storeAmountResource(co2, co2Mass);

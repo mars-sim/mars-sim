@@ -21,6 +21,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  * The subclass defines which columns are to be rendered.
  * The model automatically monitors the Building for changes and updates the table as needed.
  */
+@SuppressWarnings("serial")
 public abstract class BaseBuildingModel extends AbstractEntityModel<Building> {
 
     private static final int NAME_VAL = 0;
@@ -49,7 +50,6 @@ public abstract class BaseBuildingModel extends AbstractEntityModel<Building> {
                                 Set.of(PowerGrid.GENERATED_POWER_EVENT));
     protected static final EntityColumnSpec TEMP = new EntityColumnSpec(new ColumnSpec(TEMP_VAL, Msg.getString("temperature.shortlabel"), Double.class),
                                 Set.of(Heating.TEMPERATURE_EVENT));
-
 
     /**
      * Create a generic building model with the specified columns.

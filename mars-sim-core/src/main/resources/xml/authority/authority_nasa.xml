@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
 		code="NASA" name="National Aeronautics and Space Administration" corporation="false"
-					agenda="Finding Life" gender-ratio="0.6">
+					agenda="Finding Life" gender-ratio="0.72">
 			<country name="United States"/>
 			<settlement-name name="Jamestown" />
 			<settlement-name name="Port Braun" />

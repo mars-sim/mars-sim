@@ -298,25 +298,25 @@
 
 	<!-- Resupply mission from Earth. -->
 	<!-- name: the unique name of the resupply mission. -->
-	<resupply name="Resupply for Phase 1" person="4">
-			
+	<resupply name="Resupply for Phase 0" person="4">
+
 		<!-- New equipment -->
 		<!-- type: the type of equipment. -->
-		<!-- number: the number of this type of equipment. -->		
-		
-		<equipment type="EVA Suit" number="8" />
-							
-		 <!-- Containers-->
-		<equipment type="barrel" number="80" />
-		<equipment type="bag" number="80" />
-		<equipment type="gas canister" number="80" />		
-		<equipment type="large bag" number="80" />
-		<equipment type="specimen box" number="80" />
-    	<equipment type="thermal bottle" number="8" />			
-   	    <equipment type="wheelbarrow" number="4" />
-   	    
-		<robot type="RepairBot-Standard" number="1"/>
+		<!-- number: the number of this type of equipment. -->
 
+		<equipment type="EVA Suit" number="4" />
+
+		 <!-- Containers-->
+		<equipment type="barrel" number="40" />
+		<equipment type="bag" number="40" />
+		<equipment type="gas canister" number="40" />
+		<equipment type="large bag" number="40" />
+		<equipment type="specimen box" number="40" />
+    	<equipment type="thermal bottle" number="4" />
+   	    <equipment type="wheelbarrow" number="4" />
+
+		<robot type="MakerBot-Standard" number="1"/>
+		<robot type="RepairBot-Standard" number="1"/>
 
 		<!-- Resource provided in this resupply. -->
 		<!-- type: the type of resource (see resources.txt) -->
@@ -325,6 +325,26 @@
 		<!-- Part packages (see part_packages.xml) -->
 		<!-- name: the part package name. -->
 		<!-- number: the number of packages. -->
+		<part-package name="Standard Part Package 1" number="1" />
+
+	</resupply>
+	
+
+	<resupply name="Resupply for Phase 1" person="4">
+
+		<equipment type="EVA Suit" number="8" />
+
+		<equipment type="barrel" number="80" />
+		<equipment type="bag" number="80" />
+		<equipment type="gas canister" number="80" />
+		<equipment type="large bag" number="80" />
+		<equipment type="specimen box" number="80" />
+    	<equipment type="thermal bottle" number="8" />
+   	    <equipment type="wheelbarrow" number="8" />
+
+   	    <robot type="MakerBot-Standard" number="1"/>
+		<robot type="RepairBot-Standard" number="1"/>
+
 		<part-package name="Standard Part Package 1" number="1" />
 
 	</resupply>

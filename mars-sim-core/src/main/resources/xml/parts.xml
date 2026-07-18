@@ -273,7 +273,7 @@
 	<part name="Garment" type="utility" mass="0.5" >
 		<description>a standard set of clothing for indoor use.</description>
 	</part>
-
+		
 	<part name="Liquid cooling garment" type="EVA" mass="1.5" >
 		<description>The innermost layer of the EVA suit. Provides thermal control
 			by circulating air and water cooled by a sublimator over crew member's
@@ -1299,15 +1299,15 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Charcoal filter" type="utility" mass="1">
+	<part name="Charcoal filter" type="utility" mass="0.5">
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="dining" probability="2" max-number="2" />
 			<entity name="living accommodation" probability="2" max-number="2" />
 			<entity name="eva" probability="3" max-number="2" />
 			<entity name="exercise" probability="1" max-number="1" />
-			<entity name="waste processing" probability="3" max-number="1" />
-			<entity name="resource processing" probability="3" max-number="1" />			
+			<entity name="waste processing" probability="3" max-number="3" />
+			<entity name="resource processing" probability="3" max-number="5" />			
 			<entity name="vehicle" probability="1" max-number="1" />
 			<entity name="medical care" probability="1" max-number="1" />
 		</maintenance-entity-list>
@@ -1348,15 +1348,22 @@
 		<description>A tankless water heater rated 5kW.</description>
 	</part>
 	
-	<part name="Hand brush" type="utility" mass=".05" />				
-
-	<part name="Wash brush" type="utility" mass=".1"  >
-		<description>For manual vehicle cleaning.</description>
+	
+	<part name="Hand towel" type="utility" mass="0.25" >
+		<description>A towel for a person after shower.</description>
 	</part>
 
-	<part name="Hand towel" type="utility" mass=".05" />				
+	<part name="Hand brush" type="utility" mass="0.1" >
+		<description>A small utility brush for everyday use.</description>
+	</part>
+	
+	<part name="Wash brush" type="utility" mass="0.5"  >
+		<description>A medium-size brush for vehicle cleaning.</description>
+	</part>
 
-	<part name="Utility towel" type="utility" mass=".1" />				
+	<part name="Utility towel" type="utility" mass="0.05" >
+		<description>A small utility towel for everyday use.</description>
+	</part>
 	
 	<part name="Pressure washer" type="utility" mass="8.0" >
 		<description>A electric pressure washer provides 2.5 GPM. consumes 1.5 kW</description>

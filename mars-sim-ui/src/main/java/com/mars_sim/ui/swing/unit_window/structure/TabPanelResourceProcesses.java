@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -92,10 +91,30 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		JPanel topPanel = new JPanel(new GridLayout(1, 2, 0, 0));
 		content.add(topPanel, BorderLayout.NORTH);
 		
+		JPanel gridPanel = new JPanel(new GridLayout(1, 2));
+		topPanel.add(gridPanel);
+		
+		// Create level panel.
+		JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+//		levelPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+		gridPanel.add(levelPanel);
+		
+		JLabel levelLabel = new JLabel("Level Of Effort :");
+		levelLabel.setToolTipText("How much effort devoted to producing output resources");
+		levelPanel.add(levelLabel);
+			
+		// Prepare level combo box
+		levelComboBox = new JComboBox<>(LEVEL_NAMES);
+		levelComboBox.setPrototypeDisplayValue("3");
+		levelComboBox.setSelectedItem("3");
+		levelComboBox.addActionListener(this);
+        
+		levelPanel.add(levelComboBox);
+		
 		// Create override check box panel.
 		JPanel overrideCheckboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		overrideCheckboxPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		topPanel.add(overrideCheckboxPane);
+//		overrideCheckboxPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		gridPanel.add(overrideCheckboxPane);
 	
 		// Create override check box.
 		JCheckBox overrideCheckbox = new JCheckBox(Msg.getString("TabPanelResourceProcesses.checkbox.overrideResourceProcessToggling")); //$NON-NLS-1$
@@ -106,22 +125,6 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS));
 		
 		overrideCheckboxPane.add(overrideCheckbox);
-		
-		// Create level panel.
-		JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		levelPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-		topPanel.add(levelPanel);
-		
-		JLabel levelLabel = new JLabel("Output Effort :");
-		levelPanel.add(levelLabel);
-			
-		// Prepare level combo box
-		levelComboBox = new JComboBox<>(LEVEL_NAMES);
-		levelComboBox.setPrototypeDisplayValue("2");
-		levelComboBox.setSelectedItem("2");
-		levelComboBox.addActionListener(this);
-        
-		levelPanel.add(levelComboBox);
 	}
 
 
@@ -134,8 +137,9 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() instanceof JComboBox) {
 			int newLevel = Integer.parseInt((String)levelComboBox.getSelectedItem());
-			if (newLevel != level) {
+			if (level != newLevel) {
 				level = newLevel;
+				processPanel.setLevelOfEffort(newLevel);
 				processPanel.update();
 				logger.info(getEntity(), "Manually changed to level " + newLevel + " as the overall output effort in resource processing.");
 			}

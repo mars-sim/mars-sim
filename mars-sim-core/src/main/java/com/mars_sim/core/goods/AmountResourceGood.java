@@ -80,11 +80,11 @@ class AmountResourceGood extends Good {
 	
 	// flatten multipliers
 	private static final double ICE_FLATTENING_FACTOR = 0.5;
-	private static final double WATER_FLATTENING_FACTOR = 0.5;
+	private static final double WATER_FLATTENING_FACTOR = 0.75;
 	
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
 	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 1.0;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 2.25;
 	private static final double OXYGEN_FLATTENING_FACTOR = 0.75;	
 	
 
@@ -107,6 +107,7 @@ class AmountResourceGood extends Good {
 	private static final double KAMACITE_FLATTENING_FACTOR = 0.75;
 	
 	// Chemicals
+	private static final double ETHYLENE_FLATTENING_FACTOR = 0.75;
 	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
 	private static final double POLYESTER_FIBER_FLATTENING_FACTOR = 2.0;
 	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
@@ -164,12 +165,12 @@ class AmountResourceGood extends Good {
 	
 	private static final double OXYGEN_VALUE_MODIFIER = 4;
 	private static final double METHANE_VALUE_MODIFIER = 0.06;
-	private static final double HYDROGEN_VALUE_MODIFIER = 0.25;
+	private static final double HYDROGEN_VALUE_MODIFIER = 2.25;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	
 	// Chemicals
 	private static final int CLEANING_AGENT_MODIFIER = 2;
-	private static final int ETHYLENE_MODIFIER = 12;
+	private static final int ETHYLENE_MODIFIER = 10;
 	private static final int STYRENE_MODIFIER = 12;
 	private static final int PROPYLENE_MODIFIER = 3;
 	private static final int ETHANE_MODIFIER = 2;
@@ -231,9 +232,6 @@ class AmountResourceGood extends Good {
 		this.resource = ar;
 		
 		double multiplier = ar.getDemandMultiplier();
-		
-		if (multiplier == 0.0)
-			multiplier = 1.0;
 
 		// Calculate fixed values
 		flattenDemand = calculateFlattenDemand(ar) * multiplier;
@@ -272,6 +270,7 @@ class AmountResourceGood extends Good {
 			}
 			
 			mod *= switch(ar.getID()) {
+				case ResourceUtil.ETHYLENE_ID ->  ETHYLENE_FLATTENING_FACTOR;
 				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
 				case ResourceUtil.POLYESTER_FIBER_ID -> POLYESTER_FIBER_FLATTENING_FACTOR;
 				default -> 1D;
@@ -1164,7 +1163,7 @@ class AmountResourceGood extends Good {
 				case ResourceUtil.FOOD_ID -> personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
 				case ResourceUtil.METHANE_ID -> personConfig.getWaterConsumptionRate() * METHANE_VALUE_MODIFIER;
 				case ResourceUtil.CO2_ID -> CO2_VALUE_MODIFIER;
-				case ResourceUtil.HYDROGEN_ID -> personConfig.getWaterConsumptionRate() * HYDROGEN_VALUE_MODIFIER;
+				case ResourceUtil.HYDROGEN_ID -> personConfig.getWaterConsumptionRate() / 2 * HYDROGEN_VALUE_MODIFIER;
 				default -> 0D;
 			};
 			
@@ -1487,7 +1486,7 @@ class AmountResourceGood extends Good {
 			} break;
 
 			case ResourceUtil.HYDROGEN_ID: {
-				demand =  transFactor * HYDROGEN_VALUE_MODIFIER / 10;
+				demand =  transFactor * HYDROGEN_VALUE_MODIFIER / 20;
 			} break;
 		}
 

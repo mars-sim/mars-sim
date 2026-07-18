@@ -15,7 +15,53 @@
 
 	<!-- Part package -->
 	<!-- name: the unique name of the package. -->
-	<part-package name="Tech Part Package 1" >
+	<part-package name="Tech Part Package 0" >
+
+		<!-- Parts -->
+		<!-- type: the type of part (see parts.xml) -->
+		<!-- number: the number of parts. -->
+		<part type="logic board" number="10"/>
+		<part type="microcontroller" number="30" />
+		<part type="communications circuit board" number="3" />
+		<part type="navigation circuit board" number="2" />
+		<part type="Biosensor" number="10" />	
+				
+		<part type="methane fuel cell" number="100"/>
+		<part type="methane fuel cell stack" number="2"/>
+		<part type="methanol fuel cell" number="100"/>
+		<part type="methanol fuel cell stack" number="2"/>		
+
+		<part type="battery module" number="2" />
+		
+		<part type="SLS 3D Printer" number="2"/>
+
+		<part type="carbon dioxide laser" number="2"/>
+		<part type="helium neon laser" number="2"/>
+		<part type="optical lens" number="10"/>
+		<part type="optical prism" number="10"/>
+		
+		<part type="light emitting diode kit" number="10" />
+		<part type="light emitting diode bulb" number="25" />
+
+		<part type="transformer" number="2" />
+		<part type="power transistor" number="30" />
+
+		<part type="radio antenna" number="4" />
+		<part type="satellite dish" number="2" />
+
+		<part type="Stepper Motor" number="4"/>
+		<part type="Motor 5 kW" number="3" />
+		<part type="Motor 10 kW" number="2" />
+		<part type="Motor 30 kW" number="1" />
+		<part type="propeller" number="2"/>
+
+		<part type="Servo motor" number="8" />
+		<part type="Actuator" number="14" />
+		<part type="Gearbox" number="6" />
+		
+	</part-package>
+
+		<part-package name="Tech Part Package 1" >
 
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->
@@ -60,8 +106,6 @@
 		<part type="Gearbox" number="12" />
 		
 	</part-package>
-
-	
 	
 	<part-package name="Standard Part Package 1">
 
@@ -185,17 +229,13 @@
 	</part-package>
 
 	<part-package name="package 2" >
-
 	</part-package>
 
 
-	<part-package name="package 3">
-
-				
+	<part-package name="package 3">	
 	</part-package>
 
 	<part-package name="package 4">
-
 	</part-package>
 
 </part-package-list>

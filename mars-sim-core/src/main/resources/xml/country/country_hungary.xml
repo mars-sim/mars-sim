@@ -17,40 +17,105 @@
 		
     <first-name-list>
         <first-name value="Bence" gender="male" />
-        <first-name value="Máté" gender="male" />
+        <first-name value="Mate" gender="male" />
         <first-name value="Levente" gender="male" />
-        <first-name value="Ádám" gender="male" />
-        <first-name value="Dávid" gender="male" />
-        <first-name value="Dániel" gender="male" />
+        <first-name value="Adam" gender="male" />
+        <first-name value="David" gender="male" />
+        
+        <first-name value="Daniel" gender="male" />
         <first-name value="Marcell" gender="male" />
-        <first-name value="Balázs" gender="male" />
-        <first-name value="Milán" gender="male" />
+        <first-name value="Balazs" gender="male" />
+        <first-name value="Milan" gender="male" />
         <first-name value="Dominik" gender="male" />
 
+        <first-name value="Laszlo" gender="male" />
+        <first-name value="Istvan" gender="male" />
+        <first-name value="Jozsef" gender="male" />
+        <first-name value="Janos" gender="male" />
+        <first-name value="Zoltan" gender="male" />
+        
+        <first-name value="Ferenc" gender="male" />
+        <first-name value="Sandor" gender="male" />
+        <first-name value="Gabor" gender="male" />
+        <first-name value="Tibor" gender="male" />
+        <first-name value="Attila" gender="male" />
+        
 
+        <first-name value="Laszlo" gender="male" />
+        <first-name value="Istvan" gender="male" />
+        <first-name value="Jozsef" gender="male" />
+        <first-name value="Janos" gender="male" />
+        <first-name value="Zoltan" gender="male" />
+        
+        <first-name value="Ferenc" gender="male" />
+        <first-name value="Sandor" gender="male" />
+        <first-name value="Gabor" gender="male" />
+        <first-name value="Tibor" gender="male" />
+        <first-name value="Attila" gender="male" />
+        
+        
         <first-name value="Hanna" gender="female" />
         <first-name value="Anna" gender="female" />
-        <first-name value="Jázmin" gender="female" />
+        <first-name value="Jazmin" gender="female" />
         <first-name value="Lili" gender="female" />
-        <first-name value="Zsófia" gender="female" />
+        <first-name value="Zsofia" gender="female" />
+        
         <first-name value="Emma" gender="female" />
         <first-name value="Luca" gender="female" />
-        <first-name value="Boglárka" gender="female" />
-        <first-name value="Zoé" gender="female" />
-        <first-name value="Nóra" gender="female" />
+        <first-name value="Boglarka" gender="female" />
+        <first-name value="Zoe" gender="female" />
+        <first-name value="Nora" gender="female" />
+        
+        <first-name value="Lena" gender="female" />
+        <first-name value="Olivia" gender="female" />
+        <first-name value="Laura" gender="female" />
+        <first-name value="Aliz" gender="female" />
+        <first-name value="Kamillia" gender="female" />
+        
+        <first-name value="Sara" gender="female" />
+        <first-name value="Szofia" gender="female" />
+        <first-name value="Flora" gender="female" />
+        <first-name value="Mira" gender="female" />
+        <first-name value="Lilien" gender="female" />
+                
+        <first-name value="Lara" gender="female" />
+        <first-name value="Adel" gender="female" />       
+ 
+        <first-name value="Vicktoria" gender="female" />
+        <first-name value="Reka" gender="female" />
+                
+        <first-name value="Katalin" gender="female" />
+        <first-name value="Borbala" gender="female" /> 
+        
     </first-name-list>
+    
     <last-name-list>
-        <!-- 10 most common Hungarian surnames -->
+        <!-- 20 most common Hungarian surnames -->
 
         <last-name value="Farkas" />
-        <last-name value="Horváth" />
+        <last-name value="Horvath" />
         <last-name value="Kiss" />
-        <last-name value="Kovács" />
-        <last-name value="Molnár" />
+        <last-name value="Kovacs" />
+        <last-name value="Molnar" />
+        
         <last-name value="Nagy" />
-        <last-name value="Németh" />
-        <last-name value="Szabó" />
-        <last-name value="Tóth" />
+        <last-name value="Nemeth" />
+        <last-name value="Szabo" />
+        <last-name value="Toth" />
         <last-name value="Varga" />
+        
+        <last-name value="Takacs" />
+        <last-name value="Balogh" />
+        <last-name value="Papp" />
+        <last-name value="Juhasz" />
+        <last-name value="Szilagyi" />
+        
+        <last-name value="Meszaros" />
+        <last-name value="Simon" />
+        <last-name value="Szucs" />
+        <last-name value="Fekete" />
+        <last-name value="Torok" />
+
+        
     </last-name-list>
 </country>

@@ -342,6 +342,7 @@
 			<resource type="concrete" amount="25.0" />
 			<part type="insulation board" number="4" />				
 			<part type="steel truss" number="20" />
+			<part type="Flood light" number="2" />
 			<part type="steel cable" number="6" />
 			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
@@ -356,6 +357,7 @@
 			<part type="insulation board" number="4" />			
 			<part type="steel truss" number="10" />
 			<part type="steel sheet" number="5" />
+			<part type="Flood light" number="2" />
 			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
@@ -368,6 +370,7 @@
 			<resource type="concrete" amount="50.0" />
 			<part type="insulation board" number="6" />				
 			<part type="steel truss" number="20" />
+			<part type="Flood light" number="2" />
 			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
@@ -378,6 +381,7 @@
 		 salvagable="true" work-time="0.5" skill-required="1" foundation="Surface Foundation 2x3" >
 			<resource type="concrete" amount="6.0" />
 			<part type="brick" number="200" />
+			<part type="Flood light" number="2" />
 			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
@@ -388,6 +392,7 @@
 		 salvagable="true" work-time="1.0" skill-required="1" foundation="Subsurface Foundation 5x5x3" >
 			<resource type="concrete" amount="25.0" />
 			<part type="brick" number="250" />
+			<part type="Flood light" number="2" />
 			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>
@@ -412,6 +417,7 @@
 			<part type="gasket" number="40" />
 			<part type="valve" number="10" />
 			<part type="solar panel" number="4" />
+			<part type="Flood light" number="2" />
 		</frame>
 
 		<frame name="Inflatable Frame" width="6.0" length="9.0"
@@ -432,6 +438,7 @@
 			<part type="steel pipe" number="40" />
 			<part type="gasket" number="30" />
 			<part type="valve" number="30" />			
+			<part type="Flood light" number="2" />
 		</frame>
 
 		<frame name="Atmospheric Processor Frame" width="8.0" length="11.0"
@@ -451,6 +458,7 @@
 			<part type="power cable" number="10" />
 			<part type="steel pipe" number="10" />
 			<part type="gasket" number="18" />
+			<part type="Flood light" number="2" />
 		</frame>
 
 		<frame name="Modular A Frame" width="7.0" length="9.0"
@@ -470,6 +478,7 @@
 			<part type="wire connector" number="50" />
 			<part type="power cable" number="15" />
 			<part type="gasket" number="15" />
+			<part type="Flood light" number="2" />
 		</frame>
 
 		<frame name="Modular B Frame" width="6.0" length="9.0"
@@ -489,6 +498,7 @@
 			<part type="wire connector" number="50" />
 			<part type="power cable" number="12" />
 			<part type="gasket" number="12" />
+			<part type="Flood light" number="2" />
 		</frame>
 
 		<frame name="Core A Frame" width="6.0" length="6.0"
@@ -508,6 +518,7 @@
 			<part type="wire connector" number="30" />
 			<part type="power cable" number="8" />
 			<part type="gasket" number="8" />
+			<part type="Flood light" number="1" />
 		</frame>
 
 		<frame name="Core B Frame" width="3.0" length="6.0"
@@ -527,6 +538,7 @@
 			<part type="wire connector" number="15" />
 			<part type="power cable" number="4" />
 			<part type="gasket" number="4" />
+			<part type="Flood light" number="1" />
 		</frame>
 	
 		<frame name="Core C Frame" width="3.0" length="6.0"
@@ -546,6 +558,7 @@
 			<part type="wire connector" number="15" />
 			<part type="power cable" number="4" />
 			<part type="gasket" number="4" />
+			<part type="Flood light" number="1" />
 		</frame>
 						
 		<frame name="Round Frame" width="7.0" length="7.0"
@@ -565,6 +578,7 @@
 			<part type="wire connector" number="45" />
 			<part type="power cable" number="13" />
 			<part type="gasket" number="13" />
+			<part type="Flood light" number="2" />
 		</frame>
 		
 		<frame name="Large Greenhouse Frame" width="12.0" length="18.0"
@@ -585,6 +599,7 @@
 			<part type="electrical wire" number="120" />
 			<part type="wire connector" number="120" />
 			<part type="power cable" number="30" />
+			<part type="Flood light" number="4" />
 		</frame>
 
 		<frame name="Garage Frame" width="12.0" length="16.0"
@@ -604,6 +619,7 @@
 			<part type="wire connector" number="50" />
 			<part type="power cable" number="20" />
 			<part type="gasket" number="40" />
+			<part type="Flood light" number="4" />
 		</frame>
 
 		<frame name="Small Areothermal Well Frame" width="5.0" length="10.0"

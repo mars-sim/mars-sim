@@ -72,7 +72,8 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark>
 	private MapPanel displayComponent;
 
 	/**
-	 * Create a landmark layer for a Map Panel
+	 * Creates a landmark layer for a Map Panel.
+	 * 
 	 * @param panel
 	 */
 	public LandmarkMapLayer(MapPanel panel) {
@@ -82,13 +83,14 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark>
 		displayComponent = panel;
 
 		// By default everything
-		for(var l : LandmarkType.values()) {
+		for (var l : LandmarkType.values()) {
 			displayed.add(l.name());
 		}
 	}
 
     /**
-     * Return a list of landmarks that are within the focus specified
+     * Returns a list of landmarks that are within the focus specified.
+     * 
      * @param center Center of the viewpoint
      * @param arcAngle Angle of the viewpoint
      * @return
@@ -99,7 +101,8 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark>
 	}
 
     /**
-     * Setup the graphic context to draw this landmarks to control the font rendering.
+     * Sets up the graphic context to draw this landmarks to control the font rendering.
+     * 
      * @param g2d
      */
 	@Override
@@ -113,9 +116,10 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark>
 	}
 
 	/**
-     * Display a feature on the map using a Graphic at a particular point.
+     * Displays a feature on the map using a Graphic at a particular point.
+     * 
      * @param f Feature to display
-     * @param location Locatino on the Graphic
+     * @param location Location on the Graphic
      * @param g2d Graphic for drawing
 	 * @param isColourful Is the destination a colourful map
      */
@@ -168,7 +172,7 @@ public class LandmarkMapLayer extends SurfaceFeatureLayer<Landmark>
 	@Override
 	public List<MapFilter> getFilterDetails() {
 		List<MapFilter> filters = new ArrayList<>();
-		for(var lt : LandmarkType.values()) {
+		for (var lt : LandmarkType.values()) {
 			filters.add(new MapFilter(lt.name(), lt.getName(), 
 							ColorLegendFactory.getLegend((lt == LandmarkType.AO ? AO_COLOR : OTHERS_COLOR),
 													displayComponent)));

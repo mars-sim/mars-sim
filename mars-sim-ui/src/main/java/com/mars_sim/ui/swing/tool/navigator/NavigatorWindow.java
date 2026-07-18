@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavigatorWindow.java
- * @date 2023-07-03
+ * @date 2026-07-14
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.navigator;
@@ -15,16 +15,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -35,11 +35,11 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.formdev.flatlaf.extras.components.FlatToggleButton;
+import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.EntityManagerListener;
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.TerrainElevation;
@@ -72,7 +72,7 @@ import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 import com.mars_sim.ui.swing.utils.JCoordinateEditor;
-import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
+import com.mars_sim.ui.swing.utils.SettlementsSelector;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -166,6 +166,7 @@ public class NavigatorWindow extends ContentPanel
 	private static final int MIN_HEIGHT = 450;
 
 
+	private static final String FILTER_PROP = "FILTER";
 	private static final String MAP_SEPERATOR = "~";
 
 	private static final String LEVEL = "Level ";
@@ -175,7 +176,7 @@ public class NavigatorWindow extends ContentPanel
 	private static final String MINERAL_LAYER = "minerals";
 	private static final String DAYLIGHT_LAYER = "daylightTracking";
 	private static final String EXPLORED_LAYER = "exploredSites";
-	private static final String UNIT_LAYER = "unit";
+	private static final String UNIT_LAYER = "units";
 
 	private static final String MAPTYPE_PROP = "mapType";
 	private static final String RESOLUTION_PROP = "resolution";
@@ -225,7 +226,11 @@ public class NavigatorWindow extends ContentPanel
 	private UnitManager unitManager;
 
 	private JCoordinateEditor coordEditor;
-	private JComboBox<Settlement> settlementComboBox;
+
+	private UnitMapLayer unitMapLayer;
+	
+	private Set<Settlement> currentSelection;
+	private SettlementsSelector settlementSelector;
 
 	/**
 	 * Constructor.
@@ -254,9 +259,11 @@ public class NavigatorWindow extends ContentPanel
 		mapPanel.setMouseMoveListener(this::updateStatusBar);
 
 		// Create map layers.
+		unitMapLayer = new UnitMapLayer(mapPanel);
+		
 		mapLayers.add(new NamedLayer(DAYLIGHT_LAYER, new ShadingMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(MINERAL_LAYER, new MineralMapLayer(mapPanel)));
-		mapLayers.add(new NamedLayer(UNIT_LAYER, new UnitMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer(UNIT_LAYER, unitMapLayer));
 		mapLayers.add(new NamedLayer("navPoints", new MissionMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("vehicleTrails", new VehicleTrailMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("landmarks", new LandmarkMapLayer(mapPanel)));
@@ -267,7 +274,7 @@ public class NavigatorWindow extends ContentPanel
 
 		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		
-		wholePane.add(createControlPanel(), BorderLayout.EAST);
+		wholePane.add(createControlPanel(userSettings), BorderLayout.EAST);
 
 		// Create the status bar
 		contentPane.add(createStatusBar(), BorderLayout.SOUTH);
@@ -280,7 +287,7 @@ public class NavigatorWindow extends ContentPanel
 		setPreferredSize(dim);
 	}
 
-	private JPanel createControlPanel() {
+	private JPanel createControlPanel(Properties userSettings) {
 		JPanel controlPane = new JPanel(new BorderLayout(0, 0));
 
 		controlPane.setPreferredSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
@@ -292,7 +299,7 @@ public class NavigatorWindow extends ContentPanel
 
 		controlPane.add(searchPane, BorderLayout.NORTH);
         
-        searchPane.add(createSettlementPane());
+        searchPane.add(createSettlementPane(userSettings));
 		searchPane.add(createCoordPane());
 
 		var layerRoot = createLayerModel();
@@ -402,6 +409,8 @@ public class NavigatorWindow extends ContentPanel
 	
 	/**
 	 * Checks for config settings.
+	 * 	 * 
+	 * @param userSettings
 	 */
 	private void checkSettings(Properties userSettings) {
 		boolean layerDefined = false;
@@ -481,8 +490,6 @@ public class NavigatorWindow extends ContentPanel
 
 		var goTo = new JButton(ImageLoader.getIconByName("action/find"));
 		goTo.addActionListener(e -> {							
-			// Reset it back to the prompt text
-			settlementComboBox.setSelectedIndex(-1);
 
 			var locn = coordEditor.getCoordinates();
 			mapPanel.showMap(locn);
@@ -497,51 +504,58 @@ public class NavigatorWindow extends ContentPanel
 	/**
 	 * Creates the settlement pane.
 	 */
-	private JPanel createSettlementPane() {   
+	private JPanel createSettlementPane(Properties uiProps) {   
 	    var settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
 	    JLabel label = new JLabel("\u25B6");
 	    settlementPane.add(label);
 	    	
-		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
-		model.addAll(setupSettlements());
-		settlementComboBox = new JComboBox<>(model);
-		settlementComboBox.setOpaque(false);
-		settlementComboBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //-NLS-1$
-		settlementComboBox.setRenderer(new NamedListCellRenderer(CHOOSE_SETTLEMENT));
-
-		// Set the item listener only after the setup is done
-		settlementComboBox.addItemListener(e -> {
-			Settlement newSettlement = (Settlement) e.getItem();
-			
-			if (newSettlement != null) {				
-				// Need to update the coordinates
-				updateCoordsMaps(newSettlement.getCoordinates());
-			}
-		});
+		// Set up default selection
+		String previousChoice = (uiProps != null ? uiProps.getProperty(FILTER_PROP) : null);
 		
-		// Listen for new Settlements
-		umListener = new EntityManagerListener() {
-			@Override
-			public void entityAdded(Entity newEntity) {
-				if (newEntity instanceof Settlement s) {
-					settlementComboBox.addItem(s);
-				}
-			}
+		// Create the settlement combo box
+		settlementSelector = new SettlementsSelector(unitManager, previousChoice, true);
+		settlementSelector.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement"));
 
-			@Override
-			public void entityRemoved(Entity removedEntity) {
-				if (removedEntity instanceof Settlement s) {
-					settlementComboBox.removeItem(s);
-				}
-			}
-		};
+
+		// List for changes in the settlement selection
+		settlementSelector.setSelectionListener("selectionChanged", e -> changeSelection());
 		
 		unitManager.addEntityManagerListener(UnitType.SETTLEMENT, umListener);
 
-    	settlementPane.add(settlementComboBox);
+    	settlementPane.add(settlementSelector);
 
+    	// Hide settlement box at startup since the all settlement tab is being selected by default
+//		setSettlementBox(true);
+
+    	currentSelection = new HashSet<>(settlementSelector.getSelectedSettlements());
+    	unitMapLayer.setUnitsToDisplay(currentSelection);
+		
 		return settlementPane;
+	}
+	
+	/**
+	 * Reacts to a change in the settlement selection. 
+	 */
+	private void changeSelection() {
+		currentSelection = new HashSet<>(settlementSelector.getSelectedSettlements());
+		unitMapLayer.setUnitsToDisplay(currentSelection);
+		
+		Settlement newSettlement = new ArrayList<>(settlementSelector.getSelectedSettlements()).get(0);
+		
+		if (newSettlement != null) {				
+			// Need to update the coordinates
+			updateCoordsMaps(newSettlement.getCoordinates());
+		}
+	}
+
+	/**
+	 * Sets the opaqueness of the settlement box.
+	 * 
+	 * @param isOpaque
+	 */
+	private void setSettlementBox(boolean isOpaque) {
+		settlementSelector.setVisible(!isOpaque);
 	}
 	
 	/**
@@ -730,13 +744,13 @@ public class NavigatorWindow extends ContentPanel
 	private DefaultMutableTreeNode createLayerModel() {
 		var root = new DefaultMutableTreeNode("Layers");
 
-		for(var nl : mapLayers) {
+		for (var nl : mapLayers) {
 			var layerNode = new DefaultMutableTreeNode(
 						new LayerNode(nl.name(), nl.layer()));
 			root.add(layerNode);
 
 			if (nl.layer() instanceof FilteredMapLayer fl) {
-				for(var m : fl.getFilterDetails()) {
+				for (var m : fl.getFilterDetails()) {
 					var filterNode = new DefaultMutableTreeNode(new FilterNode(fl, m));
 					layerNode.add(filterNode);
 				}
@@ -759,7 +773,13 @@ public class NavigatorWindow extends ContentPanel
 	
 	@Override
 	public Properties getUIProps() {
+		
 		Properties results = new Properties();
+
+		Object s = settlementSelector.getSelectedItem();
+		if (s instanceof Entity ent) {
+			results.setProperty(FILTER_PROP, ent.getName());
+		}
 
 		// Record the map type
 		results.setProperty(MAPTYPE_PROP, mapPanel.getMapMetaData().getId());
@@ -774,7 +794,7 @@ public class NavigatorWindow extends ContentPanel
 			results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + LAYER_VISIBLE,
 							Boolean.toString(mapPanel.isLayerVisible(e.layer())));
 			if (e.layer() instanceof FilteredMapLayer fl) {
-				for(var f : fl.getFilterDetails()) {
+				for (var f : fl.getFilterDetails()) {
 					results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + f.name(),
 								Boolean.toString(fl.isFilterActive(f.name())));
 				}
@@ -790,8 +810,12 @@ public class NavigatorWindow extends ContentPanel
 	@Override
 	public void destroy() {
 		super.destroy();
+		
 		if (mapPanel != null)
 			mapPanel.destroy();
+		
+		settlementSelector.unregister();
+
 		
 		unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);
 		

@@ -9,9 +9,6 @@ package com.mars_sim.core.food;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.goods.GoodsUtil;
-
 /**
  * A meta class describing an economic food in the simulation.
  */

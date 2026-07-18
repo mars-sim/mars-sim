@@ -492,7 +492,7 @@ public class MonitorWindow extends ContentPanel
 	
 	/**
 	 * Prepares tool window for deletion.
-	 * Remove listeners and references to allow for garbage collection.
+	 * Remove. listeners and references to allow for garbage collection.
 	 */
 	@Override
 	public void destroy() {

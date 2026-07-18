@@ -1,15 +1,14 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-    name="Phase 2-JP" default-population="12" description="Phase 2 base for Japan"
-	sponsor="JAXA">
+    name="Phase 2-HU" default-population="8" description="Phase 2 base for HSO/Hungary"
+	sponsor="HSO">
     
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="2" xloc="-4.5" yloc="0.0" />
             <connection id="1" xloc="0.0" yloc="4.5" />
-            <connection id="14" xloc="4.5" yloc="0.0" />
-            <connection id="15" xloc="0.0" yloc="-4.4" />
+            <connection id="12" xloc="4.5" yloc="0.0" />
         </connection-list>
     </building>
 
@@ -31,7 +30,7 @@
         </connection-list>
     </building>
 
-    <building id="3" type="Lounge" xloc="-12.0" yloc="0.0"
+    <building id="3" type="Workshop" xloc="-12.0" yloc="0.0"
         facing="270.0">
         <connection-list>
             <connection id="2" xloc="0.0" yloc="4.5" />
@@ -47,16 +46,15 @@
         </connection-list>
     </building>
 
-    <building id="5" type="Residential Quarters" xloc="-24.0"
+    <building id="5" type="Algae Pond" xloc="-24.0"
         yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="4" xloc="0.0" yloc="4.5" />
             <connection id="11" xloc="-3.0" yloc="0.0" />
-            <connection id="12" xloc="3.0" yloc="0.0" />
         </connection-list>
     </building>
 
-    <building id="6" type="Machinery Hab" xloc="0.0" yloc="13.0"
+    <building id="6" type="Lander Hab" xloc="0.0" yloc="13.0"
         facing="0.0">
         <connection-list>
             <connection id="1" xloc="0.0" yloc="-4.5" />
@@ -106,74 +104,40 @@
         </connection-list>
     </building>
 
-    <!-- This hallway connects the inflatable greenhouse to the garage -->
-    <building id="12" type="Hallway" length="4.0" xloc="-24.0"
-        yloc="-5.0" facing="0.0">
-        <connection-list>
-            <connection id="5" xloc="0.0" yloc="2.0" />
-            <connection id="13" xloc="0.0" yloc="-2.0" />
-        </connection-list>
-    </building>
-
-    <building id="13" type="Garage" xloc="-24.0" yloc="-15"
-        facing="180.0">
-        <connection-list>
-            <connection id="12" xloc="0.0" yloc="-8.0" />
-        </connection-list>
-    </building>
-
     <!-- EVA Airlock is attached to the lander hab -->
-    <building id="14" type="EVA Airlock" xloc="7.5" yloc="0.0"
+    <building id="12" type="EVA Airlock" xloc="7.5" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="0" xloc="-3.0" yloc="0.0" />
         </connection-list>
     </building>
 
-    <!-- This hallway connects the inflatable greenhouse to the fish farm -->
-    <building id="15" type="Hallway" length="4.0" xloc="0"
-        yloc="-6.5" facing="0.0">
-        <connection-list>
-            <connection id="0" xloc="0.0" yloc="2.4" />
-            <connection id="16" xloc="0.0" yloc="-2.0" />
-        </connection-list>
-    </building>
-
-    <!-- This fish farm connects to the inflatable greenhouse -->
-    <building id="16" type="Fish Farm" xloc="0.0" yloc="-13"
-        facing="180.0">
-        <connection-list>
-            <connection id="15" xloc="0.0" yloc="-4.4" />
-        </connection-list>
-    </building>
-
-
     <!-- Building Packages -->
     <building-package name="Storage Set 1"/>
    	<building-package name="ERV Set 1"/>
-   	<building-package name="Air Set 1 - 1x3"/>
+   	<building-package name="Air Set 1 - 1x2"/>
     <building-package name="Sabatier Set 1 - 1x3"/>
 	<building-package name="Syngas Set 1 - 1x1"/>
- 	<building-package name="Wind Set 1 - 1x3"/>   
-	<building-package name="Solar Set 1 - 1x3"/>
-	<building-package name="Kilo Set 1 - 1x1"/>
-	<building-package name="MD1 Set 1 - 1x1"/>
-	<building-package name="TOPAZ-3 Set 1 - 1x1"/>
-	<building-package name="Small Areothermal Well Set 1 - 1x1"/>
+	<building-package name="Solar Set 1 - 1x9"/>
+   	<building-package name="Wind Set 1 - 1x6"/>	
+   	<building-package name="TOPAZ-2A Set 1 - 1x3"/>
+	<building-package name="TOPAZ-3 Set 1 - 1x2"/>
+	<building-package name="Methane Set 1 - 1x1" />	
  	<building-package name="Brine Water Well Set 1 - 1x1"/>
  	 
     <initial-supplies>
  	 
-    <vehicle type="Explorer Rover" number="3" />
-    <vehicle type="Light Utility Vehicle" number="3" />
-    <vehicle type="Delivery Drone" number="3" />
+    <vehicle type="Explorer Rover" number="2" />
+    <vehicle type="Light Utility Vehicle" number="1" />
+    <vehicle type="Delivery Drone" number="1" />
+
 
     <!-- Standard Phase 2 allocation-->
     <robot type="GardenBot-Advanced" number="2"/>
     <robot type="MakerBot-Standard" number="2"/>
     <robot type="MedicBot-Advanced" number="1"/>
     <robot type="RepairBot-Standard" number="2"/>
-    
+
     <equipment type="EVA Suit" number="16" />
 
     <!-- Containers-->
@@ -189,18 +153,18 @@
 	<resource type="food" amount="1440" />
 	<resource type="water" amount="4800" />
 	<resource type="oxygen" amount="2880" />
- 
+
     <part-package name="Standard Part Package 1" number="2" />
  	 
     </initial-supplies>
 
-  
+   	
     <resupply>
-       	<resupply-mission name="BiMonthly Delivery" manifest-name="Standard Resupply 1">
-                    <schedule firstSol="6" frequency="60" />
+       	<resupply-mission name="Quarterly Delivery" manifest-name="Standard Resupply 1">
+            <schedule firstSol="1" frequency="150" />
         </resupply-mission>
         <resupply-mission name="Annual Delivery" manifest-name="Resupply for Phase 2">
-                    <schedule firstSol="668" />
+                <schedule firstSol="668" />
         </resupply-mission>
     </resupply>
 </template>
