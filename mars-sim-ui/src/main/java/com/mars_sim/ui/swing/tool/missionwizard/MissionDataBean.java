@@ -13,12 +13,14 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MetaMissionRegistry;
 import com.mars_sim.core.mission.MissionCreationException;
+import com.mars_sim.core.mission.predefined.LandmarkMetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.BiologyFieldStudy;
@@ -54,7 +56,6 @@ class MissionDataBean {
 	
 	private MetaMission meta;
 	private String type = "";
-	private String description = "";
 	
 	private Settlement startingSettlement;
 	private Settlement destinationSettlement;
@@ -77,6 +78,8 @@ class MissionDataBean {
     private List<GroundVehicle> constructionVehicles;
 	private Map<Good, Integer> sellGoods;
 	private Map<Good, Integer> buyGoods;
+
+	private Landmark landmark;
 	    
 	/**
 	 * Creates a mission from the mission data.
@@ -89,8 +92,7 @@ class MissionDataBean {
 			mixedMembers.addAll(botMembers);
 
 		// Create the mission roster;this is for the new single constructor per Mission pattern
-		var roster = new MetaMission.Roster(personMembers.get(0),
-										mixedMembers.subList(1, mixedMembers.size()), rover);
+		var roster = new MetaMission.Roster(getLeader(), getWorkerMembers(), rover);
 
 	    try {
 			Mission mission = switch (meta.getType()) {
@@ -115,6 +117,7 @@ class MissionDataBean {
 														sellGoods, buyGoods);
 				case MissionType.TRAVEL_TO_SETTLEMENT -> new TravelToSettlement(roster, destinationSettlement, false);
 				case MissionType.TEST_DRIVE -> meta.constructInstance(roster, false);
+				case MissionType.VISIT_LANDMARK -> ((LandmarkMetaMission)meta).constructInstance(roster, landmark, false);
 				default -> throw new IllegalStateException("Mission type: " + type + " unknown");
 			};
 
@@ -127,10 +130,6 @@ class MissionDataBean {
 		}
 	}
 
-	/**
-	 * Gets the mission type enum.
-	 * @return missionType enum.
-	 */
     public MissionType getMissionType() {
 		return meta.getType();
 	}
@@ -150,175 +149,128 @@ class MissionDataBean {
     public void setMissionType(MissionType missionType) {
 		this.meta = MetaMissionRegistry.getMetaMission(missionType);
     }
-
-	/**
-	 * Sets the mission description.
-	 * 
-	 * @param description the mission description.
-	 */
-    public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * Gets the starting settlement.
-	 * 
-	 * @return settlement.
-	 */
+	
     public Settlement getStartingSettlement() {
 		return startingSettlement;
 	}
 
-	/**
-	 * Sets the starting settlement.
-	 * 
-	 * @param startingSettlement starting settlement.
-	 */
     public void setStartingSettlement(Settlement startingSettlement) {
 		this.startingSettlement = startingSettlement;
 	}
 
-	/**
-	 * Gets the rover.
-	 * 
-	 * @return rover.
-	 */
     public Rover getRover() {
 		return rover;
 	}
 
-	/**
-	 * Sets the rover.
-	 * 
-	 * @param rover the rover.
-	 */
     public void setRover(Rover rover) {
 		this.rover = rover;
 	}
 
-	/**
-	 * Gets the drone.
-	 * 
-	 * @return drone.
-	 */
     public Drone getDrone() {
 		return drone;
 	}
 
-	/**
-	 * Sets the drone.
-	 * 
-	 * @param drone the drone.
-	 */
     public void setDrone(Drone drone) {
 		this.drone = drone;
 	}
 
-	/**
-	 * Sets the mission members.
-	 * 
-	 * @param members the members.
-	 */
     public void setBotMembers(List<Robot> mm) {
     	this.botMembers = mm;
 	}
     
-	/**
-	 * Sets the mission members.
-	 * 
-	 * @param members the members.
-	 */
     public void setPersonMembers(List<Person> mm) {
     	this.personMembers = mm;
 	}
     
 	/**
-	 * Gets the destination settlement.
-	 * 
-	 * @return destination settlement.
+	 * Leader is the first Person selected.
 	 */
+	public Person getLeader() {
+		if (personMembers != null && !personMembers.isEmpty()) {
+			return personMembers.get(0);
+		}
+		return null;
+	}
+
+	/**
+	 * This is a combination of the Person & Bot members minus the leader.
+	 */
+	public List<Worker> getWorkerMembers() {
+		List<Worker> members = new ArrayList<>();
+		if (personMembers != null && personMembers.size() > 1) {
+			members.addAll(personMembers.subList(1, personMembers.size()));
+		}
+		if (botMembers != null) {
+			members.addAll(botMembers);
+		}
+		return members;
+	}
+
     public Settlement getDestinationSettlement() {
 		return destinationSettlement;
 	}
 
-	/**
-	 * Sets the destination settlement.
-	 * 
-	 * @param destinationSettlement the destination settlement.
-	 */
     public void setDestinationSettlement(Settlement destinationSettlement) {
 		this.destinationSettlement = destinationSettlement;
 	}
 
-	/**
-	 * Sets the rescue vehicle.
-	 * 
-	 * @param vehicle the target of the rescue
-	 */
     public void setRescueVehicle(Vehicle vehicle) {
 		this.rescueVehicle = vehicle;
 	}
 
-	/**
-	 * Sets the points on a route.
-	 * 
-	 * @param points the route points.
-	 */
+	public Vehicle getRescueVehicle() {
+		return rescueVehicle;
+	}
+
     public void setRoutePoints(List<Coordinates> points) {
 		this.routePoints = points;
 	}
 
-	/**
-	 * Sets the sell goods.
-	 * 
-	 * @param sellGoods map of goods and integer amounts.
-	 */
     public void setSellGoods(Map<Good, Integer> sellGoods) {
 		this.sellGoods = sellGoods;
 	}
 
-	/**
-	 * Sets the buy goods.
-	 * 
-	 * @param buyGoods map of goods and integer amounts.
-	 */
 	public void setBuyGoods(Map<Good, Integer> buyGoods) {
 		this.buyGoods = buyGoods;
 	}
 
-	/**
-	 * Sets the light utility vehicle.
-	 * 
-	 * @param luv the light utility vehicle
-	 */
 	public void setLUV(LightUtilityVehicle luv) {
 		this.luv = luv;
 	}
 
-	/**
-	 * Sets the mining site.
-	 * 
-	 * @param miningSite the mining site.
-	 */
+	public Vehicle getLUV() {
+		return luv;
+	}
+	
 	public void setMiningSite(MineralSite miningSite) {
 		this.miningSite = miningSite;
 	}
 
-    /**
-     * Sets the construction site.
-     * 
-     * @param constructionSite the construction site.
-     */
+	public MineralSite getMiningSite() {
+		return miningSite;
+	}
+
     public void setConstructionSite(ConstructionSite constructionSite) {
         this.constructionSite = constructionSite;
     }
 
-    /**
-     * Sets the scientific study.
-     * 
-     * @param study the scientific study.
-     */
+	public ConstructionSite getConstructionSite() {
+		return constructionSite;
+	}
+
     public void setScientificStudy(ScientificStudy study) {
         this.study = study;
     }
+
+	public ScientificStudy getScientificStudy() {
+		return study;	
+	}
+
+	public void setLandmark(Landmark landmark) {
+		this.landmark = landmark;	
+	}
+
+	public Landmark getLandmark() {
+		return landmark;	
+	}
 }

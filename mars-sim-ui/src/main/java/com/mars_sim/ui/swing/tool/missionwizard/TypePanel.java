@@ -19,11 +19,12 @@ import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import com.mars_sim.core.Named;
+import com.mars_sim.core.mission.MetaMissionRegistry;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 import com.mars_sim.ui.swing.utils.wizard.WizardStep;
 
@@ -39,7 +40,7 @@ class TypePanel extends WizardStep<MissionDataBean> implements ItemListener {
     // Private members.
 	private JComboBox<MissionType> typeSelect;
 
-	private JTextField descriptionTF;
+	private JLabel descriptionTF;
 	
 	/**
 	 * Constructor.
@@ -76,19 +77,15 @@ class TypePanel extends WizardStep<MissionDataBean> implements ItemListener {
 		// Add a vertical strut to separate the display.
 		add(Box.createVerticalStrut(10));
 		
-		// Create the description info label.
-		add(new JLabel("Edit Mission Description (Optional)"));
 		
 		// Create the description panel.
 		JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		descriptionPane.setBorder(SwingHelper.createLabelBorder("Mission Description"));
 		add(descriptionPane);
 		
-		// Create the description label.
-		descriptionPane.add(new JLabel("Description: "));
-		
 		// Create the description text field.
-		descriptionTF = new JTextField(20);
+		descriptionTF = new JLabel();
 		descriptionPane.add(descriptionTF);
 		descriptionPane.setMaximumSize(new Dimension(Short.MAX_VALUE, descriptionTF.getPreferredSize().height));
 
@@ -103,14 +100,22 @@ class TypePanel extends WizardStep<MissionDataBean> implements ItemListener {
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		var selectedMission = (MissionType) typeSelect.getSelectedItem();
-		setMandatoryDone(selectedMission != null);
+		if (selectedMission != null) {
+			setMandatoryDone(true);
+
+			var meta = MetaMissionRegistry.getMetaMission(selectedMission);
+			descriptionTF.setText(meta.getDescription());
+		}
+		else {
+			setMandatoryDone(false);
+			descriptionTF.setText("");
+		}
 	}
 
 	@Override
 	public void updateState(MissionDataBean state) {
 		var type = (MissionType)typeSelect.getSelectedItem();
 		state.setMissionType(type);
-		state.setDescription(descriptionTF.getText());
 
 		getWizard().setStepSequence(MissionCreate.getSteps(type));
 	}

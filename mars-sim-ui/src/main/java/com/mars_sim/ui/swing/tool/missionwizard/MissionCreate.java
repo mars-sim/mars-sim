@@ -7,6 +7,8 @@
 
 package com.mars_sim.ui.swing.tool.missionwizard;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +37,9 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 	/**
 	 * The predefined step sequences for Mission types.
 	 */
-	private static final List<String> EXPLORATION_STEPS = List.of(TypePanel.ID, StartingSettlementPanel.ID,
-								RoverPanel.ID, RoutePanel.ID,  MembersPanel.ID);
-	private static final List<String> SCIENCE_STEPS = List.of(TypePanel.ID, StartingSettlementPanel.ID,
-								SciencePanel.ID, RoverPanel.ID, RoutePanel.ID, MembersPanel.ID);
+	private static final List<String> EXPLORATION_STEPS = List.of(RoverPanel.ID, RoutePanel.ID,  MembersPanel.ID);
+	private static final List<String> SCIENCE_STEPS = List.of(SciencePanel.ID, RoverPanel.ID,
+												RoutePanel.ID, MembersPanel.ID);
 
 	// Too many to use Map.of method.
 	private static final Map<MissionType, List<String>> MISSION_STEPS = new EnumMap<>(MissionType.class);
@@ -47,23 +48,20 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 		MISSION_STEPS.put(MissionType.BIOLOGY, SCIENCE_STEPS);
 		MISSION_STEPS.put(MissionType.COLLECT_ICE, EXPLORATION_STEPS);
 		MISSION_STEPS.put(MissionType.COLLECT_REGOLITH, EXPLORATION_STEPS);
-		MISSION_STEPS.put(MissionType.CONSTRUCTION, List.of(TypePanel.ID, StartingSettlementPanel.ID,
-				ConstructionPanel.ID, LightUtilityVehiclePanel.ID, MembersPanel.ID));
-		MISSION_STEPS.put(MissionType.DELIVERY, List.of(TypePanel.ID, StartingSettlementPanel.ID, DronePanel.ID,
-				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID, MembersPanel.ID,
-				BotsPanel.ID));
-		MISSION_STEPS.put(MissionType.EMERGENCY_SUPPLY, List.of(TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID,
+		MISSION_STEPS.put(MissionType.CONSTRUCTION, List.of(ConstructionPanel.ID, LightUtilityVehiclePanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.DELIVERY, List.of(DronePanel.ID, DestinationSettlementPanel.ID,
+										TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID, MembersPanel.ID, BotsPanel.ID));
+		MISSION_STEPS.put(MissionType.EMERGENCY_SUPPLY, List.of(RoverPanel.ID,
 				DestinationSettlementPanel.ID, TradeGoodsPanel.SUPPLY_ID, MembersPanel.ID));	
 		MISSION_STEPS.put(MissionType.METEOROLOGY, SCIENCE_STEPS);
-		MISSION_STEPS.put(MissionType.MINING, List.of(TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MineSitePanel.ID,
+		MISSION_STEPS.put(MissionType.MINING, List.of(RoverPanel.ID, MineSitePanel.ID,
 				LightUtilityVehiclePanel.ID,  MembersPanel.ID));
-		MISSION_STEPS.put(MissionType.RESCUE_SALVAGE_VEHICLE, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, RescueVehiclePanel.ID, MembersPanel.ID));
-		MISSION_STEPS.put(MissionType.TRADE, List.of(TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID,
+		MISSION_STEPS.put(MissionType.VISIT_LANDMARK, List.of(RoverPanel.ID, LandmarkPanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.RESCUE_SALVAGE_VEHICLE, List.of(RoverPanel.ID, RescueVehiclePanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.TRADE, List.of(RoverPanel.ID,
 				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID, MembersPanel.ID));		
-		MISSION_STEPS.put(MissionType.TRAVEL_TO_SETTLEMENT, List.of(TypePanel.ID, StartingSettlementPanel.ID,
-				RoverPanel.ID, DestinationSettlementPanel.ID, MembersPanel.ID));
-		MISSION_STEPS.put(MissionType.TEST_DRIVE, List.of(TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.TRAVEL_TO_SETTLEMENT, List.of(RoverPanel.ID, DestinationSettlementPanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.TEST_DRIVE, List.of(RoverPanel.ID, MembersPanel.ID));
 		}
 
 	/**
@@ -126,6 +124,8 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 			case TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SUPPLY_ID, TradeGoodsPanel.SELL_ID ->
 								new TradeGoodsPanel(stepID, this, state);
 			case TypePanel.ID ->new TypePanel(this);
+			case LandmarkPanel.ID -> new LandmarkPanel(this, state);
+			case ConfirmationPanel.ID -> new ConfirmationPanel(this, state);
 			default ->
 				throw new IllegalArgumentException("Unknown step ID: " + stepID);
 		};
@@ -137,7 +137,14 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 	 * @return List of the step IDs in order.
 	 */
 	static List<String> getSteps(MissionType type) {
-		return MISSION_STEPS.getOrDefault(type, null);
+		List<String> steps = new ArrayList<>();
+		steps.add(TypePanel.ID);
+		steps.add(StartingSettlementPanel.ID);
+
+		steps.addAll(MISSION_STEPS.getOrDefault(type, Collections.emptyList()));
+
+		steps.add(ConfirmationPanel.ID);
+		return steps;
 	}
 
 	/**

@@ -67,15 +67,29 @@ public class LandmarkMetaMission extends AbstractMetaMission {
                 .filter(l -> l.getCoordinates().getDistance(startingPlace) < range)
                 .findFirst()
                 .orElseThrow(() -> new MissionCreationException("mission.landmark.noneinrange"));
-        
-		var mission = new MissionVehicleProject(null, MissionType.VISIT_LANDMARK, 10, crew);
 
-        Coordinates turningPoint = selected.getCoordinates();
+        return constructInstance(crew, selected, needsReview);
+    }
+    
+    /**
+     * Factory method to create a mission that visits a Landmark with teh specified roster.
+     * @param roster Roster of memebrs and vehicle
+     * @param landmark Landmark to visit
+     * @param needsReview Does it need a review
+     * @return
+     */
+    public Mission constructInstance(Roster roster, Landmark landmark, boolean needsReview) {
+        Settlement base = roster.leader().getAssociatedSettlement();
+        Coordinates startingPlace = base.getCoordinates();
+
+		var mission = new MissionVehicleProject(null, MissionType.VISIT_LANDMARK, 10, roster);
+
+        Coordinates turningPoint = landmark.getCoordinates();
 
         List<MissionStep> plan = new ArrayList<>();
-        plan.add(new MissionTravelStep(mission, new NavPoint(turningPoint, "Turn around",
+        plan.add(new MissionTravelStep(mission, new NavPoint(turningPoint, landmark.getName(),
                                                             startingPlace)));
-        plan.add(new VisitLandmark(mission, selected));
+        plan.add(new VisitLandmark(mission, landmark));
         plan.add(new MissionTravelStep(mission, new NavPoint(base, turningPoint)));           
 
         mission.setSteps(plan);  
@@ -94,7 +108,7 @@ public class LandmarkMetaMission extends AbstractMetaMission {
         private LandmarkObjective objective;
 
         public VisitLandmark(MissionVehicleProject parent, Landmark landmark) {
-            super(parent, Stage.ACTIVE, "Visit " + landmark.getName());
+            super(parent, Stage.ACTIVE, "Explore " + landmark.getName());
 
             objective = new LandmarkObjective(landmark, SITE_TIME);
         }
