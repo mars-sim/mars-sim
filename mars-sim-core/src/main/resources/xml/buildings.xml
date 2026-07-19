@@ -3696,7 +3696,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Sabatier RWGS Reactor" number-modules="72"/>
+				<process-engine name="Sabatier RWGS Reactor" number-modules="60"/>
 			</resource-processing>
 			<storage stock-capacity="30000">
 				<resource-capacity type="carbon dioxide" amount="5000" />
