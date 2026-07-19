@@ -374,8 +374,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 				accumulatedTime -= newCheckPeriod;	
 				// Increment the duty time here
 				dutyTime += time;
-				
-				double bottleneck = 1D;
 
 				// Input resources from inventory.
 				for (Integer resource : processSpec.getInputResources()) {
@@ -385,17 +383,9 @@ public class ResourceProcess implements ScheduledEventHandler {
 						double required = resourceRate * accumulatedTime;
 						if (required == 0D)
 							continue;
-						
+
 						double stored = host.getSpecificAmountResourceStored(resource);
-						
-						// Get resource bottleneck
-						double desiredResourceAmount = currentProductionLevel * time;
-						double proportionAvailable = 1D;
-						if (desiredResourceAmount > 0D)
-							proportionAvailable = stored / desiredResourceAmount;
-						if (bottleneck > proportionAvailable)
-							bottleneck = proportionAvailable;
-						
+
 						// Retrieve the right amount
 						if (stored > SMALL_AMOUNT) {
 							if (required > stored) {
@@ -405,7 +395,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 								host.retrieveAmountResource(resource, required);							
 								// Halt the process now 
 								resourceProblem(resource, false, required, stored);
-								
+
 								break;
 							}
 							else
@@ -414,14 +404,11 @@ public class ResourceProcess implements ScheduledEventHandler {
 						else {
 							// Halt the process now 
 							resourceProblem(resource, false, required, stored);
-							
+
 							break;
 						}
 					}
 				}
-
-				// Set the new production level and moderate the output resourceRate below
-				currentProductionLevel = Math.min(currentProductionLevel, bottleneck);
 				
 				// Output resources to inventory.
 				for (Integer resource : processSpec.getOutputResources()) {

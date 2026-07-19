@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -100,7 +101,7 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		content.add(topPanel, BorderLayout.NORTH);
 		
-		JPanel gridPanel = new JPanel(new GridLayout(1, 3));
+		JPanel gridPanel = new JPanel(new GridLayout(1, 3, 2, 2));
 		topPanel.add(gridPanel);
 				
 		// Create level panel.
@@ -108,6 +109,7 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		gridPanel.add(levelPanel);
 		
 		JLabel levelLabel = new JLabel("Effort Lvl:");
+		levelLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		levelLabel.setToolTipText("How much effort devoted to producing output resources");
 		levelPanel.add(levelLabel);
 			
@@ -124,6 +126,7 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		gridPanel.add(dutyCyclePanel);
 		
 		dutyCycleLabel = new JLabel("Overall Duty Cycle: " + Math.round(averagePercentDuty*10.0)/10.0 + "%");
+		dutyCycleLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		dutyCyclePanel.add(dutyCycleLabel);
 		
 		// Create override check box panel.
@@ -133,6 +136,7 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 	
 		// Create override check box.
 		JCheckBox overrideCheckbox = new JCheckBox(Msg.getString("TabPanelResourceProcesses.checkbox.overrideResourceProcessToggling")); //$NON-NLS-1$
+		overrideCheckbox.setAlignmentY(Component.TOP_ALIGNMENT);
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelResourceProcesses.tooltip.overrideResourceProcessToggling")); //$NON-NLS-1$
 		overrideCheckbox.addActionListener(e ->
 			setResourceProcessOverride(overrideCheckbox.isSelected())
