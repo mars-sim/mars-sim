@@ -47,7 +47,7 @@ public class LandmarkMetaMission extends AbstractMetaMission {
     }
 
 	/**
-	 * Constructs an instance of the Landmark visit
+	 * Constructs an instance of the Landmark visit. This will select a suitable Landmark.
 	 * 
 	 * @param crew the roster of crew members to perform the mission.
 	 * @param needsReview Mission must be reviewed
@@ -72,8 +72,8 @@ public class LandmarkMetaMission extends AbstractMetaMission {
     }
     
     /**
-     * Factory method to create a mission that visits a Landmark with teh specified roster.
-     * @param roster Roster of memebrs and vehicle
+     * Factory method to create a mission that visits a Landmark with the specified roster.
+     * @param roster Roster of members and vehicle
      * @param landmark Landmark to visit
      * @param needsReview Does it need a review
      * @return

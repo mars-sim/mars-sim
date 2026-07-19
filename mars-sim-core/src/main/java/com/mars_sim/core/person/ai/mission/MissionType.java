@@ -28,7 +28,6 @@ public enum MissionType implements Named {
 	CONSTRUCTION("CON"),
 	TEST_DRIVE("TDR"),
 	VISIT_LANDMARK("VSL");
-	;
 
 	private String name;
 	private String shortCode;

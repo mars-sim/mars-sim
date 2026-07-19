@@ -77,7 +77,7 @@ class LandmarkPanel extends WizardItemStep<MissionDataBean, Landmark> {
 		
 			startPoint = state.getStartingSettlement().getLocation();
 			var range = state.getRover().getEstimatedRange();
-			var rangeAsDegree = 1D;
+			var rangeAsDegree = (range*1.1)/Coordinates.KM_PER_RADIAN_AT_EQUATOR;
 
 			var surfaceFeatures = SimulationConfig.instance().getLandmarkConfiguration();
 			var withinRange = surfaceFeatures.getLandmarks().getFeatures(startPoint, rangeAsDegree).stream()

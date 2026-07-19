@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.tool.missionwizard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
@@ -52,7 +51,7 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 class MissionDataBean {
 
-	private static Logger logger = LogManager.getLogManager().getLogger(MissionDataBean.class.getName());
+	private static Logger logger = Logger.getLogger(MissionDataBean.class.getName());
 	
 	private MetaMission meta;
 	private String type = "";
@@ -148,6 +147,10 @@ class MissionDataBean {
 	 */
     public void setMissionType(MissionType missionType) {
 		this.meta = MetaMissionRegistry.getMetaMission(missionType);
+		if (this.meta == null) {
+			// This should never happen
+			throw new IllegalArgumentException("No meta mission found for mission type: " + missionType);
+		}
     }
 	
     public Settlement getStartingSettlement() {
