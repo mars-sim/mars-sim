@@ -39,7 +39,7 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
     private JLabel vehicleStatusLabel;
     private JDoubleLabel speedLabel;
     private JDoubleLabel distanceNextNavLabel;
-    private JLabel traveledLabel;
+    private JDoubleLabel traveledLabel;
 
     public TabPanelAssigned(Mission entity, UIContext context) {
 		super(
@@ -80,7 +80,12 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 		distanceNextNavLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM, 0, 0.01D);
         attributePanel.addLabelledItem(Msg.getString("MainDetailPanel.distanceNextNavPoint"), distanceNextNavLabel);
 		
-        traveledLabel = attributePanel.addTextField(Msg.getString("MainDetailPanel.distanceTraveled"), "", null);
+        traveledLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM, 0, 0.01D);
+		attributePanel.addLabelledItem(Msg.getString("MainDetailPanel.distanceTraveled"), traveledLabel);
+		if (getEntity() instanceof VehicleMission vm) {
+        	String estimatedLabel = StyleManager.DECIMAL2_KM.format(vm.getTotalDistanceProposed());
+			attributePanel.addTextField(Msg.getString("MainDetailPanel.distanceEstimated"), estimatedLabel, null);
+		}
 
         v.addEntityListener(this);
 		updateVehicleInfo();
@@ -127,13 +132,7 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 
 		if (getEntity() instanceof VehicleMission vm) {
 			distanceNextNavLabel.setValue(vm.getDistanceCurrentLegRemaining());
-
-			double travelledDistance = Math.round(vm.getTotalDistanceTravelled()*100.0)/100.0;
-			double estTotalDistance = Math.round(vm.getTotalDistanceProposed()*100.0)/100.0;
-			traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
-					travelledDistance,
-					estTotalDistance
-					));
+			traveledLabel.setValue(vm.getTotalDistanceTravelled());
 		}
 	}
 

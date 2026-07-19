@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * TestDriveMissionTest.java
+ * TestDriveMetaMissionTest.java
  * @date 2023-06-03
  * @author Barry Evans
  */
@@ -21,6 +21,7 @@ import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MetaMissionRegistry;
+import com.mars_sim.core.mission.MissionCreationException;
 import com.mars_sim.core.mission.MissionProject;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.Person;
@@ -32,12 +33,10 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadingController;
 
-class TestDriveMissionTest extends MarsSimUnitTest {
-
-    private static final String MISSION_NAME = "test-mission";
+class TestDriveMetaMissionTest extends MarsSimUnitTest {
 
     @Test
-    void testCreation() {
+    void testCreation() throws MissionCreationException {
         Settlement home = buildSettlement("mock", true, 5);
         buildGarage(home.getBuildingManager(), new LocalPosition(0,0), BUILDING_LENGTH);
         var rover = buildRover(home, "Rover 1", null, EXPLORER_ROVER);
@@ -51,7 +50,7 @@ class TestDriveMissionTest extends MarsSimUnitTest {
         }
 
         var roster = new MetaMission.Roster(leader, recruits, rover);
-        MissionVehicleProject mp = new TestDriveMission(MISSION_NAME, roster);
+        MissionVehicleProject mp = (MissionVehicleProject) meta.constructInstance(roster, false);
 
         // Check vehicle details
         assertFalse(mp.isDone(), "Mission active");
@@ -61,7 +60,7 @@ class TestDriveMissionTest extends MarsSimUnitTest {
 
         // Check route
         assertEquals(2, mp.getNavpoints().size(), "Mission navpoints");
-        assertEquals(TestDriveMission.TRAVEL_DIST * 2, mp.getTotalDistanceProposed(), 0.01D, "Mission distance");
+        assertEquals(TestDriveMetaMission.TRAVEL_DIST * 2, mp.getTotalDistanceProposed(), 0.01D, "Mission distance");
 
         // Check Members
         Collection<Worker> members = mp.getMembers();

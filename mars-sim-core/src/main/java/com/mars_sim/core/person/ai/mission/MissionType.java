@@ -26,8 +26,8 @@ public enum MissionType implements Named {
 	TRADE("TRA"),
 	TRAVEL_TO_SETTLEMENT("TTS"),
 	CONSTRUCTION("CON"),
-	TEST_DRIVE("TDR")
-	;
+	TEST_DRIVE("TDR"),
+	VISIT_LANDMARK("VSL");
 
 	private String name;
 	private String shortCode;

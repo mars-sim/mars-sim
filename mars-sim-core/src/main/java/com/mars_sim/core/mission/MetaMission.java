@@ -44,6 +44,11 @@ public interface MetaMission {
 	String getName();
 
 	/**
+	 * Get a description of this mission type. This is used in the UI to describe the mission to the user.
+	 */
+	String getDescription();
+
+	/**
 	 * Can this meta automatically create a mission without user intervention?
 	 * If not, then the mission must be reviewed by the user before it can be created.
 	 * @return true if the meta can automatically create a mission.

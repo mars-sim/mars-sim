@@ -8,6 +8,7 @@ package com.mars_sim.core.project;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -102,6 +103,7 @@ public class Project implements Serializable {
      * @param successful
      */
     protected void completed(boolean successful) {
+        // Default implementation does nothing. Override to provide notification
     }
 
     /**
@@ -109,6 +111,7 @@ public class Project implements Serializable {
      * @param activeStep Step started
      */
     protected void stepStarted(ProjectStep activeStep) {
+        // Default implementation does nothing. Override to provide notification
     }
 
     /**
@@ -116,10 +119,12 @@ public class Project implements Serializable {
      * @param completedStep Step completed
      */
     protected void stepCompleted(ProjectStep completedStep) {
+        // Default implementation does nothing. Override to provide notification
     }
 
     /**
      * Abort the project
+     * @param reason Reason for aborting
      */
     public void abort(String reason) {
         isAborted = true;
@@ -182,6 +187,14 @@ public class Project implements Serializable {
      */
     public boolean isFinished() {
         return (isDone || isAborted);
+    }
+
+    /**
+     * Gets the steps of the project.
+     * @return All steps defined
+     */
+    public List<ProjectStep> getSteps() {
+        return Collections.unmodifiableList(steps);
     }
 
     /**

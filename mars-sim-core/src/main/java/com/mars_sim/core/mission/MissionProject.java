@@ -365,7 +365,11 @@ public abstract class MissionProject implements Mission {
 
     @Override
     public List<MissionObjective> getObjectives() {
-        return Collections.emptyList();
+        return control.getSteps().stream()
+                .filter(MissionStep.class::isInstance)
+                .map(s -> ((MissionStep) s).getObjective())
+                .filter(o -> o != null)
+                .toList();
     }
 
     /**

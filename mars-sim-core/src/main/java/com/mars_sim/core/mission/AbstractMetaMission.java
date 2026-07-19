@@ -21,6 +21,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.comparators.RangeComparator;
@@ -49,6 +50,7 @@ public abstract class AbstractMetaMission implements MetaMission {
 	private int popThreshold;
 	private int solThreshold = 0;
 	private boolean automatic = true;
+	private String description;
 	
 	/**
 	 * Creates a new Mission meta instance.
@@ -66,6 +68,8 @@ public abstract class AbstractMetaMission implements MetaMission {
 		this.name = type.getName();
 		this.capacity = capacity;
 		this.minimum = 2;
+		this.description = Msg.getStringWithFallback("missiontype." + type.name().toLowerCase() + ".description",
+										type.getName());
 
 		// These are defaults
 		this.popThreshold = capacity + 2;
@@ -165,6 +169,11 @@ public abstract class AbstractMetaMission implements MetaMission {
 		return name;
 	}
 
+	@Override
+	public String getDescription() {
+		return description;
+	}
+	
 	@Override
 	public Set<JobType> getPreferredLeaderJob() {
 		return preferredLeaderJob;

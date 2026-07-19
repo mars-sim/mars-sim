@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.mission.Delivery;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.model.BasePersonModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
@@ -61,11 +60,11 @@ class MembersPanel extends WizardItemStep<MissionDataBean, Person>
 	 * @return vehicle capacity.
 	 */
 	private static int getCapacity(MissionDataBean state) {
-		return switch (state.getMissionType()) {
-			case CONSTRUCTION -> Integer.MAX_VALUE;
-			case DELIVERY -> Delivery.MAX_MEMBERS;
-			default -> state.getRover().getCrewCapacity();
-		};
+		var capacity = state.getMetaMission().getDefaultCapacity();
+		if (state.getRover() != null) {
+			capacity = Math.min(capacity, state.getRover().getCrewCapacity());
+		}
+		return capacity;
 	}
 
 	private static class MembersTableModel extends BasePersonModel implements WizardItemModel<Person> {
