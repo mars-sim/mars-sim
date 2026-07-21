@@ -171,14 +171,16 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		if (!settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
 			Building building = settlement.getBuildingManager().getABuilding(FunctionType.RESOURCE_PROCESSING);
-			selectToggableProcesses(building, 
+			if (building != null)
+				selectToggableProcesses(building, 
 					building.getResourceProcessing().getProcesses(), 
 					false, tasks, assessed);
 		}
 
 		if (!settlement.getProcessOverride(OverrideType.WASTE_PROCESSING)) {
 			Building building = settlement.getBuildingManager().getABuilding(FunctionType.WASTE_PROCESSING);
-			selectToggableProcesses(building, 
+			if (building != null)
+				selectToggableProcesses(building, 
 					building.getWasteProcessing().getProcesses(), 
 					true, tasks, assessed);
 		}
