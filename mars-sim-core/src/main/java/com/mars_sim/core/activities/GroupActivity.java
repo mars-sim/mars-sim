@@ -25,7 +25,7 @@ public class GroupActivity implements ScheduledEventHandler {
     private static final long serialVersionUID = 1L;
 
 	/**
-     * The State that a Group Activity transitions
+     * The State that a Group Activity transitions.
      */
     public enum ActivityState {
         SCHEDULED, PENDING, ACTIVE, DONE, UNSCHEDULED, CANCELLED;
@@ -40,8 +40,8 @@ public class GroupActivity implements ScheduledEventHandler {
     private String name;
 
     /**
-     * Create an activity for a specific Settlement. This will schedule the initial ScheduledEvent to
-     * handle the first occurance of this Activity adjusted to the local time zone, e.g. if the Info
+     * Creates an activity for a specific Settlement. This will schedule the initial ScheduledEvent to
+     * handle the first occurrence of this Activity adjusted to the local time zone, e.g. if the Info
      * define midday, it will be midday local time.
      * 
      * @param definition Activity being created
@@ -57,7 +57,8 @@ public class GroupActivity implements ScheduledEventHandler {
     }
 
     /**
-     * Create an activity for a specific person is the instigator.
+     * Creates an activity for a specific person is the instigator.
+     * 
      * @param name Special name of the activity
      * @param owner Owning Settlement
      * @param definition
@@ -76,8 +77,9 @@ public class GroupActivity implements ScheduledEventHandler {
     }
 
     /**
-     * Attach to a Settlement based on the current time and a calendar. Start time is adjusted
-     * for the position of the settlement around the planet/
+     * Attaches to a Settlement based on the current time and a calendar. Start time is adjusted
+     * for the position of the settlement around the planet.
+     * 
      * @param now Time now
      * @param calendar 
      */
@@ -90,7 +92,7 @@ public class GroupActivity implements ScheduledEventHandler {
     }
 
     /**
-     * Description of the future scheduled event for this activity.
+     * Gets the description of the future scheduled event for this activity.
      */
     @Override
     public String getEventDescription() {
@@ -136,7 +138,7 @@ public class GroupActivity implements ScheduledEventHandler {
                 }
             
             case PENDING:
-                // Waitng time is over, start
+                // Waiting time is over, start
                 state = ActivityState.ACTIVE;
                 return definition.activityDuration();
             default:
@@ -145,7 +147,7 @@ public class GroupActivity implements ScheduledEventHandler {
     }
 
     /**
-     * Find a meeting place of the correct type
+     * Finds a meeting place of the correct type.
      */
     private boolean selectMeetingPlace() {
         // Select the largest
@@ -163,7 +165,8 @@ public class GroupActivity implements ScheduledEventHandler {
     }
 
     /**
-     * The definition of this activity defining the behaviour.
+     * Gets the definition of this activity defining the behaviour.
+     * 
      * @return
      */
     public GroupActivityInfo getDefinition() {
@@ -171,7 +174,8 @@ public class GroupActivity implements ScheduledEventHandler {
     }   
     
     /**
-     * Person who insitgates the meeting, could be null
+     * Gets the person who instigates the meeting, could be null.
+     * 
      * @return Meeting Instigator
      */
     public Person getInstigator() {
@@ -179,7 +183,8 @@ public class GroupActivity implements ScheduledEventHandler {
     }
 
     /**
-     * Is this activity active, i.e can Persons join it.
+     * Is this activity active, i.e can Persons join it ?
+     * 
      * @return
      */
     public boolean isActive() {
@@ -187,7 +192,8 @@ public class GroupActivity implements ScheduledEventHandler {
     }
 
     /**
-     * Curent state of the activity.
+     * Gets the current state of the activity.
+     * 
      * @return
      */
     public ActivityState getState() {
@@ -195,7 +201,8 @@ public class GroupActivity implements ScheduledEventHandler {
     }
 
     /**
-     * Allocated meeting place for this activity based on the type of category
+     * Gets the allocated meeting place for this activity based on the type of category.
+     * 
      * @return
      */
     public Building getMeetingPlace() {

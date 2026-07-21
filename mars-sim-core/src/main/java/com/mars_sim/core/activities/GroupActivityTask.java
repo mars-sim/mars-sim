@@ -39,8 +39,9 @@ public class GroupActivityTask extends Task {
 
         // Walk to meeting place
         var b = person.getBuildingLocation();
-        if ((b == null) || !b.equals(activity.getMeetingPlace())) {
-        	walkToEmptyActivitySpotInBuilding(activity.getMeetingPlace(), true);
+        var p = activity.getMeetingPlace();
+        if (p != null && (b == null || !b.equals(p))) {
+        	walkToEmptyActivitySpotInBuilding(p, true);
         }
  
 		// Initialize phase
