@@ -396,7 +396,7 @@
 		</description> 
 		<!-- Note: Set ambient to false to reduce the probability of 
 				overusing hydrogen to produce methanol -->
-		<input resource="carbon dioxide" rate="44.0" ambient="true" />
+		<input resource="carbon dioxide" rate="44.0" ambient="false" />
 		<input resource="hydrogen" rate="4.0"  />
 		
 		<output resource="water" rate="36.0"  />
@@ -1055,12 +1055,12 @@
 		
 		<output resource="nitrate" rate="0.5"  />
 		<output resource="nitrite" rate="0.5"  />
-		<output resource="nitrogen" rate="0.5"  />
+		<output resource="nitrogen" rate="0.01"  />
 		<output resource="ammonia" rate="0.5"  />
 		<output resource="argon" rate="0.5"  />
-		<output resource="sand" rate="20"  />
+		<output resource="sand" rate="21.09"  />
 		<output resource="iron powder" rate="1.0" />	
-		<output resource="iron oxide" rate="1.5" />
+		<output resource="iron oxide" rate="0.5" />
 	</process>
 
 

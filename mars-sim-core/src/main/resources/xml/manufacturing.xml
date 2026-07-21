@@ -364,10 +364,10 @@ Note: 1 kg of H2 is 14.13 liter
 				
 				
 	<process name="Make crop fertilizers"
-			tech="2" skill="1"
-			work-time="10"
-			process-time="10" tooling="chemical"
-			power-required="0.1">
+			tech="1" skill="1"
+			work-time="2"
+			process-time="5" tooling="chemical"
+			power-required="0.01">
 		<description> 
 			An arbitrary N-P-K-ratio (the percentage the product contains by volume of nitrogen (N), phosphorus (P), and potassium (K)) is used.		
 			A. 3 main macronutrients (NPK):
@@ -381,9 +381,19 @@ Note: 1 kg of H2 is 14.13 liter
 			D. Of occasional significance are silicon (Si), cobalt (Co), and vanadium (V).
 		</description> 	
 		<inputs>
-			<resource name="Compost" amount="0.5" >
-				<alternative name="Crop Waste" amount="0.5" />
+			<resource name="Sand" amount="1.5" >
+				<alternative name="Sandstone" amount="1.5" />
+				<alternative name="Rock samples" amount="1.5" />
 			</resource>	
+			<resource name="Soil" amount="1.0" >
+				<alternative name="Carbon" amount="1.0" />
+			</resource>	
+			<resource name="Compost" amount="0.1" >
+				<alternative name="Crop Waste" amount="0.1" />
+			</resource>	
+			<resource name="Food" amount="1.0">
+				<alternative name="Food Waste" amount="1.0" />
+			</resource>			
 			<resource name="Nitrate" amount="0.5" >
 				<alternative name="Nitrite" amount="0.5" />
 				<alternative name="Ammonia" amount="0.5" />
@@ -396,20 +406,17 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="Nitrospira SPP" amount=".05" />
 				<alternative name="Rhizobia" amount=".05" />
 			</resource>
-			<resource name="calcium" amount="0.02" />
-			<resource name="magnesium" amount="0.02" />
-			<resource name="sulfur" amount="0.02" />
+			<resource name="Calcium" amount="0.02" />
+			<resource name="Magnesium" amount="0.02" />
+			<resource name="Sulfur" amount="0.02" />
 			
-			<resource name="zinc" amount="0.02">
-				<alternative name="iron powder" amount="0.02" />
-				<alternative name="copper" amount="0.02" />
-			</resource>
-			<resource name="methane" amount="1">
-				<alternative name="hydrogen" amount="1" />
+			<resource name="Zinc" amount="0.02">
+				<alternative name="Iron powder" amount="0.02" />
+				<alternative name="Copper" amount="0.02" />
 			</resource>
 		</inputs>
 		<outputs>
-			<resource name="Fertilizer" amount="3" />
+			<resource name="Fertilizer" amount="5.0" />
 		</outputs>
 	</process>
 
@@ -3412,9 +3419,9 @@ Note: 1 kg of H2 is 14.13 liter
 			
 		<inputs>
 			<resource name="Ethylene" amount="1.0" />
-			<resource name="food waste" amount="0.5" />
-			<resource name="carbon dioxide" amount="1.0" />
-			<resource name="bisphenol-a" amount="1.0" />
+			<resource name="Carbon" amount="0.25" />
+			<resource name="Carbon dioxide" amount="0.75" />
+			<resource name="Bisphenol-a" amount="1.0" />
 		</inputs>
 		<outputs>
 			<resource name="Polycarbonate resin" amount="3.0" />
@@ -3423,12 +3430,32 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="Produce polyurethane" tech="3" skill="2" work-time="10" process-time="20"
 			tooling="chemical" power-required="0.5">
+		<description> 
+			The defining feature of all polyurethanes is the urethane linkage (carbamate group).  
+			The general formula for the repeating unit in the polymer chain is:
+			[–R–NH–CO–O–R'–O–]ₙ
+			
+			Where:
+			
+			1. –NH–CO–O– is the urethane linkage formed during the reaction. 
+			2. R represents the organic structure derived from the isocyanate (e.g., aromatic 
+			   rings from MDI or TDI). 
+			3. R' represents the organic structure derived from the polyol (e.g., polyether 
+			   or polyester chains). 
+			4. n indicates the number of repeating units, which can be very large.
+			
+		</description> 
 		<inputs>
-			<resource name="crop waste" amount="2.0" />
-			<resource name="carbon dioxide" amount="3.0" />
+			<resource name="Carbon" amount="0.25" />
+			<resource name="Nitrogen" amount="0.5" />
+			<resource name="Polyester resin" amount="0.25" />
+			<resource name="Ammonia" amount="0.5" >
+				<alternative name="Hydrogen" amount="0.5"/>
+			</resource>					
+			<resource name="Carbon dioxide" amount="0.5" />
 		</inputs>
 		<outputs>
-			<resource name="polyurethane" amount="2.0" />
+			<resource name="Polyurethane" amount="2.0" />
 		</outputs>
 	</process>
 
@@ -3474,8 +3501,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="manganese" amount=".1" />	
 			<resource name="nickel" amount=".1" />	
-			<resource name="iron powder" amount=".1" />		
-			<resource name="Aluminum" amount=".1"  >
+			<resource name="iron powder" amount=".1" />	
+			<resource name="Aluminum" amount=".1" >
 				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>					
 			<resource name="glass" amount="4.2" />	

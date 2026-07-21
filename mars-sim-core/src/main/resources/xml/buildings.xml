@@ -396,7 +396,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<!--For producing Methane and Water -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="6"/>
-				<process-engine name="CO Methanation" number-modules="3"/>
+				<process-engine name="CO Methanation" number-modules="2"/>
 	
 				<!--For producing Oxygen -->
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
@@ -420,7 +420,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!--For producing Water -->
 				<process-engine name="Melt Ice" number-modules="16" />
 				<process-engine name="Filter Brine Water" number-modules="16" />
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="5"/>		
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>		
 				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="2"/>
 				
 				<!-- Bio-based processes -->
@@ -846,7 +846,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">	
 				<!--For producing Methane and Water -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="18"/>			
-				<process-engine name="CO Methanation" number-modules="9"/>
+				<process-engine name="CO Methanation" number-modules="6"/>
 				
 				<!--For producing Oxygen -->
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="32"/>	
@@ -870,7 +870,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!--For producing Water -->
 				<process-engine name="Melt Ice" number-modules="48" />
 				<process-engine name="Filter Brine Water" number-modules="48" />
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="20"/>	
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="16"/>	
 				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="8"/>
 				
 				<activity>
@@ -2017,7 +2017,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="1"/>	
 				
 				<!--Using Hydrogen -->
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="30"/>	
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="24"/>	
 				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="12"/>					
 						
 			</resource-processing>
@@ -3714,7 +3714,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="36"/>
-				<process-engine name="CO Methanation" number-modules="18"/>
+				<process-engine name="CO Methanation" number-modules="12"/>
 				
 			</resource-processing>
 			<storage stock-capacity="30000">
@@ -4357,7 +4357,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<!--For producing Methane and Water -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="6"/>
-				<process-engine name="CO Methanation" number-modules="3"/>
+				<process-engine name="CO Methanation" number-modules="2"/>
 				
 				<!--For producing Oxygen -->
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
@@ -4381,7 +4381,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!--For producing Water -->
 				<process-engine name="Melt Ice" number-modules="16" />
 				<process-engine name="Filter Brine Water" number-modules="16" />
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="5"/>	
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>	
 				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="2"/>	
 				
 				<!-- Bio-based processes -->
