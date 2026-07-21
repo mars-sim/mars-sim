@@ -169,24 +169,18 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		Map<ResourceProcessSpec,ResourceProcessAssessment> assessed = new HashMap<>();
 
-		if (!settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {			
-			// Get the most suitable process per Building; not each process as too many will be created
-			for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.RESOURCE_PROCESSING)) {
-				// In this building, select the best resource to compete
-				selectToggableProcesses(building, 
-								building.getResourceProcessing().getProcesses(), 
-								false, tasks, assessed);
-			}
+		if (!settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
+			Building building = settlement.getBuildingManager().getABuilding(FunctionType.RESOURCE_PROCESSING);
+			selectToggableProcesses(building, 
+					building.getResourceProcessing().getProcesses(), 
+					false, tasks, assessed);
 		}
 
 		if (!settlement.getProcessOverride(OverrideType.WASTE_PROCESSING)) {
-			// Get the most suitable process per Building; not each process as too many will be created
-			for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.WASTE_PROCESSING)) {
-				// In this building, select the best resource to compete
-				selectToggableProcesses(building, 
-								building.getWasteProcessing().getProcesses(), 
-								true, tasks, assessed);
-			}
+			Building building = settlement.getBuildingManager().getABuilding(FunctionType.WASTE_PROCESSING);
+			selectToggableProcesses(building, 
+					building.getWasteProcessing().getProcesses(), 
+					true, tasks, assessed);
 		}
 		
 		return tasks;
@@ -223,7 +217,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					
 					count++;
 					
-					if (process.getOverallScore() <= 0D) {
+					if (process.getOverallScore() < 0) {
 						results.add(new ToggleOffJob(this, settlement, building, process, new RatingScore(100)));
 						return;
 					}
@@ -237,27 +231,32 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 						var elapsed = getMarsTime().getTimeDiff(process.getToggleDue());
 
-						// If overdue by more that 2 sols then score gets increased
-						score.addModifier("toggleTime", 0.1 + elapsed / 2000);
+						score.addModifier("toggleTime", 1 + elapsed / 100);
 					
-						if (score.getScore() >= 100) { 
+						if (score.getScore() >= 10) { 
 							results.add(new ToggleOffJob(this, settlement, building, process, score));
 							return;
 						}
 					}
 				}
 				else {
-					var spec = process.getSpec();
-					int modules = process.getNumModules();
-					var a = assessed.computeIfAbsent(spec,
-								s -> calculateAssessment(building, s, modules, isWaste, results));
-					process.setAssessment(a);
+					compute(assessed, results, building, process, isWaste);
 					return;
 				}
 			}
 		}
 	}
-			
+		
+	private void compute(Map<ResourceProcessSpec, ResourceProcessAssessment> assessed, List<SettlementTask> results, 
+			Building building, ResourceProcess process, boolean isWaste) {
+		var spec = process.getSpec();
+		int modules = process.getNumModules();
+		var a = assessed.computeIfAbsent(spec,
+					s -> calculateAssessment(building, s, modules, isWaste, results));
+		process.setAssessment(a);
+	}
+	
+	
 	/**
 	 * Evaluates and assesses a resource process.
 	 * 
@@ -333,7 +332,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		double percentage = 0;
 
 		// For now, consider only the input resource for waste processes
-		for(int id : process.getInputResources()) {
+		for (int id : process.getInputResources()) {
 			double percAvailable;
 			if (process.isAmbientInputResource(id)) {
 				percAvailable = 1;
@@ -409,7 +408,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
 				
-				double mrate = rate * vp;
+				double mrate = rate * vp * .7;
 				
 				// Note: mass rate * VP -> demand
 				
@@ -466,7 +465,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
 
-				double mrate = rate * vp * .75;
+				double mrate = rate * vp * .5;
 				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),

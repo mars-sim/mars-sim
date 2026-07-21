@@ -60,6 +60,7 @@
 		CO₂ + 2 C₆H₅OH → C₁₃H₁₀O₃ (DPC) + H₂O
 
 		</description>
+		<!-- rate: the input/output resource rate [in kg/sol] -->
 		<input resource="bisphenol-a" rate="228.29" />
 		<input resource="carbon dioxide" rate="44.0" />
 		<!--input resource="phenol" rate="188.22" /-->
@@ -270,7 +271,7 @@
 
 	</process> <!-- "Oxidation of Methane into Methanol by Methanotrophs" -->
 		
-	<process name="Sabatier RWGS Reactor" kWh-required="0.12" >
+	<process name="Sabatier RWGS Reactor" kWh-required="0.0" >
 	<description> 
 	 A. Sabatier process :
 
@@ -328,6 +329,26 @@
 		<output resource="carbon monoxide" rate="280" waste="false" />
 		<output resource="water" rate="360" />
 	</process> <!-- "Sabatier RWGS Reactor" -->
+
+	<process name="CO Methanation" kWh-required="0.0" >
+	<description> 
+	
+	A related variant is CO methanation, which proceeds according to:
+	
+		CO + 3H2 -> CH4 + 2H2O, exothermic heat = -165 kJ/mol
+
+		CO : 28 g/mol
+		3H2 : 6 g/mol
+		CH4 : 16 g/mol
+		H2O : 18 g/mol
+
+	</description>
+		<input resource="carbon monoxide" rate="560" ambient="false" />
+		<input resource="hydrogen" rate="120" />
+		
+		<output resource="methane" rate="320" />
+		<output resource="water" rate="360" />
+	</process> <!-- "CO Methanation" -->
 
 		
 	<process name="Continuous Bosch Reactor (C-Bosch)" kWh-required="0.01" >
@@ -696,11 +717,11 @@
 		
 	</description>
 
-		<input resource="carbon monoxide" rate="224.0" ambient="false" />
-		<input resource="water" rate="144.0"  />				
+		<input resource="carbon monoxide" rate="280.0" ambient="false" />
+		<input resource="water" rate="180.0"  />				
 		
-		<output resource="carbon dioxide" rate="352.0" waste="true" />
-		<output resource="hydrogen" rate="16.0"  />
+		<output resource="carbon dioxide" rate="440.0" waste="true" />
+		<output resource="hydrogen" rate="20.0"  />
 	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
 
 
@@ -840,11 +861,13 @@
 		<input resource="carbon dioxide" rate="100.0" ambient="true" />
 		
 		<output resource="nitrogen" rate="2.7"  />	
-		<output resource="oxygen" rate="0.161"  />	
+		<output resource="oxygen" rate="0.16"  />	
 		<output resource="argon" rate="1.94"  />
 		<output resource="water" rate="0.03"  />
+		<output resource="methane" rate="0.0000021"  />
+		<output resource="hydrogen" rate="0.0015"  />
 		<output resource="carbon monoxide" rate=".058"  />
-		<output resource="carbon dioxide" rate="95.111" waste="true" />
+		<output resource="carbon dioxide" rate="95.11" waste="true" />
 	</process> <!-- "Atmospheric Processing" -->
 	
 

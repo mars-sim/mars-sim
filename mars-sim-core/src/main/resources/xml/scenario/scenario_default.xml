@@ -73,7 +73,7 @@
 			<location coordinates="17.3983 81.9044" />
 		</settlement>
 
-		<settlement name="Korolev" template="Alpha Base 1" persons="44" robots="24" sponsor="RKA">
+		<settlement name="Korolev" template="Alpha Base 1" persons="40" robots="24" sponsor="RKA">
  			<!--  An ice-filled impact crater. The ice is permanently stable because the crater acts as a natural cold trap.
  				  https://pubs.usgs.gov/publication/70029300 
  				  https://en.wikipedia.org/wiki/Korolev_(Martian_crater) 
@@ -81,18 +81,18 @@
 			<location coordinates="72.77 164.58" />
 		</settlement>
 
-		<settlement name="Terminus" template="Alpha Base 2" crew="Alpha" persons="48" robots="24" sponsor="NASA">
+		<settlement name="Terminus" template="Alpha Base 2" crew="Alpha" persons="44" robots="24" sponsor="NASA">
 			<location coordinates="-4.8051 0.0" />
 		</settlement>
 			
-		<settlement name="Heritage" template="Hub Base" persons="36" robots="18" sponsor="MS">
+		<settlement name="Heritage" template="Hub Base" persons="52" robots="36" sponsor="MS">
 			<location coordinates="15.1255 114.1535" />
 		</settlement>
 
-		<settlement name="Foundation" template="Sector Base 1" crew="Founders" persons="216" robots="84" sponsor="MS">
+		<settlement name="Foundation" template="Sector Base 1" crew="Founders" persons="212" robots="84" sponsor="MS">
 			<location coordinates="24.14 172.29" />
 		</settlement>
-		
+
 	</initial-settlement-list>
 	<arriving-settlement-list>
 	

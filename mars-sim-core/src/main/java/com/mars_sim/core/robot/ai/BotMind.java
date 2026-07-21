@@ -7,7 +7,6 @@
 package com.mars_sim.core.robot.ai;
 
 import java.io.Serializable;
-import java.util.logging.Level;
 
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.logging.SimLogger;
@@ -132,8 +131,7 @@ public class BotMind implements Serializable, Temporal {
 			String task = botTaskManager.getTaskName();
 			if (task.equalsIgnoreCase(""))
 				task = "None";
-			logger.log(robot, Level.WARNING, 30_000L, "Battery almost depleted and must be recharged."
-					+ " Current task: " + task + ".");
+//			logger.log(robot, Level.FINE, 30_000L, "Battery almost depleted and must be recharged." + " Current task: " + task + ".");
 		}
 			
 		if (botTaskManager.hasActiveTask()) {			

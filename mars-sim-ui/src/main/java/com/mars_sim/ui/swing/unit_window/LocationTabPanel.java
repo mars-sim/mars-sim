@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LocationTabPanel.java
- * @date 2024-07-17
+ * @date 2026-07-19
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window;
@@ -14,6 +14,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -107,18 +109,23 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	protected void buildUI(JPanel content) {
 
 		// Create top panel
-		JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
 		topPanel.setBorder(SwingHelper.createEtchedBorder());
+		topPanel.add(Box.createVerticalGlue());
+		topPanel.add(Box.createHorizontalGlue());
 		content.add(topPanel, BorderLayout.CENTER);
 
 		// Create the banner text
+		JPanel bannerPanel = new JPanel();//new BorderLayout(5, 5));
+		bannerPanel.setLayout(new BoxLayout(bannerPanel, BoxLayout.X_AXIS));
 		bannerText = new DisplaySingle();
 		bannerText.setLcdInfoString("Last Known Position");
 		bannerText.setGlowColor(Color.ORANGE);
 		bannerText.setLcdColor(LcdColor.BEIGE_LCD);	
 		bannerText.setDigitalFont(true);
-		bannerText.setSize(BANNER_DIM);
-		bannerText.setMaximumSize(BANNER_DIM);
+//		bannerText.setSize(BANNER_DIM);
+//		bannerText.setMaximumSize(BANNER_DIM);
 		bannerText.setPreferredSize(BANNER_DIM);
 		bannerText.setVisible(true);
 		bannerText.setLcdNumericValues(false);
@@ -126,11 +133,18 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 		bannerText.setLcdText(locationStringCache);
 		// Pause the location lcd text the sim is pause
         bannerText.setLcdTextScrolling(true);
-        bannerText.setAlignmentX(Component.CENTER_ALIGNMENT);
-		topPanel.add(bannerText, BorderLayout.NORTH);
+//        bannerText.setAlignmentX(Component.CENTER_ALIGNMENT);
+        bannerPanel.add(bannerText, BorderLayout.CENTER);
+        content.add(bannerPanel, BorderLayout.NORTH);
+		
+		// Create the gauge panel
+		JPanel gaugePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+//		gaugePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		setupGauge(gaugePanel);
+		topPanel.add(gaugePanel, BorderLayout.CENTER);
 		
 		JPanel latLonPanel = new JPanel(new FlowLayout());
-		latLonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//		latLonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		// Create the Lat display
 		lcdLat = new DisplaySingle();
@@ -176,12 +190,6 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 		lcdLong.setVisible(true);
 		lcdPanel.add(lcdLong);
 		latLonPanel.add(lcdPanel);
-		
-		// Create the gauge panel
-		JPanel gaugePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		gaugePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		setupGauge(gaugePanel);
-		topPanel.add(gaugePanel, BorderLayout.CENTER);
 		
 		// Create the Survey Data panel
 		var dataPanel = new AttributePanel();
@@ -276,7 +284,8 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	}
 
 	/**
-	 * Update the position details. 
+	 * Updates the position details.
+	 * 
 	 * In theory this could be event driven rather than polled.
 	 */
 	@Override
@@ -300,7 +309,7 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 		}
 
 		if (unit instanceof Settlement s) {
-			updateSettlementLabels(s);
+			updateSurveyData(s);
 		}
 	}
 	
@@ -416,11 +425,11 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	}
 
 	/**
-	 * Updates the labels.
+	 * Updates the survey data.
 	 * 
 	 * @param s
 	 */
-	private void updateSettlementLabels(Settlement s) {
+	private void updateSurveyData(Settlement s) {
 		iceLabel.setText(Math.round(s.getIceCollectionRate() * 100.0)/100.0 + "");
 		regolithLabel.setText(Math.round(s.getRegolithCollectionRate() * 100.0)/100.0 + "");
 		areothermalLabel.setText(Math.round(s.getAreothermalPotential() * 100.0)/100.0 + " %");

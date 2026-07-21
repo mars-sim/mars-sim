@@ -2,7 +2,7 @@
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Hub Base" shift-pattern="Standard 4 Shift" 
         default-population="56" sponsor="MS"
-        description="Base With Central Hub">
+        description="MS Base With Central Hub">
 
     <!-- HUBS : 0 to 100, 200, 300, 400 -->   
     

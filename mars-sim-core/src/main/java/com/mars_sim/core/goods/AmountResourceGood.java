@@ -82,8 +82,8 @@ class AmountResourceGood extends Good {
 	private static final double ICE_FLATTENING_FACTOR = 0.5;
 	private static final double WATER_FLATTENING_FACTOR = 0.75;
 	
-	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
-	private static final double METHANE_FLATTENING_FACTOR = 1.1;
+	private static final double METHANOL_FLATTENING_FACTOR = 1.0;
+	private static final double METHANE_FLATTENING_FACTOR = 1.25;
 	private static final double HYDROGEN_FLATTENING_FACTOR = 2.25;
 	private static final double OXYGEN_FLATTENING_FACTOR = 0.75;	
 	
@@ -165,11 +165,11 @@ class AmountResourceGood extends Good {
 	
 	private static final double OXYGEN_VALUE_MODIFIER = 4;
 	private static final double METHANE_VALUE_MODIFIER = 0.06;
-	private static final double HYDROGEN_VALUE_MODIFIER = 2.25;
+	private static final double HYDROGEN_VALUE_MODIFIER = 2.5;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	
 	// Chemicals
-	private static final int CLEANING_AGENT_MODIFIER = 2;
+	private static final int CLEANING_AGENT_MODIFIER = 1;
 	private static final int ETHYLENE_MODIFIER = 10;
 	private static final int STYRENE_MODIFIER = 12;
 	private static final int PROPYLENE_MODIFIER = 3;
@@ -1482,7 +1482,7 @@ class AmountResourceGood extends Good {
 					double fuelDemand = v.getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
-				demand = demand * transFactor * METHANE_VALUE_MODIFIER * 2 / pop;
+				demand = demand * transFactor * METHANE_VALUE_MODIFIER * 3 / pop;
 			} break;
 
 			case ResourceUtil.HYDROGEN_ID: {
