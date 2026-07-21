@@ -233,9 +233,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 						var elapsed = getMarsTime().getTimeDiff(process.getToggleDue());
 
-						score.addModifier("toggleTime", 1 + elapsed / 100);
+						score.addModifier("toggleTime", 1 + elapsed / 10);
 					
-						if (score.getScore() >= 10) { 
+						if (score.getScore() >= 20) { 
 							results.add(new ToggleOffJob(this, settlement, building, process, score));
 							return;
 						}

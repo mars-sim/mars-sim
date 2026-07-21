@@ -803,7 +803,7 @@ public class Battery implements Serializable {
 			health = health * (1 + PERCENT_BATTERY_RECONDITIONING / 100);
 			if (health > 1)
 				health = 1;
-			logger.info(unit, 0, "The battery has just been reconditioned.");
+//			logger.info(unit, 0, "The battery has just been reconditioned.");
 		}
 		
 		diagnoseBattery();

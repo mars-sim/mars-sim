@@ -59,7 +59,8 @@ public class ResourceProcessPanel extends JPanel {
 
 	private static final String PROCESS = EM_SPACE + NON_BREAKING_SPACE + "Process:" + EM_SPACE;
 	private static final String BUILDING_HEADER = EM_SPACE + NON_BREAKING_SPACE + "Building:" + EM_SPACE;
-	private static final String POWER_REQ = "Power Req:" + EM_SPACE;
+	private static final String NUM_MODULES = "# Modules:" + EM_SPACE;
+	private static final String POWER_REQ   = "Power Req:" + EM_SPACE;
 	private static final String NOTE = EM_SPACE + "<i>Note:  * denotes an ambient resource</i>";
 
     /**
@@ -267,8 +268,9 @@ public class ResourceProcessPanel extends JPanel {
             // Future: Use another tool tip manager to align text to improve tooltip readability			
             result.append(PROCESS).append(process.getProcessName()).append(BR);
             result.append(BUILDING_HEADER).append(building.getName()).append(BR);
-            result.append(POWER_REQ).append(StyleManager.DECIMAL_KW.format(process.getkWhRequired()))
-            .append(BR);
+            result.append(NUM_MODULES).append(process.getNumModules()).append(BR);
+            result.append(POWER_REQ).append(StyleManager.DECIMAL2_KW.format
+            		(process.getkWhRequired())).append(BR);
 
             result.append(INPUTS);
             boolean firstItem = true;

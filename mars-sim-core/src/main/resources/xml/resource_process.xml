@@ -105,7 +105,7 @@
 		<output resource="Water" rate="54.0" />
 	</process>
 	
-	<process name="Photosynthetic Conversion of CO2 to Ethylene" kWh-required="0.1" >
+	<process name="Photosynthetic Conversion of CO2 to Ethylene" kWh-required="0.001" >
 		<description>
 		The direct conversion of carbon dioxide to ethylene using photoautotrophic cyanobacteria involves an engineered 
 		photosynthetic process. While natural photosynthesis produces glucose and oxygen from carbon 
@@ -669,11 +669,12 @@
 
 
 	</description>
+		<!-- Note: this process is quite unprofitable since it uses both methane and water -->
 		<input resource="Methane" rate="160.0" />
-		<input resource="Water" rate="360.0"  />				
+		<input resource="Water" rate="360.0" />
 		
 		<output resource="Carbon dioxide" rate="440.0" waste="true" />
-		<output resource="Hydrogen" rate="60.0"  />
+		<output resource="Hydrogen" rate="60.0" />
 	</process> <!-- "Steam Methane Reforming (SMR)" -->
 
 	<process name="Dry Methane Reforming (DMR)" kWh-required="0.01" >
@@ -692,9 +693,9 @@
 
 	</description>
 		<input resource="Methane" rate="160.0" />
-		<input resource="Carbon dioxide" rate="440.0" ambient="true"  />				
+		<input resource="Carbon dioxide" rate="440.0" ambient="false" />
 		
-		<output resource="Carbon monoxide" rate="560.0" waste="false"/>
+		<output resource="Carbon monoxide" rate="560.0" waste="false" />
 		<output resource="Hydrogen" rate="40.0"  />
 	</process> <!-- "Dry Methane Reforming (DMR) to Produce Hydrogen" -->
 
@@ -718,7 +719,7 @@
 	</description>
 
 		<input resource="carbon monoxide" rate="280.0" ambient="false" />
-		<input resource="water" rate="180.0"  />				
+		<input resource="water" rate="180.0" />
 		
 		<output resource="carbon dioxide" rate="440.0" waste="true" />
 		<output resource="hydrogen" rate="20.0"  />
@@ -726,7 +727,7 @@
 
 
 
-	<process name="Oxygen Generation System (OGS)" kWh-required="0.15625" defaultOn="true">
+	<process name="Oxygen Generation System (OGS)" kWh-required="0.15625" defaultOn="false">
 	<description> 
 	
 		Oxygen Generation System can split water into H2 and O2.
@@ -819,7 +820,7 @@
 		<output resource="oxygen" rate="256" />
 	</process> <!-- Oxygen Generator System (OGS) -->
 	
-	<process name="Low Temperature Plasma CO2 Decomposition" kWh-required="0.01" defaultOn="true">
+	<process name="Low Temperature Plasma CO2 Decomposition" kWh-required="0.01" defaultOn="false">
 		<description> 
 			The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 			be ignited in ambient Martian atmosphere. 
@@ -841,7 +842,7 @@
 	</process> <!-- "Low Temperature Plasma CO2 Decomposition" -->
 	
 	     
-	<process name="Atmospheric Processing" kWh-required="0.01" defaultOn="true">
+	<process name="Atmospheric Processing" kWh-required="0.001" defaultOn="true">
 		<description> 
 		 
 		 It is likely that all the nitrogen obtain through atmospheric processing will 
@@ -858,16 +859,16 @@
 	     https://marspedia.org/Nitrogen 
 		 
 		</description> 			
-		<input resource="carbon dioxide" rate="100.0" ambient="true" />
+		<input resource="carbon dioxide" rate="1000.0" ambient="true" />
 		
-		<output resource="nitrogen" rate="2.7"  />	
-		<output resource="oxygen" rate="0.16"  />	
-		<output resource="argon" rate="1.94"  />
-		<output resource="water" rate="0.03"  />
-		<output resource="methane" rate="0.0000021"  />
-		<output resource="hydrogen" rate="0.0015"  />
-		<output resource="carbon monoxide" rate=".058"  />
-		<output resource="carbon dioxide" rate="95.11" waste="true" />
+		<output resource="nitrogen" rate="27"  />	
+		<output resource="oxygen" rate="01.6"  />	
+		<output resource="argon" rate="19.4"  />
+		<output resource="water" rate="00.3"  />
+		<output resource="methane" rate="0.000021"  />
+		<output resource="hydrogen" rate="0.015"  />
+		<output resource="carbon monoxide" rate=".58"  />
+		<output resource="carbon dioxide" rate="951.1" waste="true" />
 	</process> <!-- "Atmospheric Processing" -->
 	
 
@@ -1020,7 +1021,7 @@
 	</process>
 
 
-	<process name="Convert Regolith to Ores with Sand" kWh-required="0.02" defaultOn="true">
+	<process name="Convert Regolith to Ores with Sand" kWh-required="0.02" defaultOn="false">
 		<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 		analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 		Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
@@ -1587,25 +1588,71 @@
 		<output resource="hydrogen" rate="1.0" />
 		<output resource="concrete" rate="94.0" />
 	</process>
-	
-	<process name="Produce Ethylene" kWh-required="0.05" >
+		
+	<process name="CO2 Electroreduction from H2 to Ethylene and H2O" kWh-required="0.005" >
 		<description>
 			See https://www.sciencedaily.com/releases/2020/09/200917084058.htm
 			
+			The balanced overall chemical equation for the electrochemical reduction of 
+			carbon dioxide to ethylene using copper catalysts is:
+  
 			2CO2 + 6H2 → C2H4 + 4H2O
-			2*(12+32) , 12 , 24+4 , 18*4
-			88 , 12 , 28 , 72
+			2*(12+32), 12, 24+4, 4*(2+16)
+			       88, 12, 28, 72
 			
-			Requires iron catalyst.
+			Requires copper catalyst.
+
+			Oxide-Derived Copper Interfaces: 
+			Other studies utilize copper oxide-derived (OD-Cu) catalysts, such as 
+			ultrathin CuO nanoplate arrays that form stable Cu/Cu2O heterogeneous 
+			interfaces during operation.  
+			
+			These interfaces lower the energy barrier for C–C coupling, achieving 
+			high Faradaic efficiency (up to 84.5% for ethylene) and sustained 
+			performance in flow cells using neutral electrolytes.
 			
 		</description>
-		<input resource="carbon dioxide" rate="88.0" ambient="true" />
+		<input resource="carbon dioxide" rate="88.0" ambient="false" />
 		<input resource="hydrogen" rate="12.0" />
-		<input resource="iron powder" rate="0.04" />
+		<input resource="Potash lye" rate="0.01" />
+		<input resource="copper" rate="0.01" />
 		
 		<output resource="ethylene" rate="28.0" />
 		<output resource="water" rate="72.0"/>
-		<output resource="iron powder" rate="0.03" />
+	</process>
+	
+	<process name="CO2 Electroreduction from H2O to Ethylene and O2" kWh-required="0.005" >
+		<description>
+			
+			To improve upon "CO2 Electroreduction from H2 to Ethylene and H2O" process,
+			in a complete electrochemical cell, this cathodic reaction is paired with the 
+			anodic oxygen evolution reaction (OER), typically: 
+			
+				4H2O → 2O2 + 8H+ + 8e- 
+−
+			Combining these half-reactions yields the net cell reaction: 
+			
+				2CO2 + 2H2O → C2H4 + 3O2
+			2*(12+2*16), 2*(2+16), 24+4, 3*(2*16)
+					88,		36,		28, 	96
+			
+			Catalyst: 
+			Copper (often nanostructured or oxide-derived) is essential for facilitating 
+			the C-C coupling step required to form ethylene rather than simpler products 
+			like methane or carbon monoxide. 
+			
+			Electrolyte: 
+			Typically alkaline (e.g., KOH) or neutral bicarbonate solutions are
+			used to manage proton availability and stabilize intermediates.
+			
+		</description>
+		<input resource="carbon dioxide" rate="88.0" ambient="false" />
+		<input resource="water" rate="36.0" />
+		<input resource="Potash lye" rate="0.01" />
+		<input resource="copper" rate="0.01" />
+		
+		<output resource="ethylene" rate="28.0" />
+		<output resource="oxygen" rate="96.0"/>
 	</process>
 
 	<process name="Produce Polyethylene from Ethylene" kWh-required="0.01" >

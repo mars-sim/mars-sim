@@ -4,6 +4,7 @@
 	name="Default" description="Default Scenario">
 	<initial-settlement-list>
 	<!-- List of initial settlements in the simulation -->
+		<!-- location coordinates= xxx N (+ve is North) xxx E (+ve is East) -->	
 
 		<settlement name="New London" template="Phase 1-UK" persons="8" robots="4" sponsor="UKSA">
 			<!-- sits between Star Base and New Seoul -->	
@@ -39,7 +40,7 @@
 		</settlement>
 
 		<settlement name="Kyocera" template="Phase 2-JP" persons="12" robots="6" sponsor="JAXA">
-			<location coordinates="6 164" />
+			<location coordinates="43.3018 -171.8967" />
 		</settlement>
 
 		<settlement name="New Seoul" template="Phase 2-KR" persons="14" robots="8" sponsor="KASA">
@@ -102,7 +103,7 @@
 		</arriving-settlement>
 			
 		<arriving-settlement name="New Dubai" template="Phase 0-AE" 
-			persons="2" robots="4" sponsor="UAESA" arrival-in-sols="4">
+			persons="4" robots="4" sponsor="UAESA" arrival-in-sols="4">
 			<location coordinates="13.5488 136.4239" />
 		</arriving-settlement>	
 	
