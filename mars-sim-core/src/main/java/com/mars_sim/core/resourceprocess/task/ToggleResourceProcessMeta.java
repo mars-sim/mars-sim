@@ -242,14 +242,22 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					}
 				}
 				else {
-					compute(assessed, results, building, process, isWaste);
-					return;
+					computeAssessment(assessed, results, building, process, isWaste);
 				}
 			}
 		}
 	}
 		
-	private void compute(Map<ResourceProcessSpec, ResourceProcessAssessment> assessed, List<SettlementTask> results, 
+	/**
+	 * Computes the assessment.
+	 * 
+	 * @param assessed
+	 * @param results
+	 * @param building
+	 * @param process
+	 * @param isWaste
+	 */
+	private void computeAssessment(Map<ResourceProcessSpec, ResourceProcessAssessment> assessed, List<SettlementTask> results, 
 			Building building, ResourceProcess process, boolean isWaste) {
 		var spec = process.getSpec();
 		int modules = process.getNumModules();
@@ -345,7 +353,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				
 				double rate = process.getBaseInputRate(id); // per sol
 				double perSol = process.getProcessTime() / 1000D; // by default process time is 100
-				percAvailable = Math.max(1D, stored / rate / perSol / (cap/2 - stored) / 100);
+				percAvailable = Math.max(1D, stored / rate / perSol / (cap/2 - stored) / 10);
 			}
 
 			percentage = Math.max(percentage, percAvailable);
@@ -359,7 +367,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		if (rawScore > MAX_SCORE)
 			rawScore = MAX_SCORE;
 		
-		return new ResourceProcessAssessment(rawScore, 0, rawScore, true);
+		return new ResourceProcessAssessment(0, rawScore, rawScore, true);
 	}
 
 	/**
