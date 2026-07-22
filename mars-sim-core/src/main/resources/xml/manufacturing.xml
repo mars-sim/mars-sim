@@ -391,8 +391,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Compost" amount="0.1" >
 				<alternative name="Crop Waste" amount="0.1" />
 			</resource>	
-			<resource name="Food" amount="1.0">
-				<alternative name="Food Waste" amount="1.0" />
+			<resource name="Food Waste" amount="1.0">
+				<alternative name="Food" amount="1.0" />
 			</resource>			
 			<resource name="Nitrate" amount="0.5" >
 				<alternative name="Nitrite" amount="0.5" />
@@ -401,19 +401,28 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Potassium" amount="0.5" >
 				<alternative name="potash lye" amount="0.5" />
 			</resource>
-			<resource name="Phosphorus" amount="0.5" />
 			<resource name="Nitrosomonas SPP" amount=".05">
 				<alternative name="Nitrospira SPP" amount=".05" />
 				<alternative name="Rhizobia" amount=".05" />
 			</resource>
-			<resource name="Calcium" amount="0.02" />
-			<resource name="Magnesium" amount="0.02" />
-			<resource name="Sulfur" amount="0.02" />
-			
 			<resource name="Zinc" amount="0.02">
 				<alternative name="Iron powder" amount="0.02" />
 				<alternative name="Copper" amount="0.02" />
 			</resource>
+			<resource name="Calcium" amount="0.02" >
+				<alternative name="Calcium sulfate" amount="0.02" />
+				<alternative name="Lime" amount="0.02" />
+			</resource>
+			<resource name="Magnesium" amount="0.02" >
+				<alternative name="Manganese" amount="0.02" />
+			</resource>
+			<resource name="Sulfur" amount="0.02" >
+				<alternative name="Oxygen" amount="0.02" />
+			</resource>
+			<resource name="Phosphorus" amount="0.5" >
+				<alternative name="Chromium" amount="0.05" />
+			</resource>		
+
 		</inputs>
 		<outputs>
 			<resource name="Fertilizer" amount="5.0" />
@@ -986,23 +995,40 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="water" amount="20.0" />
 		</inputs>
 		<outputs>
-			<resource name="Polyester Resin" amount="50.0" />
+			<resource name="Polyester resin" amount="50.0" />
 		</outputs>
 	</process>
 
 	<process name="Roll mylar film" tech="2" skill="2" work-time="10" process-time="40"
 			tooling="chemical" power-required="0.05">
 		<description>
-		 Mylar film that can be coated with evaporated aluminum on one side
+
+		The chemical formula for Mylar (biaxially-oriented polyethylene terephthalate or BoPET) is:
+
+			(C₁₀H₈O₄)ₙ
+			
+		C₁₀H₈O₄ represents the repeating monomer unit derived from the reaction of 
+		terephthalic acid and ethylene glycol. 
+		n indicates the number of repeating units in the polymer chain, which varies depending 
+		on the molecular weight of the specific resin used.	
+		
+		In this process, the carboxyl groups (–COOH) of the acid react with the hydroxyl groups (–OH)
+		of the glycol to form ester linkages, releasing water as a byproduct. 
+
+		General Equation: nC8H6O4 + nC2H6O2  → [-C10H8O4-]n + 2nH2O
+		
+		In industrial settings, this is often a two-step process involving an intermediate 
+		called bis(2-hydroxyethyl) terephthalate or BHET, but the net stoichiometry remains the same:
+		
+		1 mole of acid reacts with 1 mole of glycol to form 1 mole of repeating unit and 2 moles of water.)
 		</description>
 		<inputs>
-			<resource name="Polyester Resin" amount="1.0" />
-			<resource name="Polyethylene" amount="1.0">
-				<alternative name="Polypropylene" amount="1.0" />
-			</resource>
+			<resource name="Water" amount="0.3604" />
+			<resource name="Ethylene glycol" amount="0.607" />
+			<resource name="Terephthalic acid" amount="1.6613" />
 		</inputs>
 		<outputs>
-			<resource name="Mylar" amount="2.0" />
+			<resource name="Mylar" amount="1.9217" />
 		</outputs>
 	</process>
 	
@@ -1011,6 +1037,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<description>
 		 Biaxially oriented PET film is metallized by vapor deposition of a thin film of 
 		 evaporated aluminum, gold, or other metal onto it.
+		 
+		 Mylar film that can be coated with evaporated aluminum on one side.
 		</description>
 		<inputs>
 			<resource name="Mylar" amount="2.0" />
@@ -1019,7 +1047,7 @@ Note: 1 kg of H2 is 14.13 liter
 			</resource>
 		</inputs>
 		<outputs>
-			<resource name="Aluminized Mylar" amount="2.5" />
+			<resource name="Aluminized mylar" amount="2.5" />
 		</outputs>
 	</process>
 	
@@ -1051,7 +1079,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make lubricant bottle" tech="3" skill="1" work-time="20" process-time="300"
 			tooling="3d printer" power-required="0.1">
 		<inputs>
-			<resource name="Polyester Resin" amount="1" />
+			<resource name="Polyester resin" amount="1" />
 		</inputs>
 		<outputs>
 			<part name="Lubricant Bottle" number="5" />
@@ -1073,7 +1101,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make airleak patch" tech="3" skill="1" work-time="20" process-time="100"
 			tooling="3d printer" power-required="0.1">
 		<inputs>
-			<resource name="Polyester Resin" amount="7.5" />
+			<resource name="Polyester resin" amount="7.5" />
 			<resource name="styrene" amount="7.5" />
 		</inputs>
 		<outputs>
@@ -1127,7 +1155,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Do plastic sheet extrusion" tech="1" skill="1" work-time="20" process-time="200"
 			power-required=".2">
 		<inputs>
-			<resource name="Polyester Resin" amount="10.0" />
+			<resource name="Polyester resin" amount="10.0" />
 		</inputs>
 		<outputs>
 			<part name="plastic sheet" number="10" />
@@ -1189,8 +1217,8 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="Polyester fiber" amount="0.2" />
 				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
-			<resource name="Polyurethane" amount="0.1" />
-			<resource name="Polyester resin" amount="1.0" />
+			<resource name="Polyurethane" amount="0.5" />
+			<resource name="Polyester resin" amount="0.5" />
 		</inputs>
 		<outputs>
 			<part name="Garment" number="2" />
@@ -1204,8 +1232,8 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="Polyester fiber" amount="0.2" />
 				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
-			<resource name="Polyurethane" amount="0.1" />
-			<resource name="Polyester resin" amount="1.0" />
+			<resource name="Polyurethane" amount="0.5" />
+			<resource name="Polyester resin" amount="0.5" />
 		</inputs>
 		<outputs>
 			<part name="Hand Towel" number="4" />
@@ -1224,13 +1252,17 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="Polyester fiber" amount="0.2" />
 				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
-			<resource name="Thermoplastic elastomer" amount="0.4" />
+			<resource name="Thermoplastic elastomer" amount="0.1" />
 			<resource name="Polypropylene" amount="0.1" />
+			<resource name="Polyester resin" amount="0.6">
+				<alternative name="Polyurethane" amount="0.6" />
+			</resource>
 			<resource name="Nylon" amount="0.2">
 				<alternative name="Kevlar" amount="0.2"/>
 				<alternative name="Fiber cloth" amount="0.2"/>
 			</resource>
-			<resource name="Paraffin composites" amount="0.15" />
+			<resource name="Paraffin composites" amount="0.1" />
+			<resource name="Aluminized mylar" amount="0.2" />
 			<part name="Plastic tubing" number="3" />
 		</inputs>
 		<outputs>
@@ -1300,7 +1332,7 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
 			<resource name="Polyurethane" amount="0.1" />
-			<resource name="Aluminized Mylar" amount="1.0" />			
+			<resource name="Aluminized mylar" amount="1.0" />			
 			<part name="fiberglass cloth" number="4" />
 		</inputs>
 		<outputs>
@@ -3439,20 +3471,32 @@ Note: 1 kg of H2 is 14.13 liter
 			
 			1. –NH–CO–O– is the urethane linkage formed during the reaction. 
 			2. R represents the organic structure derived from the isocyanate (e.g., aromatic 
-			   rings from MDI or TDI). 
-			3. R' represents the organic structure derived from the polyol (e.g., polyether 
-			   or polyester chains). 
+			   rings from MDI or TDI), containing the reactive –N=C=O group. 
+			   - MDI (Methylene Diphenyl Diisocyanate): 250.25 g/mol (Formula: C₁₅H₁₀N₂O₂).  
+			     This is the most common isocyanate for rigid foams and elastomers.
+			   - TDI (Toluene Diisocyanate): 174.16 g/mol (Formula: C₉H₆N₂O₂).  
+			     Primarily used in flexible foams. 
+			   - H₁₂MDI (Hydrogenated MDI): 262.35 g/mol.  Used for weather-resistant coatings.   
+			3. R', the soft segment, represents the organic structure derived from the polyol 
+			   (e.g., polyether or polyester chains). 
+			   - Chain Extenders: Very low molecular weight diols (e.g., 1,4-Butanediol at 
+			     90.12 g/mol or Ethylene Glycol at 62.07 g/mol) are often added to link hard segments. 
 			4. n indicates the number of repeating units, which can be very large.
 			
 		</description> 
 		<inputs>
+		<!-- Note: For simplicity, the input amount of each resources below are 
+		     arbitrary only and not the exact molar mass -->
 			<resource name="Carbon" amount="0.25" />
 			<resource name="Nitrogen" amount="0.5" />
-			<resource name="Polyester resin" amount="0.25" />
-			<resource name="Ammonia" amount="0.5" >
-				<alternative name="Hydrogen" amount="0.5"/>
-			</resource>					
+			<resource name="Polyester resin" amount="0.5" >
+				<alternative name="Ethylene glycol" amount="0.5"/>
+			</resource>
+			<resource name="Ammonia" amount="0.25" />			
 			<resource name="Carbon dioxide" amount="0.5" />
+			
+			
+			
 		</inputs>
 		<outputs>
 			<resource name="Polyurethane" amount="2.0" />
@@ -3839,7 +3883,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Carbon" amount="7.8"/>
 		</inputs>
 		<outputs>
-			<resource name="Thermoplastic Elastomer" amount="6" />
+			<resource name="Thermoplastic elastomer" amount="6" />
 		</outputs>
 	</process>
 	

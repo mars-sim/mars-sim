@@ -28,11 +28,21 @@ public class ManufactureConfigTest {
 
     private static final String MAKE_FERTILIZERS = "Make crop fertilizers";
     private static final String MAKE_RADIO_ANTENNA ="Make radio antenna";
+    private static final String[] FERTILIZER_ORIGINAL_NAMES = {
+    	  	"Sand",	"Soil", "Compost", "Food Waste", "Nitrate", 
+    	  	"Potassium", "Nitrosomonas SPP", "Zinc", 
+    	  	"Calcium", "Magnesium", "Sulfur", "Phosphorus"
+        };
+    
     private static final String[] FERTILIZER_ALT_NAMES = {
-        "Nitrite","Ammonia","potash lye", "Crop Waste",
-        "Nitrospira SPP","Rhizobia","iron powder","copper","hydrogen"
-    };
-    private static final int FERTILIZER_INPUTS = 10;
+        	"Sandstone", "Carbon", "Crop Waste", "Food", "Nitrite", 
+        	"potash lye", "Nitrospira SPP", "Iron powder",
+        	"Lime", "Manganese", "Oxygen", "Chromium"
+    	};
+
+    private static final int FERTILIZER_INPUTS = FERTILIZER_ORIGINAL_NAMES.length;
+    private static final int FERTILIZER_ALT_INPUTS = FERTILIZER_ALT_NAMES.length;
+    
     private ManufactureConfig manuConfig;
 
 
@@ -87,10 +97,10 @@ public class ManufactureConfigTest {
         Set<List<ProcessItem>> alternatives = new HashSet<>();
         alternatives.add(fertilizerP.getInputList());
 
-        for(var alt : FERTILIZER_ALT_NAMES) {
+        for (var alt : FERTILIZER_ALT_NAMES) {
             var found = processByName.get(MAKE_FERTILIZERS + ManufactureConfig.WITH_PREFIX + alt);
             assertNotNull(found, MAKE_FERTILIZERS + " alternative " + alt);
-            assertEquals(FERTILIZER_INPUTS, found.getInputList().size(), MAKE_FERTILIZERS + " alternative " + alt + "inputs");
+            assertEquals(FERTILIZER_ALT_INPUTS, found.getInputList().size(), MAKE_FERTILIZERS + " alternative " + alt + "inputs");
             alternatives.add(found.getInputList());
         }
 
@@ -133,7 +143,7 @@ public class ManufactureConfigTest {
 
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
-        expectedInputs.add(createAmount("Polyester Resin", 0.5D));
+        expectedInputs.add(createAmount("Polyester resin", 0.5D));
         expectedInputs.add(createAmount("styrene", 0.5D));
         expectedInputs.add(createPart("fiberglass", 1D));
         expectedInputs.add(createPart("aluminum sheet", 1D));

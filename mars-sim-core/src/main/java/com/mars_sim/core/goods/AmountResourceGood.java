@@ -102,6 +102,8 @@ class AmountResourceGood extends Good {
 	
 	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.1;
 	
+	private static final int MYLAR_FLATTENING_FACTOR = 3;
+	
 	// Minerals
 	private static final double OLIVINE_FLATTENING_FACTOR = 0.75;
 	private static final double KAMACITE_FLATTENING_FACTOR = 0.75;
@@ -251,6 +253,8 @@ class AmountResourceGood extends Good {
 		// or else the flatten amount would be invalid
 		
 		double mod = 1;
+		int id = ar.getID();
+		String name = ar.getName();
 		switch(ar.getGoodType()) {
 		
 		case ANIMAL:
@@ -261,15 +265,15 @@ class AmountResourceGood extends Good {
 		case CHEMICAL:
 			mod = CHEMICAL_FLATTENING_FACTOR;	
 			
-			if (ar.getName().equalsIgnoreCase("Dimethyl terephthalate")
-				|| ar.getName().equalsIgnoreCase("Silicone elastomer")
-				|| ar.getName().equalsIgnoreCase("Thermoplastic elastomer")
-				|| ar.getName().equalsIgnoreCase("Terephthalic acid")		
+			if (name.equalsIgnoreCase("Dimethyl terephthalate")
+				|| name.equalsIgnoreCase("Silicone elastomer")
+				|| name.equalsIgnoreCase("Thermoplastic elastomer")
+				|| name.equalsIgnoreCase("Terephthalic acid")		
 					) {
 				mod *= PLASTIC_RELATED_FLATTENING_FACTOR;
 			}
 			
-			mod *= switch(ar.getID()) {
+			mod *= switch(id) {
 				case ResourceUtil.ETHYLENE_ID ->  ETHYLENE_FLATTENING_FACTOR;
 				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
 				case ResourceUtil.POLYESTER_FIBER_ID -> POLYESTER_FIBER_FLATTENING_FACTOR;
@@ -280,7 +284,7 @@ class AmountResourceGood extends Good {
 		case COMPOUND:
 			mod = COMPOUND_FLATTENING_FACTOR;
 	
-			mod *= switch(ar.getID()) {
+			mod *= switch(id) {
 				case ResourceUtil.ACETYLENE_ID -> ACETYLENE_FLATTENING_FACTOR;
 				case ResourceUtil.SAND_ID -> SAND_FLATTENING_FACTOR;
 				case ResourceUtil.ICE_ID -> ICE_FLATTENING_FACTOR;
@@ -293,7 +297,7 @@ class AmountResourceGood extends Good {
 			};
 			
 			// Special case for NA2CO3
-			if (ar.getID() == ResourceUtil.NA2CO3_ID) 
+			if (id == ResourceUtil.NA2CO3_ID) 
 				mod *= NA2CO3_FLATTENING_FACTOR;
 			
 			break;
@@ -316,13 +320,13 @@ class AmountResourceGood extends Good {
 		case ELEMENT:
 			mod = ELEMENT_FLATTENING_FACTOR;
 			
-			if (ar.getID() == ResourceUtil.HYDROGEN_ID)
+			if (id == ResourceUtil.HYDROGEN_ID)
 				mod *= HYDROGEN_FLATTENING_FACTOR;
 			
-			else if (ar.getID() == ResourceUtil.OXYGEN_ID)
+			else if (id == ResourceUtil.OXYGEN_ID)
 				mod *= OXYGEN_FLATTENING_FACTOR;
 					
-			if (ar.getID() == ResourceUtil.IRON_POWDER_ID)
+			if (id == ResourceUtil.IRON_POWDER_ID)
 				mod *= IRON_POWDER_FLATTENING_FACTOR;
 			
 			break;
@@ -345,9 +349,9 @@ class AmountResourceGood extends Good {
 		case MINERAL:
 			mod = MINERAL_FLATTENING_FACTOR;
 			
-			if (ar.getID() == ResourceUtil.OLIVINE_ID)
+			if (id == ResourceUtil.OLIVINE_ID)
 				mod *= OLIVINE_FLATTENING_FACTOR;
-			else if (ar.getID() == ResourceUtil.KAMACITE_ID)
+			else if (id == ResourceUtil.KAMACITE_ID)
 				mod *= KAMACITE_FLATTENING_FACTOR;
 			
 			break;
@@ -384,6 +388,10 @@ class AmountResourceGood extends Good {
 	
 		case UTILITY:
 			mod = UTILITY_FLATTENING_FACTOR;
+			
+			if (id == ResourceUtil.MYLAR_ID
+					|| id == ResourceUtil.AL_MYLAR_ID)
+				mod *= MYLAR_FLATTENING_FACTOR;
 			
 			break;
 	

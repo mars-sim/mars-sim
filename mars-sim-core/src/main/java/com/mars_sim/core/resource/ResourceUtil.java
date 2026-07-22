@@ -135,9 +135,13 @@ public class ResourceUtil {
 	public static final int IRON_POWDER_ID = TEREPHTHALIC_ACID_ID + 1;
 	public static final int IRON_OXIDE_ID = IRON_POWDER_ID + 1;
 	public static final int GLASS_ID = IRON_OXIDE_ID + 1;
+	public static final int MYLAR_ID = GLASS_ID + 1;
+	public static final int AL_MYLAR_ID = MYLAR_ID + 1;
+	
+	
 	
 	// Must be one after the last fixed resource
-	public static final int FIRST_FREE_AMOUNT_RESOURCE_ID = GLASS_ID + 1;
+	public static final int FIRST_FREE_AMOUNT_RESOURCE_ID = AL_MYLAR_ID + 1;
 
 	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, 
 			COLUMNAR_BASALT_ID, GRANITE_ID, SHALE_ID, MUDSTONE_ID, 
@@ -170,11 +174,13 @@ public class ResourceUtil {
 
 	static {
 		// WARNING: all strings below MUST BE in lower-case
+		// Or else it will throw exception
 		
 		// Map the pre-defined resources to their names
 		fixedResources.put("acetylene", ACETYLENE_ID);
 		fixedResources.put("akaganeite", AKAGANEITE_ID);
 		fixedResources.put("allophane", ALLOPHANE_ID);
+		fixedResources.put("aluminized mylar", AL_MYLAR_ID);
 		fixedResources.put("argon", ARGON_ID);
 		fixedResources.put("basaltic", BASALTIC_ID);
 		fixedResources.put("bassanite", BASSANITE_ID);
@@ -228,6 +234,7 @@ public class ResourceUtil {
 		fixedResources.put("methanol", METHANOL_ID);
 		fixedResources.put("meteorite", METEORITE_ID);
 		fixedResources.put("mudstone", MUDSTONE_ID);
+		fixedResources.put("mylar", MYLAR_ID);
 		fixedResources.put("napkin", NAPKIN_ID);
 		fixedResources.put("nitrogen", NITROGEN_ID);
 		fixedResources.put("olivine", OLIVINE_ID);

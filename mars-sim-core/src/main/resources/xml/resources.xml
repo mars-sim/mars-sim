@@ -537,11 +537,11 @@
 		is manufactured as a chemical building block for
 		materials used to make packaging, insulation </resource>
 
-	 <resource name="Silicone Elastomer" type="chemical" phase="solid"> 
+	 <resource name="Silicone elastomer" type="chemical" phase="solid"> 
 	 	Highly stretchable, soft silicone elastomers 
 		 are of great interest for the fabrication of stretchable, soft devices. </resource>
 			 		 
-	<resource name="Thermoplastic Elastomer" type="chemical" phase="solid">
+	<resource name="Thermoplastic elastomer" type="chemical" phase="solid">
 		Thermoplastic elastomers (TPE), sometimes referred to as thermoplastic rubbers, are a 
 		class of copolymers or a physical mix of polymers (usually a plastic and a rubber) 
 		that consist of materials with both thermoplastic and elastomeric properties.
@@ -701,7 +701,7 @@
 	 strength and is very durable yet flexible, making it perfect for packing materials, electrical 
 	 insulation, solar technology and countless other practical uses.</resource>
 	 
-	<resource name="Aluminized Mylar" type="utility" phase="solid"> Aluminized Mylar is a reflective, 
+	<resource name="Aluminized mylar" type="utility" phase="solid"> Aluminized Mylar is a reflective, 
 	 electrical insulating material. It contains a coat of aluminum, resulting in a silver-colored radiant 
 	 barrier that reflects radiant heat and thermal radiation. It shields Space Stations against the 
 	 thermal radiation of the sun and the bitter cold of space. See 'Efficiency of aluminized mylar 
@@ -720,7 +720,7 @@
 		and it’s not ideal in compression, so fiberglass and carbon fiber are used in composites 
 		rather than Kevlar in those situations.</resource>
 		
-	<resource name="Paraffin Composites" type="utility" phase="solid"> Paraffin is a phase change 
+	<resource name="Paraffin composites" type="utility" phase="solid"> Paraffin is a phase change 
 		materials (PCMs) and is a mixture of straight-chain n-alkanes with the general formula 
 		CH3-(CH2)n-CH3. Paraffin is a name that is commonly used to denote a group of saturated 
 		alkane hydrocarbons with the general formula CnH2n+2, where “n” is greater than 20. 
@@ -749,7 +749,7 @@
 		undesired molecules and make it a perfect basis for catalytically active metals.
 	</resource>
 	
-	<resource name="Hydraulic Fluid" type="compound" phase="liquid" demand-multiplier="0.01"> 
+	<resource name="Hydraulic fluid" type="compound" phase="liquid" demand-multiplier="0.01"> 
 		Hydraulic Fluid is used for the subsurface robotic excavator to drill through the ice layer. 
 		It lubricates the drill bits.
 	</resource>			 					 		 
