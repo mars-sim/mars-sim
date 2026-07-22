@@ -1048,8 +1048,8 @@ public class CommanderWindow extends ContentPanel {
 		probabilityPanel.setToolTipText("The current ice and regolith digging probability score for this settlement");
 		
 		// Get the ice and regolith probability scores
-		double iceProb = settlement.getIceDemandCache();
-		double regolithProb = settlement.getRegolithDemandCache();
+		double iceProb = settlement.getIceDigValueCache();
+		double regolithProb = settlement.getRegolithDigValueCache();
 		iceProbLabel = probabilityPanel.addRow("Ice Value", "");
 		regolithProbLabel = probabilityPanel.addRow("Regolith Value", "");
 		iceProbLabel.setText(Math.round(iceProb * 100.0)/100.0 + "");
@@ -1528,8 +1528,8 @@ public class CommanderWindow extends ContentPanel {
 
 	private void updateIceRegolithProbability() {
 		// Get the ice and regolith probability scores 
-		double iceProb = settlement.getIceDemandCache();
-		double regolithProb = settlement.getRegolithDemandCache();
+		double iceProb = settlement.getIceDigValueCache();
+		double regolithProb = settlement.getRegolithDigValueCache();
 		iceProbLabel.setText(Math.round(iceProb * 100.0)/100.0 + "");
 		regolithProbLabel.setText(Math.round(regolithProb * 100.0)/100.0 + "");
 	}

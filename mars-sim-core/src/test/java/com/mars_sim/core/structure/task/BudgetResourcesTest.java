@@ -55,7 +55,7 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
         s.setIceReviewDue(true);
         assertTrue(s.isIceReviewDue(), "Ice Probability needs review");
         var task = new BudgetResources(p, ReviewGoal.ICE_RESOURCE);
-        assertTrue(s.getIceDemandCache() != s.getRecommendedIceDemand(), "Ice Cache is not the same as the new Ice Prob");
+        assertTrue(s.getIceDigValueCache() != s.getRecommendedIceDigValue(), "Ice Cache is not the same as the new Ice Prob");
         assertFalse(task.isDone(), "Task is active");
         assertTrue(s.isIceReviewDue(), "Ice Prob review is due");
 
@@ -84,7 +84,7 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
         // Continue to complete review
         var ph = task.getPhase();
         executeTaskUntilPhase(p, task, 1000);
-        assertTrue(!task.isDone() || task.injectDemand(), "Task is either still active or has failed");
+        assertTrue(!task.isDone() || task.shouldInjectNewDemand(), "Task is either still active or has failed");
         assertNotEquals(ph, task.getPhase(), "Phase changed");
 
         // Approval

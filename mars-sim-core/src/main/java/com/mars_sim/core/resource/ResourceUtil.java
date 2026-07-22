@@ -81,7 +81,8 @@ public class ResourceUtil {
 	
 	public static final int SOIL_ID = SCORIAL_ID + 1;
 	public static final int SAND_ID = SOIL_ID + 1;
-	public static final int BLACK_WATER_ID = SAND_ID + 1;
+	public static final int SILICON_ID = SAND_ID + 1;
+	public static final int BLACK_WATER_ID = SILICON_ID + 1;
 	public static final int GREY_WATER_ID = BLACK_WATER_ID + 1;
 	public static final int BRINE_WATER_ID = GREY_WATER_ID + 1;
 	
@@ -130,7 +131,6 @@ public class ResourceUtil {
 	public static final int POLYURETHANE_ID = POLYSTYRENE_ID + 1;
 	public static final int STYRENE_ID = POLYURETHANE_ID + 1;
 	public static final int TEREPHTHALIC_ACID_ID = STYRENE_ID + 1;
-	
 	
 	public static final int IRON_POWDER_ID = TEREPHTHALIC_ACID_ID + 1;
 	public static final int IRON_OXIDE_ID = IRON_POWDER_ID + 1;
@@ -260,6 +260,7 @@ public class ResourceUtil {
 		fixedResources.put("sandstone", SANDSTONE_ID);
 		fixedResources.put("scoria", SCORIAL_ID);
 		fixedResources.put("shale", SHALE_ID);
+		fixedResources.put("silicon", SILICON_ID);
 		fixedResources.put("smectite", SMECTITE_ID);
 		fixedResources.put("sodium hypochlorite", NACLO_ID);
 		fixedResources.put("sodium carbonate", NA2CO3_ID);
@@ -514,6 +515,20 @@ public class ResourceUtil {
 			default -> false;
 		};
 	}
+	
+	/** Is this isMethanol ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isMethanol(int resource) {
+		return switch (resource) {
+			case METHANOL_ID -> true;
+			default -> false;
+		};
+	}
+	
+	
 	
 	/**
 	 * Is this tier 0 resource ?

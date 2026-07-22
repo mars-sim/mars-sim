@@ -78,13 +78,14 @@ class AmountResourceGood extends Good {
 	private static final double ELEMENT_COST = 0.5;
 	private static final double LIFE_SUPPORT_COST = 0.5;
 	
-	// flatten multipliers
+	// Water related flattening factors
 	private static final double ICE_FLATTENING_FACTOR = 0.5;
 	private static final double WATER_FLATTENING_FACTOR = 0.75;
 	
-	private static final double METHANOL_FLATTENING_FACTOR = 1.0;
-	private static final double METHANE_FLATTENING_FACTOR = 1.25;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 2.25;
+	// Gases flattening factors
+	private static final double METHANOL_FLATTENING_FACTOR = 1.1;
+	private static final double METHANE_FLATTENING_FACTOR = 1.55;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 0.75;
 	private static final double OXYGEN_FLATTENING_FACTOR = 0.75;	
 	
 
@@ -108,10 +109,13 @@ class AmountResourceGood extends Good {
 	private static final double OLIVINE_FLATTENING_FACTOR = 0.75;
 	private static final double KAMACITE_FLATTENING_FACTOR = 0.75;
 	
+	private static final double SILICON_FLATTENING_FACTOR = .5;
+	
 	// Chemicals
 	private static final double ETHYLENE_FLATTENING_FACTOR = 0.75;
 	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
 	private static final double POLYESTER_FIBER_FLATTENING_FACTOR = 2.0;
+	private static final int POLYURETHANE_FLATTENING_FACTOR = 3;
 	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
 	
 	// Metals
@@ -128,7 +132,6 @@ class AmountResourceGood extends Good {
 	private static final double WASTE_FLATTENING_FACTOR = 0.15;
 	
 	private static final int UTILITY_FLATTENING_FACTOR = 4;
-	private static final double INSTRUMENT_FLATTENING_FACTOR = 5D;
 
 	private static final double INSECT_FLATTENING_FACTOR = 5D;
 	private static final double ORGANISM_FLATTENING_FACTOR = 2D;
@@ -166,8 +169,8 @@ class AmountResourceGood extends Good {
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
 	private static final double OXYGEN_VALUE_MODIFIER = 4;
-	private static final double METHANE_VALUE_MODIFIER = 0.06;
-	private static final double HYDROGEN_VALUE_MODIFIER = 2.5;
+	private static final double METHANE_VALUE_MODIFIER = 0.5;
+	private static final double HYDROGEN_VALUE_MODIFIER = 0.5;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	
 	// Chemicals
@@ -265,10 +268,10 @@ class AmountResourceGood extends Good {
 		case CHEMICAL:
 			mod = CHEMICAL_FLATTENING_FACTOR;	
 			
+			
 			if (name.equalsIgnoreCase("Dimethyl terephthalate")
 				|| name.equalsIgnoreCase("Silicone elastomer")
-				|| name.equalsIgnoreCase("Thermoplastic elastomer")
-				|| name.equalsIgnoreCase("Terephthalic acid")		
+				|| name.equalsIgnoreCase("Thermoplastic elastomer")	
 					) {
 				mod *= PLASTIC_RELATED_FLATTENING_FACTOR;
 			}
@@ -277,8 +280,11 @@ class AmountResourceGood extends Good {
 				case ResourceUtil.ETHYLENE_ID ->  ETHYLENE_FLATTENING_FACTOR;
 				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
 				case ResourceUtil.POLYESTER_FIBER_ID -> POLYESTER_FIBER_FLATTENING_FACTOR;
+				case ResourceUtil.POLYURETHANE_ID -> POLYURETHANE_FLATTENING_FACTOR;
+				case ResourceUtil.TEREPHTHALIC_ACID_ID -> PLASTIC_RELATED_FLATTENING_FACTOR;
 				default -> 1D;
-			};	
+			};
+	
 			break;
 			
 		case COMPOUND:
@@ -326,9 +332,12 @@ class AmountResourceGood extends Good {
 			else if (id == ResourceUtil.OXYGEN_ID)
 				mod *= OXYGEN_FLATTENING_FACTOR;
 					
-			if (id == ResourceUtil.IRON_POWDER_ID)
+			else if (id == ResourceUtil.IRON_POWDER_ID)
 				mod *= IRON_POWDER_FLATTENING_FACTOR;
 			
+			else if (id == ResourceUtil.SILICON_ID)
+				mod *= SILICON_FLATTENING_FACTOR;
+					
 			break;
 			
 		case GEMSTONE:
@@ -339,11 +348,6 @@ class AmountResourceGood extends Good {
 		case INSECT:
 			mod = INSECT_FLATTENING_FACTOR;
 			
-			break;
-			
-		case INSTRUMENT:
-			mod = INSTRUMENT_FLATTENING_FACTOR;
-
 			break;
 
 		case MINERAL:

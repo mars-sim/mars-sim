@@ -115,7 +115,9 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 				// Input resources from inventory.
 				for (Integer resource : processSpec.getInputResources()) {
+					
 					if (!processSpec.isAmbientInputResource(resource)) {
+						
 						double fullRate = getBaseFullInputRate(resource);
 						double resourceRate = fullRate * currentProductionLevel;
 						double required = resourceRate * accumulatedTime;
@@ -150,33 +152,37 @@ public class ResourceProcess implements ScheduledEventHandler {
 				
 				// Output resources to inventory.
 				for (Integer resource : processSpec.getOutputResources()) {
-					double maxRate = getBaseFullOutputRate(resource);
-					double resourceRate = maxRate * currentProductionLevel;
-					double required = resourceRate * accumulatedTime;
-					double remainingCap = host.getRemainingCombinedCapacity(resource);
 					
-					// Store the right amount
-					if (remainingCap > SMALL_AMOUNT) {
-						if (required > remainingCap) {
-							required = remainingCap;
-							// Alter the amount required to whatever required amount
-							// and store that amount
-							host.storeAmountResource(resource, required);
+					if (!isWasteOutputResource(resource)) {		
+						
+						double maxRate = getBaseFullOutputRate(resource);
+						double resourceRate = maxRate * currentProductionLevel;
+						double required = resourceRate * accumulatedTime;
+						double remainingCap = host.getRemainingCombinedCapacity(resource);
+									
+						// Store the right amount
+						if (remainingCap > SMALL_AMOUNT) {
+							if (required > remainingCap) {
+								required = remainingCap;
+								// Alter the amount required to whatever required amount
+								// and store that amount
+								host.storeAmountResource(resource, required);
+								// Halt the process now 
+								resourceProblem(resource, true, required, remainingCap);
+								
+								break;
+							}
+							else {
+								host.storeAmountResource(resource, required);						
+							}
+							
+						}
+						else {
 							// Halt the process now 
 							resourceProblem(resource, true, required, remainingCap);
 							
 							break;
 						}
-						else {
-							host.storeAmountResource(resource, required);						
-						}
-						
-					}
-					else {
-						// Halt the process now 
-						resourceProblem(resource, true, required, remainingCap);
-						
-						break;
 					}
 				}
 			}
@@ -192,12 +198,13 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @param available
 	 */
 	private void resourceProblem(int resource, boolean capacity, double required, double available) {
-		logger.info(building, 10_000,
-					(capacity ? "No capacity '" : "Not enough '")
-					+ ResourceUtil.findAmountResourceName(resource)
-					+ "' for '" + processSpec.getName() + "'. Required: "
-					+ Math.round(required * 1000.0)/1000.0 + " kg. Available: "
-					+ Math.round(available * 1000.0)/1000.0 + " kg.");
+		// Do NOT delete. For debugging : 
+//		logger.info(building, 10_000,
+//					(capacity ? "No capacity '" : "Not enough '")
+//					+ ResourceUtil.findAmountResourceName(resource)
+//					+ "' for '" + processSpec.getName() + "'. Required: "
+//					+ Math.round(required * 1000.0)/1000.0 + " kg. Available: "
+//					+ Math.round(available * 1000.0)/1000.0 + " kg.");
 		setProcessRunning(false);
 	}
 

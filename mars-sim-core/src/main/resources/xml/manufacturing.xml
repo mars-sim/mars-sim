@@ -1248,10 +1248,6 @@ Note: 1 kg of H2 is 14.13 liter
 			See technical papers at https://www.science.gov/topicpages/v/ventilation+garment+lcvg
 		</description>
 		<inputs>
-			<resource name="Cane fiber" amount="0.2">
-				<alternative name="Polyester fiber" amount="0.2" />
-				<alternative name="Soy fiber" amount="0.2" />
-			</resource>
 			<resource name="Thermoplastic elastomer" amount="0.1" />
 			<resource name="Polypropylene" amount="0.1" />
 			<resource name="Polyester resin" amount="0.6">
@@ -1259,8 +1255,8 @@ Note: 1 kg of H2 is 14.13 liter
 			</resource>
 			<resource name="Nylon" amount="0.2">
 				<alternative name="Kevlar" amount="0.2"/>
-				<alternative name="Fiber cloth" amount="0.2"/>
 			</resource>
+			<resource name="Fiber cloth" amount="0.2" />
 			<resource name="Paraffin composites" amount="0.1" />
 			<resource name="Aluminized mylar" amount="0.2" />
 			<part name="Plastic tubing" number="3" />
@@ -1271,21 +1267,21 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	
-	<process name="Make EVA helmet" tech="2" skill="2" work-time="100" process-time="300"
+	<process name="Make EVA helmet" tech="2" skill="2" work-time="100" process-time="100"
 			power-required=".2">
 		<inputs>
-			<resource name="Cane fiber" amount="0.2">
-				<alternative name="Polyester fiber" amount="0.2" />
-				<alternative name="Soy fiber" amount="0.2" />
+			<resource name="Nylon" amount="0.3">
+				<alternative name="Kevlar" amount="0.3"/>
 			</resource>
 			<resource name="Polyethylene" amount="0.5">
 				<alternative name="Polypropylene" amount="0.5" />
 			</resource>
+			<resource name="Fiber cloth" amount="0.5" />
 			<resource name="Polycarbonate resin" amount="0.5" />
-			<resource name="Aluminized mylar" amount="0.25" />
+			<resource name="Aluminized mylar" amount="0.08" />
 			<part name="Plastic tubing" number="2" />
 			<part name="Electrical wire" number="2" />
-			<part name="Wire connector" number="10" />
+			<part name="Wire connector" number="2" />
 			<part name="Gasket" number="2" />
 		</inputs>
 		<outputs>
@@ -1293,14 +1289,14 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make helmet visor" tech="2" skill="2" work-time="100" process-time="200"
+	<process name="Make helmet visor" tech="2" skill="2" work-time="50" process-time="50"
 			power-required=".1">
 		<inputs>
-			<resource name="Polycarbonate resin" amount="0.2" />
-			<resource name="Glass" amount="3.0" />
+			<resource name="Polycarbonate resin" amount="0.1" />
+			<resource name="Glass" amount="1.4" />
 		</inputs>
 		<outputs>
-			<part name="Helmet visor" number="13" />
+			<part name="Helmet visor" number="3" />
 		</outputs>
 	</process>
 
@@ -1310,53 +1306,48 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Polyethylene" amount="0.2">
 				<alternative name="Polypropylene" amount="0.2" />
 			</resource>
-			<resource name="Cane fiber" amount="0.3">
-				<alternative name="Polyester fiber" amount="0.3" />
-				<alternative name="Soy fiber" amount="0.3" />
-			</resource>
-			<resource name="Silicone elastomer" amount="1.0" />
-			<resource name="Polyester resin" amount="0.5" />
-			<part name="Plastic tubing" number="3" />
+			<resource name="Fiber cloth" amount="0.3" />
+			<resource name="Silicone elastomer" amount="0.3" />
+			<resource name="Polyester resin" amount="0.1" />
+			<part name="Plastic tubing" number="2" />
 						
 		</inputs>
 		<outputs>
-			<part name="Pressure suit" number="2" />
+			<part name="Pressure suit" number="1" />
 		</outputs>
 	</process>
 
-	<process name="Make coveralls" tech="2" skill="2" work-time="200" process-time="50"
-			power-required=".2">
-		<inputs>
-			<resource name="Cane fiber" amount="0.2">
-				<alternative name="Polyester Fiber" amount="0.2" />
-				<alternative name="Soy fiber" amount="0.2" />
-			</resource>
-			<resource name="Polyurethane" amount="0.1" />
-			<resource name="Aluminized mylar" amount="1.0" />			
-			<part name="fiberglass cloth" number="4" />
-		</inputs>
-		<outputs>
-			<part name="coveralls" number="2" />
-		</outputs>
-	</process>
-
-	<process name="Make EVA gloves" tech="3" skill="3" work-time="200" process-time="50"
+	<process name="Make coverall" tech="2" skill="2" work-time="50" process-time="30"
 			power-required=".1">
 		<inputs>
-			<resource name="Cane fiber" amount="0.1">
-				<alternative name="Polyester fiber" amount="0.1" />
-				<alternative name="Soy fiber" amount="0.1" />
-			</resource>
-			<resource name="Polyurethane" amount="0.05" />
-			<part name="Fiberglass cloth" number="1" />
-			<part name="Fiberglass" number="1" />
+			<resource name="Polyurethane" amount="0.2" />
+			<resource name="Nylon" amount="0.2">
+				<alternative name="Kevlar" amount="0.2"/>
+			</resource>			
+			<resource name="Fiber cloth" amount="0.2" />
 		</inputs>
 		<outputs>
-			<part name="EVA gloves" number="2" />
+			<part name="coverall" number="2" />
 		</outputs>
 	</process>
 
-	<process name="Make EVA boots" tech="3" skill="3" work-time="200" process-time="50"
+	<process name="Make EVA glove" tech="3" skill="3" work-time="200" process-time="10"
+			power-required=".1">
+		<inputs>
+			<resource name="Cane fiber" amount="0.2">
+				<alternative name="Polyester fiber" amount="0.2" />
+				<alternative name="Soy fiber" amount="0.2" />
+			</resource>
+			<resource name="Polyurethane" amount="0.2" />
+			<resource name="Thermoplastic elastomer" amount="0.4" />
+			<part name="Fiberglass cloth" number="2" />
+		</inputs>
+		<outputs>
+			<part name="EVA glove" number="2" />
+		</outputs>
+	</process>
+
+	<process name="Make EVA boot" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".1">
 		<inputs>
 			<resource name="Cane fiber" amount="0.4">
@@ -1364,16 +1355,16 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="Soy fiber" amount="0.4" />
 			</resource>
 			<resource name="Polyurethane" amount="0.1" />
+			<resource name="Thermoplastic elastomer" amount="0.1" />
 			<part name="Steel ingot" number="1" />
 			<part name="Fiberglass cloth" number="1" />
-			<part name="Fiberglass" number="1" />
 		</inputs>
 		<outputs>
-			<part name="EVA boots" number="2" />
+			<part name="EVA boot" number="2" />
 		</outputs>
 	</process>
 
-	<process name="Make EVA pads" tech="3" skill="3" work-time="200" process-time="50"
+	<process name="Make EVA pad" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".7">
 		<inputs>
 			<resource name="Cane fiber" amount="0.1">
@@ -1385,7 +1376,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="Fiberglass" number="1" />
 		</inputs>
 		<outputs>
-			<part name="EVA pads" number="3" />
+			<part name="EVA pad" number="3" />
 		</outputs>
 	</process>
 
@@ -1494,12 +1485,12 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="EVA helmet" number="1" />
 			<part name="helmet visor" number="1" />
 			<part name="pressure suit" number="1" />
-			<part name="coveralls" number="1" />
+			<part name="coverall" number="1" />
 			<part name="Liquid Cooling Garment" number="1" />
 			
-			<part name="EVA gloves" number="1" />
-			<part name="EVA boots" number="1" />
-			<part name="EVA pads" number="1" />
+			<part name="EVA glove" number="1" />
+			<part name="EVA boot" number="1" />
+			<part name="EVA pad" number="1" />
 			<part name="EVA backpack" number="1" />
 			
 			<part name="EVA antenna" number="1" />
@@ -1516,7 +1507,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make work gloves" tech="1" skill="1" work-time="50" process-time="50"
+	<process name="Make work glove" tech="1" skill="1" work-time="50" process-time="50"
 			power-required=".05">
 		<inputs>
 			<resource name="Cane fiber" amount="0.1">
@@ -1527,21 +1518,50 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="fiberglass" number="1" />
 		</inputs>
 		<outputs>
-			<part name="work gloves" number="2" />
+			<part name="work glove" number="2" />
 		</outputs>
 	</process>
 	
-	<process name="Make fiber cloth" tech="1" skill="1" work-time="10" process-time="50"
+	<process name="Make fiber cloth" tech="1" skill="1" work-time="10" process-time="10"
 			power-required=".05">
 		<inputs>
 			<resource name="Cane fiber" amount="0.5">
 				<alternative name="Polyester Fiber" amount="0.5" />
 				<alternative name="Soy fiber" amount="0.5" />
-				<alternative name="Nylon" amount="0.5" />
 			</resource>
 		</inputs>
 		<outputs>
 			<resource name="Fiber cloth" amount="0.5" />
+		</outputs>
+	</process>
+	
+	<process name="Make nylon"
+	tech="1" skill="1" work-time="10.0" process-time="10"
+			tooling="3D Printer" power-required=".5">
+		<description>  3D printing nylon fabric.
+		The molar mass for the Nylon 6,6 repeating unit.
+		
+		Carbon (C): There are 12 atoms. With an atomic mass of approximately 12.011 g/mol, 
+		            the total mass contribution is 144.13 g/mol.
+		Hydrogen (H): There are 22 atoms. With an atomic mass of approximately 1.008 g/mol, 
+		              the total mass contribution is 22.18 g/mol. 
+		Nitrogen (N): There are 2 atoms. With an atomic mass of approximately 14.007 g/mol, 
+		              the total mass contribution is 28.01 g/mol. 
+		Oxygen (O): There are 2 atoms. With an atomic mass of approximately 15.999 g/mol, 
+		            the total mass contribution is 32.00 g/mol. 
+	
+		Carbon constitutes the majority of the mass (~63.7%), followed by oxygen (~14.1%), 
+		nitrogen (~12.4%), and hydrogen (~9.8%). 
+		
+		</description>
+		<inputs>
+			<resource name="Carbon" amount="1.4413" />
+			<resource name="Nitrogen" amount=".2801" />
+			<resource name="Oxygen" amount=".32" />
+			<resource name="Hydrogen" amount=".2218" />
+		</inputs>
+		<outputs>
+			<resource name="Nylon" amount="2.2632" />
 		</outputs>
 	</process>
 	
@@ -2042,7 +2062,7 @@ Note: 1 kg of H2 is 14.13 liter
 			tooling="Soldering" power-required="1.0">
 		<inputs>
 			<resource name="Ethylene glycol" amount=".1"/>
-			<resource name="propylene" amount=".1"/>
+			<resource name="Propylene" amount=".1"/>
 							
 			<resource name="Rice Bran Oil" amount="3.8" >	
 				<alternative name="Soybean Oil" amount="3.8" />
@@ -3986,9 +4006,9 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="EVA helmet" number="1" />
 		<part-salvage name="helmet visor" number="1" />
 		<part-salvage name="pressure suit" number="1" />
-		<part-salvage name="coveralls" number="1" />
-		<part-salvage name="EVA gloves" number="1" />
-		<part-salvage name="EVA boots" number="1" />
+		<part-salvage name="coverall" number="1" />
+		<part-salvage name="EVA glove" number="1" />
+		<part-salvage name="EVA boot" number="1" />
 		<part-salvage name="EVA backpack" number="1" />
 		<part-salvage name="EVA antenna" number="1" />
 		<part-salvage name="EVA radio" number="1" />

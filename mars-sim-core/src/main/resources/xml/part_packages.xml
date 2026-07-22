@@ -183,11 +183,11 @@
 		<part type="eva helmet" number="16" />
 		<part type="helmet visor" number="8" />
 		<part type="pressure suit" number="16" />
-		<part type="coveralls" number="16" />
-		<part type="work gloves" number="16" />
-		<part type="eva gloves" number="16" />
-		<part type="eva boots" number="16" />
-		<part type="eva pads" number="16" />
+		<part type="coverall" number="16" />
+		<part type="work glove" number="16" />
+		<part type="eva glove" number="16" />
+		<part type="eva boot" number="16" />
+		<part type="eva pad" number="16" />
 		<part type="eva backpack" number="8" />
 		<part type="eva antenna" number="32" />
 		<part type="eva battery" number="16" />

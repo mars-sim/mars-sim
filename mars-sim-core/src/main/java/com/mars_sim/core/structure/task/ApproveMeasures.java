@@ -64,9 +64,8 @@ public class ApproveMeasures extends Task {
 			}
 		};
 		
-	// Data members		
-
-	private double newValue = 0;
+	// Data members
+	private int diff = 0;
 	/** The administration building the person is using. */
 	private Administration office;
 
@@ -225,15 +224,15 @@ public class ApproveMeasures extends Task {
 			
 			switch(taskNum) {
 				case WATER_RATIONING: {
-					newValue = person.getAssociatedSettlement().getRationing().reviewRationingLevel();
+					diff = person.getAssociatedSettlement().getRationing().reviewRationingLevel();
 				} break;
 				
 				case ICE_RESOURCE: {
-					newValue = person.getAssociatedSettlement().reviewIce();
+					diff = person.getAssociatedSettlement().reviewIce();
 				} break;
 				
 				case REGOLITH_RESOURCE: {
-					newValue = person.getAssociatedSettlement().reviewRegolith();
+					diff = person.getAssociatedSettlement().reviewRegolith();
 				} break;
 			}
 
@@ -259,32 +258,32 @@ public class ApproveMeasures extends Task {
 		switch(taskNum) {
 	
 			case ICE_RESOURCE:
-				if (newValue != 0D) {
+				if (diff != 0D) {
 					// Set the new ice probability value
 					person.getAssociatedSettlement().enforceIceDemandLevel();
 		
-					logger.info(worker, 30_000, "Approved a new ice demand probability for the settlement.");
+					logger.info(worker, 5_000, "Approved a new ice demand probability for the settlement.");
 				}
 
 				break;
 				
 			case REGOLITH_RESOURCE:
-					if (newValue != 0D) {
+					if (diff != 0D) {
 					// Set the new regolith probability value
 					person.getAssociatedSettlement().enforceRegolithDemandLevel();
 		
-					logger.info(worker, 30_000, "Approved a new regolith demand probability for the settlement.");
+					logger.info(worker, 5_000, "Approved a new regolith demand probability for the settlement.");
 				}
 
 				break;
 				
 			case WATER_RATIONING:
 						
-				if (newValue != 0D) {
+				if (diff != 0D) {
 					// Set the new water rationing level
 					person.getAssociatedSettlement().getRationing().enforceNewRationingLevel();
 					
-					logger.info(worker, 30_000, "Approved a new water rationing measure for the settlement.");
+					logger.info(worker, 5_000, "Approved a new water rationing measure for the settlement.");
 				}
 
 				break;

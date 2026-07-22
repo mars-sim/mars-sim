@@ -85,7 +85,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 			}
 
 			var missionProbability = new RatingScore(1);
-			missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getRegolithDemandCache() / VALUE);
+			missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getRegolithDigValueCache() / VALUE);
 
 			// Job modifier.
 			missionProbability.addModifier(LEADER, getLeaderSuitability(person));

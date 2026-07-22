@@ -275,10 +275,25 @@
 	</part>
 		
 	<part name="Liquid cooling garment" type="EVA" mass="1.5" >
-		<description>The innermost layer of the EVA suit. Provides thermal control
-			by circulating air and water cooled by a sublimator over crew member's
-			body. Can handle peak loads of up to 500 kcal/hr for 15 minutes, 
-			400 kcal/hr for up to an hour, or 250 kcal/hr for up to 7 hours.			
+		<description>
+		
+		The innermost layer of the EVA suit. Provides thermal control
+		by circulating air and water cooled by a sublimator over crew member's
+		body. Can handle peak loads of up to 500 kcal/hr for 15 minutes, 
+		400 kcal/hr for up to an hour, or 250 kcal/hr for up to 7 hours.
+						
+		Tubing Composition
+		Woven into the fabric is a network of approximately 300 feet (91 meters) 
+		of flexible tubing used to circulate cooling water
+		
+		Polyvinyl Chloride (PVC): A synthetic plastic polymer $(-CH_2-CHCl-)_n$ 
+		chosen for its flexibility, durability, and ability to maintain shape 
+		under pressure while conducting heat efficiently. 
+
+		Polyurethane: In newer iterations, such as the Axiom Extravehicular 
+		Mobility Unit (AxEMU) developed for the Artemis program, the tubing is 
+		specified as medical-grade polyurethane plastic, offering enhanced 
+		biocompatibility and flexibility. 						
 		</description>
 	</part>
 	
@@ -301,8 +316,20 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Coveralls" type="EVA" mass="1.0" >
-		<description>Outer EVA suit with insulative liner.</description>
+	<part name="Coverall" type="EVA" mass="0.3" >
+		<description>
+		The coverall or long underwear of the EVA suit is an insulative liner.
+		
+		The garment is a form-fitting mesh constructed from synthetic polymers:
+
+		Spandex (Elastane): A polyurethane-polyurea copolymer known for its exceptional elasticity, 
+		allowing the garment to stretch and maintain tight contact with the skin. 
+
+		Nylon Tricot: A specific knit of polyamide fibers used as a liner. This material 
+		provides structural integrity and moisture-wicking properties to pull sweat away 
+		from the body.
+
+		</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="1" max-number="1" />
 		</maintenance-entity-list>
@@ -314,20 +341,20 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="EVA gloves" type="EVA" mass="0.1" >
+	<part name="EVA glove" type="EVA" mass="0.5" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="EVA boots" type="EVA" mass="2.0" >
+	<part name="EVA boot" type="EVA" mass="2.0" >
 		<description>steel soled and tipped.  Fiberglass insulated.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="EVA pads" type="EVA" mass="0.5" >
+	<part name="EVA pad" type="EVA" mass="0.5" >
 		<description>steel plate with fiberglass insulation.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
@@ -1185,8 +1212,8 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Work gloves" type="utility" mass="0.05">
-		<description>a pair of utility work gloves for medium to heavy use.</description>
+	<part name="work glove" type="utility" mass="0.05">
+		<description>a pair of utility work glove for medium to heavy use.</description>
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="10" max-number="1" />
 			<entity name="vehicle maintenance" probability="10" max-number="1" />

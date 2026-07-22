@@ -107,7 +107,7 @@
 			     and not related to part reliability %, MTBF or 
 			     failure rate of this item. -->
 			<part name="airleak patch" number="2" repair-probability="75" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 			<part name="fiberglass cloth" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
@@ -129,7 +129,7 @@
 		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="airleak patch" number="3" repair-probability="75" />
-			<part name="work gloves" number="1" repair-probability="15" />
+			<part name="work glove" number="1" repair-probability="15" />
 			<part name="fiberglass cloth" number="1" repair-probability="5" />
 			<part name="polycarbonate roofing" number="1" repair-probability="10" />
 		</repair-parts-list>
@@ -182,7 +182,7 @@
 			<part name="valve" number="2" repair-probability="5" />
 			<part name="electrical wire" number="2" repair-probability="5" />
 			<part name="wire connector" number="2" repair-probability="5" />		
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -205,7 +205,7 @@
 			<part name="plastic bottle" number="1" repair-probability="15" />
 			<part name="plastic tubing" number="1" repair-probability="15" />
 			<part name="fuel tank" number="1" repair-probability="10" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 			<part name="decontamination kit" number="1" repair-probability="30" />
 		</repair-parts-list>
 	</malfunction>
@@ -232,7 +232,7 @@
 			<part name="wire connector" number="2" repair-probability="5" />
 			<part name="methanol fuel cell" number="1" repair-probability="5" />
 			<part name="methanol fuel cell stack" number="1" repair-probability="1" />			
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -258,7 +258,7 @@
 			<part name="wire connector" number="2" repair-probability="5" />
 			<part name="methane fuel cell" number="1" repair-probability="5" />
 			<part name="methane fuel cell stack" number="1" repair-probability="1" />			
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -284,7 +284,7 @@
 			<part name="valve" number="2" repair-probability="5" />
 			<part name="electrical wire" number="2" repair-probability="5" />
 			<part name="wire connector" number="2" repair-probability="5" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -320,7 +320,7 @@
 			<part name="valve" number="3" repair-probability="5" />
 			<part name="electrical wire" number="2" repair-probability="5" />
 			<part name="wire connector" number="2" repair-probability="5" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -356,7 +356,7 @@
 			<part name="valve" number="3" repair-probability="5" />
 			<part name="electrical wire" number="2" repair-probability="5" />
 			<part name="wire connector" number="2" repair-probability="5" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 	
@@ -388,7 +388,7 @@
 			<part name="valve" number="4" repair-probability="5" />
 			<part name="electrical wire" number="5" repair-probability="10" />
 			<part name="wire connector" number="5" repair-probability="20" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 			<part name="transformer" number="1" repair-probability="1" />			
 		</repair-parts-list>
 	</malfunction>
@@ -422,7 +422,7 @@
 			<part name="electrical wire" number="4" repair-probability="5" />
 			<part name="wire connector" number="4" repair-probability="5" />
 			<part name="plastic bottle" number="1" repair-probability="15" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 			<part name="decontamination kit" number="1" repair-probability="30" />
 		</repair-parts-list>
 	</malfunction>
@@ -457,7 +457,7 @@
 			<part name="electrical wire" number="4" repair-probability="5" />
 			<part name="wire connector" number="4" repair-probability="5" />
 			<part name="fuel tank" number="1" repair-probability="5" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 			<part name="decontamination kit" number="1" repair-probability="15" />
 		</repair-parts-list>
 	</malfunction>
@@ -473,7 +473,7 @@
 		<repair-parts-list>
 			<part name="rover wheel" number="2" repair-probability="20" />
 			<part name="steel wire" number="4" repair-probability="20" />
-			<part name="work gloves" number="1" repair-probability="20" />
+			<part name="work glove" number="1" repair-probability="20" />
 			<part name="valve" number="1" repair-probability="10" />
 			<part name="plastic tubing" number="2" repair-probability="10" />
 			<part name="plastic bottle" number="1" repair-probability="10" />
@@ -492,7 +492,7 @@
 		<repair-parts-list>
 			<part name="rover wheel" number="2" repair-probability="20" />
 			<part name="steel wire" number="4" repair-probability="20" />			
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 			<part name="valve" number="1" repair-probability="10" />
 			<part name="plastic tubing" number="2" repair-probability="10" />
 			<part name="plastic bottle" number="1" repair-probability="10" />
@@ -511,7 +511,7 @@
 		<repair-parts-list>
 			<part name="rover wheel" number="1" repair-probability="20" />
 			<part name="steel wire" number="2" repair-probability="20" />			
-			<part name="work gloves" number="1" repair-probability="20" />
+			<part name="work glove" number="1" repair-probability="20" />
 			<part name="valve" number="1" repair-probability="10" />
 			<part name="plastic tubing" number="2" repair-probability="10" />
 			<part name="plastic bottle" number="1" repair-probability="10" />
@@ -530,7 +530,7 @@
 		<repair-parts-list>
 			<part name="wheel small" number="1" repair-probability="20" />
 			<part name="steel wire" number="1" repair-probability="20" />			
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 			<part name="valve" number="1" repair-probability="10" />
 			<part name="plastic tubing" number="2" repair-probability="10" />
 			<part name="plastic bottle" number="1" repair-probability="10" />
@@ -834,7 +834,7 @@
 			<part name="plastic sheet" number="1" repair-probability="10" />
 			<part name="fiberglass" number="1" repair-probability="10" />
 			<part name="fiberglass cloth" number="1" repair-probability="10" />
-			<part name="work gloves" number="2" repair-probability="10" />
+			<part name="work glove" number="2" repair-probability="10" />
 			<part name="decontamination kit" number="1" repair-probability="30" />
 		</repair-parts-list>
 	</malfunction>
@@ -854,8 +854,8 @@
 		<repair-parts-list>
 			<part name="airleak patch" number="1" repair-probability="100" />
 			<part name="pressure suit" number="1" repair-probability="10" />
-			<part name="eva pads" number="1" repair-probability="10" />
-			<part name="coveralls" number="1" repair-probability="10" />
+			<part name="eva pad" number="1" repair-probability="10" />
+			<part name="coverall" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -895,7 +895,7 @@
 			<part name="wire connector" number="4" repair-probability="50" />
 			<part name="electrical wire" number="4" repair-probability="50" />
 			<part name="Surge Protector" number="1" repair-probability="10" />			
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 			<part name="power cable" number="1" repair-probability="5" />
 		</repair-parts-list>
 	</malfunction>
@@ -915,7 +915,7 @@
 			<part name="wire connector" number="2" repair-probability="25" />
 			<part name="lubricant bottle" number="1" repair-probability="20" />
 			<part name="Motor 30 kW" number="1" repair-probability="5" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -935,7 +935,7 @@
 			<part name="wire connector" number="2" repair-probability="25" />
 			<part name="lubricant bottle" number="1" repair-probability="20" />
 			<part name="Motor 10 kW" number="1" repair-probability="5" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 	
@@ -978,7 +978,7 @@
 			<part name="electrical wire" number="2" repair-probability="10" />
 			<part name="wire connector" number="2" repair-probability="10" />
 			<part name="fuel pump" number="1" repair-probability="60" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -1087,7 +1087,7 @@
 			<part name="logic board" number="1" repair-probability="5" />
 			<part name="ventilation fan" number="1"  repair-probability="15"/>
 			<part name="autoclave" number="2" repair-probability="5" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -1107,7 +1107,7 @@
 			<part name="lubricant bottle" number="1" repair-probability="10" />
 			<part name="logic board" number="1" repair-probability="5" />
 			<part name="refrigerator" number="1" repair-probability="5" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -1190,7 +1190,7 @@
 			<part name="gasket" number="10" repair-probability="5"  />
 			<part name="plastic tubing" number="10" repair-probability="10" />
 			<part name="Mushroom Containment Kit" number="1" repair-probability="5" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -1244,7 +1244,7 @@
 			<part name="microcontroller" number="1" repair-probability="1"/>
 			<part name="methane fuel cell" number="2" repair-probability="4"/>
 			<part name="methane fuel cell stack" number="1" repair-probability="1"/>
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 			<part name="power cable" number="2" repair-probability="5" />
 		</repair-parts-list>
 	</malfunction>
@@ -1280,7 +1280,7 @@
 			<part name="plastic pipe" number="2" repair-probability="5" />
 			<part name="valve" number="2" repair-probability="5" />
 			<part name="fiberglass cloth" number="2" repair-probability="10" />
-			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="work glove" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 

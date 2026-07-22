@@ -406,9 +406,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
 						
 				<!--For producing Hydrogen -->
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>	
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="48"/>
-				<process-engine name="Dry Methane Reforming (DMR)" number-modules="6"/>
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>	
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
+				<process-engine name="Dry Methane Reforming (DMR)" number-modules="7"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="1"/>
 				
 				<!--For producing Methanol -->
@@ -421,7 +421,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Melt Ice" number-modules="16" />
 				<process-engine name="Filter Brine Water" number-modules="16" />
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>		
-				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="2"/>
+				<process-engine name="CO Hydrogenation" number-modules="2"/>
 				
 				<!-- Bio-based processes -->
 				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
@@ -856,9 +856,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="48"/>
 				
 				<!--For producing Hydrogen -->
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>	
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="96"/>
-				<process-engine name="Dry Methane Reforming (DMR)" number-modules="12"/>
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="16"/>	
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="16"/>
+				<process-engine name="Dry Methane Reforming (DMR)" number-modules="14"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="2"/>
 					
 				<!--For producing Methanol -->
@@ -871,7 +871,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Melt Ice" number-modules="48" />
 				<process-engine name="Filter Brine Water" number-modules="48" />
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="16"/>	
-				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="8"/>
+				<process-engine name="CO Hydrogenation" number-modules="8"/>
 				
 				<activity>
 					<activity-spot xloc="7.27" yloc="4.54" />
@@ -1581,7 +1581,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- Inflatable Greenhouse -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="96"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="64"/>		
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="6"/>		
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="8"/>
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
@@ -1762,7 +1762,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="192"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="128"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="16"/>
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="8"/>
@@ -2011,14 +2011,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">		
 				
 				<!--For producing Hydrogen -->
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="128"/>
-				<process-engine name="Dry Methane Reforming (DMR)" number-modules="8"/>
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="24"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
+				<process-engine name="Dry Methane Reforming (DMR)" number-modules="9"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="1"/>	
 				
 				<!--Using Hydrogen -->
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="24"/>	
-				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="12"/>					
+				<process-engine name="CO Hydrogenation" number-modules="12"/>					
 						
 			</resource-processing>
 
@@ -4367,9 +4367,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
 								
 				<!--For producing Hydrogen -->
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>	
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="48"/>
-				<process-engine name="Dry Methane Reforming (DMR)" number-modules="6"/>
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>	
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
+				<process-engine name="Dry Methane Reforming (DMR)" number-modules="7"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="1"/>
 				
 				<!--For producing Methanol -->
@@ -4382,7 +4382,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Melt Ice" number-modules="16" />
 				<process-engine name="Filter Brine Water" number-modules="16" />
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>	
-				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="2"/>	
+				<process-engine name="CO Hydrogenation" number-modules="2"/>	
 				
 				<!-- Bio-based processes -->
 				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
@@ -4809,7 +4809,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- "Inground Greenhouse" -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="96"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="64"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="6"/>
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="6"/>
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="3"/>

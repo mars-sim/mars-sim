@@ -871,43 +871,59 @@ public class GoodsManager implements Serializable {
 		int optimalPerPop = limits.optimal();
 		int pop = settlement.getNumCitizens();
 		
-		int optimal = optimalPerPop * pop;
-		int reserve = reservePerPop * pop;
+		int optimal = optimalPerPop;
+		int reserve = reservePerPop;
 		double demand = getDemandScoreWithID(resourceID);
 
-		double stored = settlement.getAllAmountResourceStored(resourceID);
+		double stored = settlement.getAllAmountResourceStored(resourceID) / pop;
 		double surplus = 0;
 		double lacking = 0;
 		double delta = 0;
 		
-		if (stored > optimal) {
-			surplus = stored - optimal;
-			delta = surplus / Math.sqrt(pop + 1);
+		String resourceName = ResourceUtil.findAmountResourceName(resourceID);
+		
+		if (stored >= optimal) {
+			return 0;
 		}
-		else if (stored < reserve) {
+		else if (stored < optimal && stored >= reserve) {
+			surplus = stored - optimal;
+			delta = Math.sqrt(surplus + 0.1);
+//			logger.info(settlement, 10_000L,
+//					resourceName + " - " 
+//					+ "No need of demand injection since stored amount is between reserve and optimal. "
+//					+ "  stored: " + Math.round(stored * 100.0)/100.0
+//					+ "  reserve: " + Math.round(reserve * 100.0)/100.0	
+//					+ "  optimal: " + Math.round(optimal * 100.0)/100.0 
+//					);
+			return 0;
+		}
+		else {
 			lacking = reserve - stored;
-			delta = lacking / Math.sqrt(pop + 1);
+			delta = Math.sqrt(lacking + 0.1);
 		}
 
 		double fraction = delta / demand;
+
 		
-		if (fraction < .0075 || fraction > - .0075) {
-			// Too small. No need of adjustment
+		if (Math.abs(fraction) < .005) {
+			logger.info(settlement, 5_000L,
+					resourceName + " - " 
+					+ "No need of demand injection since fraction is " + Math.round(fraction*  10000.0)/10000.0);
 			return 0;
 		}
-		
-		String gasName = ResourceUtil.findAmountResourceName(resourceID);
-		logger.info(settlement, 10_000L,
-					gasName + " - " 
-					+ "Injecting demand change: " + Math.round(demand * 100.0)/100.0 
-					+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
-					+ "  optimal: " + Math.round(optimal * 100.0)/100.0 
-					+ "  stored: " + Math.round(stored * 100.0)/100.0
-					+ "  reserve: " + Math.round(reserve * 100.0)/100.0
-					+ "  lacking: " + Math.round(lacking * 100.0)/100.0
-					+ "  surplus: " + Math.round(surplus * 100.0)/100.0
-					+ ".");
 
+		logger.info(settlement, 15_000L, "On " + resourceName 
+				+ ", Demand injection: " + Math.round(demand * 100.0)/100.0 
+				+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
+				+ "  delta: " + Math.round(delta * 100.0)/100.0
+				+ "  fraction: " + Math.round(fraction*  10000.0)/10000.0
+				+ "  stored: " + Math.round(stored * 100.0)/100.0
+				+ "  reserve: " + Math.round(reserve * 100.0)/100.0
+				+ "  optimal: " + Math.round(optimal * 100.0)/100.0 
+				+ "  lacking: " + Math.round(lacking * 100.0)/100.0
+				+ "  surplus: " + Math.round(surplus * 100.0)/100.0
+				+ ".");
+		
 		return demand + delta;
 	}
 

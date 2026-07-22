@@ -90,7 +90,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 			}
 
 			var missionProbability = new RatingScore(1);
-			missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getIceDemandCache() / VALUE);
+			missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getIceDigValueCache() / VALUE);
 
 			// Job modifier.
 			missionProbability.addModifier(LEADER, getLeaderSuitability(person));

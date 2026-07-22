@@ -40,8 +40,8 @@ class TestManufactureProcessInfo {
 
     	var inputList = mInfo.getInputList();
 		
-		// [eva helmet, helmet visor, pressure suit, coveralls, Liquid Cooling Garment, 
-		// eva gloves, eva boots, eva pads, eva backpack, eva antenna, 
+		// [eva helmet, helmet visor, pressure suit, coverall, Liquid Cooling Garment, 
+		// eva glove, eva boot, eva pad, eva backpack, eva antenna, 
 		// eva radio, eva battery, suit heating unit, electrical wire, wire connector, 
 		// biosensor]
 

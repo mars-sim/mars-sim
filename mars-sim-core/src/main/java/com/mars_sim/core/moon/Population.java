@@ -236,7 +236,7 @@ public class Population implements Serializable, Temporal {
 	
 		var col = colonists.stream().filter(ColonyResearcher.class::isInstance).findAny();
 		if (col.isEmpty()) {
-			logger.warning("No researcher to remove!");
+//			logger.warning("No researcher to remove!");
 			return;
 		}
 		colonists.remove(col.get());
@@ -252,7 +252,7 @@ public class Population implements Serializable, Temporal {
 	
 		var col = colonists.stream().filter(ColonySpecialist.class::isInstance).findAny();
 		if (col.isEmpty()) {
-			logger.warning("No engineer to remove!");
+//			logger.warning("No engineer to remove!");
 			return;
 		}
 		colonists.remove(col.get());

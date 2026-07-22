@@ -79,7 +79,7 @@ public class ItemResourceUtil {
 		fixedItemResources.put("fiberglass", FIBERGLASS_ID);
 		
 		fixedItemResources.put("garment", GARMENT_ID);
-		fixedItemResources.put("work gloves", WORK_GLOVES_ID);
+		fixedItemResources.put("work glove", WORK_GLOVES_ID);
 		
 		fixedItemResources.put("pressure suit", PRESSURE_SUIT_ID);
 		fixedItemResources.put("sls 3d printer", SLS_3D_PRINTER_ID);

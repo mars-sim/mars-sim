@@ -12,6 +12,7 @@ import com.mars_sim.core.building.function.Administration;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Management;
 import com.mars_sim.core.goods.GoodsUtil;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -28,7 +29,10 @@ public class BudgetResources extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(BudgetResources.class.getName());
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.budgetResources"); //$NON-NLS-1$
 
@@ -64,11 +68,11 @@ public class BudgetResources extends Task {
 	// Data members		
 	private int settlementResource;
 	
-	private double newValue = 0;
+	private int diff = 0;
 	/** The administration building the person is using. */
 	private Administration office;
 
-	private ReviewGoal taskNum;
+	private ReviewGoal goal;
 
 	/**
 	 * Constructor. This is an effort-driven task.
@@ -174,7 +178,7 @@ public class BudgetResources extends Task {
 	private boolean budgetSettlementResource() {
 		settlementResource = person.getAssociatedSettlement().getGoodsManager().reserveResourceReview();
 		if (settlementResource != -1) {
-			taskNum = ReviewGoal.LIFE_RESOURCE;
+			goal = ReviewGoal.LIFE_RESOURCE;
 			return true;
 		}
 		
@@ -191,7 +195,7 @@ public class BudgetResources extends Task {
 		int levelDiff = person.getAssociatedSettlement().getRationing().getLevelDiff();
 		if (levelDiff != 0) {
 			
-			taskNum = ReviewGoal.WATER_RATIONING;
+			goal = ReviewGoal.WATER_RATIONING;
 			
 			// Set the flag to false to prevent another person from starting a review 
 			// while this person is about to review it
@@ -209,7 +213,7 @@ public class BudgetResources extends Task {
 	 * @return
 	 */
 	private boolean budgetIceResource() {
-		taskNum = ReviewGoal.ICE_RESOURCE;
+		goal = ReviewGoal.ICE_RESOURCE;
 	
 		return true;
 	}
@@ -220,7 +224,7 @@ public class BudgetResources extends Task {
 	 * @return
 	 */
 	private boolean budgetRegolithResource() {
-		taskNum = ReviewGoal.REGOLITH_RESOURCE;
+		goal = ReviewGoal.REGOLITH_RESOURCE;
 	
 		return true;
 	}
@@ -235,21 +239,21 @@ public class BudgetResources extends Task {
 
 		if (getTimeCompleted() > REVIEW_PERC * getDuration()) {
 			
-			switch(taskNum) {
+			switch(goal) {
 				case ICE_RESOURCE: {
-					newValue = person.getAssociatedSettlement().reviewIce();
+					diff = person.getAssociatedSettlement().reviewIce();
 				} break;
 				
 				case REGOLITH_RESOURCE: {
-					newValue = person.getAssociatedSettlement().reviewRegolith();
+					diff = person.getAssociatedSettlement().reviewRegolith();
 				} break;
 				
 				case LIFE_RESOURCE: {				
-					newValue = person.getAssociatedSettlement().getGoodsManager().moderateLifeResourceDemand(settlementResource);					
+					diff = (int) person.getAssociatedSettlement().getGoodsManager().moderateLifeResourceDemand(settlementResource);					
 				} break;
 				
 				case WATER_RATIONING: {			
-					newValue = person.getAssociatedSettlement().getRationing().reviewRationingLevel();
+					diff = person.getAssociatedSettlement().getRationing().reviewRationingLevel();
 				} break;
 			}
 
@@ -272,37 +276,62 @@ public class BudgetResources extends Task {
 	 */
 	private double submittingPhase(double time) {
 			
-		switch(taskNum) {
+		switch(goal) {
 			case ICE_RESOURCE:
-				if (newValue != 0) {
+				if (diff != 0) {
 					person.getAssociatedSettlement().setIceReviewDue(false);
+					
 					person.getAssociatedSettlement().setIceApprovalDue(true);
+					
+					double currentValue = person.getAssociatedSettlement().getIceDigValue();
+					
+					logger.info(person, 5_000, "Submitted new ice dig value: "
+							+ Math.round(currentValue * 10.0)/10.0 
+							+ " -> " + Math.round((diff + currentValue) * 10.0)/10.0);
 				}
 				break;
 				
 			case REGOLITH_RESOURCE:
-				if (newValue != 0) {
+				if (diff != 0) {
 					person.getAssociatedSettlement().setRegolithReviewDue(false);
+					
 					person.getAssociatedSettlement().setRegolithApprovalDue(true);					
+					
+					double currentValue = person.getAssociatedSettlement().getRegolithDigValue();
+					
+					logger.info(person, 5_000, "Submitted new regolith dig value: "
+							+ Math.round(currentValue * 10.0)/10.0 
+							+ " -> " + Math.round((diff + currentValue) * 10.0)/10.0);
 				}
 				break;
 				
 			case LIFE_RESOURCE:
 				
-				if (newValue > 0) {
+				if (diff > 0) {
 					
-					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(settlementResource, newValue);
+					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(settlementResource, diff);
 					
-					person.getAssociatedSettlement().getGoodsManager().updateOneGood(GoodsUtil.getGood(settlementResource));					
+					person.getAssociatedSettlement().getGoodsManager().updateOneGood(GoodsUtil.getGood(settlementResource));
+					
+					double demand = person.getAssociatedSettlement().getGoodsManager().getDemandScoreWithID(settlementResource);
+					
+					logger.info(person, 5_000, "Executed newly injected resource demand: " 
+							+ Math.round(demand * 10.0)/10.0 
+							+ " -> " + Math.round((diff + demand) * 10.0)/10.0);
 				}
 				
 				break;
 				
 			case WATER_RATIONING:
 				
-				if (newValue != 0) {		
+				if (diff != 0) {		
 					// Submit request and ask for approval
 					person.getAssociatedSettlement().getRationing().setApprovalDue(true);
+					
+					double level = person.getAssociatedSettlement().getRationing().getRationingLevel();
+					
+					logger.info(person, 5_000, "Submitted new water rationing: " + level + " -> " 
+							+ (diff + level));
 				}				
 				break;
 		}
@@ -334,15 +363,15 @@ public class BudgetResources extends Task {
 	 * 
 	 * @return
 	 */
-	public boolean injectDemand() {
-		return newValue > 0;
+	public boolean shouldInjectNewDemand() {
+		return diff > 0;
 	}
 	
 	@Override
 	public void destroy() {
 		super.destroy();
 		office = null;
-		taskNum = null;
+		goal = null;
 	}
 	
 }

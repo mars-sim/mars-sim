@@ -66,7 +66,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
     private static final String NAME = Msg.getString(
             "Task.description.budgetResources"); //$NON-NLS-1$
         
-    private static final double BASE_SCORE = 75.0;
+    private static final double BASE_SCORE = 100.0;
 
     public BudgetResourcesMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -128,7 +128,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 		if (settlement.getRationing().isReviewDue()) {
 			int levelDiff = settlement.getRationing().reviewRationingLevel();
 			if (levelDiff != 0) {
-				RatingScore score = new RatingScore("water.rationing", BASE_SCORE * Math.abs(levelDiff)/2);
+				RatingScore score = new RatingScore("water.rationing", BASE_SCORE * Math.abs(levelDiff)/1.5);
 				tasks.add(new BudgetResourcesJob(this, settlement, score, 1, ReviewGoal.WATER_RATIONING));
 			}
 		}

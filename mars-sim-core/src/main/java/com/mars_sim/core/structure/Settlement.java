@@ -138,9 +138,9 @@ public class Settlement extends Unit implements Temporal,
 	
 	private static final int MIN_REGOLITH_RESERVE = 400; // per person
 	private static final int MIN_SAND_RESERVE = 400; // per person
-	public static final int MIN_WATER_RESERVE = 800; // per person
-	private static final int MIN_ICE_RESERVE = 800; // per person
-	private static final int MIN_HYDROGEN_RESERVE = 500; // per person
+	public static final int MIN_WATER_RESERVE = 1200; // per person
+	private static final int MIN_ICE_RESERVE = 600; // per person
+	private static final int MIN_HYDROGEN_RESERVE = 700; // per person
 	
 	private static final int REGOLITH_MAX = 10_000;
 	private static final int ICE_MAX = 10_000;
@@ -222,18 +222,18 @@ public class Settlement extends Unit implements Temporal,
 	private MarsZone zone;
 	
 	/** The previous ice prob value. */
-	private double iceDemandCache = 400D;
+	private double icegetIceDigValueCache = 400D;
 	/** The current ice prob value. */
-	private double currentIceDemand;
+	private double icegetIceDigValue;
 	/** The recommended ice prob value. */
-	private double recommendedIceDemand;
+	private double recommendedIceDigValue;
 	
 	/** The previous regolith prob value. */
-	private double regolithDemandCache = 400D;
+	private double regolithDigValueCache = 400D;
 	/** The current regolith prob value. */
-	private double currentRegolithDemand;
+	private double regolithDigValue;
 	/** The recommended regolith prob value. */
-	private double recommendedRegolithDemand;
+	private double recommendedRegolithDigValue;
 	
 	/** The factor due to the population. */
 	private double popFactor = 1;
@@ -959,9 +959,9 @@ public class Settlement extends Unit implements Temporal,
 			// Reset justLoaded
 			justLoaded = false;
 
-			iceDemandCache = computeIceAdjustedDemand();
+			icegetIceDigValueCache = computeIceAdjustedDemand();
 
-			regolithDemandCache = computeRegolithAdjustedDemand();
+			regolithDigValueCache = computeRegolithAdjustedDemand();
 
 			// Initialize the goods manager
 			goodsManager.updatedMetrics();
@@ -2549,7 +2549,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public double computeIceAdjustedDemand() {
 		double result = 0;
-		double iceDemand = goodsManager.getDemandScoreWithID(ResourceUtil.ICE_ID);
+		double iceDemand = goodsManager.getDemandScoreWithID(ResourceUtil.ICE_ID) / 3;
 		if (iceDemand > ICE_MAX)
 			iceDemand = ICE_MAX;
 		if (iceDemand < 1)
@@ -2562,24 +2562,24 @@ public class Settlement extends Unit implements Temporal,
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
-		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
+		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID) / 2;
 		brineWaterDemand = brineWaterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
-		double hydrogenDemand = goodsManager.getDemandScoreWithID(ResourceUtil.HYDROGEN_ID);
+		double hydrogenDemand = goodsManager.getDemandScoreWithID(ResourceUtil.HYDROGEN_ID) / 4;
 		if (hydrogenDemand > HYDROGEN_MAX)
 			hydrogenDemand = HYDROGEN_MAX;
 		if (hydrogenDemand < 1)
 			hydrogenDemand = 1;
 		
 		// Compare the available amount of water and ice reserve
-		double iceSupply = goodsManager.getSupplyScore(ResourceUtil.ICE_ID);
+		double iceSupply = goodsManager.getSupplyScore(ResourceUtil.ICE_ID) / 3;
 		double waterSupply = goodsManager.getSupplyScore(ResourceUtil.WATER_ID);
-		double brineWaterSupply = goodsManager.getSupplyScore(ResourceUtil.BRINE_WATER_ID);
-		double hydrogenSupply = goodsManager.getSupplyScore(ResourceUtil.HYDROGEN_ID);
+		double brineWaterSupply = goodsManager.getSupplyScore(ResourceUtil.BRINE_WATER_ID) / 2;
+		double hydrogenSupply = goodsManager.getSupplyScore(ResourceUtil.HYDROGEN_ID) / 4;
 		
 		int reserve = MIN_WATER_RESERVE + MIN_ICE_RESERVE + MIN_HYDROGEN_RESERVE;
 
@@ -2610,9 +2610,9 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public void enforceIceDemandLevel() {
 		// Back up the current level to the cache
-		iceDemandCache = currentIceDemand;
+		icegetIceDigValueCache = icegetIceDigValue;
 		// Update the current level to the newly recommended level
-		currentIceDemand = recommendedIceDemand;
+		icegetIceDigValue = recommendedIceDigValue;
 		// Set the approval due back to false if it hasn't happened
 		setIceApprovalDue(false);
 	}
@@ -2622,9 +2622,9 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public void enforceRegolithDemandLevel() {
 		// Back up the current level to the cache
-		regolithDemandCache = currentRegolithDemand;
+		regolithDigValueCache = regolithDigValue;
 		// Update the current level to the newly recommended level
-		currentRegolithDemand = recommendedRegolithDemand;
+		regolithDigValue = recommendedRegolithDigValue;
 		// Set the approval due back to false if it hasn't happened
 		setRegolithApprovalDue(false);
 	}
@@ -2702,67 +2702,86 @@ public class Settlement extends Unit implements Temporal,
 	}
 	
 	/**
-	 * Reviews the ice demand.
+	 * Reviews the ice dig value.
 	 * 
 	 * @return
 	 */
-	public double reviewIce() {
+	public int reviewIce() {
 		
-		double newDemand = computeIceAdjustedDemand() ;
+		double newValue = computeIceAdjustedDemand() ;
 		
-		recommendedIceDemand = newDemand;
+		recommendedIceDigValue = newValue;
 		
-		return iceDemandCache - newDemand;
+		return (int)(icegetIceDigValueCache - newValue);
 	}
 	
 	/**
-	 * Reviews the regolith demand.
+	 * Reviews the regolith dig value.
 	 * 
 	 * @return
 	 */
-	public double reviewRegolith() {
+	public int reviewRegolith() {
 		
-		double newDemand = computeRegolithAdjustedDemand() ;
+		double newValue = computeRegolithAdjustedDemand() ;
 		
-		recommendedRegolithDemand = newDemand;
+		recommendedRegolithDigValue = newValue;
 		
-		return regolithDemandCache - newDemand;
+		return (int)(regolithDigValueCache - newValue);
 	}
 	
 	/**
-	 * Returns the recommended ice demand.
+	 * Returns the current regolith dig value.
 	 * 
 	 * @return
 	 */
-	public double getRecommendedIceDemand() {
-		return recommendedIceDemand;
+	public double getRegolithDigValue() {
+		return regolithDigValue;
 	}
 	
 	/**
-	 * Returns the recommended regolith demand.
+	 * Returns the cache ice dig value.
 	 * 
 	 * @return
 	 */
-	public double getRecommendedRegolithDemand() {
-		return recommendedRegolithDemand;
+	public double getIceDigValue() {
+		return icegetIceDigValue;
+	}
+
+	
+	/**
+	 * Returns the recommended ice dig value.
+	 * 
+	 * @return
+	 */
+	public double getRecommendedIceDigValue() {
+		return recommendedIceDigValue;
 	}
 	
 	/**
-	 * Returns the cache ice demand.
+	 * Returns the recommended regolith dig value.
 	 * 
 	 * @return
 	 */
-	public double getIceDemandCache() {
-		return iceDemandCache;
+	public double getRecommendedRegolithDigValue() {
+		return recommendedRegolithDigValue;
+	}
+	
+	/**
+	 * Returns the cache ice dig value.
+	 * 
+	 * @return
+	 */
+	public double getIceDigValueCache() {
+		return icegetIceDigValueCache;
 	}
 
 	/**
-	 * Returns the cache regolith demand.
+	 * Returns the cache regolith dig value.
 	 * 
 	 * @return
 	 */
-	public double getRegolithDemandCache() {
-		return regolithDemandCache;
+	public double getRegolithDigValueCache() {
+		return regolithDigValueCache;
 	}
 
 	public double getOutsideTemperature() {
@@ -3481,6 +3500,16 @@ public class Settlement extends Unit implements Temporal,
 		return meals;
 	}
 
+	/**
+	 * Gets the relation instance.
+	 * 
+	 * @return
+	 */
+	public Relation getRelation() {
+		return relation;
+	}
+	
+	
 	/**
 	 * Gets the Rationing instance.
 	 * 

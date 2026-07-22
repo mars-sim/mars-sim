@@ -52,7 +52,7 @@
 			<location coordinates="9.68 24.57" />	
 		</settlement>		
 				
-		<settlement name="Bharatiya" template="Phase 3-IN" persons="8" robots="8" sponsor="ISRO">
+		<settlement name="Bharatiya" template="Phase 3-IN" persons="16" robots="8" sponsor="ISRO">
 			<location coordinates="26.3650 -70.9710" />
 		</settlement>
 
