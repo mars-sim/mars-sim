@@ -217,7 +217,9 @@ class TradeTableModel extends CategoryTableModel<Good> {
 	 */
     private Object getRepair(Settlement settlement, Good good) {
 
-    	if (ResourceType.getType(good.getID()) != ResourceType.ITEM_RESOURCE) {
+    	int id = ResourceType.getType(good.getID());
+    	
+    	if (id == ResourceType.AMOUNT_RESOURCE || id == ResourceType.BIN_RESOURCE) {
     		return null;
     	}
     	

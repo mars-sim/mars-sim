@@ -45,9 +45,9 @@ public class GoodsManagerTest extends MarsSimUnitTest {
         assertEquals(ess.keySet().size()-1, reviewDue, "Essential resources needing review after reserve");
 
         double initialDemand = gm.getDemandScoreWithID(reserved);
-        boolean passed = gm.moderateLifeResourceDemand(reserved) == 0;
+        boolean needDemandInjection = gm.moderateLifeResourceDemand(reserved) == 0D;
         double newDemand = gm.getDemandScoreWithID(reserved);
-        if (passed)
+         if (!needDemandInjection)
         	assertEquals(initialDemand, newDemand, "Demand remains the same after budget review");
         else
         	assertNotEquals(initialDemand, newDemand, "Demand has changed after budget review");

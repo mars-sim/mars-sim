@@ -39,17 +39,20 @@ public class GroupActivityTask extends Task {
 
         if (currentState == ActivityState.DONE
         		|| currentState == ActivityState.UNSCHEDULED
-        		|| currentState == ActivityState.CANCELLED)
+        		|| currentState == ActivityState.CANCELLED) {
         	endTask();
+			return;
+        }
         
         // Walk to meeting place
         var b = person.getBuildingLocation();
         var p = activity.getMeetingPlace();
         
-        if (p == null) {
+        if (p == null || b == null) {
         	endTask();
+			return;
         }
-        else if (b == null || !b.equals(p)) {
+        else if (b != null && !b.equals(p)) {
         	walkToEmptyActivitySpotInBuilding(p, true);
         }
  

@@ -65,18 +65,22 @@ class TabPanelGoods extends EntityTableTabPanel<Settlement> implements TemporalC
 	@Override
 	protected void setColumnDetails(TableColumnModel columnModel) {
 				
-		columnModel.getColumn(0).setPreferredWidth(90);
-		columnModel.getColumn(1).setPreferredWidth(50);
-		columnModel.getColumn(2).setPreferredWidth(50);
-		columnModel.getColumn(3).setPreferredWidth(50);
+		columnModel.getColumn(0).setPreferredWidth(100);
+		columnModel.getColumn(1).setPreferredWidth(30);
+		columnModel.getColumn(2).setPreferredWidth(30);
+		columnModel.getColumn(3).setPreferredWidth(30);
+		columnModel.getColumn(4).setPreferredWidth(30);
+		columnModel.getColumn(5).setPreferredWidth(30);
 		
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.LEFT);
 		columnModel.getColumn(0).setCellRenderer(renderer);
-		columnModel.getColumn(1).setCellRenderer(new NumberCellRenderer(3));
-		columnModel.getColumn(2).setCellRenderer(new NumberCellRenderer(3));
+		columnModel.getColumn(1).setCellRenderer(new NumberCellRenderer(2));
+		columnModel.getColumn(2).setCellRenderer(new NumberCellRenderer(2));
 		columnModel.getColumn(3).setCellRenderer(new NumberCellRenderer(2)); // "$ ", "\u20BF "
+		columnModel.getColumn(4).setCellRenderer(new NumberCellRenderer(2));
+		columnModel.getColumn(5).setCellRenderer(new NumberCellRenderer(2));
 	}
 
 
@@ -107,7 +111,7 @@ class TabPanelGoods extends EntityTableTabPanel<Settlement> implements TemporalC
 
 		@Override
 		public int getColumnCount() {
-			return 4;
+			return 6;
 		}
 
 		@Override
@@ -120,9 +124,11 @@ class TabPanelGoods extends EntityTableTabPanel<Settlement> implements TemporalC
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
 				case 0 -> Msg.getString("TabPanelGoods.column.good");
-				case 1 -> Msg.getString("TabPanelGoods.column.demand");
-				case 2 -> Msg.getString("TabPanelGoods.column.valuePoints");
-				case 3 -> Msg.getString("TabPanelGoods.column.price");
+				case 1 -> Msg.getString("TabPanelGoods.column.supply");
+				case 2 -> Msg.getString("TabPanelGoods.column.demand");
+				case 3 -> Msg.getString("TabPanelGoods.column.valuePoints");
+				case 4 -> Msg.getString("TabPanelGoods.column.cost");
+				case 5 -> Msg.getString("TabPanelGoods.column.price");
 				default -> null;
 			};
 		}
@@ -134,9 +140,11 @@ class TabPanelGoods extends EntityTableTabPanel<Settlement> implements TemporalC
 				// Capitalized good's names
 				return switch (column) {
 					case 0 -> good.getName();
-					case 1 -> manager.getDemandScoreWithID(good.getID());
-					case 2 -> manager.getGoodValuePoint(good.getID());
-					case 3 -> manager.getPrice(good);
+					case 1 -> manager.getSupplyScore(good.getID());
+					case 2 -> manager.getDemandScoreWithID(good.getID());
+					case 3 -> manager.getGoodValuePoint(good.getID());
+					case 4 -> manager.getCost(good);
+					case 5 -> manager.getPrice(good);
 					default -> null;
 					};
 			}

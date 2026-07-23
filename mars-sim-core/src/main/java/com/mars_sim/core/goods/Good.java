@@ -186,6 +186,10 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		return cost;
 	}
 
+	public double getCost() {
+		return cost;
+	}
+	
 	public double getPrice() {
 		return price;
 	}

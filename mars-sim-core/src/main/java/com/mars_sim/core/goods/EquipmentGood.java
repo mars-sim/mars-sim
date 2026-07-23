@@ -254,8 +254,8 @@ public class EquipmentGood extends Good {
 		
 		if (previousDemand == INITIAL_EQUIPMENT_DEMAND) {
 			totalDemand = .5 * projectedCache 
-						+ .1 * repairDemand
-						+ .4 * tradeDemand;
+						+ .2 * repairDemand
+						+ .3 * tradeDemand;
 		}
 //		else {
 //			// Intentionally lose some values over time

@@ -122,30 +122,31 @@ class AmountResourceGood extends Good {
 	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.5;
 	
 	// types
-	private static final double CHEMICAL_FLATTENING_FACTOR = 2D;
-	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
-	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
-	private static final int ELEMENT_FLATTENING_FACTOR = 8;
+	private static final double CHEMICAL_FLATTENING_FACTOR = 1.1;
+	private static final int COMPOUND_FLATTENING_FACTOR = 2;
+	private static final int CONSTRUCTION_FLATTENING_FACTOR = 1;
+	private static final int ELEMENT_FLATTENING_FACTOR = 2;
 
-	private static final double GEMSTONE_FLATTENING_FACTOR = 3D;
+	private static final int GEMSTONE_FLATTENING_FACTOR = 3;
 
 	private static final double WASTE_FLATTENING_FACTOR = 0.15;
 	
 	private static final int UTILITY_FLATTENING_FACTOR = 4;
 
-	private static final double INSECT_FLATTENING_FACTOR = 5D;
-	private static final double ORGANISM_FLATTENING_FACTOR = 2D;
+	private static final int INSECT_FLATTENING_FACTOR = 5;
+	private static final int ORGANISM_FLATTENING_FACTOR = 2;
 	private static final double SOYBASED_FLATTENING_FACTOR = 0.5;
-	private static final double ANIMAL_FLATTENING_FACTOR = 2D;
+	private static final int ANIMAL_FLATTENING_FACTOR = 2;
 	private static final double CROP_FLATTENING_FACTOR = 1.25;
 	private static final double DERIVED_FLATTENING_FACTOR = 1.25;
-	private static final double TISSUE_FLATTENING_FACTOR = 1.25;
+	private static final double TISSUE_FLATTENING_FACTOR = 0.95;
 
-	private static final double PLASTIC_RELATED_FLATTENING_FACTOR = 6.0;
+	private static final int PLASTIC_RELATED_FLATTENING_FACTOR = 3;
 
 	private static final double LEAVES_VALUE_MODIFIER = 1.5;
 	
-	private static final double REGOLITH_VALUE_MODIFIER = 0.5;
+	// Future: Need to avoid making all regolith types max out at 10k proj demand.
+	private static final double REGOLITH_VALUE_MODIFIER = 0.01;
 	
 	
 	// Demand Modifiers
@@ -192,8 +193,8 @@ class AmountResourceGood extends Good {
 	private static final int IRON_OXIDE_MODIFIER = 10;
 	private static final double IRON_POWDER_MODIFIER = 1.0;
 
-	// Other factors
-	private static final double TISSUE_CULTURE_VALUE = 0.5;
+	// Future: Need to avoid making all tissue culture max out at 10k proj demand.
+	private static final double TISSUE_CULTURE_VALUE = 0.05;
 	
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;

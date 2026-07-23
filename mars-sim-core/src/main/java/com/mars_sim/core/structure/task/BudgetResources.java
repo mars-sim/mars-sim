@@ -11,6 +11,7 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.Administration;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Management;
+import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -309,13 +310,15 @@ public class BudgetResources extends Task {
 				
 				if (diff > 0) {
 					
+					Good good = GoodsUtil.getGood(settlementResource);
+					
 					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(settlementResource, diff);
 					
-					person.getAssociatedSettlement().getGoodsManager().updateOneGood(GoodsUtil.getGood(settlementResource));
+					person.getAssociatedSettlement().getGoodsManager().updateOneGood(good);
 					
 					double demand = person.getAssociatedSettlement().getGoodsManager().getDemandScoreWithID(settlementResource);
 					
-					logger.info(person, 5_000, "Executed newly injected resource demand: " 
+					logger.info(person, 5_000, "Injected " + good.getName() + " demand: " 
 							+ Math.round(demand * 10.0)/10.0 
 							+ " -> " + Math.round((diff + demand) * 10.0)/10.0);
 				}

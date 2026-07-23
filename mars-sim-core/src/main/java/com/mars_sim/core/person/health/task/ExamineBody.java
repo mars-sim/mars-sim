@@ -156,6 +156,11 @@ public class ExamineBody extends MedicalAidTask {
 	private double preparingPhase(double time) {
 		double remainingTime = 0;
 
+		if (worker.getSettlement() == null) {
+			endTask();
+			return 0;
+		}
+		
 		if (!attemptTransfer) {
 			
 			attemptTransfer = true;
@@ -166,7 +171,6 @@ public class ExamineBody extends MedicalAidTask {
 			transportRemainingTime = transportRemainingTime - time;
 			
 			if (transportRemainingTime < 0) {
-
 				// Send the worker as a patient to a medical bed
 				boolean toSend = BuildingManager.addPatientToMedicalBed(deceasedPerson, worker.getSettlement());
 

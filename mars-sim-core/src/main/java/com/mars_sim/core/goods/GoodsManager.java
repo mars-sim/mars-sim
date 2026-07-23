@@ -522,7 +522,7 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Determines the trade demand for a good at a settlement.
 	 *
-	 * @param good          the good.
+	 * @param good the good.
 	 * @return the trade demand.
 	 */
 	double determineTradeDemand(Good good) {
@@ -536,13 +536,18 @@ public class GoodsManager implements Serializable {
 												tempSettlement.getCoordinates());
 				double tradeValue = baseValue / (1D + (distance / 1000D));
 				if (tradeValue > selectedTradeValue)
+					// Gets the largest trade value
 					selectedTradeValue = tradeValue;
 			}
 		}
 		
-		setTradeDemandScore(good, selectedTradeValue);
+		double previousValue = getTradeDemandScore(good);
+				
+		double newValue = (previousValue + selectedTradeValue) / 2.2; 
 		
-		return selectedTradeValue;
+		setTradeDemandScore(good, newValue);
+		
+		return newValue;
 	}
 
 	/**
@@ -661,6 +666,16 @@ public class GoodsManager implements Serializable {
 	 */
 	public double getPrice(Good good) {
 		return good.getPrice();
+	}
+	
+	/**
+	 * Gets the cost for a good.
+	 *
+	 * @param good the good
+	 * @return
+	 */
+	public double getCost(Good good) {
+		return good.getCost();
 	}
 	
 

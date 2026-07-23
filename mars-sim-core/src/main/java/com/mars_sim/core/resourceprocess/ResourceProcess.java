@@ -324,6 +324,14 @@ public class ResourceProcess implements ScheduledEventHandler {
 		levelOfEffort = level;
 	}
 	
+	/**
+	 * Gets the level of effort.
+	 * 
+	 * @return
+	 */
+	public int getLevel() {
+		return levelOfEffort;
+	}
 	
 	public void setAssessment(ResourceProcessAssessment assessment) {
 		this.assessment = assessment;
