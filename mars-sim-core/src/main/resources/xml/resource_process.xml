@@ -178,7 +178,7 @@
 		<input resource="Glucose" rate="180.0" />
 		<input resource="water" rate="108.0" />	
 
-		<output resource="Carbon dioxide" rate="264.0" waste="true" />
+		<output resource="Carbon dioxide" rate="264.0" waste="false" />
 		<output resource="Hydrogen" rate="24.0" />
 	</process>
 
@@ -339,7 +339,6 @@
 		<input resource="Water" rate="36.0" />
 		
 		<output resource="Methanol" rate="128.0" />
-
 	</process> <!-- "Oxidation of Methane into Methanol by Methanotrophs" -->
 		
 	<process name="Sabatier RWGS Reactor" kW-required="0.0" >
@@ -883,9 +882,9 @@
 		3. https://www.nasa.gov/pdf/570243main_OxygenGen_CHEM_ST.pdf
 		4. https://www.sciencedaily.com/releases/2021/03/210317141722.htm
 		5. https://www.researchgate.net/publication/265608781_Decoupled_catalytic_hydrogen_evolution_from_a_molecular_metal_oxide_redox_mediator_in_water_splitting
-
 	</description> 
 		<input resource="water" rate="288" />
+		
 		<output resource="hydrogen" rate="32" />
 		<output resource="oxygen" rate="256" />
 	</process> <!-- Oxygen Generator System (OGS) -->
@@ -903,6 +902,7 @@
 		</description>
 		<input resource="hydrogen" rate="32" />
 		<input resource="oxygen" rate="256" />
+		
 		<output resource="water" rate="288" />
 
 	</process> <!-- Catalytic Recombination into Water -->
@@ -991,7 +991,7 @@
 
 	<process name="Excavate Ice" kW-required="0.5" defaultOn="true">
 	<description>
-		This process works hand in hand with the "Melt Ice" resource process.
+		This process works hand in hand with theresource process of melting the ice.
 		
 		Assumptions :		
 		1. Drilling has been performed at specific site and reach subsurface water ice layer.
@@ -1061,51 +1061,68 @@
 			photochemically via UV light on a metallic iron catalyst.
 			See https://marspedia.org/Perchlorate
 		</description>
-		<input resource="brine water" rate="400.0"  />
+		<input resource="brine water" rate="450.0"  />
 		
-		<output resource="water" rate="374.0"  />
-		<output resource="sand" rate="11.8"  />
+		<!-- 400 below -->
+		<output resource="water" rate="344.0"  />
 		
+		<!-- 56 below  -->
+		<output resource="sand" rate="100.0"  />
+		
+		<!-- 26 below  --> 			
+		<output resource="gypsum" rate="5.0"  />			
+
 		<output resource="lime" rate="1.0"  />	
 		
-		<output resource="perchlorate" rate="0.4"  />	
-		<output resource="iron chloride" rate="0.1" />
+		<output resource="perchlorate" rate="2.0"  />	
 		
-		<output resource="aluminum oxide" rate="0.8"  />	
-		<output resource="iron oxide" rate="1.6"  />	
+		<output resource="iron oxide" rate="1.5"  />	
 		<output resource="nickel" rate="0.5"  />	
 		
-		<output resource="silica" rate="0.9"  />	
+		<output resource="silica" rate="0.8"  />	
 		<output resource="sulfur" rate="0.2" />	
 		
-		<output resource="magnesium" rate="0.9"  />	
-		<output resource="manganese" rate="0.1"  />	
 		<output resource="calcium" rate="0.5"  />			
 		<output resource="Calcium carbonate" rate="1.5"  />
+				
+		<output resource="iron chloride" rate="0.1" />
+		<output resource="magnesium" rate="0.9"  />	
 		
+		<output resource="manganese" rate="0.1"  />	
 		<output resource="copper" rate="0.1" />	
 		<output resource="gold" rate="0.1" />	
 		<output resource="platinum" rate="0.1" />	
 		<output resource="chromium" rate="0.1" />	
-		<output resource="scandium" rate="0.1" />	
 		
+		<output resource="scandium" rate="0.1" />	
 		<output resource="aluminum" rate="0.1" />	
 		<output resource="silver" rate="0.1" />	
 		<output resource="tin" rate="0.1" />	
 		<output resource="titanium" rate="0.1" />	
-		<output resource="vanadium" rate="0.1" />	
 		
-		<output resource="zinc" rate="0.1" />	
-		<output resource="vanadium" rate="0.1" />
-														
-		<output resource="hematite" rate="1.5"  />	
-		<output resource="goethite" rate="1.5"  />	
-		<output resource="gypsum" rate="1.5"  />			
-				
+		<output resource="vanadium" rate="0.1" />	
+		<output resource="zinc" rate="0.1" />
+		
+		<output resource="aluminum oxide" rate="0.8"  />	
+
+		<output resource="Chalcopyrite" rate="1.0"  />
+		<output resource="Goethite" rate="1.0"  />
+		<output resource="Hematite" rate="1.0"  />	
+		<output resource="Kamacite" rate="1.0"  />	
+		
+		<output resource="Magnesite" rate="1.0"  />
+		<output resource="Magnetite" rate="1.0"  />	
+		<output resource="Malachite" rate="1.0"  />	
+		<output resource="Olivine" rate="1.0"  />
+		
+		<output resource="Taenite" rate="1.0"  />	
+		<output resource="Sylvite" rate="1.0"  />	
+
+								
 	</process>
 
 
-	<process name="Convert Regolith to Ores with Sand" kW-required="0.02" defaultOn="true">
+	<process name="Process Ores from Regolith" kW-required="0.02" defaultOn="true">
 		<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 		analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 		Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
@@ -1125,7 +1142,7 @@
 	</process>
 
 
-	<process name="Extract Nitrogen Compounds from Regolith" kW-required="0.005" >
+	<process name="Process Nitrogen Compounds from Regolith" kW-required="0.005" >
 		<description> 
 			According to https://newatlas.com/nitrates-nitrogen-mars-curiosity-nasa/36700/, 
 			Nitrates are widespread on Mars with concentrations of 1,100 parts per million at the drill sites.
@@ -1148,7 +1165,7 @@
 	</process>
 
 
-	<process name="Process Regolith-B rich in Poly-Hydrated Sulfate"
+	<process name="Process Poly-Hydrated Sulfate from Regolith-B"
 		kW-required="0.03" >
 		<description>
 			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
@@ -1168,7 +1185,7 @@
 			<output resource="sand" rate="20.0"  />
 	</process>
 
-	<process name="Process Regolith-C rich in Phyllo-Silicate" kW-required="0.03" >
+	<process name="Process Phyllo-Silicate from Regolith-C" kW-required="0.03" >
 		<description>
 			This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
 					40% smectite;
@@ -1186,7 +1203,7 @@
 	</process>
 
 
-	<process name="Process Regolith-D rich in Basaltic" kW-required="0.03" >
+	<process name="Process Basaltic from Regolith-D" kW-required="0.03" >
 		<description>
 			This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
 					23.5% basaltic;

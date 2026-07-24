@@ -206,6 +206,7 @@ public final class MalfunctionFactory implements Serializable {
 
 		// Get all vehicles belong to the Settlement. Vehicles can have a malfunction
 		// in the Settlement or outside settlement
+		// Note: getParkedGaragedVehicles() can have CME
 		for (Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
 			entities.addAll(getMalfunctionables(vehicle));
 		}

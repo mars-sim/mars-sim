@@ -1213,11 +1213,11 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make Garment" tech="2" skill="1" work-time="50" process-time="100"
 			power-required=".2">
 		<inputs>
-			<resource name="Cane fiber" amount="0.2">
-				<alternative name="Polyester fiber" amount="0.2" />
-				<alternative name="Soy fiber" amount="0.2" />
+			<resource name="Cane fiber" amount="0.4">
+				<alternative name="Polyester fiber" amount="0.4" />
+				<alternative name="Soy fiber" amount="0.4" />
 			</resource>
-			<resource name="Polyurethane" amount="0.5" />
+			<resource name="Polyurethane" amount="0.3" />
 			<resource name="Polyester resin" amount="0.5" />
 		</inputs>
 		<outputs>
@@ -3514,9 +3514,6 @@ Note: 1 kg of H2 is 14.13 liter
 			</resource>
 			<resource name="Ammonia" amount="0.25" />			
 			<resource name="Carbon dioxide" amount="0.5" />
-			
-			
-			
 		</inputs>
 		<outputs>
 			<resource name="Polyurethane" amount="2.0" />

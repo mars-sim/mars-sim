@@ -522,7 +522,7 @@ public class ResourceUtil {
 	 * @param resource
 	 * @return
 	 */
-	public static boolean isFuel(int resource) {
+	public static boolean isMethane(int resource) {
 		return switch (resource) {
 			case METHANE_ID -> true;
 			default -> false;
@@ -544,12 +544,12 @@ public class ResourceUtil {
 	
 	
 	/**
-	 * Is this tier 0 resource ?
+	 * Is this tier 1 resource ?
 	 * 
 	 * @param resource
 	 * @return
 	 */
-	public static boolean isTier0Resource(int resource) {
+	public static boolean isTier1Resource(int resource) {
 		return switch (resource) {
 			case ICE_ID, BRINE_WATER_ID, ROCK_SALT_ID -> true;
 			default -> false;
@@ -557,12 +557,12 @@ public class ResourceUtil {
 	}
 	
 	/**
-	 * Is this tier 1 resource ?
+	 * Is this hydrogen resource ?
 	 * 
 	 * @param resource
 	 * @return
 	 */
-	public static boolean isTier1Resource(int resource) {
+	public static boolean isHydrogen(int resource) {
 		return switch (resource) {
 			case HYDROGEN_ID -> true;
 			default -> false;

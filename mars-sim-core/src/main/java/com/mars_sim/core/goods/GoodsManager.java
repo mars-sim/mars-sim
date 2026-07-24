@@ -927,8 +927,8 @@ public class GoodsManager implements Serializable {
 			return 0;
 		}
 
-		logger.info(settlement, 15_000L, "On " + resourceName 
-				+ ", Demand injection: " + Math.round(demand * 100.0)/100.0 
+		logger.info(settlement, 15_000L,  
+				"Demand injection for " + resourceName + ": " + Math.round(demand * 100.0)/100.0 
 				+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
 				+ "  delta: " + Math.round(delta * 100.0)/100.0
 				+ "  fraction: " + Math.round(fraction*  10000.0)/10000.0

@@ -312,12 +312,12 @@ public class BudgetResources extends Task {
 					
 					Good good = GoodsUtil.getGood(settlementResource);
 					
-					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(settlementResource, diff);
-					
-					person.getAssociatedSettlement().getGoodsManager().updateOneGood(good);
-					
 					double demand = person.getAssociatedSettlement().getGoodsManager().getDemandScoreWithID(settlementResource);
 					
+					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(settlementResource, diff + demand);
+					
+					person.getAssociatedSettlement().getGoodsManager().updateOneGood(good);
+			
 					logger.info(person, 5_000, "Injected " + good.getName() + " demand: " 
 							+ Math.round(demand * 10.0)/10.0 
 							+ " -> " + Math.round((diff + demand) * 10.0)/10.0);

@@ -414,7 +414,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Enzymatic Dehydrogenation" number-modules="4"/>				
 				
 				<!--For producing Methanol -->
-				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="5"/>	
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="6"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 								
 				<process-engine name="Atmospheric processing" number-modules="96"/>
@@ -868,7 +868,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Enzymatic Dehydrogenation" number-modules="16"/>
 
 				<!--For producing Methanol -->
-				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="20"/>	
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="24"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="12"/>					
 			
 				<process-engine name="Atmospheric processing" number-modules="128"/>
@@ -2076,11 +2076,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing low-power-level="0.25">
 				<!-- 5 processes for breaking down regolith -->		
-				<process-engine name="Convert Regolith to Ores with Sand" number-modules="80"/>
-				<process-engine name="Extract Nitrogen Compounds from Regolith" number-modules="60"/>
-				<process-engine name="Process Regolith-B rich in Poly-Hydrated Sulfate" number-modules="30"/> 
-				<process-engine name="Process Regolith-C rich in Phyllo-Silicate" number-modules="30"/>
-				<process-engine name="Process Regolith-D rich in Basaltic" number-modules="30"/>
+				<process-engine name="Process Ores from Regolith" number-modules="80"/>
+				<process-engine name="Process Nitrogen Compounds from Regolith" number-modules="60"/>
+				<process-engine name="Process Poly-Hydrated Sulfate from Regolith-B" number-modules="30"/> 
+				<process-engine name="Process Phyllo-Silicate from Regolith-C" number-modules="30"/>
+				<process-engine name="Process Basaltic from Regolith-D" number-modules="30"/>
 				
 				<!-- 10 processes for breaking down minerals -->
 				<process-engine name="Do Chalcopyrite Smelting" number-modules="15"/>
@@ -2465,7 +2465,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<resource-processing low-power-level="0.25">
 				<!--For producing Methanol -->
-				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="40"/>	
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="48"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="24"/>	
 			</resource-processing>
 
@@ -4412,7 +4412,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Enzymatic Dehydrogenation" number-modules="4"/>
 				
 				<!--For producing Methanol -->
-				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="5"/>	
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="6"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="96"/>

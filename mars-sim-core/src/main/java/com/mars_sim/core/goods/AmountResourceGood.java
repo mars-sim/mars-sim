@@ -96,7 +96,7 @@ class AmountResourceGood extends Good {
 	private static final double CO2_FLATTENING_FACTOR = 1.1;
 		
 	private static final double ORE_FLATTENING_FACTOR = 1.0;
-	private static final double MINERAL_FLATTENING_FACTOR = 1.0;
+	private static final double MINERAL_FLATTENING_FACTOR = 0.9;
 	private static final double ROCK_FLATTENING_FACTOR = 1D;
 	private static final double REGOLITH_FLATTENING_FACTOR = 0.75D;
 	private static final double SAND_FLATTENING_FACTOR = 1D;

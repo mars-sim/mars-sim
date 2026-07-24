@@ -89,8 +89,10 @@ public class PartGood extends Good {
 	private static final int EVA_PART_DEMAND = 1;
     private static final int KITCHEN_DEMAND = 1;
 	private static final double SCRAP_METAL_DEMAND = 1;
+	private static final double STEEL_INGOT_DEMAND = 0.25;
+	private static final double IRON_INGOT_DEMAND = 0.65;
 	private static final double INGOT_METAL_DEMAND = 1;
-	private static final double SHEET_METAL_DEMAND = 1;
+	private static final double SHEET_METAL_DEMAND = .75;
 	private static final double TRUSS_DEMAND = .5;
 	private static final double STEEL_DEMAND = .5;
 	private static final double BRICK_DEMAND = 1.0;
@@ -509,10 +511,10 @@ public class PartGood extends Good {
 		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
 
 		if (name.equalsIgnoreCase(STEEL_INGOT))
-			return base * 0.35;
+			return base * STEEL_INGOT_DEMAND;
 		
 		if (name.equalsIgnoreCase(IRON_INGOT))
-			return base * 0.75;
+			return base * IRON_INGOT_DEMAND;
 
 		if (name.contains(INGOT))
 			return base * INGOT_METAL_DEMAND;
