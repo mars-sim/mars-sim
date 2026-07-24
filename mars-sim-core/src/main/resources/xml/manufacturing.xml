@@ -2702,11 +2702,38 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Prepare potassium chloride" tech="1" skill="1" work-time="2.0"
+			tooling="chemical" process-time="3.0" power-required="0.0">
+		<description>
+			2K(s) + Cl2(g) → 2KCl(s)
+			
+		Process: Solid potassium metal reacts with chlorine gas. Potassium loses an 
+		electron (oxidation) to become K+, and chlorine gains an electron (reduction) 
+		to become Cl−. The resulting ions form an ionic lattice.
+		
+		Stoichiometry:
+		- 2 moles of Potassium, 2×39.10g = 78.20g
+		- 1 mole of Chlorine gas, 1×70.90g = 70.90g
+		Produces 2 moles of Potassium Chloride, 2×74.55g = 149.10g
+		
+		Energy: The reaction is highly exothermic, releasing significant heat and often producing a 
+		characteristic lilac flame (from potassium) and white smoke (KCl particles). 
+		</description>
+		<inputs>
+			<resource name="potassium" amount="1.955" />
+			<resource name="chlorine" amount="1.7725" />
+		</inputs>
+		<outputs>
+		
+			<resource name="sylvite" amount="3.7275" />
+		</outputs>
+	</process>
+		
 
 	<!-- Electrolysis of potassium chloride (sylvite) in water to produce potassium hydroxide (potash lye) -->
 	<!-- and chlorine gas  -->
 	<!--      2 K+(aq) + 2H2O(l) + 2e−   →   H2(g) + 2 KOH(aq) -->
-	<!-- 2 * 39 g/mol    36 g/mol        →    2 g/mol  2 * 56 g/mol -->
+	<!--     2*39 g/mol    36 g/mol      →  2 g/mol   2*56 g/mol -->
 	<!--         2 Cl– — 2e−   →    Cl2(g) -->
 	<!--      2 * 35.5 g/mol   →  35.5 * 2       -->
 	<!--      KCl (74.6 g/mol) -->
@@ -2747,7 +2774,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="potash lye" amount="5.6" />
 			<resource name="hydrogen" amount="0.1" />
- 			<resource name="chlorine" amount="7.1" />
+ 			<resource name="chlorine" amount="3.55" />
 		</outputs>
 	</process>
 
@@ -2766,33 +2793,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Prepare potassium chloride" tech="1" skill="1" work-time="2.0"
-			tooling="chemical" process-time="3.0" power-required="0.0">
-		<description>
-			2K(s) + Cl2(g) → 2KCl(s)
-			
-		Process: Solid potassium metal reacts with chlorine gas. Potassium loses an 
-		electron (oxidation) to become K+, and chlorine gains an electron (reduction) 
-		to become Cl−. The resulting ions form an ionic lattice.
-		
-		Stoichiometry:
-		- 2 moles of Potassium, 2×39.10g = 78.20g
-		- 1 mole of Chlorine gas, 1×70.90g = 70.90g
-		Produces 2 moles of Potassium Chloride, 2×74.55g = 149.10g
-		
-		Energy: The reaction is highly exothermic, releasing significant heat and often producing a 
-		characteristic lilac flame (from potassium) and white smoke (KCl particles). 
-		</description>
-		<inputs>
-			<resource name="potassium" amount="1.955" />
-			<resource name="chlorine" amount="1.7725" />
-		</inputs>
-		<outputs>
-		
-			<resource name="sylvite" amount="3.7275" />
-		</outputs>
-	</process>
-		
 	<process name="Manufacture battery module" tech="2" skill="3" work-time="300" process-time="100"
 			tooling="Soldering" power-required="1.0">
 		<description> At operating voltage of 4.2V, the lithium content is 0.075g/Wh.

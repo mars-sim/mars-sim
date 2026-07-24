@@ -504,6 +504,19 @@ public class ResourceUtil {
 	}
 	
 	/**
+	 * Is this CO ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isCO(int resource) {
+		return switch (resource) {
+			case CO_ID -> true;
+			default -> false;
+		};
+	}
+	
+	/**
 	 * Is this tier 1 resource ?
 	 * 
 	 * @param resource

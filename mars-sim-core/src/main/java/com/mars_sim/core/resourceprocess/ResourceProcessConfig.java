@@ -23,7 +23,7 @@ public class ResourceProcessConfig {
 	
 	private static final String DEFAULT = "defaultOn";
 	private static final String NAME = "name";
-	private static final String KWH_REQUIRED = "kWh-required";
+	private static final String KW_REQUIRED = "kW-required";
 	private static final String PROCESS = "process";
 	private static final String INPUT = "input";
 	private static final String OUTPUT = "output";
@@ -64,12 +64,12 @@ public class ResourceProcessConfig {
 	private ResourceProcessSpec parseProcessSpec(Element processElement) {
 
 		String name = processElement.getAttributeValue(NAME);
-		double kWhRequired = Double.parseDouble(processElement.getAttributeValue(KWH_REQUIRED));
+		double kWRequired = Double.parseDouble(processElement.getAttributeValue(KW_REQUIRED));
 		int processTime = ConfigHelper.getOptionalAttributeInt(processElement, PROCESS_TIME, 200);
 		int workTime = ConfigHelper.getOptionalAttributeInt(processElement, WORK_TIME, 10);
 		boolean defaultOn = ConfigHelper.getOptionalAttributeBool(processElement, DEFAULT, false);
 	
-		ResourceProcessSpec process =  new ResourceProcessSpec(name, kWhRequired, processTime, workTime, defaultOn);
+		ResourceProcessSpec process =  new ResourceProcessSpec(name, kWRequired, processTime, workTime, defaultOn);
 
 		// Get input resources.
 		List<Element> inputNodes = processElement.getChildren(INPUT);

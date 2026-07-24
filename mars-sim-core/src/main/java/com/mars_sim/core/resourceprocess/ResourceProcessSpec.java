@@ -26,7 +26,7 @@ public class ResourceProcessSpec implements Serializable{
 
 	private boolean defaultOn;
 	private String name;
-	private double kWhRequired;
+	private double kWRequired;
 
 	private Map<Integer, Double> baseInputRates;
 	private Map<Integer, Double> baseOutputRates;
@@ -46,12 +46,12 @@ public class ResourceProcessSpec implements Serializable{
 	 * Constructor.
 	 * 
 	 * @param name
-	 * @param kWhRequired
+	 * @param kWRequired
 	 * @param processTime
 	 * @param workTime
 	 * @param defaultOn
 	 */
-	ResourceProcessSpec(String name, double kWhRequired, int processTime, int workTime, boolean defaultOn) {
+	ResourceProcessSpec(String name, double kWRequired, int processTime, int workTime, boolean defaultOn) {
 		this.defaultOn = defaultOn;
 		this.name = name;
 		this.baseInputRates = new HashMap<>();
@@ -60,7 +60,7 @@ public class ResourceProcessSpec implements Serializable{
 
 		this.wasteResources = new HashSet<>();
 		this.ambientResources = new HashSet<>();
-		this.kWhRequired = kWhRequired;
+		this.kWRequired = kWRequired;
 		this.processTime = processTime;
 		this.workTime = workTime;
 	}
@@ -178,12 +178,12 @@ public class ResourceProcessSpec implements Serializable{
 	}
 
 	/**
-	 * Gets the kWh required for this process.
+	 * Gets the kW required for this process.
 	 * 
 	 * @return
 	 */
-	public double getkWhRequired() {
-		return kWhRequired;
+	public double getkWRequired() {
+		return kWRequired;
 	}
 
 	/**

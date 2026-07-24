@@ -88,24 +88,24 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		
 		private static final long serialVersionUID = 1L;
 		
-		private ResourceProcessSpec process;
+		private ResourceProcessSpec spec;
 		private boolean useWaste;
 
 		public ToggleOnJob(SettlementMetaTask mt, Settlement owner, boolean useWaste,
 							ResourceProcessSpec process, RatingScore score) {
 			super(mt, owner, "Toggle On " + process.getName(), null, score);
-			this.process = process;
+			this.spec = process;
 			this.useWaste = useWaste;
         }
 
         @Override
         public Task createTask(Person person) {
-            return new ToggleResourceProcess(person, useWaste, process);
+            return new ToggleResourceProcess(person, useWaste, spec);
         }
 
         @Override
         public Task createTask(Robot robot) {
-            return new ToggleResourceProcess(robot, useWaste, process);
+            return new ToggleResourceProcess(robot, useWaste, spec);
         }
 		
  		@Override
@@ -118,7 +118,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			if (super.equals(obj)) {
 				// Same building & meta task so compare on Process
 				ToggleOnJob other = (ToggleOnJob) obj;
-				return process.equals(other.process);
+				return spec.equals(other.spec);
 			}
 			return false;
 		}
@@ -128,7 +128,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
 	private static final double MIN_SCORE = 1;
-	private static final double MAX_SCORE = 200;
+	private static final double MAX_SCORE = 150;
 	private static final double WASTE_THRESHOLD = 0.3; // % waste need to be available to toggle
 	private static final double UNBELIEVABLY_HIGH_BIAS = 1024;	
 	private static final double EXCEEDINGLY_HIGH_BIAS = 512;	
@@ -226,7 +226,6 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					
 					if (process.getOverallScore() <= 0) {
 						results.add(new ToggleOffJob(this, settlement, building, process, new RatingScore(100)));
-						return;
 					}
 					// Note: Allow a running process to stop once in a while in order to reduce wear and tear
 					// Reduce the likelihood of having to submit ToggleOffJob all the time
@@ -242,13 +241,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					
 						if (score.getScore() >= 4 * process.getLevel()) { 
 							results.add(new ToggleOffJob(this, settlement, building, process, score));
-							return;
 						}
 					}
 				}
 				else {
 					computeAssessment(assessed, results, building, process, isWaste);
-					return;
 				}
 			}
 		}
@@ -358,7 +355,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				double stored = settlement.getSpecificAmountResourceStored(id);
 				
 				double rate = process.getBaseInputRate(id); // per sol
-				double perSol = process.getProcessTime() / 1000D; // by default process time is 100
+				double perSol = process.getProcessTime() / 100D; // by default process time is 100
 				percAvailable = Math.max(1D, stored / rate / perSol / (cap/2 - stored) / 10);
 			}
 
@@ -434,8 +431,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (processSpec.isAmbientInputResource(resource)
-					// Note: 'Ambient' is used mostly for CO2 only 
-					|| ResourceUtil.isRawMaterial(resource)   				// all ores, all minerals, sand)
+						&& ResourceUtil.isCO(resource)) {
+					// Note: 'Ambient' is used mostly for CO & CO2 only - needed to slow down certain processes
+					score += mrate * MEGA_HIGH_BIAS;
+				} else if (ResourceUtil.isRawMaterial(resource)   				// all ores, all minerals, sand)
 					|| ResourceUtil.isChemical(resource)) {					// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 
 					score += mrate / MEGA_HIGH_BIAS;
 				} else if (ResourceUtil.isTier1Resource(resource)) { 		// hydrogen	
@@ -450,7 +449,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					score += mrate / MEGA_HIGH_BIAS;
 				} else if (ResourceUtil.isTier0Resource(resource) 			// ice, brine water, rock salt
 					|| ResourceUtil.isInSitu(resource)						// all regolith types
-					|| ResourceUtil.isWasteProduct(resource)) { 			// CO, grey water, black water, * waste
+					|| ResourceUtil.isWasteProduct(resource)) { 			// grey water, black water, * waste
 					score += mrate / SUPER_HIGH_BIAS;
 				} else if (ResourceUtil.isTier2Resource(resource)) { 		// water
 					score += mrate * MEGA_HIGH_BIAS;
@@ -495,7 +494,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
 				// Note: 'waste' is used for both CO and CO2 
-					score += mrate * LOW_BIAS;
+					score += mrate * HIGH_BIAS;
 				} else if (ResourceUtil.isTier1Resource(resource)) { 	// hydrogen
 					score += mrate * UNBELIEVABLY_HIGH_BIAS;
 				} else if (ResourceUtil.isFuel(resource)) { 			// methane
@@ -526,7 +525,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			}
 		}
 		
-		return score * computeModuleFactor(modules) ;
+		return score * computeModuleFactor(modules) * .6;
 	}
 	
 	/**

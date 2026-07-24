@@ -270,7 +270,7 @@ public class ResourceProcessPanel extends JPanel {
             result.append(BUILDING_HEADER).append(building.getName()).append(BR);
             result.append(NUM_MODULES).append(process.getNumModules()).append(BR);
             result.append(POWER_REQ).append(StyleManager.DECIMAL2_KW.format
-            		(process.getkWhRequired())).append(BR);
+            		(process.getkWRequired())).append(BR);
 
             result.append(INPUTS);
             boolean firstItem = true;

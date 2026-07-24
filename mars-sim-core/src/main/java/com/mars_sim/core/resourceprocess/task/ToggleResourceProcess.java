@@ -61,7 +61,7 @@ public class ToggleResourceProcess extends Task {
 	private Building resourceProcessBuilding;
 
 	/**
-	 * Turn a process off
+	 * Turn a process off.
 	 *
 	 * @param worker the worker performing the task.
 	 */
@@ -78,19 +78,19 @@ public class ToggleResourceProcess extends Task {
 	}
 
 	/**
-	 * Turn a process On
+	 * Turn a process on.
 	 *
 	 * @param worker the worker performing the task.
-	 * @param processSpec Process to turn on
+	 * @param spec process spec to turn on
 	 */
-	public ToggleResourceProcess(Worker worker, boolean useWaste, ResourceProcessSpec process) {
+	public ToggleResourceProcess(Worker worker, boolean useWaste, ResourceProcessSpec spec) {
 		super(NAME, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 20D);
 		if (!worker.isInSettlement()) {
 			clearTask("Not in Settlement.");
 			return;
 		}
 
-		if (!selectResourceProcess(worker.getSettlement(), useWaste, process)) {
+		if (!selectResourceProcess(worker.getSettlement(), useWaste, spec)) {
 			clearTask("No process to toggle on.");
 			return;
 		}

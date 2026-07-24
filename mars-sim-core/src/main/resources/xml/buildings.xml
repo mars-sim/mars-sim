@@ -396,7 +396,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<!--For producing Methane and Water -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="6"/>
-				<process-engine name="CO Methanation" number-modules="2"/>
+				<process-engine name="CO Methanation" number-modules="4"/>
 	
 				<!--For producing Oxygen -->
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
@@ -410,8 +410,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Dry Methane Reforming (DMR)" number-modules="7"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="1"/>
 				
+				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
+				<process-engine name="Enzymatic Dehydrogenation" number-modules="4"/>				
+				
 				<!--For producing Methanol -->
-				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>	
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="5"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 								
 				<process-engine name="Atmospheric processing" number-modules="96"/>
@@ -846,7 +849,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">	
 				<!--For producing Methane and Water -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="18"/>			
-				<process-engine name="CO Methanation" number-modules="6"/>
+				<process-engine name="CO Methanation" number-modules="12"/>
 				
 				<!--For producing Oxygen -->
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="32"/>	
@@ -861,8 +864,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Dry Methane Reforming (DMR)" number-modules="14"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="2"/>
 					
+				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
+				<process-engine name="Enzymatic Dehydrogenation" number-modules="16"/>
+
 				<!--For producing Methanol -->
-				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="12"/>	
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="20"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="12"/>					
 			
 				<process-engine name="Atmospheric processing" number-modules="128"/>
@@ -2459,7 +2465,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<resource-processing low-power-level="0.25">
 				<!--For producing Methanol -->
-				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="24"/>	
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="40"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="24"/>	
 			</resource-processing>
 
@@ -3187,6 +3193,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
 				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
 								
+				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
+				<process-engine name="Enzymatic Dehydrogenation" number-modules="8"/>
+												
 				<activity>
 					<activity-spot xloc="-.51" yloc="-.75" />
 					<activity-spot xloc="-.51" yloc="-2.31" />
@@ -3714,8 +3723,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			<resource-processing low-power-level="0.25">
+				<!--For producing Methane and Water -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="36"/>
-				<process-engine name="CO Methanation" number-modules="12"/>
+				<process-engine name="CO Methanation" number-modules="24"/>
 				
 			</resource-processing>
 			<storage stock-capacity="30000">
@@ -3912,6 +3922,31 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.58" yloc="2.7" />
 				</activity>
 			</research>
+			<resource-processing low-power-level="0.25">
+				<!-- Bio-based processes -->
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="3"/>
+				<process-engine name="Glucose Fermentation" number-modules="2"/>
+				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
+				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
+				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="8"/>
+				
+				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
+				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
+								
+				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
+				<process-engine name="Enzymatic Dehydrogenation" number-modules="8"/>
+												
+				<activity>
+					<activity-spot xloc="-.51" yloc="-.75" />
+					<activity-spot xloc="-.51" yloc="-2.31" />
+					<activity-spot xloc="-1.62" yloc="-1.12" />
+					<activity-spot xloc="-1.61" yloc="-2.19" />		
+					
+					<activity-spot xloc=".29" yloc="-.9" />
+					<activity-spot xloc=".28" yloc="-2.72" />										
+				</activity>
+			</resource-processing>
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="-0.86" yloc="-0.86" />
@@ -4358,7 +4393,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<!--For producing Methane and Water -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="6"/>
-				<process-engine name="CO Methanation" number-modules="2"/>
+				<process-engine name="CO Methanation" number-modules="4"/>
 				
 				<!--For producing Oxygen -->
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
@@ -4373,8 +4408,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Dry Methane Reforming (DMR)" number-modules="7"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="1"/>
 				
+				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
+				<process-engine name="Enzymatic Dehydrogenation" number-modules="4"/>
+				
 				<!--For producing Methanol -->
-				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>	
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="5"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="96"/>

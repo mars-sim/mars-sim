@@ -209,15 +209,15 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	/**
-	 * Gets the amount of energy required to run the process.
+	 * Gets the amount of power required to run the process.
 	 *
-	 * @return energy (kWh).
+	 * @return energy (kW).
 	 */
-	public double getkWhRequired() {
+	public double getkWRequired() {
 		// Note : No need of checking if (isProcessRunning()) since 
 		// ResourceProcessor::getCombinedPowerLoad will check 
 		// if a process is running
-		return processSpec.getkWhRequired() * getNumModules();
+		return processSpec.getkWRequired() * getNumModules() * levelOfEffort / 5;
 	}
 
 	/**

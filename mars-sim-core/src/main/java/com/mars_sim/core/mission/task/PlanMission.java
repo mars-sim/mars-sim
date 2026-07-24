@@ -146,6 +146,7 @@ public class PlanMission extends Task {
 		}
 	
 		double remainingTime = 0;
+		
 		Mission mission = person.getMind().getMission();
 		if (mission == null) {	
 			if (is70Completed()) {
@@ -196,31 +197,33 @@ public class PlanMission extends Task {
 		if (isNearlyCompleted()) {
 			Mission mission = person.getMind().getMission();
 			
-			MissionPlanning plan = mission.getPlan();
-			
-			if (plan == null) {
-				// No mission found so stop planning for now
-				logger.log(worker, Level.INFO, 10_000, "No plan in place for " + mission.getName() + " just yet.");
+			if (mission != null) {
+				MissionPlanning plan = mission.getPlan();
 				
-				endTask();
-			}
-			else if (mission.isDone()) {
-				// No mission found so stop planning for now
-				logger.log(worker, Level.INFO, 10_000, "Mission already accomplished.");
-				
-				endTask();
-			}
-			else if ((plan != null) && !mission.isDone()) {
-				// Simulate to take 20% of the task time to request for approval of the mission
-				logger.log(worker, Level.INFO, 30_000, "Submitted a mission plan for " 
-						+ mission.getName() + ".");
-				
-				// Set the plan pending and add to approval list
-				plan.setStatus(PlanType.PENDING);
-				var control = mission.getAssociatedSettlement().getMissionControl();
-				control.requestMissionReview(plan);
-				
-				endTask();
+				if (plan == null) {
+					// No mission found so stop planning for now
+					logger.log(worker, Level.INFO, 10_000, "No plan in place for " + mission.getName() + " just yet.");
+					
+					endTask();
+				}
+				else if (mission.isDone()) {
+					// No mission found so stop planning for now
+					logger.log(worker, Level.INFO, 10_000, "Mission already accomplished.");
+					
+					endTask();
+				}
+				else if ((plan != null) && !mission.isDone()) {
+					// Simulate to take 20% of the task time to request for approval of the mission
+					logger.log(worker, Level.INFO, 30_000, "Submitted a mission plan for " 
+							+ mission.getName() + ".");
+					
+					// Set the plan pending and add to approval list
+					plan.setStatus(PlanType.PENDING);
+					var control = mission.getAssociatedSettlement().getMissionControl();
+					control.requestMissionReview(plan);
+					
+					endTask();
+				}
 			}
 		}
 		

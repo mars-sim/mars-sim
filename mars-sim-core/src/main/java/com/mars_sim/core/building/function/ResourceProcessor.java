@@ -93,7 +93,7 @@ public abstract class ResourceProcessor extends Function {
 			}
 
 			// Subtract value of require power.
-			double powerHrsRequiredPerReaction = spec.getkWhRequired();
+			double powerHrsRequiredPerReaction = spec.getkWRequired();
 			double powerValue = powerHrsRequiredPerReaction * settlement.getPowerGrid().getPowerValue();
 			processValue -= powerValue;
 
@@ -194,7 +194,7 @@ public abstract class ResourceProcessor extends Function {
 		double result = 0D;
 		for(ResourceProcess process : processes) {
 			if (process.isProcessRunning()) {
-				result += process.getkWhRequired();
+				result += process.getkWRequired();
 			}
 		}
 		return result;

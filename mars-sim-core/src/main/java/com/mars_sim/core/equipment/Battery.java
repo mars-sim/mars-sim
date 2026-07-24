@@ -486,7 +486,7 @@ public class Battery implements Serializable {
    
     	    changeDegradation();
     	    
-    		logger.warning(unit, 10_000L, "Battery almost out of power.");
+//    		logger.warning(unit, 10_000L, "Battery almost out of power.");
     	}
     	
         return readykWh;
