@@ -83,7 +83,7 @@ public abstract class ProjectStep implements Serializable {
      * Is the step completed
      * @return
      */
-    boolean isCompleted() {
+    public boolean isCompleted() {
         return completed;
     }
 }

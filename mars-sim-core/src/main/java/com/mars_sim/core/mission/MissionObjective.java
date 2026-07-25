@@ -12,6 +12,8 @@ import java.io.Serializable;
  * This represents the objective of a mission
  */
 public interface MissionObjective extends Serializable{
+    public static final String CHANGE_EVENT = "objective:update";
+
     /**
      * Returns the name for this mission objective.
      *

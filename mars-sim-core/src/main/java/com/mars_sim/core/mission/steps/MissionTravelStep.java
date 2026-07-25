@@ -158,7 +158,7 @@ public class MissionTravelStep extends MissionStep {
         if (VehicleType.isRover(vehicle.getVehicleType())) {
             double travelDuration = mvp.getEstimateTravelTime(distance);
 
-            addLifeSupportResource(mvp.getMembers().size(), travelDuration, addOptionals, manifest);
+            addLifeSupportResource(travelDuration, addOptionals, manifest);
         }
     }
 

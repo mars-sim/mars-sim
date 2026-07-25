@@ -65,7 +65,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 		boolean canWork = false;
         if (!notifiedMembers) {
             // Tell everyone to get onboard
-            callMembersToMission(mp, worker, v, (int)(DEPARTURE_DURATION - DEPARTURE_PREPARATION));
+            callMembersToMission(mp, worker, v, (DEPARTURE_DURATION - DEPARTURE_PREPARATION));
             notifiedMembers = true;
         }
 
@@ -99,9 +99,6 @@ public class MissionBoardVehicleStep extends MissionStep {
      */
     private void depart(MissionProject m, Vehicle v) {
 		logger.info(v, "Ready to depart for " + m.getName());
-
-        // Record the start mass right before departing the settlement
-        //recordStartMass();
 		
         // Embark from settlement
 		if (!v.transfer(getUnitManager().getMarsSurface())) {
@@ -135,17 +132,16 @@ public class MissionBoardVehicleStep extends MissionStep {
 
 		boolean canDepart = false;
 
-		// Must have the leader
-		if (!ejectedMembers.contains(getLeader())) {
-			// Still enough members ? If so eject late arrivals
-			if ((members.size() - ejectedMembers.size()) >= 2) {
-				for(Person ej : ejectedMembers) {
-					logger.info(ej, "Ejected from mission " + m.getName() + " missed Departure");
-					m.removeMember(ej);
-					m.addMissionLog(ej.getName() + " ejected");
-				}
-				canDepart = true;
+		// Must have the leader and still enough members ? If so eject late arrivals
+		var leader = getLeader();
+		if (!ejectedMembers.contains(leader)
+				&& ((members.size() - ejectedMembers.size()) >= 2)) {
+			for(Person ej : ejectedMembers) {
+				logger.info(ej, "Ejected from mission " + m.getName() + " missed Departure");
+				m.removeMember(ej);
+				m.addMissionLog(ej.getName() + " ejected", leader.getName());
 			}
+			canDepart = true;
 		}
 		return canDepart;
     }
@@ -163,15 +159,12 @@ public class MissionBoardVehicleStep extends MissionStep {
 
 		// Set the members' work shift to on-call to get ready
 		for (Worker w : getMission().getMembers()) {
-			if (w instanceof Person p) {
-				// If first time this person has been called and there is a limit interrupt them
-				if (!p.getShiftSlot().setOnCall(true) && (boardingTime > 0)) {
-					// First call so 
-					if (p.getTaskManager().getTask() instanceof Sleep s) {
-						// Not create but the only way
-						s.setAlarm(boardingTime);
-					}
-				}
+			// If first time this person has been called and there is a limit interrupt them
+			if (w instanceof Person p
+				&& !p.getShiftSlot().setOnCall(true) && (boardingTime > 0)
+				&& p.getTaskManager().getTask() instanceof Sleep s) {
+					// Not create but the only way
+					s.setAlarm(boardingTime);
 			}
 		}
     }

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.person.ai.task.util.Worker;
 
-public class ProjectTest {
+class ProjectTest {
     @SuppressWarnings("serial")
 	static final class TestStep extends ProjectStep {
 
@@ -47,7 +47,7 @@ public class ProjectTest {
 
     @Test
     void testExecuteOneStep() {
-        Project p = new Project("Test");
+        Project<TestStep> p = new Project<>("Test");
 
         assertEquals(Stage.WAITING, p.getStage(), "Waiting with no steps");
 
@@ -71,7 +71,7 @@ public class ProjectTest {
 
     @Test
     void testExecuteTwoStep() {
-        Project p = new Project("Test");
+        Project<TestStep> p = new Project<>("Test");
 
         assertEquals(Stage.WAITING, p.getStage(), "Waiting with no steps");
 
@@ -89,14 +89,14 @@ public class ProjectTest {
         Worker worker = null;
         p.execute(worker);
         assertEquals(Stage.ACTIVE, p.getStage(), "Stage is Active");
-        assertEquals("Step 1", p.getStep().getDescription(), "Project 1st step");
+        assertEquals("Step 1", p.getCurrentStep().getDescription(), "Project 1st step");
         assertEquals(2, p.getRemainingSteps().size(), "Number of step after starting");
 
 
         // Xecute second time
         p.execute(worker);
         assertEquals(Stage.CLOSEDOWN, p.getStage(), "Step1 stage is DONE");
-        assertEquals("Step 2", p.getStep().getDescription(), "Project 2nd step");
+        assertEquals("Step 2", p.getCurrentStep().getDescription(), "Project 2nd step");
         assertEquals(1, step1.startCount, "Step1 started once");
         assertEquals(1, step1.endCount, "Step1 ended once");
         assertEquals(0, step1.expectedCount, "Step1 fully expected");
@@ -123,7 +123,7 @@ public class ProjectTest {
 
     @Test
     void testAbort() {
-        Project p = new Project("Test");
+        Project<TestStep> p = new Project<>("Test");
 
         TestStep step1 = new TestStep(Stage.ACTIVE, 2, "Step 1");
         TestStep step2 = new TestStep(Stage.CLOSEDOWN, 1, "Step 2");
@@ -137,7 +137,7 @@ public class ProjectTest {
         p.abort("Test");
 
         assertEquals(Stage.ABORTED, p.getStage(), "Stage is aborted");
-        assertTrue(p.isFinished(), "Project is done");
+        assertTrue(p.isDone(), "Project is done");
 
         // Step 1 only executed one
         assertEquals(1, step1.startCount, "Step1 started once");
@@ -153,7 +153,7 @@ public class ProjectTest {
 
     @Test
     void testRemoveStep() {
-        Project p = new Project("Test");
+        Project<TestStep> p = new Project<>("Test");
 
         TestStep step1 = new TestStep(Stage.PREPARATION, 2, "Step 1");
         TestStep step2 = new TestStep(Stage.ACTIVE, 1, "Old Step");
@@ -167,7 +167,7 @@ public class ProjectTest {
         Worker worker = null;
         p.execute(worker);
         assertEquals(Stage.PREPARATION, p.getStage(), "Stage is Active");
-        assertEquals("Step 1", p.getStep().getDescription(), "Project step");
+        assertEquals("Step 1", p.getCurrentStep().getDescription(), "Project step");
 
 
         // Swap last step
@@ -177,7 +177,7 @@ public class ProjectTest {
         // Xecute end of first step, stage is new last step
         p.execute(worker);
         assertEquals(Stage.CLOSEDOWN, p.getStage(), "Process stage is Closedown");
-        assertEquals("New Step", p.getStep().getDescription(), "Project step");
+        assertEquals("New Step", p.getCurrentStep().getDescription(), "Project step");
 
         // Last step executed
         p.execute(worker);
@@ -209,7 +209,7 @@ public class ProjectTest {
 
     @Test
     void testAddingBadStage() {
-        Project p = new Project("Bad");
+        Project<TestStep> p = new Project<>("Bad");
         p.addStep(new TestStep(Stage.CLOSEDOWN, 0, null));
 
         // Add a step with Active stage

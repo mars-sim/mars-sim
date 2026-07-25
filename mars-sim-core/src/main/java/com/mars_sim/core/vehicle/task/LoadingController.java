@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -104,6 +105,11 @@ public class LoadingController implements Serializable {
 		removeVehicleItems(optionalItemManifest);
 	}
 
+	private List<Equipment> getEquipmentSet(EquipmentOwner source, EquipmentType eType) {
+		return source.getEquipmentSet().stream()
+				.filter(e -> e.getEquipmentType() == eType)
+				.toList();
+	}
 	/*
 	 * Remove any equipment the Vehicle has from the manifest. Equipment completely loaded
 	 * in the vehicle will be removed from the manifest.
@@ -112,7 +118,7 @@ public class LoadingController implements Serializable {
 		Set<Integer> ids = new HashSet<>(equipment.keySet());
 		for (Integer eqmId : ids) {
 			EquipmentType eType = EquipmentType.convertID2Type(eqmId);
-			int amountLoaded = vehicle.findNumEmptyContainersOfType(eType, false);
+			int amountLoaded = getEquipmentSet(vehicle, eType).size();
 			if (amountLoaded > 0) {
 				int newAmount = equipment.get(eqmId).intValue() - amountLoaded;
 				if (newAmount <= 0D) {
@@ -504,7 +510,9 @@ public class LoadingController implements Serializable {
 			if (amountNeeded > 0) {
 				// How many available ?
 				EquipmentType eType = EquipmentType.convertID2Type(equipmentType);
-				List<Equipment> list = new ArrayList<>(settlement.getContainerSet(eType));
+
+				// Must take a copy
+				List<Equipment> list = new ArrayList<>(getEquipmentSet(settlement, eType));
 				for (Equipment eq : list) {
 					if (eq.isEmpty(true)) {
 						// Put this equipment into a vehicle
