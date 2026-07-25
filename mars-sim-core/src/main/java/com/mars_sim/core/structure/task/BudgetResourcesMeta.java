@@ -66,7 +66,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
     private static final String NAME = Msg.getString(
             "Task.description.budgetResources"); //$NON-NLS-1$
         
-    private static final double BASE_SCORE = 100.0;
+    private static final double BASE_SCORE = 20.0;
 
     public BudgetResourcesMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);

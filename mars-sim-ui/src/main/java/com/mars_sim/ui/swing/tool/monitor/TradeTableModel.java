@@ -51,13 +51,13 @@ class TradeTableModel extends CategoryTableModel<Good> {
 	private static final int VALUE_COL 			= MARKET_DEMAND_COL + 1;
 	private static final int MARKET_VALUE_COL 	= VALUE_COL + 1;
 	
-	private static final int COST_COL 			= MARKET_VALUE_COL + 1;
-	private static final int MARKET_COST_COL 	= COST_COL + 1;
-			
-	private static final int PRICE_COL 			= MARKET_COST_COL + 1;
-	private static final int MARKET_PRICE_COL 	= PRICE_COL + 1;
+//	private static final int COST_COL 			= MARKET_VALUE_COL + 1;
+//	private static final int MARKET_COST_COL 	= COST_COL + 1;
+//			
+//	private static final int PRICE_COL 			= MARKET_COST_COL + 1;
+//	private static final int MARKET_PRICE_COL 	= PRICE_COL + 1;
 
-	private static final int COLUMNCOUNT = MARKET_PRICE_COL + 1;
+	private static final int COLUMNCOUNT = MARKET_VALUE_COL + 1;
 
 	private static final int NUM_INITIAL_COLUMNS = PROJECTED_COL;
 	
@@ -79,11 +79,11 @@ class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[VALUE_COL] = new ColumnSpec ("Value", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Double.class, ColumnSpec.STYLE_DIGIT2);
 		
-		COLUMNS[COST_COL] = new ColumnSpec ("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
-		COLUMNS[MARKET_COST_COL] = new ColumnSpec ("Market Cost ", Double.class, ColumnSpec.STYLE_CURRENCY);
-		
-		COLUMNS[PRICE_COL] = new ColumnSpec ("Price", Double.class, ColumnSpec.STYLE_CURRENCY);
-		COLUMNS[MARKET_PRICE_COL] = new ColumnSpec ("Market Price", Double.class, ColumnSpec.STYLE_CURRENCY);
+//		COLUMNS[COST_COL] = new ColumnSpec ("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
+//		COLUMNS[MARKET_COST_COL] = new ColumnSpec ("Market Cost ", Double.class, ColumnSpec.STYLE_CURRENCY);
+//		
+//		COLUMNS[PRICE_COL] = new ColumnSpec ("Price", Double.class, ColumnSpec.STYLE_CURRENCY);
+//		COLUMNS[MARKET_PRICE_COL] = new ColumnSpec ("Market Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 		
 		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flattened", Double.class, ColumnSpec.STYLE_DIGIT2);
@@ -139,14 +139,14 @@ class TradeTableModel extends CategoryTableModel<Good> {
 				entityValueUpdated(key, MASS_COL, MASS_COL);
 			} else if (EntityEventType.SUPPLY_EVENT.equals(eventType)) {
 				entityValueUpdated(key, SUPPLY_COL, SUPPLY_COL);
-			} else if (EntityEventType.COST_EVENT.equals(eventType)) {
-				entityValueUpdated(key, COST_COL, COST_COL);
-			} else if (EntityEventType.PRICE_EVENT.equals(eventType)) {
-				entityValueUpdated(key, PRICE_COL, PRICE_COL);
-			} else if (EntityEventType.MARKET_COST_EVENT.equals(eventType)) {
-				entityValueUpdated(key, MARKET_COST_COL, MARKET_COST_COL);
-			} else if (EntityEventType.MARKET_PRICE_EVENT.equals(eventType)) {
-				entityValueUpdated(key, MARKET_PRICE_COL, MARKET_PRICE_COL);
+//			} else if (EntityEventType.COST_EVENT.equals(eventType)) {
+//				entityValueUpdated(key, COST_COL, COST_COL);
+//			} else if (EntityEventType.PRICE_EVENT.equals(eventType)) {
+//				entityValueUpdated(key, PRICE_COL, PRICE_COL);
+//			} else if (EntityEventType.MARKET_COST_EVENT.equals(eventType)) {
+//				entityValueUpdated(key, MARKET_COST_COL, MARKET_COST_COL);
+//			} else if (EntityEventType.MARKET_PRICE_EVENT.equals(eventType)) {
+//				entityValueUpdated(key, MARKET_PRICE_COL, MARKET_PRICE_COL);
 			} else {
 				entityValueUpdated(key, NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 			}
@@ -195,14 +195,14 @@ class TradeTableModel extends CategoryTableModel<Good> {
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedGood.getID());
 			case MARKET_VALUE_COL:
 				return marketManager.getGlobalMarketGoodValue(selectedGood);
-			case COST_COL:
-				return selectedGood.getCostOutput();
-			case MARKET_COST_COL:
-				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getCost();
-			case PRICE_COL:
-				return selectedGood.getPrice();
-			case MARKET_PRICE_COL:
-				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getPrice();
+//			case COST_COL:
+//				return selectedGood.getCostOutput();
+//			case MARKET_COST_COL:
+//				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getCost();
+//			case PRICE_COL:
+//				return selectedGood.getPrice();
+//			case MARKET_PRICE_COL:
+//				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getPrice();
 			default:
 				return null;
 		}

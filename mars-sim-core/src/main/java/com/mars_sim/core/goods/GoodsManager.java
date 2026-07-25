@@ -319,14 +319,23 @@ public class GoodsManager implements Serializable {
 		
 		// Note: No need to update the market demand/VP. 
 		// Already done in determineGoodValue()
-
-		double localCost = g.computeAdjustedCost();
+		
+		// Update the local cost
+		// For now, no need of updating the local cost since it's not dependent 
+		// upon the demand, supply or Good value
+		// In future when the manufacturing efficiency can be improved by new engineering 
+		// research or scientific breakthrough, the cost will get adjusted 
+//		double localCost = g.computeAdjustedCost();
+		// Update the local price
 		double localPrice = g.calculatePrice(settlement, localValue);
 
 		settlement.fireUnitUpdate(EntityEventType.COST_EVENT, g);
 		settlement.fireUnitUpdate(EntityEventType.PRICE_EVENT, g);
 		
-		mv.updateCost(localCost);
+		// Update the market cost
+		// For now, no need of updating the market cost since local price is not updated
+		// mv.updateCost(localCost);
+		// Update the market price
 		mv.updatePrice(localPrice);
 		
 		settlement.fireUnitUpdate(EntityEventType.MARKET_COST_EVENT, g);
