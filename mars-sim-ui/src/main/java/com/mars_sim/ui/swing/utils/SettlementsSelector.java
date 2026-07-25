@@ -42,11 +42,12 @@ import com.mars_sim.ui.swing.components.SortedComboBoxModel;
  * It also listens for new settlements being added and updates the selection options accordingly.
  */
 @SuppressWarnings("serial")
-public class SettlementsSelector extends JPanel {
+public class SettlementsSelector extends JPanel
+ 			implements StatefulComponent, EntityManagerListener {
+
     private static final String ALL = "All";
 
     private UnitManager unitMgr;
-    private EntityManagerListener umListener;
 
     private Map<Authority, Set<Settlement>> authorities;
     private JComboBox<Object> selectionCombo;
@@ -72,21 +73,8 @@ public class SettlementsSelector extends JPanel {
         
         buildUI(choices, selected, showDescription);
 
-        // 	// Listen for new Settlements
-		umListener = new EntityManagerListener() {
-			@Override
-			public void entityAdded(Entity newEntity) {
-				if (newEntity instanceof Settlement s) {
-					addNewSettlement(s);
-				}
-			}
-
-			@Override
-			public void entityRemoved(Entity removedEntity) {
-				// Settlements are never removed
-			}
-		};
-		unitMgr.addEntityManagerListener(UnitType.SETTLEMENT, umListener);
+        // Listen for new Settlements
+		unitMgr.addEntityManagerListener(UnitType.SETTLEMENT, this);
 
         // Setup initial selection
         changeSelection(selectionCombo.getSelectedItem());
@@ -182,6 +170,9 @@ public class SettlementsSelector extends JPanel {
         if (selectionCombo.getSelectedItem() instanceof Authority a && a.equals(ra)) {
             changeSelection(a);
         }
+		else if (selectionCombo.getSelectedItem() instanceof String str && str.equals(ALL)) {
+			changeSelection(ALL);
+		}
     }
 
     /**
@@ -328,10 +319,27 @@ public class SettlementsSelector extends JPanel {
 		}
 	}
 
-    /**
+	/**
+	 * A new Settlement has been added to the UnitManager. This will trigger the selection listener if there is a change.
+	 * @param newEntity New Settlement
+	 */
+	@Override
+	public void entityAdded(Entity newEntity) {
+		if (newEntity instanceof Settlement s) {
+			addNewSettlement(s);
+		}
+	}
+
+	@Override
+	public void entityRemoved(Entity removedEntity) {
+		// Nothing to do, settlements are never removed
+	}
+
+	/**
      * Unregisters this component from any listeners
      */
-    public void unregister() {
-        unitMgr.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);
+	@Override
+    public void release() {
+        unitMgr.removeEntityManagerListener(UnitType.SETTLEMENT, this);
     }
 }

@@ -496,12 +496,13 @@ public class MonitorWindow extends ContentPanel
 	 */
 	@Override
 	public void destroy() {
-		settlementSelector.unregister();
+		settlementSelector.release();
 
-		// Remove listeners for the active tab; should already be present but just in case
-		MonitorModel activeModel = (activeTab != null) ? activeTab.getModel() : null;
-		if (activeModel != null) {
-			activeModel.enableListeners(false);
+		// Remove listeners for tabs
+		for(var tt : tabsSection.getComponents()) {
+			if (tt instanceof MonitorTab tab) {
+				tab.getModel().enableListeners(false);
+			}
 		}
 			
 		super.destroy();

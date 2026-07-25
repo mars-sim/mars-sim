@@ -14,7 +14,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -37,8 +36,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import com.formdev.flatlaf.extras.components.FlatToggleButton;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityManagerListener;
-import com.mars_sim.core.GameManager;
-import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
@@ -170,7 +167,6 @@ public class NavigatorWindow extends ContentPanel
 	private static final String MAP_SEPERATOR = "~";
 
 	private static final String LEVEL = "Level ";
-	private static final String CHOOSE_SETTLEMENT = "Choose";
 	private static final String MAPTYPE_RELOAD_ACTION = "notloaded";
 
 	private static final String MINERAL_LAYER = "minerals";
@@ -525,9 +521,6 @@ public class NavigatorWindow extends ContentPanel
 
     	settlementPane.add(settlementSelector);
 
-    	// Hide settlement box at startup since the all settlement tab is being selected by default
-//		setSettlementBox(true);
-
     	currentSelection = new HashSet<>(settlementSelector.getSelectedSettlements());
     	unitMapLayer.setUnitsToDisplay(currentSelection);
 		
@@ -548,37 +541,7 @@ public class NavigatorWindow extends ContentPanel
 			updateCoordsMaps(newSettlement.getCoordinates());
 		}
 	}
-
-	/**
-	 * Sets the opaqueness of the settlement box.
-	 * 
-	 * @param isOpaque
-	 */
-	private void setSettlementBox(boolean isOpaque) {
-		settlementSelector.setVisible(!isOpaque);
-	}
 	
-	/**
-	 * Sets up a list of settlements.
-	 *
-	 * @return List<Settlement>
-	 */
-	private List<Settlement> setupSettlements() {
-		List<Settlement> settlements = new ArrayList<>();
-
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			settlements = unitManager.getCommanderSettlements();
-		}
-
-		else {
-			settlements.addAll(unitManager.getSettlements());
-		}
-
-		Collections.sort(settlements);
-		
-		return settlements;
-	}
-
 	/**
 	 * Updates the labels on the status bar.
 	 * 
@@ -814,10 +777,8 @@ public class NavigatorWindow extends ContentPanel
 		if (mapPanel != null)
 			mapPanel.destroy();
 		
-		settlementSelector.unregister();
+		settlementSelector.release();
 
-		
 		unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);
-		
 	}
 }
