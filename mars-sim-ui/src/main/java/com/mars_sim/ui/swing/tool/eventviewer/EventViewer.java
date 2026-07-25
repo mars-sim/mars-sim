@@ -103,7 +103,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
                 try {
                     HistoricalEventCategory category = HistoricalEventCategory.valueOf(name.trim());
                     loadedCategories.add(category);
-                } catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException _) {
                     // Ignore invalid category names
                 }
             }
@@ -341,7 +341,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         if (eventManager != null) {
             eventManager.removeListener(this);
         }
-        settlementSelector.unregister();
+        settlementSelector.release();
         super.destroy();
     }
 
