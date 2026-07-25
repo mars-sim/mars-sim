@@ -247,9 +247,9 @@ public abstract class MissionProject implements Mission {
 	 * 
 	 * @param affected the entity affected by the event
 	 * @param type the type of the historical event
-	 * @param message 	
+	 * @param message Message details
 	 */
-	private void registerHistoricalEvent(Entity affected, HistoricalEventType type, String message) {
+	protected void registerHistoricalEvent(Entity affected, HistoricalEventType type, String message) {
 		
 		// Creating mission joining event.
 		HistoricalEvent newEvent = new HistoricalEvent(type, this, getAssociatedSettlement(),
@@ -349,7 +349,8 @@ public abstract class MissionProject implements Mission {
     /**
      * Gets the resources needed to complete the mission.
      * 
-     * @return
+     * @param includeOptionals Include optional resources
+     * @return Manifest of resources needed to complete the mission
      */
     public SuppliesManifest getResources(boolean includeOptionals) {
         SuppliesManifest resources = new SuppliesManifest();
@@ -363,6 +364,9 @@ public abstract class MissionProject implements Mission {
         return resources;
     }
 
+    /**
+     * Gets the resources needed to complete the mission. This takes the Objective from each step.
+     */
     @Override
     public List<MissionObjective> getObjectives() {
         return control.getSteps().stream()
@@ -423,19 +427,10 @@ public abstract class MissionProject implements Mission {
 		}
 	}
 
-    /**
-     * Adds an entry to the mission log.
-     * 
-     * @param string
-     */
-    public void addMissionLog(String string) {
-        log.addEntry(string);
-    }
-
 	/**
 	 * Adds an entry to the mission log.
 	 * 
-	 * @param entry
+	 * @param entry Message to log
 	 * @param enterBy the name of the person who logs this
 	 */
 	public void addMissionLog(String entry, String enterBy) {

@@ -17,18 +17,13 @@ import com.mars_sim.core.environment.LandmarkConfig;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.mission.MissionCreationException;
-import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.mission.MissionVehicleProject;
-import com.mars_sim.core.mission.objectives.LandmarkObjective;
 import com.mars_sim.core.mission.steps.MissionTravelStep;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.NavPoint;
-import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.project.Stage;
-import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -89,7 +84,7 @@ public class LandmarkMetaMission extends AbstractMetaMission {
         List<MissionStep> plan = new ArrayList<>();
         plan.add(new MissionTravelStep(mission, new NavPoint(turningPoint, landmark.getName(),
                                                             startingPlace)));
-        plan.add(new VisitLandmark(mission, landmark));
+        plan.add(new VisitLandmarkStep(mission, landmark));
         plan.add(new MissionTravelStep(mission, new NavPoint(base, turningPoint)));           
 
         mission.setSteps(plan);  
@@ -99,47 +94,5 @@ public class LandmarkMetaMission extends AbstractMetaMission {
 
     private static LandmarkConfig getLandmarkConfig() {
         return SimulationConfig.instance().getLandmarkConfiguration();
-    }
-
-    private static class VisitLandmark extends MissionStep {
-
-        private static final int SITE_TIME = 100; // mSol
-        private static final long serialVersionUID = 1L;
-        private LandmarkObjective objective;
-
-        public VisitLandmark(MissionVehicleProject parent, Landmark landmark) {
-            super(parent, Stage.ACTIVE, "Explore " + landmark.getName());
-
-            objective = new LandmarkObjective(landmark, SITE_TIME);
-        }
-
-        /**
-         * Calculates what resources are needed for this step.
-         * 
-         * Method should be empty
-         * The return value may change once the step is active.
-         */
-        @Override
-        protected void getRequiredResources(SuppliesManifest resources, boolean includeOptionals) {
-            addLifeSupportResource(getMission().getMembers().size(), objective.getMSolOnSite(), includeOptionals, resources);
-        }
-
-        @Override
-        protected boolean execute(Worker worker) {
-            if (getStepDuration() > objective.getMSolOnSite()) {
-                complete();
-            }
-
-            // nothing to do
-            return false;
-        }
-        
-        /**
-         * Return the objective for visiting a site.
-         */
-        @Override
-        public MissionObjective getObjective() {
-            return objective;
-        }
     }
 }

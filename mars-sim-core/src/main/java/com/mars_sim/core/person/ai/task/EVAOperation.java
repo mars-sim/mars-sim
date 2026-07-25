@@ -729,14 +729,14 @@ public abstract class EVAOperation extends Task {
 
 
 	/**
-	 * Determines a random location for for working outside a Rover for the
+	 * Determines a random location for for working outside a Vehicle for the
 	 * assigned Worker.
 	 * <p>If no site is found then the Task is ended.
 	 *
-	 * @param rover Base rover hosting EVA
+	 * @param rover Base vehicle for the outside location
 	 * @return Was a site found
 	 */
-	protected boolean setRandomOutsideLocation(Rover rover) {
+	protected boolean setRandomOutsideLocation(Vehicle rover) {
 
 		LocalPosition sLoc = null;
 		boolean goodLocation = false;

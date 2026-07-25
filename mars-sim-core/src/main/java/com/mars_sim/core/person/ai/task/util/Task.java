@@ -654,7 +654,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					timeCompleted += remainingTime;
 				}
 			} else {
+				double remainingTime = timeLeft;
 				timeLeft = performMappedPhase(timeLeft);
+				timeCompleted += remainingTime;
 			}
 
 			// Some Task return a percentage of the time which can produce a very small number

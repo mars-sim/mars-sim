@@ -117,8 +117,9 @@ public class LoadControllerTest {
 	@Test
 	void testLoadRequiredEquipment() {
 		var manifest = new SuppliesManifest();
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
+		manifest.addEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
+		manifest.addEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
+		manifest.addEquipment(EquipmentType.EVA_SUIT.getResourceID(), 2, true);
 
 		// Load the manifest
 		testLoading(100, manifest);
@@ -130,10 +131,10 @@ public class LoadControllerTest {
 	@Test
 	void testLoadOptionalEquipment() {
 		var manifest = new SuppliesManifest();
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
+		manifest.addEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
+		manifest.addEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
 
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 10, false);
+		manifest.addEquipment(EquipmentType.GAS_CANISTER.getResourceID(), 10, false);
 
 		// Load the manifest
 		testLoading(100, manifest);
@@ -145,15 +146,15 @@ public class LoadControllerTest {
 	@Test
 	void testLoadMissingOptionalEquipment() {
 		var manifest = new SuppliesManifest();
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
+		manifest.addEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
+		manifest.addEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
 
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 10, false);
+		manifest.addEquipment(EquipmentType.GAS_CANISTER.getResourceID(), 10, false);
 
 		loadSettlement(settlement, manifest);
 
 		// Add an extra resource that will not be present
-		int missingId = EquipmentType.getResourceID(EquipmentType.LARGE_BAG);
+		int missingId = EquipmentType.LARGE_BAG.getResourceID();
 		var expanded = new SuppliesManifest(manifest);
 		expanded.addEquipment(missingId, 10, false);
 

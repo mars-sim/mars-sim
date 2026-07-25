@@ -74,13 +74,12 @@ public abstract class MissionStep extends ProjectStep {
     /**
      * Calculates and add life support resources to the manifest for the crew.
      * 
-     * @param crew Number of crew members
      * @param durationMSol Duration to cover for supplies
      * @param ideal Calculate the ideal amount which will be more than the minimum
      * @param manifest Place to hold the order
      */
-    protected void addLifeSupportResource(int crew, double durationMSol, boolean ideal, SuppliesManifest manifest) {
-        double personSols = (crew * durationMSol) / 1000D; // Consumption rates are in Sols
+    protected void addLifeSupportResource(double durationMSol, boolean ideal, SuppliesManifest manifest) {
+        double personSols = (mission.getMembers().size() * durationMSol) / 1000D; // Consumption rates are in Sols
         personSols *= (ideal ? Vehicle.getLifeSupportRangeErrorMargin() : 1D);
         manifest.addAmount(ResourceUtil.OXYGEN_ID,
                         PhysicalCondition.getOxygenConsumptionRate() * personSols, true);
