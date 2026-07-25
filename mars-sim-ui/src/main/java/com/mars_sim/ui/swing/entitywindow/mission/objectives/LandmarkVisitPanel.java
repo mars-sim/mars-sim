@@ -64,7 +64,7 @@ public class LandmarkVisitPanel extends JPanel
 
     @Override
     public void entityUpdate(EntityEvent event) {
-        if (event.getType().equals(MissionObjective.CHANGE_EVENT)) {
+        if (MissionObjective.CHANGE_EVENT.equals(event.getType())) {
             loadModel();
         }
     }

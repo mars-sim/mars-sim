@@ -58,7 +58,7 @@ public class LandmarkObjective implements MissionObjective {
      * @return true if the worker has completed the objective, false otherwise
      */
     public boolean isEVADone(Worker worker) {
-        return evaTimes.getOrDefault(worker.getName(), 0.0) >= mSolAtSite;
+        return evaTimes.getOrDefault(worker.getName(), 0.0) >= mSolViewing;
     }
 
     /**
@@ -70,6 +70,10 @@ public class LandmarkObjective implements MissionObjective {
         evaTimes.merge(worker.getName(), timeCompleted, (a,b) -> a + b);
     }
 
+    /**
+     * Get the EVA times visiting the landmark for each worker.
+     * @return
+     */
     public Map<String, Double> getEVATimes() {
         return evaTimes;
     }

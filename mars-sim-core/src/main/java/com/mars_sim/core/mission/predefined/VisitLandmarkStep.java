@@ -19,7 +19,8 @@ import com.mars_sim.core.resource.SuppliesManifest;
 
 /**
  * Mission step that involves visiting a Landmark and allowing the crew to explore it.
- * The step will be complete when all crew members have completed their EVA to the Landmark.
+ * The step will be complete when all crew members have completed their EVA to the Landmark 
+ * or the time limit for the step has been reached.
  */
 class VisitLandmarkStep extends MissionStep {
 
