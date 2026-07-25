@@ -901,34 +901,26 @@ public class GoodsManager implements Serializable {
 			return 0;
 		}
 		else if (stored < optimal && stored >= reserve) {
-			surplus = stored - optimal;
-			delta = Math.sqrt(surplus + 0.1);
-//			logger.info(settlement, 10_000L,
-//					resourceName + " - " 
-//					+ "No need of demand injection since stored amount is between reserve and optimal. "
-//					+ "  stored: " + Math.round(stored * 100.0)/100.0
-//					+ "  reserve: " + Math.round(reserve * 100.0)/100.0	
-//					+ "  optimal: " + Math.round(optimal * 100.0)/100.0 
-//					);
-			return 0;
+			surplus = stored - reserve;
+			delta = Math.sqrt(2 * surplus + 0.1);
 		}
 		else {
 			lacking = reserve - stored;
-			delta = Math.sqrt(lacking + 0.1);
+			delta = Math.sqrt(2 * lacking + 0.1);
 		}
 
 		double fraction = delta / demand;
 
 		
 		if (Math.abs(fraction) < .005) {
-			logger.info(settlement, 5_000L,
+			logger.info(settlement, 0,
 					resourceName + " - " 
 					+ "No need of demand injection since fraction is " + Math.round(fraction*  10000.0)/10000.0);
 			return 0;
 		}
 
-		logger.info(settlement, 15_000L,  
-				"Demand injection for " + resourceName + ": " + Math.round(demand * 100.0)/100.0 
+		logger.info(settlement, 0,  
+				"Ready to inject demand for " + resourceName + ": " + Math.round(demand * 100.0)/100.0 
 				+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
 				+ "  delta: " + Math.round(delta * 100.0)/100.0
 				+ "  fraction: " + Math.round(fraction*  10000.0)/10000.0
@@ -939,7 +931,7 @@ public class GoodsManager implements Serializable {
 				+ "  surplus: " + Math.round(surplus * 100.0)/100.0
 				+ ".");
 		
-		return demand + delta;
+		return delta;
 	}
 
 	/**

@@ -318,9 +318,9 @@ public class BudgetResources extends Task {
 					
 					person.getAssociatedSettlement().getGoodsManager().updateOneGood(good);
 			
-					logger.info(person, 5_000, "Injected " + good.getName() + " demand: " 
-							+ Math.round(demand * 10.0)/10.0 
-							+ " -> " + Math.round((diff + demand) * 10.0)/10.0);
+					logger.info(person, 5_000, "Injected demand for " + good.getName() + ": "
+							+ Math.round(demand * 100.0)/100.0 
+							+ " -> " + Math.round((diff + demand) * 100.0)/100.0);
 				}
 				
 				break;

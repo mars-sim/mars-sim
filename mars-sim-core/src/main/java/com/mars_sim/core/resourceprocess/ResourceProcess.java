@@ -10,8 +10,7 @@ import java.util.Set;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.events.ScheduledEventHandler;
-import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
@@ -25,7 +24,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName());
+	// May add back: private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName())
 
 	private static final double SMALL_AMOUNT = 0.000001;
 	// How often should the process be checked? 
@@ -38,6 +37,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 			RUNNING, IDLE, INPUTS_UNAVAILABLE
 	}
 
+	private boolean canToggle = false;
 	private boolean workerAssigned = false;
 	private boolean isRunning;
 	
@@ -52,7 +52,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 	
 	private ResourceProcessAssessment assessment;
 
-	private boolean canToggle = false;
 	private MarsTime toggleDue = null; 
 
 	private ResourceProcessEngine engine;
@@ -97,7 +96,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 		if (isRunning) {
 			
-			var host = building.getAssociatedSettlement();
+			Settlement host = building.getAssociatedSettlement();
 			
 			double newProdLevel = productionLevel;
 			// Set the current production level.
@@ -113,82 +112,100 @@ public class ResourceProcess implements ScheduledEventHandler {
 				// Increment the duty time here
 				dutyTime += time;
 
-				// Input resources from inventory.
-				for (Integer resource : processSpec.getInputResources()) {
-					
-					if (!processSpec.isAmbientInputResource(resource)) {
-						
-						double fullRate = getBaseFullInputRate(resource);
-						double resourceRate = fullRate * currentProductionLevel;
-						double required = resourceRate * accumulatedTime;
-						if (required == 0D)
-							continue;
+				processInputResources(host);
 
-						double stored = host.getSpecificAmountResourceStored(resource);
-
-						// Retrieve the right amount
-						if (stored > SMALL_AMOUNT) {
-							if (required > stored) {
-								required = stored;
-								// Alter the amount required to whatever required amount
-								// and retrieve that amount
-								host.retrieveAmountResource(resource, required);							
-								// Halt the process now 
-								resourceProblem(resource, false, required, stored);
-
-								break;
-							}
-							else
-								host.retrieveAmountResource(resource, required);
-						}
-						else {
-							// Halt the process now 
-							resourceProblem(resource, false, required, stored);
-
-							break;
-						}
-					}
-				}
-				
-				// Output resources to inventory.
-				for (Integer resource : processSpec.getOutputResources()) {
-					
-					if (!isWasteOutputResource(resource)) {		
-						
-						double maxRate = getBaseFullOutputRate(resource);
-						double resourceRate = maxRate * currentProductionLevel;
-						double required = resourceRate * accumulatedTime;
-						double remainingCap = host.getRemainingCombinedCapacity(resource);
-									
-						// Store the right amount
-						if (remainingCap > SMALL_AMOUNT) {
-							if (required > remainingCap) {
-								required = remainingCap;
-								// Alter the amount required to whatever required amount
-								// and store that amount
-								host.storeAmountResource(resource, required);
-								// Halt the process now 
-								resourceProblem(resource, true, required, remainingCap);
-								
-								break;
-							}
-							else {
-								host.storeAmountResource(resource, required);						
-							}
-							
-						}
-						else {
-							// Halt the process now 
-							resourceProblem(resource, true, required, remainingCap);
-							
-							break;
-						}
-					}
-				}
+				processOutputResources(host);
 			}
 		}
 	}
 
+	/**
+	 * Processes the input resources.
+	 * 
+	 * @param host
+	 */
+	private void processInputResources(Settlement host) {
+		// Input resources from inventory.
+		for (Integer resource : processSpec.getInputResources()) {
+			
+			if (!processSpec.isAmbientInputResource(resource)) {
+				
+				double fullRate = getBaseFullInputRate(resource);
+				double resourceRate = fullRate * currentProductionLevel;
+				double required = resourceRate * accumulatedTime;
+				if (required == 0D)
+					continue;
+
+				double stored = host.getSpecificAmountResourceStored(resource);
+
+				// Retrieve the right amount
+				if (stored > SMALL_AMOUNT) {
+					if (required > stored) {
+						required = stored;
+						// Alter the amount required to whatever required amount
+						// and retrieve that amount
+						host.retrieveAmountResource(resource, required);							
+						// Halt the process now 
+						resourceProblem(resource, false, required, stored);
+
+						break;
+					}
+					else
+						host.retrieveAmountResource(resource, required);
+				}
+				else {
+					// Halt the process now 
+					resourceProblem(resource, false, required, stored);
+
+					break;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Processes the output resources.
+	 * 
+	 * @param host
+	 */
+	private void processOutputResources(Settlement host) {
+		// Output resources to inventory.
+		for (Integer resource : processSpec.getOutputResources()) {
+			
+			if (!isWasteOutputResource(resource)) {		
+				
+				double maxRate = getBaseFullOutputRate(resource);
+				double resourceRate = maxRate * currentProductionLevel;
+				double required = resourceRate * accumulatedTime;
+				double remainingCap = host.getRemainingCombinedCapacity(resource);
+							
+				// Store the right amount
+				if (remainingCap > SMALL_AMOUNT) {
+					if (required > remainingCap) {
+						required = remainingCap;
+						// Alter the amount required to whatever required amount
+						// and store that amount
+						host.storeAmountResource(resource, required);
+						// Halt the process now 
+						resourceProblem(resource, true, required, remainingCap);
+						
+						break;
+					}
+					else {
+						host.storeAmountResource(resource, required);						
+					}
+					
+				}
+				else {
+					// Halt the process now 
+					resourceProblem(resource, true, required, remainingCap);
+					
+					break;
+				}
+			}
+		}
+		
+	}
 	/**
 	 * Prints the resource problem and stops the process.
 	 * 
