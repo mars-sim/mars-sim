@@ -26,6 +26,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.ColumnSpecHelper;
+import com.mars_sim.ui.swing.components.RetryRowSorter;
 import com.mars_sim.ui.swing.components.ToolTipTableModel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -79,8 +80,9 @@ public class TableTab extends MonitorTab {
 		});
 		
 		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
-		table.setAutoCreateRowSorter(true);
-		table.getRowSorter().toggleSortOrder(0);   // By default sort on 1st column
+		RowSorter<MonitorModel> sorter = new RetryRowSorter<>(model);
+		table.setRowSorter(sorter);
+		sorter.toggleSortOrder(0);   // By default sort on 1st column
 		
 		// Set single selection mode if necessary.
 		if (singleSelection)
