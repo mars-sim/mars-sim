@@ -23,7 +23,7 @@ public class RetryRowSorter<T extends TableModel> extends TableRowSorter<T> {
 
     public RetryRowSorter(T model) {
         super(model);
-        setSortsOnUpdates(true);
+        setSortsOnUpdates(false);
     }
 
     /**
