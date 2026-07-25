@@ -169,9 +169,6 @@ abstract class EVAMission extends RoverMission {
 		if (evaPhase.equals(getPhase())) {
 
 			logger.info(getRover(), "EVA ended due to external trigger.");
-
-			// set activeEVA to false
-			activeEVA = false;
 			
 			endEVATasks();
 		}
@@ -192,6 +189,8 @@ abstract class EVAMission extends RoverMission {
 				}
 			}
 		}
+
+		activeEVA = false;
 	}
     
 	/**
@@ -201,37 +200,37 @@ abstract class EVAMission extends RoverMission {
 	 * @throws MissionException if problem performing phase.
 	 */
 	private void evaPhase(Worker member) {
+		if (!activeEVA) 
+			return;
+
+		// Check if crew has been at site for more than one sol.
+		double timeDiff = getPhaseTimeElapse();
+		if (timeDiff > getEstimatedTimeAtEVASite(false)) {
+			logger.info(getVehicle(), 10_000L, "Ran out of EVA site time.");
+			addMissionLog("No More EVA Site Time", member.getName());
+			activeEVA = false;
+		}
+
+
+		// Anyone in the crew or a single person at the home settlement has a dangerous
+		// illness, end phase.
+		if (activeEVA && hasEmergency()) {
+			logger.info(getVehicle(), 10_000L, "A medical emergency was reported during the EVA phase of the mission.");
+			addMissionLog("Medical Emergency", member.getName());
+			activeEVA = false;
+		}
+
+		// Check if enough resources for remaining trip. false = not using margin.
+		if (activeEVA && !hasEnoughResourcesForRemainingMission()) {
+			logger.info(getVehicle(), 10_000L, "Not enough resources was reported during the EVA phase of the mission.");
+			addMissionLog("Not Enough Resources", member.getName());
+			activeEVA = false;
+		}
 		
+		// All good so far, perform the EVA
 		if (activeEVA) {
-			// Check if crew has been at site for more than one sol.
-			double timeDiff = getPhaseTimeElapse();
-			if (timeDiff > getEstimatedTimeAtEVASite(false)) {
-				logger.info(getVehicle(), 10_000L, "Ran out of EVA site time.");
-				addMissionLog("No More EVA Site Time", member.getName());
-				activeEVA = false;
-			}
-
-
-			// Anyone in the crew or a single person at the home settlement has a dangerous
-			// illness, end phase.
-			if (activeEVA && hasEmergency()) {
-				logger.info(getVehicle(), 10_000L, "A medical emergency was reported during the EVA phase of the mission.");
-				addMissionLog("Medical Emergency", member.getName());
-				activeEVA = false;
-			}
-
-			// Check if enough resources for remaining trip. false = not using margin.
-			if (activeEVA && !hasEnoughResourcesForRemainingMission()) {
-				logger.info(getVehicle(), 10_000L, "Not enough resources was reported during the EVA phase of the mission.");
-				addMissionLog("Not Enough Resources", member.getName());
-				activeEVA = false;
-			}
-			
-			// All good so far, perform the EVA
-			if (activeEVA) {
-				// performEVA will check if rover capacity is full
-				activeEVA = performEVA((Person) member);
-			}
+			// performEVA will check if rover capacity is full
+			activeEVA = performEVA((Person) member);
 		}
 
 		// An EVA-ending event was triggered. End EVA phase.

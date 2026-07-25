@@ -74,7 +74,7 @@ class MembersPanel extends WizardItemStep<MissionDataBean, Person>
 
 		/** Constructor. */
 		private MembersTableModel(MissionDataBean state) {
-			super(NAME, JOB, SHIFT, MISSION, PERFORMANCE, HEALTH);
+			super(NAME, JOB, SHIFT, MISSION, INSIDE, PERFORMANCE, HEALTH);
 
 			List<Person> people = state.getStartingSettlement().getIndoorPeople().stream()
 					.sorted(Comparator.comparing(Person::getName))
