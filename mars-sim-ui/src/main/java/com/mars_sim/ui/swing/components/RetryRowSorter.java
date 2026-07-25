@@ -42,4 +42,23 @@ public class RetryRowSorter<T extends TableModel> extends TableRowSorter<T> {
             }
         }
     }
+
+    
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
+    @Override
+    public void rowsUpdated(int firstRow, int endRow) {
+        for(int i = 0; i < RETRY_COUNT; i++) {
+            try {
+                super.rowsUpdated(firstRow, endRow);
+                return; // Success, exit the method
+            } catch (RuntimeException e) {
+                // Log the exception or handle it as needed
+                logger.warning("RetryRowSorter: Exception occurred while updating rows. " + e.getMessage());
+            }
+        }
+    }
 }

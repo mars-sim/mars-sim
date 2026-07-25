@@ -168,10 +168,10 @@ public class SettlementsSelector extends JPanel
 
         // If the parent authority is selected, then simulate a change selection to update the selection set
         if (selectionCombo.getSelectedItem() instanceof Authority a && a.equals(ra)) {
-            changeSelection(a);
+            SwingHelper.runInEDT(() -> changeSelection(a));
         }
 		else if (selectionCombo.getSelectedItem() instanceof String str && str.equals(ALL)) {
-			changeSelection(ALL);
+			SwingHelper.runInEDT(() -> changeSelection(ALL));
 		}
     }
 

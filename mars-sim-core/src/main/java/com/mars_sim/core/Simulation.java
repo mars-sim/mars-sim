@@ -83,6 +83,7 @@ import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.SystemDateTime;
+import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.CheckSerializedSize;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
@@ -1385,9 +1386,9 @@ public class Simulation implements ClockPulseListener, Serializable {
 			DataLogger.changeTime(pulse.getMasterClock().getMarsTime());
 			
 			// Always update environment first			
-			orbitInfo.timePassing(pulse);
-			weather.timePassing(pulse);
-			surfaceFeatures.timePassing(pulse);
+			executePulseSafely("Orbit", pulse, orbitInfo);
+			executePulseSafely("Weather", pulse, weather);
+			executePulseSafely("Surface Features", pulse, surfaceFeatures);
 
 			if (pulse.isNewSol()) {
 				// Compute reliability daily for each part
@@ -1400,12 +1401,12 @@ public class Simulation implements ClockPulseListener, Serializable {
 			}
 
 			// Update scheduled events
-			scheduledEvents.timePassing(pulse);
+			executePulseSafely("Scheduled Events", pulse, scheduledEvents);
 
 			// Lastly cascade the pulse to the Entity managers
-			lunarColonyManager.timePassing(pulse);
-			unitManager.timePassing(pulse);			
-			marketManager.timePassing(pulse);
+			executePulseSafely("Lunar Colony Manager", pulse, lunarColonyManager);
+			executePulseSafely("Unit Manager", pulse, unitManager);			
+			executePulseSafely("Market Manager", pulse, marketManager);
 			
 			// Pending save
 			if (savePending != null) {
@@ -1413,6 +1414,20 @@ public class Simulation implements ClockPulseListener, Serializable {
 				saveCallback = null;
 				savePending = null;
 			}
+		}
+	}
+
+	/**
+	 * This executes the clock pulse on a target object and catches any exceptions that may occur during the execution.
+	 * @param context Context for any error messages
+	 * @param pulse Pulse to action
+	 * @param target Temporal object to action
+	 */
+	private void executePulseSafely(String context, ClockPulse pulse, Temporal target) {
+		try {
+			target.timePassing(pulse);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, context + ": Error during clock pulse: " + e.getMessage(), e);
 		}
 	}
 
