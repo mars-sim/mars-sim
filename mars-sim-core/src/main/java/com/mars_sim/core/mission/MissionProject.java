@@ -33,7 +33,6 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Project;
 import com.mars_sim.core.project.ProjectStep;
-import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
@@ -42,48 +41,9 @@ import com.mars_sim.core.time.MarsTime;
 /**
  * Is a Mission abstraction that allows a Mission to be defined in terms of a number of MissionSteps.
  */
-public abstract class MissionProject implements Mission {
+public abstract class MissionProject extends Project<MissionStep> implements Mission {
 
 	private static final long serialVersionUID = 1L;
-
-	/**
-     * Controller of mission flow. Monitors the start & stop callbacks
-     */
-    private final class MissionController extends Project {
-        private static final long serialVersionUID = 1L;
-
-		private MissionController(String name) {
-            super(name);
-        }
-
-        @Override
-        protected void completed(boolean successful) {
-            if (successful) {
-                // Assume that the status has already been updated as part of the abort
-                log.addEntry("Completed");
-                status.add(ACCOMPLISHED);
-            }
-
-            // Update stats
-            fireMissionUpdate(Mission.END_MISSION_EVENT, this);
-            getAssociatedSettlement().getMissionControl().finishMission(successful);
-            clearDown();
-        }
-
-        @Override
-        protected void stepStarted(ProjectStep activeStep) {
-            log.addEntry(activeStep.getDescription());
-            stepStarted = log.getLastEntry().getTime();
-            fireMissionUpdate(Mission.PHASE_EVENT, null);
-
-			registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_PHASE, activeStep.getDescription());
-        }
-
-        @Override
-        protected void stepCompleted(ProjectStep closedStep) {
-            MissionProject.this.stepCompleted((MissionStep) closedStep);
-        }
-    }
 
 	/** Default logger. */
     private static final SimLogger logger = SimLogger.getLogger(MissionProject.class.getName());
@@ -101,7 +61,6 @@ public abstract class MissionProject implements Mission {
     
     private MissionType type;
 
-    private Project control;
     private MissionLog log;
     private Person leader;
     private MarsTime stepStarted;
@@ -110,7 +69,17 @@ public abstract class MissionProject implements Mission {
     private Set<Worker> signedUp = new UnitSet<>();
     private Set<MissionStatus> status = new HashSet<>();
 
-    protected MissionProject(String name, MissionType type, int priority, Person leader, Collection<? extends Worker> recruits) {
+    /**
+     * Creates a new MissionProject with the given parameters.
+     * @param name Name of project.
+     * @param type Classification of the mission.
+     * @param priority Priority
+     * @param leader Leader of the mission.
+     * @param recruits Other members of the mission.
+     */
+    protected MissionProject(String name, MissionType type, int priority, Person leader,
+                            Collection<? extends Worker> recruits) {
+        super(name);
         this.type = type;
         this.priority = priority;
 
@@ -118,13 +87,12 @@ public abstract class MissionProject implements Mission {
         this.missionCallSign = names.callSign();
         if (name == null) {
             // Use default generated if no user name defined
-            name = names.name();
+            setName(names.name());
         }
         
         this.leader = leader;
         leader.setMission(this);
         this.log = new MissionLog();
-        this.control = new MissionController(name);
 
         // Inviite them in
         recruits.forEach(r -> r.setMission(this));
@@ -135,7 +103,38 @@ public abstract class MissionProject implements Mission {
         return new EntityIdentifier("MISSION", getFullMissionDesignation(), 
                 Integer.toString(getAssociatedSettlement().getIdentifier()));
     }
-    
+
+    /**
+     * The mission has been completed.
+     * @param successful Was it successful or not
+     */
+    @Override
+    protected void completed(boolean successful) {
+        if (successful) {
+            // Assume that the status has already been updated as part of the abort
+            log.addEntry("Completed");
+            status.add(ACCOMPLISHED);
+        }
+
+        // Update stats
+        fireMissionUpdate(Mission.END_MISSION_EVENT, this);
+        getAssociatedSettlement().getMissionControl().finishMission(successful);
+        clearDown();
+    }
+
+    /**
+     * Notification that a step has been started.
+     * @param activeStep The step that has just started.
+     */
+    @Override
+    protected void stepStarted(MissionStep activeStep) {
+        log.addEntry(activeStep.getDescription());
+        stepStarted = log.getLastEntry().getTime();
+        fireMissionUpdate(Mission.PHASE_EVENT, null);
+
+        registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_PHASE, activeStep.getDescription());
+    }
+
     /**
      * Aborts the mission for a reason.
      * 
@@ -143,41 +142,25 @@ public abstract class MissionProject implements Mission {
      */
     @Override
     public void abortMission(MissionStatus reason) {
-        if (!control.isFinished()) {
+        if (!isDone()) {
             logger.warning(leader, "Mission aborted : " + reason.getName());
 
             log.addEntry("Aborted:" + reason.getName());
-            control.abort(reason.getName());
+            abort(reason.getName());
         }
     }
-
 
     /**
      * Aborts the current phase/step.
      */
     @Override
     public void abortPhase() {
-        control.abortStep();
-    }
-
-    @Override
-    public boolean isDone() {
-        return control.isFinished();
-    }
-
-    @Override
-    public String getName() {
-        return control.getName();
+        abortStep();
     }
 
     @Override
     public String getContext() {
         return leader.getAssociatedSettlement().getName();
-    }
-    
-    @Override
-    public void setName(String name) {
-        control.setName(name);
     }
 
     /**
@@ -214,11 +197,6 @@ public abstract class MissionProject implements Mission {
         return Collections.emptySet();
     }
 
-    @Override
-    public Stage getStage() {
-        return control.getStage();
-    }
-
     /**
      * Defines the step of this Mission. This will trigger finding suitable people.
      * 
@@ -226,20 +204,11 @@ public abstract class MissionProject implements Mission {
      */
     protected void setSteps(List<MissionStep> plan) {
         for(MissionStep ps : plan) {
-            control.addStep(ps);
+            addStep(ps);
         }
 
         // Add the close down step
-        control.addStep(new MissionCloseStep(this));
-    }
-
-    /**
-     * Callbacks method to be notified when a step is completed.
-     * 
-     * @param ms The Mission step just completed
-     */
-    protected void stepCompleted(MissionStep ms) {
-        // Do nothing
+        addStep(new MissionCloseStep(this));
     }
 
     /**
@@ -259,7 +228,7 @@ public abstract class MissionProject implements Mission {
     
     @Override
     public String getPhaseDescription() {
-        ProjectStep current = control.getStep();
+        ProjectStep current = getCurrentStep();
         return (current != null ? current.getDescription() : "");
     }
 
@@ -330,20 +299,7 @@ public abstract class MissionProject implements Mission {
 
     @Override
     public boolean performMission(Worker member) {
-        return control.execute(member);
-    }
-
-    protected ProjectStep getCurrentStep() {
-        return control.getStep();
-    }
-
-    /**
-     * Notifies that a step has been started so update the Mission log.
-     * 
-     * @param activeStep Step started
-     */
-    protected void stepStarted(ProjectStep activeStep) {
-        log.addEntry(activeStep.getDescription());
+        return execute(member);
     }
 
     /**
@@ -354,11 +310,9 @@ public abstract class MissionProject implements Mission {
      */
     public SuppliesManifest getResources(boolean includeOptionals) {
         SuppliesManifest resources = new SuppliesManifest();
-        List<ProjectStep> steps = control.getRemainingSteps();
-        for(ProjectStep ps : steps) {
-            if (ps instanceof MissionStep ms) {
-                ms.getRequiredResources(resources, includeOptionals);
-            }
+        var steps = getRemainingSteps();
+        for(var ps : steps) {
+            ps.getRequiredResources(resources, includeOptionals);
         }
 
         return resources;
@@ -369,9 +323,8 @@ public abstract class MissionProject implements Mission {
      */
     @Override
     public List<MissionObjective> getObjectives() {
-        return control.getSteps().stream()
-                .filter(MissionStep.class::isInstance)
-                .map(s -> ((MissionStep) s).getObjective())
+        return getSteps().stream()
+                .map(s -> s.getObjective())
                 .filter(o -> o != null)
                 .toList();
     }

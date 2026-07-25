@@ -17,15 +17,15 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 /**
  * Represents a project that has a number of steps
  */
-public class Project implements Serializable {
+public class Project<T extends ProjectStep> implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	private static final SimLogger logger = SimLogger.getLogger(Project.class.getName());
 
     private String name;
-    private List<ProjectStep> steps = new ArrayList<>();
+    private List<T> steps = new ArrayList<>();
     private int currentStepIdx = -1; // Hold the index to make it easier
-    private ProjectStep currentStep = null;
+    private T currentStep = null;
     private boolean isDone = false;
     private boolean isAborted = false;
 
@@ -110,7 +110,7 @@ public class Project implements Serializable {
      * Notification that a step has been started. This can be override for notification
      * @param activeStep Step started
      */
-    protected void stepStarted(ProjectStep activeStep) {
+    protected void stepStarted(T activeStep) {
         // Default implementation does nothing. Override to provide notification
     }
 
@@ -118,7 +118,7 @@ public class Project implements Serializable {
      * Notification that a step has been completed. This can be override for notification
      * @param completedStep Step completed
      */
-    protected void stepCompleted(ProjectStep completedStep) {
+    protected void stepCompleted(T completedStep) {
         // Default implementation does nothing. Override to provide notification
     }
 
@@ -140,7 +140,7 @@ public class Project implements Serializable {
      * @param step
      * @see ProjectStep#setParent(Project)
      */
-    public void addStep(ProjectStep step) {
+    public void addStep(T step) {
         // Check the Stage is now regressing
         if (!steps.isEmpty()) {
             int lastStage = steps.get(steps.size()-1).getStage().ordinal();
@@ -176,7 +176,7 @@ public class Project implements Serializable {
      * 
      * @return
      */
-    public ProjectStep getStep() {
+    public T getCurrentStep() {
         return currentStep;
     }
 
@@ -185,7 +185,7 @@ public class Project implements Serializable {
      * 
      * @return Finished
      */
-    public boolean isFinished() {
+    public boolean isDone() {
         return (isDone || isAborted);
     }
 
@@ -193,7 +193,7 @@ public class Project implements Serializable {
      * Gets the steps of the project.
      * @return All steps defined
      */
-    public List<ProjectStep> getSteps() {
+    public List<T> getSteps() {
         return Collections.unmodifiableList(steps);
     }
 
@@ -202,7 +202,7 @@ public class Project implements Serializable {
      * 
      * @return
      */
-    public List<ProjectStep> getRemainingSteps() {
+    public List<T> getRemainingSteps() {
         int start = (currentStepIdx < 0 ? 0 : currentStepIdx);
         return steps.subList(start, steps.size());
     }
@@ -212,7 +212,7 @@ public class Project implements Serializable {
      * 
      * @param completedStep
      */
-    void completeStep(ProjectStep completedStep) {
+    void completeStep(T completedStep) {
         stepCompleted(completedStep); // Notify
 
         // Check not abnormal shutdown of the project
