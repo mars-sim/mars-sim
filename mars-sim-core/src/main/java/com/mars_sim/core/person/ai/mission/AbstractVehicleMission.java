@@ -1116,67 +1116,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 
 	/**
-	 * Determines the emergency destination settlement for the mission if one is
-	 * reachable, otherwise sets the emergency beacon and ends the mission.
-	 * 
-	 * @param reason
-	 */
-	protected final void determineEmergencyDestination(MissionStatus reason) {
-		Settlement oldHome = getStartingSettlement();
-
-		// Determine closest settlement.
-		boolean requestHelp = false;
-		Settlement newDestination = MissionUtil.findClosestSettlement(getCurrentMissionLocation());
-		
-		if (newDestination != null) {
-			double newDistance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
-			int id = 0;
-
-			if (vehicle instanceof GroundVehicle v) {
-				
-				id = hasEnoughResources(getResourcesNeededForTrip(false, newDistance));
-
-				// Check if enough resources to get to settlement.
-				if (id == -1D) {
-					// Nothing is lacking
-					logger.info(v, "Reported no lacking of resources. Turning toward " + newDestination.getName() +
-							". New distance: " + Math.round(newDistance * 1000.0)/1000.0);
-				}
-				
-				else {
-					// Supposedly lacking in resources to go to this new destination. Turn on beacon
-					// Note: but it may suffice since the amount of resource needed is just an estimate and each person
-					//       can ration food and water			
-					requestHelp = true;
-					
-					// Question, should it starting driving toward the settlement as close as possible
-					//           or wait for rescue ?
-					
-					logger.info(v, "Possibly lacking resources. Turning toward " + newDestination.getName() +
-							". New distance: " + Math.round(newDistance * 1000.0)/1000.0);
-				}	
-				
-				travelDirectToSettlement(newDestination);
-				
-				// Creating emergency destination mission event for going to a new settlement.
-				if (!newDestination.equals(oldHome)) {
-					registerHistoricalEvent(newDestination, HistoricalEventType.MISSION_EMERGENCY_DESTINATION, reason.getName());
-				}
-			}
-			// Note: for Drone mission, Will need to alert the player differently if it runs out of fuel
-		}
-		else {
-			requestHelp = true;
-		}
-
-		// Need help
-		if (requestHelp) {
-			abortPhase();
-			getHelp(reason);
-		}
-	}
-
-	/**
 	 * Sets the vehicle's emergency beacon on or off.
 	 *
 	 * @param member   the mission member performing the mission.
@@ -1196,20 +1135,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		vehicle.setEmergencyBeacon(beaconOn);
 
-	}
-
-	/**
-	 * Gets to the nearest settlement and end collection phase if necessary.
-	 */
-	public void goToNearestSettlement() {
-		Settlement nearestSettlement = MissionUtil.findClosestSettlement(getCurrentMissionLocation());
-		if (nearestSettlement != null) {
-			clearRemainingNavpoints();
-			addNavpoint(nearestSettlement);
-			// Note: Not sure if they should become citizens of another settlement
-			updateTravelDestination();
-			abortPhase();
-		}
 	}
 
 	/**
@@ -1490,13 +1415,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		int index = getNextNavpointIndex();
 
 		// REmove all points that are after the current point
-		for (int x = navPoints.size()-1; x >= index; x--) {
+		for (int x = navPoints.size()-1; x > index; x--) {
 			navPoints.remove(x);
 		}
 		
 		// Note: how to compensate the shifted index upon removal of this navPoint
 		fireMissionUpdate(NAVPOINTS_EVENT);
-
 	}
 
 	/**
@@ -1699,7 +1623,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			// If mission is still at home then leave the vehicle
 			if (getStage() != Stage.PREPARATION) {
-				determineEmergencyDestination(status);
+				addMissionStatus(status);
+
+				// What to do with status ?
+				travelDirectToSettlement(startingSettlement);
 			}
 			else {
 				// Already at home
