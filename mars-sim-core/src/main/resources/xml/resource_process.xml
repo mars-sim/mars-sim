@@ -228,7 +228,7 @@
 
 		<output resource="Methane" rate="160.0" />
 		<output resource="Water" rate="180.0" />
-	</process>
+	</process> <!-- "Methanogenesis by Archaea" -->
 
 	<!-- process name="Methanol Steam Reforming (MSR)" kW-required="0.57" >
 		<description>
@@ -743,7 +743,7 @@
 		<input resource="Methane" rate="160.0" />
 		<input resource="Water" rate="360.0" />
 		
-		<output resource="Carbon dioxide" rate="440.0" waste="true" />
+		<output resource="Carbon dioxide" rate="440.0" waste="false" />
 		<output resource="Hydrogen" rate="60.0" />
 	</process> <!-- "Steam Methane Reforming (SMR)" -->
 
@@ -1431,7 +1431,7 @@
 		<input resource="sodium oxide" rate="4.0" />
 		<input resource="lime" rate="2.0" />
 
-		<output resource="Carbon dioxide" rate="1.5" />
+		<output resource="Carbon dioxide" rate="1.5" waste="false" />
 		<output resource="aluminum oxide" rate="3.5" />
 		<output resource="iron powder" rate="2.0" />	
 		<output resource="iron oxide" rate="3.0" />			
@@ -1493,7 +1493,7 @@
 		</description>					
 		<input resource="gypsum" rate="50.0" />
 		<input resource="hydrogen" rate="2.3" />
-		<input resource="Carbon dioxide" rate="12.8" ambient="false" />
+		<input resource="Carbon dioxide" rate="12.8" ambient="true" />
 
 		<output resource="lime" rate="2.0" />
 		<output resource="sulfur" rate="1.0" />
@@ -1549,7 +1549,7 @@
 		<input resource="Carbon dioxide" rate="4.4" ambient="true" />
 
 		<output resource="sodium carbonate" rate="10.6" />
-	</process>
+	</process> <!-- "Make soda from sodium oxide" -->
 
 	<process name="Make cement" kW-required=".05" >
 		<input resource="regolith" rate="30.0" />

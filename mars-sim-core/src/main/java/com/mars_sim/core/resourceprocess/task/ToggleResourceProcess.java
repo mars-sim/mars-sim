@@ -1,13 +1,17 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @date 2025-08-30
+ * @date 202-07-26
  * @author Scott Davis
  */
 package com.mars_sim.core.resourceprocess.task;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
@@ -61,7 +65,7 @@ public class ToggleResourceProcess extends Task {
 	private Building resourceProcessBuilding;
 
 	/**
-	 * Turn a process off.
+	 * Turns a process off.
 	 *
 	 * @param worker the worker performing the task.
 	 */
@@ -74,11 +78,12 @@ public class ToggleResourceProcess extends Task {
 
 		this.resourceProcessBuilding = processBuilding;
 		this.process = process;
+		
 		prepResourceProcess();
 	}
 
 	/**
-	 * Turn a process on.
+	 * Turns a process on.
 	 *
 	 * @param worker the worker performing the task.
 	 * @param spec process spec to turn on
@@ -100,11 +105,11 @@ public class ToggleResourceProcess extends Task {
 	private static record PotentialProcess(Building building, ResourceProcess process) {}
 	
 	/**
-	 * Create a potential record if the processor can start the selected processSpec
+	 * Creates a potential record if the processor can start the selected processSpec
 	 */
 	private static PotentialProcess createPotential(ResourceProcessor processor,
 			ResourceProcessSpec processSpec) {
-		for(var p : processor.getProcesses()) {
+		for (var p : processor.getProcesses()) {
 			if (p.getSpec().equals(processSpec) && p.canToggle()
 				&& !p.isWorkerAssigned() && !p.isProcessRunning()) {
 				return new PotentialProcess(processor.getBuilding(), p);
@@ -114,22 +119,30 @@ public class ToggleResourceProcess extends Task {
 	}
 
 	/**
-	 * Select a suitable resource process to toggle on for a Settlement.
+	 * Selects a suitable resource process to toggle on for a Settlement.
 	 * 
 	 * @param s the Settlement.
 	 * @param useWaste true if the process is for waste.
 	 * @param processSpec the process specification.
 	 */
 	private boolean selectResourceProcess(Settlement s, boolean useWaste, ResourceProcessSpec processSpec) {
+		
 		// Create a set of potential processes to toggle on
-		var potentials = s.getBuildingManager().getBuildingSet((useWaste ? FunctionType.WASTE_PROCESSING
+		List<PotentialProcess> potentials = s.getBuildingManager().getBuildingSet((useWaste ? FunctionType.WASTE_PROCESSING
 									: FunctionType.RESOURCE_PROCESSING)).stream()
 					.map(b -> (useWaste ? b.getWasteProcessing() : b.getResourceProcessing()))
 					.map(rp -> createPotential(rp, processSpec))
 					.filter(Objects::nonNull)
 					.toList();
-
-		var selected = RandomUtil.getRandomElement(potentials);
+		
+		Map<PotentialProcess, Double> scoreMap = new HashMap<>();
+				
+		for (PotentialProcess pp: potentials) {
+			double score = pp.process.getOverallScore();
+			scoreMap.put(pp, score);
+		}
+		
+		var selected = RandomUtil.getWeightedRandomObject(scoreMap);
 		if (selected == null) {
 			clearTask("No process to toggle on.");
 			return false;

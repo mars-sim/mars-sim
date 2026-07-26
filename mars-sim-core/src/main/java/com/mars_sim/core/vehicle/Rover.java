@@ -665,27 +665,25 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param time
 	 */
 	public void plugInTemperature(double time) {
-		// TODO: need to draw the the hose connecting between the vehicle and the settlement to supply resources
-		if (isPluggedIn()) {
-			if (temperature > NORMAL_TEMP * 1.15 || temperature < NORMAL_TEMP * 0.85) {
-				// Internal air pumps of a rover maintains the air pressure
-				// TODO: need to model the power usage
+		// Future: need to draw the the hose connecting between the vehicle and the settlement to supply resources
+		if (isPluggedIn() && (temperature > NORMAL_TEMP * 1.15 || temperature < NORMAL_TEMP * 0.85)) {
+			// Internal air pumps of a rover maintains the air pressure
+			// Future: need to model the power usage
 
-				double p = 0;
-				if (getPrimaryStatus() == StatusType.GARAGED)
-					p = getGarage().getCurrentTemperature();
-				else
-					p = getSettlement().getTemperature();
-				double delta = temperature - p;
-				if (delta > 5)
-					delta = 5;
-				else if (delta < -5)
-					delta = -5;
+			double p = 0;
+			if (getGarage() != null)
+				p = getGarage().getCurrentTemperature();
+			else
+				p = getSettlement().getTemperature();
+			double delta = temperature - p;
+			if (delta > 5)
+				delta = 5;
+			else if (delta < -5)
+				delta = -5;
 
-				double result = temperature - delta * TEMPERATURE_FLOW_PER_MILLISOL * time;
+			double result = temperature - delta * TEMPERATURE_FLOW_PER_MILLISOL * time;
 
-				temperature = result;
-			}
+			temperature = result;
 		}
 	}
 
@@ -713,27 +711,25 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param time
 	 */
 	public void plugInAirPressure(double time) {
-		// TODO: need to draw the the hose connecting between the vehicle and the settlement to supply resources
-		if (isPluggedIn()) {
-			if (airPressure > NORMAL_AIR_PRESSURE * 1.15 || airPressure < NORMAL_AIR_PRESSURE * 0.85) {
-				// Internal heat pump of a rover maintains the air pressure
-				// TODO: need to model the power usage
+		// Future: need to draw the the hose connecting between the vehicle and the settlement to supply resources
+		if (isPluggedIn() && (airPressure > NORMAL_AIR_PRESSURE * 1.15 || airPressure < NORMAL_AIR_PRESSURE * 0.85)) {
+			// Internal heat pump of a rover maintains the air pressure
+			// Future: need to model the power usage
 
-				double p = 0;
-				if (getPrimaryStatus() == StatusType.GARAGED)
-					p = getGarage().getCurrentAirPressure();
-				else
-					p = getSettlement().getAirPressure();
+			double p = 0;
+			if (getGarage() != null)
+				p = getGarage().getCurrentAirPressure();
+			else
+				p = getSettlement().getAirPressure();
 
-				double delta = airPressure - p;
-				if (delta > 5)
-					delta = 5;
-				else if (delta < -5)
-					delta = -5;
+			double delta = airPressure - p;
+			if (delta > 5)
+				delta = 5;
+			else if (delta < -5)
+				delta = -5;
 
-				double result = airPressure - delta * AIR_PRESSURE_FLOW_PER_MILLISOL * time;
-				airPressure = result;
-			}
+			double result = airPressure - delta * AIR_PRESSURE_FLOW_PER_MILLISOL * time;
+			airPressure = result;
 		}
 	}
 

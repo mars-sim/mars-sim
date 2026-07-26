@@ -147,7 +147,7 @@ public class BudgetResources extends Task {
 		}
 	}
 
-	/*
+	/**
 	 * Selects a task.
 	 * 
 	 * @param goal

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager;
@@ -35,6 +36,7 @@ import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Meta task for the ToggleResourceProcess task.
@@ -175,18 +177,33 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		Map<ResourceProcessSpec, ResourceProcessAssessment> assessed = new HashMap<>();
 
+//		Map<Building, Double> possibleBuildings = new HashMap<>();
+//		Building b = RandomUtil.getWeightedRandomObject(possibleBuildings);		
+		
 		if (!settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
-			Building building = settlement.getBuildingManager().getABuilding(FunctionType.RESOURCE_PROCESSING);
-			if (building != null)
+			Set<Building> buildingSet = settlement.getBuildingManager().getBuildingSet(FunctionType.RESOURCE_PROCESSING);
+			
+			for (Building building: buildingSet) {
 				selectToggableProcesses(building, false, tasks, assessed);
+			}
+					
+//			Building building = settlement.getBuildingManager().getABuilding(FunctionType.RESOURCE_PROCESSING);
+//			if (building != null)
+//				selectToggableProcesses(building, false, tasks, assessed);
 		}
 
 		if (!settlement.getProcessOverride(OverrideType.WASTE_PROCESSING)) {
-			Building building = settlement.getBuildingManager().getABuilding(FunctionType.WASTE_PROCESSING);
-			if (building != null)
+			Set<Building> buildingSet = settlement.getBuildingManager().getBuildingSet(FunctionType.WASTE_PROCESSING);
+			
+			for (Building building: buildingSet) {
 				selectToggableProcesses(building, true, tasks, assessed);
+			}
+			
+//			Building building = settlement.getBuildingManager().getABuilding(FunctionType.WASTE_PROCESSING);
+//			if (building != null)
+//				selectToggableProcesses(building, true, tasks, assessed);
 		}
-		
+
 		return tasks;
 	}
 
@@ -204,7 +221,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			Map<ResourceProcessSpec, ResourceProcessAssessment> assessed) {
 
 		List<ResourceProcess> processes = null;
-		if (isWaste ) {
+		if (isWaste) {
 			processes = building.getWasteProcessing().getProcesses();
 		}
 		else
@@ -442,7 +459,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
 					score += mrate * UNBELIEVABLY_HIGH_BIAS;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
-					score += mrate * EXTREME_HIGH_BIAS;
+					score += mrate * EXTREME_HIGH_BIAS * 1.1;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
 					score += mrate * EXTREME_HIGH_BIAS * 1.2;
 				} else if (ResourceUtil.isTier3Resource(resource)) {  		// oxygen
@@ -509,7 +526,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					|| ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick, gypsum plaster			
 					score += mrate * MEGA_HIGH_BIAS;					
 				} else if (ResourceUtil.isTier1Resource(resource)) { 	// ice, brine water, rock salt	
-					score += mrate * OMNI_BIAS ;	
+					score += mrate * GOD_BIAS ;	
 				} else if (ResourceUtil.isInSitu(resource)) {			// all regolith types
 					score += mrate * SUPREMELY_HIGH_BIAS;	
 				} else if (ResourceUtil.isWasteProduct(resource)) {		// CO, grey/black water, compost, all waste, carbon monoxide			
@@ -520,7 +537,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					|| ResourceUtil.isCriticalResource(resource)) {		// glass
 					score += mrate * SUPREMELY_HIGH_BIAS;
 				} else if (ResourceUtil.isTier2Resource(resource)) { 	// water
-					score += mrate * SUPER_HIGH_BIAS * .7;
+					score += mrate * SUPREMELY_HIGH_BIAS;
 				} else if (ResourceUtil.isRawMaterial(resource)) { 		// all ores, all minerals, sand
 					score += mrate * GOD_BIAS;
 				} else

@@ -412,6 +412,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
 				<process-engine name="Enzymatic Dehydrogenation" number-modules="4"/>				
+				<process-engine name="Methanogenesis by Archaea" number-modules="2"/>
 				
 				<!--For producing Methanol -->
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="6"/>	
@@ -1397,7 +1398,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.65" yloc="-1.76" />	
 				</activity>
 			</research>
-			
+			<!-- end of Bioreactor-M -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Methanogenesis by Archaea" number-modules="12"/>
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="16"/>
@@ -3177,10 +3178,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 					<activity-spot xloc="1.49" yloc="-.62" />
 					<activity-spot xloc="1.48" yloc="-2.02" />
-
-
 				</activity>
 			</research>
+			
+			<!-- Laboratory -->
 			<resource-processing low-power-level="0.25">
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="3"/>
@@ -3922,6 +3923,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.58" yloc="2.7" />
 				</activity>
 			</research>
+			<!-- Research Hab-->
 			<resource-processing low-power-level="0.25">
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="3"/>
@@ -4410,7 +4412,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
 				<process-engine name="Enzymatic Dehydrogenation" number-modules="4"/>
-				
+				<process-engine name="Methanogenesis by Archaea" number-modules="2"/>
+								
 				<!--For producing Methanol -->
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="6"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>

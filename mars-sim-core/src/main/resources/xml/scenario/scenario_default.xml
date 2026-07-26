@@ -47,7 +47,7 @@
 			<location coordinates="40.4244 -105.8939" />
 		</settlement>
 	
-		<settlement name="New Taipei" template="Phase 3-ISRA" persons="16" robots="8" sponsor="ISRA">
+		<settlement name="New Shanghai" template="Phase 3-ISRA" persons="16" robots="8" sponsor="ISRA">
 			<!-- previously, longitude="20.9156 E" coordinates="0.7777 " -->
 			<location coordinates="9.68 24.57" />	
 		</settlement>		

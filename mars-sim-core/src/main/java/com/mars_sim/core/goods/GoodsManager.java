@@ -897,36 +897,47 @@ public class GoodsManager implements Serializable {
 		
 		int optimal = optimalPerPop;
 		int reserve = reservePerPop;
-		double demand = getDemandScoreWithID(resourceID);
-
+		double demand = getDemandScoreWithID(resourceID);	
+	
 		double stored = settlement.getAllAmountResourceStored(resourceID) / pop;
 		double surplus = 0;
 		double lacking = 0;
 		double delta = 0;
-		
+
+
 		String resourceName = ResourceUtil.findAmountResourceName(resourceID);
 		
 		if (stored >= optimal) {
 			return 0;
 		}
-		else if (stored < optimal && stored >= reserve) {
-			surplus = stored - reserve;
-			delta = Math.sqrt(2 * surplus + 0.1);
+		else if (stored >= 3 * reserve) {
+			surplus = stored - 3 * reserve;
+			delta = Math.sqrt(surplus + 1);
 		}
-		else {
+		else if (stored >= 2 * reserve) {
+			surplus = stored - 2 * reserve;
+			delta = Math.sqrt(2 * surplus + 2);
+		}
+		else if (stored >= reserve) {
+			surplus = stored - reserve;
+			delta = Math.sqrt(4 * surplus + 4);
+		}
+		else if (stored < reserve) {
 			lacking = reserve - stored;
-			delta = Math.sqrt(2 * lacking + 0.1);
+			delta = Math.sqrt(8 * lacking + 8);
 		}
 
 		double fraction = delta / demand;
 
+		if (fraction > 1)
+			delta = delta * fraction;
 		
-		if (Math.abs(fraction) < .005) {
-			logger.info(settlement, 0,
-					resourceName + " - " 
-					+ "No need of demand injection since fraction is " + Math.round(fraction*  10000.0)/10000.0);
-			return 0;
-		}
+//		if (Math.abs(fraction) < .005) {
+//			logger.info(settlement, 0,
+//					resourceName + " - " 
+//					+ "No need of demand injection since fraction is " + Math.round(fraction*  10000.0)/10000.0);
+//			return 0;
+//		}
 
 		logger.info(settlement, 0,  
 				"Ready to inject demand for " + resourceName + ": " + Math.round(demand * 100.0)/100.0 
