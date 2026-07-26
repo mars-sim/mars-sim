@@ -34,7 +34,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementParameters;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -117,7 +116,7 @@ public class ConstructionMission extends AbstractMission {
 	 */
 	public ConstructionMission(Collection<Worker> members, Settlement settlement,
 			ConstructionSite choosenSite,
-			List<GroundVehicle> vehicles) {
+			List<LightUtilityVehicle> vehicles) {
 		if (choosenSite == null) {
 			throw new IllegalArgumentException("Choosen site is missing");
 		}
@@ -138,7 +137,7 @@ public class ConstructionMission extends AbstractMission {
 		createObjectives(choosenSite, vehicles);
 	}
 	
-	private void createObjectives(ConstructionSite site, List<GroundVehicle> constructionVehicles) {
+	private void createObjectives(ConstructionSite site, List<LightUtilityVehicle> constructionVehicles) {
 		var settlement = site.getAssociatedSettlement();
 		site.setWorkOnSite(this);
 
@@ -167,9 +166,9 @@ public class ConstructionMission extends AbstractMission {
 	/**
 	 * Reserves construction vehicles for the mission.
 	 */
-	private List<GroundVehicle> reserveConstructionVehicles(Settlement settlement, ConstructionStage stage) {
+	private List<LightUtilityVehicle> reserveConstructionVehicles(Settlement settlement, ConstructionStage stage) {
 		// Construct a new list of construction vehicles
-		List<GroundVehicle> constructionVehicles = new ArrayList<>();
+		List<LightUtilityVehicle> constructionVehicles = new ArrayList<>();
 		for(ConstructionVehicleType vehicleType : stage.getInfo().getVehicles()) {
 			// Only handle light utility vehicles for now.
 			if (vehicleType.getVehicleType() == VehicleType.LUV) {
@@ -208,7 +207,7 @@ public class ConstructionMission extends AbstractMission {
 	 * Retrieves LUV attachment parts from the settlement.
 	 * @return 
 	 */
-	public List<Integer> retrieveConstructionLUVParts(Settlement settlement, ConstructionStage stage, List<GroundVehicle> reserved) {
+	public List<Integer> retrieveConstructionLUVParts(Settlement settlement, ConstructionStage stage, List<LightUtilityVehicle> reserved) {
 		List<Integer> luvAttachmentParts = new ArrayList<>();
 		int vehicleIndex = 0;
 		for(var k : stage.getInfo().getVehicles()) {
@@ -449,8 +448,7 @@ public class ConstructionMission extends AbstractMission {
 	 */
 	private void showLightUtilityVehicle() {
 		var site = objective.getSite();
-		for(GroundVehicle vehicle : objective.getConstructionVehicles()) {
-			LightUtilityVehicle luv = (LightUtilityVehicle) vehicle;
+		for(LightUtilityVehicle luv : objective.getConstructionVehicles()) {
 			// Place light utility vehicles at random location in construction site.
 			LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
 			luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
@@ -488,7 +486,7 @@ public class ConstructionMission extends AbstractMission {
 	 *
 	 * @return list of construction vehicles.
 	 */
-	public List<GroundVehicle> getConstructionVehicles() {
+	public List<LightUtilityVehicle> getConstructionVehicles() {
 		return objective.getConstructionVehicles();
 	}
 

@@ -25,7 +25,6 @@ import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
 /**
@@ -58,7 +57,7 @@ public class ConstructBuilding extends EVAOperation {
 	private ConstructionSite site;
 	private LightUtilityVehicle luv;
 
-	private List<GroundVehicle> vehicles;
+	private List<LightUtilityVehicle> vehicles;
 
 	/**
 	 * Constructor.
@@ -103,7 +102,7 @@ public class ConstructBuilding extends EVAOperation {
 	 * @throws Exception if error constructing task.
 	 */
 	public ConstructBuilding(Person person, ConstructionStage stage, ConstructionSite site,
-			List<GroundVehicle> vehicles) {
+			List<LightUtilityVehicle> vehicles) {
 		// Use EVAOperation parent constructor.
 		super(NAME, person, RandomUtil.getRandomDouble(5D) + 100D, CONSTRUCTION);
 
@@ -243,22 +242,21 @@ public class ConstructBuilding extends EVAOperation {
 	 * @throws Exception if error obtaining construction vehicle.
 	 */
 	private void obtainVehicle() {
-		Iterator<GroundVehicle> i = vehicles.iterator();
+		Iterator<LightUtilityVehicle> i = vehicles.iterator();
 		while (i.hasNext() && (luv == null)) {
-			GroundVehicle vehicle = i.next();
+			LightUtilityVehicle vehicle = i.next();
 			if (!vehicle.getMalfunctionManager().hasMalfunction()
-				&& (vehicle instanceof LightUtilityVehicle tempLuv)
-				&& (tempLuv.getOperator() == null)) {
+				&& (vehicle.getOperator() == null)) {
 
 					// Warning: do not call addPerson directly
-//					tempLuv.addPerson(person);
+//					vehicle.addPerson(person);
 					
 					// Call transfer()
-					person.transfer(tempLuv);
+					person.transfer(vehicle);
 				
-					tempLuv.setOperator(person);
+					vehicle.setOperator(person);
 
-					luv = tempLuv;
+					luv = vehicle;
 					operatingLUV = true;
 
 					// Place light utility vehicles at random location in construction site.
