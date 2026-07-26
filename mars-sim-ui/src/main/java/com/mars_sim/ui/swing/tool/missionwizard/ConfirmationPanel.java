@@ -52,6 +52,10 @@ class ConfirmationPanel extends WizardStep<MissionDataBean>  {
         if (state.getLUV() != null) {
             attrs.addLabelledItem(Msg.getString("lightutilityvehicle.singular"), new EntityLabel(state.getLUV(), context), null);
         }
+        if ((state.getConstructionVehicles() != null) && !state.getConstructionVehicles().isEmpty()) {
+            attrs.addLabelledItem(Msg.getString("lightutilityvehicle.plural"),
+                    createEntityList(state.getConstructionVehicles(), context), null);
+        }
 
         // Final purpose
         if (state.getConstructionSite() != null) {

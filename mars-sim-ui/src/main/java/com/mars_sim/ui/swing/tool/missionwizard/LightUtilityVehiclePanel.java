@@ -10,6 +10,7 @@ package com.mars_sim.ui.swing.tool.missionwizard;
 import java.util.List;
 
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.ui.swing.utils.model.BaseVehicleModel;
@@ -30,14 +31,19 @@ class LightUtilityVehiclePanel extends WizardItemStep<MissionDataBean,LightUtili
 	 * @param wizard the create mission wizard.
 	 */
 	public LightUtilityVehiclePanel(MissionCreate wizard, MissionDataBean state) {
-		super(ID, wizard, new VehicleTableModel(state));
+		super(ID, wizard, new VehicleTableModel(state), 1, getMaxSelection(state));
 	
 	}
 	
 
 	@Override
 	protected void updateState(MissionDataBean state, List<LightUtilityVehicle> selectedItems) {
-		state.setLUV(selectedItems.get(0));
+		if (state.getMissionType() == MissionType.CONSTRUCTION) {
+			state.setConstructionVehicles(selectedItems);
+		}
+		else {
+			state.setLUV(selectedItems.get(0));
+		}
 	}
 
 	/**
@@ -47,6 +53,11 @@ class LightUtilityVehiclePanel extends WizardItemStep<MissionDataBean,LightUtili
 	public void clearState(MissionDataBean state) {
 		super.clearState(state);
 		state.setLUV(null);
+		state.setConstructionVehicles(null);
+	}
+
+	private static int getMaxSelection(MissionDataBean state) {
+		return state.getMissionType() == MissionType.CONSTRUCTION ? Integer.MAX_VALUE : 1;
 	}
 
 	/**

@@ -11,7 +11,7 @@ import java.util.List;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.mission.MissionObjective;
-import com.mars_sim.core.vehicle.GroundVehicle;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
 /**
  * This class holds the objectives and facilities of a Construction mission.
@@ -22,11 +22,11 @@ public class ConstructionObjective implements MissionObjective {
 	private ConstructionSite site;
 	private ConstructionStage stage;
 
-	private List<GroundVehicle> constructionVehicles;
+	private List<LightUtilityVehicle> constructionVehicles;
 	private List<Integer> luvAttachmentParts;
 
     public ConstructionObjective(ConstructionSite site, ConstructionStage stage,
-            List<GroundVehicle> constructionVehicles, List<Integer> luvAttachmentParts) {
+            List<LightUtilityVehicle> constructionVehicles, List<Integer> luvAttachmentParts) {
         this.site = site;
         this.stage = stage;
         this.constructionVehicles = constructionVehicles;
@@ -46,7 +46,7 @@ public class ConstructionObjective implements MissionObjective {
         return stage;
     }
 
-    public List<GroundVehicle> getConstructionVehicles() {
+    public List<LightUtilityVehicle> getConstructionVehicles() {
         return constructionVehicles;
     }
 

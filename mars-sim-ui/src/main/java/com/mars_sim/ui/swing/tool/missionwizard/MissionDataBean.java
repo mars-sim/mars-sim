@@ -41,7 +41,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Drone;
-import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -74,7 +73,7 @@ class MissionDataBean {
     
 	private List<Person> personMembers = new ArrayList<>();
 	private List<Robot> botMembers = new ArrayList<>();
-    private List<GroundVehicle> constructionVehicles;
+    private List<LightUtilityVehicle> constructionVehicles;
 	private Map<Good, Integer> sellGoods;
 	private Map<Good, Integer> buyGoods;
 
@@ -243,6 +242,14 @@ class MissionDataBean {
 
 	public Vehicle getLUV() {
 		return luv;
+	}
+
+	public void setConstructionVehicles(List<LightUtilityVehicle> constructionVehicles) {
+		this.constructionVehicles = constructionVehicles;
+	}
+
+	public List<LightUtilityVehicle> getConstructionVehicles() {
+		return constructionVehicles;
 	}
 	
 	public void setMiningSite(MineralSite miningSite) {
