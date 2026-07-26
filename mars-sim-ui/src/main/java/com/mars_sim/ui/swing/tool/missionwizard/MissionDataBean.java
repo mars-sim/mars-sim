@@ -243,6 +243,14 @@ class MissionDataBean {
 	public Vehicle getLUV() {
 		return luv;
 	}
+
+	public void setConstructionVehicles(List<LightUtilityVehicle> constructionVehicles) {
+		this.constructionVehicles = constructionVehicles;
+	}
+
+	public List<LightUtilityVehicle> getConstructionVehicles() {
+		return constructionVehicles;
+	}
 	
 	public void setMiningSite(MineralSite miningSite) {
 		this.miningSite = miningSite;
