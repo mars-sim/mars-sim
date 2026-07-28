@@ -412,11 +412,13 @@ public abstract class TaskManager implements Serializable {
 			Task newTask = createTask(job);
 
 			if (newTask == null) {
-				logger.severe(worker, 30_000, "The Pending task '" + job.getName() + "' could not be created.");				
+				logger.severe(worker, 30_000, "The Pending task '" + job.getName() + "' could not be created.");	
+				// Add the pending task back
+				pendingTasks.add(firstTask);
 			}
 			
 			else if (newTask.isDone()) {
-				logger.warning(worker, 30_000, "The Pending task '" + job.getName() + "' was no longer possible.");				
+				logger.warning(worker, 30_000, "The Pending task '" + job.getName() + "' was done already.");				
 			}
 			// Potential here to loose started Task if new pending matches the existing
 			// check should be done against the TaskJob and delay the Task creation until the name check

@@ -123,7 +123,7 @@ public class MedicalCare extends Function implements MedicalAid {
 			if (success)
 				logger.info(worker, 10_000, "Arrived at " + building.getName() + ".");
 			else
-				logger.info(worker, 10_000, "Unable to be go to a medical building.");
+				logger.info(worker, 10_000, "Unable to be go to " + building.getName() + " or to be added to a medical activity spot.");
 		}
 		else
 			logger.info(worker, 10_000, "Unable to find a medical building.");

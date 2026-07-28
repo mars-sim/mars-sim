@@ -1033,6 +1033,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		LocalPosition loc = f.getAvailableActivitySpot();
 		
 		if (loc == null) {
+			// Note: If turning on the following log, it will flood the stack trace.
+			// May add back for debugging: logger.info(worker, 10_000L, "No activity spot on " + f.getFunctionType().getName() + " available in " + building + ".")
 			return false;
 		}
 			
@@ -1050,10 +1052,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			else {
 				// Reverse the walk and go back to the original building
 		
+				// Question: what would happen to this worker's previous activity spot that he occupied ?
+				
 				// Unclaim the activity spot.
 				worker.leaveActivitySpot(true);
-				
-				logger.info(worker, 10_000L, "Unable to walk to " + loc + " in " + building + " " +  ".");
+
+				logger.info(worker, 10_000L, "Reverse the walk to " + loc + " in " + building + " " +  ".");
 				return false;
 			}
 		}

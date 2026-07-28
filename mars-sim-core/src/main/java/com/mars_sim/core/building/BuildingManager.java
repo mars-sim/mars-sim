@@ -1742,7 +1742,7 @@ public class BuildingManager implements Serializable {
 		
 		FunctionType functionType = type;
 		
-		if (type == null) {		
+		if (functionType == null) {		
 			// Look for a function with empty activity spot
 			Function f = building.getEmptyActivitySpotFunction();
 			if (f != null) {
@@ -1755,8 +1755,10 @@ public class BuildingManager implements Serializable {
 			}
 			
 			else {
+				// Note: this happens frequently at the start of a sim
+				
 				// if type is not null and yet there's no empty activity spot
-				logger.info(worker, 20_000L, "Unable to claim a spot since there's no empty activity spot at any function.");
+				logger.info(worker, 20_000L, "No available functions with an activty spot in " + building.getName() + ".");
 				
 				return false;
 			}
@@ -1779,16 +1781,11 @@ public class BuildingManager implements Serializable {
 			}
 		}
 		
-		else {
-			if (functionType != null) {
+		else if (functionType != null) {
 				
-				logger.info(worker, 20_000L, "Unable to claim a spot at " + functionType.getName() + ".");
-				
-				return false;
-			}
-			
-			// if type is null prior to calling this method in the first time, then it doesn't need to claim a spot.
-			return true;
+			logger.info(worker, 20_000L, "Unable to claim a spot at " + functionType.getName() + " in " + building.getName() + ".");
+
+			return false;
 		}
 		
 		return result;
@@ -1810,7 +1807,8 @@ public class BuildingManager implements Serializable {
 		LocalPosition loc = f.getAvailableActivitySpot();	
 		
 		if (loc != null) {
-			// May add back : logger.info(worker, 10_000L, "Available loc " + loc + " found. Trying to claim it.")
+			// Note: if the following log is enabled, it will be excessive.
+			// May add back: logger.info(worker, 10_000L, "Available loc " + loc + " found. Trying to claim it.")
 			// Claim this activity spot
 			return f.claimActivitySpot(loc, worker);
 		}
