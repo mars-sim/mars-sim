@@ -88,9 +88,9 @@ public class DriveGroundVehicle extends OperateVehicle {
 		// Set initial parameters
 		setDescription(DETAIL + vehicle.getName());
 		
-		if (getPhase() == null) {
-			logger.log(driver, Level.INFO, 4_000, "Starting phase is null.");
-		}
+//		if (getPhase() == null) {
+//			logger.log(driver, Level.INFO, 4_000, "Starting phase is null.");
+//		}
 		
 		if (startingPhase != null) {
 			setPhase(startingPhase);
@@ -112,7 +112,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-    	    logger.info(worker, "Phase is null. No longer driving " + getVehicle() + ".");
+    	    logger.info(worker, "No longer driving " + getVehicle() + ".");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or 
     	    // it will end up calling endTask() again recursively.

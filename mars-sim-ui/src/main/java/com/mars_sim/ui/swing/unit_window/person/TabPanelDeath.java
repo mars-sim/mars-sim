@@ -26,7 +26,6 @@ import com.mars_sim.ui.swing.utils.EntityLabel;
 /**
  * The TabPanelDeath is a tab panel with info about a person's death.
  */
-@SuppressWarnings("serial")
 class TabPanelDeath extends EntityTabPanel<Person> {
 
 	private static final String RIP_ICON = "rip";
@@ -57,9 +56,12 @@ class TabPanelDeath extends EntityTabPanel<Person> {
 		PhysicalCondition condition = person.getPhysicalCondition();
 		death = condition.getDeathDetails();
 
+		JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
+		content.add(mainPanel, BorderLayout.CENTER);
 		// Prepare death label panel
+		
 		var deathLabelPanel = new AttributePanel();
-		content.add(deathLabelPanel, BorderLayout.CENTER);
+		mainPanel.add(deathLabelPanel, BorderLayout.NORTH);
 
 		deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.cause"), death.getIllness().getName(), null);
 		deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.time"), death.getTimeOfDeath().getTruncatedDateTimeStamp(), null);

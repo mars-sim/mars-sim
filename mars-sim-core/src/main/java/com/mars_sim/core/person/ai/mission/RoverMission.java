@@ -919,11 +919,14 @@ public abstract class RoverMission extends AbstractVehicleMission {
 						if (rover.isInGarage()) {						
 							// Force the person to get off the vehicle and back to the garage
 							// Note: may need to evaluate a better way of handling this
-							p.transfer(rover.getGarage());
+							boolean success = p.transfer(rover.getGarage());
 							
-							BuildingManager.walkToBed(p, disembarkSettlement);
-							
-							assignTask(p, new Relax(p));
+							if (success) {
+								boolean hasABed = BuildingManager.walkToBed(p, disembarkSettlement);
+								
+								if (!hasABed)
+									assignTask(p, new Relax(p));
+							}
 						}
 						else 
 							walkToAirlock(rover, p, disembarkSettlement);

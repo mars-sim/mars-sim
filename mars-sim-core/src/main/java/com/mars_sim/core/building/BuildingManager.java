@@ -1013,32 +1013,32 @@ public class BuildingManager implements Serializable {
 		
 		AllocatedSpot bed = p.getBed();
 		
+		if (bed == null) {
+			// It will look for a permanent bed if possible
+			AllocatedSpot tempBed = Sleep.findABed(s, p);
+						
+			if (tempBed == null) {
+				// Assign a temporary bed to this person
+				bed = LivingAccommodation.allocateBed(p.getSettlement(), p, false);	
+			}	
+		}
+		
 		if (bed != null) {
 				
 			Building b = bed.getOwner();
 			// Question: does it still need to claim since this is already his own bed ?
 			success = b.getLivingAccommodation().claimActivitySpot(bed.getAllocated().getPos(), p);
 			
-			if (success) {
-				
-				logger.log(p, Level.INFO, 10_000L, "Walking to his/her bed.");
-				
-				success = true;
+			if (success) {			
+				logger.log(p, Level.INFO, 10_000L, "Able to claim the activity spot of a bed.");
 			}
 		}
-
-		// It will look for a permanent bed if possible
-		AllocatedSpot tempBed = Sleep.findABed(s, p);
 		
-		if (tempBed == null) {
-			// Assign a temporary bed to this person
-			bed = LivingAccommodation.allocateBed(p.getSettlement(), p, false);	
+		if (bed == null) {
+			logger.log(p, Level.INFO, 10_000L, "Unsuccessful in finding a bed.");
 			
-			if (bed != null) {
-				
-				success = true;
-			}
-		}	
+			return success;
+		}
 		
 		if (success) {
 			// Check my own position
@@ -1056,6 +1056,10 @@ public class BuildingManager implements Serializable {
 				// Create subtask for walking to destination.
 				return createWalkingSubtask(p, bed.getOwner(), bedLoc, false, true);
 			}
+		}
+		
+		else {
+			logger.log(p, Level.INFO, 10_000L, "Unsuccessful claiming the activity spot of a bed.");
 		}
 		
 		return success;
