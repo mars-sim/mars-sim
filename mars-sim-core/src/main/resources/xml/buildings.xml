@@ -412,7 +412,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
 				<process-engine name="Enzymatic Dehydrogenation" number-modules="4"/>				
-				<process-engine name="Methanogenesis by Archaea" number-modules="2"/>
+				<process-engine name="Methanogenesis by Archaea" number-modules="2"/>			
+				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="2"/>
 				
 				<!--For producing Methanol -->
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="6"/>	
@@ -867,7 +868,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					
 				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
 				<process-engine name="Enzymatic Dehydrogenation" number-modules="16"/>
-
+				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="2"/>
+				
 				<!--For producing Methanol -->
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="24"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="12"/>					

@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager;
@@ -177,19 +176,12 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 		Map<ResourceProcessSpec, ResourceProcessAssessment> assessed = new HashMap<>();
 
-//		Map<Building, Double> possibleBuildings = new HashMap<>();
-//		Building b = RandomUtil.getWeightedRandomObject(possibleBuildings);		
-		
 		if (!settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
 			Set<Building> buildingSet = settlement.getBuildingManager().getBuildingSet(FunctionType.RESOURCE_PROCESSING);
 			
 			for (Building building: buildingSet) {
 				selectToggableProcesses(building, false, tasks, assessed);
 			}
-					
-//			Building building = settlement.getBuildingManager().getABuilding(FunctionType.RESOURCE_PROCESSING);
-//			if (building != null)
-//				selectToggableProcesses(building, false, tasks, assessed);
 		}
 
 		if (!settlement.getProcessOverride(OverrideType.WASTE_PROCESSING)) {
@@ -198,10 +190,6 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			for (Building building: buildingSet) {
 				selectToggableProcesses(building, true, tasks, assessed);
 			}
-			
-//			Building building = settlement.getBuildingManager().getABuilding(FunctionType.WASTE_PROCESSING);
-//			if (building != null)
-//				selectToggableProcesses(building, true, tasks, assessed);
 		}
 
 		return tasks;
@@ -220,6 +208,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private void selectToggableProcesses(Building building, boolean isWaste, List<SettlementTask> results,
 			Map<ResourceProcessSpec, ResourceProcessAssessment> assessed) {
 
+		List<SettlementTask> toggleOffTasks = new ArrayList<>();
+		Map<SettlementTask, Double> scoreMap = new HashMap<>();
+		
 		List<ResourceProcess> processes = null;
 		if (isWaste) {
 			processes = building.getWasteProcessing().getProcesses();
@@ -232,26 +223,25 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		var settlement = building.getSettlement();
 
 		int count = 0;
-		
-		int size = processes.size();
+
+		Collections.shuffle(processes);
 		
 		for (ResourceProcess process : processes) {
 			// Avoid process that can't be toggled or no point toggling
 			if (process.canToggle() && !process.isWorkerAssigned()) {
 
 				if (process.isProcessRunning()) {
-					
-					count++;
-					
+	
 					if (process.getOverallScore() <= 0) {
-						results.add(new ToggleOffJob(this, settlement, building, process, new RatingScore(100)));
+						toggleOffTasks.add(new ToggleOffJob(this, settlement, building, process, new RatingScore(100)));
 					}
 					// Note: Allow a running process to stop once in a while in order to reduce wear and tear
 					// Reduce the likelihood of having to submit ToggleOffJob all the time
-					else if (count > size - 1) {
-
-						count = 0;
+					else if (count == 0) {
 						
+						count++;
+					
+						// Note: Pick only the first process
 						var score = new RatingScore(0);
 
 						var elapsed = getMarsTime().getTimeDiff(process.getToggleDue());
@@ -259,32 +249,49 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 						score.addModifier("toggleTime", elapsed / 10);
 					
 						if (score.getScore() >= 4 * process.getLevel()) { 
-							results.add(new ToggleOffJob(this, settlement, building, process, score));
+							toggleOffTasks.add(new ToggleOffJob(this, settlement, building, process, score));
 						}
 					}
 				}
 				else {
-					computeAssessment(assessed, results, building, process, isWaste);
+					computeAssessment(assessed, scoreMap, building, process, isWaste);
 				}
 			}
 		}
+		
+		// Select one toggleOnTask
+		SettlementTask toggleOnTask = null;
+		
+		if (!scoreMap.isEmpty())
+			toggleOnTask = RandomUtil.getWeightedRandomObject(scoreMap);
+		
+		// Add the selected toggleOnTask
+		if (toggleOnTask != null)
+			results.add(toggleOnTask);
+		
+		// Add all toggleOffTasks
+		results.addAll(toggleOffTasks);
+		
 	}
 		
 	/**
 	 * Computes the assessment.
 	 * 
-	 * @param assessed
-	 * @param results
+	 * @param mapToAssess
+	 * @param scoreMap
 	 * @param building
 	 * @param process
 	 * @param isWaste
 	 */
-	private void computeAssessment(Map<ResourceProcessSpec, ResourceProcessAssessment> assessed, List<SettlementTask> results, 
+	private void computeAssessment(Map<ResourceProcessSpec, ResourceProcessAssessment> mapToAssess, Map<SettlementTask, Double> scoreMap, 
 			Building building, ResourceProcess process, boolean isWaste) {
+
 		var spec = process.getSpec();
 		int modules = process.getNumModules();
-		var a = assessed.computeIfAbsent(spec,
-					s -> calculateAssessment(building, s, modules, isWaste, results));
+		var a = mapToAssess.computeIfAbsent(spec,
+					s -> calculateAssessment(building, s, modules, isWaste, scoreMap));
+		
+		
 		process.setAssessment(a);
 	}
 	
@@ -296,12 +303,12 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @param spec
 	 * @param modules
 	 * @param isWaste
-	 * @param results
+	 * @param scoreMap
 	 * @return
 	 */
 	private ResourceProcessAssessment calculateAssessment(Building building,
 					ResourceProcessSpec spec, int modules, boolean isWaste,
-					List<SettlementTask> results) {
+					Map<SettlementTask, Double> scoreMap) {
 		ResourceProcessAssessment a = ResourceProcess.DEFAULT_ASSESSMENT;
 
 		Settlement settlement = building.getSettlement();	
@@ -328,7 +335,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 			if (score.getScore() >= MIN_SCORE) {
 				score.applyRange(MIN_SCORE, MAX_SCORE);
-				results.add(new ToggleOnJob(this, settlement, isWaste, spec, score));
+				scoreMap.put(new ToggleOnJob(this, settlement, isWaste, spec, score), score.getScore());
 			}
 		}
 
@@ -459,11 +466,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
 					score += mrate * UNBELIEVABLY_HIGH_BIAS;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
-					score += mrate * EXTREME_HIGH_BIAS * 1.1;
+					score += mrate * EXTREME_HIGH_BIAS;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
-					score += mrate * EXTREME_HIGH_BIAS * 1.2;
+					score += mrate * EXTREME_HIGH_BIAS;
 				} else if (ResourceUtil.isTier3Resource(resource)) {  		// oxygen
-					score += mrate * MEGA_HIGH_BIAS * .9;
+					score += mrate * MEGA_HIGH_BIAS;
 				} else if (ResourceUtil.isDerivedResource(resource)) { 		// glucose, leaves, soil 
 					score += mrate / MEGA_HIGH_BIAS;
 				} else if (ResourceUtil.isTier1Resource(resource) 			// ice, brine water, rock salt
@@ -517,11 +524,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isHydrogen(resource)) { 		// hydrogen
 					score += mrate * OMNI_BIAS;
 				} else if (ResourceUtil.isMethane(resource)) { 			// methane
-					score += mrate * SUPREMELY_HIGH_BIAS * .8;
+					score += mrate * SUPREMELY_HIGH_BIAS;
 				} else if (ResourceUtil.isMethanol(resource)) { 		// methanol
-					score += mrate * SUPREMELY_HIGH_BIAS * 1.15;
+					score += mrate * SUPREMELY_HIGH_BIAS;
 				} else if (ResourceUtil.isTier3Resource(resource)) {	// oxygen
-					score += mrate * HIGH_BIAS * .7;
+					score += mrate * MID_BIAS;
 				} else if (ResourceUtil.isRawElement(resource)      	// carbon, iron powder, iron oxide
 					|| ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick, gypsum plaster			
 					score += mrate * MEGA_HIGH_BIAS;					

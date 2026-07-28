@@ -630,7 +630,7 @@ public class PartGood extends Good {
 			}
 		}
 
-		return Math.min(GoodsManager.MAX_DEMAND, base / 100);
+		return Math.min(GoodsManager.MAX_DEMAND, base / 300);
 	}
 
 	/**
@@ -738,7 +738,7 @@ public class PartGood extends Good {
 			if (totalInputsValue > 0D) {
 				double partNum = partInput.getAmount();
 
-				demand = totalInputsValue * (partNum / totalInputNum);
+				demand = totalInputsValue * partNum / totalInputNum;
 			}
 		}
 
@@ -897,9 +897,9 @@ public class PartGood extends Good {
 		owner.setDemandScore(this, finalDemand);
 		
 		// Output a detailed message	
-		logger.info(owner.getSettlement(), 30_000L, 
-				part.getName()
-				+ " - Injecting Part Demand: "
+		logger.info(owner.getSettlement(), 1_000L,
+				"Injecting Part Demand for "
+				+ part.getName() + ": "
 				+ Math.round(previousDemand * 1000.0)/1000.0 
 				+ " -> " + Math.round(finalDemand * 1000.0)/1000.0 
 				+ "  Quantity: " + needNum

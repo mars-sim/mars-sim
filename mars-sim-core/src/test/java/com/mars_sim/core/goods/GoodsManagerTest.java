@@ -37,7 +37,7 @@ public class GoodsManagerTest extends MarsSimUnitTest {
         int reviewDue = gm.getResourceReviewDue();
         assertEquals(ess.keySet().size(), reviewDue, "Essential resources needing review at start");
 
-        int reserved = gm.reserveResourceReview();
+        int reserved = gm.selectResourceForReview();
 
         // Add a resource with 1 kg
         s.storeAmountResource(reserved, 1D);

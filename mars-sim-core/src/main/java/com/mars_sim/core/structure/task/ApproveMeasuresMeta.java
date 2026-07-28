@@ -67,7 +67,7 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
     private static final double BASE_SCORE = 75.0;
 
     public ApproveMeasuresMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
 		addPreferredRole(RoleType.RESOURCE_SPECIALIST, 1.5D);
 		addPreferredRole(RoleType.CHIEF_OF_SUPPLY_RESOURCE, 2);

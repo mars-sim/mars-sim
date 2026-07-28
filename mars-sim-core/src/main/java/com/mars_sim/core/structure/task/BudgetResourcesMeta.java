@@ -47,7 +47,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 			return switch(goal) {
 				case ICE_RESOURCE -> "Budget Ice Resource";
 				case REGOLITH_RESOURCE -> "Budget Regolith Resource";
-				case LIFE_RESOURCE -> "Budget Essential Resources";
+				case LIFE_RESOURCE -> "Budget Life Resource";
 				case WATER_RATIONING -> "Budget Settlement Water";
 			};
 		}
@@ -69,7 +69,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
     private static final double BASE_SCORE = 20.0;
 
     public BudgetResourcesMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setTrait(TaskTrait.LEADERSHIP);
 		addPreferredRole(RoleType.RESOURCE_SPECIALIST, 1.5D);
 		addPreferredRole(RoleType.CHIEF_OF_SUPPLY_RESOURCE, 2);
@@ -94,7 +94,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
             return factor;
         }
 	   	
-        if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+        if (p.isInSettlement()) {// && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 			
 			factor = super.assessPersonSuitability(t, p);
 			if (factor.getScore() == 0D) {
@@ -135,7 +135,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 		
 		int numResource = settlement.getGoodsManager().getResourceReviewDue();
 		if (numResource > 0) { 
-			RatingScore score = new RatingScore("resource.lifeSupport", BASE_SCORE * 3); 
+			RatingScore score = new RatingScore("resource.lifeSupport", BASE_SCORE * numResource * 2); 
 			tasks.add(new BudgetResourcesJob(this, settlement, score, numResource, ReviewGoal.LIFE_RESOURCE));
 		}
 		
@@ -159,7 +159,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 	 * Gets a number of living accommodations that need waste water review.
 	 *
 	 * @param settlement
-	 * @return the number
+	 * @return targetZone
 	 */
 	public static List<Building> getAccommodationNeedingWaterReview(Settlement settlement,
 				int targetZone) {

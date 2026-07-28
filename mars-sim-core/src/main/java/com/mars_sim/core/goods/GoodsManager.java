@@ -96,7 +96,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private class ResourcesReset implements ScheduledEventHandler {
 		// Duration to between reviewing essential resources
-		private static final int REVIEW_PERIOD = 1000; // Once per sol
+		private static final int REVIEW_PERIOD = 100; // in millisols
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -853,6 +853,12 @@ public class GoodsManager implements Serializable {
 		return resLimits.size() - reviewedEssentials.size();
 	}
 	
+	
+	/**
+	 * Gets the resources for review.
+	 * 
+	 * @return
+	 */
 	private Set<Integer> getResourceForReview() {
 		Set<Integer> unreviewed = new HashSet<>(resLimits.keySet());
 		unreviewed.removeAll(reviewedEssentials);
@@ -861,22 +867,45 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Reserves an essential resource for a review.
+	 * Selects and reserves an essential resource for review.
 	 * 
 	 * @return Selected resource
 	 */
-    public int reserveResourceReview() {
-		var unreviewed = getResourceForReview();
+    public int selectResourceForReview() {
+
+		Set<Integer> unreviewed = getResourceForReview();
 
 		// Everything has been reviewed
 		if (unreviewed.isEmpty()) {
 			return -1;
 		}
 
-		// Pick one an random and add to the reviewed set
-		int selected = RandomUtil.getARandSet(unreviewed);
-		reviewedEssentials.add(selected);
-		return selected;
+		Map<Integer, Double> map = new HashMap<>();
+		
+    	int selectID = -1;
+	
+    	for (int resourceID: unreviewed) {
+    		var limits = resLimits.get(resourceID);
+    		int reservePerPop = limits.reserve();
+    		int pop = settlement.getNumCitizens();
+    		
+    		int reserve = reservePerPop;
+    		double vp = getGoodValuePoint(resourceID);
+    		
+    		double stored = settlement.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
+    		
+    		double amount = reserve / stored + 1 / vp;
+    		
+    		map.put(resourceID, amount);
+    	}
+		
+    	if (!map.isEmpty())
+    		selectID = RandomUtil.getWeightedRandomObject(map);
+    	
+    	if (selectID != -1)
+    		reviewedEssentials.add(selectID);
+    	
+		return selectID;
     }
 
 	/**
@@ -899,51 +928,43 @@ public class GoodsManager implements Serializable {
 		int reserve = reservePerPop;
 		double demand = getDemandScoreWithID(resourceID);	
 	
-		double stored = settlement.getAllAmountResourceStored(resourceID) / pop;
+		double stored = settlement.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
 		double surplus = 0;
 		double lacking = 0;
 		double delta = 0;
-
 
 		String resourceName = ResourceUtil.findAmountResourceName(resourceID);
 		
 		if (stored >= optimal) {
 			return 0;
 		}
-		else if (stored >= 3 * reserve) {
-			surplus = stored - 3 * reserve;
-			delta = Math.sqrt(surplus + 1);
-		}
+//		else if (stored >= 3 * reserve) {
+//			surplus = stored - 3 * reserve;
+//			delta = Math.sqrt(surplus + 2);
+//		}
 		else if (stored >= 2 * reserve) {
 			surplus = stored - 2 * reserve;
-			delta = Math.sqrt(2 * surplus + 2);
+			delta = Math.sqrt(surplus + 4);
 		}
 		else if (stored >= reserve) {
 			surplus = stored - reserve;
-			delta = Math.sqrt(4 * surplus + 4);
+			delta = Math.sqrt(2 * surplus + 8);
 		}
 		else if (stored < reserve) {
 			lacking = reserve - stored;
-			delta = Math.sqrt(8 * lacking + 8);
+			delta = Math.sqrt(4 * lacking + 16);
 		}
 
 		double fraction = delta / demand;
 
-		if (fraction > 1)
-			delta = delta * fraction;
-		
-//		if (Math.abs(fraction) < .005) {
-//			logger.info(settlement, 0,
-//					resourceName + " - " 
-//					+ "No need of demand injection since fraction is " + Math.round(fraction*  10000.0)/10000.0);
-//			return 0;
-//		}
+//		if (fraction > 1)
+//			delta = delta * fraction;
 
 		logger.info(settlement, 0,  
-				"Ready to inject demand for " + resourceName + ": " + Math.round(demand * 100.0)/100.0 
+				"Ready to inject Demand for " + resourceName + ": " + Math.round(demand * 100.0)/100.0 
 				+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
 				+ "  delta: " + Math.round(delta * 100.0)/100.0
-				+ "  fraction: " + Math.round(fraction*  10000.0)/10000.0
+				+ "  fraction: " + Math.round(fraction *  10000.0)/10000.0
 				+ "  stored: " + Math.round(stored * 100.0)/100.0
 				+ "  reserve: " + Math.round(reserve * 100.0)/100.0
 				+ "  optimal: " + Math.round(optimal * 100.0)/100.0 

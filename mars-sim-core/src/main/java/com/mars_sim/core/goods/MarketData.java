@@ -15,6 +15,9 @@ public class MarketData implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
+	private static final double DELTA = 0.01;
+	private static final double LIMIT = 1 - DELTA;
+	
 	private double goodValue = 0.0;
 	private double price = 0.0;
 	private double cost = 0.0;
@@ -32,7 +35,7 @@ public class MarketData implements Serializable {
 	 */
 	private static double smoothValue(double newValue, double oldValue) {
 		if (!Double.isNaN(oldValue) && !Double.isNaN(newValue)) {
-			newValue = (0.95 * oldValue + 0.05 * newValue);
+			newValue = (LIMIT * oldValue + DELTA * newValue);
 		}
 		else {
 			newValue = 0.01;

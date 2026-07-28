@@ -177,7 +177,7 @@ public class BudgetResources extends Task {
 	 * @return
 	 */
 	private boolean budgetSettlementResource() {
-		settlementResource = person.getAssociatedSettlement().getGoodsManager().reserveResourceReview();
+		settlementResource = person.getAssociatedSettlement().getGoodsManager().selectResourceForReview();
 		if (settlementResource != -1) {
 			goal = ReviewGoal.LIFE_RESOURCE;
 			return true;
