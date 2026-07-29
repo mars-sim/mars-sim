@@ -52,10 +52,6 @@ public class Mining extends EVAMission
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Mining.class.getName());
 	
-	// Mining mission event types
-	public static final String EXCAVATE_MINERALS_EVENT = "excavate minerals";
-	public static final String COLLECT_MINERALS_EVENT = "collect minerals";
-	
 	/** Mission phases */
 	private static final MissionPhase MINING_SITE = new MissionPhase("Mission.phase.miningSite");
 	private static final MissionStatus MINING_SITE_NOT_BE_DETERMINED = new MissionStatus("Mission.status.miningSite");
@@ -87,6 +83,8 @@ public class Mining extends EVAMission
 	public static final int MATURE_ESTIMATE_NUM = 75;
 
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.BUILDERS_HAVEN, ObjectiveType.MANUFACTURING_DEPOT);
+
+	private static final double MIN_COLLECTION = 20;
 
 	private MiningObjective objective;
 
@@ -319,15 +317,19 @@ public class Mining extends EVAMission
 		if (person.isEVAFit()) {
 			attachLUV(false);
 
+			boolean doMining = true;
 			// Is there extractable minerals ?
 			if (getExtractMineralsStream(person).findAny().isPresent()) {
 				int mineralToCollect = getMineralToCollect(person);
-				if (mineralToCollect > 0) {
-					assignTask(person, new CollectMinedMinerals(person, objective, getRover(), mineralToCollect));
+				if (mineralToCollect > MIN_COLLECTION) {
+					assignTask(person, new CollectMinedMinerals(person, objective, getRover(), mineralToCollect, this));
+					doMining = false;
 				}
 			}
-			else {
-				assignTask(person, new MineSite(person, objective, getRover()));
+			
+			// Nothing to collect so mine
+			if (doMining) {
+				assignTask(person, new MineSite(person, objective, getRover(), this));
 			}	
 		}
 		return true;

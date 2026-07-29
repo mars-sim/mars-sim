@@ -11,9 +11,11 @@ import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.tool.Msg;
@@ -55,6 +57,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	
 	private MiningObjective objective;
 	private Rover rover;
+	private Mission eventSource;
 	
 	/**
 	 * Constructor.
@@ -63,8 +66,10 @@ public class CollectMinedMinerals extends EVAOperation {
 	 * @param objective The objective
 	 * @param rover Base for the collection
 	 * @param mineralType the type of mineral to collect.
+	 * @param eventSource The source of the mission event.
 	 */
-	public CollectMinedMinerals(Person person, MiningObjective objective, Rover rover, int mineralType) {
+	public CollectMinedMinerals(Person person, MiningObjective objective, Rover rover, int mineralType,
+						Mission eventSource) {
 
 		// Use EVAOperation parent constructor.
 		super(NAME, person, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5), COLLECT_MINERALS);
@@ -76,6 +81,7 @@ public class CollectMinedMinerals extends EVAOperation {
 		this.mineralType = mineralType;
 		this.maxAmount = objective.getMineralStats().get(mineralType).getAvailable();
 		this.rover = rover;
+		this.eventSource = eventSource;
 
 		// Determine location for collection site.
 		setRandomOutsideLocation(rover);
@@ -203,6 +209,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	@Override
 	protected void clearDown() {
 		objective.recordResourceCollected(mineralType, totalCollected);
+		eventSource.fireMissionUpdate(MissionObjective.CHANGE_EVENT, "collected");
 
 		// Task may end early before a Rover is selected
 		returnEquipmentToVehicle(rover);

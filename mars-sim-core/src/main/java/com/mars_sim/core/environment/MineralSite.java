@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.authority.Authority;
@@ -174,10 +174,23 @@ public class MineralSite implements Serializable, SurfacePOI {
 	 * @return Map from resource id to estimated amount in kg
 	 */
 	public Map<Integer,Double> getEstimatedMineralAmounts() {
-		return minerals.entrySet().stream()
-				.collect(Collectors.toMap(Entry::getKey,
-									v -> (remainingMass * v.getValue().concentration())/100D));
+		return minerals.keySet().stream()
+				.collect(Collectors.toMap(Function.identity(),
+									this::getEstimatedMineralAmount));
 	}
+
+	/**
+	 * Get the estimated amount of each mineral at the site based on the Mass and mineral concentration
+	 * @return Map from resource id to estimated amount in kg
+	 */
+	public double getEstimatedMineralAmount(int resourceId) {
+		var mineral = minerals.get(resourceId);
+		if (mineral != null) {
+			return (remainingMass * mineral.concentration()) / 100D;
+		}
+		return 0.0;
+	}
+
 	/**
 	 * Gets the number of times the mineral concentration estimation has been
 	 * improved.

@@ -11,7 +11,6 @@ import java.util.Set;
 
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.data.UnitSet;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
@@ -67,6 +66,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * 
 	 * @return capacity
 	 */
+	@Override
 	public int getCrewCapacity() {
 		return crewCapacity;
 	}
@@ -76,6 +76,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * 
 	 * @return capacity
 	 */
+	@Override
 	public int getRobotCrewCapacity() {
 		return robotCrewCapacity;
 	}
@@ -85,6 +86,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * 
 	 * @return number of crewmembers
 	 */
+	@Override
 	public int getCrewNum() {
 		if (!getCrew().isEmpty())
 			return occupants.size();
@@ -96,6 +98,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * 
 	 * @return number of crewmembers
 	 */
+	@Override
 	public int getRobotCrewNum() {
 		if (!getRobotCrew().isEmpty())
 			return robotOccupants.size();
@@ -107,6 +110,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * 
 	 * @return robot crewmembers as Collection
 	 */
+	@Override
 	public Set<Person> getCrew() {
 		if (occupants == null || occupants.isEmpty())
 			return new UnitSet<>();
@@ -118,6 +122,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * 
 	 * @return robot crewmembers as Collection
 	 */
+	@Override
 	public Set<Robot> getRobotCrew() {
 		if (robotOccupants == null || robotOccupants.isEmpty())
 			return new UnitSet<>();
@@ -130,6 +135,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @param person the person to check
 	 * @return true if person is a crewmember
 	 */
+	@Override
 	public boolean isCrewmember(Person person) {
 		return occupants.contains(person);
 	}
@@ -140,6 +146,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @param robot the robot to check
 	 * @return true if robot is a crewmember
 	 */
+	@Override
 	public boolean isRobotCrewmember(Robot robot) {
 		return robotOccupants.contains(robot);
 	}
@@ -158,11 +165,10 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (occupants.size() == 0 && robotOccupants.size() == 0) {
-			person.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
+		if (occupants.size() < crewCapacity) {
 			// Fire the unit event type
 			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, person);
-			return true;
+			return occupants.add(person);
 		}
 		return false;
 	}
@@ -188,7 +194,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @param true if the robot can be added
 	 */
 	public boolean addRobot(Robot robot) {
-		if (occupants.size() == 0 && robotOccupants.size() == 0) {
+		if (robotOccupants.size() < robotCrewCapacity) {
 			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, robot);
 			return robotOccupants.add(robot);
 		}
@@ -202,6 +208,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @param robot
 	 * @param true if the robot can be removed
 	 */
+	@Override
 	public boolean removeRobot(Robot robot) {
 		if (isRobotCrewmember(robot)) {
 			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, robot);
