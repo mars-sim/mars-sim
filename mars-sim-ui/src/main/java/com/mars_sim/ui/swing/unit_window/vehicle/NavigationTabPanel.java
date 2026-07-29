@@ -345,7 +345,7 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
                 destinationLabelPanel.add(destinationButton);
             }
         }
-        catch (ArrayIndexOutOfBoundsException e) {
+        catch (ArrayIndexOutOfBoundsException _) {
             destinationLabelPanel.add(destinationButton);
         }
     }
@@ -361,7 +361,7 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
                 destinationLabelPanel.add(destinationTextLabel);
             }
         }
-        catch (ArrayIndexOutOfBoundsException e) {
+        catch (ArrayIndexOutOfBoundsException _) {
             destinationLabelPanel.add(destinationTextLabel);
         }
     }
@@ -400,7 +400,8 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
     @Override
     public void entityUpdate(EntityEvent event) {
         if (EntityEventType.COORDINATE_EVENT.equals(event.getType())
-                || EntityEventType.STATUS_EVENT.equals(event.getType())) {
+                || EntityEventType.STATUS_EVENT.equals(event.getType())
+                || EntityEventType.OPERATOR_EVENT.equals(event.getType())) {
             updateDisplay();
         }
     }

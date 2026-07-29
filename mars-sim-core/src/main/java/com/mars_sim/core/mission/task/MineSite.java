@@ -6,20 +6,19 @@
  */
 package com.mars_sim.core.mission.task;
 
-import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.ExitAirlock;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 
 /**
@@ -45,9 +44,9 @@ public class MineSite extends EVAOperation {
 
 
 	/** Excavation rates (kg/millisol). */
-	private static final double HAND_EXCAVATION_RATE = .1D;
+	private static final double HAND_EXCAVATION_RATE = 5D;
 	/** Excavation rates (kg/millisol). */
-	private static final double LUV_EXCAVATION_RATE = 1D;
+	private static final double LUV_EXCAVATION_RATE = 25D;
 
 	/** The base chance of an accident while operating LUV per millisol. */
 	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
@@ -57,8 +56,9 @@ public class MineSite extends EVAOperation {
 
 	// Data members
 	private MiningObjective objectives;
-	private LightUtilityVehicle luv;
 	private boolean operatingLUV;
+
+	private Mission eventSource;
 
 	/**
 	 * Constructor.
@@ -66,16 +66,17 @@ public class MineSite extends EVAOperation {
 	 * @param person the person performing the task.
 	 * @param objective   the objectives of the mining
 	 * @param rover  the rover used for the EVA operation.
+	 * @param eventSource The source of the mission event.
 	 */
-	public MineSite(Person person, MiningObjective objective, Rover rover) {
+	public MineSite(Person person, MiningObjective objective, Rover rover, Mission eventSource) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, RandomUtil.getRandomDouble(50D) + 10D, MINING);
+		super(NAME, person, RandomUtil.getRandomDouble(50D) + 50D, MINING);
 		setMinimumSunlight(LIGHT_LEVEL);
 
 		// Initialize data members.
 		this.objectives = objective;
-		this.luv = objective.getLUV();
+		this.eventSource = eventSource;		
 		operatingLUV = false;
 
 		if (EVAOperation.isSuperUnfit(person)){
@@ -124,6 +125,20 @@ public class MineSite extends EVAOperation {
 		return time;
 	}
 
+	@Override
+	public void endEVA(String reason) {
+		// End operating light utility vehicle.
+		if (operatingLUV) {
+			var luv = objectives.getLUV();
+			logger.info(person, "Release " + luv.getName());
+			luv.setOperator(null);
+			luv.removePerson(person);
+			operatingLUV = false;
+		}
+
+		super.endEVA(reason);
+	}
+
 	/**
 	 * Perform the mining phase of the task.
 	 *
@@ -134,41 +149,23 @@ public class MineSite extends EVAOperation {
 	private double miningPhase(double time) {
 		double remainingTime = 0;
 
-		// Check if there is reason to cut the mining phase short and return
-		// to the rover.
-		if (addTimeOnSite(time)) {
-			// End operating light utility vehicle.
-			if (person != null && luv.isCrewmember(person)) {
-				luv.removePerson(person);
-				luv.setOperator(null);
-				operatingLUV = false;
-
-			}
-			endEVA("Time on site expired.");
-			return 0;
-		}
-	
 		// Note: need to call addTimeOnSite() ahead of checkReadiness() since
 		// checkReadiness's addTimeOnSite() lacks the details of handling LUV
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time) > 0) {
 			return time;
+		}
 		
 		// Operate light utility vehicle if no one else is operating it.
-		if (person != null && !luv.getMalfunctionManager().hasMalfunction()
-				&& (luv.getCrewNum() == 0) && (luv.getRobotCrewNum() == 0)) {
+		var luv = objectives.getLUV();
+		if (!luv.getMalfunctionManager().hasMalfunction()
+				&& (luv.getOperator() == null)) {
 
-			if (luv.addPerson(person)) {
+			luv.addPerson(person);
+			luv.setOperator(person);
+			logger.info(person, "Operating " + luv.getName());
 
-				LocalPosition settlementLoc = LocalAreaUtil.getRandomLocalPos(luv);
-
-				person.setPosition(settlementLoc);
-				luv.setOperator(person);
-
-				operatingLUV = true;
-				setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // -NLS-1$
-			} else {
-				logger.info(person, " could not operate " + luv.getName());
-			}
+			operatingLUV = true;
+			setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // -NLS-1$
 		}
 
 		// Excavate minerals.
@@ -187,32 +184,38 @@ public class MineSite extends EVAOperation {
 	 * Excavating minerals from the mining site.
 	 *
 	 * @param time the time to excavate minerals.
-	 * @throws Exception if error excavating minerals.
 	 */
 	private void excavateMinerals(double time) {
-		int skill = getEffectiveSkillLevel();
-		double extractionRate = (operatingLUV ? LUV_EXCAVATION_RATE 
+		double totalToBeExtracted = (operatingLUV ? LUV_EXCAVATION_RATE 
 									: HAND_EXCAVATION_RATE) * time;
-		if (skill == 0)
-			extractionRate /= 2D;
-		else if (skill > 1)
-			extractionRate += (.2D * skill);
+		int skill = getEffectiveSkillLevel();
+		if (skill > 1)
+			totalToBeExtracted += (.2D * skill);
 
+		var totalExtracted = 0D;
 		var site = objectives.getSite();
-		var minerals = surfaceFeatures.getMineralMap()
-				.getAllMineralConcentrations(site.getLocation());
 		var siteMinerals = site.getMinerals();
-		for(var e : minerals.entrySet()) {
+		for(var e : siteMinerals.entrySet()) {
 
 			int mineralId = e.getKey();
-			double mineralConcentration = e.getValue();
-			double reserve = site.getRemainingMass();
-			double certainty = siteMinerals.get(mineralId).certainty();
-			double variance = .5 + RandomUtil.getRandomDouble(.5 * certainty) / 100;
-
-			double amountExcavated = variance * reserve * extractionRate * mineralConcentration;
-			objectives.extractedMineral(mineralId, amountExcavated);
+			double concentration = e.getValue().concentration()/100D;
+			double certainty = e.getValue().certainty()/100D;
+			double mineralExcavated = totalToBeExtracted * certainty * concentration;
+			mineralExcavated = Math.min(mineralExcavated, site.getEstimatedMineralAmount(mineralId));
+			objectives.extractedMineral(mineralId, mineralExcavated);
+			
+        	totalExtracted += mineralExcavated;
 		}
+
+		site.excavateMass(totalExtracted);
+	}
+
+	@Override
+	protected void clearDown() {
+		// Just fire one event at the end of the task
+		eventSource.fireMissionUpdate(MissionObjective.CHANGE_EVENT, "extracted");
+
+		super.clearDown();
 	}
 
 	@Override
@@ -241,6 +244,8 @@ public class MineSite extends EVAOperation {
 
 			// Driving skill modification.
 			int skill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
+
+			var luv = objectives.getLUV();
 			checkForAccident(luv, time, BASE_LUV_ACCIDENT_CHANCE, skill, luv.getName());
 		}
 	}
@@ -250,7 +255,7 @@ public class MineSite extends EVAOperation {
 		boolean result = super.shouldEndEVAOperation();
 
 		// If operating LUV, check if LUV has malfunction.
-		if (operatingLUV && luv.getMalfunctionManager().hasMalfunction()) {
+		if (operatingLUV && objectives.getLUV().getMalfunctionManager().hasMalfunction()) {
 			result = true;
 		}
 

@@ -40,7 +40,7 @@ class MiningObjectiveTest extends MarsSimUnitTest {
         // Extract some mineral
         var amount = initialMineral/2;
         obj.extractedMineral(targetId, amount);
-
+        site.excavateMass(amount);
         assertLessThan("Site reduced mass", initialMass, site.getRemainingMass());
 
         var minDetails = obj.getMineralStats().get(targetId);

@@ -114,7 +114,5 @@ public class MiningObjective implements MissionObjective {
     public void extractedMineral(int mineralId, double amount) {
         var found = minerals.get(mineralId);
         found.extracted += amount;
-
-        site.excavateMass(amount);
     }
 }

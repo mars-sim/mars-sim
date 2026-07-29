@@ -16,11 +16,10 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.mission.objectives.MiningObjective.MineralStats;
-import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
@@ -73,9 +72,7 @@ public class MiningPanel extends JPanel
 
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (event.getType().equals(Mining.EXCAVATE_MINERALS_EVENT)
-				|| event.getType().equals(Mining.COLLECT_MINERALS_EVENT)
-				|| EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
+		if (event.getType().equals(MissionObjective.CHANGE_EVENT)) {
 			excavationTableModel.updateTable();
 		}
 	}
