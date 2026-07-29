@@ -2,6 +2,7 @@
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
     name="Mining Outpost" default-population="4" description="Base for Mining Outpost for Mars Society"
     sponsor="MS" objective="MANUFACTURING_DEPOT">
+    
     <building id="00" type="Outpost Hub" xloc="0.0" yloc="0.0"
         facing="0.0">
         <connection-list>
@@ -9,7 +10,7 @@
             <connection id="3" xloc="-5.0" yloc="-2.5" />
             <connection id="5" xloc="5.0" yloc="2.5" />
             <connection id="9" xloc="5.0" yloc="-2.5" />
-            <connection id="02" xloc="0.0" yloc="-5.0" />
+            <connection id="T1" xloc="0.0" yloc="5.0" />
         </connection-list>
     </building>
     <building id="1" type="Tunnel" length="3.0" xloc="-6.5"
@@ -111,17 +112,17 @@
             <connection id="13" xloc="0.0" yloc="2.5" />
         </connection-list>
     </building>
-    <building id="02" type="Tunnel" length="4.0" xloc="0.0"
-        yloc="-7.0" facing="0.0">
+    <building id="T1" type="Tunnel" length="4.0" xloc="0.0"
+        yloc="7.0" facing="0.0">
         <connection-list>
-            <connection id="00" xloc="0.0" yloc="2.0" />
-            <connection id="16" xloc="0.0" yloc="-2.0" />
+            <connection id="00" xloc="0.0" yloc="-2.0" />
+            <connection id="LDG" xloc="0.0" yloc="2.0" />
         </connection-list>
     </building>
-    <building id="16" type="Loading Dock Garage" xloc="0.0"
-        yloc="-18.0" facing="180.0">
+    <building id="LDG" type="Loading Dock Garage" xloc="0.0"
+        yloc="18.0" facing="0.0">
         <connection-list>
-            <connection id="02" xloc="0.0" yloc="-9.0" />
+            <connection id="T1" xloc="0.0" yloc="-9.0" />
         </connection-list>
     </building>
     

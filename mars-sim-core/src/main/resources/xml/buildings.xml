@@ -1229,7 +1229,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="10" discharge-rate="1.2"/>
 
 			<research tech-level="4" capacity="8">
-				<!-- Sciences that can be researched at the laboratory. -->
+				<!-- Sciences that can be researched at the Bioreactor-F. -->
 				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
@@ -1306,7 +1306,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="10" discharge-rate="1.2"/>
 
 			<research tech-level="4" capacity="8">
-				<!-- Sciences that can be researched at the laboratory. -->
+				<!-- Sciences that can be researched at the Bioreactor-E. -->
 				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
@@ -1383,7 +1383,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="10" discharge-rate="1.2"/>
 
 			<research tech-level="4" capacity="8">
-				<!-- Sciences that can be researched at the laboratory. -->
+				<!-- Sciences that can be researched at the Bioreactor-M. -->
 				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
@@ -1462,7 +1462,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="10" discharge-rate="1.2"/>
 
 			<research tech-level="4" capacity="8">
-				<!-- Sciences that can be researched at the laboratory. -->
+				<!-- Sciences that can be researched at the Bioreactor-G. -->
 				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
@@ -4724,6 +4724,28 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-.62" yloc="-.77" />
 				</activity>
 			</research>
+			<!-- Mining Lab -->
+			<resource-processing low-power-level="0.25">
+				<!-- Bio-based processes -->
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="1"/>
+				<process-engine name="Glucose Fermentation" number-modules="1"/>
+				<process-engine name="Photo Fermentation by Chlorella" number-modules="1"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="1"/>
+				<process-engine name="Methanogenesis by Archaea" number-modules="1"/>
+				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="3"/>
+				
+				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="1"/>
+				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
+								
+				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
+				<process-engine name="Enzymatic Dehydrogenation" number-modules="3"/>
+												
+				<activity>		
+					<activity-spot xloc="1.4" yloc="-1.6" />
+					<activity-spot xloc="1.4" yloc="-1.15" />										
+				</activity>
+			</resource-processing>
+			
 			<robotic-station capacity="2">
 				<activity>
 					<activity-spot xloc="-0.5" yloc="0.5" />
