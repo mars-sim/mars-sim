@@ -25,17 +25,20 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.environment.TerrainElevation;
+import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
+import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
@@ -70,7 +73,7 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 
 	private JLabel vicinityLabel;
 	private JLabel containerLabel;
-	private JLabel posnLabel;
+	private JLabel localPosLabel;
 	private JLabel buildingLabel;
 	private JLabel locationStateLabel;
 	private JLabel activitySpot;
@@ -87,7 +90,8 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	private Entity containerCache;
 	private Building buildingCache;
 	private Coordinates locationCache = new Coordinates(0D, 0D);
-
+	private LocalPosition localPosCache;
+	
 	private LocationStateType locationStateTypeCache;
 	
 	/**
@@ -228,10 +232,15 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	
 	private void addMobileUnitValues(AttributePanel containerPanel) {
 		buildingLabel = containerPanel.addRow("Building", "");
-		posnLabel = containerPanel.addRow("Position", "");
+		localPosLabel = containerPanel.addRow("Local Pos", "");
 		vicinityLabel = containerPanel.addRow("Vicinity", "");
 	}
 	
+	/**
+	 * Updates the mobile unit label.
+	 * 
+	 * @param mu
+	 */
 	private void updateMobileLabels(MobileUnit mu) {
 		// If this unit is inside a building
 		Building building = mu.getBuildingLocation();
@@ -241,7 +250,12 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 			buildingLabel.setText(n);
 		}
 
-		posnLabel.setText(mu.getPosition().getShortFormat());
+		LocalPosition localPos = mu.getPosition();
+		if (localPosCache != localPos) {
+			localPosCache = localPos;
+			String l = localPos != null ? localPos.getShortFormat() : "";
+			localPosLabel.setText(l);
+		}
 
 		// Update labels as necessary
 		Entity container = mu.getContainerUnit();
@@ -253,6 +267,11 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 		updateSurfacePOI(mu);
 	}
 
+	/**
+	 * Updates the vicinity label.
+	 * 
+	 * @param unit
+	 */
 	private void updateVicinityLabel(AbstractMobileUnit unit) {
 		LocationStateType locationStateType = unit.getLocationStateType();
 		if (locationStateTypeCache != locationStateType) {
@@ -262,19 +281,32 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 		}
 			
 		Unit vicinityUnit = null;
-		if (locationStateType == LocationStateType.SETTLEMENT_VICINITY) {
-			// If this unit is near a settlement
+		
+		if (unit instanceof Person || unit instanceof Robot || unit instanceof Equipment) {
 			vicinityUnit = unit.getLocationTag().findSettlementVicinity();
-		}
-		else if (locationStateType == LocationStateType.VEHICLE_VICINITY) {
-			// If this unit is near a vehicle
-			vicinityUnit = unit.getLocationTag().findVehicleVicinity();
+			if (vicinityUnit == null) {
+				vicinityUnit = unit.getLocationTag().findVehicleVicinity();
+			}
 		}
 		
-		// If this unit (including a settlement) is on Mars surface
-		else if (locationStateType == LocationStateType.MARS_SURFACE && unit instanceof Vehicle) {
-			vicinityUnit = unit.getLocationTag().findVehicleVicinity();
-		}
+		
+//		if (locationStateType == LocationStateType.SETTLEMENT_VICINITY) {
+//			// If this unit is near a settlement
+//			vicinityUnit = unit.getLocationTag().findSettlementVicinity();
+//		}
+//		else if (locationStateType == LocationStateType.VEHICLE_VICINITY) {
+//			// If this unit is near a vehicle
+//			vicinityUnit = unit.getLocationTag().findVehicleVicinity();
+//		}
+//		
+//		// If this unit is on Mars surface
+//		else if (locationStateType == LocationStateType.MARS_SURFACE) {
+//			if (unit instanceof Person || unit instanceof Robot) {
+//				vicinityUnit = unit.getLocationTag().findVehicleVicinity();
+//			}
+//			// if the unit is a vehicle or a settlement, then vicinityUnit is null
+//		}
+		
 		if (vicinityUnit != null) {
 			vicinityLabel.setText(vicinityUnit.getName());
 		}
@@ -358,7 +390,7 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	}
 
 	/**
-	 * Updates the gauge.
+	 * Updates the lat and lon LCD.
 	 * 
 	 * @param location
 	 */

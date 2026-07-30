@@ -66,6 +66,9 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static double getVehicleTypeBaseMass(VehicleType vehicleType) {
+		if (simulationConfig == null)
+			simulationConfig = SimulationConfig.instance();
+		
 		return simulationConfig.getVehicleConfiguration().getVehicleSpec(vehicleType.getName()).getEmptyMass();
 	}
 	
@@ -167,6 +170,8 @@ public class CollectionUtils {
 	 * @return list of people to display.
 	 */
 	public static List<Person> getPeopleInSettlementVicinity(Settlement settlement, boolean isCitizen) {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
 
 		List<Person> result = new ArrayList<>();
 
@@ -201,7 +206,9 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static Set<Person> getOtherPeople(Settlement settlement) {
-
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+		
 		Set<Person> group0 = new UnitSet<>();
 		group0.addAll(unitManager.getPeople());
 		Set<Person> group1 = new UnitSet<>();
@@ -219,7 +226,9 @@ public class CollectionUtils {
 	 * @return list of vehicles to display.
 	 */
 	public static List<Vehicle> getVehiclesInSettlementVicinity(Settlement settlement) {
-
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+		
 		List<Vehicle> result = new ArrayList<>();
 
 		if (settlement != null) {
@@ -255,6 +264,9 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static int getTotalNumPart(int id) {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+		
 		int result = 0;
 		// Obtain the total # of this part in used from all settlements
 		for (Settlement s : unitManager.getSettlements()) {

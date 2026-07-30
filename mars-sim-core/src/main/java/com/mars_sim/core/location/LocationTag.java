@@ -29,7 +29,9 @@ public class LocationTag implements Serializable {
 
 	private static final String UNKNOWN = "Unknown";
 
-	private static final String IN = " in ";
+	private static final String OPEN_P = " (";
+
+	private static final String CLOSE_P = ")";
 
 	private AbstractMobileUnit unit;
 
@@ -111,8 +113,11 @@ public class LocationTag implements Serializable {
 		if (immediate.equalsIgnoreCase(locale))
 			return immediate;
 
-		// The general case
-		return immediate + IN + locale;
+		if (locale != null && !locale.equals(UNKNOWN) && !locale.equals(""))
+			// The general case
+			return immediate + OPEN_P + locale + CLOSE_P;
+		
+		return immediate;
 	}
 
 
@@ -178,13 +183,21 @@ public class LocationTag implements Serializable {
 	 */
 	public Settlement findSettlementVicinity() {
 		
-		if (unit instanceof Person p && p.isBuried())
-			return p.getBuriedSettlement();
+		if (unit instanceof Person p) {
+			Settlement s = p.getSettlement();
+			if (s != null)
+				return s;
+			
+			if (p.isBuried())
+				return p.getBuriedSettlement();			
+		}
 		
-		if (unit instanceof Vehicle v && v.getSettlement() != null)
-			return v.getSettlement();
+		if (unit instanceof Vehicle v) {
+			Settlement s = v.getSettlement();
+			if (s != null) 
+				return s;
+		}
 		
-
 		return CollectionUtils.findSettlement(unit.getCoordinates());	
 	}
 
@@ -199,7 +212,8 @@ public class LocationTag implements Serializable {
 		
 		Collection<Vehicle> list = settlement.getAllAssociatedVehicles();
 		for (Vehicle v : list) {
-			if (v.getCoordinates().equals(c) || v.getCoordinates() == c)
+			Coordinates coord = v.getCoordinates();
+			if (coord.equals(c) || coord == c)
 				return v;
 		}
 		
