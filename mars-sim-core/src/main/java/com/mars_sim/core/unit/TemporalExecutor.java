@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core.unit;
 
+import java.util.concurrent.TimeUnit;
+
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 
@@ -31,4 +33,10 @@ public interface TemporalExecutor {
      * @param s Temporal to add
      */
     void addTarget(Temporal s);
+
+	void shutdown();
+
+	void shutdownNow();
+
+	boolean awaitTermination(long i, TimeUnit seconds) throws InterruptedException;
 }

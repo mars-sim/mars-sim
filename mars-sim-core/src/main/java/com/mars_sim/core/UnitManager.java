@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.Building;
@@ -329,8 +330,26 @@ public class UnitManager implements Serializable, Temporal {
 	 * Ends the current executor.
 	 */
 	public void endSimulation() {
-		if (executor != null)
-			executor.stop();
+		if (executor != null) {
+//			executor.stop();
+			
+			// Step 1: Graceful shutdown
+			executor.shutdown();
+
+			try {
+			    // Step 2: Wait for tasks to complete
+			    if (!executor.awaitTermination(3L, TimeUnit.SECONDS)) {
+			        // Step 3: Force shutdown if timeout reached
+			        executor.shutdownNow();
+			        if (!executor.awaitTermination(3L, TimeUnit.SECONDS)) {
+						logger.severe("Executor did not terminate");
+			        }
+			    }
+			} catch (Exception e) {
+			    executor.shutdownNow();
+			    Thread.currentThread().interrupt();
+			}			
+		}	
 	}
 
 	/**

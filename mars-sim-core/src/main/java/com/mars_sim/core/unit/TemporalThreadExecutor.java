@@ -9,6 +9,7 @@ package com.mars_sim.core.unit;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
@@ -125,4 +126,21 @@ public class TemporalThreadExecutor implements TemporalExecutor {
         var t = new Thread(task, s.toString() + " Pulse");
         t.start();
     }
+
+	@Override
+	public void shutdown() {
+		logger.info("Shutting down tasks now.");
+        tasks.stream().forEach(s -> s.stop());
+	}
+
+	@Override
+	public void shutdownNow() {
+		logger.info("Shutting down tasks now.");
+        tasks.stream().forEach(s -> s.stop());
+	}
+
+	@Override
+	public boolean awaitTermination(long i, TimeUnit seconds) {
+		return true;
+	}
 }

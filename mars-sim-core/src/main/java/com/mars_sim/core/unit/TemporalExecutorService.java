@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.logging.SimLogger;
@@ -101,11 +102,41 @@ public class TemporalExecutorService implements TemporalExecutor {
 
     @Override
     public void stop() {
-        executor.shutdown();
+		// Step 1: Graceful shutdown
+		executor.shutdown();
+
+		try {
+		    // Step 2: Wait for tasks to complete
+		    if (!executor.awaitTermination(3, TimeUnit.SECONDS)) {
+		        // Step 3: Force shutdown if timeout reached
+		        executor.shutdownNow();
+		        if (!executor.awaitTermination(3, TimeUnit.SECONDS)) {
+					logger.severe("Executor did not terminate");
+		        }
+		    }
+		} catch (Exception e) {
+		    executor.shutdownNow();
+		    Thread.currentThread().interrupt();
+		}
     }
 
     @Override
     public void addTarget(Temporal s) {
         tasks.add(new TemporalTask(s));
     }
+
+	@Override
+	public void shutdown() {
+		executor.shutdown();
+	}
+
+	@Override
+	public void shutdownNow() {
+		executor.shutdownNow();
+	}
+
+	@Override
+	public boolean awaitTermination(long i, TimeUnit seconds) throws InterruptedException {
+		return executor.awaitTermination(i, seconds);
+	}
 }
