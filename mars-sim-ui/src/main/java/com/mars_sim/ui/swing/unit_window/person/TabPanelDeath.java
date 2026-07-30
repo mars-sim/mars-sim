@@ -30,8 +30,8 @@ class TabPanelDeath extends EntityTabPanel<Person> {
 
 	private static final String RIP_ICON = "rip";
 
-	private JLabel doctorRetrievingBodyTF;	
-	private JLabel examinerTF;
+	private JLabel doctorRetrievingBodyLabel;	
+	private JLabel examinerLabel;
 	private DeathInfo death;
 	
 	/**
@@ -57,27 +57,33 @@ class TabPanelDeath extends EntityTabPanel<Person> {
 		death = condition.getDeathDetails();
 
 		JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
-		content.add(mainPanel, BorderLayout.CENTER);
-		// Prepare death label panel
+		content.add(mainPanel, BorderLayout.NORTH);
 		
+		// Prepare death label panel
 		var deathLabelPanel = new AttributePanel();
 		mainPanel.add(deathLabelPanel, BorderLayout.NORTH);
 
-		deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.cause"), death.getIllness().getName(), null);
-		deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.time"), death.getTimeOfDeath().getTruncatedDateTimeStamp(), null);
- 		doctorRetrievingBodyTF = deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.retrievingBody"), death.getDoctorRetrievingBody(), null);
-		examinerTF = deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.examiner"), death.getDoctorSigningCertificate(), null);
-		deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.malfunctionIfAny"), death.getMalfunction(), null);
-		deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.lastWord"), death.getLastWord(), null);
-	
-		var deathPlace = death.getDeathVicinity();
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.task"), death.getTask());
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.mission"), death.getMission());
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.mission.phase"), death.getMissionPhase());
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.cause"), death.getIllness().getName());
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.time"), death.getTimeOfDeath().getTruncatedDateTimeStamp());
+ 		doctorRetrievingBodyLabel = deathLabelPanel.addRow(Msg.getString("TabPanelDeath.retrievingBody"), death.getDoctorRetrievingBody());
+		examinerLabel = deathLabelPanel.addRow(Msg.getString("TabPanelDeath.examiner"), death.getDoctorSigningCertificate());
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.malfunctionIfAny"), death.getMalfunction());
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.lastWord"), death.getLastWord());
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.placeOfDeath"), death.getPlaceOfDeath());
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.locationState"), death.getLocationState());
+		
+		var deathPlace = death.getContainerUnit();
 		if (deathPlace != null) {
 			var deathEntity = new EntityLabel(deathPlace, getContext());
-			deathLabelPanel.addLabelledItem(Msg.getString("TabPanelDeath.placeOfDeath"), deathEntity);
+			deathLabelPanel.addLabelledItem(Msg.getString("TabPanelDeath.containerUnit"), deathEntity);
 		}
-		else {
-			deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.placeOfDeath"),
-					death.getLocationOfDeath().getFormattedString(), null);
+		
+		if (death.getCoordinates() != null) {
+			deathLabelPanel.addRow(Msg.getString("TabPanelDeath.coordinates"),
+					death.getCoordinates().getFormattedString());
 		}
 	}
 
@@ -89,13 +95,13 @@ class TabPanelDeath extends EntityTabPanel<Person> {
 		
 		if (death.getDoctorRetrievingBody() != null) {
 			String text = death.getDoctorRetrievingBody();
-			doctorRetrievingBodyTF.setText(text);
+			doctorRetrievingBodyLabel.setText(text);
 		}	
 		
 		if (death.getExamDone()) {
 			String text = death.getDoctorSigningCertificate() + " done @ " 
 				+ death.getTimePostMortemExam().getTruncatedDateTimeStamp();
-			examinerTF.setText(text);
+			examinerLabel.setText(text);
 		}	
 	}
 }

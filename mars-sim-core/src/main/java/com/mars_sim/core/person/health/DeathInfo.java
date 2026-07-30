@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DeathInfo.java
- * @date 2024-07-15
+ * @date 2026-07-29
  * @author Barry Evans
  */
 
@@ -21,6 +21,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
@@ -54,23 +55,24 @@ public class DeathInfo implements Serializable {
 	private boolean examDone = false;	
 	/** Amount of time performed so far in postmortem exam [in Millisols]. */	
 	private double timeSpentExam;
-	/** Time of death. */
-	private MarsTime timePostMortemExam;
+
 	/** Estimated time the postmortem exam should take [in Millisols]. */	
 	private double estTotExamTime;
 	/** Percent of illness*/	
 	private double healthCondition;	
 	/** Cause of death. */	
 	private String causeOfDeath;
-	/** Time of death. */
-	private MarsTime timeOfDeath;
 	/** Place of death. */
 	private String placeOfDeath = "";
 	/** Name of the doctor who sign on to transfer the body to the medical. */	
 	private String doctorRetrievingBody;
 	/** Name of the doctor who sign the death certificate. */	
 	private String doctorSigningCertificate;
-
+	
+	/** Name of mission at time of death. */
+	private String mission;
+	/** Name of mission phase at time of death. */
+	private String missionPhase;	
 	/** Name of task at time of death. */
 	private String task;
 	/** Phase of task at time of death. */
@@ -79,20 +81,28 @@ public class DeathInfo implements Serializable {
 	private String malfunction;
 	/** The person's last word before departing. */
 	private String lastWord = "None";
-
+	/** The person's location state before departing. */
+	private String locationState;
+	
+	/** Time of death. */
+	private MarsTime timeOfDeath;
+	/** Time of death. */
+	private MarsTime timePostMortemExam;
 	/** Medical problem contributing to the death. */
 	private HealthProblem problem;
 	/** Container unit at time of death. */
 	private Entity containerUnit;
 	/** Coordinate at time of death. */
-	private Coordinates locationOfDeath;
-	/** The person's job at time of death. */
-	private JobType job;
+	private Coordinates coordinates;
 	/** The person. */
 	private Person person;
 	/** The robot. */
 	private Robot robot;
 	
+	/** Name of mission stage at time of death. */
+	private Stage missionStage;
+	/** The person's job at time of death. */
+	private JobType job;
 	/** Medical cause of death. */
 	private ComplaintType illness;
 	/** Person's role type. */
@@ -112,6 +122,11 @@ public class DeathInfo implements Serializable {
 		this.person = person;
 		this.problem = problem;
 
+		if (person.getLocationStateType() != null)
+			locationState = person.getLocationStateType().getName();
+		
+		containerUnit = person.getContainerUnit();
+		
 		String medicalCause = "";
 		
 		// Initialize data members
@@ -154,7 +169,6 @@ public class DeathInfo implements Serializable {
 		// Record the place of death
 		if (person.isInVehicle()) {
 			// such as died inside a vehicle
-			containerUnit = person.getContainerUnit();
 			placeOfDeath = person.getVehicle().getName();
 		}
 
@@ -171,10 +185,10 @@ public class DeathInfo implements Serializable {
 		}
 
 		else {
-			placeOfDeath = "Unspecified Location";
+			placeOfDeath = "Unspecified";
 		}
 
-		locationOfDeath = person.getCoordinates();
+		coordinates = person.getCoordinates();
 
 		Mind mind = person.getMind();
 		
@@ -189,6 +203,14 @@ public class DeathInfo implements Serializable {
 		taskPhase = taskMgr.getTaskDescription(false);
 		if (taskPhase.equals(""))
 			taskPhase = taskMgr.getLastTaskDescription();
+		
+		if (mind.getMission() != null) {
+			mission = mind.getMission().getFullMissionDesignation();
+			
+			missionPhase = mind.getMission().getPhaseDescription();
+			
+			missionStage = mind.getMission().getStage();
+		}
 	}
 
 	/**
@@ -256,11 +278,18 @@ public class DeathInfo implements Serializable {
 	}
 
 	/**
+	 * Gets the location state.
+	 */
+	public String getLocationState() {
+		return locationState;	
+	}
+	
+	/**
 	 * Gets the container unit at the time of death. Returns null if none.
 	 * 
 	 * @return container unit
 	 */
-	public Entity getDeathVicinity() {
+	public Entity getContainerUnit() {
 		return containerUnit;
 	}
 	
@@ -281,8 +310,8 @@ public class DeathInfo implements Serializable {
 	 * 
 	 * @return coordinates
 	 */
-	public Coordinates getLocationOfDeath() {
-		return locationOfDeath;
+	public Coordinates getCoordinates() {
+		return coordinates;
 	}
 
 	/**
@@ -307,6 +336,34 @@ public class DeathInfo implements Serializable {
 	}
 	
 	/**
+	 * Gets the mission the person was doing at time of death.
+	 * 
+	 * @return mission designation
+	 */
+	public String getMission() {
+		return mission;
+	}
+
+	/**
+	 * Gets the mission phase the person was doing at time of death.
+	 * 
+	 * @return mission phase
+	 */
+	public String getMissionPhase() {
+		return missionPhase;
+	}
+
+	/**
+	 * Gets the mission stage the person was doing at time of death.
+	 * 
+	 * @return mission stage
+	 */
+	public Stage getMissionStage() {
+		return missionStage;
+	}
+
+	
+	/**
 	 * Gets the most serious emergency malfunction local to the person at time of
 	 * death.
 	 * 
@@ -329,10 +386,20 @@ public class DeathInfo implements Serializable {
 		examDone = value;
 	}
 	
+	/**
+	 * Is the exam done ?
+	 * 
+	 * @return
+	 */
 	public boolean getExamDone() {
 		return examDone;
 	}
 	
+	/**
+	 * Gets the health problem.
+	 * 
+	 * @return
+	 */
 	public HealthProblem getProblem() {
 		return problem;
 	}
@@ -404,10 +471,20 @@ public class DeathInfo implements Serializable {
 		return robot;
 	}
 	
+	/**
+	 * Gets the time spent in examination in millisols.
+	 * 
+	 * @return
+	 */
 	public double getTimeSpentExam() {
 		return timeSpentExam;
 	}
 
+	/**
+	 * Adds the time spent in examination in millisols.
+	 * 
+	 * @return
+	 */
 	public void addTimeSpentExam(double time) {
 		timeSpentExam += time;
 	}

@@ -24,7 +24,6 @@ import com.mars_sim.ui.swing.utils.EntityLabel;
 /**
  * The TabPanelGeneral is a tab panel for general information about a person.
  */
-@SuppressWarnings("serial")
 class TabPanelGeneral extends EntityTabPanel<Person> {
 			
 	/**
@@ -45,10 +44,12 @@ class TabPanelGeneral extends EntityTabPanel<Person> {
 	@Override
 	protected void buildUI(JPanel content) {
 
+		JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
+		content.add(mainPanel, BorderLayout.CENTER);
+		
 		// Prepare attribute panel.
 		AttributePanel infoPanel = new AttributePanel();
-		
-		content.add(infoPanel, BorderLayout.NORTH);
+		mainPanel.add(infoPanel, BorderLayout.NORTH);
 
 		var person = getEntity();
 
