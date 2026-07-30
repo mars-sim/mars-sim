@@ -20,7 +20,7 @@ public class MarsSurface extends PlanetaryEntity
 	/** default serial id. */
 	private static final long serialVersionUID = 123L;
 
-	private static final String NAME = "Mars Surface";
+	public static final String NAME = "Mars Surface";
 
 	public MarsSurface() {
 		super(NAME, Unit.MARS_SURFACE_UNIT_ID, UnitType.MARS);

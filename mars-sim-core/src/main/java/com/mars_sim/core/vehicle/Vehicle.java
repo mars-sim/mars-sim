@@ -16,15 +16,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.task.MaintainBuilding;
@@ -39,7 +38,6 @@ import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.equipment.ItemHolder;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
@@ -233,7 +231,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	Vehicle(String name, VehicleSpec spec, Settlement settlement, double maintenanceWorkTime) {
 		// Use Unit constructor
 		super(name, settlement);
-		setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+//		setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 		
 		this.spec = spec;
 		this.specName = spec.getName();
@@ -2356,54 +2354,54 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 *
 	 * @param newContainer the unit to contain this unit.
 	 */
-	protected boolean setContainerUnitAndID(UnitHolder newContainer) {
+	protected boolean setContainerUnit(UnitHolder newContainer) {
 		if (newContainer != null) {
 			var cu = getContainerUnit();
 			
 			if (newContainer.equals(cu)) {
 				return true;
 			}
-
-			LocationStateType newState;
-			// 2. Set new LocationStateType
-			// Note: This is a special case for Vehicle
-			//       A vehicle can have settlement as container unit while it's on Mars Surface
-			// 2a. If the old cu is a settlement or building
-			//     and the new cu is mars surface,
-			//     then location state is within settlement vicinity
-			if ((cu instanceof Settlement
-						|| cu instanceof Building)
-					&& newContainer instanceof MarsSurface) {
-				newState = LocationStateType.SETTLEMENT_VICINITY;
-			}	
-			else {
-				newState = getNewLocationState(newContainer);
-			}
-			
+//
+//			LocationStateType newState;
+//			// 2. Set new LocationStateType
+//			// Note: This is a special case for Vehicle
+//			//       A vehicle can have settlement as container unit while it's on Mars Surface
+//			// 2a. If the old cu is a settlement or building
+//			//     and the new cu is mars surface,
+//			//     then location state is within settlement vicinity
+//			if ((cu instanceof Settlement
+//						|| cu instanceof Building)
+//					&& newContainer instanceof MarsSurface) {
+//				newState = LocationStateType.SETTLEMENT_VICINITY;
+//			}	
+//			else {
+////				newState = getNewLocationState(newContainer);
+//			}
+//			
 			// 3. Set containerID
-			setContainer(newContainer, newState);
+			setContainer(newContainer);//, newState);
 		}
 		return true;
 	}
 
-	/**
-	 * Gets the location state type based on the type of the new container unit.
-	 *
-	 * @param newContainer
-	 * @return {@link LocationStateType}
-	 */
-	private LocationStateType getNewLocationState(UnitHolder newContainer) {
-
-		return switch(newContainer) {
-			case Settlement s -> (isInGarage() ? LocationStateType.INSIDE_SETTLEMENT
-						: LocationStateType.SETTLEMENT_VICINITY);
-			case Vehicle v -> LocationStateType.INSIDE_VEHICLE;
-			case ConstructionSite cs -> LocationStateType.MARS_SURFACE;
-			case Person p -> LocationStateType.ON_PERSON_OR_ROBOT;
-			case MarsSurface ms -> LocationStateType.MARS_SURFACE;
-			default -> null;
-		};
-	}
+//	/**
+//	 * Gets the location state type based on the type of the new container unit.
+//	 *
+//	 * @param newContainer
+//	 * @return {@link LocationStateType}
+//	 */
+//	private LocationStateType getNewLocationState(UnitHolder newContainer) {
+//
+//		return switch(newContainer) {
+//			case Settlement s -> (isInGarage() ? LocationStateType.INSIDE_SETTLEMENT
+//						: LocationStateType.SETTLEMENT_VICINITY);
+//			case Vehicle v -> LocationStateType.INSIDE_VEHICLE;
+//			case ConstructionSite cs -> LocationStateType.MARS_SURFACE;
+//			case Person p -> LocationStateType.ON_PERSON_OR_ROBOT;
+//			case MarsSurface ms -> LocationStateType.MARS_SURFACE;
+//			default -> null;
+//		};
+//	}
 
 	/**
 	 * Is this unit inside a settlement ?
@@ -2494,7 +2492,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 				}
 				
 				// Set the container unit for this vehicle
-				setContainerUnitAndID(destination);
+				setContainerUnit(destination);
 			}
 		}
 		return transferred;

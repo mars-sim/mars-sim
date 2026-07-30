@@ -62,7 +62,6 @@ import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.goods.GoodsUtil;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.map.location.Coordinates;
@@ -2012,12 +2011,12 @@ public class Settlement extends Unit implements Temporal,
 				// Call findNewParkingLoc to get a non-collided x and y coordinates
 				vehicle.findNewParkingLoc();
 				// Directly update the location state type
-				vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+//				vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			}
 			
 			else
 				// Directly update the location state type
-				vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+//				vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 			
 			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			

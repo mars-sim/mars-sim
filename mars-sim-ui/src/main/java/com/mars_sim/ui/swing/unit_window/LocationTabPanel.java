@@ -24,10 +24,9 @@ import javax.swing.border.EmptyBorder;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.Equipment;
-import com.mars_sim.core.location.LocationStateType;
-import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
@@ -75,7 +74,7 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	private JLabel containerLabel;
 	private JLabel localPosLabel;
 	private JLabel buildingLabel;
-	private JLabel locationStateLabel;
+//	private JLabel locationStateLabel;
 	private JLabel activitySpot;
 	private JLabel iceLabel;
 	private JLabel regolithLabel;
@@ -92,7 +91,7 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	private Coordinates locationCache = new Coordinates(0D, 0D);
 	private LocalPosition localPosCache;
 	
-	private LocationStateType locationStateTypeCache;
+//	private LocationStateType locationStateTypeCache;
 	
 	/**
 	 * Constructor.
@@ -227,7 +226,7 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 
 	private void addUnitValues(AttributePanel containerPanel) {
 		containerLabel = containerPanel.addRow("Container Unit", "");
-		locationStateLabel = containerPanel.addRow("Location State", "");
+//		locationStateLabel = containerPanel.addRow("Location State", "");
 	}
 	
 	private void addMobileUnitValues(AttributePanel containerPanel) {
@@ -273,12 +272,12 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	 * @param unit
 	 */
 	private void updateVicinityLabel(AbstractMobileUnit unit) {
-		LocationStateType locationStateType = unit.getLocationStateType();
-		if (locationStateTypeCache != locationStateType) {
-			locationStateTypeCache = locationStateType;
-			String n = locationStateType != null ? locationStateType.getName() : "";
-			locationStateLabel.setText(n);
-		}
+//		LocationStateType locationStateType = unit.getLocationStateType();
+//		if (locationStateTypeCache != locationStateType) {
+//			locationStateTypeCache = locationStateType;
+//			String n = locationStateType != null ? locationStateType.getName() : "";
+//			locationStateLabel.setText(n);
+//		}
 			
 		Unit vicinityUnit = null;
 		
@@ -489,7 +488,7 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	 */
 	private void updateBanner(Unit unit) {
 
-		String loc = LocationTag.MARS_SURFACE;
+		String loc = MarsSurface.NAME;
 		if (unit instanceof AbstractMobileUnit mu) {
 			loc = mu.getLocationTag().getExtendedLocation();
 		}

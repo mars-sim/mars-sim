@@ -1068,7 +1068,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 			// 2. Set LocationStateType
 			// 3. Set container
-			setContainer(newContainer, defaultLocationState(newContainer));
+			setContainer(newContainer);//, defaultLocationState(newContainer));
 		}
 
 		return true;

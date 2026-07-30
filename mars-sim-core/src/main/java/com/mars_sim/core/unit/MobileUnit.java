@@ -1,7 +1,6 @@
 package com.mars_sim.core.unit;
 
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.structure.Settlement;
@@ -91,9 +90,9 @@ public interface MobileUnit extends SurfacePOI {
 	 */
 	public boolean isOutside();
 
-	/**
-	 * Get the definitive assessment of the physical state os this mobile unit.
-	 * @return
-	 */
-	public LocationStateType getLocationStateType();
+//	/**
+//	 * Get the definitive assessment of the physical state os this mobile unit.
+//	 * @return
+//	 */
+//	public LocationStateType getLocationStateType();
 }

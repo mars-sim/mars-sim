@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.config.VehicleMaintenanceSpec;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
@@ -157,7 +156,7 @@ public class VehicleMaintenance extends Function {
 		// change the vehicle status
 		newVehicle.setPrimaryStatus(StatusType.GARAGED);
 		// Update the vehicle's location state type
-		newVehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+//		newVehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 		
 		double newFacing = getBuilding().getFacing();
 		newVehicle.setParkedLocation(location.getPosition(), newFacing);
@@ -285,7 +284,7 @@ public class VehicleMaintenance extends Function {
 	private void parkInVicinity(Vehicle vehicle) {
 		vehicle.setPrimaryStatus(StatusType.PARKED);
 		// Update the vehicle's location state type
-		vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+//		vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 		// Find a new parking location
 		vehicle.findNewParkingLoc();
 	}

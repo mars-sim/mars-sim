@@ -13,15 +13,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.UnitSet;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -348,7 +347,7 @@ public class Rover extends GroundVehicle implements Crewable,
 			return true;
 		}
 		if (occupants.add(person)) {
-			person.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
+//			person.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			// Fire the unit event type
 			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, person);
 			return true;
@@ -384,7 +383,7 @@ public class Rover extends GroundVehicle implements Crewable,
 			return true;
 		}
 		if (robotOccupants.add(robot)) {
-			robot.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
+//			robot.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, robot);
 			return true;
 		}

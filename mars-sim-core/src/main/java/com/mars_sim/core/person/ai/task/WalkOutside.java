@@ -76,9 +76,9 @@ public class WalkOutside extends Task {
 		// Use Task constructor.
 		super(NAME, worker, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 
-		// Check that the worker is currently outside a settlement or vehicle.
+		// Check that the worker is currently outside a settlement or vehicle so that he may start walking.
 		if (!worker.isOutside())
-			throw new IllegalStateException("WalkOutside task started when " + worker + " was " + worker.getLocationStateType());
+			throw new IllegalStateException("WalkOutside task started when " + worker + " was in " + worker.getContainerUnit());
 
 		init(start, destination, ignoreEndEVA);
 	}

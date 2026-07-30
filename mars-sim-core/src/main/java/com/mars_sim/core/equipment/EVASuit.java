@@ -17,7 +17,6 @@ import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.data.History;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -457,7 +456,7 @@ public class EVASuit extends Equipment
 	}
 
 	@Override
-	public void setContainer(UnitHolder parent, LocationStateType newState) {
+	public void setContainer(UnitHolder parent) {//, LocationStateType newState) {
 		var cu = getContainerUnit();
 		if (parent != cu) {
 			// Add new parent to owner history
@@ -466,9 +465,10 @@ public class EVASuit extends Equipment
 			}
 			locnHistory.add(parent);
 		}
-		super.setContainer(parent, newState);
+		super.setContainer(parent); //, newState);
 	}
 
+	
 	/**
 	 * Gets the history of the EVASuit.
 	 * 

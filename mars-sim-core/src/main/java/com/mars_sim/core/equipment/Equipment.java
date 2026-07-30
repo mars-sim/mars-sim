@@ -344,8 +344,9 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 				}
 			}
 			else {
-				// Set the new container unit (which will internally set the container unit id)
-				setContainer(destination, defaultLocationState(destination));
+//				// Set the new container unit
+				// Update the ownership history
+				setContainer(destination);//, defaultLocationState(destination));
 			}
 		}
 		

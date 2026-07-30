@@ -21,10 +21,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.authority.Authority;
@@ -42,7 +42,6 @@ import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.HistoricalEventType;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
@@ -1712,35 +1711,35 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 				setCoordinates(mu.getCoordinates());
 			}
 
-			// 2. Set new LocationStateType
-			var newLocnState = defaultLocationState(newContainer);
-			// 2a. If the previous cu is a settlement
-			//     and this person's new cu is mars surface,
-			//     then location state is within settlement vicinity
-			if (oldCU instanceof Settlement
-				&& newContainer instanceof MarsSurface) {
-					newLocnState = LocationStateType.SETTLEMENT_VICINITY;
-			}	
-			// 2b. If the previous cu is a vehicle
-			//     and the previous cu is in settlement vicinity
-			//     then the new location state is settlement vicinity
-			else if (oldCU instanceof Vehicle v
-					&& v.isRightOutsideSettlement()
-					&& newContainer instanceof MarsSurface) {
-						newLocnState = LocationStateType.SETTLEMENT_VICINITY;
-			}
-			// 2c. If the previous cu is a vehicle
-			//     and the previous cu vehicle is outside on mars surface
-			//     then the new location state is vehicle vicinity
-			else if (oldCU instanceof Vehicle v
-					&& v.isOutside()
-					&& newContainer instanceof MarsSurface) {
-						newLocnState = LocationStateType.VEHICLE_VICINITY;
-			}
-			
-			// 3. Set containerID
+//			// 2. Set new LocationStateType
+//			var newLocnState = defaultLocationState(newContainer);
+//			// 2a. If the previous cu is a settlement
+//			//     and this person's new cu is mars surface,
+//			//     then location state is within settlement vicinity
+//			if (oldCU instanceof Settlement
+//				&& newContainer instanceof MarsSurface) {
+//					newLocnState = LocationStateType.SETTLEMENT_VICINITY;
+//			}	
+//			// 2b. If the previous cu is a vehicle
+//			//     and the previous cu is in settlement vicinity
+//			//     then the new location state is settlement vicinity
+//			else if (oldCU instanceof Vehicle v
+//					&& v.isRightOutsideSettlement()
+//					&& newContainer instanceof MarsSurface) {
+//						newLocnState = LocationStateType.SETTLEMENT_VICINITY;
+//			}
+//			// 2c. If the previous cu is a vehicle
+//			//     and the previous cu vehicle is outside on mars surface
+//			//     then the new location state is vehicle vicinity
+//			else if (oldCU instanceof Vehicle v
+//					&& v.isOutside()
+//					&& newContainer instanceof MarsSurface) {
+//						newLocnState = LocationStateType.VEHICLE_VICINITY;
+//			}
+//			
+			// 3. Set container
 			// Note: need to decide what to set for a deceased person
-			setContainer(newContainer, newLocnState);
+			setContainer(newContainer);//, newLocnState);
 		}
 		return true;
 	}

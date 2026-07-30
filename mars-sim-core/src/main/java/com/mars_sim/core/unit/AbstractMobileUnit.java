@@ -6,18 +6,15 @@
  */
 package com.mars_sim.core.unit;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Equipment;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
@@ -36,7 +33,7 @@ public abstract class AbstractMobileUnit extends Unit
     private int currentBuildingInt;
 	private double baseMass = 0D;
 	private LocationTag tag;
-	private LocationStateType locnState;
+//	private LocationStateType locnState;
 	private Coordinates location;
 	private UnitHolder container;
 
@@ -51,7 +48,7 @@ public abstract class AbstractMobileUnit extends Unit
         this.owner = owner;
 		this.location = owner.getCoordinates();
 		this.tag = new LocationTag(this);
-		setContainer(owner, LocationStateType.INSIDE_SETTLEMENT);
+		setContainer(owner);//, LocationStateType.INSIDE_SETTLEMENT);
 	}
 
 	/**
@@ -70,8 +67,8 @@ public abstract class AbstractMobileUnit extends Unit
 	 * @param destination New destination of container
 	 * @param newState 
 	 */
-	protected void setContainer(UnitHolder destination, LocationStateType newState) {
-		this.locnState = newState;
+	protected void setContainer(UnitHolder destination) { //, LocationStateType newState) {
+//		this.locnState = newState;
 		container = destination;
 
 		fireUnitUpdate(CONTAINER_EVENT);
@@ -372,33 +369,33 @@ public abstract class AbstractMobileUnit extends Unit
 		return tag;
 	}
 	
-	/**
-	 * Gets the current location state for this mobile unit. It will be a refinement of the container.
-	 */
-	public LocationStateType getLocationStateType() {
-		return locnState;
-	}
-
-	public void setLocationStateType(LocationStateType locationStateType) {
-		locnState = locationStateType;
-	}
-
-    /**
-	 * Returns the default Location state for a new container.
-	 *
-	 * @param newContainer
-	 */
-	protected static LocationStateType defaultLocationState(Object newContainer) {
-		return switch (newContainer) {
-            case Settlement s -> LocationStateType.INSIDE_SETTLEMENT;
-            case Building b -> LocationStateType.INSIDE_SETTLEMENT;
-            case Vehicle v -> LocationStateType.INSIDE_VEHICLE;
-            case ConstructionSite c -> LocationStateType.MARS_SURFACE;
-            case Person p -> LocationStateType.ON_PERSON_OR_ROBOT;
-            case MarsSurface m -> LocationStateType.MARS_SURFACE;
-            default -> null;
-        };
-	}
+//	/**
+//	 * Gets the current location state for this mobile unit. It will be a refinement of the container.
+//	 */
+//	public LocationStateType getLocationStateType() {
+//		return locnState;
+//	}
+//
+//	public void setLocationStateType(LocationStateType locationStateType) {
+//		locnState = locationStateType;
+//	}
+//
+//    /**
+//	 * Returns the default Location state for a new container.
+//	 *
+//	 * @param newContainer
+//	 */
+//	protected static LocationStateType defaultLocationState(Object newContainer) {
+//		return switch (newContainer) {
+//            case Settlement s -> LocationStateType.INSIDE_SETTLEMENT;
+//            case Building b -> LocationStateType.INSIDE_SETTLEMENT;
+//            case Vehicle v -> LocationStateType.INSIDE_VEHICLE;
+//            case ConstructionSite c -> LocationStateType.MARS_SURFACE;
+//            case Person p -> LocationStateType.ON_PERSON_OR_ROBOT;
+//            case MarsSurface m -> LocationStateType.MARS_SURFACE;
+//            default -> null;
+//        };
+//	}
 
 	/**
 	 * Gets the unit's mass including inventory mass.

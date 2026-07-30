@@ -70,7 +70,6 @@ import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.PartGood;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -1296,7 +1295,7 @@ public class BuildingManager implements Serializable {
 						// Vehicle already on Garage
 						vehicle.setPrimaryStatus(StatusType.GARAGED);
 						// Directly update the location state type
-						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+//						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 						
 						return garageBuilding;
 					}
@@ -1333,7 +1332,7 @@ public class BuildingManager implements Serializable {
 						// Vehicle already on Garage
 						vehicle.setPrimaryStatus(StatusType.GARAGED);
 						// Directly update the location state type
-						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+//						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 
 						return garageBuilding;
 					}
@@ -1370,7 +1369,7 @@ public class BuildingManager implements Serializable {
 						// Vehicle already on Garage
 						vehicle.setPrimaryStatus(StatusType.GARAGED);
 						// Directly update the location state type
-						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+//						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 						
 						return garageBuilding;
 					}

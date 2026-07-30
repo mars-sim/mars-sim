@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
@@ -25,7 +26,7 @@ public class LocationTag implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String MARS_SURFACE = LocationStateType.MARS_SURFACE.getName();
+	public static final String MARS_SURFACE = MarsSurface.NAME;// LocationStateType.MARS_SURFACE.getName();
 
 	private static final String VICINITY = " Vicinity";
 
