@@ -157,13 +157,15 @@ public class VehicleMaintenance extends Function {
 	 */
 	private <T extends Vehicle> boolean addVehicle(List<ParkingLocation<T>> locations, T newVehicle, boolean transferCrew) {
 		if (newVehicle == null) {
-			throw new IllegalArgumentException("Vehicle cannot be null.");
+			logger.log(newVehicle, Level.INFO, 1000, building + "Vehicle cannot be null.");
+			return false;
 		}
 
 		ParkingLocation<T> location = assignParkingLocation(locations, newVehicle);
 		
 		if (location == null) {
 			logger.log(newVehicle, Level.INFO, 1000, building + " has no empty parking location.");	
+			return false;
 		}
 		
 		location.parkVehicle(newVehicle);
