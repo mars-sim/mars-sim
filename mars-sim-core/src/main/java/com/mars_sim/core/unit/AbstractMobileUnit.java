@@ -81,6 +81,8 @@ public abstract class AbstractMobileUnit extends Unit
 	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit
 	 * and being just right outside in a settlement/building/vehicle vicinity
 	 * Note: being inside a vehicle (that's on a mission outside) doesn't count being outside
+	 * 
+	 * For vehicle, being outside includes parking on settlement vicinity on the surface. 
 	 *
 	 * @return true if the unit is outside
 	 */
@@ -90,11 +92,19 @@ public abstract class AbstractMobileUnit extends Unit
 			return true;
 		}
 		
-		if (cu instanceof Vehicle || cu instanceof Settlement || cu instanceof Building) {
+		if (this instanceof Vehicle v) {
+			if (v.isInGarage())
+				return false;
+			if (cu instanceof Settlement)
+				return true;
+		}
+
+		if (cu instanceof Vehicle || cu instanceof Building
+			|| cu instanceof Settlement) {
 			return false;
 		}
 		
-		if (cu instanceof Equipment) {
+		if (this instanceof Equipment) {
 			return ((Worker) cu).isOutside();
 		}
 		
@@ -114,11 +124,16 @@ public abstract class AbstractMobileUnit extends Unit
 			return false;
 		}
 		
-		if (cu instanceof Vehicle || cu instanceof Settlement || cu instanceof Building) {
+		if (this instanceof Vehicle v && v.isInGarage()) {
 			return true;
 		}
 		
-		if (cu instanceof Equipment) {
+		if (cu instanceof Vehicle || cu instanceof Building
+				|| (cu instanceof Settlement && !(this instanceof Vehicle))) {
+			return true;
+		}
+		
+		if (this instanceof Equipment) {
 			return ((AbstractMobileUnit) cu).isInside();
 		}
 		

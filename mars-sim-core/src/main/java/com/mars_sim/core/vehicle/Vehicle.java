@@ -2417,10 +2417,16 @@ public abstract class Vehicle extends AbstractMobileUnit
 		}
 
 		boolean isVehicleInGarage = isInGarage();
+		if (isVehicleInGarage)
+			return true;
+		
 		boolean isUnitTypeSettlement = getContainerUnit() instanceof Settlement;
+		if (isUnitTypeSettlement)
+			return true;
+		
 		boolean isVehicleInSettlementVicinity = !isVehicleInGarage && isUnitTypeSettlement;
 
-		return isVehicleInGarage || isVehicleInSettlementVicinity || isUnitTypeSettlement ;
+		return isVehicleInSettlementVicinity;
 	}
 
 	/**
