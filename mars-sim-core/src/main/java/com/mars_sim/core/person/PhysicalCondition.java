@@ -106,6 +106,9 @@ public class PhysicalCondition implements Serializable {
 	/** The standard pre-breathing time in the EVA suit. */
 	private static final double STANDARD_PREBREATHING_TIME = 40;
 	
+	private static final String SICK = "Sick: ";
+	private static final String WELL = "Well";
+	
 	/** The default string for degree celsius */
 	public static final String DEGREE_CELSIUS = Msg.getString("temperature.sign.degreeCelsius");
 
@@ -1576,9 +1579,9 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public String getStatus() {
 		if (mostSeriousProblem != null) {
-			return (alive ? "Sick: " : "Dead: ") + mostSeriousProblem.printStatus();
+			return (alive ? SICK : "") + mostSeriousProblem.printStatus();
     	}
-		return "Well";	
+		return WELL;
 	}
 
 	/**

@@ -243,7 +243,7 @@ public class MaintainGarageVehicle extends Task {
 					}
 					
 				} else if (vehicle instanceof Drone d) {
-					garage.removeFlyer(d);
+					garage.removeFlyer(d, true);
 				}
 			}
 		}

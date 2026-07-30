@@ -1275,6 +1275,8 @@ public class BuildingManager implements Serializable {
 				else { 
 					boolean vacated = false;
 					
+					// If there is no garage space, check if an existing rover can leave
+					// the garage to make room for a new rover to come in
 					if (garage.getAvailableRoverCapacity() == 0) {
 						// Try removing a non-reserved vehicle inside a garage		
 						for (Rover rover: garage.getRovers()) {
@@ -1282,7 +1284,7 @@ public class BuildingManager implements Serializable {
 								&& !rover.isReservedForMaintenance()
 								&& rover.getMission() == null
 								&& rover.hasNoCrew()
-								&& garage.removeRover(rover, false)) {
+								&& garage.removeRover(rover, true)) {
 									vacated = true;
 									break;
 							}
@@ -1290,7 +1292,7 @@ public class BuildingManager implements Serializable {
 					}
 					
 					if ((garage.getAvailableRoverCapacity() > 0)
-						&& garage.addRover(r)) {
+						&& garage.addRover(r, true)) {
 
 						// Vehicle already on Garage
 						vehicle.setPrimaryStatus(StatusType.GARAGED);
@@ -1313,13 +1315,15 @@ public class BuildingManager implements Serializable {
 				else { 
 					boolean vacated = false;
 					
+					// If there is no garage space, check if an existing flyer can leave
+					// the garage to make room for a new flyer to come in
 					if (garage.getAvailableFlyerCapacity() == 0) {
 						// Try removing a non-reserved drone inside a garage		
 						for (Flyer flyer: garage.getFlyers()) {
 							if (!vacated && !flyer.isReserved() 
 								&& !flyer.isReservedForMaintenance()
 								&& flyer.getMission() == null
-								&& garage.removeFlyer(flyer)) {
+								&& garage.removeFlyer(flyer, true)) {
 									vacated = true;
 									break;
 							}
@@ -1327,7 +1331,7 @@ public class BuildingManager implements Serializable {
 					}
 					
 					if (garage.getAvailableFlyerCapacity() > 0 
-							&& garage.addFlyer(f)) {
+							&& garage.addFlyer(f, true)) {
 
 						// Vehicle already on Garage
 						vehicle.setPrimaryStatus(StatusType.GARAGED);
@@ -1364,7 +1368,7 @@ public class BuildingManager implements Serializable {
 					}
 					
 					if ((garage.getAvailableUtilityVehicleCapacity() > 0)
-						&& garage.addUtilityVehicle(luv)) {
+						&& garage.addUtilityVehicle(luv, true)) {
 
 						// Vehicle already on Garage
 						vehicle.setPrimaryStatus(StatusType.GARAGED);
@@ -1398,7 +1402,7 @@ public class BuildingManager implements Serializable {
 				return true;
 		}
 		else if (vehicle instanceof Flyer flyer
-			&& garage.getVehicleMaintenance().removeFlyer(flyer)) {
+			&& garage.getVehicleMaintenance().removeFlyer(flyer, true)) {
 				return true;
 		}
 		else if (vehicle instanceof LightUtilityVehicle luv

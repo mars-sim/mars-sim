@@ -39,10 +39,10 @@ public class VehicleMaintenanceTest extends MarsSimUnitTest {
         int cap = g.getRoverCapacity();
 
         assertFalse(g.containsRover(r), "Rover found");
-        assertTrue(g.addRover(r), "Add Rover");
+        assertTrue(g.addRover(r, false), "Add Rover");
         assertTrue(r.isInGarage(), "Rover in garage");
         assertTrue(g.getRovers().contains(r), "Garage contains rover");
-        assertFalse(g.addRover(r), "2nd Add Rover");
+        assertFalse(g.addRover(r, false), "2nd Add Rover");
         assertEquals(cap-1, g.getAvailableRoverCapacity(), "Capacity reduced");
 
         // Remove it

@@ -562,7 +562,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 
         Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
-        garage.addRover(rover);
+        garage.addRover(rover, true);
 
         buildingManager.setupBuildingFunctionsMap();
 
@@ -608,7 +608,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         rover.transfer(settlement);
         
         var garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
-        garage.addRover(rover);
+        garage.addRover(rover, true);
         buildingManager.setupBuildingFunctionsMap();
         
 		Person person = buildPerson("Walker", settlement);

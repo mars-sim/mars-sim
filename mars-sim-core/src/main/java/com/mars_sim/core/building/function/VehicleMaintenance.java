@@ -44,9 +44,9 @@ public class VehicleMaintenance extends Function {
 	// Event type for when a vehicle is garaged in the building.
 	public static final String GARAGED = "garaged";
 	
-	private List<ParkedLocation<Rover>> roverLocations;
-	private List<ParkedLocation<LightUtilityVehicle>> luvLocations;
-	private List<ParkedLocation<Flyer>> flyerLocations;
+	private List<ParkingLocation<Rover>> roverLocations;
+	private List<ParkingLocation<LightUtilityVehicle>> luvLocations;
+	private List<ParkingLocation<Flyer>> flyerLocations;
 	
 	/**
 	 * Constructor.
@@ -61,13 +61,13 @@ public class VehicleMaintenance extends Function {
 		VehicleMaintenanceSpec vms = (VehicleMaintenanceSpec) spec;
 		
 		roverLocations = vms.getRoverParking().stream()
-							.map(p -> new ParkedLocation<Rover>(p.name(), p.position().toPosition(building)))
+							.map(p -> new ParkingLocation<Rover>(p.name(), p.position().toPosition(building)))
 							.toList();
 		flyerLocations = vms.getFlyerParking().stream()
-							.map(p -> new ParkedLocation<Flyer>(p.name(), p.position().toPosition(building)))
+							.map(p -> new ParkingLocation<Flyer>(p.name(), p.position().toPosition(building)))
 							.toList();
 		luvLocations = vms.getUtilityParking().stream()
-							.map(p -> new ParkedLocation<LightUtilityVehicle>(p.name(), p.position().toPosition(building)))
+							.map(p -> new ParkingLocation<LightUtilityVehicle>(p.name(), p.position().toPosition(building)))
 							.toList();
 	}
 
@@ -126,35 +126,55 @@ public class VehicleMaintenance extends Function {
 	}
 
 	/**
-	 * Adds vehicle to building if there's room for parking.
+	 * Assigns an available parking location.
 	 * 
-	 * @param vehicle the vehicle to be added.
-	 * @return true if vehicle can be added.
+	 * @param locations
+	 * @param newVehicle
+	 * @return
 	 */
-	public boolean addRover(Rover rover) {
-		return addVehicle(roverLocations, rover);
+	public <T extends Vehicle> ParkingLocation<T> assignParkingLocation(List<ParkingLocation<T>> locations, T newVehicle) {
+		if (getAssignedLocation(locations, newVehicle) != null) {
+			logger.log(newVehicle, Level.INFO, 1000,  "Already garaged in " + building + ".");
+			return null;
+		}
+		// Put vehicle in assigned parking location within building.
+		ParkingLocation<T> location = getEmptyLocation(locations);
+		if (location == null) {
+			logger.log(newVehicle, Level.INFO, 1000, building + " already full.");
+			return null;
+		}
+		
+		return location;
 	}
-
-	private <T extends Vehicle> boolean addVehicle(List<ParkedLocation<T>> locations, T newVehicle) {
+	
+	/**
+	 * Add the vehicle to a parking location and optionally relocate the crew.
+	 * 
+	 * @param locations
+	 * @param newVehicle
+	 * @param transferCrew
+	 * @return
+	 */
+	private <T extends Vehicle> boolean addVehicle(List<ParkingLocation<T>> locations, T newVehicle, boolean transferCrew) {
 		if (newVehicle == null) {
 			throw new IllegalArgumentException("Vehicle cannot be null.");
 		}
 
-		if (getAssignedLocation(locations, newVehicle) != null) {
-			logger.log(newVehicle, Level.INFO, 1000,  "Already garaged in " + building + ".");
-			return false;
-		}
-		// Put vehicle in assigned parking location within building.
-		ParkedLocation<T> location = getEmptyLocation(locations);
+		ParkingLocation<T> location = assignParkingLocation(locations, newVehicle);
+		
 		if (location == null) {
-			logger.log(newVehicle, Level.INFO, 1000, building + " already full.");
-			return false;
+			logger.log(newVehicle, Level.INFO, 1000, building + " has no empty parking location.");	
 		}
-
+		
 		location.parkVehicle(newVehicle);
 		
-		// change the vehicle status
+		// Change the vehicle status
 		newVehicle.setPrimaryStatus(StatusType.GARAGED);
+		
+		// Relocate/transfer the crew to the garage.
+		if (transferCrew)
+			relocateCrewToGarage(newVehicle);
+		
 		// Update the vehicle's location state type
 //		newVehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 		
@@ -167,23 +187,54 @@ public class VehicleMaintenance extends Function {
 
 	
 	/**
+	 * Relocates the crew to the garage building.
+	 * 
+	 * @param vehicle
+	 */
+	public void relocateCrewToGarage(Vehicle vehicle) {
+		
+		if (vehicle instanceof Crewable c) {
+			for (Person p: new ArrayList<>(c.getCrew())) {
+				p.transfer(building);
+			}
+			for (Robot r: new ArrayList<>(c.getRobotCrew())) {
+				r.transfer(building);
+			}
+		}
+	}
+	
+
+	/**
 	 * Adds vehicle to building if there's room for parking.
 	 * 
 	 * @param vehicle the vehicle to be added.
+	 * @param transferCrew
 	 * @return true if vehicle can be added.
 	 */
-	public boolean addUtilityVehicle(LightUtilityVehicle luv) {
-		return addVehicle(luvLocations, luv);
+	public boolean addRover(Rover rover, boolean transferCrew) {
+		return addVehicle(roverLocations, rover, transferCrew);
+	}
+	
+	/**
+	 * Adds vehicle to building if there's room for parking.
+	 * 
+	 * @param vehicle the vehicle to be added.
+	 * @param transferCrew
+	 * @return true if vehicle can be added.
+	 */
+	public boolean addUtilityVehicle(LightUtilityVehicle luv, boolean transferCrew) {
+		return addVehicle(luvLocations, luv, transferCrew);
 	}
 
 	/**
 	 * Adds flyer to building if there's room for parking.
 	 * 
 	 * @param flyer the flyer to be added.
+	 * @param transferCrew
 	 * @return true if flyer can be added.
 	 */
-	public boolean addFlyer(Flyer flyer) {
-		return addVehicle(flyerLocations, flyer);
+	public boolean addFlyer(Flyer flyer, boolean transferCrew) {
+		return addVehicle(flyerLocations, flyer, transferCrew);
 	}
 
 	
@@ -191,6 +242,7 @@ public class VehicleMaintenance extends Function {
 	 * Remove a rover from garage building.
 	 * 
 	 * @param rover the rover to be removed.
+	 * @param transferCrew
 	 * @return true if successfully removed
 	 */
 	public boolean removeRover(Rover rover, boolean transferCrew) {
@@ -198,10 +250,14 @@ public class VehicleMaintenance extends Function {
 	}
 
 	/**
-	 * Remove a vehicle from a parked location and optionally transfer the crew.
+	 * Remove a vehicle from a parking location and optionally transfer the crew.
 	 * 
+	 * @param locations
+	 * @param oldVehicle
+	 * @param transferCrew
+	 * @return
 	 */
-	private <T extends Vehicle> boolean removeVehicle(List<ParkedLocation<T>> locations, T oldVehicle, boolean transferCrew) {
+	private <T extends Vehicle> boolean removeVehicle(List<ParkingLocation<T>> locations, T oldVehicle, boolean transferCrew) {
 		if (oldVehicle == null) {
 			throw new IllegalArgumentException("Vehicle cannot be null.");
 		}
@@ -211,8 +267,9 @@ public class VehicleMaintenance extends Function {
 			return false;
 		}
 
+		// Relocate/transfer the crew to the garage.
 		if (transferCrew)
-			relocateCrew(oldVehicle);
+			relocateCrewToVehicle(oldVehicle);
 		
 		found.parkVehicle(null);
 		parkInVicinity(oldVehicle);
@@ -235,11 +292,12 @@ public class VehicleMaintenance extends Function {
 	/**
 	 * Remove flyer from garage building.
 	 * 
-	 * @param flyer the flyer to be removed.
+	 * @param flyer the flyer to be removed
+	 * @param transferCrew
 	 * @return true if successfully removed
 	 */
-	public boolean removeFlyer(Flyer flyer) {
-		return removeVehicle(flyerLocations, flyer, false);
+	public boolean removeFlyer(Flyer flyer, boolean transferCrew) {
+		return removeVehicle(flyerLocations, flyer, transferCrew);
 	}
 	
 	/**
@@ -247,34 +305,18 @@ public class VehicleMaintenance extends Function {
 	 * 
 	 * @param vehicle
 	 */
-	public void relocateCrew(Vehicle vehicle) {
-		
-		// Question: will this account for a person/robot being in a vehicle
-		// parked inside a garage ?
-	
+	public void relocateCrewToVehicle(Vehicle vehicle) {
+
 		if (vehicle instanceof Crewable c) {
-			// Remove the human occupants from the settlement
-			// But is this needed ? These should already be in the Vehicle
-			// if there are in the crew
 			for (Person p: new ArrayList<>(c.getCrew())) {
-				// If person's origin is already in this vehicle
-				// and it's called by removeFromGarage()
-				Vehicle v = p.getVehicle();
-				if (v != null) {
-					p.transfer(vehicle);
-					// Note: inside transfer() will call BuildingManager.removePersonFromBuilding(this, getBuildingLocation())
-				}
+				p.transfer(vehicle);
 			}
-			// Remove the robot occupants from the settlement
 			for (Robot r: new ArrayList<>(c.getRobotCrew())) {
-				Vehicle v = r.getVehicle();
-				if (v != null) {
-					r.transfer(vehicle);
-					// Note: inside transfer() will call BuildingManager.removePersonFromBuilding(this, getBuildingLocation())
-				}
+				r.transfer(vehicle);
 			}
 		}
 	}
+
 	
 	/**
 	 * Parks the vehicle in settlement vicinity upon being removed from garage.
@@ -362,7 +404,7 @@ public class VehicleMaintenance extends Function {
 	 * @param v the parked Vehicle.
 	 * @return Location or null if none.
 	 */
-	private <T extends Vehicle> ParkedLocation<T> getAssignedLocation(List<ParkedLocation<T>> potential, T v) {
+	private <T extends Vehicle> ParkingLocation<T> getAssignedLocation(List<ParkingLocation<T>> potential, T v) {
 		return potential.stream()
 			// Use v first as other since could be null
 			.filter(p -> v.equals(p.getVehicle()))
@@ -375,8 +417,8 @@ public class VehicleMaintenance extends Function {
 	 * @param potential
 	 * @return
 	 */
-	private <T extends Vehicle> ParkedLocation<T> getEmptyLocation(List<ParkedLocation<T>> potential) {
-		List<ParkedLocation<T>> empty = potential.stream()
+	private <T extends Vehicle> ParkingLocation<T> getEmptyLocation(List<ParkingLocation<T>> potential) {
+		List<ParkingLocation<T>> empty = potential.stream()
 										.filter(p -> !p.hasParkedVehicle())
 										.toList();
 		
@@ -432,9 +474,9 @@ public class VehicleMaintenance extends Function {
 	}
 
 	/**
-	 * Inner class to represent a parking location for the utility vehicles in the building.
+	 * Inner class to represent a parking location for vehicles in the building.
 	 */
-	private static class ParkedLocation<T extends Vehicle> implements Serializable {
+	private static class ParkingLocation<T extends Vehicle> implements Serializable {
 
 		private static final long serialVersionUID = 1L;
 		
@@ -442,7 +484,7 @@ public class VehicleMaintenance extends Function {
 		private LocalPosition pos;
 		private T parked;
 
-		private ParkedLocation(String name, LocalPosition pos) {
+		private ParkingLocation(String name, LocalPosition pos) {
 			this.name = name;
 			this.pos = pos;
 			parked = null;

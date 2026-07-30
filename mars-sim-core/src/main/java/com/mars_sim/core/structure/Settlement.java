@@ -99,6 +99,7 @@ import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
+import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -2004,7 +2005,7 @@ public class Settlement extends Unit implements Temporal,
 		if (vicinityParkedVehicles.add(vehicle)) {
 			
 			boolean canGarage = getBuildingManager().addToGarage(vehicle);
-			
+	
 			if (!canGarage) {
 				// Set vehicle's coordinates to that of settlement
 				vehicle.setCoordinates(getCoordinates());
@@ -2017,7 +2018,7 @@ public class Settlement extends Unit implements Temporal,
 			else
 				// Directly update the location state type
 //				vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-			
+		
 			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
 			return true;
