@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -46,52 +48,11 @@ public class LocationTag implements Serializable {
 	 */
 	public String getLocale() {
 		String result = UNKNOWN;
-		switch(unit.getLocationStateType()) {
-			case INSIDE_SETTLEMENT: {
-				var s = unit.getSettlement();
-				if (s != null) {
-					result = s.getName();
-				}
-			} break;
-			case INSIDE_VEHICLE: {
-				var v = unit.getVehicle();
-				if (v != null) {
-					result = v.getName();
-				}
-			} break;
-			case MARS_SURFACE: {
-				Settlement s = findSettlementVicinity();
-				if (s != null) {
-					result = s.getName() + VICINITY;
-				}
-				else {
-					Vehicle v = findVehicleVicinity();
-					if (v != null)
-						result = v.getName() + VICINITY;
-					else
-						result = MARS_SURFACE;
-				}
-			} break;
-			case ON_PERSON_OR_ROBOT: {
-				var container = unit.getContainerUnit();
-				if (container instanceof AbstractMobileUnit w) {
-					result = w.getLocationTag().getImmediateLocation();
-				}
-			} break;
-			case SETTLEMENT_VICINITY: {
-				Settlement s = findSettlementVicinity();
-				if (s != null)
-					result = s + VICINITY;	
-			} break;
-			case VEHICLE_VICINITY:
-				Vehicle v = findVehicleVicinity();
-				if (v != null)
-					result = v + VICINITY;	
-				break;
-			default:
-				break;
-		}
-
+		
+		var topContainer = unit.getContainerUnit();
+		if (topContainer != null)
+			result = topContainer.getName();
+		
 		return result;
 	}
 
@@ -131,53 +92,17 @@ public class LocationTag implements Serializable {
 	 */
 	public String getImmediateLocation() {
 		String result = UNKNOWN;
-		switch(unit.getLocationStateType()) {
-			case INSIDE_SETTLEMENT:
-				var b = unit.getBuildingLocation();
-				if (b != null) {
-					result = b.getName();
-				}			
-				break;
-			case INSIDE_VEHICLE:
-				var v = unit.getVehicle();
-				if (v != null) {
-					result = v.getName();
-				}
-				break;
-			case MARS_SURFACE: {
-				Settlement s = findSettlementVicinity();
-				if (s != null) {
-					result = s.getName() + VICINITY;
-				}
-				else {
-					Vehicle vv = findVehicleVicinity();
-					if (vv != null)
-						result = vv.getName() + VICINITY;
-					else
-						result = MARS_SURFACE;
-				}
-			} break;
-			case ON_PERSON_OR_ROBOT: {
-				var container = unit.getContainerUnit();
-				if (container instanceof AbstractMobileUnit w) {
-					result = w.getLocationTag().getImmediateLocation();
-				}
-			} break;
-			case SETTLEMENT_VICINITY, VEHICLE_VICINITY:
-				var lp = unit.getPosition();
-				if (lp != null)
-					result = lp.getShortFormat();
-				break;
-			default:
-				break;
-		}
-
+		
+		var container = unit.getContainerUnit();
+		if (container != null)
+			result = container.getName();
+		
 		return result;
 	}
 
 
 	/**
-	 * Finds the settlement in the vicinity of a person/robot/vehicle.
+	 * Finds the settlement in the vicinity of a unit.
 	 *
 	 * @return {@link Settlement}
 	 */
@@ -198,9 +123,51 @@ public class LocationTag implements Serializable {
 				return s;
 		}
 		
+		if (unit instanceof Robot r) {
+			Settlement s = r.getSettlement();
+			if (s != null) 
+				return s;
+		}
+		
+		if (unit instanceof Equipment e) {
+			Settlement s = e.getSettlement();
+			if (s != null) 
+				return s;
+		}
+		
 		return CollectionUtils.findSettlement(unit.getCoordinates());	
 	}
 
+	/**
+	 * Is this unit in a settlement vicinity ?
+	 *
+	 * @return {@link Settlement}
+	 */
+	public boolean isInSettlementVicinity() {
+		
+		if (unit instanceof Person p) {
+			if (p.getSettlement() != null)
+				return true;
+			
+			if (p.isBuried())
+				return true;			
+		}
+		
+		if (unit instanceof Robot r && r.getSettlement() != null) {
+			return true;
+		}
+		
+		if (unit instanceof Vehicle v && v.getSettlement() != null) {
+			return true;
+		}
+		
+		if (unit instanceof Equipment e && e.getSettlement() != null) {
+			return true;
+		}
+		
+		return CollectionUtils.findSettlement(unit.getCoordinates()) instanceof Settlement;	
+	}
+	
 	/**
 	 * Finds the nearby vehicle that drops off a person/robot in the vicinity.
 	 *

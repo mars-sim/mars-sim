@@ -663,7 +663,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		//    and a person doing EVA right outside a vehicle that are on a mission far away from the settlement ?
 		// Ans: Use coordinates to see if it matches 
 		
-		return LocationStateType.SETTLEMENT_VICINITY == getLocationStateType() || isBuried;
+		return getLocationTag().isInSettlementVicinity() || isBuried;
 	}
 
 	/**

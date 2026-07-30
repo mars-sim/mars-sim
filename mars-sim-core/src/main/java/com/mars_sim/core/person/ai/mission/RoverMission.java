@@ -838,14 +838,14 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				logger.info(p, 20_000L, STATUS_REPORT + roverName
 						+ " in " + rover.getBuildingLocation().getName()
 						+ ".  Building: " + p.getBuildingLocation().getName()
-						+ ".  Location State: " + p.getLocationStateType().getName());
+						+ ".  Container Unit: " + p.getContainerUnit().getName());
 			}
 			
 			else {						
 				// Not in settlement yet
 				logger.severe(p, 20_000L, STATUS_REPORT + roverName
 						+ " in " + rover.getLocationStateType().getName()
-						+ ".  Location State: " + p.getLocationStateType().getName());
+						+ ".  Container Unit: " + p.getContainerUnit().getName());
 			}
 		}
 	}

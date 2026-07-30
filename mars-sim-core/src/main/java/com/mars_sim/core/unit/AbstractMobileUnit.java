@@ -11,6 +11,7 @@ import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MarsSurface;
+import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.location.LocationTag;
 import com.mars_sim.core.map.location.Coordinates;
@@ -84,14 +85,19 @@ public abstract class AbstractMobileUnit extends Unit
 	 * @return true if the unit is outside
 	 */
 	public boolean isOutside() {
-		if (LocationStateType.MARS_SURFACE == locnState
-				|| LocationStateType.SETTLEMENT_VICINITY == locnState
-				|| LocationStateType.VEHICLE_VICINITY == locnState)
+		var cu = getContainerUnit();
+		if (cu instanceof MarsSurface) {
 			return true;
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
-			return ((Worker) getContainerUnit()).isOutside();
-
+		}
+		
+		if (cu instanceof Vehicle || cu instanceof Settlement || cu instanceof Building) {
+			return false;
+		}
+		
+		if (cu instanceof Equipment) {
+			return ((Worker) cu).isOutside();
+		}
+		
 		return false;
 	}
 
@@ -103,13 +109,19 @@ public abstract class AbstractMobileUnit extends Unit
 	 * @return true if the unit is inside a breathable environment
 	 */
 	public boolean isInside() {
-		if (LocationStateType.INSIDE_SETTLEMENT == locnState
-				|| LocationStateType.INSIDE_VEHICLE == locnState)
+		var cu = getContainerUnit();
+		if (cu instanceof MarsSurface) {
+			return false;
+		}
+		
+		if (cu instanceof Vehicle || cu instanceof Settlement || cu instanceof Building) {
 			return true;
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
-			return ((AbstractMobileUnit)getContainerUnit()).isInside();
-
+		}
+		
+		if (cu instanceof Equipment) {
+			return ((AbstractMobileUnit) cu).isInside();
+		}
+		
 		return false;
 	}
 
@@ -273,15 +285,6 @@ public abstract class AbstractMobileUnit extends Unit
 		return (getSettlement() != null);
 	}
 
-//	/**
-//	 * Is this unit in the vicinity of a settlement ?
-//	 *
-//	 * @return true if the unit is inside a settlement
-//	 */
-//	public boolean isInSettlementVicinity() {
-//		return tag.isRightOutsideSettlement();
-//	}
-
 	/**
 	 * Gets the vehicle the unit is in, null if person is not in vehicle.
 	 * Note: if the unit is a rover, do NOT use this method to get the superclass
@@ -299,9 +302,6 @@ public abstract class AbstractMobileUnit extends Unit
 		if (getContainerUnit() instanceof LightUtilityVehicle luv) {
 			return luv;
 		}
-//		if (getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
-//			return (Vehicle) getContainerUnit();
-//		}
 
 		return null;
 	}
@@ -322,12 +322,6 @@ public abstract class AbstractMobileUnit extends Unit
 		if (v != null) {
 			return true;
 		}
-		
-//		if (LocationStateType.INSIDE_VEHICLE == locnState)
-//			return true;
-//
-//		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
-//			return ((Worker)getContainerUnit()).isInVehicle();
 
 		return false;
 	}

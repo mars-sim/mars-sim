@@ -12,7 +12,6 @@ import java.util.Collection;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.task.MaintainBuilding;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.task.Repair;
 import com.mars_sim.core.manufacture.Salvagable;
@@ -236,7 +235,7 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	 * @return true if the equipment's is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-        return LocationStateType.SETTLEMENT_VICINITY == getLocationStateType();
+        return getLocationTag().isInSettlementVicinity();
     }
 
 	/**

@@ -35,7 +35,6 @@ import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
@@ -364,7 +363,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 */
 	@Override
 	public boolean isRightOutsideSettlement() {
-        return LocationStateType.SETTLEMENT_VICINITY == getLocationStateType();
+        return getLocationTag().isInSettlementVicinity() ;
     }
 
 	/**

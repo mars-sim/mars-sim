@@ -73,8 +73,7 @@ class TabPanelDeath extends EntityTabPanel<Person> {
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.malfunctionIfAny"), death.getMalfunction());
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.lastWord"), death.getLastWord());
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.placeOfDeath"), death.getPlaceOfDeath());
-		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.locationState"), death.getLocationState());
-		
+	
 		var deathPlace = death.getContainerUnit();
 		if (deathPlace != null) {
 			var deathEntity = new EntityLabel(deathPlace, getContext());

@@ -43,6 +43,7 @@ import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.DustStorm;
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.AmountResourceBin;
@@ -791,8 +792,7 @@ public class Settlement extends Unit implements Temporal,
 	public Collection<Person> getOutsideEVAPeople() {
 		return citizens.stream()
 				.filter(p -> !p.isDeclaredDead()
-						&& (p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.MARS_SURFACE))
+						&& (p.getContainerUnit() instanceof MarsSurface))
 				.toList();
 	}
 

@@ -81,8 +81,6 @@ public class DeathInfo implements Serializable {
 	private String malfunction;
 	/** The person's last word before departing. */
 	private String lastWord = "None";
-	/** The person's location state before departing. */
-	private String locationState;
 	
 	/** Time of death. */
 	private MarsTime timeOfDeath;
@@ -121,9 +119,6 @@ public class DeathInfo implements Serializable {
 							MarsTime martianTime) {
 		this.person = person;
 		this.problem = problem;
-
-		if (person.getLocationStateType() != null)
-			locationState = person.getLocationStateType().getName();
 		
 		containerUnit = person.getContainerUnit();
 		
@@ -277,12 +272,6 @@ public class DeathInfo implements Serializable {
 			return "";
 	}
 
-	/**
-	 * Gets the location state.
-	 */
-	public String getLocationState() {
-		return locationState;	
-	}
 	
 	/**
 	 * Gets the container unit at the time of death. Returns null if none.

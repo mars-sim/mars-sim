@@ -1937,7 +1937,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return
 	 */
 	public boolean isRightOutsideSettlement() {
-        return getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY;
+        return getLocationTag().isInSettlementVicinity();
 	}
 
 
@@ -2416,10 +2416,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 			return false;
 		}
 
-		var currentStateType = getLocationStateType();
-		boolean isVehicleInGarage = LocationStateType.INSIDE_SETTLEMENT == currentStateType;
-		boolean isVehicleInSettlementVicinity = LocationStateType.SETTLEMENT_VICINITY == currentStateType;
+		boolean isVehicleInGarage = isInGarage();
 		boolean isUnitTypeSettlement = getContainerUnit() instanceof Settlement;
+		boolean isVehicleInSettlementVicinity = !isVehicleInGarage && isUnitTypeSettlement;
 
 		return isVehicleInGarage || isVehicleInSettlementVicinity || isUnitTypeSettlement ;
 	}

@@ -18,7 +18,7 @@ import javax.swing.Icon;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.location.LocationStateType;
+import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
@@ -139,7 +139,7 @@ public class UnitMapLayer implements FilteredMapLayer {
 		if (vehicles != null) {
 			for (Vehicle v : vehicles) {
 				if (v.isOutsideOnMarsMission() 
-						&& v.getLocationStateType() == LocationStateType.MARS_SURFACE) {
+						&& v.getContainerUnit() instanceof MarsSurface) {
 					// Check against filters
 					if (isFilterActive(LABEL_VEHICLES)) {
 						renderUnit(v, v.getCoordinates(), mapCenter, baseMap, g2d, d, hotspots);
