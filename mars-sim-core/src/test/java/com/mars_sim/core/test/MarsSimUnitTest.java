@@ -164,15 +164,18 @@ public abstract class MarsSimUnitTest {
     }
 
 	protected LightUtilityVehicle buildLUV(Settlement settlement, String name, LocalPosition parked) {
-	    var rover1 = new LightUtilityVehicle(name, getConfig().getVehicleConfiguration().getVehicleSpec("Light Utility Vehicle"),
+	    var luv = new LightUtilityVehicle(name, getConfig().getVehicleConfiguration().getVehicleSpec("Light Utility Vehicle"),
 								settlement);
 		if (parked != null) {			
 			// Note: since settlement.addOwnedVehicle(this) was called in Vehicle's constructor
-	    	rover1.setParkedLocation(parked, 0D);
+			luv.setParkedLocation(parked, 0D);
 		}
-	    getSim().getUnitManager().addUnit(rover1);
+		
+	    getSim().getUnitManager().addUnit(luv);
 	    
-	    return rover1;
+        luv.setTestContainerUnit(settlement);
+        
+	    return luv;
 	}
 
     protected Robot buildRobot(String name, Settlement s, RobotType type, Building place, FunctionType activity) {
@@ -182,6 +185,8 @@ public abstract class MarsSimUnitTest {
 
         getSim().getUnitManager().addUnit(robot);
 
+        robot.setTestContainerUnit(s);
+        
         if (place != null) {
             BuildingManager.addToActivitySpot(robot, place, activity);
         }

@@ -37,6 +37,14 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	private static final SimLogger logger = SimLogger.getLogger(Equipment.class.getName());
 
 	// Data members.
+	/** True if the equipment is currently inside a building, a vehicle, or a settlement. */
+	boolean isInside;
+	/** True if the equipment is currently outside on Mars Surface, in a settlement/vehicle vicinity. */
+	boolean isOutside;
+	/** True if the equipment is currently inside a building or a settlement. */
+	boolean isInSettlement;
+//	/** True if the state has been updated */
+	boolean isStateUpdated = false;
 	/** is this equipment being salvage. */
 	private boolean isSalvaged;
 
@@ -70,6 +78,9 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	protected Equipment(String name, EquipmentType eType, String type, Settlement settlement) {
 		super(name, settlement);
 
+		// Call Equipment's setContainerUnit to set up coordinates and related states
+//		setContainerUnit(getContainerUnit());
+		
 		// Initialize data members.
 		this.equipmentType = eType;
 		isSalvaged = false;
@@ -344,13 +355,104 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 				}
 			}
 			else {
-//				// Set the new container unit
-				// Update the ownership history
-				setContainer(destination);//, defaultLocationState(destination));
+				
+				// Note: in future, we may add ownership history for certain equipment 
+				// So far, only EVASuit records ownership history
+
+				// Call setContainerUnit
+				setContainerUnit(destination);
 			}
 		}
 		
 		return canRetrieve && canStore;
+	}
+	
+	/**
+	 * Sets the unit's container unit.
+	 *
+	 * @param newContainer the unit to contain this unit.
+	 */
+	private boolean setContainerUnit(UnitHolder newContainer) {
+		if (newContainer != null) {
+			
+			var oldCU = getContainerUnit();
+
+			if (!newContainer.equals(oldCU)) {
+				// Call AbstractMobileUnit's setContainer
+				super.setContainer(newContainer);
+			}
+			
+			updateStates();
+		}
+		
+		return true;
+	}
+
+	
+	/**
+	 * Updates the states.
+	 */
+	void updateStates() {
+
+		// Set isInside
+		isInside = super.isInside();
+		// Set isOutside
+		isOutside = super.isOutside();
+		// Set isOutside
+		isInSettlement = super.isInSettlement();
+
+		isStateUpdated = true;
+	}
+	
+	/**
+	 * Is this equipment inside an environmentally enclosed breathable living space such
+	 * as inside a settlement or a vehicle (NOT including in an EVA Suit) ?
+	 *
+	 * @return true if the unit is inside a breathable environment
+	 */
+	@Override
+	public boolean isInside() {
+		if (isStateUpdated) {
+			return isInside;
+		}
+
+		updateStates();
+		return isInside;
+	}
+	
+	/**
+	 * Is this equipment outside on the surface of Mars,
+	 * being just right outside in a settlement/building/vehicle vicinity ?
+	 * 
+	 * Note 1: being inside the cabin of a vehicle (on a mission) doesn't count being outside.
+	 *
+	 * Note 2: Will need to verify if isInside() is the exact opposite of isOutside() in all circumstances.
+	 *
+	 * @return true if the unit is outside
+	 */
+	@Override
+	public boolean isOutside() {
+		if (isStateUpdated) {
+			return isOutside;
+		}
+
+		updateStates();
+		return isOutside;
+	}
+	
+	/**
+	 * Is this unit inside a settlement ?
+	 *
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		if (isStateUpdated) {
+			return isInSettlement;
+		}
+
+		updateStates();
+		return isInSettlement; 
 	}
 	
 	/**

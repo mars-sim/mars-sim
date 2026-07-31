@@ -177,13 +177,16 @@ public class VehicleMaintenance extends Function {
 		if (transferCrew)
 			relocateCrewToGarage(newVehicle);
 		
-		// Update the vehicle's location state type
-//		newVehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-		
 		double newFacing = getBuilding().getFacing();
+		
 		newVehicle.setParkedLocation(location.getPosition(), newFacing);
 
+		// Directly update the states
+		newVehicle.setContainerUnit(newVehicle.getSettlement());
+		
+		// Fire the unit update
 		getBuilding().fireUnitUpdate(GARAGED);
+		
 		return true;
 	}
 
@@ -274,8 +277,13 @@ public class VehicleMaintenance extends Function {
 			relocateCrewToVehicle(oldVehicle);
 		
 		found.parkVehicle(null);
+		
 		parkInVicinity(oldVehicle);
 
+		// Directly update the states
+		oldVehicle.setContainerUnit(oldVehicle.getSettlement());
+		
+		// Fire the unit update
 		getBuilding().fireUnitUpdate(GARAGED);
 			
 		return true;

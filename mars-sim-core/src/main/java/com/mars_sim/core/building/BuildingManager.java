@@ -93,6 +93,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.AlphanumComparator;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
@@ -1293,11 +1294,6 @@ public class BuildingManager implements Serializable {
 					
 					if ((garage.getAvailableRoverCapacity() > 0)
 						&& garage.addRover(r, true)) {
-
-						// Vehicle already on Garage
-						vehicle.setPrimaryStatus(StatusType.GARAGED);
-						// Directly update the location state type
-//						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 						
 						return garageBuilding;
 					}
@@ -1333,11 +1329,6 @@ public class BuildingManager implements Serializable {
 					if (garage.getAvailableFlyerCapacity() > 0 
 							&& garage.addFlyer(f, true)) {
 
-						// Vehicle already on Garage
-						vehicle.setPrimaryStatus(StatusType.GARAGED);
-						// Directly update the location state type
-//						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-
 						return garageBuilding;
 					}
 				}
@@ -1369,11 +1360,6 @@ public class BuildingManager implements Serializable {
 					
 					if ((garage.getAvailableUtilityVehicleCapacity() > 0)
 						&& garage.addUtilityVehicle(luv, true)) {
-
-						// Vehicle already on Garage
-						vehicle.setPrimaryStatus(StatusType.GARAGED);
-						// Directly update the location state type
-//						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 						
 						return garageBuilding;
 					}
@@ -1382,35 +1368,6 @@ public class BuildingManager implements Serializable {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Removes a vehicle from garage and transfers to a new parking location.
-	 *
-	 * @param vehicle
-	 * @return true if the vehicle is inside a garage and can be removed
-	 */
-	public static boolean removeFromGarage(Vehicle vehicle) {
-		// If the vehicle is in a garage, put the vehicle outside.
-		Building garage = vehicle.getGarage();
-		if (garage == null) {
-			return false;
-		}
-		
-		if (vehicle instanceof Rover rover
-			&& garage.getVehicleMaintenance().removeRover(rover, true)) {
-				return true;
-		}
-		else if (vehicle instanceof Flyer flyer
-			&& garage.getVehicleMaintenance().removeFlyer(flyer, true)) {
-				return true;
-		}
-		else if (vehicle instanceof LightUtilityVehicle luv
-			&& garage.getVehicleMaintenance().removeUtilityVehicle(luv, true)) {
-				return true;
-		}
-
-		return false;
 	}
 	
 	/**
@@ -1425,11 +1382,10 @@ public class BuildingManager implements Serializable {
 	 */
 	public boolean addToGarage(Vehicle vehicle) {
 		// Check if the vehicle is already inside garage
-		if (isInGarage(vehicle)) {
-			// Vehicle already on Garage
-//			vehicle.setPrimaryStatus(StatusType.GARAGED);
-			// Directly update the location state type
-//			vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+		// Note: use vehicle.isInGarage() to check since it returns the boolean value 
+		//       of isInGarage instead of having to go through the long steps of 
+		//       BuildingManager's isInGarage() as shown below.
+		if (vehicle.isInGarage()) {
 			return true;
 		}
 		return (addToGarageBuilding(vehicle) != null);
@@ -1441,6 +1397,8 @@ public class BuildingManager implements Serializable {
 	 * @return true if vehicle is in a garage.
 	 */
 	public boolean isInGarage(Vehicle vehicle) {
+		// Note: do not use vehicle.isInGarage() here
+		
 		if (getGarages().isEmpty())
 			return false;
 		
@@ -1483,6 +1441,35 @@ public class BuildingManager implements Serializable {
 		return null;
 	}
 
+	/**
+	 * Removes a vehicle from garage and transfers to a new parking location.
+	 *
+	 * @param vehicle
+	 * @return true if the vehicle is inside a garage and can be removed
+	 */
+	public static boolean removeFromGarage(Vehicle vehicle) {
+		// If the vehicle is in a garage, put the vehicle outside.
+		Building garage = vehicle.getGarage();
+		if (garage == null) {
+			return false;
+		}
+		
+		if (vehicle instanceof Rover rover
+			&& garage.getVehicleMaintenance().removeRover(rover, true)) {
+				return true;
+		}
+		else if (vehicle instanceof Flyer flyer
+			&& garage.getVehicleMaintenance().removeFlyer(flyer, true)) {
+				return true;
+		}
+		else if (vehicle instanceof LightUtilityVehicle luv
+			&& garage.getVehicleMaintenance().removeUtilityVehicle(luv, true)) {
+				return true;
+		}
+
+		return false;
+	}
+	
 	/**
 	 * Gets the building a person or robot is in.
 	 *

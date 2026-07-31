@@ -87,6 +87,12 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 	
 	// Data members
+	/** True if the robot is currently inside a building, a vehicle, or a settlement. */
+	private boolean isInside;
+	/** True if the vehicle is currently inside a building or a settlement. */
+	private boolean isInSettlement;
+//	/** True if the state has been updated */
+	private boolean isStateUpdated = false;
 	/** Is the robot is inoperable. */
 	private boolean isInoperable;
 	/** Is the robot is salvaged. */
@@ -146,7 +152,10 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 */
 	public Robot(String name, Settlement settlement, RobotSpec spec) {
 		super(name, settlement);
-
+		
+		// Call Robot's setContainerUnit to set up coordinates and related states
+//		setContainerUnit(getContainerUnit());
+		
 		// Initialize data members.
 		this.robotType = spec.getRobotType();
 		this.model = spec.getName();
@@ -1066,14 +1075,104 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 				setCoordinates(mu.getCoordinates());
 			}
 
-			// 2. Set LocationStateType
-			// 3. Set container
-			setContainer(newContainer);//, defaultLocationState(newContainer));
+			// Call AbstractMobileUnit's setContainer
+			super.setContainer(newContainer);
+			
+			// Note: Will need to verify if isInside() is the exact opposite of isOutside() in all circumstances.
+			
+			updateStates();
 		}
 
 		return true;
 	}
+	/**
+	 * Sets the unit's container unit.
+	 *
+	 * @param newContainer the unit to contain this unit.
+	 */
+	public boolean setTestContainerUnit(UnitHolder newContainer) {
+		
+		if (newContainer != null) {
 
+			var oldCU = getContainerUnit();
+
+			if (!newContainer.equals(oldCU)) {
+				// Call AbstractMobileUnit's setContainer
+				super.setContainer(newContainer);
+			}
+			
+			updateStates();
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Updates the states.
+	 */
+	private void updateStates() {
+		// Set isInside
+		isInside = super.isInside();
+		// Set isOutside
+		isInSettlement = super.isInSettlement();
+
+		isStateUpdated = true;
+	}
+	
+	/**
+	 * Is this robot inside an environmentally enclosed breathable living space such
+	 * as inside a settlement or a vehicle (NOT including in an EVA Suit) ?
+	 *
+	 * @return true if the unit is inside a breathable environment
+	 */
+	@Override
+	public boolean isInside() {
+		if (isStateUpdated) {
+			return isInside;
+		}
+
+		updateStates();
+		return isInside;
+	}
+	
+	/**
+	 * Is this robot outside on the surface of Mars,
+	 * being just right outside in a settlement/building/vehicle vicinity ?
+	 * 
+	 * Note 1: being inside the cabin of a vehicle (on a mission) doesn't count being outside.
+	 * 
+	 * Note 2: For vehicles, being outside includes parking on settlement vicinity on the surface. 
+	 *
+	 * Note 3: Will need to verify if isInside() is the exact opposite of isOutside() in all circumstances.
+	 *
+	 * @return true if the unit is outside
+	 */
+	@Override
+	public boolean isOutside() {
+		if (isStateUpdated) {
+			return !isInside;
+		}
+
+		updateStates();
+		return !isInside;
+	}
+	
+	
+	/**
+	 * Is this unit inside a settlement ?
+	 *
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		if (isStateUpdated) {
+			return isInSettlement;
+		}
+
+		updateStates();
+		return isInSettlement; 
+	}
+	
 	/**
 	 * Is the robot already at a robotic station ?
 	 * 

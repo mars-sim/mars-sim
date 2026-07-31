@@ -48,7 +48,7 @@ public abstract class AbstractMobileUnit extends Unit
         this.owner = owner;
 		this.location = owner.getCoordinates();
 		this.tag = new LocationTag(this);
-		setContainer(owner);//, LocationStateType.INSIDE_SETTLEMENT);
+		setContainer(owner);
 	}
 
 	/**
@@ -65,9 +65,8 @@ public abstract class AbstractMobileUnit extends Unit
 	 * Sets the container of this mobile unit.
 	 * 
 	 * @param destination New destination of container
-	 * @param newState 
 	 */
-	protected void setContainer(UnitHolder destination) { //, LocationStateType newState) {
+	protected void setContainer(UnitHolder destination) { 
 //		this.locnState = newState;
 		container = destination;
 
@@ -75,30 +74,38 @@ public abstract class AbstractMobileUnit extends Unit
 	}
 
 	/**
-	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit
-	 * and being just right outside in a settlement/building/vehicle vicinity
-	 * Note: being inside a vehicle (that's on a mission outside) doesn't count being outside
+	 * Is this unit outside on the surface of Mars (wearing an EVA Suit),
+	 * being just right outside in a settlement/building/vehicle vicinity ?
 	 * 
-	 * For vehicle, being outside includes parking on settlement vicinity on the surface. 
+	 * Note 1: being inside the cabin of a vehicle (on a mission) doesn't count being outside.
+	 * 
+	 * Note 2: For vehicles, being outside includes parking on settlement vicinity on the surface. 
 	 *
+	 * Note 3: Will need to verify if isInside() is the exact opposite of isOutside() in all circumstances.
+	 * 
 	 * @return true if the unit is outside
 	 */
 	public boolean isOutside() {
 		var cu = getContainerUnit();
-		if (cu instanceof MarsSurface) {
-			return true;
+
+		// Note: must check vehicle first
+		if (this instanceof Vehicle v) {
+			if (v.isInGarage()) {
+				return false;
+			}
+			// Note: make sure checking v.isInGarage() first
+			if (cu instanceof Settlement) {
+				return true;
+			}
 		}
 		
-		if (this instanceof Vehicle v) {
-			if (v.isInGarage())
-				return false;
-			if (cu instanceof Settlement)
-				return true;
-		}
-
 		if (cu instanceof Vehicle || cu instanceof Building
 			|| cu instanceof Settlement) {
 			return false;
+		}
+
+		if (cu instanceof MarsSurface) {
+			return true;
 		}
 		
 		if (this instanceof Equipment) {
@@ -117,17 +124,25 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	public boolean isInside() {
 		var cu = getContainerUnit();
-		if (cu instanceof MarsSurface) {
-			return false;
-		}
-		
-		if (this instanceof Vehicle v && v.isInGarage()) {
-			return true;
+			
+		// Note: must check vehicle first
+		if (this instanceof Vehicle v) {
+			if (v.isInGarage()) {
+				return true;	
+			}
+			// Note: make sure checking v.isInGarage() first
+			if (cu instanceof Settlement) {
+				return false;
+			}
 		}
 		
 		if (cu instanceof Vehicle || cu instanceof Building
-				|| (cu instanceof Settlement && !(this instanceof Vehicle))) {
+				|| cu instanceof Settlement) {
 			return true;
+		}
+		
+		if (cu instanceof MarsSurface) {
+			return false;
 		}
 		
 		if (this instanceof Equipment) {
@@ -171,6 +186,7 @@ public abstract class AbstractMobileUnit extends Unit
 	
 		if (currentBuildingInt == -1)
 			return null;
+		
 		return unitManager.getBuildingByID(currentBuildingInt);
 	}
 
@@ -230,7 +246,8 @@ public abstract class AbstractMobileUnit extends Unit
 		if (isInVehicle()) {
 			return getVehicle().getChildContext();
 		}
-		else if (isInSettlement()) {
+		
+		if (isInSettlement()) {
 			var b = getBuildingLocation();
 			if (b != null) {
 				return b.getContext();
@@ -239,12 +256,12 @@ public abstract class AbstractMobileUnit extends Unit
 				return getAssociatedSettlement().getName();
 			}
 		}
-		else if (isOutside()) {
+		
+		if (isOutside()) {
 			return getCoordinates().getFormattedString();
 		}
-		else {
-			return getContainerUnit().getName();
-		}
+		
+		return getContainerUnit().getName();
 	}
 
     /**
@@ -270,17 +287,17 @@ public abstract class AbstractMobileUnit extends Unit
 			return s;
 		}
 
-		else if (c instanceof Vehicle v) {
+		if (c instanceof Vehicle v) {
 			// Will see if vehicle is inside a garage or not
 			return (v.isInVehicleInGarage() ? v.getSettlement() : null);
 		}
 
-		else if (c instanceof FixedUnit b) {
+		if (c instanceof FixedUnit b) {
 			// Note: only Building and ConstructionSites are FixedUnit
 			return b.getAssociatedSettlement();
 		}
 		
-		else if (c instanceof AbstractMobileUnit m) {
+		if (c instanceof AbstractMobileUnit m) {
 			return m.getSettlement();
 		}
 
@@ -294,7 +311,37 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	@Override
 	public boolean isInSettlement() {
-		return (getSettlement() != null);
+
+		var c = getContainerUnit();
+		
+		if (c instanceof FixedUnit) {
+			// Note: only Building and ConstructionSites are FixedUnit
+			return true;
+		}
+		
+		if (c instanceof MarsSurface) {
+			return false;
+		}
+		
+		if (c instanceof Settlement) {
+			return true;
+		}
+
+		if (this instanceof Vehicle v) {
+			// Will see if vehicle is inside a garage or not
+			return (v.isInVehicleInGarage() ? v.isInSettlement() : false);
+		}
+		
+		if (c instanceof Vehicle v) {
+			// Will see if vehicle is inside a garage or not
+			return (v.isInVehicleInGarage() ? v.isInSettlement() : false);
+		}
+
+		if (c instanceof AbstractMobileUnit m) {
+			return m.isInSettlement();
+		}
+
+		return false;
 	}
 
 	/**
@@ -305,13 +352,16 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	@Override
 	public Vehicle getVehicle() {
-		if (getContainerUnit() instanceof Vehicle v) {
+		
+		var c = getContainerUnit();
+		
+		if (c instanceof Vehicle v) {
 			return v;
 		}
-		if (getContainerUnit() instanceof Rover r) {
+		if (c instanceof Rover r) {
 			return r;
 		}
-		if (getContainerUnit() instanceof LightUtilityVehicle luv) {
+		if (c instanceof LightUtilityVehicle luv) {
 			return luv;
 		}
 
@@ -325,8 +375,10 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	@Override
 	public boolean isInVehicle() {
-		var cu = getContainerUnit();
-		if (cu instanceof Vehicle) {
+		
+		var c = getContainerUnit();
+		
+		if (c instanceof Vehicle) {
 			return true;
 		}
 		
@@ -344,19 +396,23 @@ public abstract class AbstractMobileUnit extends Unit
 	 * @return true if the unit is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
+		
 		Vehicle v = getVehicle();
+		
 		if (v != null) {
 			return v.isInGarage();
 		}
-		var cu = getContainerUnit();
-//		if (cu instanceof Settlement s) {
+		
+//		var c = getContainerUnit();
+////		if (cu instanceof Settlement s) {
+////			// still inside the garage
+////			return v.isInSettlement() && v.isInGarage();
+////		}
+//		if (c instanceof Vehicle vv) {
 //			// still inside the garage
-//			return v.isInSettlement() && v.isInGarage();
+//			return vv.isInGarage();
 //		}
-		if (cu instanceof Vehicle vv) {
-			// still inside the garage
-			return vv.isInGarage();
-		}
+		
 		return false;
 	}
 

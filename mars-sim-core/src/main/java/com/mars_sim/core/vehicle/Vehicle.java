@@ -118,7 +118,16 @@ public abstract class Vehicle extends AbstractMobileUnit
 			StatusType.TOWING
 			);
 
-
+	/** True if the vehicle is currently inside a building, a vehicle, or a settlement. */
+	private boolean isInside;
+	/** True if the vehicle is currently outside on Mars Surface, in a settlement/vehicle vicinity. */
+	private boolean isOutside;
+	/** True if the vehicle is currently in a garage. */
+	private boolean isInGarage;
+	/** True if the vehicle is currently inside a building or a settlement. */
+	private boolean isInSettlement;
+//	/** True if the state has been updated */
+	private boolean isStateUpdated = false;
 	/** True if vehicle is currently reserved for a mission. */
 	protected boolean isReservedMission;
 	/** True if vehicle is due for maintenance. */
@@ -231,7 +240,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	Vehicle(String name, VehicleSpec spec, Settlement settlement, double maintenanceWorkTime) {
 		// Use Unit constructor
 		super(name, settlement);
-//		setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
+		// Call Person's setContainerUnit to set up coordinates and related states
+//		setContainerUnit(getContainerUnit());
 		
 		this.spec = spec;
 		this.specName = spec.getName();
@@ -474,6 +484,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public void setParkedLocation(LocalPosition position, double facing) {
 		// Set new parked location for the vehicle.
 		setPosition(position);
+		
 		this.facingParked = facing;
 		
 		// Get current human crew positions relative to the vehicle.
@@ -690,25 +701,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 			writeLog();
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, oldStatus);
 		}
-	}
-
-	/**
-	 * Checks if the vehicle is currently in a garage or not.
-	 *
-	 * @return true if vehicle is in a garage.
-	 */
-	public boolean isInGarage() {
-		Settlement settlement = getSettlement();
-		return settlement != null && settlement.getBuildingManager().isInGarage(this);
-	}
-
-	/**
-	 * Adds the vehicle to a garage.
-	 *
-	 * @return true if successful.
-	 */
-	public boolean addToAGarage() {
-		return getSettlement().getBuildingManager().addToGarageBuilding(this) != null;
 	}
 	
 	/**
@@ -1446,6 +1438,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return {@link Building}
 	 */
 	public Building getGarage() {
+
 		Settlement settlement = getSettlement();
 		if (settlement == null)
 			return null;
@@ -2350,84 +2343,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
-	 * Sets the unit's container unit.
-	 *
-	 * @param newContainer the unit to contain this unit.
-	 */
-	protected boolean setContainerUnit(UnitHolder newContainer) {
-		if (newContainer != null) {
-			var cu = getContainerUnit();
-			
-			if (newContainer.equals(cu)) {
-				return true;
-			}
-//
-//			LocationStateType newState;
-//			// 2. Set new LocationStateType
-//			// Note: This is a special case for Vehicle
-//			//       A vehicle can have settlement as container unit while it's on Mars Surface
-//			// 2a. If the old cu is a settlement or building
-//			//     and the new cu is mars surface,
-//			//     then location state is within settlement vicinity
-//			if ((cu instanceof Settlement
-//						|| cu instanceof Building)
-//					&& newContainer instanceof MarsSurface) {
-//				newState = LocationStateType.SETTLEMENT_VICINITY;
-//			}	
-//			else {
-////				newState = getNewLocationState(newContainer);
-//			}
-//			
-			// 3. Set containerID
-			setContainer(newContainer);//, newState);
-		}
-		return true;
-	}
-
-//	/**
-//	 * Gets the location state type based on the type of the new container unit.
-//	 *
-//	 * @param newContainer
-//	 * @return {@link LocationStateType}
-//	 */
-//	private LocationStateType getNewLocationState(UnitHolder newContainer) {
-//
-//		return switch(newContainer) {
-//			case Settlement s -> (isInGarage() ? LocationStateType.INSIDE_SETTLEMENT
-//						: LocationStateType.SETTLEMENT_VICINITY);
-//			case Vehicle v -> LocationStateType.INSIDE_VEHICLE;
-//			case ConstructionSite cs -> LocationStateType.MARS_SURFACE;
-//			case Person p -> LocationStateType.ON_PERSON_OR_ROBOT;
-//			case MarsSurface ms -> LocationStateType.MARS_SURFACE;
-//			default -> null;
-//		};
-//	}
-
-	/**
-	 * Is this unit inside a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	@Override
-	public boolean isInSettlement() {
-		if (getContainerUnit() instanceof MarsSurface) {
-			return false;
-		}
-
-		boolean isVehicleInGarage = isInGarage();
-		if (isVehicleInGarage)
-			return true;
-		
-		boolean isUnitTypeSettlement = getContainerUnit() instanceof Settlement;
-		if (isUnitTypeSettlement)
-			return true;
-		
-		boolean isVehicleInSettlementVicinity = !isVehicleInGarage && isUnitTypeSettlement;
-
-		return isVehicleInSettlementVicinity;
-	}
-
-	/**
 	 * Transfers the unit from one owner to another owner.
 	 *
 	 * @param origin {@link Unit} the original container unit
@@ -2498,7 +2413,158 @@ public abstract class Vehicle extends AbstractMobileUnit
 		return transferred;
 	}
 
-    /**
+	/**
+	 * Sets the unit's container unit.
+	 *
+	 * @param newContainer the unit to contain this unit.
+	 */
+	public boolean setContainerUnit(UnitHolder newContainer) {
+		if (newContainer != null) {
+			
+			var oldCU = getContainerUnit();
+
+			if (!newContainer.equals(oldCU)) {
+				// Call AbstractMobileUnit's setContainer
+				super.setContainer(newContainer);
+			}
+			
+			updateStates();
+		}
+		
+		return true;
+	}
+
+	/**
+	 * Sets the unit's container unit.
+	 *
+	 * @param newContainer the unit to contain this unit.
+	 */
+	public boolean setTestContainerUnit(UnitHolder newContainer) {
+		
+		if (newContainer != null) {
+			// Note: need to decide what to set for a deceased person
+			
+			// Call AbstractMobileUnit's setContainer
+			super.setContainer(newContainer);
+			
+			updateStates();
+		}
+		return true;
+	}
+	
+	
+	/**
+	 * Updates the states.
+	 */
+	private void updateStates() {
+		// Set isInside
+		isInside = super.isInside();
+		// Set isOutside
+		isOutside = super.isOutside();
+		// Set isInGarage
+		isInGarage = isInGarage();
+		// Set isOutside
+		isInSettlement = super.isInSettlement();
+
+		isStateUpdated = true;
+	}
+	
+	/**
+	 * Is this vehicle inside an environmentally enclosed breathable living space such
+	 * as inside a settlement or a vehicle (NOT including in an EVA Suit) ?
+	 *
+	 * @return true if the unit is inside a breathable environment
+	 */
+	@Override
+	public boolean isInside() {
+		if (isStateUpdated) {
+			return isInside;
+		}
+		
+		updateStates();
+		return isInside;
+	}
+	
+	/**
+	 * Is this vehicle outside on the surface of Mars,
+	 * being just right outside in a settlement/building/vehicle vicinity ?
+	 * 
+	 * Note 1: being inside the cabin of a vehicle (on a mission) doesn't count being outside.
+	 * 
+	 * Note 2: For vehicles, being outside includes parking on settlement vicinity on the surface. 
+	 *
+	 * Note 3: Will need to verify if isInside() is the exact opposite of isOutside() in all circumstances.
+	 *
+	 * @return true if the unit is outside
+	 */
+	@Override
+	public boolean isOutside() {
+		if (isStateUpdated) {
+			return isOutside;
+		}
+
+		updateStates();
+		return isOutside;
+	}
+
+	/**
+	 * Checks if the vehicle is currently in a garage or not.
+	 * 
+	 * @return true if vehicle is in a garage.
+	 */
+	public boolean isInGarage() {
+
+		var s = getSettlement();
+		
+		if (s != null) {
+			// Rely on BuildingManager's isInGarage() to compute the state
+			isInGarage = s.getBuildingManager().isInGarage(this);
+		}
+		else {
+			isInGarage = false;
+		}
+		
+		return isInGarage;
+	}
+	
+	/**
+	 * Is this unit inside a settlement ?
+	 *
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		if (isStateUpdated) {
+			return isInSettlement;
+		}
+
+		boolean value = false;
+
+		var c = getContainerUnit();
+
+		if (c instanceof MarsSurface) {
+			value = false;
+		}
+
+		if (c instanceof Settlement)
+			value = true;
+
+		isInSettlement = value;
+
+		return value;
+	}
+
+	/**
+	 * Adds the vehicle to a garage.
+	 *
+	 * @return true if successful.
+	 */
+	public boolean addToAGarage() {
+		return getSettlement().getBuildingManager().addToGarageBuilding(this) != null;
+	}
+	
+	/**
+     * 
 	 * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
 	 *
 	 * @param tripDistance   the distance (km) of the trip.

@@ -30,6 +30,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.unit.UnitHolder;
 
 /**
@@ -174,6 +175,7 @@ public class EVASuit extends Equipment
 	EVASuit(String name, Settlement settlement) {
 		// Use Equipment constructor.
 		super(name, TYPE, settlement);
+		
 		setDescription("A standard EVA suit for Mars surface operation.");
 
 		// Add scope to malfunction manager.
@@ -455,19 +457,34 @@ public class EVASuit extends Equipment
 		return true;
 	}
 
+	/**
+	 * Sets the unit's container unit.
+	 *
+	 * @param newContainer the unit to contain this unit.
+	 */
 	@Override
-	public void setContainer(UnitHolder parent) {//, LocationStateType newState) {
+	public void setContainer(UnitHolder newContainer) {
+		
 		var cu = getContainerUnit();
-		if (parent != cu) {
+		if (newContainer != cu) {
 			// Add new parent to owner history
 			if (locnHistory == null) {
 				locnHistory = new History<>(10);
 			}
-			locnHistory.add(parent);
+			locnHistory.add(newContainer);
 		}
-		super.setContainer(parent); //, newState);
-	}
+		
+		if (newContainer != null) {
 
+			// Note: need to decide what to set for a deceased person
+			
+			// Call AbstractMobileUnit's setContainer
+			super.setContainer(newContainer);
+			
+			updateStates();
+		}
+	}
+	
 	
 	/**
 	 * Gets the history of the EVASuit.

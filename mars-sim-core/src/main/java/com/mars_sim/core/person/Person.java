@@ -111,6 +111,12 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	private int extrovertScore = -1;
 
 	// Data members
+	/** True if the person is currently inside a building, a vehicle, or a settlement. */
+	private boolean isInside;
+	/** True if the person is currently inside a building or a settlement. */
+	private boolean isInSettlement;
+//	/** True if the state has been updated */
+	private boolean isStateUpdated = false;
 	/** True if the person is buried. */
 	private boolean isBuried;
 	/** True if the person is declared dead. */
@@ -202,6 +208,9 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 					int age, PopulationCharacteristics ethnicity,
 					Map<NaturalAttributeType, Integer> initialAttrs) {
 		super(name, settlement);
+		// Call Person's setContainerUnit to set up coordinates and related states
+//		setContainerUnit(getContainerUnit());
+		
 		super.setDescription(EARTHLING);
 		this.gender = gender;
 
@@ -273,6 +282,10 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			int age, Map<NaturalAttributeType, Integer> initialAttrs) {
 		super(name, settlement);
 		super.setDescription(EARTHLING);
+		
+		// Call Person's setContainerUnit to set up coordinates and related states
+//		setContainerUnit(getContainerUnit());
+		
 		this.gender = gender;
 
 		// Create a prior training profile
@@ -1695,55 +1708,114 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		if (newContainer != null) {
 			// Gets the old container unit
 			var oldCU = getContainerUnit();
-			
-			if (newContainer.equals(oldCU)) {
-				return true;
-			}
-			
+
+
 			// 1. Set Coordinates
 			if (newContainer instanceof MobileUnit mu) {
 				setCoordinates(mu.getCoordinates());
 			}
-			else if (oldCU instanceof MobileUnit mu) {
-				// Since it's on the surface of Mars,
-				// First set its initial location to its old parent's location as it's leaving its parent.
-				// Later it may move around and updates its coordinates by itself
-				setCoordinates(mu.getCoordinates());
-			}
+//			else if (oldCU instanceof MobileUnit mu) {
+//				// Since it's on the surface of Mars,
+//				// First set its initial location to its old parent's location as it's leaving its parent.
+//				// Later it may move around and updates its coordinates by itself
+//				setCoordinates(mu.getCoordinates());
+//			}
 
-//			// 2. Set new LocationStateType
-//			var newLocnState = defaultLocationState(newContainer);
-//			// 2a. If the previous cu is a settlement
-//			//     and this person's new cu is mars surface,
-//			//     then location state is within settlement vicinity
-//			if (oldCU instanceof Settlement
-//				&& newContainer instanceof MarsSurface) {
-//					newLocnState = LocationStateType.SETTLEMENT_VICINITY;
-//			}	
-//			// 2b. If the previous cu is a vehicle
-//			//     and the previous cu is in settlement vicinity
-//			//     then the new location state is settlement vicinity
-//			else if (oldCU instanceof Vehicle v
-//					&& v.isRightOutsideSettlement()
-//					&& newContainer instanceof MarsSurface) {
-//						newLocnState = LocationStateType.SETTLEMENT_VICINITY;
-//			}
-//			// 2c. If the previous cu is a vehicle
-//			//     and the previous cu vehicle is outside on mars surface
-//			//     then the new location state is vehicle vicinity
-//			else if (oldCU instanceof Vehicle v
-//					&& v.isOutside()
-//					&& newContainer instanceof MarsSurface) {
-//						newLocnState = LocationStateType.VEHICLE_VICINITY;
-//			}
-//			
-			// 3. Set container
 			// Note: need to decide what to set for a deceased person
-			setContainer(newContainer);//, newLocnState);
+			
+			if (!newContainer.equals(oldCU)) {
+				// Call AbstractMobileUnit's setContainer
+				super.setContainer(newContainer);
+			}
+				
+			updateStates();
 		}
+		
 		return true;
 	}
 
+	/**
+	 * Sets the unit's container unit.
+	 *
+	 * @param newContainer the unit to contain this unit.
+	 */
+	public boolean setTestContainerUnit(UnitHolder newContainer) {
+		
+		if (newContainer != null) {
+			// Note: need to decide what to set for a deceased person
+			
+			// Call AbstractMobileUnit's setContainer
+			super.setContainer(newContainer);
+			
+			updateStates();
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Updates the states.
+	 */
+	private void updateStates() {
+		// Set isInside
+		isInside = super.isInside();
+		// Set isOutside
+		isInSettlement = super.isInSettlement();
+		
+		isStateUpdated = true;
+	}
+	
+	/**
+	 * Is this person inside an environmentally enclosed breathable living space such
+	 * as inside a settlement or a vehicle (NOT including in an EVA Suit) ?
+	 *
+	 * @return true if the unit is inside a breathable environment
+	 */
+	@Override
+	public boolean isInside() {
+		if (isStateUpdated) {
+			return isInside;
+		}
+
+		updateStates();
+		return isInside;
+	}
+	
+	/**
+	 * Is this person outside on the surface of Mars (wearing an EVA Suit),
+	 * being just right outside in a settlement/building/vehicle vicinity ?
+	 * 
+	 * Note 1: being inside the cabin of a vehicle (on a mission) doesn't count being outside.
+	 *
+	 * Note 2: Will need to verify if isInside() is the exact opposite of isOutside() in all circumstances.
+	 *
+	 * @return true if the unit is outside
+	 */
+	@Override
+	public boolean isOutside() {
+		if (isStateUpdated) {
+			return !isInside;
+		}
+		
+		updateStates();
+		return !isInside;
+	}
+	
+	/**
+	 * Is this unit inside a settlement ?
+	 *
+	 * @return true if the unit is inside a settlement
+	 */
+	@Override
+	public boolean isInSettlement() {
+		if (isStateUpdated) {
+			return isInSettlement;
+		}
+		
+		updateStates();
+		return isInSettlement; 
+	}
+	
 	/**
 	 * Transfer the unit from one owner to another owner.
 	 *

@@ -89,10 +89,4 @@ public interface MobileUnit extends SurfacePOI {
 	 * @return true if the worker is on the MarsSurface
 	 */
 	public boolean isOutside();
-
-//	/**
-//	 * Get the definitive assessment of the physical state os this mobile unit.
-//	 * @return
-//	 */
-//	public LocationStateType getLocationStateType();
 }

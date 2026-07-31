@@ -87,6 +87,8 @@ public class MarsSimContextImpl implements MarsSimContext {
         
         unitManager.addUnit(person);
 
+        person.setTestContainerUnit(settlement);
+        
         if (place != null) {
             boolean success = BuildingManager.addToActivitySpot(person, place, activity);
             if (!success) {
@@ -189,7 +191,8 @@ public class MarsSimContextImpl implements MarsSimContext {
     }
 
     /**
-     * Build a rover and add it to the unit manager.
+     * Builds a rover and add it to the unit manager.
+     * 
      * @param settlement
      * @param name
      * @param parked
@@ -205,11 +208,14 @@ public class MarsSimContextImpl implements MarsSimContext {
 		}
 	    unitManager.addUnit(rover1);
 	    
+	    rover1.setTestContainerUnit(settlement);
+	    
 	    return rover1;
 	}
 
     /**
      * Creates a test settlement at a random location.
+     * 
      * @param name
      * @param needGoods
      * @param locn
