@@ -192,7 +192,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person>
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private static final String COLLABORATOR = Msg.getString("scientificstudy.collaborator"); //$NON-NLS-1$
+		private static final String COLLABORATOR = Msg.getString("scientificstudy.collaborator.singular"); //$NON-NLS-1$
 		private static final String LEAD = Msg.getString("scientificstudy.lead"); //$NON-NLS-1$
 
 		private static final int ROLE_VAL = 10;

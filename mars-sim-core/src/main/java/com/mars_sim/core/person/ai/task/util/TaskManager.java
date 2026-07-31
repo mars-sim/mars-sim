@@ -414,7 +414,7 @@ public abstract class TaskManager implements Serializable {
 			if (newTask == null) {
 				logger.severe(worker, 30_000, "The Pending task '" + job.getName() + "' could not be created.");	
 				// Add the pending task back
-				pendingTasks.add(firstTask);
+//				pendingTasks.add(firstTask);
 			}
 			
 			else if (newTask.isDone()) {

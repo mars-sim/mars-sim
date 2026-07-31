@@ -99,7 +99,6 @@ import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
-import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;

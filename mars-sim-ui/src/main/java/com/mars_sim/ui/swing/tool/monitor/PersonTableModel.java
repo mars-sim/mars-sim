@@ -43,7 +43,7 @@ public class PersonTableModel extends BasePersonModel
 	 */
 	public PersonTableModel()  {
 		super (NAME, TASK, SETTLEMENT, MISSION, HEALTH, ENERGY, WATER, FATIGUE, STRESS,
-				PERFORMANCE, EMOTION, LOCATION, LOCALE, ROLE, JOB, SHIFT);
+				PERFORMANCE, MOBILE_LOC, LOCALE, ROLE, JOB, SHIFT, EMOTION);
 	}
 
 	@Override

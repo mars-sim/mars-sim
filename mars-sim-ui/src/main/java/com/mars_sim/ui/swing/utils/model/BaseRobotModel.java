@@ -73,7 +73,7 @@ public abstract class BaseRobotModel extends AbstractEntityModel<Robot> {
     protected Object getEntityValue(Robot entity, int valueIndex) {
         return switch (valueIndex) {
             case TYPE_VAL -> entity.getModel();
-            case LOCATION_VAL -> entity.getLocationTag().getImmediateLocation();
+            case LOCATION_VAL -> entity.getLocationTag().getMobileContainerUnit();
             case MODE_VAL -> entity.printStatusModes();
             case HEALTH_VAL -> entity.isOperable() ? OPERABLE : INOPERABLE;
             case BATTERY_VAL -> entity.getSystemCondition().getBattery().getBatteryStatus().getName();

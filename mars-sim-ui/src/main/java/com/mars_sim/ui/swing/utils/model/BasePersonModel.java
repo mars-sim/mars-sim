@@ -23,6 +23,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  * The subclass defines which columns are to be rendered.
  * The model automatically monitors the Person for changes and updates the table as needed.
  */
+@SuppressWarnings("serial")
 public abstract class BasePersonModel extends AbstractEntityModel<Person> {
 
     private static final int INSIDE_VAL = 100;
@@ -33,7 +34,7 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
     private static final int STRESS_VAL = 105;
     private static final int PERFORMANCE_VAL = 106;
     private static final int EMOTION_VAL = 107;
-    private static final int LOCATION_VAL = 108;
+    private static final int MOBILE_LOC_VAL = 108;
     private static final int LOCALE_VAL = 109;
     private static final int ROLE_VAL = 110;
     private static final int JOB_VAL = 111;
@@ -63,9 +64,10 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
                                                 Set.of(PhysicalCondition.PERFORMANCE_EVENT));
 	protected static final EntityColumnSpec EMOTION = new EntityColumnSpec(new ColumnSpec(EMOTION_VAL, Msg.getString("person.emotion"), String.class),
                                                 Set.of(EntityEventType.EMOTION_EVENT));
-	protected static final EntityColumnSpec LOCATION = new EntityColumnSpec(new ColumnSpec(LOCATION_VAL, Msg.getString("PersonTableModel.column.location"), String.class),
-                                                Set.of(EntityEventType.COORDINATE_EVENT, MobileUnit.CONTAINER_EVENT));
-	protected static final EntityColumnSpec LOCALE = new EntityColumnSpec(new ColumnSpec(LOCALE_VAL, Msg.getString("PersonTableModel.column.locale"), String.class), null);
+	protected static final EntityColumnSpec MOBILE_LOC = new EntityColumnSpec(new ColumnSpec(MOBILE_LOC_VAL, Msg.getString("PersonTableModel.column.mobileLoc"), String.class),
+                                                Set.of(MobileUnit.CONTAINER_EVENT));
+	protected static final EntityColumnSpec LOCALE = new EntityColumnSpec(new ColumnSpec(LOCALE_VAL, Msg.getString("PersonTableModel.column.locale"), String.class), 
+												Set.of(EntityEventType.COORDINATE_EVENT, MobileUnit.CONTAINER_EVENT));
 	protected static final EntityColumnSpec ROLE = new EntityColumnSpec(new ColumnSpec(ROLE_VAL, Msg.getString("person.role"), String.class), null);
 	protected static final EntityColumnSpec JOB = new EntityColumnSpec(new ColumnSpec(JOB_VAL, Msg.getString("person.job"), String.class),
                                                 Set.of(EntityEventType.JOB_EVENT));
@@ -101,7 +103,7 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
 			case PERFORMANCE_VAL -> isDead ? null : pc.getPerformanceLevel().getName();
 			case EMOTION_VAL -> isDead ? null : entity.getMind().getEmotion().getDescription();
 			case HEALTH_VAL -> entity.getPhysicalCondition().getStatus();
-			case LOCATION_VAL -> entity.getLocationTag().getImmediateLocation();
+			case MOBILE_LOC_VAL -> entity.getLocationTag().getMobileContainerUnit();
 			case LOCALE_VAL -> entity.getLocationTag().getLocale();
 
 			case ROLE_VAL -> {

@@ -43,61 +43,132 @@ public class LocationTag implements Serializable {
 	}
 
 	/**
-	 * Prints the locale (settlement, vehicle or coordinates) of the unit.
+	 * Prints the settlement, Mars Surface, or Mars Surface's coordinates of the unit.
 	 *
 	 * @return the general (nearby) location
 	 */
 	public String getLocale() {
 		String result = UNKNOWN;
 		
-		var topContainer = unit.getContainerUnit();
-		if (topContainer != null)
-			result = topContainer.getName();
+		var container = unit.getContainerUnit();
 		
+		if (unit instanceof Person || unit instanceof Robot 
+				|| unit instanceof Vehicle || unit instanceof Equipment) {
+			if (container instanceof Settlement) {
+				result = container.getName();
+			}
+			else if (container instanceof Vehicle v) {
+				var topContainer = v.getContainerUnit();
+				if (topContainer instanceof Settlement s) {
+					result = s.getName();
+				}
+				else {
+					result = MARS_SURFACE;
+				}
+			}
+			else if (container instanceof MarsSurface) {
+				// Print out coordinates on MarsSurface
+				result = unit.getCoordinates().getFormattedString();
+			}
+		}
+
 		return result;
 	}
 
 	/**
 	 * Prints the extended location of the unit in details.
 	 *
-	 * @apiNote Extended = immediate + locale
-	 * (e.g. Lander Hab 1 in New Pompeii;
-	 * e.g. Garage 1 in New Pompeii;
-	 * e.g. On the Surface of Mars in New Pompeii Vicinity)
+	 * @apiNote Extended = mobile loc + locale
+	 * e.g. Lander Hab 1 (New Pompeii)
+	 * e.g. Josh Benson (Starbase)
+	 * e.g. Mars Surface (32.2312 N 121.3233 E)
+	 * e.g. New Shanghai (Mars Surface)
 	 *
 	 * @return the name string of the extended location
 	 */
 	public String getExtendedLocation() {
-		String immediate = getImmediateLocation();
+		String mobileLoc = getMobileContainerUnit();
 		String locale = getLocale();
 
 		// a special case
-		if (immediate.equalsIgnoreCase(locale))
-			return immediate;
+		if (mobileLoc.equalsIgnoreCase(locale))
+			return mobileLoc;
 
 		if (locale != null && !locale.equals(UNKNOWN) && !locale.equals(""))
 			// The general case
-			return immediate + OPEN_P + locale + CLOSE_P;
+			return mobileLoc + OPEN_P + locale + CLOSE_P;
 		
-		return immediate;
+		return mobileLoc;
 	}
 
 
 	/**
-	 * Prints the immediate location of the unit.
+	 * Prints the container unit of the unit.
 	 *
 	 * @apiNote
-	 * (e.g. in a container, building, vehicle, settlement vicinity or on surface of Mars)
+	 * (e.g. in a container unit such as person, robot, building, vehicle, or Mars Surface)
 	 *
 	 * @return the name string of the immediate location
 	 */
-	public String getImmediateLocation() {
+	public String getMobileContainerUnit() {
 		String result = UNKNOWN;
 		
 		var container = unit.getContainerUnit();
-		if (container != null)
-			result = container.getName();
 		
+		if (unit instanceof Person p) {
+			if (container instanceof Settlement) {
+				result = p.getBuildingLocation().getName();
+			}
+			else if (container instanceof Vehicle v) {
+				result = v.getName();
+			}
+			else if (container instanceof MarsSurface) {
+				// Print out MarsSurface
+				result = container.getName();
+			}
+			else if (container != null) {
+				// Print out container
+				result = container.getName();
+			}
+		}
+		else if (unit instanceof Robot r) {
+			if (container instanceof Settlement) {
+				result = r.getBuildingLocation().getName();
+			}
+			else if (container instanceof Vehicle v) {
+				result = v.getName();
+			}
+			else if (container instanceof MarsSurface) {
+				// Print out MarsSurface
+				result = container.getName();
+			}
+			else if (container != null) {
+				// Print out container
+				result = container.getName();
+			}
+		}
+		else if (unit instanceof Equipment e) {
+			if (container instanceof Settlement) {
+				result = e.getBuildingLocation().getName();
+			}
+			else if (container instanceof Vehicle v) {
+				result = v.getName();
+			}
+			else if (container instanceof Person p) {
+				result = p.getName();
+			}
+			else if (container instanceof Robot r) {
+				result = r.getName();
+			}
+			else if (container instanceof MarsSurface) {
+				// Print out MarsSurface
+				result = container.getName();
+			}
+			else if (container != null) {
+				// Print out container
+				result = container.getName();
+			}
+		}	
 		return result;
 	}
 

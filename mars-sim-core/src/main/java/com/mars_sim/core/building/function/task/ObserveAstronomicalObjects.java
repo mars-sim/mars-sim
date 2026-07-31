@@ -173,7 +173,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 				logger.log(person, Level.INFO, 0, 
 						"Just spent " 
 						+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
-						+ " millisols to complete a primary research using " + person.getLocationTag().getImmediateLocation());				
+						+ " millisols to complete a primary research using " + person.getLocationTag().getMobileContainerUnit());				
 				endTask();
 			}
 		}
@@ -183,7 +183,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 				logger.log(person, Level.INFO, 0, 
 						"Just spent " 
 						+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
-						+ " millisols to complete a collaborative research using " + person.getLocationTag().getImmediateLocation());
+						+ " millisols to complete a collaborative research using " + person.getLocationTag().getMobileContainerUnit());
 				endTask();
 			}
 		}
