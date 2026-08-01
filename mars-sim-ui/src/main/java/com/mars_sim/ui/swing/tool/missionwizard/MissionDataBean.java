@@ -41,7 +41,6 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -55,8 +54,7 @@ class MissionDataBean {
 	private Settlement startingSettlement;
 	private Settlement destination;
     
-	private Drone drone;
-	private Rover rover;
+	private Vehicle rover;
 	private Vehicle rescueVehicle;
 	private LightUtilityVehicle luv;
 		
@@ -75,6 +73,7 @@ class MissionDataBean {
 	private Map<Good, Integer> buyGoods;
 
 	private Landmark landmark;
+	private List<MineralSite> exploration;
 	    
 	/**
 	 * Creates a mission from the mission data.
@@ -101,10 +100,10 @@ class MissionDataBean {
 			case CollectIceMeta m -> m.constructInstance(roster, routePoints);
 			case CollectRegolithMeta m -> m.constructInstance(roster, routePoints);
 			case DeliveryMeta m -> m
-					.constructInstance(mixedMembers, destination, drone, sellGoods, buyGoods);
+					.constructInstance(mixedMembers, destination, (Drone) rover, sellGoods, buyGoods);
 			case EmergencySupplyMeta m -> m
 					.constructInstance(roster, destination, sellGoods);
-			case ExplorationMeta m -> m.constructInstance(roster, routePoints);
+			case ExplorationMeta m -> m.constructInstance(roster, exploration);
 			case MiningMeta m -> m.constructInstance(roster, miningSite, luv);
 			case RescueSalvageVehicleMeta m -> m.constructInstance(roster, rescueVehicle);
 			case TradeMeta m -> m
@@ -153,20 +152,12 @@ class MissionDataBean {
 		this.startingSettlement = startingSettlement;
 	}
 
-    public Rover getRover() {
+    public Vehicle getVehicle() {
 		return rover;
 	}
 
-    public void setRover(Rover rover) {
+    public void setVehicle(Vehicle rover) {
 		this.rover = rover;
-	}
-
-    public Drone getDrone() {
-		return drone;
-	}
-
-    public void setDrone(Drone drone) {
-		this.drone = drone;
 	}
 
     public void setBotMembers(List<Robot> mm) {
@@ -245,6 +236,10 @@ class MissionDataBean {
 		return constructionVehicles;
 	}
 	
+	public void setExplorationSites(List<MineralSite> sites) {
+		this.exploration = sites;
+	}
+
 	public void setMiningSite(MineralSite miningSite) {
 		this.miningSite = miningSite;
 	}

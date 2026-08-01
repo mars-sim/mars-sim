@@ -7,16 +7,15 @@
 package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -76,12 +75,16 @@ public class ExplorationMeta extends AbstractMetaMission {
 		return new Exploration(crew, needsReview);
 	}
 
-	public Mission constructInstance(Collection<Worker> members, List<Coordinates> sites, Rover rover) {
-		return new Exploration(members, sites, rover);
-	}
+	/**
+	 * Constructs a new instance of the Exploration mission with the given crew and exploration sites.
+	 * @param crew the roster of crew members for the mission.
+	 * @param sites the list of mineral sites to be explored during the mission.
+	 * @return a new instance of the Exploration mission.
+	 */
+	public Mission constructInstance(Roster crew, List<MineralSite> sites) {
+		var locations = sites.stream().map(MineralSite::getLocation).toList();
 
-	public Mission constructInstance(Roster crew, List<Coordinates> sites) {
-		return constructInstance(getMembers(crew), sites, (Rover) crew.vehicle());
+		return new Exploration(getMembers(crew), locations, (Rover) crew.vehicle());
 	}
 
 	private static List<Worker> getMembers(Roster crew) {
