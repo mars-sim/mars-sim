@@ -98,7 +98,7 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 		settlementPane.add(tableScrollPane, BorderLayout.CENTER);
 
 		// Create the item table and support tooltips.
-		boolean single = minSelection == 1;
+		boolean single = maxSelection == 1;
 		if (!single) {
 			// For multiple selection we add a selection column to show the order of selection.
 			model = new SelectionColumnModel<>(model);

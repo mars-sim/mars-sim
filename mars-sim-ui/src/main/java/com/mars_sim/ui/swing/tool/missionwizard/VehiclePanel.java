@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * RoverPanel.java
+ * VehiclePanel.java
  * @date 2024-07-30
  * @author Scott Davis
  */
@@ -10,28 +10,28 @@ package com.mars_sim.ui.swing.tool.missionwizard;
 import java.util.List;
 
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
+import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.utils.model.BaseVehicleModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 
 /**
- * A wizard panel for selecting the mission Rover.
+ * A wizard panel for selecting the mission vehicle.
  */
 @SuppressWarnings("serial")
-class RoverPanel extends WizardItemStep<MissionDataBean, Rover> {
+class VehiclePanel extends WizardItemStep<MissionDataBean, Vehicle> {
 
 	/** The wizard panel name. */
-	public static final String ID = "Rover";
+	public static final String ID = "Vehicle";
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param wizard the create mission wizard.
 	 */
-	RoverPanel(WizardPane<MissionDataBean> parent, MissionDataBean state) {
+	VehiclePanel(WizardPane<MissionDataBean> parent, MissionDataBean state) {
 		// Use WizardPanel constructor.
 		super(ID, parent, new VehicleTableModel(state));
 	}
@@ -41,7 +41,7 @@ class RoverPanel extends WizardItemStep<MissionDataBean, Rover> {
 	 */
 	@Override
 	public void clearState(MissionDataBean state) {
-		state.setRover(null);
+		state.setVehicle(null);
 		super.clearState(state);
 	}
 
@@ -49,15 +49,15 @@ class RoverPanel extends WizardItemStep<MissionDataBean, Rover> {
 	 * Update the state with the selected vehicle.
 	 */
 	@Override
-	protected void updateState(MissionDataBean state, List<Rover> sel) {
-		state.setRover(sel.get(0));
+	protected void updateState(MissionDataBean state, List<Vehicle> sel) {
+		state.setVehicle(sel.get(0));
 	}
 
 	/**
 	 * A table model for vehicles.
 	 */
 	private static class VehicleTableModel extends BaseVehicleModel
-		implements WizardItemModel<Rover> {
+		implements WizardItemModel<Vehicle> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -69,17 +69,19 @@ class RoverPanel extends WizardItemStep<MissionDataBean, Rover> {
 			super(NAME, TYPE, EST_RANGE, CARGO_CAPACITY, STATUS, RESERVED, MISSION,
 					CREW_CAPACITY, HAS_LAB);
 		
+			var prefered = state.getMetaMission().getPreferredVehicle();
+
 			var startingSettlement = state.getStartingSettlement();
 			var r = startingSettlement.getParkedGaragedVehicles().stream()
-					.filter(Rover.class::isInstance)
+					.filter(v -> prefered.contains(v.getVehicleType()))
 					.toList();
 			setEntities(r);
 			enableListeners(true);
 		}
 
 		@Override
-		public Rover getItem(int row) {
-			return (Rover) getAssociatedEntity(row);
+		public Vehicle getItem(int row) {
+			return (Vehicle) getAssociatedEntity(row);
 		}
 
 		/**

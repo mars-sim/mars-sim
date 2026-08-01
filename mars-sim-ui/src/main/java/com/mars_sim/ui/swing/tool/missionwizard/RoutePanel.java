@@ -76,7 +76,7 @@ class RoutePanel extends WizardStep<MissionDataBean> {
     public RoutePanel(MissionCreate wizard, MissionDataBean state, UIContext context) {
         super(ID, wizard);
 
-        this.range = state.getRover().getEstimatedRange();
+        this.range = state.getVehicle().getEstimatedRange();
         this.maxLeg = 10;
         var mType = state.getMissionType();
         if (mType == MissionType.AREOLOGY || mType == MissionType.BIOLOGY

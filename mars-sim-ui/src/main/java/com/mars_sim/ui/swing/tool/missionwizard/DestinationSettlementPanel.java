@@ -102,10 +102,7 @@ class DestinationSettlementPanel extends WizardItemStep<MissionDataBean,Settleme
 				Settlement startingSettlement = state.getStartingSettlement();
 				var settlement = getItem(row);
 				double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
-				Vehicle v = state.getRover();
-				if (v == null) {
-					v = state.getDrone();
-				}
+				Vehicle v = state.getVehicle();
 				double vRange = v.getRange();
 				return (vRange < distance) ? MissionCreate.VEHICLE_OUT_OF_RANGE : null;
 			}

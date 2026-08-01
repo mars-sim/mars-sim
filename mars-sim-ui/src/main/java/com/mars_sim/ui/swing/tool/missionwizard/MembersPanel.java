@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.model.BasePersonModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
@@ -61,8 +62,8 @@ class MembersPanel extends WizardItemStep<MissionDataBean, Person>
 	 */
 	private static int getCapacity(MissionDataBean state) {
 		var capacity = state.getMetaMission().getDefaultCapacity();
-		if (state.getRover() != null) {
-			capacity = Math.min(capacity, state.getRover().getCrewCapacity());
+		if (state.getVehicle() instanceof Rover rover) {
+			capacity = Math.min(capacity, rover.getCrewCapacity());
 		}
 		return capacity;
 	}

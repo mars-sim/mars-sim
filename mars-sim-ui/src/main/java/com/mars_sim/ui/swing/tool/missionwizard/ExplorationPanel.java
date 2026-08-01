@@ -1,17 +1,16 @@
 /*
  * Mars Simulation Project
- * MineSitePanel.java
+ * ExplorationPanel.java
  * @date 2026-02-08
  * @author Barry Evans
  */
-
 package com.mars_sim.ui.swing.tool.missionwizard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.Msg;
@@ -21,13 +20,13 @@ import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 
 /**
- * A wizard panel for selecting the mission Rover.
+ * A wizard panel for selecting the mission exploration site.
  */
 @SuppressWarnings("serial")
-class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
+class ExplorationPanel extends WizardItemStep<MissionDataBean, MineralSite> {
 
 	/** The wizard panel name. */
-	public static final String ID = "mine_site";
+	public static final String ID = "exploration";
 	private MineralPanel mineralPanel;
 
 	/**
@@ -35,9 +34,9 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 	 * 
 	 * @param wizard the create mission wizard.
 	 */
-	MineSitePanel(WizardPane<MissionDataBean> parent, MissionDataBean state) {
+	ExplorationPanel(WizardPane<MissionDataBean> parent, MissionDataBean state) {
 		// Use WizardPanel constructor.
-		super(ID, parent, new SiteTableModel(state));
+		super(ID, parent, new SiteTableModel(state), 1, 3);
 	}
 
 	/**
@@ -45,7 +44,7 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 	 */
 	@Override
 	public void clearState(MissionDataBean state) {
-		state.setMiningSite(null);
+		state.setExplorationSites(null);
 		super.clearState(state);
 	}
 
@@ -54,7 +53,7 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 	 */
 	@Override
 	protected void updateState(MissionDataBean state, List<MineralSite> sel) {
-		state.setMiningSite(sel.get(0));
+		state.setExplorationSites(sel);
 	}
 
 	/**
@@ -65,6 +64,7 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 	protected JComponent buildInfoPanel() {
 		mineralPanel = new MineralPanel();
 		return mineralPanel;
+
 	}
 
 	/**
@@ -88,8 +88,9 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 		private static final long serialVersionUID = 1L;
 		private static final List<ColumnSpec> COLUMNS = List.of(
 				new ColumnSpec(Msg.getString("entity.name"), String.class),
-				new ColumnSpec("Remaining Mass", Double.class, ColumnSpec.STYLE_DIGIT1),
-				new ColumnSpec("Certainity", Double.class, ColumnSpec.STYLE_PERCENTAGE),
+				new ColumnSpec("Reviews", Integer.class),
+				new ColumnSpec("Owner", String.class),
+				new ColumnSpec("Explored", Boolean.class),
 				new ColumnSpec(Msg.getString("entity.coordinates"), String.class),
 				new ColumnSpec("Distance", Double.class, ColumnSpec.STYLE_DIGIT1));
 		private Coordinates startPoint;
@@ -100,17 +101,11 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 		private SiteTableModel(MissionDataBean state) {
 			super(COLUMNS);
 		
-			var owner = state.getStartingSettlement().getReportingAuthority();
+			var explorationManager = state.getStartingSettlement().getExplorations();
 			startPoint = state.getStartingSettlement().getLocation();
-			var range = state.getVehicle().getEstimatedRange();
 
-			var surfaceFeatures = Simulation.instance().getSurfaceFeatures();
-			var withinRange = surfaceFeatures.getAllPossibleRegionOfInterestLocations().stream()
-					.filter(s -> s.isMinable() && owner.equals(s.getOwner()))
-					.filter(s -> s.getLocation().getDistance(startPoint) < range)
-					.toList();
-	
-			setItems(withinRange);
+			var withinRange = explorationManager.getDeclaredROIs();
+			setItems(new ArrayList<>(withinRange));
 		}
 
 		/**	
@@ -123,10 +118,11 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 		protected Object getItemValue(MineralSite site, int column) {
 			return switch(column) {
 				case 0 -> site.getName();
-				case 1 -> site.getRemainingMass();
-				case 2 -> site.getAverageCertainty();
-				case 3 -> site.getCoordinates().getFormattedString();
-				case 4 -> site.getCoordinates().getDistance(startPoint);
+				case 1 -> site.getNumEstimationImprovement();
+				case 2 -> (site.getOwner() != null ? site.getOwner().getName() : null);
+				case 3 -> site.isExplored();
+				case 4 -> site.getCoordinates().getFormattedString();
+				case 5 -> site.getCoordinates().getDistance(startPoint);
 				default -> null;
 			};
 		}
@@ -138,7 +134,7 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 		 */
 		@Override
 		protected String isFailureCell(MineralSite site, int column) {
-			return ((column == 1 && site.getRemainingMass() < 100) ? "Remaining mass is below 100" : null);
+			return null;
 		}
 	}
 }

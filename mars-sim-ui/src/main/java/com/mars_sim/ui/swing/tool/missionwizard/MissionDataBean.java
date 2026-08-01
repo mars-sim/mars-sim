@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.tool.missionwizard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.Landmark;
@@ -18,48 +17,44 @@ import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MetaMissionRegistry;
-import com.mars_sim.core.mission.MissionCreationException;
 import com.mars_sim.core.mission.predefined.LandmarkMetaMission;
+import com.mars_sim.core.mission.predefined.TestDriveMetaMission;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
-import com.mars_sim.core.person.ai.mission.BiologyFieldStudy;
-import com.mars_sim.core.person.ai.mission.CollectIce;
-import com.mars_sim.core.person.ai.mission.CollectRegolith;
-import com.mars_sim.core.person.ai.mission.ConstructionMission;
-import com.mars_sim.core.person.ai.mission.Delivery;
-import com.mars_sim.core.person.ai.mission.EmergencySupply;
-import com.mars_sim.core.person.ai.mission.Exploration;
-import com.mars_sim.core.person.ai.mission.MeteorologyFieldStudy;
-import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.RescueSalvageVehicle;
-import com.mars_sim.core.person.ai.mission.Trade;
-import com.mars_sim.core.person.ai.mission.TravelToSettlement;
+import com.mars_sim.core.person.ai.mission.meta.AreologyFieldStudyMeta;
+import com.mars_sim.core.person.ai.mission.meta.BiologyFieldStudyMeta;
+import com.mars_sim.core.person.ai.mission.meta.CollectIceMeta;
+import com.mars_sim.core.person.ai.mission.meta.CollectRegolithMeta;
+import com.mars_sim.core.person.ai.mission.meta.ConstructionMissionMeta;
+import com.mars_sim.core.person.ai.mission.meta.DeliveryMeta;
+import com.mars_sim.core.person.ai.mission.meta.EmergencySupplyMeta;
+import com.mars_sim.core.person.ai.mission.meta.ExplorationMeta;
+import com.mars_sim.core.person.ai.mission.meta.MeteorologyFieldStudyMeta;
+import com.mars_sim.core.person.ai.mission.meta.MiningMeta;
+import com.mars_sim.core.person.ai.mission.meta.RescueSalvageVehicleMeta;
+import com.mars_sim.core.person.ai.mission.meta.TradeMeta;
+import com.mars_sim.core.person.ai.mission.meta.TravelToSettlementMeta;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * Mission data holder bean.
  */
 class MissionDataBean {
-
-	private static Logger logger = Logger.getLogger(MissionDataBean.class.getName());
 	
 	private MetaMission meta;
 	private String type = "";
 	
 	private Settlement startingSettlement;
-	private Settlement destinationSettlement;
+	private Settlement destination;
     
-	private Drone drone;
-	private Rover rover;
+	private Vehicle rover;
 	private Vehicle rescueVehicle;
 	private LightUtilityVehicle luv;
 		
@@ -78,6 +73,7 @@ class MissionDataBean {
 	private Map<Good, Integer> buyGoods;
 
 	private Landmark landmark;
+	private List<MineralSite> exploration;
 	    
 	/**
 	 * Creates a mission from the mission data.
@@ -92,40 +88,36 @@ class MissionDataBean {
 		// Create the mission roster;this is for the new single constructor per Mission pattern
 		var roster = new MetaMission.Roster(getLeader(), getWorkerMembers(), rover);
 
-	    try {
-			Mission mission = switch (meta.getType()) {
-				case MissionType.AREOLOGY -> new AreologyFieldStudy(mixedMembers, study,
-														rover, routePoints.get(0));
-				case MissionType.BIOLOGY -> new BiologyFieldStudy(mixedMembers, study,
-														rover, routePoints.get(0));
-				case MissionType.METEOROLOGY -> new MeteorologyFieldStudy(mixedMembers, study,
-														rover, routePoints.get(0));
-				case MissionType.CONSTRUCTION -> new ConstructionMission(mixedMembers, startingSettlement, constructionSite,
-														constructionVehicles);
-				case MissionType.COLLECT_ICE -> new CollectIce(mixedMembers, routePoints, rover);
-				case MissionType.COLLECT_REGOLITH -> new CollectRegolith(mixedMembers, routePoints, rover);
-				case MissionType.DELIVERY -> new Delivery(mixedMembers, destinationSettlement, drone,
-														sellGoods, buyGoods);
-				case MissionType.EMERGENCY_SUPPLY -> new EmergencySupply(mixedMembers, destinationSettlement,
-														sellGoods, rover);
-				case MissionType.EXPLORATION -> new Exploration(mixedMembers, routePoints, rover);
-				case MissionType.MINING -> new Mining(mixedMembers, miningSite, rover, luv);
-				case MissionType.RESCUE_SALVAGE_VEHICLE -> new RescueSalvageVehicle(mixedMembers, rescueVehicle, rover);
-				case MissionType.TRADE -> new Trade(mixedMembers, destinationSettlement, rover,
-														sellGoods, buyGoods);
-				case MissionType.TRAVEL_TO_SETTLEMENT -> new TravelToSettlement(roster, destinationSettlement, false);
-				case MissionType.TEST_DRIVE -> meta.constructInstance(roster, false);
-				case MissionType.VISIT_LANDMARK -> ((LandmarkMetaMission)meta).constructInstance(roster, landmark, false);
-				default -> throw new IllegalStateException("Mission type: " + type + " unknown");
-			};
+		Mission mission = switch (meta) {
+			case AreologyFieldStudyMeta m -> m
+					.constructInstance(roster, study, routePoints.get(0));
+			case BiologyFieldStudyMeta m -> m
+					.constructInstance(roster, study, routePoints.get(0));
+			case MeteorologyFieldStudyMeta m -> m
+					.constructInstance(roster, study, routePoints.get(0));
+			case ConstructionMissionMeta m -> m
+					.constructInstance(mixedMembers, startingSettlement, constructionSite, constructionVehicles);
+			case CollectIceMeta m -> m.constructInstance(roster, routePoints);
+			case CollectRegolithMeta m -> m.constructInstance(roster, routePoints);
+			case DeliveryMeta m -> m
+					.constructInstance(mixedMembers, destination, (Drone) rover, sellGoods, buyGoods);
+			case EmergencySupplyMeta m -> m
+					.constructInstance(roster, destination, sellGoods);
+			case ExplorationMeta m -> m.constructInstance(roster, exploration);
+			case MiningMeta m -> m.constructInstance(roster, miningSite, luv);
+			case RescueSalvageVehicleMeta m -> m.constructInstance(roster, rescueVehicle);
+			case TradeMeta m -> m
+					.constructInstance(roster, destination, sellGoods, buyGoods);
+			case TravelToSettlementMeta m -> m.constructInstance(roster, destination, false);
+			case TestDriveMetaMission m -> m.constructInstance(roster, false);
+			case LandmarkMetaMission m -> m.constructInstance(roster, landmark, false);
+			default -> throw new IllegalStateException("Mission type: " + type + " unknown");
+		};
 
+		if (mission != null) {
 			startingSettlement.getMissionControl().addMission(mission);
-
-			return mission;
-		} catch (MissionCreationException e) {
-			logger.severe("Error creating mission: " + e.getMessage());
-			return null;
 		}
+		return mission;
 	}
 
     public MissionType getMissionType() {
@@ -160,20 +152,12 @@ class MissionDataBean {
 		this.startingSettlement = startingSettlement;
 	}
 
-    public Rover getRover() {
+    public Vehicle getVehicle() {
 		return rover;
 	}
 
-    public void setRover(Rover rover) {
+    public void setVehicle(Vehicle rover) {
 		this.rover = rover;
-	}
-
-    public Drone getDrone() {
-		return drone;
-	}
-
-    public void setDrone(Drone drone) {
-		this.drone = drone;
 	}
 
     public void setBotMembers(List<Robot> mm) {
@@ -209,11 +193,11 @@ class MissionDataBean {
 	}
 
     public Settlement getDestinationSettlement() {
-		return destinationSettlement;
+		return destination;
 	}
 
     public void setDestinationSettlement(Settlement destinationSettlement) {
-		this.destinationSettlement = destinationSettlement;
+		this.destination = destinationSettlement;
 	}
 
     public void setRescueVehicle(Vehicle vehicle) {
@@ -252,6 +236,10 @@ class MissionDataBean {
 		return constructionVehicles;
 	}
 	
+	public void setExplorationSites(List<MineralSite> sites) {
+		this.exploration = sites;
+	}
+
 	public void setMiningSite(MineralSite miningSite) {
 		this.miningSite = miningSite;
 	}

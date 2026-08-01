@@ -37,8 +37,8 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 	/**
 	 * The predefined step sequences for Mission types.
 	 */
-	private static final List<String> EXPLORATION_STEPS = List.of(RoverPanel.ID, RoutePanel.ID,  MembersPanel.ID);
-	private static final List<String> SCIENCE_STEPS = List.of(SciencePanel.ID, RoverPanel.ID,
+	private static final List<String> COLLECTION_STEPS = List.of(VehiclePanel.ID, RoutePanel.ID,  MembersPanel.ID);
+	private static final List<String> SCIENCE_STEPS = List.of(SciencePanel.ID, VehiclePanel.ID,
 												RoutePanel.ID, MembersPanel.ID);
 
 	// Too many to use Map.of method.
@@ -46,22 +46,23 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 	static {
 		MISSION_STEPS.put(MissionType.AREOLOGY, SCIENCE_STEPS);
 		MISSION_STEPS.put(MissionType.BIOLOGY, SCIENCE_STEPS);
-		MISSION_STEPS.put(MissionType.COLLECT_ICE, EXPLORATION_STEPS);
-		MISSION_STEPS.put(MissionType.COLLECT_REGOLITH, EXPLORATION_STEPS);
+		MISSION_STEPS.put(MissionType.COLLECT_ICE, COLLECTION_STEPS);
+		MISSION_STEPS.put(MissionType.COLLECT_REGOLITH, COLLECTION_STEPS);
 		MISSION_STEPS.put(MissionType.CONSTRUCTION, List.of(ConstructionPanel.ID, LightUtilityVehiclePanel.ID, MembersPanel.ID));
-		MISSION_STEPS.put(MissionType.DELIVERY, List.of(DronePanel.ID, DestinationSettlementPanel.ID,
+		MISSION_STEPS.put(MissionType.DELIVERY, List.of(VehiclePanel.ID, DestinationSettlementPanel.ID,
 										TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID, MembersPanel.ID, BotsPanel.ID));
-		MISSION_STEPS.put(MissionType.EMERGENCY_SUPPLY, List.of(RoverPanel.ID,
+		MISSION_STEPS.put(MissionType.EMERGENCY_SUPPLY, List.of(VehiclePanel.ID,
 				DestinationSettlementPanel.ID, TradeGoodsPanel.SUPPLY_ID, MembersPanel.ID));	
 		MISSION_STEPS.put(MissionType.METEOROLOGY, SCIENCE_STEPS);
-		MISSION_STEPS.put(MissionType.MINING, List.of(RoverPanel.ID, MineSitePanel.ID,
+		MISSION_STEPS.put(MissionType.EXPLORATION, List.of(VehiclePanel.ID, ExplorationPanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.MINING, List.of(VehiclePanel.ID, MineSitePanel.ID,
 				LightUtilityVehiclePanel.ID,  MembersPanel.ID));
-		MISSION_STEPS.put(MissionType.VISIT_LANDMARK, List.of(RoverPanel.ID, LandmarkPanel.ID, MembersPanel.ID));
-		MISSION_STEPS.put(MissionType.RESCUE_SALVAGE_VEHICLE, List.of(RoverPanel.ID, RescueVehiclePanel.ID, MembersPanel.ID));
-		MISSION_STEPS.put(MissionType.TRADE, List.of(RoverPanel.ID,
+		MISSION_STEPS.put(MissionType.VISIT_LANDMARK, List.of(VehiclePanel.ID, LandmarkPanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.RESCUE_SALVAGE_VEHICLE, List.of(VehiclePanel.ID, RescueVehiclePanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.TRADE, List.of(VehiclePanel.ID,
 				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID, MembersPanel.ID));		
-		MISSION_STEPS.put(MissionType.TRAVEL_TO_SETTLEMENT, List.of(RoverPanel.ID, DestinationSettlementPanel.ID, MembersPanel.ID));
-		MISSION_STEPS.put(MissionType.TEST_DRIVE, List.of(RoverPanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.TRAVEL_TO_SETTLEMENT, List.of(VehiclePanel.ID, DestinationSettlementPanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.TEST_DRIVE, List.of(VehiclePanel.ID, MembersPanel.ID));
 		}
 
 	/**
@@ -112,12 +113,12 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 			case BotsPanel.ID -> new BotsPanel(this, state);
 			case ConstructionPanel.ID -> new ConstructionPanel(this, state);
 			case DestinationSettlementPanel.ID -> new DestinationSettlementPanel(this, state);
-			case DronePanel.ID -> new DronePanel(this, state);
 			case LightUtilityVehiclePanel.ID -> new LightUtilityVehiclePanel(this, state);
 			case MembersPanel.ID -> new MembersPanel(this, state);
 			case MineSitePanel.ID -> new MineSitePanel(this, state);
 			case RescueVehiclePanel.ID -> new RescueVehiclePanel(this, state);
-			case RoverPanel.ID -> new RoverPanel(this, state);
+			case VehiclePanel.ID -> new VehiclePanel(this, state);
+			case ExplorationPanel.ID -> new ExplorationPanel(this, state);
 			case RoutePanel.ID -> new RoutePanel(this, state, getContext());
 			case StartingSettlementPanel.ID ->new StartingSettlementPanel(this, state);
 			case SciencePanel.ID -> new SciencePanel(this, state);

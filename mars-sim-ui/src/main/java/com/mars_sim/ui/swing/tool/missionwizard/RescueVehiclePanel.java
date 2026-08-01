@@ -126,7 +126,7 @@ class RescueVehiclePanel extends WizardItemStep<MissionDataBean, Vehicle> {
 			if (colSpec.equals(RANGE.column())) {
 				var distance = state.getStartingSettlement().getCoordinates().getDistance(vehicle.getCoordinates())
 						* 2.2D; // Round trip distance
-				return (distance > state.getRover().getRange()) ? MissionCreate.VEHICLE_OUT_OF_RANGE : null;
+				return (distance > state.getVehicle().getRange()) ? MissionCreate.VEHICLE_OUT_OF_RANGE : null;
 			}
 			else if (colSpec.equals(RESCUE.column())) {
 				return RescueSalvageVehicle.getRescueingVehicle(vehicle) != null ? "Already being rescued" : null;

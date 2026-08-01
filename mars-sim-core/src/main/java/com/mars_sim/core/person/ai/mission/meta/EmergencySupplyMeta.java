@@ -6,12 +6,21 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
+import com.mars_sim.core.person.ai.mission.EmergencySupply;
+import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.VehicleType;
 
 /**
@@ -36,5 +45,22 @@ public class EmergencySupplyMeta extends AbstractMetaMission{
     @Override
     public Mission constructInstance(Roster crew, boolean needsReview) {
         throw new UnsupportedOperationException("Unimplemented method 'constructInstance'");
+    }
+
+	public Mission constructInstance(Collection<Worker> members, Settlement destination,
+			Map<Good, Integer> emergencyGoods, Rover rover) {
+		return new EmergencySupply(members, destination, emergencyGoods, rover);
+	}
+
+    public Mission constructInstance(Roster crew, Settlement destination,
+            Map<Good, Integer> emergencyGoods) {
+        return constructInstance(getMembers(crew), destination, emergencyGoods, (Rover) crew.vehicle());
+    }
+
+    private static List<Worker> getMembers(Roster crew) {
+        List<Worker> members = new ArrayList<>();
+        members.add(crew.leader());
+        members.addAll(crew.members());
+        return members;
     }
 }

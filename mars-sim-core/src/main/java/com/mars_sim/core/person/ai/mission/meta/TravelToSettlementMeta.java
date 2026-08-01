@@ -78,8 +78,12 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         if (destination == null) {
             throw new MissionCreationException("mission.travelsettlement.dest");
         }
-        return new TravelToSettlement(crew, destination, needsReview);
+		return constructInstance(crew, destination, needsReview);
     }
+
+	public Mission constructInstance(Roster crew, Settlement destination, boolean needsReview) {
+		return new TravelToSettlement(crew, destination, needsReview);
+	}
 
     /**
 	 * Determines a random destination settlement other than current one.
