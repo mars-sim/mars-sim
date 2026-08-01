@@ -6,13 +6,17 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -20,7 +24,9 @@ import com.mars_sim.core.person.ai.mission.CollectRegolith;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.VehicleType;
 
 /**
@@ -47,6 +53,21 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	@Override
 	public Mission constructInstance(Roster crew, boolean needsReview) {
 		return new CollectRegolith(crew, needsReview);
+	}
+
+	public Mission constructInstance(Collection<Worker> members, List<Coordinates> sites, Rover rover) {
+		return new CollectRegolith(members, sites, rover);
+	}
+
+	public Mission constructInstance(Roster crew, List<Coordinates> sites) {
+		return constructInstance(getMembers(crew), sites, (Rover) crew.vehicle());
+	}
+
+	private static List<Worker> getMembers(Roster crew) {
+		List<Worker> members = new ArrayList<>();
+		members.add(crew.leader());
+		members.addAll(crew.members());
+		return members;
 	}
 
 	@Override

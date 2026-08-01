@@ -6,11 +6,15 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.Deal;
+import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.mission.AbstractMetaMission;
@@ -21,7 +25,9 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
@@ -58,6 +64,23 @@ public class TradeMeta extends AbstractMetaMission {
 	@Override
 	public Mission constructInstance(Roster crew, boolean needsReview) {
 		return new Trade(crew, needsReview);
+	}
+
+	public Mission constructInstance(List<Worker> members, Settlement destination,
+			Rover rover, Map<Good, Integer> sellLoad, Map<Good, Integer> buyLoad) {
+		return new Trade(members, destination, rover, sellLoad, buyLoad);
+	}
+
+	public Mission constructInstance(Roster crew, Settlement destination,
+			Map<Good, Integer> sellLoad, Map<Good, Integer> buyLoad) {
+		return constructInstance(getMembers(crew), destination, (Rover) crew.vehicle(), sellLoad, buyLoad);
+	}
+
+	private static List<Worker> getMembers(Roster crew) {
+		List<Worker> members = new ArrayList<>();
+		members.add(crew.leader());
+		members.addAll(crew.members());
+		return members;
 	}
 
 	@Override

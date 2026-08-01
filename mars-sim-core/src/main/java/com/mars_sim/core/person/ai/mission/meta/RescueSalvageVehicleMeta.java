@@ -6,7 +6,10 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
@@ -21,6 +24,7 @@ import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -41,6 +45,21 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     @Override
     public Mission constructInstance(Roster crew, boolean needsReview) {
         return new RescueSalvageVehicle(crew, needsReview);
+    }
+
+	public Mission constructInstance(Collection<Worker> members, Vehicle rescueVehicle, Rover rover) {
+		return new RescueSalvageVehicle(members, rescueVehicle, rover);
+	}
+
+    public Mission constructInstance(Roster crew, Vehicle rescueVehicle) {
+        return constructInstance(getMembers(crew), rescueVehicle, (Rover) crew.vehicle());
+    }
+
+    private static List<Worker> getMembers(Roster crew) {
+        List<Worker> members = new ArrayList<>();
+        members.add(crew.leader());
+        members.addAll(crew.members());
+        return members;
     }
 
     @Override

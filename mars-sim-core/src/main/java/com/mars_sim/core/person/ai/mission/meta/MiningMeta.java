@@ -6,11 +6,15 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.mission.AbstractMetaMission;
@@ -20,8 +24,10 @@ import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
@@ -60,6 +66,22 @@ public class MiningMeta extends AbstractMetaMission {
 	public Mission constructInstance(Roster crew, boolean needsReview) {
 		return new Mining(crew, needsReview);
     }
+
+	public Mission constructInstance(Collection<Worker> members, MineralSite site,
+			Rover rover, LightUtilityVehicle luv) {
+		return new Mining(members, site, rover, luv);
+	}
+
+	public Mission constructInstance(Roster crew, MineralSite site, LightUtilityVehicle luv) {
+		return constructInstance(getMembers(crew), site, (Rover) crew.vehicle(), luv);
+	}
+
+	private static List<Worker> getMembers(Roster crew) {
+		List<Worker> members = new ArrayList<>();
+		members.add(crew.leader());
+		members.addAll(crew.members());
+		return members;
+	}
 
     @Override
     public RatingScore getProbability(Person person) {

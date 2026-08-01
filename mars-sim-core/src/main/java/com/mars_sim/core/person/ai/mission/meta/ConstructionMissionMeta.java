@@ -7,8 +7,11 @@
 package com.mars_sim.core.person.ai.mission.meta;
 
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
@@ -19,7 +22,9 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.MissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
 
 /**
@@ -52,6 +57,11 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	public Mission constructInstance(Roster crew, boolean needsReview) {
         return new ConstructionMission(crew);
     }
+
+	public Mission constructInstance(Collection<Worker> members, Settlement settlement,
+			ConstructionSite selectedSite, List<LightUtilityVehicle> vehicles) {
+		return new ConstructionMission(members, settlement, selectedSite, vehicles);
+	}
 
     @Override
     public RatingScore getProbability(Person person) {
