@@ -20,10 +20,12 @@ import com.mars_sim.core.building.config.NamedPosition;
 import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
+import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
@@ -43,6 +45,8 @@ public abstract class Function implements Serializable, Temporal {
 
 	private long lastPulse = 0; // First initial pulse is always 1
 
+	private double functionalValue;
+	
 	private FunctionType type;
 	
 	protected Building building;
@@ -81,6 +85,26 @@ public abstract class Function implements Serializable, Temporal {
 		}
 	}
 
+	public abstract double getFunctionValue();
+	
+	/**
+	 * Gets the particular functional value.
+	 * 
+	 * @return
+	 */
+	protected double getFunctionalValue() {
+		return functionalValue;
+	}
+
+	/**
+	 * Sets the particular functional value.
+	 * 
+	 * @return
+	 */
+	protected void setFunctionalValue(double value) {
+		functionalValue = value;
+	}
+	
 	/**
 	 * Create a set of Activity Spots from a set of LocalPositions. The Activity spots are created
 	 * into the global Settlement coordinate frame.
@@ -114,6 +138,24 @@ public abstract class Function implements Serializable, Temporal {
 		return building;
 	}
 
+	/**
+	 * Gets the function's settlement.
+	 *
+	 * @return {@link Settlement}
+	 */
+	public Settlement getSettlement() {
+		return building.getSettlement();
+	}
+	
+	/**
+	 * Gets the settlement's goods manager.
+	 *
+	 * @return goods manager
+	 */
+	public GoodsManager getGoodsManager() {
+		return building.getGoodsManager();
+	}
+	
 	/**
 	 * Gets the maintenance time for this building function.
 	 *

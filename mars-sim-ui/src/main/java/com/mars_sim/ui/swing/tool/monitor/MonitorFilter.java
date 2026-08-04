@@ -60,11 +60,14 @@ implements ActionListener {
 		categoryPane.setBorder(SwingHelper.createEtchedBorder());
 		mainPane.add(categoryPane, BorderLayout.CENTER);
 
-		// Create filter checboxes
+		// Create filter checkboxes
 		for(var f : filters) {
 			addFilterCheckBox(categoryPane, f);
 		}
 
+		setModal(true);
+		setAlwaysOnTop(true);
+		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(parent);
 		pack();	    

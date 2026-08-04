@@ -88,9 +88,9 @@ public class LifeSupport extends Function {
 	 * @throws Exception if error getting function value.
 	 */
 	public static double getFunctionValue(String buildingType, boolean newBuilding, Settlement settlement) {
-
-		// Demand is 2 occupant capacity for every inhabitant.
-		double demand = settlement.getNumCitizens() * 2D;
+		
+		// Note: do use getNumCitizens() since bestExistingProcessValue() below will be used
+		double demand = settlement.getNumCitizens();
 
 		double supply = 0D;
 		boolean removedBuilding = false;
@@ -105,25 +105,26 @@ public class LifeSupport extends Function {
 			}
 		}
 
-		double occupantCapacityValue = demand / (supply + 1D);
-
-		FunctionSpec spec = buildingConfig.getFunctionSpec(buildingType, FunctionType.LIFE_SUPPORT);
-		int occupantCapacity = spec.getCapacity();
-
-		double result = occupantCapacity * occupantCapacityValue;
-
-		// Subtract power usage cost per sol.
-		double power = POWER_PER_OCCUPANT;
-		double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL * 1000D;
-		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue() / 1000D;
-		result -= powerValue;
-
-		if (result < 0D)
-			result = 0D;
-
-		return result;
+		return demand / (supply + 1D);
 	}
 
+	/**
+	 * Gets the value of this function.
+	 * 
+	 */
+	public double getFunctionValue() {
+		
+		// Note: do use getNumCitizens() since bestExistingProcessValue() below will be used
+		double demand = getBuilding().getSettlement().getNumCitizens();
+
+		double supply = 0D;
+	
+		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		supply += occupantCapacity * wearModifier;
+
+		return demand / (supply + 1D);
+	}
+	
 	/**
 	 * Gets the building's capacity for supporting occupants.
 	 * 

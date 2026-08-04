@@ -39,7 +39,6 @@ public class PersonTableModel extends BasePersonModel
 	/**
 	 * Constructs a PersonTableModel that displays residents are all associated
 	 * people with a specified settlement.
-	 *
 	 */
 	public PersonTableModel()  {
 		super (NAME, TASK, SETTLEMENT, MISSION, HEALTH, ENERGY, WATER, FATIGUE, STRESS,
@@ -58,6 +57,7 @@ public class PersonTableModel extends BasePersonModel
 
 	/**
 	 * Sets the settlement filter for the model. This will select the Persons associated with the selected settlements.
+	 * 
 	 * @param filter New settlements
 	 * @return
 	 */
@@ -77,7 +77,7 @@ public class PersonTableModel extends BasePersonModel
 	}
 
 	/**
-	 * Find the relevant Person by apply filters.
+	 * Finds the relevant Person by apply filters.
 	 */
 	private void reapplyFilter() {
 		Collection<Person> entities = settlements.stream()
@@ -90,7 +90,8 @@ public class PersonTableModel extends BasePersonModel
 	}
 
 	/**
-	 * Is the Person displayable based on the alive/deceased filters.
+	 * Is the Person displayable based on the alive/deceased filters ?
+	 * 
 	 * @param p
 	 * @return
 	 */
@@ -105,7 +106,8 @@ public class PersonTableModel extends BasePersonModel
 	}
 
 	/**
-	 * Get a list of the supported filters and their active state based on the alive state of Persons
+	 * Gets a list of the supported filters and their active state based on the alive state of persons.
+	 * 
 	 * @return
 	 */	
 	@Override
@@ -118,8 +120,9 @@ public class PersonTableModel extends BasePersonModel
 	}
 
 	/**
-	 * Enable/disable display of a filter.
-	 * @param name Name of the filter.
+	 * Enables/disables display of a filter.
+	 * 
+	 * @param name Name of the filter
 	 * @param selected true to display, false to block
 	 */
 	@Override
@@ -137,13 +140,13 @@ public class PersonTableModel extends BasePersonModel
 	}
 
 	/**
-	 * Catches changes to the Settlement
+	 * Catches changes to the Settlement.
 	 *
-	 * @param event the unit event.
+	 * @param event the unit event
 	 */
 	@Override		
 	public void entityUpdate(EntityEvent event) {
-		if (event.getSource() instanceof Settlement s) {
+		if (event.getSource() instanceof Settlement) {
 			// Catch all Settlement events that add/remove associated people.
 			if (event.getTarget() instanceof Person p) {
 				String eventType = event.getType();

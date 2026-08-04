@@ -138,6 +138,7 @@ public class Communication extends Function {
 	}
 		
 	private int techLevel;
+	
 	private List<Channel> availableChannels = new ArrayList<>();
 	
     /**
@@ -175,6 +176,7 @@ public class Communication extends Function {
 
     /**
      * Gets the value of the function for a named building.
+     * 
      * @param buildingName the building name.
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
@@ -184,30 +186,63 @@ public class Communication extends Function {
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
 
-        // Settlements need one communication building.
-        // Note: Might want to update this when we do more with simulating communication.
-        double demand = 1D;
+        double demand = 4 * settlement.getPopulationFactor0();
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
+        
         Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.COMMUNICATION).iterator();
         while (i.hasNext()) {
-            supply += (i.next().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+        	Building building = i.next();
+        	
+        	Communication comm = building.getComm();
+        	
+        	int tech = comm.getTechLevel();
+        	
+			double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+			
+        	for (Channel c: comm.getAvailableChannels()) {
+        		supply += tech * c.getNumBand();
+        	}
+        	
+        	supply = supply * wearModifier;
         }
 
-        if (!newBuilding) {
-            supply -= 1D;
-            if (supply < 0D) supply = 0D;
-        }
 
         return demand / (supply + 1D);
     }
 
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+        double demand = 4 * getBuilding().getSettlement().getPopulationFactor0();
+
+        double supply = 0;
+        
+    	for (Channel c: getAvailableChannels()) {
+    		supply += techLevel * c.getNumBand();
+    	}
+ 
+        return demand / (supply + 1D);
+    }
+    
+    
+    public int getTechLevel() {
+    	return techLevel;
+    }
+    
+    public List<Channel> getAvailableChannels() {
+    	return availableChannels;
+    }
+    
     @Override
     public double getMaintenanceTime() {
         return 10;
     }
-    
 	
 	@Override
 	public void destroy() {

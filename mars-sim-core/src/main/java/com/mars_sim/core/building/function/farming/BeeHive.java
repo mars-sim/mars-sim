@@ -12,7 +12,7 @@ import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;
 
-public class BeeHive extends Function {
+public class BeeHive {
 	
 	/** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -44,7 +44,7 @@ public class BeeHive extends Function {
 
     public BeeHive(BeeGrowing beeGrowing, String beeSpecies) {
         // Use Function constructor.
-        super(FunctionType.FARMING, null, beeGrowing.getFarming().getBuilding());
+//        super(FunctionType.FARMING, null, beeGrowing.getFarming().getBuilding());
 		
     	this.beeGrowing = beeGrowing;
     	this.beeSpecies = beeSpecies; 	
@@ -63,10 +63,9 @@ public class BeeHive extends Function {
     	return beeGrowing;
     }
     
-	@Override
 	public boolean timePassing(ClockPulse pulse) {	
-		boolean valid = isValid(pulse);
-		if (valid) {
+//		boolean valid = isValid(pulse);
+//		if (valid) {
 			double time = pulse.getElapsed();
 	        if (queenBee !=null) queenBee.timePassing(time);        
 	        if (workerBee !=null) workerBee.timePassing(time);
@@ -74,8 +73,9 @@ public class BeeHive extends Function {
 	        //if (beeEgg !=null) beeEgg.timePassing(time);
 	        if (beeLarvae !=null) beeLarvae.timePassing(time);
 	        if (beePupa !=null) beePupa.timePassing(time);
-		}
-        return valid;
+//		}
+//        return valid;
+	    return true;
 	}
 
 	public Bee getQueen() {

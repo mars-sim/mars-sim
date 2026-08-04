@@ -93,12 +93,10 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.AlphanumComparator;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -113,6 +111,8 @@ public class BuildingManager implements Serializable {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(BuildingManager.class.getName());
 
+	private static final int BUILDING_VALUES_UPDATE = 250;
+	
 	private transient MarsTime lastVPUpdateTime;
 
 	private Set<Building> buildings = new UnitSet<>();
@@ -121,9 +121,14 @@ public class BuildingManager implements Serializable {
 	private Set<Building> airlocks = new UnitSet<>();
 	private Set<Building> comNodes = new UnitSet<>();
 	
+	/** A map of each function type and its value. */
+//	private transient EnumMap<FunctionType, Double> functionTypeValues = new EnumMap<>(FunctionType.class); 
+	/** A map of each building type and its value. */
+//	private transient Map<String, Double> buildingTypeValues = new HashMap<>();
 	private transient Map<String, Double> vPNewCache = new HashMap<>();
 	private transient Map<String, Double> vPOldCache = new HashMap<>();
-	private transient EnumMap<FunctionType, Set<Building>> buildingFunctionsMap;
+	/** A map of each function type and its set of buildings. */
+	private transient EnumMap<FunctionType, Set<Building>> functionSetOfBuildings;
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, Set<Building>> adjacentBuildingMap = new HashMap<>();
 	/** The settlement's maintenance parts map. */
@@ -182,7 +187,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public void initializeFunctionsNMeteorite() {
 
-		if (buildingFunctionsMap == null)
+		if (functionSetOfBuildings == null)
 			setupBuildingFunctionsMap();
 		
 		meteorite = new MeteoriteImpactProperty(settlement);
@@ -192,26 +197,26 @@ public class BuildingManager implements Serializable {
 	 * Sets up the map for the building functions.
 	 */
 	public void setupBuildingFunctionsMap() {
-		buildingFunctionsMap = new EnumMap<>(FunctionType.class); 
+		functionSetOfBuildings = new EnumMap<>(FunctionType.class); 
 
 		for (Building b : buildings) {
 			addBuildingToMap(b);
 		}
 
 		// Get a handy shortcut to a set of garages
-		garages = buildingFunctionsMap.computeIfAbsent(FunctionType.VEHICLE_MAINTENANCE,
+		garages = functionSetOfBuildings.computeIfAbsent(FunctionType.VEHICLE_MAINTENANCE,
 				ft -> new UnitSet<>());
 		
 		// Get a handy shortcut to a set of observatories
-		observatories = buildingFunctionsMap.computeIfAbsent(FunctionType.ASTRONOMICAL_OBSERVATION,
+		observatories = functionSetOfBuildings.computeIfAbsent(FunctionType.ASTRONOMICAL_OBSERVATION,
 				ft -> new UnitSet<>());
 		
 		// Get a handy shortcut to a set of airlocks
-		airlocks = buildingFunctionsMap.computeIfAbsent(FunctionType.EVA,
+		airlocks = functionSetOfBuildings.computeIfAbsent(FunctionType.EVA,
 				ft -> new UnitSet<>());
 		
 		// Get a handy shortcut to a set of airlocks
-		comNodes = buildingFunctionsMap.computeIfAbsent(FunctionType.COMPUTATION,
+		comNodes = functionSetOfBuildings.computeIfAbsent(FunctionType.COMPUTATION,
 				ft -> new UnitSet<>());
 	}
 	
@@ -223,7 +228,7 @@ public class BuildingManager implements Serializable {
 	 */
 	private void addBuildingToMap(Building b) {
 		for(Function f : b.getFunctions()) {
-			buildingFunctionsMap.computeIfAbsent(f.getFunctionType(),
+			functionSetOfBuildings.computeIfAbsent(f.getFunctionType(),
 						ft -> new UnitSet<>()).add(b);
 		}
 	}
@@ -262,9 +267,9 @@ public class BuildingManager implements Serializable {
 	 * @param a function
 	 */
 	public void removeOneFunctionfromBFMap(Building b, Function f) {
-		if (buildingFunctionsMap != null) {
+		if (functionSetOfBuildings != null) {
 			FunctionType ft = f.getFunctionType();
-			Set<Building> list = buildingFunctionsMap.get(ft);
+			Set<Building> list = functionSetOfBuildings.get(ft);
 			if (list != null) {
 				list.remove(b);
 			}
@@ -303,7 +308,7 @@ public class BuildingManager implements Serializable {
 	 * @param oldBuilding
 	 */
 	public void refreshFunctionMapForBuilding(Building newBuilding) {
-		if (buildingFunctionsMap == null)
+		if (functionSetOfBuildings == null)
 			setupBuildingFunctionsMap();
 		addBuildingToMap(newBuilding);
 
@@ -463,17 +468,17 @@ public class BuildingManager implements Serializable {
 	 * @return list of buildings.
 	 */
 	public Set<Building> getBuildingSet(FunctionType bf) {
-		if (buildingFunctionsMap == null) {
+		if (functionSetOfBuildings == null) {
 			setupBuildingFunctionsMap();
 		}
 
-		if (buildingFunctionsMap.containsKey(bf)) {
-			return buildingFunctionsMap.get(bf);
+		if (functionSetOfBuildings.containsKey(bf)) {
+			return functionSetOfBuildings.get(bf);
 		}
 
 		else {
 			Set<Building> set = buildings.stream().filter(b -> b.hasFunction(bf)).collect(Collectors.toSet());
-			buildingFunctionsMap.put(bf, set);
+			functionSetOfBuildings.put(bf, set);
 			return set;
 		}
 	}
@@ -878,13 +883,13 @@ public class BuildingManager implements Serializable {
 	 * @return a building.
 	 */
 	public Building getABuilding(FunctionType bf) {
-		if (buildingFunctionsMap == null) {
-			buildingFunctionsMap = new EnumMap<>(FunctionType.class);
+		if (functionSetOfBuildings == null) {
+			functionSetOfBuildings = new EnumMap<>(FunctionType.class);
 			setupBuildingFunctionsMap();
 		}
 
-		if (buildingFunctionsMap.containsKey(bf)) {
-			return RandomUtil.getARandSet(buildingFunctionsMap.get(bf));
+		if (functionSetOfBuildings.containsKey(bf)) {
+			return RandomUtil.getARandSet(functionSetOfBuildings.get(bf));
 		}
 
 		return null;
@@ -923,8 +928,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public boolean timePassing(ClockPulse pulse) {
 
-		if (buildingFunctionsMap == null) {
-			buildingFunctionsMap = new EnumMap<>(FunctionType.class);
+		if (functionSetOfBuildings == null) {
+			functionSetOfBuildings = new EnumMap<>(FunctionType.class);
 			setupBuildingFunctionsMap();
 		}
 		
@@ -1840,6 +1845,85 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Gets a map of function value of a building.
+	 *
+	 * @param building the building.
+	 * @return building value (VP).
+	 */
+	public Map<FunctionType, Double> getFunctionTypeValue(Building building) {
+	
+		/** A map of each function type and its value. */
+		EnumMap<FunctionType, Double> functionTypeValues = new EnumMap<>(FunctionType.class); 
+		
+		for (Function f : building.getFunctions()) {
+			FunctionType ft = f.getFunctionType();
+			double value = f.getFunctionValue();
+		
+			// Note: Remove the wear condition modification in each getFunctionValue() in a Function subclass
+			
+			// Modify building value by its wear condition.
+			double wearCondition = building.getMalfunctionManager().getWearCondition();
+			value *= (wearCondition / 100D) * .75D + .25D;
+			
+			functionTypeValues.put(ft, value);
+		}
+
+		return functionTypeValues;
+	}
+	
+	/**
+	 * Gets the value of each building type at the settlement.
+	 *
+	 * @param building the building.
+	 * @return building value (VP).
+	 */
+	public Map<String, Double> getAllBuildingTypeValues() {
+		
+		Set<Building> buildings = settlement.getBuildingManager().getBuildingSet();		
+
+		Map<String, Double> buildingTypeValues = new HashMap<>();
+		
+		for (Building building: buildings) {
+			
+			String buildingType = building.getBuildingType();
+			
+			// Question: what is the proper way of handling two different buildings having the same building type ?
+			
+			double result = getBuildingValue(buildingType, false);
+			
+			// Note: Remove the wear condition modification in each getFunctionValue() in a Function subclass
+					
+			// Modify building value by its wear condition.
+			double wearCondition = building.getMalfunctionManager().getWearCondition();
+			result *= (wearCondition / 100D) * .75D + .25D;
+			
+			buildingTypeValues.put(buildingType, result);
+
+		}
+
+		return buildingTypeValues;
+	}
+	
+	/**
+	 * Gets the value of a building type at the settlement.
+	 *
+	 * @param building the building.
+	 * @return building value (VP).
+	 */
+	public double getBuildingValue(Building building) {
+		
+		double result = getBuildingValue(building.getBuildingType(), false);
+	
+		// Note: Remove the wear condition modification in each getFunctionValue() in a Function subclass
+		
+		// Modify building value by its wear condition.
+		double wearCondition = building.getMalfunctionManager().getWearCondition();
+		result *= (wearCondition / 100D) * .75D + .25D;
+
+		return result;
+	}
+	
+	/**
 	 * Gets the value of a building at the settlement.
 	 *
 	 * @param buildingType the building type.
@@ -1858,8 +1942,8 @@ public class BuildingManager implements Serializable {
 
 		// Update building values cache once per Sol.
 		MarsTime now = masterClock.getMarsTime();
-		if ((lastVPUpdateTime == null)
-				|| (now.getTimeDiff(lastVPUpdateTime) > 1000D)) {
+		if ((lastVPUpdateTime == null) 
+				|| (now.getTimeDiff(lastVPUpdateTime) > BUILDING_VALUES_UPDATE)) {
 			vPNewCache.clear();
 			vPOldCache.clear();
 			lastVPUpdateTime = now;
@@ -1913,13 +1997,13 @@ public class BuildingManager implements Serializable {
 			}
 
 			// Multiply value.
-			result *= 1000D;
+//			result *= 1000D;
 
-			// Subtract power costs per Sol.
-			double power = spec.getBaseFullPower();
-			double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL;
-			double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
-			result -= powerValue;
+//			// Subtract power costs per Sol.
+//			double power = spec.getBaseFullPower();
+//			double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL;
+//			double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
+//			result -= powerValue;
 
 			if (result < 0D)
 				result = 0D;
@@ -1943,22 +2027,6 @@ public class BuildingManager implements Serializable {
 
 			return result;
 		}
-	}
-
-	/**
-	 * Gets the value of a building at the settlement.
-	 *
-	 * @param building the building.
-	 * @return building value (VP).
-	 */
-	public double getBuildingValue(Building building) {
-		double result = getBuildingValue(building.getBuildingType(), false);
-
-		// Modify building value by its wear condition.
-		double wearCondition = building.getMalfunctionManager().getWearCondition();
-		result *= (wearCondition / 100D) * .75D + .25D;
-
-		return result;
 	}
 
 	/**

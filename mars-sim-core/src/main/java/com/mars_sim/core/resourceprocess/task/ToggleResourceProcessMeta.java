@@ -130,18 +130,23 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	
 	private static final double MIN_SCORE = 1;
 	private static final double MAX_SCORE = 150;
+	
 	private static final double WASTE_THRESHOLD = 0.3; // % waste need to be available to toggle
+	
 	private static final double GOD_BIAS = 2048;	
-	private static final double OMNI_BIAS = 1792; //1536;	
-	private static final double UNBELIEVABLY_HIGH_BIAS = 1024;	
-	private static final double EXCEEDINGLY_HIGH_BIAS = 512;	
-	private static final double SUPREMELY_HIGH_BIAS = 256;	
-	private static final double EXTREME_HIGH_BIAS = 128;
-	private static final double MEGA_HIGH_BIAS = 64;
-	private static final double SUPER_HIGH_BIAS = 32;
-	private static final double HIGH_BIAS = 16;
-	private static final double MID_BIAS = 8;
-	private static final double LOW_BIAS = 4;
+	private static final double OMNI_BIAS = 1792;
+	private static final double HOVERING = 1536;
+	private static final double GREAT_BIAS = 1280;	
+	private static final double UNBELIEVABLE = 1024;	
+	private static final double EXCEEDING = 512;	
+	private static final double SUPREME = 256;	
+	private static final double TRENDY = 192;	
+	private static final double EXTREME = 128;
+	private static final double MEGA = 64;
+	private static final double SUPER = 32;
+	private static final double HIGH = 16;
+	private static final double MID = 8;
+	private static final double LOW = 4;
 	
 	private static Map<Integer, Double> moduleFactor = new HashMap<>();
 	
@@ -431,7 +436,6 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			// Stored amount is slower and more time consuming
 //			double supply = gm.getSupplyScore(resource);
 
-
 			if (input) {
 				// For inputs:
 				
@@ -459,28 +463,28 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isAmbientInputResource(resource)
 						&& ResourceUtil.isCO(resource)) {
 					// Note: 'Ambient' is used mostly for CO & CO2 only - needed to slow down certain processes
-					score += mrate * MEGA_HIGH_BIAS;
+					score += mrate * MEGA;
 				} else if (ResourceUtil.isRawMaterial(resource)   			// all ores, all minerals, sand)
 					|| ResourceUtil.isChemical(resource)) {					// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 
-					score += mrate / MEGA_HIGH_BIAS;
+					score += mrate / MEGA;
 				} else if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
-					score += mrate * UNBELIEVABLY_HIGH_BIAS;
+					score += mrate * HOVERING;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
-					score += mrate * EXTREME_HIGH_BIAS;
+					score += mrate * TRENDY;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
-					score += mrate * EXTREME_HIGH_BIAS;
+					score += mrate * TRENDY;
 				} else if (ResourceUtil.isTier3Resource(resource)) {  		// oxygen
-					score += mrate * MEGA_HIGH_BIAS;
+					score += mrate * SUPER;
 				} else if (ResourceUtil.isDerivedResource(resource)) { 		// glucose, leaves, soil 
-					score += mrate / MEGA_HIGH_BIAS;
+					score += mrate / MEGA;
 				} else if (ResourceUtil.isTier1Resource(resource) 			// ice, brine water, rock salt
 					|| ResourceUtil.isInSitu(resource)						// all regolith types
 					|| ResourceUtil.isWasteProduct(resource)) { 			// grey water, black water, * waste
-					score += mrate / SUPER_HIGH_BIAS;
+					score += mrate / SUPER;
 				} else if (ResourceUtil.isTier2Resource(resource)) { 		// water
 					score += mrate;
 				} else if (ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick	
-					score += mrate / MID_BIAS;
+					score += mrate / MID;
 				} else {
 					score += mrate;
 				}
@@ -520,31 +524,31 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
 				// Note: 'waste' is used for both CO and CO2 
-					score += mrate * SUPER_HIGH_BIAS;
+					score += mrate * SUPER;
 				} else if (ResourceUtil.isHydrogen(resource)) { 		// hydrogen
 					score += mrate * OMNI_BIAS;
 				} else if (ResourceUtil.isMethane(resource)) { 			// methane
-					score += mrate * SUPREMELY_HIGH_BIAS;
+					score += mrate * SUPREME;
 				} else if (ResourceUtil.isMethanol(resource)) { 		// methanol
-					score += mrate * SUPREMELY_HIGH_BIAS;
+					score += mrate * SUPREME;
 				} else if (ResourceUtil.isTier3Resource(resource)) {	// oxygen
-					score += mrate * MID_BIAS;
+					score += mrate * MID;
 				} else if (ResourceUtil.isRawElement(resource)      	// carbon, iron powder, iron oxide
 					|| ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick, gypsum plaster			
-					score += mrate * MEGA_HIGH_BIAS;					
+					score += mrate * MEGA;					
 				} else if (ResourceUtil.isTier1Resource(resource)) { 	// ice, brine water, rock salt	
 					score += mrate * GOD_BIAS ;	
 				} else if (ResourceUtil.isInSitu(resource)) {			// all regolith types
-					score += mrate * SUPREMELY_HIGH_BIAS;	
+					score += mrate * SUPREME;	
 				} else if (ResourceUtil.isWasteProduct(resource)) {		// CO, grey/black water, compost, all waste, carbon monoxide			
-					score += mrate * SUPER_HIGH_BIAS;
+					score += mrate * SUPER;
 				} else if (ResourceUtil.isChemical(resource)) {			// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 				
-					score += mrate * SUPREMELY_HIGH_BIAS;
+					score += mrate * SUPREME;
 				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil
 					|| ResourceUtil.isCriticalResource(resource)) {		// glass
-					score += mrate * SUPREMELY_HIGH_BIAS;
+					score += mrate * SUPREME;
 				} else if (ResourceUtil.isTier2Resource(resource)) { 	// water
-					score += mrate * SUPREMELY_HIGH_BIAS;
+					score += mrate *  TRENDY;
 				} else if (ResourceUtil.isRawMaterial(resource)) { 		// all ores, all minerals, sand
 					score += mrate * GOD_BIAS;
 				} else

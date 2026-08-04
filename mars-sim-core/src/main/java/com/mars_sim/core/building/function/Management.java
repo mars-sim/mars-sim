@@ -58,7 +58,7 @@ public class Management extends Function {
             Settlement settlement) {
 
         // Settlements need enough management buildings to support population.
-        double demand = settlement.getNumCitizens();
+        double demand = settlement.getNumCitizens() / 5D;
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
@@ -71,14 +71,29 @@ public class Management extends Function {
             supply += capacity * wearFactor;
         }
 
-        if (!newBuilding) {
-            supply -= buildingConfig.getFunctionSpec(buildingName, FunctionType.MANAGEMENT).getCapacity();
-            if (supply < 0D) supply = 0D;
-        }
-
         return demand / (supply + 1D);
     }
 
+    /**
+     * Gets the value of this function.
+     *
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+        // Settlements need enough management buildings to support population.
+        double demand = getBuilding().getSettlement().getNumCitizens() / 5D;
+
+        // Supply based on wear condition of buildings.
+        double supply = 0D;
+ 
+        double capacity = getBuilding().getManagement().getStaffCapacity();
+        double wearFactor = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
+        supply += capacity * wearFactor;
+
+        return demand / (supply + 1D);
+    }
+    
 	/**
 	 * Gets an available building with the management function.
 	 *
@@ -129,6 +144,11 @@ public class Management extends Function {
 		return staff;
 	}
 
+	/**
+	 * Is the office space full ?
+	 * 
+	 * @return
+	 */
 	public boolean isFull() {
         return staff >= staffCapacity;
 	}

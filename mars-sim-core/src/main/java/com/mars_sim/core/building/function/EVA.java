@@ -59,7 +59,7 @@ public class EVA extends Function {
 			Settlement settlement) {
 
 		// Demand is one airlock capacity for every four inhabitants.
-		double demand = settlement.getNumCitizens() / 4D;
+		double demand = settlement.getNumCitizens() / 8D;
 
 		double supply = 0D;
 		boolean removedBuilding = false;
@@ -69,18 +69,31 @@ public class EVA extends Function {
 			}
 			else {
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += building.getEVA().airlock.getCapacity() * wearModifier;
+				supply += building.getEVA().getAirlock().getCapacity() * wearModifier;
 			}
 		}
 
-		double airlockCapacityValue = demand / (supply + 1D);
-
-		// Note: building.getEVA().airlock.getCapacity() is the same as the airlockCapacity below
-		double airlockCapacity = buildingConfig.getFunctionSpec(type, FunctionType.EVA).getCapacity();
-
-		return airlockCapacity * airlockCapacityValue;
+		return demand / (supply + 1D);
 	}
 
+	/**
+	 * Gets the value of the function for a named building.
+	 * 
+	 * @return value (VP) of building function.
+	 */
+	public double getFunctionValue() {
+
+		// Demand is one airlock capacity for every four inhabitants.
+		double demand = getBuilding().getSettlement().getNumCitizens() / 8D;
+
+		double supply = 0D;
+		
+		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		supply += airlockCapacity * wearModifier;
+
+		return demand / (supply + 1D);
+	}
+	
 	/**
 	 * Gets the building's airlock.
 	 * 

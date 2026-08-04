@@ -46,4 +46,14 @@ public class WasteProcessing extends ResourceProcessor {
 		List<ResourceProcessEngine> processes = (processSpec != null ? processSpec.getProcesses() : Collections.emptyList());
 		return calculateFunctionValue(settlement, processes);
 	}
+	
+
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+        return getFunctionValue(building.getBuildingType(), false, getSettlement());
+    }
 }

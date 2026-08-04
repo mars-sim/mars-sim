@@ -15,6 +15,7 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.HouseKeeping;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -272,7 +273,6 @@ public class AlgaeFarming extends Function {
 		currentFood = initalFood;
 	}
 
-
 	/**
 	 * Gets the value of the function for a named building type.
 	 * 
@@ -285,10 +285,13 @@ public class AlgaeFarming extends Function {
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		// The demand should be the amount of algae needed to produce food for settlement population
-		double demand = 2D * settlement.getNumCitizens();
-
-		// The supply is the production capability and the amount of algae at settlement.
-		double supply = 0D;
+		double demand = settlement.getNumCitizens();
+		
+		double supply = settlement.getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.BOTANY))
+				.sum();	
+		
+		// The supply includes the production capability and the amount of algae at settlement.
 		boolean removedBuilding = false;
 		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.ALGAE_FARMING)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
@@ -305,6 +308,31 @@ public class AlgaeFarming extends Function {
 		return (demand / (supply + 1D)) * foodValue;
 	}
 
+	/**
+	 * Gets the value of this function.
+	 * 
+	 * @return value (VP) of building function. Called by BuildingManager.java
+	 *         getBuildingValue()
+	 */
+	public double getFunctionValue() {
+
+		// The demand should be the amount of algae needed to produce food for settlement population
+		double demand = getSettlement().getNumCitizens();
+		
+		double supply = getSettlement().getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.BOTANY))
+				.sum();	
+		
+		// The supply includes the production capability and the amount of algae at settlement.		
+		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		supply += building.getAlgae().getCurrentAlgae() * wearModifier;
+
+		// Modify result by value (VP) of spirulina at the settlement.
+		double foodValue = getGoodsManager().getGoodValuePoint(ResourceUtil.SPIRULINA_ID);
+
+		return (demand / (supply + 1D)) * foodValue;
+	}
+	
 	/**
 	 * Time passing for the building.
 	 * 

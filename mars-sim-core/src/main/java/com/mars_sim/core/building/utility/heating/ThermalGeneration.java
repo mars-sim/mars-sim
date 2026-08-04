@@ -150,11 +150,12 @@ public class ThermalGeneration extends Function {
 				removedBuilding = true;
 			} else {
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += getHeatSourceSupply(building.getThermalGeneration().heatSources) * wearModifier;
+				supply += getHeatSourceSupply(building.getThermalGeneration().getHeatSources()) * wearModifier;
 			}
 		}
 
 		double existingHeatValue = demand / (supply + 1D);
+		
 		var spec = buildingConfig.getFunctionSpec(buildingName, FunctionType.THERMAL_GENERATION);
 		if (spec instanceof GenerationSpec ss) {
 			double heatSupply = ss.getSources().stream()
@@ -162,10 +163,34 @@ public class ThermalGeneration extends Function {
 
 			return heatSupply * existingHeatValue;
 		}
+		
 		return 0;
-
 	}
 
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+    	double demand = getSettlement().getThermalSystem().getTotalHeatReq();
+
+		double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		double supply = getHeatSourceSupply(heatSources) * wearModifier;
+
+		double existingHeatValue = demand / (supply + 1D);
+		var spec = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.THERMAL_GENERATION);
+		if (spec instanceof GenerationSpec ss) {
+			double heatSupply = ss.getSources().stream()
+									.mapToDouble(SourceSpec::getCapacity).sum();
+
+			return heatSupply * existingHeatValue;
+		}
+		
+		return 0;
+    }
+    
 	/**
 	 * Gets the supply value of a list of heat sources.
 	 * 

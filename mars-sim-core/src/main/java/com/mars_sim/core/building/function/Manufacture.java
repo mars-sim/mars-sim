@@ -91,8 +91,8 @@ public class Manufacture extends Function {
 	// Data members.
 	private int techLevel;
 	private int numMaxConcurrentProcesses;
-	private Map<Tooling, ToolCapacity> availableTools;
 	
+	private Map<Tooling, ToolCapacity> availableTools;
 	private List<WorkshopProcess> ongoingProcesses;
 		
 	/**
@@ -131,27 +131,29 @@ public class Manufacture extends Function {
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		double result;
+        // Settlements need enough management buildings to support population.
+        double demand = settlement.getNumCitizens() / 8;
 
 		FunctionSpec spec = buildingConfig.getFunctionSpec(type, FunctionType.MANUFACTURE);
 		int buildingTech = spec.getTechLevel();
 
-		double demand = settlement.getAllAssociatedPeople().stream()
+		double supply = settlement.getAllAssociatedPeople().stream()
 				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE))
 				.sum();
 
-		double supply = 0D;
 		int highestExistingTechLevel = 0;
+		
 		boolean removedBuilding = false;
-		BuildingManager buildingManager = settlement.getBuildingManager();
-		for(Building building : buildingManager.getBuildingSet(FunctionType.MANUFACTURE)) {
+
+		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
 				Manufacture manFunction = building.getManufacture();
-				int tech = manFunction.techLevel;
-				double processes = manFunction.getCurrentTotalProcesses();
+				int tech = manFunction.getTechLevel();
+				double processes = manFunction.getMaxProcesses();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += (tech * tech) * processes * wearModifier;
+				supply += tech * processes * wearModifier;
 
 				if (tech > highestExistingTechLevel) {
 					highestExistingTechLevel = tech;
@@ -159,12 +161,12 @@ public class Manufacture extends Function {
 			}
 		}
 
-		double baseManufactureValue = demand / (supply + 1D);
+		double baseValue = demand / (supply + 1D);
 
-		double processes = spec.getIntegerProperty(CONCURRENT_PROCESSES);
-		double manufactureValue = (buildingTech * buildingTech) * processes;
+//		double processes = spec.getIntegerProperty(CONCURRENT_PROCESSES);
+//		double manufactureValue = buildingTech * processes;
 
-		result = manufactureValue * baseManufactureValue;
+		result = baseValue;
 
 		// If building has higher tech level than other buildings at settlement,
 		// add difference between best manufacturing processes.
@@ -180,6 +182,48 @@ public class Manufacture extends Function {
 
 			result += processValueDiff;
 		}
+
+		return result;
+	}
+
+	/**
+	 * Gets the value of this function.
+	 *
+	 * @return value (VP) of building function.
+	 */
+	public double getFunctionValue() {
+
+		double result;
+		// Note: do use getNumCitizens() since sum of skill level will be used.
+        double demand = getBuilding().getSettlement().getNumCitizens() / 8;
+
+		double supply = getBuilding().getSettlement().getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE))
+				.sum();
+
+		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		
+		supply += techLevel * numMaxConcurrentProcesses * wearModifier;
+
+		double baseValue = demand / (supply + 1D);
+
+//		double manufactureValue = techLevel * getCurrentTotalProcesses();
+
+		result =  baseValue;
+
+		int highestExistingTechLevel =  ManufactureUtil.getHighestManufacturingTechLevel(getBuilding().getSettlement());
+	
+		double bestBuildingProcessValue = getBestManufacturingProcessValue(techLevel, getBuilding().getSettlement());
+		
+		double bestExistingProcessValue = getBestManufacturingProcessValue(highestExistingTechLevel, getBuilding().getSettlement());
+		
+		double processValueDiff = bestExistingProcessValue - bestBuildingProcessValue;
+
+		processValueDiff = MathUtils.between(processValueDiff, 0, PROCESS_MAX_VALUE);
+		
+		// If building has higher tech level than other buildings at settlement,
+		// add difference between best manufacturing processes.
+		result += processValueDiff;
 
 		return result;
 	}
@@ -245,10 +289,11 @@ public class Manufacture extends Function {
 	}
 
 	/**
-	 * What spare capacity for new processes does this facility have
+	 * Gets the spare capacity for new processes does this facility have.
+	 * 
 	 * @return
 	 */
-	public int getCapacity() {
+	public int getSpareCapacity() {
 		return numMaxConcurrentProcesses - getCurrentTotalProcesses();
 	}
 	

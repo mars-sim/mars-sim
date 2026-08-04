@@ -28,18 +28,18 @@ public class Administration extends Function {
 
 	private static final String POPULATION_SUPPORT = "population-support";
 
-
 	// Data members
+	
+	// Note: define the use of populationSupport
 	private int populationSupport;
 	private int staff;
 	private int staffCapacity;
-
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param building the building this function is for.
-	 * @param spec Spec of teh Administration Function
+	 * @param spec Spec of the Administration Function
 	 */
 	public Administration(Building building, FunctionSpec spec) {
 		// Use Function constructor.
@@ -51,7 +51,7 @@ public class Administration extends Function {
 	}
 
 	/**
-	 * Gets the value of the function for a named building.
+	 * Gets the full value of the function for a building type across the settlement.
 	 * 
 	 * @param type the building type.
 	 * @param newBuilding  true if adding a new building.
@@ -59,8 +59,8 @@ public class Administration extends Function {
 	 * @return value (VP) of building function.
 	 */
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
-
-		// Settlements need enough administration buildings to support population.
+		double value = 0;
+		// Note: do use getNumCitizens() since populationSupport and staffCapacity below will be used
 		double demand = settlement.getNumCitizens();
 
 		// Supply based on wear condition of buildings.
@@ -70,20 +70,36 @@ public class Administration extends Function {
 			Building adminBuilding = i.next();
 			Administration admin = adminBuilding.getAdministration();
 			double populationSupport = admin.getPopulationSupport();
+			double staffCapacity = admin.getStaffCapacity();
 			double wearFactor = ((adminBuilding.getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
-			supply += populationSupport * wearFactor;
+			supply += populationSupport - staffCapacity * wearFactor;
 		}
 
-		if (!newBuilding) {
-			supply -= buildingConfig.getFunctionSpec(type, FunctionType.ADMINISTRATION).getCapacity();
-			if (supply < 0D)
-				supply = 0D;
-		}
+		value = demand / (supply + 1D);
 
-		return demand / (supply + 1D);
+		return value;
 	}
 
+	/**
+	 * Gets the value of this function.
+	 * 
+	 * @return value (VP) of building function.
+	 */
+	@Override
+	public double getFunctionValue() {
+		double value = 0;
+		// Note: do use getNumCitizens() since populationSupport and staffCapacity below will be used
+		double demand = getBuilding().getSettlement().getNumCitizens();
 
+		double supply = 0D;
+
+		supply = populationSupport - staffCapacity;
+
+		value = (demand + 1) / (supply + 1D);
+
+		return value;
+	}
+	
 	/**
 	 * Gets the number of people this administration facility can support.
 	 * 

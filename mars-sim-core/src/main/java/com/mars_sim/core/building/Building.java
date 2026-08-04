@@ -60,6 +60,7 @@ import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
+import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -603,6 +604,16 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return getAssociatedSettlement().getBuildingManager();
 	}
 
+	/**
+	 * Gets the settlement's goods manager.
+	 *
+	 * @return goods manager
+	 */
+	public GoodsManager getGoodsManager() {
+		return getAssociatedSettlement().getGoodsManager();
+	}
+
+	
 	/**
 	 * Gets the building type.
 	 *

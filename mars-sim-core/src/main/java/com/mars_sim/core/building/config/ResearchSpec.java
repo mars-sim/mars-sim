@@ -11,7 +11,7 @@ import java.util.List;
 import com.mars_sim.core.science.ScienceType;
 
 /**
- * Specificaion for a Research Function
+ * Specification for a Research Function
  */
 public class ResearchSpec extends FunctionSpec {
 

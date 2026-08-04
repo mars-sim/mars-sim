@@ -19,6 +19,7 @@ import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -80,29 +81,31 @@ public class FoodProduction extends Function {
 	 * @throws Exception if error getting function value.
 	 */
 	public static double getFunctionValue(String buildingType, boolean newBuilding, Settlement settlement) {
-
+		
 		double result;
+		// Note: do use getNumCitizens() since sum of skill level will be used.
+		double demand = settlement.getNumCitizens();
 
 		FunctionSpec spec = buildingConfig.getFunctionSpec(buildingType, FunctionType.FOOD_PRODUCTION);
-
 		int buildingTech = spec.getTechLevel();
-
-		double demand = settlement.getAllAssociatedPeople().stream()
-						.mapToInt(p -> p.getSkillManager().getSkillLevel(SkillType.COOKING))
-						.sum();
-
-		double supply = 0D;
+		
+		double supply = settlement.getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.COOKING))
+				.sum();
+		
 		int highestExistingTechLevel = 0;
+		
 		boolean removedBuilding = false;
+		
 		for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingType) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				FoodProduction manFunction = building.getFoodProduction();
-				int tech = manFunction.techLevel;
-				double processes = manFunction.getNumPrintersInUse();
+				FoodProduction function = building.getFoodProduction();
+				int tech = function.techLevel;
+				double processes = function.getMaxProcesses();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += (tech * tech) * processes * wearModifier;
+				supply += tech * processes * wearModifier;
 
 				if (tech > highestExistingTechLevel) {
 					highestExistingTechLevel = tech;
@@ -110,15 +113,15 @@ public class FoodProduction extends Function {
 			}
 		}
 
-		double baseFoodProductionValue = demand / (supply + 1D);
+		double baseValue = demand / (supply + 1D);
 
 		double processes = spec.getIntegerProperty(CONCURRENT_PROCESSES);
-		double foodProductionValue = (buildingTech * buildingTech) * processes;
+		double manufactureValue = buildingTech * processes;
 
-		result = foodProductionValue * baseFoodProductionValue;
+		result = manufactureValue * baseValue;
 
 		// If building has higher tech level than other buildings at settlement,
-		// add difference between best food production processes.
+		// add difference between best manufacturing processes.
 		if (buildingTech > highestExistingTechLevel) {
 			double bestExistingProcessValue = 0D;
 			if (highestExistingTechLevel > 0D) {
@@ -126,6 +129,7 @@ public class FoodProduction extends Function {
 			}
 			double bestBuildingProcessValue = getBestFoodProductionProcessValue(buildingTech, settlement);
 			double processValueDiff = bestBuildingProcessValue - bestExistingProcessValue;
+
 			processValueDiff = MathUtils.between(processValueDiff, 0, PROCESS_MAX_VALUE);
 
 			result += processValueDiff;
@@ -134,6 +138,48 @@ public class FoodProduction extends Function {
 		return result;
 	}
 
+	/**
+	 * Gets the value of this function.
+	 * 
+	 * @return value (VP) of building function.
+	 */
+	public double getFunctionValue() {
+		
+		double result;
+		// Note: do use getNumCitizens() since sum of skill level will be used.
+		double demand = getSettlement().getNumCitizens();
+	
+		double supply = getSettlement().getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.COOKING))
+				.sum();
+	
+		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		
+		supply += techLevel * numMaxConcurrentProcesses * wearModifier;
+
+		double baseValue = demand / (supply + 1D);
+
+		double manufactureValue = techLevel * numMaxConcurrentProcesses;
+
+		result = manufactureValue * baseValue;
+
+		int highestExistingTechLevel =  FoodProductionUtil.getHighestFoodProductionTechLevel(getBuilding().getSettlement());
+	
+		double bestBuildingProcessValue = getBestFoodProductionProcessValue(techLevel, getBuilding().getSettlement());
+		
+		double bestExistingProcessValue = getBestFoodProductionProcessValue(highestExistingTechLevel, getBuilding().getSettlement());
+		
+		double processValueDiff = bestExistingProcessValue - bestBuildingProcessValue;
+
+		processValueDiff = MathUtils.between(processValueDiff, 0, PROCESS_MAX_VALUE);
+		
+		// If building has higher tech level than other buildings at settlement,
+		// add difference between best food production processes.
+		result += processValueDiff;
+		
+		return result;
+	}
+	
 	/**
 	 * Gets the best food production process value for a given food production tech
 	 * level at a settlement.
@@ -146,7 +192,7 @@ public class FoodProduction extends Function {
 
 		double result = 0D;
 
-		for(FoodProductionProcessInfo process : FoodProductionUtil.getProcessesForTechSkillLevel(techLevel)) {
+		for (FoodProductionProcessInfo process : FoodProductionUtil.getProcessesForTechSkillLevel(techLevel)) {
 			double value = FoodProductionUtil.getFoodProductionProcessValue(process, settlement);
 			if (value > result) {
 				result = value;

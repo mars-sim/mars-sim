@@ -54,12 +54,13 @@ class TabPanelCooking extends EntityTabPanel<Settlement> implements TemporalComp
 	private JLabel availableMealsLabel;
 	/** The number of meals cooked today. */
 	private JLabel mealsTodayLabel;
-
+	/** The meals replenishment rate label. */
 	private JLabel mealsReplenishmentLabel;
+	/** The settlement meal shortfall label. */
+	private JLabel mealShortfallLabel;
 	
 	/** The number of cooks label. */
 	private JLabel numCooksLabel;
-
 	/** The cook capacity label. */
 	private JLabel cookCapacityLabel;
 
@@ -92,26 +93,30 @@ class TabPanelCooking extends EntityTabPanel<Settlement> implements TemporalComp
 
 		for(var m : meals.getMeals()) {
 			var msg = m.period().start() + " - " + m.period().end();
-			topPanel.addTextField(m.name(), msg, null);
+			topPanel.addRow(m.name(), msg);
 		}
 		
 		// Prepare cook number label
-		numCooksLabel = topPanel.addTextField(Msg.getString("TabPanelCooking.numberOfCooks"),
-											  "", null); //$NON-NLS-1$
-		cookCapacityLabel = topPanel.addTextField(Msg.getString("TabPanelCooking.cookCapacity"),
-													"", null); //$NON-NLS-1$
+		numCooksLabel = topPanel.addRow(Msg.getString("TabPanelCooking.numberOfCooks"),
+											  ""); //$NON-NLS-1$
+		cookCapacityLabel = topPanel.addRow(Msg.getString("TabPanelCooking.cookCapacity"),
+													""); //$NON-NLS-1$
 
 		// Prepare available meals label
-		AttributePanel m = new AttributePanel(3);
+		AttributePanel m = new AttributePanel();
 		m.setBorder(SwingHelper.createLabelBorder("Dishes"));
 
-		availableMealsLabel = m.addTextField(Msg.getString("TabPanelCooking.available"), //$NON-NLS-1$
-												"", null);
-		mealsTodayLabel = m.addTextField(Msg.getString("TabPanelCooking.madeToday"), //$NON-NLS-1$
-												"",null); 
-		mealsReplenishmentLabel = m.addTextField(
+		availableMealsLabel = m.addRow(Msg.getString("TabPanelCooking.available"), //$NON-NLS-1$
+												"");
+		mealsTodayLabel = m.addRow(Msg.getString("TabPanelCooking.madeToday"), //$NON-NLS-1$
+												""); 
+		mealsReplenishmentLabel = m.addRow(
 				Msg.getString("TabPanelCooking.replenishment"), //$NON-NLS-1$
-				"", null); 
+				"");
+		mealShortfallLabel = m.addRow(
+				Msg.getString("TabPanelCooking.shortfall"), //$NON-NLS-1$
+				""); 
+		
 		northPanel.add(m, BorderLayout.CENTER);
 
 		// Create scroll panel for the outer table panel.
@@ -130,10 +135,10 @@ class TabPanelCooking extends EntityTabPanel<Settlement> implements TemporalComp
 		table.setRowSelectionAllowed(true);
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(0).setPreferredWidth(140);
-		columnModel.getColumn(1).setPreferredWidth(47);
-		columnModel.getColumn(2).setPreferredWidth(45);
-		columnModel.getColumn(3).setPreferredWidth(45);
+		columnModel.getColumn(0).setPreferredWidth(150);
+		columnModel.getColumn(1).setPreferredWidth(42);
+		columnModel.getColumn(2).setPreferredWidth(38);
+		columnModel.getColumn(3).setPreferredWidth(38);
 		// Add the two methods below to make all heatTable columns
 		// resizable automatically when its Panel resizes
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
@@ -164,6 +169,7 @@ class TabPanelCooking extends EntityTabPanel<Settlement> implements TemporalComp
 		int cookCapacity = 0;
 		int availableMeals = 0;
 		int mealsToday = 0;
+
 		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.COOKING)) {
 			// for each building's kitchen in the settlement
 			Cooking kitchen = b.getCooking();
@@ -175,13 +181,19 @@ class TabPanelCooking extends EntityTabPanel<Settlement> implements TemporalComp
 
 		double mealsReplenishment = Math.round(settlement.getMealsReplenishmentRate() * 100.0) / 100.0;
 
+		int shortfall = Cooking.getSettlementMealShortfall(settlement);
 
-		mealsReplenishmentLabel.setText(
-							StyleManager.DECIMAL_PLACES1.format(mealsReplenishment));
-		availableMealsLabel.setText(Integer.toString(availableMeals)); //$NON-NLS-1$
-		mealsTodayLabel.setText(Integer.toString(mealsToday)); //$NON-NLS-1$
+		
 		numCooksLabel.setText(Integer.toString(numCooks)); //$NON-NLS-1$
 		cookCapacityLabel.setText(Integer.toString(cookCapacity)); //$NON-NLS-1$
+		
+		availableMealsLabel.setText(Integer.toString(availableMeals)); //$NON-NLS-1$
+		mealsTodayLabel.setText(Integer.toString(mealsToday)); //$NON-NLS-1$
+		mealsReplenishmentLabel.setText(StyleManager.DECIMAL_PLACES1.format(mealsReplenishment));
+
+		mealShortfallLabel.setText(Integer.toString(shortfall)); //$NON-NLS-1$
+		
+		
 	}
 
 	/**

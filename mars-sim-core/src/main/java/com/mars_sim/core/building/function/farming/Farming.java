@@ -31,6 +31,7 @@ import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.food.FoodType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.AmountResource;
@@ -179,6 +180,76 @@ public class Farming extends Function {
 				}
 			}
 		}
+	}
+	
+
+	/**
+	 * Gets the value of the function for a named building.
+	 *
+	 * @param type the building type.
+	 * @param newBuilding  true if adding a new building.
+	 * @param settlement   the settlement.
+	 * @return value (VP) of building function. Called by BuildingManager.java
+	 *         getBuildingValue()
+	 */
+	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
+
+		double supply = settlement.getAllAssociatedPeople().stream()
+						.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.BOTANY))
+						.sum();	
+				
+		// Demand is farming area (m^2) needed to produce food for settlement
+		// population.
+		double requiredFarmingAreaPerPerson = cropConfig.getFarmingAreaNeededPerPerson();
+		double demand = requiredFarmingAreaPerPerson * settlement.getNumCitizens();
+
+		// Supply is total farming area (m^2) of all farming buildings at settlement.
+		boolean removedBuilding = false;
+		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING)) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
+				removedBuilding = true;
+			} else {
+				Farming farmingFunction = building.getFarming();
+				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+				supply += farmingFunction.getGrowingArea() * wearModifier;
+			}
+		}
+
+		// NOTE: investigating if other food group besides food should be added as well
+		
+		// Modify result by value (VP) of food at the settlement.
+		double foodValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.FOOD_ID);
+
+		return (demand / (supply + 1D)) * foodValue;
+	}
+	
+	/**
+	 * Gets the value of this function.
+	 * 
+	 * @return value (VP) of building function. Called by BuildingManager.java
+	 *         getBuildingValue()
+	 */
+	public double getFunctionValue() {
+
+		double supply = getSettlement().getAllAssociatedPeople().stream()
+						.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.BOTANY))
+						.sum();	
+				
+		// Demand is farming area (m^2) needed to produce food for settlement
+		// population.
+		double requiredFarmingAreaPerPerson = cropConfig.getFarmingAreaNeededPerPerson();
+		double demand = requiredFarmingAreaPerPerson * getSettlement().getNumCitizens();
+
+		// Supply is total farming area (m^2) of all farming buildings at settlement.
+		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		supply += getGrowingArea() * wearModifier;
+
+		// NOTE: investigating if other food group besides food should be added as well
+		
+		// Modify result by value (VP) of food at the settlement.
+		double foodValue = getBuilding().getGoodsManager().getGoodValuePoint(ResourceUtil.FOOD_ID);
+
+		return (demand / (supply + 1D)) * foodValue;
 	}
 	
 	/**
@@ -631,47 +702,6 @@ public class Farming extends Function {
 				i++;
 			}
 		}
-	}
-
-	/**
-	 * Gets the value of the function for a named building.
-	 *
-	 * @param type the building type.
-	 * @param newBuilding  true if adding a new building.
-	 * @param settlement   the settlement.
-	 * @return value (VP) of building function. Called by BuildingManager.java
-	 *         getBuildingValue()
-	 */
-	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
-
-		double result;
-
-		// Demand is farming area (m^2) needed to produce food for settlement
-		// population.
-		double requiredFarmingAreaPerPerson = cropConfig.getFarmingAreaNeededPerPerson();
-		double demand = requiredFarmingAreaPerPerson * settlement.getNumCitizens();
-
-		// Supply is total farming area (m^2) of all farming buildings at settlement.
-		double supply = 0D;
-		boolean removedBuilding = false;
-		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING)) {
-			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
-				removedBuilding = true;
-			} else {
-				Farming farmingFunction = building.getFarming();
-				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += farmingFunction.getGrowingArea() * wearModifier;
-			}
-		}
-
-		// Modify result by value (VP) of food at the settlement.
-		double foodValue = settlement.getGoodsManager().getGoodValuePoint(ResourceUtil.FOOD_ID);
-
-		result = (demand / (supply + 1D)) * foodValue;
-
-		// NOTE: investigating if other food group besides food should be added as well
-
-		return result;
 	}
 
 	/**

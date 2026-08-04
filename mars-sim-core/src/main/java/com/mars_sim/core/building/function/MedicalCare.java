@@ -18,6 +18,7 @@ import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.config.MedicalCareSpec;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
@@ -38,7 +39,11 @@ public class MedicalCare extends Function implements MedicalAid {
 	private static final long serialVersionUID = 1L;
 
 	private static SimLogger logger = SimLogger.getLogger(MedicalCare.class.getName());
-
+	
+	private int techLevel;
+	
+	private int beds;
+	
 	private MedicalStation medicalStation;
 
 	/**
@@ -52,7 +57,7 @@ public class MedicalCare extends Function implements MedicalAid {
 		// Use Function constructor.
 		super(FunctionType.MEDICAL_CARE, spec, building);
 
-		int techLevel = spec.getTechLevel();
+		techLevel = spec.getTechLevel();
 		
 		// THis is not good. all details should be in the FunctionSpec
 		var medSpec = (MedicalCareSpec) spec;
@@ -61,8 +66,10 @@ public class MedicalCare extends Function implements MedicalAid {
 				.map(np -> np.position().toPosition(building))
 				.collect(Collectors.toSet());
 		
+		beds = bedSet.size();
+
 		// NOTE: distinguish between activity spots and bed locations
-		medicalStation = new MedicalStation(building.getName(), techLevel, bedSet.size());
+		medicalStation = new MedicalStation(building.getName(), techLevel, beds);
 		
 		medicalStation.setMedicalBeds(bedSet);
 	}
@@ -79,10 +86,14 @@ public class MedicalCare extends Function implements MedicalAid {
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
 		// Demand is 5 medical points per inhabitant.
-		double demand = settlement.getNumCitizens() * 5D;
+		double demand = settlement.getNumCitizens();
 
-		double supply = 0D;
+		double supply = settlement.getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.MEDICINE))
+				.sum();
+		
 		boolean removedBuilding = false;
+		
 		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
@@ -91,16 +102,33 @@ public class MedicalCare extends Function implements MedicalAid {
 				double tech = medFunction.getTechLevel();
 				double beds = medFunction.getSickBedNum();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += (tech * tech) * beds * wearModifier;
+				supply += tech * beds * wearModifier;
 			}
 		}
 
-		double value = demand / (supply + 1D) / 10D;
-
-		double tech = buildingConfig.getFunctionSpec(type, FunctionType.MEDICAL_CARE).getTechLevel();
-		return tech * value;
+		return demand / (supply + 1D) / 10D;
 	}
 
+	/**
+	 * Gets the value of this function.
+	 * 
+	 * @return value (VP) of building function.
+	 */
+	public double getFunctionValue() {
+
+		// Demand is 5 medical points per inhabitant.
+		double demand = getBuilding().getSettlement().getNumCitizens();
+
+		double supply = getBuilding().getSettlement().getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.MEDICINE))
+				.sum();
+		
+		double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		
+		supply += techLevel * beds * wearModifier;
+
+		return demand / (supply + 1D) / 10D;
+	}
     
     /**
      * Dispatch a worker to serve a medical need by occupying an activity spot.

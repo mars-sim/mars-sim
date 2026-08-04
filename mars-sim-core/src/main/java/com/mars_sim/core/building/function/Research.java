@@ -51,7 +51,7 @@ implements Lab {
     /** Number of researchers supported at any given time. */
     private int researcherCapacity;
     /** How advanced the laboratory is. */
-    private int technologyLevel;
+    private int techLevel;
     /** The number of people currently doing research in laboratory. */
     private int researcherNum = 0;
     
@@ -98,18 +98,18 @@ implements Lab {
         // Use Function constructor
         super(FunctionType.RESEARCH, spec, building);
 
-        maxEntropy = maxEntropy + 1.5 * technologyLevel;
+        maxEntropy = maxEntropy + 1.5 * techLevel;
         
         setupTissueCultures();
         
-        technologyLevel = spec.getTechLevel();
+        techLevel = spec.getTechLevel();
         researcherCapacity = spec.getCapacity();
         researchSpecialties = ((ResearchSpec) spec).getScience();
         researchQualityMap = new EnumMap<>(ScienceType.class);
 		
         // Initialize the research quality map
         for (ScienceType scienceType : researchSpecialties) {
-        	researchQualityMap.put(scienceType, technologyLevel * 1.0);
+        	researchQualityMap.put(scienceType, techLevel * 1.0);
         }
     }
 
@@ -143,7 +143,7 @@ implements Lab {
                     }
                     else {
                         Research researchFunction = building.getResearch();
-                        int techLevel = researchFunction.technologyLevel;
+                        int techLevel = researchFunction.techLevel;
                         int labSize = researchFunction.researcherCapacity;
                         double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                         for (int x = 0; x < researchFunction.getTechSpecialties().length; x++) {
@@ -169,12 +169,47 @@ implements Lab {
     }
 
     /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+        // Settlements need enough recreation buildings to support population.
+        double demand = getSettlement().getNumCitizens();
+        double supply = 0D;
+        
+        double wearFactor = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
+        
+        var spec = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.RESEARCH);
+        if (spec instanceof ResearchSpec rs) {
+            for (ScienceType specialty : rs.getScience()) {
+                for(Person p : getSettlement().getAllAssociatedPeople()) {
+                	supply += p.getSkillManager().getSkillLevel(specialty.getSkill());
+                }
+                
+                for (int x = 0; x < getTechSpecialties().length; x++) {
+                    ScienceType researchSpecialty = getTechSpecialties()[x];
+                    if (specialty.equals(researchSpecialty)) {
+                    	supply += techLevel * researcherCapacity;
+                    }
+                }
+            }
+        }
+        
+        supply *= wearFactor;
+   
+        return demand / (supply + 1D);
+    }
+    
+    
+    /**
      * Gets the research tech level of this building.
      * 
      * @return tech level
      */
     public int getTechnologyLevel() {
-        return technologyLevel;
+        return techLevel;
     }
 
     /**
@@ -513,7 +548,7 @@ implements Lab {
 		double result = researchQualityMap.size();
 
 		// Add maintenance for tech level.
-		result *= technologyLevel * .5;
+		result *= techLevel * .5;
 
 		// Add maintenance for observer capacity.
 		result *= researcherCapacity * .25;

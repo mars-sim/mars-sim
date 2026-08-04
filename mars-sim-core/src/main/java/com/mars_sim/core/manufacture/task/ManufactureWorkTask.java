@@ -198,7 +198,7 @@ public class ManufactureWorkTask extends Task {
 	 */
 	private WorkshopProcess createNewProcess() {
 
-		if (workshop.getCapacity() > 0) {
+		if (workshop.getSpareCapacity() > 0) {
 			int skill = getWorkerSkill(worker);
 
 			// Get something off the queue

@@ -150,6 +150,29 @@ public class PowerGeneration extends Function {
 		return 0;
 	}
 
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+		double demand = getSettlement().getPowerGrid().getPowerLoad();
+
+		double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		double supply = getPowerSourceSupply(building.getPowerGeneration().powerSources, getSettlement()) * wearModifier;
+
+		double existingPowerValue = demand / (supply + 1D);
+		var spec = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.POWER_GENERATION);
+		if (spec instanceof GenerationSpec ss) {
+			double powerSupply = ss.getSources().stream()
+									.mapToDouble(SourceSpec::getCapacity).sum();
+
+			return existingPowerValue / powerSupply;
+		}
+		return 0;
+    }
+    
 	/**
 	 * Gets the supply value of a list of power sources.
 	 * 

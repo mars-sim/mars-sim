@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
@@ -88,12 +89,12 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 				
 		// Base details
 		var attrPanel = new AttributePanel();
-		attrPanel.setBorder(SwingHelper.createLabelBorder("Details"));
+		attrPanel.setBorder(SwingHelper.createLabelBorder("Sponsorship"));
 		mainPanel.add(attrPanel);
 
-		attrPanel.addTextField("Code", agencyShortName, null);
-		attrPanel.addTextField(Msg.getString("entity.name"), ra.getDescription(), null);
-		attrPanel.addTextField("Corporation", Boolean.toString(ra.isCorporation()), null);
+		attrPanel.addRow(Msg.getString("entity.name"), ra.getDescription());
+		attrPanel.addRow("Code", agencyShortName);
+		attrPanel.addRow("Corporation", Conversion.capitalize(Boolean.toString(ra.isCorporation())));
 
 		// Country names
 		String cText = String.join(", ", ra.getCountries());

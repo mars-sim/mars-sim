@@ -93,7 +93,7 @@ class AmountResourceGood extends Good {
 	// 5 important Resource Processes that produce other resources (alongside with Carbon Monoxide)
 	// Note2: high CO demand can be counter productive for manufacturing processes that uses it as input 
 	private static final double CO_FLATTENING_FACTOR = 0.5;
-	private static final double CO2_FLATTENING_FACTOR = 1.1;
+	private static final double CO2_FLATTENING_FACTOR = 1.05;
 		
 	private static final double ORE_FLATTENING_FACTOR = 1.0;
 	private static final double MINERAL_FLATTENING_FACTOR = 0.9;
@@ -151,7 +151,7 @@ class AmountResourceGood extends Good {
 	
 	// Demand Modifiers
     private static final double ICE_VALUE_MODIFIER = 0.75;
-	private static final double WATER_VALUE_MODIFIER = 0.2;
+	private static final double WATER_VALUE_MODIFIER = 0.15;
 	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
@@ -187,7 +187,7 @@ class AmountResourceGood extends Good {
 	private static final int LIME_MODIFIER = 6;
 	
 	// gases
-	private static final int CO2_VALUE_MODIFIER = 1;
+	private static final double CO2_VALUE_MODIFIER = 0.8;
 
 	// metal
 	private static final int IRON_OXIDE_MODIFIER = 10;

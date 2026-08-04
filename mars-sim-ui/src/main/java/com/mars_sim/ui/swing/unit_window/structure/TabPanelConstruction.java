@@ -106,7 +106,7 @@ class TabPanelConstruction extends EntityTabPanel<Settlement> implements EntityL
 
 		var queuePanel = new JPanel();
 		queuePanel.setLayout(new BorderLayout());
-		queuePanel.setBorder(SwingHelper.createLabelBorder("Construction Q"));
+		queuePanel.setBorder(SwingHelper.createLabelBorder("Construction Queue"));
 		mainContentPanel.add(queuePanel);
 
 		var selectionPanel = new  JPanel(new BorderLayout());
@@ -114,7 +114,7 @@ class TabPanelConstruction extends EntityTabPanel<Settlement> implements EntityL
 		queuePanel.add(selectionPanel, BorderLayout.NORTH);
 
 		// Create user building selection
-		var label = new JLabel("New Building :");
+		var label = new JLabel("Building List:");
 		label.setFont(StyleManager.getLabelFont());
 		selectionPanel.add(label, BorderLayout.WEST);
 		

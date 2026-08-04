@@ -75,6 +75,25 @@ public class EarthReturn extends Function {
 	}
 
 	/**
+	 * Gets the value of this function.
+	 *
+	 * @return value (VP) of building function.
+	 */
+	public double getFunctionValue() {
+
+		// Settlements need enough Earth return facilities to support population.
+		double demand = getBuilding().getSettlement().getNumCitizens();
+
+		// Supply based on wear condition of buildings.
+		double supply = 0D;
+
+		double wearFactor = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
+		supply += crewCapacity * wearFactor;
+
+		return demand / (supply + 1D);
+	}
+	
+	/**
 	 * Get the crew capacity for an Earth return mission.
 	 *
 	 * @return crew capacity.

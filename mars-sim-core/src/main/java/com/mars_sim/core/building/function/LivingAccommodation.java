@@ -56,6 +56,8 @@ public class LivingAccommodation extends Function {
 	/** The cache for the last millisol. */
 	private int millisolIntCache;
 	
+	private int capacity;
+	
 	/** The average water used per person for washing (showers, washing clothes, hands, dishes, etc) [kg/sol].*/
 	private double washWaterUsage;
 	/** percent portion of grey water generated from waste water.*/
@@ -77,6 +79,8 @@ public class LivingAccommodation extends Function {
 		// Call Function constructor.
 		super(FunctionType.LIVING_ACCOMMODATION, spec, building);
 
+		capacity = spec.getCapacity();
+		
 		dailyWaterUsage = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
 		
 		greyWaterGen = new SolSingleMetricDataLogger(MAX_NUM_SOLS);
@@ -107,8 +111,8 @@ public class LivingAccommodation extends Function {
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
-		// Demand is two beds for every inhabitant (with population expansion in mind).
-		double demand = settlement.getNumCitizens() * 2D;
+		// Note: do use getNumCitizens() since bestExistingProcessValue() below will be used
+		double demand = settlement.getNumCitizens();
 
 		double supply = 0D;
 		boolean removedBuilding = false;
@@ -119,15 +123,43 @@ public class LivingAccommodation extends Function {
 				removedBuilding = true;
 			} else {
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += building.getLivingAccommodation().getBedCap() * wearModifier;
+				supply += building.getLivingAccommodation().getCapacity() * wearModifier;
 			}
 		}
 
-		double value = demand / (supply + 1D) / 5;
-
-		return value * buildingConfig.getFunctionSpec(buildingName, FunctionType.LIVING_ACCOMMODATION).getCapacity();
+		return demand / (supply + 1D);
 	}
 
+
+	/**
+	 * Gets the value of this function.
+	 *
+	 * @return value (VP) of building function.
+	 */
+	public double getFunctionValue() {
+
+		// Note: do use getNumCitizens() since bestExistingProcessValue() below will be used
+		double demand = getBuilding().getSettlement().getNumCitizens();
+
+		double supply = 0D;
+
+		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		supply += building.getLivingAccommodation().getCapacity() * wearModifier;
+
+		return demand / (supply + 1D);
+	}
+
+	
+	
+	/**
+	 * Gets the capacity of this function (namely, the number of beds).
+	 * 
+	 * @return
+	 */
+	public int getCapacity() {
+		return capacity;
+	}
+	
 	/**
 	 * Gets the max number of regular beds in the living accommodation.
 	 *

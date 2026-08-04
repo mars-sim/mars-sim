@@ -100,16 +100,16 @@ public class Storage extends Function {
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
-		double result = 0D;
+		double value = 0;
 
 		var spec = buildingConfig.getFunctionSpec(buildingName, FunctionType.STORAGE);
 		if (spec instanceof StorageSpec ss) { 
-			for(Entry<Integer, Double> e : ss.getCapacityResources().entrySet()) {
+			for (Entry<Integer, Double> e : ss.getCapacityResources().entrySet()) {
 				Integer resource = e.getKey();
 				double storageAmount = e.getValue();
 
 				double existingStorage = 0D;
-				for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.STORAGE)) {
+				for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.STORAGE)) {
 					Storage storageFunction = building.getStorage();
 					double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 					existingStorage += storageFunction.resourceCapacities.getOrDefault(resource, 0D) * wearModifier;
@@ -121,27 +121,55 @@ public class Storage extends Function {
 						existingStorage = 0D;
 				}
 
+				double supply = existingStorage;
+				
 				double resourceValue = settlement.getGoodsManager().getGoodValuePoint(resource);
+				
 				double resourceStored = settlement.getSpecificAmountResourceStored(resource);
-				double resourceDemand = resourceValue * (resourceStored + 1D);
 
-				double currentStorageDemand = resourceDemand - existingStorage;
-				if (currentStorageDemand < 0D)
-					currentStorageDemand = 0D;
-
-				// Determine amount of this building's resource storage is useful to the
-				// settlement.
-				double buildingStorageNeeded = Math.min(currentStorageDemand, storageAmount);
-
-				double storageValue = buildingStorageNeeded / 1000D;
-
-				result += storageValue;
+				double demand = resourceStored;
+	
+				value += demand / (supply + 1) * resourceValue;
 			}
 		}
 
-		return result;
+		return value;
 	}
 
+	
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+		double value = 0;
+
+		var spec = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.STORAGE);
+		if (spec instanceof StorageSpec ss) { 
+			for (Entry<Integer, Double> e : ss.getCapacityResources().entrySet()) {
+				Integer resource = e.getKey();
+
+				double existingStorage = 0D;
+				
+				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+				existingStorage += resourceCapacities.getOrDefault(resource, 0D) * wearModifier;
+
+				double supply = existingStorage;
+				
+				double resourceValue = building.getGoodsManager().getGoodValuePoint(resource);
+				
+				double resourceStored = building.getSpecificAmountResourceStored(resource);
+
+				double demand = resourceStored;
+	
+				value += demand / (supply + 1) * resourceValue;
+			}
+		}
+
+		return value;
+    }
+    
 	/**
 	 * Gets a map of the resource capacities this building is capable of storing in kg.
 	 *

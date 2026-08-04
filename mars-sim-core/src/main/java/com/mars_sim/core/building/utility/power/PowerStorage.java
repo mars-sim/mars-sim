@@ -105,6 +105,28 @@ public class PowerStorage extends Function {
 		return value;
 	}
 
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+		double hrInSol = 1000D * PowerGrid.HOURS_PER_MILLISOL;
+		double demand = getSettlement().getPowerGrid().getPowerLoad() * hrInSol;
+
+		double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		double supply = getBattery().getEnergyStorageCapacity() * wearModifier;
+
+		double existingPowerStorageValue = demand / (supply + 1D);
+
+		double powerStorage = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.POWER_STORAGE).getCapacity();
+
+		double value = existingPowerStorageValue / hrInSol / powerStorage;
+		if (value > 10D) value = 10D;
+
+		return value;
+    }  
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {

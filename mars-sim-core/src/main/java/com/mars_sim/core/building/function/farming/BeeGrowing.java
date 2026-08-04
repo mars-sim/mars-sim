@@ -35,6 +35,26 @@ public class BeeGrowing extends Function {
         
 	}
 
+
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+        // Settlements need enough recreation buildings to support population.
+        double demand = getSettlement().getNumCitizens();
+
+        // Supply based on wear condition of buildings.
+        double supply = 0D;
+  
+        double wearFactor = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
+        supply += wearFactor;
+
+        return demand / (supply + 1D);
+    }
+    
     public Farming getFarming() {
     	return farm;
     }

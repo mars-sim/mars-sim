@@ -53,6 +53,59 @@ public class AstronomicalObservation extends Function {
 	}
 
 	/**
+	 * Gets the value of the function for a named building type.
+	 * 
+	 * @param type  the building type.
+	 * @param newBuilding  true if adding a new building.
+	 * @param settlement   the settlement.
+	 * @return value (VP) of building function.
+	 * @throws Exception if error getting function value.
+	 */
+	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
+		// Note: do use getNumCitizens() since observatoryCapacity below will be used
+		double demand =  settlement.getNumCitizens();
+		
+		double supply = settlement.getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.ASTRONOMY))
+				.sum();
+		
+		boolean removedBuilding = false;
+		for (Building building : settlement.getBuildingManager().getObservatories()) {
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
+				removedBuilding = true;
+			} else {
+				AstronomicalObservation astroFunction = building.getAstronomicalObservation();
+				int techLevel = astroFunction.getTechnologyLevel();
+				int observatoryCapacity = astroFunction.getObservatoryCapacity();
+				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+				supply += techLevel * observatoryCapacity * wearModifier;
+			}
+		}
+		
+		return demand / (supply + 1);
+	}
+
+	/**
+	 * Gets the value of this function.
+	 * 
+	 * @return value (VP) of building function.
+	 */
+	public double getFunctionValue() {
+		
+		Settlement s = getSettlement();
+		// Note: do use getNumCitizens() since observatoryCapacity below will be used
+		double demand =  s.getNumCitizens();
+		
+		double supply = getSettlement().getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.ASTRONOMY))
+				.sum();	
+		
+		supply += techLevel * observatoryCapacity;
+		
+		return demand / (supply + 1);
+	}
+	
+	/**
 	 * Gets the amount of power required when function is at full power.
 	 * 
 	 * @return power (kW)
@@ -116,65 +169,6 @@ public class AstronomicalObservation extends Function {
 	 */
 	public int getTechnologyLevel() {
 		return techLevel;
-	}
-
-	/**
-	 * Gets the value of the function for a named building type.
-	 * 
-	 * @param type  the building type.
-	 * @param newBuilding  true if adding a new building.
-	 * @param settlement   the settlement.
-	 * @return value (VP) of building function.
-	 * @throws Exception if error getting function value.
-	 */
-	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
-
-		double observatoryDemand = 0D;
-		ScienceType astronomyScience = ScienceType.ASTRONOMY;
-
-		// Determine settlement demand for astronomical observatories.
-		SkillType astronomySkill = astronomyScience.getSkill();
-		for(Person p : settlement.getAllAssociatedPeople()) {
-			observatoryDemand += p.getSkillManager().getSkillLevel(astronomySkill);
-		}
-
-		// Determine existing settlement supply of astronomical observatories.
-		double observatorySupply = 0D;
-		boolean removedBuilding = false;
-		for (Building building : settlement.getBuildingManager().getObservatories()) {
-			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
-				removedBuilding = true;
-			} else {
-				AstronomicalObservation astroFunction = building.getAstronomicalObservation();
-				int techLevel = astroFunction.techLevel;
-				int observatorySize = astroFunction.observatoryCapacity;
-				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				observatorySupply += techLevel * observatorySize * wearModifier;
-			}
-		}
-
-		// Determine existing settlement value for astronomical observatories.
-		double existingObservatoryValue = observatoryDemand / (observatorySupply + 1D);
-
-		// Determine settlement value for this building's astronomical observatory
-		// function.
-		FunctionSpec fSpec = buildingConfig.getFunctionSpec(type, FunctionType.ASTRONOMICAL_OBSERVATION);
-		int techLevel = fSpec.getTechLevel();
-		int observatorySize = fSpec.getCapacity();
-		int buildingObservatorySupply = techLevel * observatorySize;
-
-		double result = buildingObservatorySupply * existingObservatoryValue;
-
-		// Subtract power usage cost per sol.
-		double power = fSpec.getDoubleProperty(BuildingConfig.POWER);
-		double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL * 1000D;
-		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
-		result -= powerValue;
-
-		if (result < 0D)
-			result = 0D;
-
-		return result;
 	}
 
 	@Override

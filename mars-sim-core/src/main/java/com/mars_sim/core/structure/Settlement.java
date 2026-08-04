@@ -238,8 +238,9 @@ public class Settlement extends Unit implements Temporal,
 	private double regolithDigValue;
 	/** The recommended regolith prob value. */
 	private double recommendedRegolithDigValue;
-	
-	/** The factor due to the population. */
+	/** A factor due to the population. */
+	private double popFactor0 = 1;
+	/** A factor due to the population. */
 	private double popFactor = 1;
 	/** The average areothermal potential at this location. */
 	private double areothermalPotential = 0;
@@ -1687,6 +1688,20 @@ public class Settlement extends Unit implements Temporal,
 		return numCitizens;
 	}
 	
+	/**
+	 * Gets a factor due to the size of the population.
+	 * 
+	 * @return
+	 */
+	public double getPopulationFactor0() {
+		return popFactor0;
+	}
+	
+	/**
+	 * Gets a factor due to the size of the of population.
+	 * 
+	 * @return
+	 */
 	public double getPopulationFactor() {
 		return popFactor;
 	}
@@ -1861,7 +1876,9 @@ public class Settlement extends Unit implements Temporal,
 			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
 			// Update the population factor
-			popFactor = Math.max(1, Math.log(Math.sqrt(numCitizens)));
+			popFactor0 = Math.sqrt(numCitizens);
+			
+			popFactor = Math.max(1, Math.log(popFactor0));
 
 			missionControl.populationChanged();
 

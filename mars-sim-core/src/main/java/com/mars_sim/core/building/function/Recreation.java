@@ -71,6 +71,30 @@ public class Recreation extends Function {
     }
 
     /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+        // Settlements need enough recreation buildings to support population.
+        double demand = getSettlement().getNumCitizens();
+
+        // Supply based on wear condition of buildings.
+        double supply = 0D;
+  
+        double wearFactor = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
+        supply += populationSupport * wearFactor;
+  
+//        if (!newBuilding) {
+//            supply -= buildingConfig.getFunctionSpec(buildingName, FunctionType.RECREATION).getCapacity();
+//            if (supply < 0D) supply = 0D;
+//        }
+
+        return demand / (supply + 1D);
+    }
+    
+    /**
      * Gets the number of people this recreation facility can support.
      * 
      * @return population that can be supported.

@@ -666,7 +666,7 @@
 
 	<resource name="Nitrate" type="compound" phase="solid"> NO3 is an essential nutrient for plants</resource>
 	<resource name="Nitrite" type="compound" phase="solid"> NO2 is an essential nutrient for plants</resource>
-	<resource name="Potash lye" type="compound" phase="solid" demand="5"> Potassium Hydroxide (KOH). Used for
+	<resource name="Potash lye" type="compound" phase="solid" demand="2"> Potassium Hydroxide (KOH). Used for
 		liquid soap production. Also for food processing, such as curing olives and making certain types of noodles.</resource>
 	<resource name="Sand" type="compound" phase="solid"> Soil with iron oxide removed. Used for making glass.</resource>
 	<resource name="Silica" type="compound" phase="solid"> The word Silica came from the Latin silex. 

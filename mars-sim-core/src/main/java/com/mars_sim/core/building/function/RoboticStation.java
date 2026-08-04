@@ -84,11 +84,29 @@ public class RoboticStation extends Function {
 			}
 		}
 
-		double stationCapacityValue = demand / (supply + 1D);
-		int stationCapacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.ROBOTIC_STATION).getCapacity();
-		return stationCapacity * stationCapacityValue;
+//		double stationCapacityValue = demand / (supply + 1D);
+//		int stationCapacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.ROBOTIC_STATION).getCapacity();
+//		return stationCapacity * stationCapacityValue;
+		
+		return demand / (supply + 1D);
 	}
+	
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
 
+        // Settlements need enough recreation buildings to support population.
+        double demand = getSettlement().getNumBots() * 1D;
+
+        double wearModifier = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
+        double supply = getOccupantCapacity() * wearModifier;
+
+        return demand / (supply + 1D);
+    }
+    
 	/**
 	 * Time passing for the building.
 	 * 

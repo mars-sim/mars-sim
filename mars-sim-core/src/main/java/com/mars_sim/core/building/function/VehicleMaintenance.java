@@ -71,6 +71,69 @@ public class VehicleMaintenance extends Function {
 							.toList();
 	}
 
+	
+	/**
+	 * Gets the value of the function for a named building.
+	 * 
+	 * @param buildingName the building name.
+	 * @param newBuilding true if adding a new building.
+	 * @param settlement the settlement.
+	 * @return value (VP) of building function.
+	 * @throws Exception if error getting function value.
+	 */
+	public static double getFunctionValue(String buildingName, boolean newBuilding,
+			Settlement settlement) {
+
+		// Demand is one ground vehicle capacity for every ground vehicles.
+		double demand = settlement.getOwnedVehicleNum();
+
+		double supply = 0D;
+		boolean removedBuilding = false;
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE).iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+				removedBuilding = true;
+			}
+			else {
+				VehicleMaintenance maintFunction = building.getVehicleParking();
+				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+				supply += maintFunction.getRoverCapacity() * wearModifier;
+			}
+		}
+
+		double vehicleCapacityValue = demand / (supply + 1D);
+
+		var spec = (VehicleMaintenanceSpec) buildingConfig.getFunctionSpec(buildingName, FunctionType.VEHICLE_MAINTENANCE);
+		double roverCapacity = spec.getRoverParking().size() + 1.0;
+
+		double luvCapacity = spec.getUtilityParking().size() + 1.0;
+		
+		double flyerCapacity = spec.getFlyerParking().size() + 1.0;
+		
+		return (roverCapacity + luvCapacity + flyerCapacity) * vehicleCapacityValue;
+	}
+
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+        // Settlements need enough recreation buildings to support population.
+        double demand = getSettlement().getNumCitizens();
+    	
+		// Demand is one ground vehicle capacity for every ground vehicles.
+		demand += getSettlement().getOwnedVehicleNum();
+  
+        double wearModifier = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
+        
+        double supply = (getRoverCapacity() + .25 * getUtilityVehicleCapacity() + .5 * getFlyerCapacity()) * wearModifier;
+        
+        return demand / (supply + 1D);
+    }
+    
 	/**
 	 * Gets the number of rovers the building can accommodate.
 	 * 
@@ -440,49 +503,8 @@ public class VehicleMaintenance extends Function {
 		return roverLocations.size() * 5D;
 	}
 	
-	
-	/**
-	 * Gets the value of the function for a named building.
-	 * 
-	 * @param buildingName the building name.
-	 * @param newBuilding true if adding a new building.
-	 * @param settlement the settlement.
-	 * @return value (VP) of building function.
-	 * @throws Exception if error getting function value.
-	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding,
-			Settlement settlement) {
 
-		// Demand is one ground vehicle capacity for every ground vehicles.
-		double demand = settlement.getOwnedVehicleNum();
-
-		double supply = 0D;
-		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
-				removedBuilding = true;
-			}
-			else {
-				VehicleMaintenance maintFunction = building.getVehicleParking();
-				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += maintFunction.getRoverCapacity() * wearModifier;
-			}
-		}
-
-		double vehicleCapacityValue = demand / (supply + 1D);
-
-		var spec = (VehicleMaintenanceSpec) buildingConfig.getFunctionSpec(buildingName, FunctionType.VEHICLE_MAINTENANCE);
-		double roverCapacity = spec.getRoverParking().size() + 1.0;
-
-		double luvCapacity = spec.getUtilityParking().size() + 1.0;
-		
-		double flyerCapacity = spec.getFlyerParking().size() + 1.0;
-		
-		return (roverCapacity + luvCapacity + flyerCapacity) * vehicleCapacityValue;
-	}
-
+    
 	/**
 	 * Inner class to represent a parking location for vehicles in the building.
 	 */

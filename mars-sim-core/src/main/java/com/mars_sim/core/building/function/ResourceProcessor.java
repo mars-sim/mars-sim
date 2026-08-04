@@ -63,14 +63,15 @@ public abstract class ResourceProcessor extends Function {
 	 */
 	protected static double calculateFunctionValue(Settlement settlement, List<ResourceProcessEngine> processSpecs) {
 
-		double result = 0D;
+		double demand = 0;
+		double supply = 0;
+		
 		for (ResourceProcessEngine process : processSpecs) {
-			double processValue = 0D;
 			var spec = process.getProcessSpec();
 			for (Integer outResource : spec.getOutputResources()) {
 				if (!spec.isWasteOutputResource(outResource)) {
 					double fullRate = process.getBaseFullOutputRate(outResource);
-					processValue += settlement.getGoodsManager().getGoodValuePoint(outResource) * fullRate;
+					demand += settlement.getGoodsManager().getGoodValuePoint(outResource) * fullRate;
 				}
 			}
 
@@ -79,7 +80,7 @@ public abstract class ResourceProcessor extends Function {
 			for (int inResource : spec.getInputResources()) {
 				if (!spec.isAmbientInputResource(inResource)) {
 					double fullRate = process.getBaseFullInputRate(inResource);
-					processValue -= settlement.getGoodsManager().getGoodValuePoint(inResource) * fullRate;
+					double baseSupply = settlement.getGoodsManager().getGoodValuePoint(inResource) * fullRate;
 
 					// Check inventory limit.
 					double inputSupply = settlement.getSpecificAmountResourceStored(inResource);
@@ -89,29 +90,22 @@ public abstract class ResourceProcessor extends Function {
 							inputInventoryLimit = limit;
 						}
 					}
+					
+					supply += baseSupply * inputInventoryLimit;
 				}
 			}
 
 			// Subtract value of require power.
-			double powerHrsRequiredPerReaction = spec.getkWRequired();
-			double powerValue = powerHrsRequiredPerReaction * settlement.getPowerGrid().getPowerValue();
-			processValue -= powerValue;
-
-			if (processValue < 0D) {
-				processValue = 0D;
-			}
-
-			// Modify by input inventory limit.
-			processValue *= inputInventoryLimit;
-
-			if (processValue > PROCESS_MAX_VALUE) {
-				processValue = PROCESS_MAX_VALUE;
-			}
-
-			result += processValue;
+//			double powerHrsRequiredPerReaction = spec.getkWRequired();
+//			double powerValue = powerHrsRequiredPerReaction * settlement.getPowerGrid().getPowerValue();
+//			processValue -= powerValue;
+//
+//			if (processValue < 0D) {
+//				processValue = 0D;
+//			}
 		}
 
-		return result;
+		return demand / (supply + 1) ;
 	}
 
 	/**

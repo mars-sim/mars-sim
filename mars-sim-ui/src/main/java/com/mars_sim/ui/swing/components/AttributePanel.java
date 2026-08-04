@@ -71,7 +71,8 @@ public class AttributePanel extends JPanel {
         super();
 		buildLayout(cols);
     }
-
+    
+    
 	/**
 	 * Adds a text field and label to a Panel. The layout should be Spring layout.
 	 * 
@@ -135,5 +136,9 @@ public class AttributePanel extends JPanel {
 	 */
 	public void addBlankField() {
 		attributeLayout.addBlankCell();
+	}
+	
+	public void updateItem() {
+		
 	}
 }

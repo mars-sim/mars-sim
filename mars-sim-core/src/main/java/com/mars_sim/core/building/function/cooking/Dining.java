@@ -40,6 +40,7 @@ public class Dining extends Function {
 
     /**
      * Gets the value of the function for a named building.
+     * 
      * @param buildingName the building name.
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
@@ -49,11 +50,12 @@ public class Dining extends Function {
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
 
-        // Settlements need enough dining capacity for all associated people.
-        double demand = settlement.getNumCitizens();
+		// Note: do use getNumCitizens() since getDiningCapacity below will be used
+        double demand = settlement.getNumCitizens() / 6D;
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
+        
         Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.DINING).iterator();
         while (i.hasNext()) {
             Building diningBuilding = i.next();
@@ -63,15 +65,34 @@ public class Dining extends Function {
             supply += capacity * wearFactor;
         }
 
-        if (!newBuilding) {
-            double capacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.DINING).getCapacity();
-            supply -= capacity;
-            if (supply < 0D) supply = 0D;
-        }
+//        if (!newBuilding) {
+//            double capacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.DINING).getCapacity();
+//            supply -= capacity;
+//            if (supply < 0D) supply = 0D;
+//        }
 
         return demand / (supply + 1D);
     }
 
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+		// Note: do use getNumCitizens() since getDiningCapacity below will be used
+        double demand = getBuilding().getSettlement().getNumCitizens() / 6D;
+
+        // Supply based on wear condition of buildings.
+        double supply = 0D;
+        
+        double wearFactor = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
+        supply += capacity * wearFactor;
+
+        return demand / (supply + 1D);
+    }
+    
     /**
      * Gets the dining capacity of the building.
      * 

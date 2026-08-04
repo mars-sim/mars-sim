@@ -13,6 +13,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.config.SourceSpec;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.building.config.GenerationSpec;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -131,32 +132,54 @@ public class Computation extends Function {
 	 */
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
-		double demand = settlement.getPowerGrid().getPowerLoad();
+		double demand = settlement.getPopulationFactor0();
 
-		double supply = 0D;
+		double supply = settlement.getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.COMPUTING))
+				.sum();
+		
 		boolean removedBuilding = false;
+		
 		for (Building building : settlement.getBuildingManager().getComNodes()) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
 				Computation com = building.getComputation();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += com.getCurrentCU() * wearModifier;
+				supply += com.getPeakCU() * wearModifier;
 			}
 		}
 
-		double existingPowerValue = demand / (supply + 1D);
-
-		var spec = buildingConfig.getFunctionSpec(type, FunctionType.THERMAL_GENERATION);
-		if (spec instanceof GenerationSpec ss) {
-			double powerSupply = ss.getSources().stream()
-									.mapToDouble(SourceSpec::getCapacity).sum();
-
-			return powerSupply * existingPowerValue;
-		}
-		return 0;
+//		var spec = buildingConfig.getFunctionSpec(type, FunctionType.THERMAL_GENERATION);
+//		if (spec instanceof GenerationSpec ss) {
+//			double powerSupply = ss.getSources().stream()
+//									.mapToDouble(SourceSpec::getCapacity).sum();
+//			return powerSupply * existingPowerValue;
+//		}
+		
+		return demand / (supply + 1D);
 	}
 
+	/**
+	 * Gets the value of this function.
+	 * 
+	 * @return value (VP) of building function.
+	 */
+	public double getFunctionValue() {
+
+		double demand = getBuilding().getSettlement().getPopulationFactor0();
+
+		double supply = getBuilding().getSettlement().getAllAssociatedPeople().stream()
+				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.COMPUTING))
+				.sum();
+
+		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		
+		supply += getPeakCU() * wearModifier;
+		
+		return demand / (supply + 1D);
+	}
+	
 	/**
 	 * Sets the power efficiency
 	 * 

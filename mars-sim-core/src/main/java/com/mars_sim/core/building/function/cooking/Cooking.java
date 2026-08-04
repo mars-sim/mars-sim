@@ -172,6 +172,15 @@ public class Cooking extends Function {
 	}
 	
 	/**
+	 * Gets the cooking work time.
+	 * 
+	 * @return
+	 */
+	public double getCookingWorkTime() {
+		return cookingWorkTime;
+	}
+	
+	/**
 	 * Gets the cleaning agent usage.
 	 * 
 	 * @return
@@ -199,27 +208,49 @@ public class Cooking extends Function {
 	 * @throws Exception if error getting function value.
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
-
-		// Demand is 1 cooking capacity for every five inhabitants.
-		double demand = settlement.getNumCitizens() / 5D;
+		
+		// Note: do use getNumCitizens() since getCookCapacity() below will be used
+		double demand = settlement.getNumCitizens();
 
 		double supply = 0D;
+		
 		boolean removedBuilding = false;
-		for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.COOKING)) {
+		
+		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.COOKING)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
 				Cooking cookingFunction = building.getCooking();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += cookingFunction.cookCapacity * wearModifier;
+				supply += cookingFunction.getCookCapacity() * wearModifier;
 			}
 		}
 
-		double cookingCapacityValue = demand / (supply + 1D);
-		double cookingCapacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.COOKING).getCapacity();
-		return cookingCapacity * cookingCapacityValue;
+		return demand / (supply + 1D);
 	}
 
+	/**
+	 * Gets the value of this function.
+	 *
+	 * @return value (VP) of building function.
+	 */
+	public double getFunctionValue() {
+
+		// Note: do use getNumCitizens() since getCookCapacity() below will be used
+		double demand = getBuilding().getSettlement().getNumCitizens();
+
+		double supply = 0D;
+	
+		for (Building building : getBuilding().getBuildingManager().getBuildingSet(FunctionType.COOKING)) {
+			Cooking cookingFunction = building.getCooking();
+			double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+			supply += cookingFunction.getCookCapacity() * wearModifier;
+		}
+
+		return demand / (supply + 1D);
+	}
+
+	
 	/**
 	 * Get the maximum number of cooks supported by this facility.
 	 *
@@ -265,14 +296,19 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Gets the number of cooked meals in this facility.
+	 * Gets the number of available cooked meals now in this facility.
 	 *
 	 * @return number of meals
 	 */
 	public int getNumberOfAvailableCookedMeals() {
 		return availableDishes.size();
 	}
-
+	
+	/**
+	 * Gets the total number of cooked meals today in this facility.
+	 *
+	 * @return number of meals
+	 */
 	public int getTotalNumberOfCookedMealsToday() {
 		return mealCounterPerSol;
 	}
@@ -342,6 +378,12 @@ public class Cooking extends Function {
 		return cookNoMore;
 	}
 
+	/**
+	 * Gets the meal shortfall figure for a settlement.
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static final int getSettlementMealShortfall(Settlement s) {
 		// Force rounding up so at least one meal will be need if anyone is inside
 		int requiredMeals = (int)Math.ceil(s.getIndoorPeopleCount() * s.getMealsReplenishmentRate());

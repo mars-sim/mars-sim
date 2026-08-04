@@ -39,7 +39,6 @@ import com.mars_sim.ui.swing.utils.model.BaseBuildingModel;
 /**
  * This is a tab panel for displaying the composition of air of each inhabitable building in a settlement.
  */
-@SuppressWarnings("serial")
 class TabPanelAirComposition extends EntityTabPanel<Settlement> implements TemporalComponent {
 
 	private static final String O2_NAME = Msg.getString("TabPanelAirComposition.o2"); //$NON-NLS-1$

@@ -50,7 +50,7 @@ public class Exercise extends Function {
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
-		// Demand is one exerciser capacity for every four inhabitants.
+		// Note: do use getNumCitizens() since getExerciserCapacity() below will be used
 		double demand = settlement.getNumCitizens() / 4D;
 
 		double supply = 0D;
@@ -63,17 +63,35 @@ public class Exercise extends Function {
 			} else {
 				Exercise exerciseFunction = (Exercise) building.getFunction(FunctionType.EXERCISE);
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += exerciseFunction.exerciserCapacity * wearModifier;
+				supply += exerciseFunction.getExerciserCapacity() * wearModifier;
 			}
 		}
 
-		double valueExerciser = demand / (supply + 1D);
-
-		double exerciserCapacity = buildingConfig.getFunctionSpec(buildingName, FunctionType.EXERCISE).getCapacity();
-
-		return exerciserCapacity * valueExerciser;
+		return demand / (supply + 1D);
 	}
 
+	/**
+	 * Gets the value of this function.
+	 * 
+	 * @param buildingName the building name.
+	 * @param newBuilding  true if adding a new building.
+	 * @param settlement   the settlement.
+	 * @return value (VP) of building function.
+	 * @throws Exception if error getting function value.
+	 */
+	public double getFunctionValue() {
+
+		// Note: do use getNumCitizens() since getExerciserCapacity() below will be used
+		double demand = getBuilding().getSettlement().getNumCitizens() / 4D;
+
+		double supply = 0D;
+
+		double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+		supply += exerciserCapacity * wearModifier;
+
+		return demand / (supply + 1D);
+	}
+	
 	/**
 	 * Gets the number of people who can use the exercise facility at once.
 	 * 

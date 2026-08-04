@@ -64,4 +64,29 @@ public class ResourceProcessing extends ResourceProcessor {
 		List<ResourceProcessEngine> processes = (processSpec != null ? processSpec.getProcesses() : Collections.emptyList());
 		return calculateFunctionValue(settlement, processes);
 	}
+	
+    /**
+     * Gets the value of this function.
+     * 
+     * @return value (VP) of building function.
+     */
+    public double getFunctionValue() {
+
+    	var spec = buildingConfig.getBuildingSpec(building.getBuildingType());
+		var processSpec = (ResourceProcessingSpec)spec.getFunctionSpec(FunctionType.RESOURCE_PROCESSING);
+		List<ResourceProcessEngine> processes = (processSpec != null ? processSpec.getProcesses() : Collections.emptyList());
+		return calculateFunctionValue(building.getSettlement(), processes);
+		
+//        // Settlements need enough recreation buildings to support population.
+//        double demand = getSettlement().getNumCitizens();
+//
+//        // Supply based on wear condition of buildings.
+//        double supply = 0D;
+//  
+//        double wearFactor = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
+//        supply += populationSupport * wearFactor;
+//
+//        return demand / (supply + 1D);
+    }
+    
 }

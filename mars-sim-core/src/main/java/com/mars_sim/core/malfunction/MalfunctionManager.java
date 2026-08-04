@@ -121,7 +121,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
-	private static final String PERC_CHANGE = "%.3f %% --> %.3f %%";
+	private static final String PERC_CHANGE = "%.4f %% --> %.4f %%";
 
 	private static final String OXYGEN = "Oxygen";
 	private static final String PROBABLE_CAUSE = ". Probable Cause: ";
@@ -530,7 +530,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 				return;
 			}
 			
-			// Record the number of failure
+			// 1. Record the number of failure
 			int numFailed = p.getValue();
 			part.recordCumFailure(numFailed);	
 			
@@ -541,37 +541,39 @@ public class MalfunctionManager implements Serializable, Temporal {
 			
 			double oldMTBF = part.getMTBF();
 			
-			// Retrieve the cumulative number of failure
+			// 2. Retrieve the cumulative number of failure
 			int cumFailure = part.getCumFailure();				
 			// Gets the mission sol
 			int missionSol = masterClock.getMarsTime().getMissionSol();
 			
 			double millisols = masterClock.getMarsTime().getMillisol();
-			// Gets the fractional sols in use 
+			// 3. Gets the fractional sols in use 
 			double solsInUse = missionSol + millisols/1000 - part.getStartSol();
 			
-			// Recompute the MTBF for this part
+			// 4. Recompute the MTBF for this part
 			double newMTBF = part.computeMTBF(solsInUse, numFailed);
-			// Recompute the reliability for this part
-			double newRel = part.computeReliability(solsInUse);
-			// Recompute the failure rate
+			// 5. Recompute the failure rate
 			double newFailure = part.computeFailureRate(solsInUse);
-			// Update all part's repair probability
+			// 6. Recompute the percent of reliability for this part
+			double newRel = part.computeReliability(solsInUse);
+			// 7. Update all part's repair probability percent
 			double newRepairProb = computeRepairPartProbability(malfunction, partName, oldRel, newRel);
-			// Recompute the malfunction failure 
-			double newMalProb = Math.max(oldMalProb * 1.1, oldMalProb * + 0.1 * newFailure);
+			// 8. Recompute the malfunction probability 
+			double newMalProb = MathUtils.between(oldMalProb * (1 + newFailure), 0, 100);
 			// Update the probability of failure for this particular malfunction
 			malfunction.setProbability(newMalProb);
 			
+			// Question: what can a settlement do to lower or stabilize the malfunction probability ?
+			
 			logger.warning("                     Part Name : " + partName + "");
-			logger.warning(" (0). Cumulative # of Failures : " + cumFailure);
-			logger.warning(" (1).         Current # Failed : " + numFailed);			
-			logger.warning(" (2).              Sols in Use : " + Math.round(solsInUse * 100.0)/100.0);
-			logger.warning(" (3).                     MTBF : " + String.format("%.2f sols --> %.2f sols", oldMTBF, newMTBF));	
-			logger.warning(" (4).             Failure Rate : " + String.format(PERC_CHANGE, oldFailure, newFailure));			
-			logger.warning(" (5).      Percent Reliability : " + String.format(PERC_CHANGE, oldRel, newRel));
-			logger.warning(" (6).       Repair Probability : " + String.format(PERC_CHANGE, oldRepairProb, newRepairProb));			
-			logger.warning(" (7).  Malfunction Probability : " + String.format(PERC_CHANGE, oldMalProb, newMalProb));
+			logger.warning(" (1).         Current # Failed : " + numFailed);
+			logger.warning(" (2). Cumulative # of Failures : " + cumFailure);
+			logger.warning(" (3).              Sols in Use : " + Math.round(solsInUse * 100.0)/100.0);
+			logger.warning(" (4).                     MTBF : " + String.format("%.2f sols --> %.2f sols", oldMTBF, newMTBF));
+			logger.warning(" (5).             Failure Rate : " + String.format(PERC_CHANGE, oldFailure, newFailure));
+			logger.warning(" (6).      Percent Reliability : " + String.format(PERC_CHANGE, oldRel, newRel));
+			logger.warning(" (7).       Repair Probability : " + String.format(PERC_CHANGE, oldRepairProb, newRepairProb));
+			logger.warning(" (8).  Malfunction Probability : " + String.format(PERC_CHANGE, oldMalProb, newMalProb));
 		}
 	}
 	

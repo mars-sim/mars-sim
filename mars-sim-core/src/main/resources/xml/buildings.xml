@@ -209,7 +209,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<!-- The functions the building is capable of performing/fulfilling. -->
 		<functions>
 		<!-- The building has administrative capabilities. -->
-			<administration capacity="2" population-support="8">
+			<administration capacity="2" population-support="4">
 				<activity>
 					<!-- Top and bottom seats of the west dining table -->
 					<activity-spot xloc="2.76" yloc="-0.62" />
@@ -3058,7 +3058,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<base-power power-priority="5" base-full-power="5.0" base-low-power="0.5" />
 
 		<functions>
-			<administration capacity="4" population-support="4">
+			<administration capacity="4" population-support="6">
 				<activity>
 					<activity-spot xloc="1.10" yloc="2.15" />
 					<activity-spot xloc="0.36" yloc="2.15" />
@@ -4285,7 +4285,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<base-power power-priority="9" base-full-power="2.0" base-low-power="0.2" />
 
 		<functions>
-			<administration capacity="2" population-support="6">
+			<administration capacity="2" population-support="4">
 				<activity>
 					<!-- temporarily using two of the activity-spots/chairs in the dining space for now -->
 					<activity-spot xloc="-.75" yloc="2.67" />

@@ -15,7 +15,7 @@ public class MarketData implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	private static final double DELTA = 0.01;
+	private static final double DELTA = 0.001;
 	private static final double LIMIT = 1 - DELTA;
 	
 	private double goodValue = 0.0;
@@ -38,7 +38,7 @@ public class MarketData implements Serializable {
 			newValue = (LIMIT * oldValue + DELTA * newValue);
 		}
 		else {
-			newValue = 0.01;
+			newValue = 1.0;
 		}
 		return newValue;
 	}
@@ -53,7 +53,7 @@ public class MarketData implements Serializable {
 		double oldValue = goodValue;
 		if (oldValue == 0.0) {
 			goodValue = data;
-			return goodValue;
+			return data;
 		}
 		var newValue = smoothValue(data, oldValue);
 		newValue = MathUtils.between(newValue, GoodsManager.MIN_VP, GoodsManager.MAX_FINAL_VP);
