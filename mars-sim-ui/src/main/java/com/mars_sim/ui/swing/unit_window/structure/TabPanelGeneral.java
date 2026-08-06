@@ -18,7 +18,6 @@ import java.util.Optional;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;

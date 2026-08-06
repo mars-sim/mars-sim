@@ -844,7 +844,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			else {						
 				// Not in settlement yet
 				logger.severe(p, 20_000L, STATUS_REPORT + roverName
-//						+ " in " + rover.getLocationStateType().getName()
 						+ " in Container Unit: " + p.getContainerUnit().getName());
 			}
 		}

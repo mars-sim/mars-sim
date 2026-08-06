@@ -74,7 +74,6 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	private JLabel containerLabel;
 	private JLabel localPosLabel;
 	private JLabel buildingLabel;
-//	private JLabel locationStateLabel;
 	private JLabel activitySpot;
 	private JLabel iceLabel;
 	private JLabel regolithLabel;
@@ -91,7 +90,6 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	private Coordinates locationCache = new Coordinates(0D, 0D);
 	private LocalPosition localPosCache;
 	
-//	private LocationStateType locationStateTypeCache;
 	
 	/**
 	 * Constructor.
@@ -226,7 +224,6 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 
 	private void addUnitValues(AttributePanel containerPanel) {
 		containerLabel = containerPanel.addRow("Container Unit", "");
-//		locationStateLabel = containerPanel.addRow("Location State", "");
 	}
 	
 	private void addMobileUnitValues(AttributePanel containerPanel) {
@@ -272,12 +269,6 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	 * @param unit
 	 */
 	private void updateVicinityLabel(AbstractMobileUnit unit) {
-//		LocationStateType locationStateType = unit.getLocationStateType();
-//		if (locationStateTypeCache != locationStateType) {
-//			locationStateTypeCache = locationStateType;
-//			String n = locationStateType != null ? locationStateType.getName() : "";
-//			locationStateLabel.setText(n);
-//		}
 			
 		Unit vicinityUnit = null;
 		
@@ -287,24 +278,6 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 				vicinityUnit = unit.getLocationTag().findVehicleVicinity();
 			}
 		}
-		
-		
-//		if (locationStateType == LocationStateType.SETTLEMENT_VICINITY) {
-//			// If this unit is near a settlement
-//			vicinityUnit = unit.getLocationTag().findSettlementVicinity();
-//		}
-//		else if (locationStateType == LocationStateType.VEHICLE_VICINITY) {
-//			// If this unit is near a vehicle
-//			vicinityUnit = unit.getLocationTag().findVehicleVicinity();
-//		}
-//		
-//		// If this unit is on Mars surface
-//		else if (locationStateType == LocationStateType.MARS_SURFACE) {
-//			if (unit instanceof Person || unit instanceof Robot) {
-//				vicinityUnit = unit.getLocationTag().findVehicleVicinity();
-//			}
-//			// if the unit is a vehicle or a settlement, then vicinityUnit is null
-//		}
 		
 		if (vicinityUnit != null) {
 			vicinityLabel.setText(vicinityUnit.getName());

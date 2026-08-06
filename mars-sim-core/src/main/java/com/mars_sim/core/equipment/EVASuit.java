@@ -30,7 +30,6 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.unit.UnitHolder;
 
 /**
@@ -47,7 +46,7 @@ import com.mars_sim.core.unit.UnitHolder;
  *     in the Earth's atmosphere at sea level,
  *
  * <p> (B) plus 5.31 kPa (40 Torr; 0.77 psi) CO2 and 
- * 
+ * O
  * <p> (C) 6.28 kPa (47 Torr; 0.91 psi) water vapor pressure,
  * 
  * <p> both of which must be subtracted from the alveolar pressure to get alveolar oxygen

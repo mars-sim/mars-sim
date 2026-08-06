@@ -2027,15 +2027,10 @@ public class Settlement extends Unit implements Temporal,
 				vehicle.setCoordinates(getCoordinates());
 				// Call findNewParkingLoc to get a non-collided x and y coordinates
 				vehicle.findNewParkingLoc();
-				// Directly update the location state type
-//				vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 			}
 			
 			else
-				// Directly update the location state type
-//				vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-		
-			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
+				fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
 			return true;
 		}

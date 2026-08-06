@@ -33,7 +33,6 @@ public abstract class AbstractMobileUnit extends Unit
     private int currentBuildingInt;
 	private double baseMass = 0D;
 	private LocationTag tag;
-//	private LocationStateType locnState;
 	private Coordinates location;
 	private UnitHolder container;
 
@@ -425,34 +424,6 @@ public abstract class AbstractMobileUnit extends Unit
 		return tag;
 	}
 	
-//	/**
-//	 * Gets the current location state for this mobile unit. It will be a refinement of the container.
-//	 */
-//	public LocationStateType getLocationStateType() {
-//		return locnState;
-//	}
-//
-//	public void setLocationStateType(LocationStateType locationStateType) {
-//		locnState = locationStateType;
-//	}
-//
-//    /**
-//	 * Returns the default Location state for a new container.
-//	 *
-//	 * @param newContainer
-//	 */
-//	protected static LocationStateType defaultLocationState(Object newContainer) {
-//		return switch (newContainer) {
-//            case Settlement s -> LocationStateType.INSIDE_SETTLEMENT;
-//            case Building b -> LocationStateType.INSIDE_SETTLEMENT;
-//            case Vehicle v -> LocationStateType.INSIDE_VEHICLE;
-//            case ConstructionSite c -> LocationStateType.MARS_SURFACE;
-//            case Person p -> LocationStateType.ON_PERSON_OR_ROBOT;
-//            case MarsSurface m -> LocationStateType.MARS_SURFACE;
-//            default -> null;
-//        };
-//	}
-
 	/**
 	 * Gets the unit's mass including inventory mass.
 	 * This method will be overridden by those inheriting this Unit.

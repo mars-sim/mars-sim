@@ -13,11 +13,8 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.config.FunctionSpec;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.time.MarsTime;
 
 /**
  * A building function for observing astronomical objects.

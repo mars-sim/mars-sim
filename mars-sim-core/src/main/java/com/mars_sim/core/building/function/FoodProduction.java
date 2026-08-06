@@ -19,7 +19,6 @@ import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;

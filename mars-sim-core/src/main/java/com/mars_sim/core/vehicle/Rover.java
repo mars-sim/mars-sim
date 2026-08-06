@@ -347,7 +347,6 @@ public class Rover extends GroundVehicle implements Crewable,
 			return true;
 		}
 		if (occupants.add(person)) {
-//			person.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			// Fire the unit event type
 			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, person);
 			return true;
@@ -383,7 +382,6 @@ public class Rover extends GroundVehicle implements Crewable,
 			return true;
 		}
 		if (robotOccupants.add(robot)) {
-//			robot.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, robot);
 			return true;
 		}

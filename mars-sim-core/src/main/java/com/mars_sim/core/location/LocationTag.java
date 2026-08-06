@@ -26,7 +26,7 @@ public class LocationTag implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String MARS_SURFACE = MarsSurface.NAME;// LocationStateType.MARS_SURFACE.getName();
+	public static final String MARS_SURFACE = MarsSurface.NAME;
 
 	private static final String VICINITY = " Vicinity";
 

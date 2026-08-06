@@ -398,8 +398,6 @@ public class VehicleMaintenance extends Function {
 	 */
 	private void parkInVicinity(Vehicle vehicle) {
 		vehicle.setPrimaryStatus(StatusType.PARKED);
-		// Update the vehicle's location state type
-//		vehicle.setLocationStateType(LocationStateType.SETTLEMENT_VICINITY);
 		// Find a new parking location
 		vehicle.findNewParkingLoc();
 	}
