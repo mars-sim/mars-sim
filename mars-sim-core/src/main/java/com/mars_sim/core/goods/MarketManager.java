@@ -60,7 +60,7 @@ public class MarketManager implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 	
-		if (pulse.isNewHalfMillisol()) {
+		if (pulse.isNewIntMillisol()) { //.isNewHalfMillisol()) {
 			updateMarket();
 		}
 		

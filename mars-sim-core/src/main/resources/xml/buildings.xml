@@ -419,7 +419,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="6"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 								
-				<process-engine name="Atmospheric processing" number-modules="96"/>
+				<process-engine name="Atmospheric processing" number-modules="10"/>
 
 				<!--For producing Water -->
 				<process-engine name="Melt Ice" number-modules="16" />
@@ -874,7 +874,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="24"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="12"/>					
 			
-				<process-engine name="Atmospheric processing" number-modules="128"/>
+				<process-engine name="Atmospheric processing" number-modules="20"/>
 
 				<!--For producing Water -->
 				<process-engine name="Melt Ice" number-modules="48" />
@@ -1590,7 +1590,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<!-- Inflatable Greenhouse -->
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Atmospheric processing" number-modules="96"/>
+				<process-engine name="Atmospheric processing" number-modules="10"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="6"/>		
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="6"/>
@@ -1771,7 +1771,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Atmospheric processing" number-modules="192"/>
+				<process-engine name="Atmospheric processing" number-modules="20"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="12"/>
@@ -2425,7 +2425,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<!-- "Atmospheric Processor" -->
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Atmospheric processing" number-modules="784"/>
+				<process-engine name="Atmospheric processing" number-modules="50"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="52"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
@@ -4420,7 +4420,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="6"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 				
-				<process-engine name="Atmospheric processing" number-modules="96"/>
+				<process-engine name="Atmospheric processing" number-modules="10"/>
 				
 				<!--For producing Water -->
 				<process-engine name="Melt Ice" number-modules="16" />
@@ -4875,7 +4875,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<!-- "Inground Greenhouse" -->
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Atmospheric processing" number-modules="96"/>
+				<process-engine name="Atmospheric processing" number-modules="10"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="6"/>
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="3"/>

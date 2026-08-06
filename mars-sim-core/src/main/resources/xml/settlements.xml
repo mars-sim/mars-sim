@@ -149,14 +149,14 @@
 		       optimal is being the recommended optimal  
 	-->
 	<essential-resources>
-		<resource name="Food" reserve="100" optimal="400" />
-		<resource name="Oxygen" reserve="2000" optimal="8000" />
-		<resource name="Methane" reserve="500" optimal="2000" />
-		<resource name="Methanol" reserve="500" optimal="2000" />
-		<resource name="Water" reserve="2500" optimal="10000" />
-		<resource name="Hydrogen" reserve="700" optimal="2800" />
-		<resource name="Nitrogen" reserve="50" optimal="200" />
-		<resource name="Carbon dioxide" reserve="50" optimal="200" />
+		<resource name="Food" reserve="50" optimal="150" />
+		<resource name="Oxygen" reserve="2000" optimal="6000" />
+		<resource name="Methane" reserve="500" optimal="1500" />
+		<resource name="Methanol" reserve="500" optimal="1500" />
+		<resource name="Water" reserve="2500" optimal="7500" />
+		<resource name="Hydrogen" reserve="700" optimal="2100" />
+		<resource name="Nitrogen" reserve="25" optimal="75" />
+		<resource name="Carbon dioxide" reserve="10" optimal="30" />
 	</essential-resources>
 
 	<!-- The Standard patterns are the default and but always be present. 

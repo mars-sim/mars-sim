@@ -74,6 +74,7 @@ public class PartGood extends Good {
 	private static final String WIRE_CONNECTOR = "wire connector";
 
 	private static final int VEHICLE_PART_COST = 3;
+	private static final int CIRCUIT_COMPONENT_DEMAND = 4;
 	
 	private static final double ROBOT_VALUE = .25;
 	private static final double EVA_PARTS_VALUE = .25;
@@ -172,7 +173,7 @@ public class PartGood extends Good {
 				if (name.contains(RESISTOR)
 					|| name.contains(CAPACITOR)
 					|| name.contains(DIODE)) {
-					return 2;
+					return CIRCUIT_COMPONENT_DEMAND;
 				}
 				if (name.equalsIgnoreCase(WIRE_CONNECTOR))
 					return .2;
@@ -426,7 +427,7 @@ public class PartGood extends Good {
 			projectedCache = projected;
 		}
 		else {
-			projectedCache = .01 * projected + .99 * projectedCache;
+			projectedCache = .005 * projected + .995 * projectedCache;
 		}
 		
 		owner.setProjectedDemandScore(this, projectedCache);

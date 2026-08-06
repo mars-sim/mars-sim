@@ -944,17 +944,29 @@ public class GoodsManager implements Serializable {
 //		}
 		else if (stored >= 2 * reserve) {
 			surplus = stored - 2 * reserve;
-			delta = Math.sqrt(surplus + 4);
+			delta = .5 * Math.sqrt(.5 * surplus);
+		}
+		else if (stored >= 1.5 * reserve) {
+			surplus = stored - 1.5 * reserve;
+			delta = .5 * Math.sqrt(surplus + 1);
 		}
 		else if (stored >= reserve) {
 			surplus = stored - reserve;
-			delta = Math.sqrt(2 * surplus + 8);
+			delta = .5 * Math.sqrt(2 * surplus + 2);
+		}
+		else if (stored < .5 * reserve) {
+			lacking = .5 * reserve - stored;
+			delta = .5 * Math.sqrt(16 * lacking + 16);
+		}
+		else if (stored < .25 * reserve) {
+			lacking = .25 * reserve - stored;
+			delta = .5 * Math.sqrt(8 * lacking + 8);
 		}
 		else if (stored < reserve) {
 			lacking = reserve - stored;
-			delta = Math.sqrt(4 * lacking + 16);
+			delta = .5 * Math.sqrt(4 * lacking + 4);
 		}
-
+		
 		double fraction = delta / demand;
 
 //		if (fraction > 1)

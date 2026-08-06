@@ -452,7 +452,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
 				
-				double mrate = rate * vp * .7;
+				double mrate = rate * vp;
 				
 				// Note: mass rate * VP -> demand
 				
@@ -516,14 +516,14 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
 
-				double mrate = rate * vp * .5;
+				double mrate = rate * vp * vp * .25;
 				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
-				// Note: 'waste' is used for both CO and CO2 
+				// Note: 'waste' is used for N2, CO and CO2 
 					score += mrate * SUPER;
 				} else if (ResourceUtil.isHydrogen(resource)) { 		// hydrogen
 					score += mrate * OMNI_BIAS;
@@ -539,8 +539,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isTier1Resource(resource)) { 	// ice, brine water, rock salt	
 					score += mrate * GOD_BIAS ;	
 				} else if (ResourceUtil.isInSitu(resource)) {			// all regolith types
-					score += mrate * SUPREME;	
-				} else if (ResourceUtil.isWasteProduct(resource)) {		// CO, grey/black water, compost, all waste, carbon monoxide			
+					score += mrate * EXCEEDING;	
+				} else if (ResourceUtil.isWasteProduct(resource)) {		// Nitrogen, CO, grey/black water, compost, all waste, carbon monoxide			
 					score += mrate * SUPER;
 				} else if (ResourceUtil.isChemical(resource)) {			// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 				
 					score += mrate * SUPREME;

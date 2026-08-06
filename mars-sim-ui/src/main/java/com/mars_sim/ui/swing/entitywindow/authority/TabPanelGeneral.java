@@ -94,7 +94,7 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 
 		attrPanel.addRow(Msg.getString("entity.name"), ra.getDescription());
 		attrPanel.addRow("Code", agencyShortName);
-		attrPanel.addRow("Corporation", Conversion.capitalize(Boolean.toString(ra.isCorporation())));
+		attrPanel.addRow("Corporation", ra.isCorporation() ? "Y" : "N");
 
 		// Country names
 		String cText = String.join(", ", ra.getCountries());

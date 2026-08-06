@@ -952,14 +952,15 @@
 		</description> 			
 		<input resource="Carbon dioxide" rate="1000.0" ambient="true" />
 		
-		<output resource="nitrogen" rate="20"  />	
-		<output resource="oxygen" rate="1.6"  />	
+		<output resource="nitrogen" rate="10.0" waste="false" />	
+		<output resource="oxygen" rate="16.0"  />	
 		<output resource="argon" rate="19.4"  />
-		<output resource="water" rate="0.3"  />
-		<output resource="methane" rate="0.000021"  />
-		<output resource="hydrogen" rate="0.15"  />
-		<output resource="Carbon monoxide" rate=".58"  />
-		<output resource="Carbon dioxide" rate="951.1" waste="true" />
+		<output resource="water" rate="3.0"  />
+		<output resource="methane" rate="0.00021"  />
+		<output resource="hydrogen" rate="1.5"  />
+		<output resource="Carbon monoxide" rate="2.8" waste="false" />
+		<output resource="Carbon dioxide" rate="40.0" waste="false" />
+		<!-- previous: output resource="Carbon dioxide" rate="9510.1" waste="true" /-->
 	</process> <!-- "Atmospheric Processing" -->
 	
 	<process name="Methanol Synthesis with Syngas" kW-required="0.1" >

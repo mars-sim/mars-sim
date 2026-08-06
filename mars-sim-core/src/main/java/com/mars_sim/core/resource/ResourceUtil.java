@@ -497,7 +497,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isWasteProduct(int resource) {
 		return switch (resource) {
-			case GREY_WATER_ID, BLACK_WATER_ID, SOLID_WASTE_ID, TOXIC_WASTE_ID, 
+			case NITROGEN_ID, GREY_WATER_ID, BLACK_WATER_ID, SOLID_WASTE_ID, TOXIC_WASTE_ID, 
 				COMPOST_ID, FOOD_WASTE_ID, CROP_WASTE_ID, CO_ID -> true;
 			default -> false;
 		};

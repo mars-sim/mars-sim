@@ -101,7 +101,7 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_FLATTENING_FACTOR = 0.75D;
 	private static final double SAND_FLATTENING_FACTOR = 1D;
 	
-	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.1;
+	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.2;
 	
 	private static final int MYLAR_FLATTENING_FACTOR = 3;
 	
@@ -146,13 +146,13 @@ class AmountResourceGood extends Good {
 	private static final double LEAVES_VALUE_MODIFIER = 1.5;
 	
 	// Future: Need to avoid making all regolith types max out at 10k proj demand.
-	private static final double REGOLITH_VALUE_MODIFIER = 0.01;
+	private static final double REGOLITH_VALUE_MODIFIER = 0.02;
 	
 	
 	// Demand Modifiers
     private static final double ICE_VALUE_MODIFIER = 0.75;
-	private static final double WATER_VALUE_MODIFIER = 0.15;
-	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
+	private static final double WATER_VALUE_MODIFIER = 0.25;
+	private static final double BRINE_WATER_VALUE_MODIFIER  = 1.25;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
 	private static final double SAND_VALUE_MODIFIER = 2.5;
@@ -164,7 +164,7 @@ class AmountResourceGood extends Good {
 	private static final double ROCK_VALUE_MODIFIER = 0.2;
 	private static final double METEORITE_VALUE_MODIFIER = 100;
 	
-	private static final double ROCK_SALT_VALUE_MODIFIER = .5;
+	private static final double ROCK_SALT_VALUE_MODIFIER = 1.5;
 	private static final double EPSOM_SALT_VALUE_MODIFIER = .05;
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
@@ -653,7 +653,7 @@ class AmountResourceGood extends Good {
 			projectedCache = projected;
 		}
 		else {
-			projectedCache = .01 * projected + .99 * projectedCache;
+			projectedCache = .005 * projected + .995 * projectedCache;
 		}
 		
 		owner.setProjectedDemandScore(this, projectedCache);
