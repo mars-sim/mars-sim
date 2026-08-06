@@ -111,7 +111,7 @@ public class BuildingManager implements Serializable {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(BuildingManager.class.getName());
 
-	private static final int BUILDING_VALUES_UPDATE = 250;
+	private static final int BUILDING_VALUES_UPDATE = 100;
 	
 	private transient MarsTime lastVPUpdateTime;
 
@@ -1856,14 +1856,16 @@ public class BuildingManager implements Serializable {
 		EnumMap<FunctionType, Double> functionTypeValues = new EnumMap<>(FunctionType.class); 
 		
 		for (Function f : building.getFunctions()) {
+			
 			FunctionType ft = f.getFunctionType();
+			
 			double value = f.getFunctionValue();
 		
 			// Note: Remove the wear condition modification in each getFunctionValue() in a Function subclass
 			
 			// Modify building value by its wear condition.
-			double wearCondition = building.getMalfunctionManager().getWearCondition();
-			value *= (wearCondition / 100D) * .75D + .25D;
+//			double wearCondition = building.getMalfunctionManager().getWearCondition();
+//			value *= (wearCondition / 100D) * .75D + .25D;
 			
 			functionTypeValues.put(ft, value);
 		}
@@ -1894,8 +1896,8 @@ public class BuildingManager implements Serializable {
 			// Note: Remove the wear condition modification in each getFunctionValue() in a Function subclass
 					
 			// Modify building value by its wear condition.
-			double wearCondition = building.getMalfunctionManager().getWearCondition();
-			result *= (wearCondition / 100D) * .75D + .25D;
+//			double wearCondition = building.getMalfunctionManager().getWearCondition();
+//			result *= (wearCondition / 100D) * .75D + .25D;
 			
 			buildingTypeValues.put(buildingType, result);
 

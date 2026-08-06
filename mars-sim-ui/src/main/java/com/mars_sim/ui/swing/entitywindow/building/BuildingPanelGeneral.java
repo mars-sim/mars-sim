@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +38,12 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * the general status of a settlement building.
  */
 class BuildingPanelGeneral extends EntityTabPanel<Building> 
-implements TemporalComponent {
+	implements TemporalComponent {
 		
-	private Map<JLabel, Double> labels = new HashMap<>();
+	private Map<String, JLabel> labels = new HashMap<>();
 
+	private AttributePanel valuePanel;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -94,7 +97,7 @@ implements TemporalComponent {
 				"The overall building value");
 		
 		// Prepare attribute panel for building values
-		AttributePanel valuePanel = new AttributePanel();
+		valuePanel = new AttributePanel();
 		
 		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -104,22 +107,23 @@ implements TemporalComponent {
 		
 		listPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("settlement.buildingtypeValues")));
 
-//		Map<String, Double> buildingTypeMap = building.getBuildingManager().getAllBuildingTypeValues();
 		Map<FunctionType, Double> buildingTypeMap = building.getBuildingManager().getFunctionTypeValue(building);
 		
 		List<FunctionType> buildingList = new ArrayList<>(buildingTypeMap.keySet());
 		
+		Collections.sort(buildingList);
+		
 		// Sort by descending value and cap the number of displayed rows.
-		buildingList.sort((a, b) -> Double.compare(
-				buildingTypeMap.getOrDefault(b, 0D),
-				buildingTypeMap.getOrDefault(a, 0D)));
+//		buildingList.sort((a, b) -> Double.compare(
+//				buildingTypeMap.getOrDefault(b, 0D),
+//				buildingTypeMap.getOrDefault(a, 0D)));
 		
 		int rows =  buildingList.size();
 		for (int i = 0; i < rows; i++) {
 			FunctionType type = buildingList.get(i);
 			double pct = buildingTypeMap.getOrDefault(type, 0D);
-			JLabel label = valuePanel.addTextField(type.getName(), StyleManager.DECIMAL_PLACES2.format(pct), null);
-			labels.put(label, pct);
+			JLabel label = valuePanel.addRow(type.getName(), StyleManager.DECIMAL_PLACES2.format(pct));
+			labels.put(type.getName(), label);
 		}
 	}
 	/**
@@ -132,12 +136,12 @@ implements TemporalComponent {
 	}
 	
 	/**
-	 * Refresh the UI elements of this tab. Commonly called when the tab is selected.
+	 * Refreshes the UI elements of this tab. Commonly called when the tab is selected.
 	 * Can be overridden by subclasses. but should be rarely needed.
 	 */
 	@Override
     public void refreshUI() {
-	
+
 		var building = getEntity();
 
 		Map<FunctionType, Double> buildingTypeMap = building.getBuildingManager().getFunctionTypeValue(building);
@@ -149,20 +153,25 @@ implements TemporalComponent {
 		int rows =  buildingList.size();
 
 		for (int i = 0; i < rows; i++) {
+
 			FunctionType type = buildingList.get(i);
 			double pct = buildingTypeMap.getOrDefault(type, 0D);
 			String name = type.getName();
-			
-			Optional<Map.Entry<JLabel, Double>> foundEntry = labels.entrySet().stream()
-				    .filter(entry -> name.equals(entry.getKey().getName()))
+
+			Optional<Map.Entry<String, JLabel>> foundEntry = labels.entrySet().stream()
+				    .filter(entry -> entry.getKey().equals(name))
 				    .findFirst();
-			
+
 			foundEntry.ifPresent(entry -> {
-				JLabel keyLabel = entry.getKey();
-			    double value = entry.getValue();
-				if (value != pct)
-					keyLabel.setText(StyleManager.DECIMAL_PLACES2.format(pct));
+				JLabel label = entry.getValue();
+				String oldDouble = label.getText();
+				String newDouble = StyleManager.DECIMAL_PLACES2.format(pct);
+				if (!newDouble.equals(oldDouble)) {
+					label.setText(newDouble);
+				}
 			});
 		}
+		
+		valuePanel.updateItems();
     }
 }

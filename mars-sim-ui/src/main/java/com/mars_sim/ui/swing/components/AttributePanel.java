@@ -120,14 +120,14 @@ public class AttributePanel extends JPanel {
 	 */
 	public void addLabelledItem(String titleLabel, JComponent content, String tooltip) {
 		var fullTitle = (titleLabel != null ? titleLabel + ": " : "");
-		JLabel title = new JLabel(fullTitle, SwingConstants.RIGHT);
-		title.setFont(StyleManager.getLabelFont());
+		JLabel labelTitle = new JLabel(fullTitle, SwingConstants.RIGHT);
+		labelTitle.setFont(StyleManager.getLabelFont());
 
 		if (tooltip != null) {
-			title.setToolTipText(tooltip);
+			labelTitle.setToolTipText(tooltip);
 			content.setToolTipText(tooltip);
 		}
-		attributeLayout.addLabelledItem(title, content);
+		attributeLayout.addLabelledItem(labelTitle, content);
 	}
 
 	/**
@@ -138,7 +138,7 @@ public class AttributePanel extends JPanel {
 		attributeLayout.addBlankCell();
 	}
 	
-	public void updateItem() {
-		
+	public void updateItems() {
+		updateUI();
 	}
 }

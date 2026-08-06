@@ -204,6 +204,13 @@ implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets the value of heat energy at the settlement.
+	 */
+	public double getHeatValue() {
+		return heatValue;
+	}
+	
+	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {

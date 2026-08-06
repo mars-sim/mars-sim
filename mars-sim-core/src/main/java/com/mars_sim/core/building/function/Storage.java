@@ -107,29 +107,33 @@ public class Storage extends Function {
 			for (Entry<Integer, Double> e : ss.getCapacityResources().entrySet()) {
 				Integer resource = e.getKey();
 				double storageAmount = e.getValue();
+				
+				double settlementCap = settlement.getSpecificCapacity(resource);
 
-				double existingStorage = 0D;
+				double resourceValue = settlement.getGoodsManager().getGoodValuePoint(resource);
+				
+				double settlementStored = settlement.getSpecificAmountResourceStored(resource);
+
 				for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.STORAGE)) {
 					Storage storageFunction = building.getStorage();
 					double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-					existingStorage += storageFunction.resourceCapacities.getOrDefault(resource, 0D) * wearModifier;
+					double buildingCap = storageFunction.getResourceStorageCapacity().getOrDefault(resource, 0D) * wearModifier;
+					
+					double supply = buildingCap;
+					
+					if (!newBuilding) {
+						buildingCap -= storageAmount;
+						if (buildingCap < 0D)
+							buildingCap = 0D;
+					}
+
+					// Assume settlementCap include buildings that have no wear and tear
+					double buildingStored = buildingCap / settlementCap * settlementStored;
+		
+					double demand = buildingStored;
+		
+					value += demand / (supply + 1) * resourceValue;
 				}
-
-				if (!newBuilding) {
-					existingStorage -= storageAmount;
-					if (existingStorage < 0D)
-						existingStorage = 0D;
-				}
-
-				double supply = existingStorage;
-				
-				double resourceValue = settlement.getGoodsManager().getGoodValuePoint(resource);
-				
-				double resourceStored = settlement.getSpecificAmountResourceStored(resource);
-
-				double demand = resourceStored;
-	
-				value += demand / (supply + 1) * resourceValue;
 			}
 		}
 
@@ -150,18 +154,22 @@ public class Storage extends Function {
 			for (Entry<Integer, Double> e : ss.getCapacityResources().entrySet()) {
 				Integer resource = e.getKey();
 
-				double existingStorage = 0D;
-				
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				existingStorage += resourceCapacities.getOrDefault(resource, 0D) * wearModifier;
+				
+				double buildingCap = resourceCapacities.getOrDefault(resource, 0D) * wearModifier;
 
-				double supply = existingStorage;
+				double settlementCap = building.getAssociatedSettlement().getSpecificCapacity(resource);
+
+				double supply = buildingCap;
 				
 				double resourceValue = building.getGoodsManager().getGoodValuePoint(resource);
 				
-				double resourceStored = building.getSpecificAmountResourceStored(resource);
+				double settlementStored = building.getSpecificAmountResourceStored(resource);
 
-				double demand = resourceStored;
+				// Assume settlementCap include buildings that have no wear and tear
+				double buildingStored = buildingCap / settlementCap * settlementStored;
+	
+				double demand = buildingStored;
 	
 				value += demand / (supply + 1) * resourceValue;
 			}

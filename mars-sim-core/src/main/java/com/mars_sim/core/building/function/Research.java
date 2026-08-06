@@ -124,17 +124,16 @@ implements Lab {
     public static double getFunctionValue(String type, boolean newBuilding,
             Settlement settlement) {
 
-        double result = 0D;
+        double demand = 0;
+        double supply = 0;
 
         var spec = buildingConfig.getFunctionSpec(type, FunctionType.RESEARCH);
         if (spec instanceof ResearchSpec rs) {
             for (ScienceType specialty : rs.getScience()) {
-                double researchDemand = 0D;
                 for(Person p : settlement.getAllAssociatedPeople()) {
-                    researchDemand += p.getSkillManager().getSkillLevel(specialty.getSkill());
+                	demand += p.getSkillManager().getSkillLevel(specialty.getSkill());
                 }
 
-                double researchSupply = 0D;
                 boolean removedBuilding = false;
 
                 for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.RESEARCH)) {
@@ -149,23 +148,15 @@ implements Lab {
                         for (int x = 0; x < researchFunction.getTechSpecialties().length; x++) {
                             ScienceType researchSpecialty = researchFunction.getTechSpecialties()[x];
                             if (specialty.equals(researchSpecialty)) {
-                                researchSupply += techLevel * labSize * wearModifier;
+                            	supply += techLevel * labSize * wearModifier;
                             }
                         }
                     }
                 }
-
-                double existingResearchValue = researchDemand / (researchSupply + 1D);
-
-                int techLevel = spec.getTechLevel();
-                int labSize = spec.getCapacity();
-                int buildingResearchSupply = techLevel * labSize;
-
-                result += buildingResearchSupply * existingResearchValue;
             }
         }
 
-        return result;
+        return demand / (supply + 1D);
     }
 
     /**
@@ -175,9 +166,8 @@ implements Lab {
      */
     public double getFunctionValue() {
 
-        // Settlements need enough recreation buildings to support population.
-        double demand = getSettlement().getNumCitizens();
-        double supply = 0D;
+        double demand = 0;
+        double supply = 0;
         
         double wearFactor = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
         

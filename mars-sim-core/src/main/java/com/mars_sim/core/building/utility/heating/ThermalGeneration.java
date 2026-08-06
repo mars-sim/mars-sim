@@ -39,14 +39,24 @@ public class ThermalGeneration extends Function {
 	
 	private static final double THRESHOLD = .1;
 	
+    public static final String HEAT_SURPLUS_EVENT = "heat surplus";
+    public static final String ELECTRIC_HEAT_EVENT = "electric heat";
+    public static final String SOLAR_HEAT_EVENT = "solar heat";
+    public static final String NUCLEAR_HEAT_EVENT = "nuclear heat";
+    public static final String FUEL_HEAT_EVENT = "fuel heat";
+    
 	// Data members.
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
 	
 	private double heatGeneratedCache;
-	
 	private double heatSurplusCache;
-
+	
+	private double sHeatCache;
+	private double fHeatCache;
+	private double eHeatCache;
+	private double nHeatCache;
+	
 	private Heating heating;
 	
 	private List<HeatSource> heatSources;
@@ -55,21 +65,8 @@ public class ThermalGeneration extends Function {
 	private HeatSource nuclearHeatSource;
 	private HeatSource electricHeatSource;
 	private HeatSource fuelHeatSource;
-	
-	private double sHeatCache;
-	private double fHeatCache;
-	private double eHeatCache;
-	private double nHeatCache;
 
-    public static final String HEAT_SURPLUS_EVENT = "heat surplus";
 
-    public static final String ELECTRIC_HEAT_EVENT = "electric heat";
-
-    public static final String SOLAR_HEAT_EVENT = "solar heat";
-
-    public static final String NUCLEAR_HEAT_EVENT = "nuclear heat";
-
-    public static final String FUEL_HEAT_EVENT = "fuel heat";
 	
 	/**
 	 * Constructor
@@ -141,30 +138,29 @@ public class ThermalGeneration extends Function {
 	public static double getFunctionValue(String buildingName,
 			boolean newBuilding, Settlement settlement) {
 
-		double demand = settlement.getThermalSystem().getTotalHeatReq();
-		double supply = 0D;
-		boolean removedBuilding = false;
-
-		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.THERMAL_GENERATION)) {
-			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
-				removedBuilding = true;
-			} else {
-				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += getHeatSourceSupply(building.getThermalGeneration().getHeatSources()) * wearModifier;
-			}
-		}
-
-		double existingHeatValue = demand / (supply + 1D);
+		return settlement.getThermalSystem().getHeatValue();
 		
-		var spec = buildingConfig.getFunctionSpec(buildingName, FunctionType.THERMAL_GENERATION);
-		if (spec instanceof GenerationSpec ss) {
-			double heatSupply = ss.getSources().stream()
-									.mapToDouble(SourceSpec::getCapacity).sum();
-
-			return heatSupply * existingHeatValue;
-		}
-		
-		return 0;
+//		double demand = settlement.getThermalSystem().getTotalHeatReq();
+//		double supply = 0D;
+//		boolean removedBuilding = false;
+//
+//		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.THERMAL_GENERATION)) {
+//			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+//				removedBuilding = true;
+//			} else {
+//				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+//				supply += getHeatSourceSupply(building.getThermalGeneration().getHeatSources()) * wearModifier;
+//			}
+//		}
+//		var spec = buildingConfig.getFunctionSpec(buildingName, FunctionType.THERMAL_GENERATION);
+//		if (spec instanceof GenerationSpec ss) {
+//			double heatSupply = ss.getSources().stream()
+//									.mapToDouble(SourceSpec::getCapacity).sum();
+//
+//			return heatSupply * existingHeatValue;
+//		}
+//		
+//		return 0;
 	}
 
     /**
@@ -174,21 +170,24 @@ public class ThermalGeneration extends Function {
      */
     public double getFunctionValue() {
 
-    	double demand = getSettlement().getThermalSystem().getTotalHeatReq();
+    	double demand = (getGeneratedHeat() + building.getHeatRequired()) / 2; // getSettlement().getThermalSystem().getTotalHeatReq();
 
 		double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 		double supply = getHeatSourceSupply(heatSources) * wearModifier;
-
-		double existingHeatValue = demand / (supply + 1D);
-		var spec = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.THERMAL_GENERATION);
-		if (spec instanceof GenerationSpec ss) {
-			double heatSupply = ss.getSources().stream()
-									.mapToDouble(SourceSpec::getCapacity).sum();
-
-			return heatSupply * existingHeatValue;
-		}
 		
-		return 0;
+		return demand / (supply + 1D);
+		
+//		double existingHeatValue = demand / (supply + 1D);
+//		
+//		var spec = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.THERMAL_GENERATION);
+//		if (spec instanceof GenerationSpec ss) {
+//			double heatSupply = ss.getSources().stream()
+//									.mapToDouble(SourceSpec::getCapacity).sum();
+//
+//			return heatSupply * existingHeatValue;
+//		}
+//		
+//		return 0;
     }
     
 	/**

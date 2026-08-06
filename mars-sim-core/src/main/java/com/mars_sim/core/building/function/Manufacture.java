@@ -129,19 +129,19 @@ public class Manufacture extends Function {
 	 */
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
-		double result;
         // Settlements need enough management buildings to support population.
-        double demand = settlement.getNumCitizens() / 8;
-
-		FunctionSpec spec = buildingConfig.getFunctionSpec(type, FunctionType.MANUFACTURE);
-		int buildingTech = spec.getTechLevel();
-
-		double supply = settlement.getAllAssociatedPeople().stream()
+        double demand = //settlement.getNumCitizens() / 8.0 + 
+        		settlement.getAllAssociatedPeople().stream()
 				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE))
 				.sum();
 
+		double supply = 0;
+		
 		int highestExistingTechLevel = 0;
 		
+		FunctionSpec spec = buildingConfig.getFunctionSpec(type, FunctionType.MANUFACTURE);
+		int buildingTech = spec.getTechLevel();
+	
 		boolean removedBuilding = false;
 
 		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
@@ -162,27 +162,26 @@ public class Manufacture extends Function {
 
 		double baseValue = demand / (supply + 1D);
 
-//		double processes = spec.getIntegerProperty(CONCURRENT_PROCESSES);
-//		double manufactureValue = buildingTech * processes;
-
-		result = baseValue;
+		double processValue = 0;
 
 		// If building has higher tech level than other buildings at settlement,
 		// add difference between best manufacturing processes.
 		if (buildingTech > highestExistingTechLevel) {
+			
 			double bestExistingProcessValue = 0D;
 			if (highestExistingTechLevel > 0D) {
 				bestExistingProcessValue = getBestManufacturingProcessValue(highestExistingTechLevel, settlement);
 			}
+			
 			double bestBuildingProcessValue = getBestManufacturingProcessValue(buildingTech, settlement);
 			double processValueDiff = bestBuildingProcessValue - bestExistingProcessValue;
 
-			processValueDiff = MathUtils.between(processValueDiff, 0, PROCESS_MAX_VALUE);
+			processValueDiff = MathUtils.between(processValueDiff / 10, 0, PROCESS_MAX_VALUE);
 
-			result += processValueDiff;
+			processValue += processValueDiff;
 		}
 
-		return result;
+		return baseValue * (1 + processValue);
 	}
 
 	/**
@@ -192,39 +191,33 @@ public class Manufacture extends Function {
 	 */
 	public double getFunctionValue() {
 
-		double result;
 		// Note: do use getNumCitizens() since sum of skill level will be used.
-        double demand = getBuilding().getSettlement().getNumCitizens() / 8;
-
-		double supply = getBuilding().getSettlement().getAllAssociatedPeople().stream()
+        double demand = //getBuilding().getSettlement().getNumCitizens() / 8.0 +  
+        		getBuilding().getSettlement().getAllAssociatedPeople().stream()
 				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE))
 				.sum();
 
 		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 		
-		supply += techLevel * numMaxConcurrentProcesses * wearModifier;
+		double supply = techLevel * numMaxConcurrentProcesses * wearModifier;
 
 		double baseValue = demand / (supply + 1D);
 
-//		double manufactureValue = techLevel * getCurrentTotalProcesses();
-
-		result =  baseValue;
+		double processValue = 0;
 
 		int highestExistingTechLevel =  ManufactureUtil.getHighestManufacturingTechLevel(getBuilding().getSettlement());
 	
 		double bestBuildingProcessValue = getBestManufacturingProcessValue(techLevel, getBuilding().getSettlement());
-		
 		double bestExistingProcessValue = getBestManufacturingProcessValue(highestExistingTechLevel, getBuilding().getSettlement());
-		
 		double processValueDiff = bestExistingProcessValue - bestBuildingProcessValue;
 
-		processValueDiff = MathUtils.between(processValueDiff, 0, PROCESS_MAX_VALUE);
+		processValueDiff = MathUtils.between(processValueDiff / 10, 0, PROCESS_MAX_VALUE);
 		
 		// If building has higher tech level than other buildings at settlement,
 		// add difference between best manufacturing processes.
-		result += processValueDiff;
+		processValue = processValueDiff;
 
-		return result;
+		return baseValue * (1 + processValue);
 	}
 
 	/**
