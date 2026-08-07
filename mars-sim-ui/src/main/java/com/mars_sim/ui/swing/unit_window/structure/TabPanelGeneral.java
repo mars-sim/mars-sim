@@ -15,10 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
@@ -41,6 +43,7 @@ class TabPanelGeneral extends EntityTabPanel<Settlement> implements TemporalComp
 	
 	private JLabel populationCitizensLabel;
 	private JLabel populationCapacityLabel;
+	private JLabel totalBuildingValuelabel;
 	
 	private Map<String, JLabel> labels = new HashMap<>();
 
@@ -74,6 +77,11 @@ class TabPanelGeneral extends EntityTabPanel<Settlement> implements TemporalComp
      	populationCapacityLabel = infoPanel.addTextField(Msg.getString("settlement.capacity"),
      			String.valueOf(settlement.getBuildingManager().getPopulationCapacity()), null);
 	
+     	// Create the total building values label
+		totalBuildingValuelabel = infoPanel.addTextField(Msg.getString("settlement.totalBuildingValues"), 
+				StyleManager.DECIMAL_PLACES2.format(settlement.getBuildingManager().getTotalBuildingValues()),
+				"The total building values for this settlement");
+		
 		// Prepare attribute panel for building values
 		valuePanel = new AttributePanel();
 		valuePanel.updateUI();
@@ -83,25 +91,26 @@ class TabPanelGeneral extends EntityTabPanel<Settlement> implements TemporalComp
 		listPanel.add(valuePanel, BorderLayout.CENTER);
 		contentPanel.add(listPanel, BorderLayout.CENTER);
 		
-		listPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("settlement.buildingtypeValues")));
+		listPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("settlement.listOfBuildingValues")));
 
-		Map<String, Double> buildingTypeMap = settlement.getBuildingManager().getAllBuildingTypeValues();
-				
-		List<String> buildingList = new ArrayList<>(buildingTypeMap.keySet());
+		Map<Building, Double> buildingTypeMap = settlement.getBuildingManager().getAllBuildingTypeValues();
+		
+		List<Building> buildingList = new ArrayList<>(buildingTypeMap.keySet());
 		
 		Collections.sort(buildingList);
 		
-		// Sort by descending value and cap the number of displayed rows.
-//		buildingList.sort((a, b) -> Double.compare(
-//				buildingTypeMap.getOrDefault(b, 0D),
-//				buildingTypeMap.getOrDefault(a, 0D)));
-		
+//		List<String> buildingList = buildings.stream()
+//			    .map(obj -> obj.getName()) 	// Extract the name string
+//			    .sorted()                  	// Sort strings alphabetically (natural order)
+//			    .toList(); 					// Collect into a new List
+
 		int rows =  buildingList.size();
 		for (int i = 0; i < rows; i++) {
-			String type = buildingList.get(i);
-			double pct = buildingTypeMap.getOrDefault(type, 0D);
-			JLabel label = valuePanel.addRow(type, StyleManager.DECIMAL_PLACES2.format(pct));
-			labels.put(type, label);
+			Building building = buildingList.get(i);
+			String name = building.getName();
+			double pct = buildingTypeMap.getOrDefault(building, 0D);
+			JLabel label = valuePanel.addRow(name, StyleManager.DECIMAL_PLACES2.format(pct));
+			labels.put(name, label);
 		}
     }
     
@@ -134,17 +143,20 @@ class TabPanelGeneral extends EntityTabPanel<Settlement> implements TemporalComp
 			populationCapacityLabel.setText(Integer.toString(populationCapacityCache));
 		}
 		
-		Map<String, Double> buildingTypeMap = settlement.getBuildingManager().getAllBuildingTypeValues();
+		totalBuildingValuelabel.setText( 
+				StyleManager.DECIMAL_PLACES2.format(settlement.getBuildingManager().getTotalBuildingValues()));
 		
-		List<String> buildingList = new ArrayList<>(buildingTypeMap.keySet());
+		Map<Building, Double> buildingTypeMap = settlement.getBuildingManager().getAllBuildingTypeValues();
 		
-		// Question: how to re-sort the order of label once the attribute panel has been created ?
+		List<Building> buildingList = new ArrayList<>(buildingTypeMap.keySet());
 		
+		Collections.sort(buildingList);
+
 		int rows =  buildingList.size();
-		
 		for (int i = 0; i < rows; i++) {
-			String name = buildingList.get(i);
-			double pct = buildingTypeMap.getOrDefault(name, 0D);
+			Building building = buildingList.get(i);
+			String name = building.getName();
+			double pct = buildingTypeMap.getOrDefault(building, 0D);
 
 			Optional<Map.Entry<String, JLabel>> foundEntry = labels.entrySet().stream()
 				    .filter(entry -> entry.getKey().equals(name))
@@ -159,7 +171,5 @@ class TabPanelGeneral extends EntityTabPanel<Settlement> implements TemporalComp
 				}
 			});
 		}
-		
-		valuePanel.updateItems();
     }
 }

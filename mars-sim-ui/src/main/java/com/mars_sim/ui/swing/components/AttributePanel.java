@@ -138,7 +138,7 @@ public class AttributePanel extends JPanel {
 		attributeLayout.addBlankCell();
 	}
 	
-	public void updateItems() {
-		updateUI();
-	}
+//	public void updateItems() {
+//		updateUI();
+//	}
 }

@@ -39,7 +39,9 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  */
 class BuildingPanelGeneral extends EntityTabPanel<Building> 
 	implements TemporalComponent {
-		
+	
+	private JLabel totalFunctionalValuelabel;
+	
 	private Map<String, JLabel> labels = new HashMap<>();
 
 	private AttributePanel valuePanel;
@@ -93,8 +95,9 @@ class BuildingPanelGeneral extends EntityTabPanel<Building>
 			+ " m x 2.5 m", "Length x Width x Height");
 		infoPanel.addTextField("Floor Area", StyleManager.DECIMAL_M2.format(building.getFloorArea()),
 				"The floor area in square meters");
-		infoPanel.addTextField("Overall Value", StyleManager.DECIMAL_PLACES2.format(building.getBuildingManager().getBuildingValue(building)),
-				"The overall building value");
+		totalFunctionalValuelabel = infoPanel.addTextField(Msg.getString("building.totalFunctionalValue"), 
+				StyleManager.DECIMAL_PLACES2.format(building.getBuildingManager().getAllBuildingTypeValues().get(building)),
+				"The total functional value for this building");
 		
 		// Prepare attribute panel for building values
 		valuePanel = new AttributePanel();
@@ -105,18 +108,13 @@ class BuildingPanelGeneral extends EntityTabPanel<Building>
 		listPanel.add(valuePanel, BorderLayout.CENTER);
 		center.add(listPanel, BorderLayout.CENTER);
 		
-		listPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("settlement.buildingtypeValues")));
+		listPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("building.listOfFunctionalValues")));
 
-		Map<FunctionType, Double> buildingTypeMap = building.getBuildingManager().getFunctionTypeValue(building);
+		Map<FunctionType, Double> buildingTypeMap = building.getBuildingManager().computeFunctionTypeValue(building);
 		
 		List<FunctionType> buildingList = new ArrayList<>(buildingTypeMap.keySet());
 		
 		Collections.sort(buildingList);
-		
-		// Sort by descending value and cap the number of displayed rows.
-//		buildingList.sort((a, b) -> Double.compare(
-//				buildingTypeMap.getOrDefault(b, 0D),
-//				buildingTypeMap.getOrDefault(a, 0D)));
 		
 		int rows =  buildingList.size();
 		for (int i = 0; i < rows; i++) {
@@ -144,12 +142,12 @@ class BuildingPanelGeneral extends EntityTabPanel<Building>
 
 		var building = getEntity();
 
-		Map<FunctionType, Double> buildingTypeMap = building.getBuildingManager().getFunctionTypeValue(building);
+		totalFunctionalValuelabel.setText(StyleManager.DECIMAL_PLACES2.format(building.getBuildingManager().getAllBuildingTypeValues().get(building)));
+		
+		Map<FunctionType, Double> buildingTypeMap = building.getBuildingManager().computeFunctionTypeValue(building);
 		
 		List<FunctionType> buildingList = new ArrayList<>(buildingTypeMap.keySet());
-		
-		// Question: how to re-sort the order of label once the attribute panel has been created ?
-		
+
 		int rows =  buildingList.size();
 
 		for (int i = 0; i < rows; i++) {
@@ -171,7 +169,5 @@ class BuildingPanelGeneral extends EntityTabPanel<Building>
 				}
 			});
 		}
-		
-		valuePanel.updateItems();
     }
 }

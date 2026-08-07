@@ -28,40 +28,16 @@ import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.connection.BuildingConnector;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
-import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
-import com.mars_sim.core.building.function.Administration;
-import com.mars_sim.core.building.function.AstronomicalObservation;
-import com.mars_sim.core.building.function.BuildingConnection;
-import com.mars_sim.core.building.function.Communication;
 import com.mars_sim.core.building.function.Computation;
-import com.mars_sim.core.building.function.EVA;
-import com.mars_sim.core.building.function.EarthReturn;
-import com.mars_sim.core.building.function.Exercise;
-import com.mars_sim.core.building.function.FoodProduction;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.LivingAccommodation;
-import com.mars_sim.core.building.function.Management;
-import com.mars_sim.core.building.function.Manufacture;
-import com.mars_sim.core.building.function.MedicalCare;
-import com.mars_sim.core.building.function.Recreation;
 import com.mars_sim.core.building.function.Research;
-import com.mars_sim.core.building.function.ResourceProcessing;
 import com.mars_sim.core.building.function.RoboticStation;
-import com.mars_sim.core.building.function.Storage;
 import com.mars_sim.core.building.function.VehicleMaintenance;
-import com.mars_sim.core.building.function.WasteProcessing;
-import com.mars_sim.core.building.function.cooking.Cooking;
-import com.mars_sim.core.building.function.cooking.Dining;
-import com.mars_sim.core.building.function.farming.AlgaeFarming;
-import com.mars_sim.core.building.function.farming.Farming;
-import com.mars_sim.core.building.function.farming.Fishery;
-import com.mars_sim.core.building.utility.heating.ThermalGeneration;
-import com.mars_sim.core.building.utility.power.PowerGeneration;
-import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -112,8 +88,18 @@ public class BuildingManager implements Serializable {
 	private static final SimLogger logger = SimLogger.getLogger(BuildingManager.class.getName());
 
 	private static final int BUILDING_VALUES_UPDATE = 100;
+
+	// Data members
+	/** The population capacity (determined by the # of beds) of the settlement. */
+	private int popCap = 0;
+
+	/** The settlement's total building values. */
+	private double totalBuildingValues = 0D;
 	
-	private transient MarsTime lastVPUpdateTime;
+	private double farmTimeCache = -5D;
+	
+	/** The id of the settlement. */
+	private int settlementID;
 
 	private Set<Building> buildings = new UnitSet<>();
 	private Set<Building> garages = new UnitSet<>();
@@ -121,32 +107,28 @@ public class BuildingManager implements Serializable {
 	private Set<Building> airlocks = new UnitSet<>();
 	private Set<Building> comNodes = new UnitSet<>();
 	
-	/** A map of each function type and its value. */
-//	private transient EnumMap<FunctionType, Double> functionTypeValues = new EnumMap<>(FunctionType.class); 
 	/** A map of each building type and its value. */
-//	private transient Map<String, Double> buildingTypeValues = new HashMap<>();
-	private transient Map<String, Double> vPNewCache = new HashMap<>();
-	private transient Map<String, Double> vPOldCache = new HashMap<>();
+	private transient Map<Building, Double> buildingValueMap = new HashMap<>();
+
 	/** A map of each function type and its set of buildings. */
 	private transient EnumMap<FunctionType, Set<Building>> functionSetOfBuildings;
+
+	/** A map of each building with a set of function type values.  */
+	private transient Map<Building, EnumMap<FunctionType, Double>> buildingsOfFunctionTypeValues = new HashMap<>();
+	
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, Set<Building>> adjacentBuildingMap = new HashMap<>();
+	
 	/** The settlement's maintenance parts map. */
 	private Map<Malfunctionable, Map<MaintenanceScope, Integer>> partsMaint = new HashMap<>();
 	
-	private transient Settlement settlement;
-	private MeteoriteImpactProperty meteorite;
-	
-	// Data members
-	/** The population capacity (determined by the # of beds) of the settlement. */
-	private int popCap = 0;
-
-	private double farmTimeCache = -5D;
-	
-	/** The id of the settlement. */
-	private int settlementID;
-	
 	private Set<Building> farmsNeedingWorkCache = new UnitSet<>();
+	
+	private transient MarsTime lastVPUpdateTime;
+		
+	private transient Settlement settlement;
+	
+	private MeteoriteImpactProperty meteorite;
 	
 	private static SimulationConfig simulationConfig;
 	private static MasterClock masterClock;
@@ -1814,7 +1796,6 @@ public class BuildingManager implements Serializable {
 		
 		return false;
 	}
-
 	
 	/**
 	 * Removes the person from a building if possible.
@@ -1843,15 +1824,74 @@ public class BuildingManager implements Serializable {
 			robot.leaveActivitySpot(false);
 		} 
 	}
-
+	
 	/**
-	 * Gets a map of function value of a building.
+	 * Gets the values of each building type at the settlement.
+	 *
+	 * @return a map of building values.
+	 */
+	public Map<Building, Double> getAllBuildingTypeValues() {
+		
+		// Update building values cache once per Sol.
+		MarsTime now = masterClock.getMarsTime();
+		if (totalBuildingValues == 0D || (lastVPUpdateTime == null) 
+				|| (now.getTimeDiff(lastVPUpdateTime) > BUILDING_VALUES_UPDATE)) {
+
+			buildingValueMap.clear();
+			lastVPUpdateTime = now;
+			
+			computeAllFunctionTypeValues();
+		}
+
+		return buildingValueMap;
+	}
+	/**
+	 * 
+	 * Computes all the function type values for all buildings.
+	 */
+	private void computeAllFunctionTypeValues() {
+		double total = 0;
+		for (Building building: getBuildingSet()) {
+			total += computeOneBuildingFunctionTypeValues(building);
+		}
+		totalBuildingValues = total;
+	}
+	
+	/**
+	 * Computes a map of function value of a building.
 	 *
 	 * @param building the building.
-	 * @return building value (VP).
+	 * @return a map of each function type with function value.
 	 */
-	public Map<FunctionType, Double> getFunctionTypeValue(Building building) {
+	public Map<FunctionType, Double> computeFunctionTypeValue(Building building) {	
+		
+		if (!buildingsOfFunctionTypeValues.containsKey(building)
+				|| computeSumOfFunctionTypeValue(building) == 0D) {
+			computeOneBuildingFunctionTypeValues(building);
+		}
+		
+		return buildingsOfFunctionTypeValues.get(building);
+	}
 	
+	/**
+	 * Computes the sum of all function type values.
+	 * 
+	 * @param building
+	 * @return
+	 */
+	public double computeSumOfFunctionTypeValue(Building building) {
+		return buildingsOfFunctionTypeValues.get(building).values().stream().mapToDouble(Double::doubleValue).sum();
+	}
+	
+	/**
+	 * Computes all the function type values for one single buildings.
+	 * 
+	 * @param building
+	 */
+	private double computeOneBuildingFunctionTypeValues(Building building) {
+		
+		double totalValue = 0D;
+		
 		/** A map of each function type and its value. */
 		EnumMap<FunctionType, Double> functionTypeValues = new EnumMap<>(FunctionType.class); 
 		
@@ -1860,7 +1900,9 @@ public class BuildingManager implements Serializable {
 			FunctionType ft = f.getFunctionType();
 			
 			double value = f.getFunctionValue();
-		
+			
+			totalValue += value;
+			
 			// Note: Remove the wear condition modification in each getFunctionValue() in a Function subclass
 			
 			// Modify building value by its wear condition.
@@ -1869,168 +1911,23 @@ public class BuildingManager implements Serializable {
 			
 			functionTypeValues.put(ft, value);
 		}
-
-		return functionTypeValues;
+		
+		buildingsOfFunctionTypeValues.put(building, functionTypeValues);
+		
+		buildingValueMap.put(building, totalValue);
+		
+		return totalValue;
 	}
 	
 	/**
-	 * Gets the value of each building type at the settlement.
+	 * Gets the values of each building type at the settlement.
 	 *
-	 * @param building the building.
-	 * @return building value (VP).
+	 * @return a map of building values.
 	 */
-	public Map<String, Double> getAllBuildingTypeValues() {
-		
-		Set<Building> buildings = settlement.getBuildingManager().getBuildingSet();		
-
-		Map<String, Double> buildingTypeValues = new HashMap<>();
-		
-		for (Building building: buildings) {
-			
-			String buildingType = building.getBuildingType();
-			
-			// Question: what is the proper way of handling two different buildings having the same building type ?
-			
-			double result = getBuildingValue(buildingType, false);
-			
-			// Note: Remove the wear condition modification in each getFunctionValue() in a Function subclass
-					
-			// Modify building value by its wear condition.
-//			double wearCondition = building.getMalfunctionManager().getWearCondition();
-//			result *= (wearCondition / 100D) * .75D + .25D;
-			
-			buildingTypeValues.put(buildingType, result);
-
-		}
-
-		return buildingTypeValues;
+	public double getTotalBuildingValues() {
+		return totalBuildingValues;
 	}
 	
-	/**
-	 * Gets the value of a building type at the settlement.
-	 *
-	 * @param building the building.
-	 * @return building value (VP).
-	 */
-	public double getBuildingValue(Building building) {
-		
-		double result = getBuildingValue(building.getBuildingType(), false);
-	
-		// Note: Remove the wear condition modification in each getFunctionValue() in a Function subclass
-		
-		// Modify building value by its wear condition.
-		double wearCondition = building.getMalfunctionManager().getWearCondition();
-		result *= (wearCondition / 100D) * .75D + .25D;
-
-		return result;
-	}
-	
-	/**
-	 * Gets the value of a building at the settlement.
-	 *
-	 * @param buildingType the building type.
-	 * @param newBuilding  true if adding a new building.
-	 * @return building value (VP).
-	 */
-	public double getBuildingValue(String type, boolean newBuilding) {
-
-		// Make sure building name is lower case.
-		String buildingType = type.toLowerCase().trim();
-
-		if (vPNewCache == null)
-			vPNewCache = new HashMap<>();
-		if (vPOldCache == null)
-			vPOldCache = new HashMap<>();
-
-		// Update building values cache once per Sol.
-		MarsTime now = masterClock.getMarsTime();
-		if ((lastVPUpdateTime == null) 
-				|| (now.getTimeDiff(lastVPUpdateTime) > BUILDING_VALUES_UPDATE)) {
-			vPNewCache.clear();
-			vPOldCache.clear();
-			lastVPUpdateTime = now;
-		}
-
-		if (newBuilding && vPNewCache.containsKey(buildingType)) {
-			return vPNewCache.get(buildingType);
-		}
-
-		else if (!newBuilding && vPOldCache.containsKey(buildingType)) {
-			return vPOldCache.get(buildingType);
-		}
-
-		else {
-			double result = 0D;
-			BuildingSpec spec = simulationConfig.getBuildingConfiguration().getBuildingSpec(buildingType);
-
-			for (FunctionType supported : spec.getFunctionSupported()) {
-				result += switch (supported) {
-					case ADMINISTRATION -> Administration.getFunctionValue(buildingType, newBuilding, settlement);
-					case ALGAE_FARMING -> AlgaeFarming.getFunctionValue(buildingType, newBuilding, settlement);
-					case ASTRONOMICAL_OBSERVATION -> AstronomicalObservation.getFunctionValue(buildingType, newBuilding, settlement);
-					case CONNECTION -> BuildingConnection.getFunctionValue(buildingType, newBuilding, settlement);
-					case COMMUNICATION -> Communication.getFunctionValue(buildingType, newBuilding, settlement);
-					case COMPUTATION -> Computation.getFunctionValue(buildingType, newBuilding, settlement);
-					case COOKING -> Cooking.getFunctionValue(buildingType, newBuilding, settlement);
-					case DINING -> Dining.getFunctionValue(buildingType, newBuilding, settlement);
-					case EARTH_RETURN -> EarthReturn.getFunctionValue(buildingType, newBuilding, settlement);
-					case EVA -> EVA.getFunctionValue(buildingType, newBuilding, settlement);
-					case EXERCISE -> Exercise.getFunctionValue(buildingType, newBuilding, settlement);
-					case FARMING -> Farming.getFunctionValue(buildingType, newBuilding, settlement);
-					case FISHERY -> Fishery.getFunctionValue(buildingType, newBuilding, settlement);
-					case FOOD_PRODUCTION -> FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
-					case VEHICLE_MAINTENANCE -> VehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
-					case LIFE_SUPPORT -> LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
-					case LIVING_ACCOMMODATION -> LivingAccommodation.getFunctionValue(buildingType, newBuilding, settlement);
-					case MANAGEMENT -> Management.getFunctionValue(buildingType, newBuilding, settlement);
-					case MANUFACTURE -> Manufacture.getFunctionValue(buildingType, newBuilding, settlement);
-					case MEDICAL_CARE -> MedicalCare.getFunctionValue(buildingType, newBuilding, settlement);
-					case POWER_GENERATION -> PowerGeneration.getFunctionValue(buildingType, newBuilding, settlement);
-					case POWER_STORAGE -> PowerStorage.getFunctionValue(buildingType, newBuilding, settlement);
-					case RECREATION -> Recreation.getFunctionValue(buildingType, newBuilding, settlement);
-					case RESEARCH -> Research.getFunctionValue(buildingType, newBuilding, settlement);
-					case RESOURCE_PROCESSING -> ResourceProcessing.getFunctionValue(buildingType, newBuilding, settlement);
-					case ROBOTIC_STATION -> RoboticStation.getFunctionValue(buildingType, newBuilding, settlement);
-					case STORAGE -> Storage.getFunctionValue(buildingType, newBuilding, settlement);
-					case THERMAL_GENERATION -> ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
-					case WASTE_PROCESSING -> WasteProcessing.getFunctionValue(buildingType, newBuilding, settlement);
-					default -> throw new IllegalArgumentException("Do not know how to build Function " + supported);
-				};
-			}
-
-			// Multiply value.
-//			result *= 1000D;
-
-//			// Subtract power costs per Sol.
-//			double power = spec.getBaseFullPower();
-//			double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL;
-//			double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
-//			result -= powerValue;
-
-			if (result < 0D)
-				result = 0D;
-
-			// Check if a building of this type is already in flight
-			if (newBuilding) {
-				// Check if the building's frame exists at the settlement.
-				ConstructionManager constManager = settlement.getConstructionManager();
-				boolean hasFrame = constManager.getConstructionSites().stream()
-									.anyMatch(s -> s.getBuildingName().equalsIgnoreCase(buildingType));				
-				if (hasFrame) {
-					// If frame exist the building has zero value.
-					result = 0D;
-				}
-			}
-
-			if (newBuilding)
-				vPNewCache.put(buildingType, result);
-			else
-				vPOldCache.put(buildingType, result);
-
-			return result;
-		}
-	}
-
 	/**
 	 * Checks if a proposed building location is open or intersects with existing
 	 * buildings or construction sites.
@@ -2789,9 +2686,12 @@ public class BuildingManager implements Serializable {
         for (Building building : buildings) {
             building.destroy();
         }
+    	garages = null;
+    	observatories = null;
+    	airlocks = null;
+    	comNodes = null;
 		buildings = null;
-		vPNewCache = null;
-		vPOldCache = null;
+		partsMaint = null;
 		lastVPUpdateTime = null;
 		meteorite = null;
 	}
