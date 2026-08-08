@@ -416,52 +416,86 @@ public class PhysicalCondition implements Serializable {
 	 * @return True still alive.
 	 */
 	public void timePassing(ClockPulse pulse, LifeSupportInterface support) {
-		
-		if (alive) {
-			
-			double time = pulse.getElapsed();
-			
-			if (pulse.isNewIntMillisol()) {
-				boolean isResting = person.isRestingTask();
-
-				// Check key attributes
-				double factor = isResting ? 2 : 1;
-				checkStress(time, factor);
-				checkThirst(time, factor);
-				checkFatigue(time, factor);
-				checkHunger(time, factor);
-				
-				double currentO2Consumption = isResting ? personConfig.getLowO2ConsumptionRate()
-												: personConfig.getNominalO2ConsumptionRate();
-				// Check life support system
-				checkLifeSupport(time, currentO2Consumption, support);
-				// Update the existing health problems
-				checkHealth(pulse, isResting);
-
-				// Calculate performance and most mostSeriousProblem illness.
-				recalculatePerformance();
-
-				// Check radiation 
-				radiation.timePassing(pulse);			
-				
-				int msol = pulse.getMarsTime().getMillisolInt();
-				if (msol % 7 == 0) {
-				
-					// Check if person is at very high fatigue may collapse.
-
-					// Check radiation poisoning
-					if (!isRadiationPoisoned) {
-						checkRadiationPoisoning(time);
-					}
-				}
+		if (!alive) {
+			return;
+		}
+		if (pulse.isNewIntMillisol()) {
+			moderateTime(pulse, support);
+		}
+		// Check once a day only
+		if (pulse.isNewSol()) {	
+			// Update the personal appetite
+			updateAppetite();
+			// Update personal max energy
+			updateMaxEnergy();
+		}
+	}
+	
+	/**
+	 * Moderates the time for decisions.
+	 * 
+	 * @param time in millisols
+	 * @throws Exception if error during action.
+	 */
+	private void moderateTime(ClockPulse pulse, LifeSupportInterface support) {
+		double remaining = pulse.getElapsed();
+		double pTime = Task.getStandardPulseTime();
+		if (pTime == 0.0) {
+			pTime = remaining;
+		}
+		while (remaining > 0) {
+			if (remaining > pTime) {
+				// Call takeAction to perform a task and consume the pulse time.
+				checkVitals(pulse, pTime, support);
+				// Reduce the total time by the pulse time
+				remaining -= pTime;
 			}
-			
-			// Check once a day only
-			if (pulse.isNewSol()) {	
-				// Update the personal appetite
-				updateAppetite();
-				// Update personal max energy
-				updateMaxEnergy();
+			else {
+				// Call takeAction to perform a task and consume the pulse time.
+				checkVitals(pulse, remaining, support);
+				// Reduce the total time by the pulse time
+				remaining = 0;
+			}
+		}
+	}
+	
+	/**
+	 * Checks various vitals.
+	 * 
+	 * @param pulse
+	 * @param time
+	 * @param support
+	 */
+	private void checkVitals(ClockPulse pulse, double time, LifeSupportInterface support) {
+		boolean isResting = person.isRestingTask();
+
+		// Check key attributes
+		double factor = isResting ? 2 : 1;
+		checkStress(time, factor);
+		checkThirst(time, factor);
+		checkFatigue(time, factor);
+		checkHunger(time, factor);
+		
+		double currentO2Consumption = isResting ? personConfig.getLowO2ConsumptionRate()
+										: personConfig.getNominalO2ConsumptionRate();
+		// Check life support system
+		checkLifeSupport(time, currentO2Consumption, support);
+		// Update the existing health problems
+		checkHealth(pulse, isResting);
+
+		// Calculate performance and most mostSeriousProblem illness.
+		recalculatePerformance();
+
+		// Check radiation 
+		radiation.timePassing(pulse);			
+		
+		int msol = pulse.getMarsTime().getMillisolInt();
+		if (msol % 7 == 0) {	
+			// Check if person is at very high fatigue may collapse.
+
+			// Check radiation poisoning
+			if (!isRadiationPoisoned) {
+				checkRadiationPoisoning(time);
 			}
 		}
 	}
@@ -1096,6 +1130,7 @@ public class PhysicalCondition implements Serializable {
 	
 	/**
 	 * Gets the person's stress level.
+	 * 
 	 * @return stress (0.0 to 100.0)
 	 */
 	public double getStress() {

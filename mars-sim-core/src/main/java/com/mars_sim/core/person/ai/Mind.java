@@ -103,10 +103,25 @@ public class Mind implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		double time = pulse.getElapsed();
-		if ((taskManager != null) && (pulse.getElapsed() > 0)) {
+		if ((taskManager != null) && (time > 0)) {
 			moderateTime(time);
 		}
+		
+		checkRelationStressEmotion(pulse);
+		
+		checkJob(pulse);
+		
+		return true;
+	}
 
+	/**
+	 * Updates the relationship, stress and emotion.
+	 * 
+	 * @param pulse
+	 */
+	public void checkRelationStressEmotion(ClockPulse pulse) {
+		double time = pulse.getElapsed();
+		
 		if (pulse.isNewIntMillisol()) {
 			// Update stress based on personality.
 			mbti.updateStress(time);
@@ -121,8 +136,14 @@ public class Mind implements Serializable, Temporal {
 				emotionMgr.updateEmotion(trait.getPersonalityVector());
 			}
 		}
+	}
 	
-		
+	/**
+	 * Checks the job.
+	 * 
+	 * @param pulse
+	 */
+	private void checkJob(ClockPulse pulse) {
 		// Note: for now, a Mayor/Manager cannot switch job
 		if (jobLock && jobType != JobType.POLITICIAN) {
 			// Check for the passing of each day
@@ -135,8 +156,6 @@ public class Mind implements Serializable, Temporal {
 			// Assign a new job but do not bypass jobLock
 			getAJob(false, JobUtil.SETTLEMENT);
 		}
-
-		return true;
 	}
 
 	/**
