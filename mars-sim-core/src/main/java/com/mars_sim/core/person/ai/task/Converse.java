@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Converse.java
- * @date 2023-10-28
+ * @date 2026-08-07
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.task;
@@ -28,6 +28,7 @@ import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.TaskUtil;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -64,11 +65,11 @@ public class Converse extends Task {
     	
 	/** Impact doing this Task */
 	private static final ExperienceImpact INSTIGATOR_IMPACT = new ExperienceImpact(50D,
-										NaturalAttributeType.CONVERSATION, false, -0.3,
+										NaturalAttributeType.CONVERSATION, false, -0.5,
 										SkillType.PSYCHOLOGY, SkillType.REPORTING);
     
 
-    private Location initiatorLocation = null;
+    private Location inviteeLocation = Location.NONE;
 
 	/** The id of the target person (either the invitee or the initiator). */
 	private Integer targetID;
@@ -83,7 +84,10 @@ public class Converse extends Task {
         SAME_BUILDING,
     	SAME_DINING,
         SAME_SETTLEMENT,
-        SAME_VEHICLE;
+        SAME_VEHICLE,
+    	VEHICLE,
+    	SETTLEMENT_VICINITY,
+    	VEHICLE_VICINITY;
     	
 		@Override
     	public String toString(){
@@ -104,6 +108,12 @@ public class Converse extends Task {
                     return "in same settlement";  
                 case SAME_VEHICLE:
                     return "in same vehicle";  
+                case VEHICLE:
+                    return "in a vehicle";  
+                case SETTLEMENT_VICINITY:
+                    return "in a settlement vicinity"; 
+                case VEHICLE_VICINITY:
+                    return "in a vehicle vicinity"; 
                 default: 
                 	return "";
             }
@@ -143,18 +153,18 @@ public class Converse extends Task {
     public void findInvitee() {
     	Person p = null;
         if (person.isInSettlement()) {
-           	p = selectFromSettlement();
+           	p = selectFromSettlement(0);
         	if (p != null)
         		setTarget(p, true);
         }
         else if (person.isInVehicle()) {
-        	p = selectFromVehicle();
+        	p = selectFromVehicle(1);
         	if (p != null)
         		setTarget(p, true);
         }
         else {
         	// Allow a person who are walking on the surface of Mars to have conversation
-        	p = selectforEVA();
+        	p = selectforEVA(2);
         	if (p != null)
         		setTarget(p, true);
         }
@@ -265,14 +275,17 @@ public class Converse extends Task {
      * 
      * @return
      */
-    public Person selectFromSettlement() {
+    public Person selectFromSettlement(int choice) {
     	Person invitee = null;
         Set<Person> pool = new UnitSet<>();
     
         // Gets a list of idle people in the same building
         Collection<Person> candidates = getChattingPeople(person, true, true, true);
         pool.addAll(candidates);
-    	initiatorLocation = Location.SAME_BUILDING;
+     // remove the one who starts the conversation
+        pool.remove(person);
+        
+    	inviteeLocation = Location.SAME_BUILDING;
 
         if (pool.isEmpty()) {
         	// Gets a list of busy people in the same building
@@ -289,7 +302,7 @@ public class Converse extends Task {
                 // Gets a list of chatty people in the same building
             	candidates = getChattingPeople(person, true, true, true);
             	pool.addAll(candidates);
-            	initiatorLocation = Location.SAME_DINING;
+            	inviteeLocation = Location.SAME_DINING;
             	
                 if (pool.isEmpty()) {
                 	// Gets a list of busy people in the same dining building
@@ -303,33 +316,54 @@ public class Converse extends Task {
         	// Gets a list of idle people in different bldg but the same settlement
         	candidates = getChattingPeople(person, true, false, true);
         	pool.addAll(candidates);
-        	initiatorLocation = Location.SAME_SETTLEMENT; 
+        	inviteeLocation = Location.SAME_SETTLEMENT; 
         }
         
         if (pool.isEmpty()) {
         	// Gets a list of busy people in different bldg but the same settlement
             candidates = getChattingPeople(person, false, false, true);
         	pool.addAll(candidates);
-        	initiatorLocation = Location.SAME_SETTLEMENT;
+        	inviteeLocation = Location.SAME_SETTLEMENT;
         }
                 
+        if (pool.isEmpty() && choice != 1) {
+        	// Gets a list of people from vehicles
+        	Person p = selectFromVehicle(0);
+        	if (p != null) {
+        		candidates.add(p);
+        		pool.addAll(candidates);
+        	}
+        }
+        
+        if (pool.isEmpty() && choice != 2) {
+        	
+        	Person p = selectforEVA(0);
+        	if (p != null) {
+	        	candidates.add(p);
+	        	pool.addAll(candidates);
+	        	inviteeLocation = Location.EVA;
+        	}
+        }
+        
         if (pool.isEmpty()) {
         	// Gets a list of idle people from other settlements
             candidates = getChattingPeople(person, true, false, false);
         	pool.addAll(candidates);
-        	initiatorLocation = Location.ANOTHER_SETTLEMENT;
+        	inviteeLocation = Location.ANOTHER_SETTLEMENT;
         }
 
         if (pool.isEmpty()) {
         	// Gets a list of busy people from other settlements
             candidates = getChattingPeople(person, false, false, false);
         	pool.addAll(candidates);
-        	initiatorLocation = Location.ANOTHER_SETTLEMENT;
+        	inviteeLocation = Location.ANOTHER_SETTLEMENT;
         }
         
         if (pool.isEmpty()) {
-        	initiatorLocation = Location.NONE;
+        	inviteeLocation = Location.NONE;
         	logger.info(person, 30_000, "Unable to find anyone to chat with.");
+        	
+        	endTask();
         	return null;
         }
 
@@ -360,34 +394,64 @@ public class Converse extends Task {
      *  
      * @return
      */
-    public Person selectFromVehicle() {
+    public Person selectFromVehicle(int choice) {
     	Person invitee = null;
 
         Set<Person> pool = new UnitSet<>();
-        Vehicle v = (Vehicle) person.getContainerUnit();
-         
-        Collection<Person> candidates = v.getTalkingPeople();
-        pool.addAll(candidates);
-        // remove the one who starts the conversation
-        pool.remove(person);
-		initiatorLocation = Location.SAME_VEHICLE;
+    
+        Collection<Person> candidates = new UnitSet<>();
+        if (person.getContainerUnit() instanceof Vehicle cv) {
+            candidates = cv.getTalkingPeople();
+            pool.addAll(candidates);
+            // remove the one who starts the conversation
+            pool.remove(person);
+        }
 
-        if (pool.isEmpty()) {
-        	// Gets a list of busy people in different bldg but the same settlement
-            candidates = getChattingPeople(person, false, false, true);
-        	pool.addAll(candidates);
-        	initiatorLocation = Location.SAME_SETTLEMENT;
+        if (!pool.isEmpty()) {
+        	inviteeLocation = Location.SAME_VEHICLE;
+        }
+        else {
+            Collection<Vehicle> vv = person.getAssociatedSettlement().getAllAssociatedVehicles();
+            if (person.getContainerUnit() instanceof Vehicle v) {
+            	vv.remove(v);
+            }
+            
+            for (Vehicle vehicle: vv) {
+            	Collection<Person> p = vehicle.getTalkingPeople();
+                pool.addAll(p);
+                // remove the one who starts the conversation
+                pool.remove(person);
+            }
+            if (!pool.isEmpty()) {
+            	inviteeLocation = Location.VEHICLE;
+            }
+        }
+
+        if (pool.isEmpty() && choice != 0) {
+        	
+        	Person p = selectFromSettlement(1);
+        	if (p != null) {
+	        	candidates.add(p);
+	        	pool.addAll(candidates);
+        	}
         }
         
-        if (pool.isEmpty()) {
-            Collection<Person> talkingSameSettlement = getChattingPeople(person, false, false, true);
-        	pool.addAll(talkingSameSettlement);
-        	initiatorLocation = Location.ANOTHER_SETTLEMENT;
+        if (pool.isEmpty() && choice != 2) {
+        	
+        	Person p = selectforEVA(1);
+        	if (p != null) {
+	        	candidates.add(p);
+	        	pool.addAll(candidates);
+	        	inviteeLocation = Location.EVA;
+        	}
         }
 
         if (pool.isEmpty()) {
-        	initiatorLocation = Location.NONE;
-        	logger.info(person, 30_000, "Unable to find anyone to chat with in " + v + ".");
+        	inviteeLocation = Location.NONE;
+        	logger.info(person, 30_000, "Unable to find anyone to chat with in vehicles.");
+        	
+        	endTask();
+        	
         	return null;
         }
 
@@ -417,22 +481,85 @@ public class Converse extends Task {
      * 
      * @return
      */
-    public Person selectforEVA() {
+    public Person selectforEVA(int choice) {
     	Person invitee = null;
 
         Set<Person> pool = new UnitSet<>();
         
-        Collection<Person> talkingSameSettlement = getChattingPeople(person, false, false, true);
+        Collection<Person> candidates = new UnitSet<>();
+    	Settlement settlementVicinity = CollectionUtils.findSettlement(person.getCoordinates());
 
+    	if (settlementVicinity != null) {
+    		// Look for citizens only
+            candidates = CollectionUtils.getPeopleInSettlementVicinity(person.getAssociatedSettlement(), true);
+                  
+            if (!candidates.isEmpty()) {
+            	inviteeLocation = Location.SETTLEMENT_VICINITY;
+            }
+            else {
+            	// Look for non-citizens only
+                candidates = CollectionUtils.getPeopleInSettlementVicinity(person.getAssociatedSettlement(), false);
+                
+                if (!candidates.isEmpty()) {
+                	inviteeLocation = Location.SETTLEMENT_VICINITY;
+                }
+            }
+            
+    	}
+    	else { // if (vehicleVicinity != null){
+        	Vehicle vehicleVicinity = CollectionUtils.findVehicle(person.getCoordinates());      	
+    		// Look for citizens only
+    		candidates = CollectionUtils.getPeopleInVehicleVicinity(vehicleVicinity, true);
+    		
+    		if (!candidates.isEmpty()) {
+            	inviteeLocation = Location.VEHICLE_VICINITY;
+            }
+            else {
+            	// Look for non-citizens only
+            	// Note: for now, it's very rare for two mission vehicles of different settlement to arrive at the same outside location
+                candidates = CollectionUtils.getPeopleInVehicleVicinity(vehicleVicinity, false);
+                
+                if (!candidates.isEmpty()) {
+                	inviteeLocation = Location.VEHICLE_VICINITY;
+                }
+            }
+    	}
+    	
+    	// In future, add other settlements' vicinity and other settlement's vehicles' vicinity  
+          
+    	pool.addAll(candidates);
         // remove the one who starts the conversation
         pool.remove(person);
-        pool.addAll(talkingSameSettlement);
-
+        
+        if (pool.isEmpty() && choice != 0) {
+        	
+        	Person p = selectFromSettlement(2);
+        	if (p != null) {
+	        	candidates.add(p);
+	        	pool.addAll(candidates);
+        	}
+        }
+        
+        if (pool.isEmpty() && choice != 1) {
+        	
+        	Person p = selectFromVehicle(2);
+        	if (p != null) {
+        		candidates.add(p);
+        		pool.addAll(candidates);
+        	}
+        }
+        
+        if (pool.isEmpty()) {
+            endTask();
+            return null;
+        }
+        
         int num = pool.size();
         List<Person> list = new ArrayList<>();
         list.addAll(pool);
         if (num == 1) {
         	invitee = list.get(0);
+//        	inviteeLocation = Location.EVA;
         }
         else if (num > 1) {
         	int rand = RandomUtil.getRandomInt(num-1);
@@ -444,13 +571,13 @@ public class Converse extends Task {
         	if (invitee == null) {
     			invitee = list.get(RandomUtil.getRandomInt(rand));
     		}
+        	
+//        	inviteeLocation = Location.EVA;
         }
         else {
         	endTask();
         }
 
-    	initiatorLocation = Location.EVA;
-    	
     	return invitee;
     }
     
@@ -474,7 +601,7 @@ public class Converse extends Task {
 		else
 			logger.warning(person, "invitee is null.");
  
-    	if (initiatorLocation.toString().contains("same"))
+    	if (inviteeLocation.toString().contains("same"))
     		RelationshipUtil.changeOpinion(person, getTarget(), 
             	RelationshipType.FACE_TO_FACE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .3));
     	else 
@@ -509,7 +636,7 @@ public class Converse extends Task {
 		
 		if (canAdd) {
 			String name = getTarget().getName();
-	    	String loc = initiatorLocation.toString();
+	    	String loc = inviteeLocation.toString();
 	    	String s = CHATTING_WITH + " " + name + " " + loc;
 	    	
 	    	setDescription(s);
@@ -614,34 +741,33 @@ public class Converse extends Task {
 		}
 
 		while (i.hasNext()) {
-			Person p = i.next();
+			Person invitee = i.next();
 			
 			// Skip the initiator
-			if (p.equals(initiator))
+			if (invitee.equals(initiator))
 				continue;
 
-			Task task = p.getMind().getTaskManager().getTask();
+			Task task = invitee.getMind().getTaskManager().getTask();
 
-			if (p.isInSettlement()
-					&& initiator.isInSettlement()) {
+			if (initiator.isInSettlement()) {
 
 				if (sameBuilding) {
 					// face-to-face conversation
 					if (initiator.getBuildingLocation() != null
-						&& p.getBuildingLocation() != null
-						&& initiator.getBuildingLocation().equals(p.getBuildingLocation())) {
-						addPerson(checkIdle, task, initiator, people, p);
+						&& invitee.getBuildingLocation() != null
+						&& initiator.getBuildingLocation().equals(invitee.getBuildingLocation())) {
+						addPerson(checkIdle, task, initiator, people, invitee);
 					}
 				}
 
 				else {
 					// may be radio (non face-to-face) conversation
-					addPerson(checkIdle, task, initiator, people, p);
+					addPerson(checkIdle, task, initiator, people, invitee);
 				}
 			}
-			
+
 			else {
-				addPerson(checkIdle, task, initiator, people, p);
+				addPerson(checkIdle, task, initiator, people, invitee);
 			}
 		}
 
@@ -674,6 +800,6 @@ public class Converse extends Task {
 	@Override
 	public void destroy() {
 		super.destroy();
-		initiatorLocation = null; 
+		inviteeLocation = null; 
 	}
 }

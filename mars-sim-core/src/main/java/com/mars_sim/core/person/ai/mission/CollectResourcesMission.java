@@ -23,6 +23,7 @@ import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.mission.task.CollectResources;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -312,7 +313,19 @@ public abstract class CollectResourcesMission extends EVAMission
 				boolean canSleep = assignTask(person, new Sleep(person));
 	        	if (canSleep) {
 	        		logger.log(person, Level.INFO, 4_000,
-	            			"Instructed to sleep in " + getVehicle() + " since fatigue is " + Math.round(fatigue) + ".");
+	            			"Instructed to sleep in " + getVehicle() + " since fatigue was " + Math.round(fatigue) + ".");
+	        	}
+        	}
+			
+			double hunger = person.getPhysicalCondition().getHunger();
+			double thirst = person.getPhysicalCondition().getThirst();
+			if (hunger > 500 || thirst > 350) {				
+				boolean canEatDrink = assignTask(person, new EatDrink(person));
+	        	if (canEatDrink) {
+	        		logger.log(person, Level.INFO, 4_000,
+	            			"Instructed to eat and drink in " + getVehicle() 
+	            			+ ".  Hunger: " + Math.round(hunger) 
+	            			+ ".  Thirst: " + Math.round(thirst)  + ".");
 	        	}
         	}
 		}

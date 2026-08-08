@@ -91,7 +91,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		}
 
 		if (mal.isWorkDone(MalfunctionRepairWork.INSIDE)) {
-			logger.warning(worker, 30_000, "Inside repair work already completed.");
+			logger.warning(worker, 10_000, "Inside repair work already completed.");
 			endTask();
 			return;
 		}
@@ -103,16 +103,16 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		this.partStore = RepairHelper.getClosestRepairStore(worker);
 
 		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
-			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + entity.getName() + ".");
+			logger.log(worker, Level.INFO, 1_000, "Parts available for repairing malfunction '" + malfunction + "' in " + entity.getName() + ".");
 		} 
 		else {
-			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' NOT available from " + entity.getName() + ".");
+			logger.log(worker, Level.INFO, 1_000, "Parts not available for repairing malfunction '" + malfunction + "' in " + entity.getName() + ".");
 			endTask();
 		}	
 		
 		// Start if found
-		setDescription(Msg.getString("Task.description.repairInsideMalfunction.detail", malfunction.getName(),
-				entity.getName())); // $NON-NLS-1$
+		setDescription(Msg.getString("Task.description.repairInsideMalfunction.detail", malfunction.getName(), // $NON-NLS-1$
+				entity.getName())); 
 		
 		// Add person to location of malfunction if possible.
 		addPersonOrRobotToMalfunctionLocation(entity);
@@ -178,11 +178,11 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		// Add repair parts if necessary.
 		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
 			if (!worker.isOutside()) {
-				logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + entity.getName() + ".");
+				logger.log(worker, Level.INFO, 1_000, "Parts available for repairing malfunction '" + malfunction + "' in " + entity.getName() + ".");
 			}
 		} 
 		else {
-			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' NOT available from " + entity.getName() + ".");
+			logger.log(worker, Level.INFO, 1_000, "Parts not available for repairing malfunction '" + malfunction + "' in " + entity.getName() + ".");
 		}
 		
 		// Add experience
@@ -194,7 +194,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		double workTimeLeft = 0D;
 		// Check if the malfunction has been handled.
 		if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)) {
-			logger.log(worker, Level.FINE, 10_000, "Performing inside repair on malfunction '" + malfunction + "' at " + entity.getName() + ".");
+			logger.log(worker, Level.FINE, 1_000, "Performing inside repair on malfunction '" + malfunction + "' at " + entity.getName() + ".");
 			// Add work to malfunction.
 			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.INSIDE, workTime, worker.getName());
 		}

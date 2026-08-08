@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * CollectionUtils.java
- * @date 2025-08-27
+ * @date 2026-08-07
  * @author Sebastien Venot
  */
 package com.mars_sim.core;
@@ -176,20 +176,37 @@ public class CollectionUtils {
 		List<Person> result = new ArrayList<>();
 
 		if (settlement != null) {
-			Iterator<Person> i = unitManager.getPeople().iterator();
-			while (i.hasNext()) {
-				Person person = i.next();
-				
-				// if isCitizen is true, then it's required that this person must be associated with 
+			if (isCitizen) {
+				// Faster search with less people
+				// if isCitizen is true, then it's required that this person must be the same as 
 				// this settlement
-				// If if isCitizen is false, then it's not required
-				if ((!isCitizen || person.getAssociatedSettlement().equals(settlement)) 
-					&& !person.getPhysicalCondition().isDead()) {
+				Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+				while (i.hasNext()) {
+					Person person = i.next();
+					if (person.getAssociatedSettlement().equals(settlement)
+							&& !person.getPhysicalCondition().isDead()) {
 
-					// Select a person that is at the settlement location.
-					Coordinates personLoc = person.getCoordinates();
-					if (personLoc != null && personLoc.equals(settlement.getCoordinates())) {
-						result.add(person);
+						// Select a person that is at the settlement location.
+						Coordinates personLoc = person.getCoordinates();
+						if (personLoc != null && personLoc.equals(settlement.getCoordinates())) {
+							result.add(person);
+						}
+					}
+				}
+			}
+			else {
+				Iterator<Person> i = unitManager.getPeople().iterator();
+				while (i.hasNext()) {
+					Person person = i.next();
+					
+					// If if isCitizen is false, then it's not a citizen, then this person doesn't have to the same as  
+					// this settlement, but the coordinates must still be the same as this settlement
+					if (!person.getPhysicalCondition().isDead()) {
+						// Select a person that is at the settlement location.
+						Coordinates personLoc = person.getCoordinates();
+						if (personLoc != null && personLoc.equals(settlement.getCoordinates())) {
+							result.add(person);
+						}
 					}
 				}
 			}
@@ -197,7 +214,62 @@ public class CollectionUtils {
 
 		return result;
 	}
-	
+
+	/**
+	 * Gets a list of people of a vehicle's vicinity.
+	 *
+	 * @param Vehicle
+	 * @param isCitizen are these people associated with this vehicle's associated settlement
+	 * @return list of people to display.
+	 */
+	public static List<Person> getPeopleInVehicleVicinity(Vehicle vehicle, boolean isCitizen) {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+
+		List<Person> result = new ArrayList<>();
+
+		if (vehicle != null) {
+			if (isCitizen) {
+				// Faster search with less people
+				Settlement vehicleSettlement = vehicle.getAssociatedSettlement();
+				// if isCitizen is true, then it's required that this person must be the same as 
+				// this vehicle's associated settlement
+				Iterator<Person> i = vehicleSettlement.getAllAssociatedPeople().iterator();
+				while (i.hasNext()) {
+					Person person = i.next();
+					if (person.getAssociatedSettlement().equals(vehicleSettlement)
+							&& !person.getPhysicalCondition().isDead()) {
+
+						// Select a person that is at the settlement location.
+						Coordinates personLoc = person.getCoordinates();
+						if (personLoc != null && personLoc.equals(vehicle.getCoordinates())) {
+							result.add(person);
+						}
+					}
+				}
+			}
+			else {
+				Iterator<Person> i = unitManager.getPeople().iterator();
+				while (i.hasNext()) {
+					Person person = i.next();
+					
+					// If if isCitizen is false, then it's not a citizen, then this person doesn't 
+					// have to be the same as this vehicle's associated settlement, but the 
+					// coordinates must still be the same as this vehicle's associated settlement
+					if (!person.getPhysicalCondition().isDead()) {
+						// Select a person that is at the settlement location.
+						Coordinates personLoc = person.getCoordinates();
+						if (personLoc != null && personLoc.equals(vehicle.getCoordinates())) {
+							result.add(person);
+						}
+					}
+				}
+			}
+		}
+
+
+		return result;
+	}
 	/**
 	 * Gets a set of other people that are NOT on this settlement.
 	 * Note: a person can be either inside the settlement or within its vicinity

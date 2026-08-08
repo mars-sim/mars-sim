@@ -1590,7 +1590,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isSuperUnfit() {
-        return isUnfitByLevel(900, 90, 900, 550);
+        return isUnfitByLevel(900, 90, 900, 650);
     }
 	
 	/**
@@ -1599,7 +1599,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isNominallyUnfit() {
-        return isUnfitByLevel(700, 70, 700, 450);
+        return isUnfitByLevel(700, 70, 700, 500);
     }
 	
 	/**

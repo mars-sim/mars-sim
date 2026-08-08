@@ -1167,7 +1167,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 						boolean canSleep = assignTask(person, new Sleep(person));
 			        	if (canSleep) {
 			        		logger.log(person, Level.INFO, 4_000,
-			            			"Instructed to sleep before piloting " + getVehicle() + " since fatigue is " + Math.round(fatigue) + ".");
+			            			"Instructed to sleep before piloting " + getVehicle() + ". Fatigue: " + Math.round(fatigue) + ".");
 			        		
 			        		return null;
 			        	}
@@ -1175,13 +1175,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					
 					double hunger = person.getPhysicalCondition().getHunger();
 					double thirst = person.getPhysicalCondition().getThirst();
-					if (hunger > 900 || thirst > 550) {				
+					if (hunger > 900 || thirst > 650) {				
 						boolean canEatDrink = assignTask(person, new EatDrink(person));
 			        	if (canEatDrink) {
 			        		logger.log(person, Level.INFO, 4_000,
 			            			"Instructed to eat/drink before piloting " + getVehicle() 
-			            			+ " (hunger: " + Math.round(fatigue) + "; "
-			            			+ " thirst: " + Math.round(thirst) + ").");
+			            			+ ".  Hunger: " + Math.round(fatigue)
+			            			+ ".  Thirst: " + Math.round(thirst) + ".");
 			        		
 			        		return null;
 			        	}
