@@ -124,7 +124,7 @@ public class MaintainRobot extends Task  {
 		}
 		else {
 			robotInService.getSystemCondition().setMaintenance(false);
-			clearTask("No available workspace for " + robot.getName() + " maintenance.");
+			clearTask("No available workspace for " + robotInService.getName() + " maintenance.");
 			return;
 		}
 		
