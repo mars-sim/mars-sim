@@ -80,13 +80,16 @@ public class MedicalManager implements Serializable {
 
 	public void addDeathRegistry(Settlement s, DeathInfo death) {
 		int id = s.getIdentifier();
-		awaitingPostmortemExam.get(id).remove(death);
-		if (deathRegistry.containsKey(id)) {
-			deathRegistry.get(id).add(death);
-		} else {
-			List<DeathInfo> list = new CopyOnWriteArrayList<>();
-			list.add(death);
-			deathRegistry.put(id, list);
+		if (awaitingPostmortemExam.containsKey(id)) {
+			awaitingPostmortemExam.get(id).remove(death);
+
+			if (deathRegistry.containsKey(id)) {
+				deathRegistry.get(id).add(death);
+			} else {
+				List<DeathInfo> list = new CopyOnWriteArrayList<>();
+				list.add(death);
+				deathRegistry.put(id, list);
+			}
 		}
 	}
 
