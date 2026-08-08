@@ -116,8 +116,10 @@ public class LocationTag implements Serializable {
 		var container = unit.getContainerUnit();
 		
 		if (unit instanceof Person p) {
-			if (container instanceof Settlement) {
-				result = p.getBuildingLocation().getName();
+			if (container instanceof Settlement s) {
+				if (p.getBuildingLocation() != null)
+					result = p.getBuildingLocation().getName();
+				result = s.getName();
 			}
 			else if (container instanceof Vehicle v) {
 				result = v.getName();
@@ -132,8 +134,10 @@ public class LocationTag implements Serializable {
 			}
 		}
 		else if (unit instanceof Robot r) {
-			if (container instanceof Settlement) {
-				result = r.getBuildingLocation().getName();
+			if (container instanceof Settlement s) {
+				if (r.getBuildingLocation() != null)
+					result = r.getBuildingLocation().getName();
+				result = s.getName();
 			}
 			else if (container instanceof Vehicle v) {
 				result = v.getName();
@@ -148,8 +152,10 @@ public class LocationTag implements Serializable {
 			}
 		}
 		else if (unit instanceof Equipment e) {
-			if (container instanceof Settlement) {
-				result = e.getBuildingLocation().getName();
+			if (container instanceof Settlement s) {
+				if (e.getBuildingLocation() != null)
+					result = e.getBuildingLocation().getName();
+				result = s.getName();
 			}
 			else if (container instanceof Vehicle v) {
 				result = v.getName();

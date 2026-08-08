@@ -408,17 +408,19 @@ public class ConstructionMission extends AbstractMission {
 
 	@Override
 	public void endMission(MissionStatus endStatus) {
-		var site = objective.getSite();
-		// Mark site as not undergoing construction.
-		site.setWorkOnSite(null);
-
-		// Unreserve all LUV attachment parts for this mission.
-		unreserveLUVparts(objective.getLuvAttachmentParts(), site.getAssociatedSettlement());
-
-		objective.getConstructionVehicles().stream()
-			.filter(v -> this.equals(v.getMission()))
-			.forEach(v1 -> v1.setMission(null));
-
+		if (objective != null) {
+			var site = objective.getSite();
+			// Mark site as not undergoing construction.
+			site.setWorkOnSite(null);
+	
+			// Unreserve all LUV attachment parts for this mission.
+			unreserveLUVparts(objective.getLuvAttachmentParts(), site.getAssociatedSettlement());
+	
+			objective.getConstructionVehicles().stream()
+				.filter(v -> this.equals(v.getMission()))
+				.forEach(v1 -> v1.setMission(null));
+		}
+		
 		super.endMission(endStatus);
 	}
 
