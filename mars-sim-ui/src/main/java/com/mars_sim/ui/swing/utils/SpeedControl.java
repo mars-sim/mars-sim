@@ -22,6 +22,7 @@ import com.mars_sim.core.time.MasterClock;
 /**
  * Control panel for adjusting the speed of the simulation and pausing/resuming it.
  */
+@SuppressWarnings("serial")
 public class SpeedControl extends JPanel implements ClockListener {
 
     private JToggleButton playPauseSwitch;
@@ -72,7 +73,7 @@ public class SpeedControl extends JPanel implements ClockListener {
 		add(playPauseSwitch);
 		add(increaseSpeed);
 
-		// Simulate change to corrrect buttons
+		// Simulate change to correct buttons
 		pauseChange(masterClock.isPaused());
 
 		speedLabel = new JLabel("x" + masterClock.getDesiredTR());

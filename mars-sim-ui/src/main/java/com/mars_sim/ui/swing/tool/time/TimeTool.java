@@ -67,25 +67,27 @@ public class TimeTool extends ContentPanel {
 
 	private static final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
 		
-	/** the execution time label string */
+	/** The execution time label string */
 	private static final String EXEC = "Execution";
-	/** the sleep time label string */
+	/** The sleep time label string */
 	private static final String SLEEP_TIME = "Sleep";
-	/** the lead time pulse width label string */
+	/** The desired pulse width label string */
+	private static final String DESIRED_PULSE_WDITH_MS = "Desired Pulse Width";
+	/** The lead time pulse width label string */
 	private static final String LEAD_PULSE_TIME = "Lead Pulse Width";
-	/** the pulse deviation label string */
+	/** The pulse deviation label string */
 	private static final String PULSE_DEVIATION = "Pulse Deviation";
-	/** the optimal pulse label string */
+	/** The optimal pulse label string */
 	private static final String OPTIMAL = "Optimal Pulse Width";
-	/** the reference pulse label string */
+	/** The reference pulse label string */
 	private static final String REFERENCE = "Ref Pulse Width";
-	/** the reference pulse label string */
+	/** The reference pulse label string */
 	private static final String TASK_PULSE_TIME = "Task Pulse Width";
-	/** the time ratio string */
+	/** The time ratio string */
 	private static final String ACTUAL_TIME_RATIO = Msg.getString("TimeWindow.actualTRHeader"); //$NON-NLS-1$
-	/** the execution time unit */
+	/** The execution time unit */
 	private static final String MS = " ms";
-	/** the Universal Mean Time abbreviation */
+	/** The Universal Mean Time abbreviation */
 	private static final String UMT = " (UMT) ";
 
 
@@ -111,48 +113,49 @@ public class TimeTool extends ContentPanel {
 	private JSpinner refPulseRatioSpinner;
 	/** The ref pulse damper spinner */
 	private JSpinner refPulseDamperSpinner;
-	/** label for Martian time. */
+	/** The label for Martian time. */
 	private JLabel martianTimeLabel;
-	/** label for areocentric longitude. */
+	/** The label for areocentric longitude. */
 	private JLabel lonLabel;
-	/** label for Northern hemisphere season. */
+	/** The label for Northern hemisphere season. */
 	private JLabel northernSeasonLabel;
-	/** label for Southern hemisphere season. */
+	/** The label for Southern hemisphere season. */
 	private JLabel southernSeasonLabel;
-	/** label for uptimer. */
+	/** The label for uptimer. */
 	private JLabel uptimeLabel;
-	/** label for pulses per second label. */
+	/** The label for pulses per second label. */
 	private JLabel ticksPerSecLabel;
-	/** label for pulses per second label. */
+	/** The label for pulses per second label. */
 	private JLabel averageTPSLabel;
-	/** label for actual time ratio. */
+	/** The label for actual time ratio. */
 	private JLabel actualTRLabel;
-	/** label for desire time ratio. */
+	/** The label for desire time ratio. */
 	private JLabel desireTRLabel;
-	/** label for pulse deviation percent. */
+	/** The label for pulse deviation percent. */
 	private JLabel pulseDeviationLabel;
-	/** label for optimal pulse width. */
+	/** The label for optimal pulse width. */
 	private JLabel optimalPulseLabel;
-	/** label for rff pulse width. */
+	/** The label for rff pulse width. */
 	private JLabel refPulseLabel;
-	/** label for execution time. */
+	/** The label for execution time. */
 	private JLabel execTimeLabel;
-	/** label for sleep time. */
+	/** The label for sleep time. */
 	private JLabel sleepTimeLabel;
-	/** label for lead pulse width. */
+	/** The label for lead pulse width. */
 	private JLabel leadPulseLabel;
-	/** label for ref pulse width. */
+	/** The label for ref pulse width. */
 	private JLabel taskPulseLabel;
-	/** label for time compression. */
+	/** The label for desired pulse in millisec. */
+	private JLabel desiredPulseMSLabel;
+	/** The label for time compression. */
 	private JLabel realTimeClockLabel;
-
+	/** The label for the month. */
 	private JLabel monthLabel;
-
+	/** The label for the week. */
 	private JLabel weeksolLabel;
-	
+	/** The orbit info instance. */
 	private OrbitInfo orbitInfo;
 
-	
 	/**
 	 * Constructs a TimeTool content panel
 	 *
@@ -162,7 +165,6 @@ public class TimeTool extends ContentPanel {
 		// Use TimeWindow constructor
 		super(NAME, TITLE, Placement.RIGHT);
 	
-
 		// Initialize data members
 		MasterClock masterClock = sim.getMasterClock();
 		MarsTime marsTime = masterClock.getMarsTime();
@@ -283,7 +285,7 @@ public class TimeTool extends ContentPanel {
 		paramPane.add(attributePane, BorderLayout.NORTH);
 		
 		// Create speed panel
-		AttributePanel speedPane = new AttributePanel(8);
+		AttributePanel speedPane = new AttributePanel();
 		speedPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.simParam"))); //$NON-NLS-1$
 		attributePane.add(speedPane, BorderLayout.NORTH);
 
@@ -295,8 +297,8 @@ public class TimeTool extends ContentPanel {
 				"The last execution time of a tick");
 		sleepTimeLabel = speedPane.addTextField(SLEEP_TIME, "", 
 				"The sleep time [ms] of the last tick");
-		
-		
+		desiredPulseMSLabel = speedPane.addTextField(DESIRED_PULSE_WDITH_MS, "", 
+				"The desired pulse width [ms]");
 		actualTRLabel = speedPane.addTextField(ACTUAL_TIME_RATIO, "",
 				"Master clock's actual time ratio");
 		desireTRLabel = speedPane.addTextField(DESIRE_TR, "",
@@ -586,13 +588,17 @@ public class TimeTool extends ContentPanel {
 		
 		
 		// Update execution time label
-		short execTime = masterClock.getExecutionTime();
+		int execTime = masterClock.getExecutionTime();
 		execTimeLabel.setText(execTime + MS);
 
 		// Update sleep time label
 		float sleepTime = masterClock.getSleepTime();
-		sleepTimeLabel.setText(sleepTime + MS);
+		sleepTimeLabel.setText(StyleManager.DECIMAL_PLACES1.format(sleepTime) + MS);
 
+		// Update sleep time label
+		float desiredPulseMS = masterClock.getMillisecPerPulse();
+		desiredPulseMSLabel.setText(StyleManager.DECIMAL_PLACES1.format(desiredPulseMS) + MS);
+		
 		// Update pulse width label
 		float leadPulse = masterClock.getLeadPulseTime();
 		float refPulse = masterClock.getReferencePulse();
