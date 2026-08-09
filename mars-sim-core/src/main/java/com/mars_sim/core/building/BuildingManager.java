@@ -1561,12 +1561,28 @@ public class BuildingManager implements Serializable {
 				LifeSupport lifeSupport = building.getLifeSupport();
 				double buildingRelationships = 0D;
 				int numPeople = 0;
-				for (Person occupant : lifeSupport.getOccupants()) {
-					if (person.equals(occupant)) {
-						buildingRelationships += RelationshipUtil.getOpinionOfPerson(person, occupant);
-						numPeople++;
-					}
-				}
+	
+//				List<Person> occupants = lifeSupport.getOccupants()
+//						  .stream()
+//						  .collect(Collectors.toList());
+//				
+//				for (Person occupant: occupants) {
+//					if (person.equals(occupant)) {
+//						buildingRelationships += RelationshipUtil.getOpinionOfPerson(person, occupant);
+//						numPeople++;
+//					}
+//				}
+				
+				Optional<Person> found = lifeSupport.getOccupants().stream()
+					    .filter(e -> person.equals(e))
+					    .findFirst();
+				
+				if (found.isPresent()) {
+					Person occupant = found.get();
+					buildingRelationships += RelationshipUtil.getOpinionOfPerson(person, occupant);
+					numPeople++;
+				} 
+				
 				double prob = 50D;
 				if (numPeople > 0) {
 					prob = buildingRelationships / numPeople;

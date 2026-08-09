@@ -126,7 +126,7 @@ public class RoleUtil {
 		RoleType selectedRole = null;
 		double highestWeight = 0;
 
-		ChainOfCommand chain = p.getSettlement().getChainOfCommand();
+		ChainOfCommand chain = p.getAssociatedSettlement().getChainOfCommand();
 		
 		
 		JobType job = p.getMind().getJobType();

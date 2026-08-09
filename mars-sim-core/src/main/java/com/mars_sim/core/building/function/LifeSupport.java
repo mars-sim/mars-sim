@@ -8,6 +8,8 @@ package com.mars_sim.core.building.function;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.Building;
@@ -215,7 +217,12 @@ public class LifeSupport extends Function {
 			if (occupants != null && !occupants.isEmpty()) {
 				// Make sure all occupants are actually in settlement inventory.
 				// If not, remove them as occupants.
-				Iterator<Person> i = occupants.iterator();
+				
+				List<Person> list = occupants
+						  .stream()
+						  .collect(Collectors.toList());
+				
+				Iterator<Person> i = list.iterator();
 				while (i.hasNext()) {
 					if (!building.getSettlement().containsPerson(i.next()))
 						i.remove();
