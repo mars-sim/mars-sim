@@ -102,10 +102,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		logger.info(worker, "Starting repair " + malfunction.getName());
 		this.partStore = RepairHelper.getClosestRepairStore(worker);
 
-		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
-			logger.log(worker, Level.INFO, 1_000, "Parts available for repairing malfunction '" + malfunction + "' in " + entity.getName() + ".");
-		} 
-		else {
+		if (!RepairHelper.hasRepairParts(partStore, malfunction)) {
 			logger.log(worker, Level.INFO, 1_000, "Parts not available for repairing malfunction '" + malfunction + "' in " + entity.getName() + ".");
 			endTask();
 		}	
@@ -176,12 +173,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		}
 		
 		// Add repair parts if necessary.
-		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
-			if (!worker.isOutside()) {
-				logger.log(worker, Level.INFO, 1_000, "Parts available for repairing malfunction '" + malfunction + "' in " + entity.getName() + ".");
-			}
-		} 
-		else {
+		if (!RepairHelper.hasRepairParts(partStore, malfunction)) {
 			logger.log(worker, Level.INFO, 1_000, "Parts not available for repairing malfunction '" + malfunction + "' in " + entity.getName() + ".");
 		}
 		
