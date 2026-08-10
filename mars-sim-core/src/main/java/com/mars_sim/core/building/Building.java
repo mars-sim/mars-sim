@@ -123,7 +123,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	// Regarding the length, how to best handle the variable length of brickway/walkly/hallway/tunnel 
 	private double length;
 	private double floorArea;
-	private String shape;
 	private double areaFactor;
 	private double facing;
 
@@ -214,7 +213,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		
 		this.floorArea = buildingSpec.getArea();
 		this.areaFactor = Math.sqrt(this.floorArea) / 2;
-		this.shape = buildingSpec.getShape();
 		
 		constructionType = buildingSpec.getConstruction();
 
@@ -1420,10 +1418,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 	// TODO this is wrong as names can change. This is just used to identify if there are multiple floors.
 	public boolean isAHabOrHub() {
-		if (shape != null) {
-			return "circular".equalsIgnoreCase(shape);
-		}
-		// Fallback for tests if shape is not loaded
         return buildingType.contains(" Hab") || buildingType.contains(" Hub");
     }
 
