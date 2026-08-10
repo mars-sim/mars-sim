@@ -149,6 +149,13 @@ public class BuildingConfig {
 
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
+		String shape = buildingElement.getAttributeValue("shape");
+		double area;
+		if (shape != null && shape.equalsIgnoreCase("circular")) {
+			area = Math.PI * (length / 2.0) * (length / 2.0);
+		} else {
+			area = width * length;
+		}
 		String alignment = buildingElement.getAttributeValue(N_S_ALIGNMENT);
 		int baseLevel = Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
 		double presetTemp = Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
@@ -204,11 +211,18 @@ public class BuildingConfig {
 			category = deriveCategory(supportedFunctions.keySet());
 		}
 
-		return new BuildingSpec(buildingTypeName, desc, category, 
+		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, category, 
 				width, length, alignment, constructionType, scopeNames, baseLevel,
 			 	presetTemp, maintenanceTime, wearLifeTime,
 			 	powerPriority, baseFullPowerLoad, baseLowPowerLoad,
 			 	supportedFunctions);
+		
+		newSpec.setArea(area);
+		if (shape != null) {
+			newSpec.setShape(shape);
+		}
+		
+		return newSpec;
 	}
 
 	/**

@@ -61,7 +61,7 @@ public class LifeSupport extends Function {
 
 		length = building.getLength();
 		width = building.getWidth();
-		floorArea = length * width;
+		floorArea = building.getFloorArea();
 
 		occupants = new UnitSet<>();
 

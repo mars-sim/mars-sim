@@ -6,6 +6,7 @@
 	<!ATTLIST building category CDATA #IMPLIED>
 	<!ATTLIST building width CDATA #REQUIRED>
 	<!ATTLIST building length CDATA #REQUIRED>
+	<!ATTLIST building shape CDATA #IMPLIED>
 	<!ATTLIST building north-south-alignment (width|length) #REQUIRED>
 	<!ATTLIST building construction CDATA #IMPLIED>
 	<!ATTLIST building base-level CDATA #REQUIRED>
@@ -186,7 +187,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- maintenance-time: in millisols (old default : 50 millisols). -->
 	<!-- room-temperature: in deg Celsius (old default : 22.5D). -->
 	<!-- base-mass: in kg (old default : 3000). -->
-	<building type="Lander Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
+	<building type="Lander Hab" shape="circular" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 		wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Lander Hab is a jack-of-all-trades building that houses many basic but critical functions
 		to jump start a settlement. It's commonly used as a main hub.
@@ -3843,7 +3844,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- end of Astronomy Observatory-->
 
 	<!-- A lander hab refitted for storage. -->
-	<building type="Storage Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
+	<building type="Storage Hab" shape="circular" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="2000">
 		<description> The Storage Hab is a Lander Hab refitted storage
 			building with ample storage space. It has built-in PV panels
@@ -3883,7 +3884,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Storage Hab-->
 
-	<building type="Research Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
+	<building type="Research Hab" shape="circular" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="3000">
 		<description> The Research Hab is a Lander Hab refitted laboratory
 			building for scientific research. It can be custom-tailored with COMPUTING
@@ -3968,7 +3969,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Research Hab-->
 
-	<building type="Residential Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
+	<building type="Residential Hab" shape="circular" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="22.5" base-mass="2000"
 			category="LIVING">
 		<description> The Residential Hab is a Lander Hab refitted residential
@@ -4022,7 +4023,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- end of Residential Hab-->
 
 	<!-- A lander hab refitted as a medical facility. -->
-	<building type="Medical Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
+	<building type="Medical Hab" shape="circular" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 			wear-lifetime="3340000" maintenance-time="100" room-temperature="22.5" base-mass="2500">
 		<description> The Medical Hab is a Lander Hab refitted medical facility
 		 for providing medical basic care. It also has medical research workbench and
@@ -4100,7 +4101,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Medical Hab-->
 
-	<building type="Machinery Hab" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
+	<building type="Machinery Hab" shape="circular" width="9.0" length="9.0" north-south-alignment="length" base-level="1"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Machinery Hab is a Lander Hab refitted manufacturing workshop
 		 	for making items and synthesizing resource. It provides storage space for
@@ -4275,7 +4276,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- The buildings below are constructed with in-situ materials, primarly 
 	underground and are used primarily for trading and mining settlements -->
 
-	<building type="Outpost Hub" width="10.0" length="10.0" north-south-alignment="length" 
+	<building type="Outpost Hub" shape="circular" width="10.0" length="10.0" north-south-alignment="length" 
 			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Outpost Hub is a vaulted brick building that acts

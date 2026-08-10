@@ -187,12 +187,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		this.width = bounds.getWidth();
 		this.length = bounds.getLength();
 
-		if (name.toLowerCase().contains(_HAB) || name.toLowerCase().contains(_HUB)) {
-			// For Habs and Hubs that have a circular footprint
-			this.floorArea = Math.PI * (.5 * length) * (.5 * length);
-		}
-		else
-			this.floorArea = length * width;
+		this.floorArea = length * width;
 		
 		areaFactor = Math.sqrt(floorArea) / 2;
 				
@@ -215,6 +210,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public Building(Settlement owner, String id, int zone, String name, BoundedObject bounds,
 						BuildingSpec buildingSpec) {
 		this(owner, id, zone, name, buildingSpec.getValidBounds(bounds), buildingSpec.getName(), buildingSpec.getCategory());
+		
+		this.floorArea = buildingSpec.getArea();
+		this.areaFactor = Math.sqrt(this.floorArea) / 2;
 		
 		constructionType = buildingSpec.getConstruction();
 
@@ -1420,8 +1418,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 	// TODO this is wrong as names can change. This is just used to identify if there are multiple floors.
 	public boolean isAHabOrHub() {
-        return buildingType.contains(" Hab")
-                || buildingType.contains(" Hub");
+        return buildingType.contains(" Hab") || buildingType.contains(" Hub");
     }
 
 	/**

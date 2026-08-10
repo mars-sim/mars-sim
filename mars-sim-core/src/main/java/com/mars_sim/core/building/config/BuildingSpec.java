@@ -39,6 +39,8 @@ public class BuildingSpec {
 
 	private double length;
 	private double width;
+	private double area;
+	private String shape;
 	
 	private String alignment;
 	private String buildingType;
@@ -197,6 +199,22 @@ public class BuildingSpec {
 
 	public double getWidth() {
 		return width;
+	}
+
+	public double getArea() {
+		return area;
+	}
+	
+	public void setArea(double area) {
+		this.area = area;
+	}
+
+	public String getShape() {
+		return shape;
+	}
+	
+	public void setShape(String shape) {
+		this.shape = shape;
 	}
 	
     /**
