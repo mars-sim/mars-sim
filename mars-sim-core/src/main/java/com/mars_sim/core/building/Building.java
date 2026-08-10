@@ -123,6 +123,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	// Regarding the length, how to best handle the variable length of brickway/walkly/hallway/tunnel 
 	private double length;
 	private double floorArea;
+	private String shape;
 	private double areaFactor;
 	private double facing;
 
@@ -187,12 +188,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		this.width = bounds.getWidth();
 		this.length = bounds.getLength();
 
-		com.mars_sim.core.building.config.BuildingSpec spec = BuildingManager.getBuildingConfig().getBuildingSpec(buildingType);
-		if (spec != null) {
-			this.floorArea = spec.getArea();
-		} else {
-			this.floorArea = length * width;
-		}
+		this.floorArea = length * width;
 		
 		areaFactor = Math.sqrt(floorArea) / 2;
 				
@@ -215,6 +211,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public Building(Settlement owner, String id, int zone, String name, BoundedObject bounds,
 						BuildingSpec buildingSpec) {
 		this(owner, id, zone, name, buildingSpec.getValidBounds(bounds), buildingSpec.getName(), buildingSpec.getCategory());
+		
+		this.floorArea = buildingSpec.getArea();
+		this.areaFactor = Math.sqrt(this.floorArea) / 2;
+		this.shape = buildingSpec.getShape();
 		
 		constructionType = buildingSpec.getConstruction();
 
@@ -1420,8 +1420,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 	// TODO this is wrong as names can change. This is just used to identify if there are multiple floors.
 	public boolean isAHabOrHub() {
-        com.mars_sim.core.building.config.BuildingSpec spec = BuildingManager.getBuildingConfig().getBuildingSpec(buildingType);
-        return spec != null && "circular".equalsIgnoreCase(spec.getShape());
+		if (shape != null) {
+			return "circular".equalsIgnoreCase(shape);
+		}
+		// Fallback for tests if shape is not loaded
+        return buildingType.contains(" Hab") || buildingType.contains(" Hub");
     }
 
 	/**
