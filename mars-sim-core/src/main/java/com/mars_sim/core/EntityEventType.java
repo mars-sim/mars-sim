@@ -17,7 +17,6 @@ public class EntityEventType {
 	// For Unit
 	public static final String NAME_EVENT = "name";
 	public static final String DESCRIPTION_EVENT = "description";
-	public static final String MASS_EVENT = "mass";
 	public static final String COORDINATE_EVENT = "coordinate";
 	public static final String LOCAL_POSITION_EVENT = "local position";
 	
@@ -27,12 +26,7 @@ public class EntityEventType {
 
 	public static final String ADD_ASSOCIATED_ROBOT_EVENT = "add associated robot";
 	public static final String REMOVE_ASSOCIATED_ROBOT_EVENT = "remove associated robot";
-	
-	public static final String ADD_ASSOCIATED_EQUIPMENT_EVENT = "add associated equipment";
-
-	public static final String ADD_ASSOCIATED_BIN_EVENT = "add associated bin";
-	public static final String REMOVE_ASSOCIATED_BIN_EVENT = "remove associated bin";
-	
+		
 	public static final String EMOTION_EVENT = "emotion event";
 	
 	// Others
@@ -55,9 +49,6 @@ public class EntityEventType {
 	public static final String REMOVE_BUILDING_EVENT = "remove building";
 
 	public static final String START_BUILDING_PLACEMENT_EVENT = "start building placement";
-
-	// For Cooking and PreparingDessert
-	public static final String FOOD_EVENT = "food event";
 
 	// For Mind
 	public static final String JOB_EVENT = "job event";

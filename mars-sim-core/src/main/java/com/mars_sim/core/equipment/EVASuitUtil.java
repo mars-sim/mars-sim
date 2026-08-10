@@ -111,20 +111,19 @@ public final class EVASuitUtil {
 	/**
 	 * Finds the instance of an available EVA suit (preferably the one registered by the person) 
 	 * with or without resources from a given inventory. 
-	 * 
 	 * @Note: this method does not transfer the suit
 	 * 
-	 * @param owner 	the EquipmentOwner
+	 * @param inv 	the inventory to search for resources
 	 * @param p 		the person who's looking for an EVA Suit
 	 * @return EVA suit's instance
 	 */
-	public static EVASuit findEVASuitWithResources(EquipmentOwner owner, Person p) {
+	public static EVASuit findEVASuitWithResources(EquipmentOwner inv, Person p) {
 		EVASuit previousSuit = null;
 		List<EVASuit> noResourceSuits = new ArrayList<>(0);
 		List<EVASuit> goodSuits = new ArrayList<>(0);
 		List<EVASuit> suits = new ArrayList<>();
 		
-		for (Equipment e : owner.getSuitSet()) {
+		for (Equipment e : inv.getSuitSet()) {
 			EVASuit suit = (EVASuit)e;
 			boolean lastOwner = p.getIdentifier() == suit.getRegisteredOwnerID();
 			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
@@ -145,7 +144,13 @@ public final class EVASuitUtil {
 			boolean hasEnoughResources = false;
 			
 			try {
-				hasEnoughResources = hasEnoughResourcesForSuit(owner, suit);
+				var location = p.getContainerUnit();
+				int otherPeopleNum = 0;
+				if (location instanceof Settlement s)
+					otherPeopleNum = s.getIndoorPeopleCount() - 1;
+				else if (location instanceof Crewable c)
+					otherPeopleNum = c.getCrewNum();
+				hasEnoughResources = hasEnoughResourcesForSuit(inv, suit, otherPeopleNum);
 
 			} catch (Exception ex) {
 				logger.severe(p, 50_000,
@@ -204,38 +209,34 @@ public final class EVASuitUtil {
 	/**
 	 * Checks if entity unit has enough resource supplies to fill the EVA suit.
 	 *
-	 * @param owner 	the EquipmentOwner
+	 * @param resourceStore 	the EquipmentOwner
 	 * @param suit      the EVA suit
+	 * @param otherPeopleNum  the number of other people who will be using the EVA suit
 	 * @return true if enough supplies
 	 */
-	private static boolean hasEnoughResourcesForSuit(EquipmentOwner owner, EVASuit suit) {
-		int otherPeopleNum = 0;
-		if (owner instanceof Settlement s)
-			otherPeopleNum = s.getIndoorPeopleCount() - 1;
-		else if (owner instanceof Crewable c)
-			otherPeopleNum = c.getCrewNum();
-		
+	private static boolean hasEnoughResourcesForSuit(EquipmentOwner resourceStore, EVASuit suit, int otherPeopleNum) {
+
 		// Check if enough oxygen.
 		double neededOxygen = suit.getRemainingCombinedCapacity(ResourceUtil.OXYGEN_ID);
-		double availableOxygen = owner.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+		double availableOxygen = resourceStore.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		// Make sure there is enough extra oxygen for everyone else.
 		availableOxygen -= (neededOxygen * otherPeopleNum);
 		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
 		// Check if enough water.
 		double neededWater = suit.getRemainingCombinedCapacity(ResourceUtil.WATER_ID);
-		double availableWater = owner.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+		double availableWater = resourceStore.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		// Make sure there is enough extra water for everyone else.
 		availableWater -= (neededWater * otherPeopleNum);
 		boolean hasEnoughWater = (availableWater >= neededWater);
 
 		// it's okay even if there's not enough water
 		if (!hasEnoughWater) {
-			if (owner instanceof Settlement settlement)
+			if (resourceStore instanceof Settlement settlement)
 				logger.warning(settlement, 20_000, 
 					"No enough water to feed " + suit.getName() 
 					+ " but can still use the EVA Suit.");
-			else if (owner instanceof Rover rover)
+			else if (resourceStore instanceof Rover rover)
 				logger.warning(rover, 20_000, 
 					"No enough water to feed " + suit.getName() 
 					+ " but can still use the EVA Suit.");

@@ -9,7 +9,6 @@ package com.mars_sim.core.equipment;
 
 import java.util.EnumMap;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.structure.Settlement;
 
@@ -74,7 +73,6 @@ public final class EquipmentFactory {
 
 		// Add this equipment as being placed in this settlement
 		settlement.addEquipment(newEqm);
-		settlement.fireUnitUpdate(EntityEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, newEqm);
 		return newEqm;
 	}
 

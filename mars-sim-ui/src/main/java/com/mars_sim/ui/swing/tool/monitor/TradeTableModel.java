@@ -115,40 +115,31 @@ class TradeTableModel extends CategoryTableModel<Good> {
 	 */
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (event.getTarget() instanceof Good g
-			&& event.getSource() instanceof Settlement s) {
-			
-			String eventType = event.getType();
-			CategoryKey<Good> key = new CategoryKey<>(s, g);
-			
-			if (EntityEventType.VALUE_EVENT.equals(eventType)) {
-				entityValueUpdated(key, VALUE_COL, VALUE_COL);
-			} else if (EntityEventType.DEMAND_EVENT.equals(eventType)) {
-				entityValueUpdated(key, DEMAND_COL, DEMAND_COL);
-			} else if (EntityEventType.MARKET_VALUE_EVENT.equals(eventType)) {
-				entityValueUpdated(key, MARKET_VALUE_COL, MARKET_VALUE_COL);
-			} else if (EntityEventType.MARKET_DEMAND_EVENT.equals(eventType)) {
-				entityValueUpdated(key, MARKET_DEMAND_COL, MARKET_DEMAND_COL);
-			} else if (EntityEventType.PROJECTED_DEMAND_EVENT.equals(eventType)) {
-				entityValueUpdated(key, PROJECTED_COL, PROJECTED_COL);
-			} else if (EntityEventType.TRADE_DEMAND_EVENT.equals(eventType)) {
-				entityValueUpdated(key, TRADE_COL, TRADE_COL);
-			} else if (EntityEventType.REPAIR_DEMAND_EVENT.equals(eventType)) {
-				entityValueUpdated(key, REPAIR_COL, REPAIR_COL);
-			} else if (EntityEventType.MASS_EVENT.equals(eventType)) {
-				entityValueUpdated(key, MASS_COL, MASS_COL);
-			} else if (EntityEventType.SUPPLY_EVENT.equals(eventType)) {
-				entityValueUpdated(key, SUPPLY_COL, SUPPLY_COL);
-//			} else if (EntityEventType.COST_EVENT.equals(eventType)) {
-//				entityValueUpdated(key, COST_COL, COST_COL);
-//			} else if (EntityEventType.PRICE_EVENT.equals(eventType)) {
-//				entityValueUpdated(key, PRICE_COL, PRICE_COL);
-//			} else if (EntityEventType.MARKET_COST_EVENT.equals(eventType)) {
-//				entityValueUpdated(key, MARKET_COST_COL, MARKET_COST_COL);
-//			} else if (EntityEventType.MARKET_PRICE_EVENT.equals(eventType)) {
-//				entityValueUpdated(key, MARKET_PRICE_COL, MARKET_PRICE_COL);
-			} else {
-				entityValueUpdated(key, NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
+		String eventType = event.getType();
+		if (event.getSource() instanceof Settlement s) {
+
+			if (event.getTarget() instanceof Good g) {
+				CategoryKey<Good> key = new CategoryKey<>(s, g);
+				
+				switch(eventType) {
+					case EntityEventType.VALUE_EVENT -> entityValueUpdated(key, VALUE_COL, VALUE_COL);
+					case EntityEventType.DEMAND_EVENT -> entityValueUpdated(key, DEMAND_COL, DEMAND_COL);
+					case EntityEventType.MARKET_VALUE_EVENT -> entityValueUpdated(key, MARKET_VALUE_COL, MARKET_VALUE_COL);
+					case EntityEventType.MARKET_DEMAND_EVENT -> entityValueUpdated(key, MARKET_DEMAND_COL, MARKET_DEMAND_COL);
+					case EntityEventType.PROJECTED_DEMAND_EVENT -> entityValueUpdated(key, PROJECTED_COL, PROJECTED_COL);
+					case EntityEventType.TRADE_DEMAND_EVENT -> entityValueUpdated(key, TRADE_COL, TRADE_COL);
+					case EntityEventType.REPAIR_DEMAND_EVENT -> entityValueUpdated(key, REPAIR_COL, REPAIR_COL);
+					case EntityEventType.SUPPLY_EVENT -> entityValueUpdated(key, SUPPLY_COL, SUPPLY_COL);
+					default -> entityValueUpdated(key, NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
+				}
+			}
+			else if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(eventType)
+					&& event.getTarget() instanceof Integer resourceID) {
+				Good g = GoodsUtil.getGood(resourceID);
+
+				CategoryKey<Good> key = new CategoryKey<>(s, g);
+
+				entityValueUpdated(key, QUANTITY_COL, MASS_COL);
 			}
 		}
 	}

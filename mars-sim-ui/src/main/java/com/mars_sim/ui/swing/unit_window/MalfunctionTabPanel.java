@@ -39,6 +39,7 @@ import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
 /**
@@ -89,10 +90,7 @@ public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> impleme
 
         @Override
 		public int getColumnCount() {
-            if (showSource)
-			    return 5;
-            else
-                return 4;
+            return (showSource ? 5 : 4);
 		}
 
         @Override
@@ -123,6 +121,10 @@ public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> impleme
         @Override
 		public Object getValueAt(int row, int column) {
             Malfunction p = malfunctions.get(row);
+			if (p == null) {
+				// Malfunction has been removed from the building, but not yet from the table.
+				return null;
+			}
             int realColumn = getPropFromColumn(column);
             switch(realColumn) {
                 case NAME: return p.getName();
@@ -168,13 +170,16 @@ public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> impleme
 
 		public void update(List<Malfunction> newMalfunctions) {
 
+			boolean changed = false;
 			if (newMalfunctions.isEmpty() && !malfunctions.isEmpty()) {
 				// No new malfunction but old in table
 				malfunctions.clear();
+				changed = true;
 			}
-			else if (malfunctions.isEmpty()) {
+			else if (malfunctions.isEmpty() && !newMalfunctions.isEmpty()) {
 				// New malfunction but none in model
 				malfunctions.addAll(newMalfunctions);
+				changed = true;
 			}
 			else {
 				// Malfunctions on both sides; need to do a Union
@@ -184,12 +189,15 @@ public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> impleme
 				List<Malfunction> rowsToAdd = new ArrayList<>(newMalfunctions);
 				rowsToAdd.removeAll(malfunctions);
 
-				malfunctions.removeAll(rowsToDelete);
-				malfunctions.addAll(rowsToAdd);
+				if (!rowsToDelete.isEmpty() || !rowsToAdd.isEmpty()) {
+					changed = true;
+					malfunctions.removeAll(rowsToDelete);
+					malfunctions.addAll(rowsToAdd);
+				}
 			}
 
-			if (!malfunctions.isEmpty()) {
-				fireTableDataChanged();
+			if (changed) {
+				SwingHelper.runInEDT(() -> fireTableDataChanged());
 			}
 		}
 
@@ -326,7 +334,8 @@ public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> impleme
 					  .append((int) malfunction.getCompletedWorkTime(workType))
 					  .append(SLASH)
 					  .append((int) malfunction.getWorkTime(workType))
-					  .append(MILLISOLS + BR);
+					  .append(MILLISOLS)
+					  .append(BR);
 			}
 		}
 
@@ -352,23 +361,6 @@ public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> impleme
 		
 		if (useHTML)
 			return result.replaceAll(COMMA, BR);
-		
-//		if (!parts.isEmpty()) {
-//			boolean first = true;
-//			for(Entry<MaintenanceScope, Integer> entry : parts.entrySet()) {
-//				if (!first) {
-//					buf.append(useHTML ? BR : COMMA);
-//				}
-//				first = false;
-//				Integer part = entry.getKey();
-//				int number = entry.getValue();
-//				buf.append(number).append(ONE_SPACE)
-//						.append(ItemResourceUtil.findItemResource(part).getName());
-//			}
-//			buf.append(DOT);
-//		} else
-//			buf.append(NONE);
-
 		return result;
 	}
 

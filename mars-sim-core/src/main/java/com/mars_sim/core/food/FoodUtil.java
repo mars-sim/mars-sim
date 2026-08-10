@@ -55,12 +55,23 @@ public class FoodUtil {
 	/**
 	 * Converts good object to food object.
 	 * 
-	 * @param food
-	 * @return
+	 * @param good Source Good.
 	 */
 	public static Food convertGoodToFood(Good good) {
 		return getFoodList().stream()
 			    .filter(f -> f.getID() == good.getID())
+			    .findFirst().orElse(null);
+	}
+	
+	/**
+	 * Converts resource Id to food object.
+	 * 
+	 * @param resourceId Source resource Id.
+	 * @return
+	 */
+	public static Food convertResourceToFood(int resourceId) {
+		return getFoodList().stream()
+			    .filter(f -> f.getID() == resourceId)
 			    .findFirst().orElse(null);
 	}
 	
