@@ -419,13 +419,22 @@ public class PhysicalCondition implements Serializable {
 		if (!alive) {
 			return;
 		}
-		if (pulse.isNewIntMillisol()) {
-			moderateTime(pulse, support);
-		}
-		// Check once a day only
-		if (pulse.isNewSol()) {	
+
+		moderateTime(pulse, support);
+
+		int msol = pulse.getMarsTime().getMillisolInt();
+		if (msol % 7 == 0) {	
+			// Check radiation poisoning
+			if (!isRadiationPoisoned) {
+				checkRadiationPoisoning(pulse.getElapsed());
+			}
+			
 			// Update the personal appetite
 			updateAppetite();
+		}
+		
+		// Check once a day only
+		if (pulse.isNewHalfSol()) {	
 			// Update personal max energy
 			updateMaxEnergy();
 		}
@@ -467,6 +476,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param support
 	 */
 	private void checkVitals(ClockPulse pulse, double time, LifeSupportInterface support) {
+		
 		boolean isResting = person.isRestingTask();
 
 		// Check key attributes
@@ -474,30 +484,19 @@ public class PhysicalCondition implements Serializable {
 		checkStress(time, factor);
 		checkThirst(time, factor);
 		checkFatigue(time, factor);
-		checkHunger(time, factor);
-		
+		checkHunger(time, factor);	
+
 		double currentO2Consumption = isResting ? personConfig.getLowO2ConsumptionRate()
-										: personConfig.getNominalO2ConsumptionRate();
+				: personConfig.getNominalO2ConsumptionRate();
+	
 		// Check life support system
 		checkLifeSupport(time, currentO2Consumption, support);
 		// Update the existing health problems
 		checkHealth(pulse, isResting);
-
 		// Calculate performance and most mostSeriousProblem illness.
 		recalculatePerformance();
-
 		// Check radiation 
 		radiation.timePassing(pulse);			
-		
-		int msol = pulse.getMarsTime().getMillisolInt();
-		if (msol % 7 == 0) {	
-			// Check if person is at very high fatigue may collapse.
-
-			// Check radiation poisoning
-			if (!isRadiationPoisoned) {
-				checkRadiationPoisoning(time);
-			}
-		}
 	}
 
 	 /**
@@ -511,7 +510,7 @@ public class PhysicalCondition implements Serializable {
 			List<Complaint> newComplaints = new ArrayList<>();
 			List<HealthProblem> finished = new ArrayList<>();
 
-			for(var problem : problems) {
+			for (var problem : problems) {
 				// Advance each problem, they may change into a worse problem.
 				// If the current is completed or a new problem exists then
 				// remove this one.

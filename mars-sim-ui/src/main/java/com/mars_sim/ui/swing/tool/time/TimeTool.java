@@ -67,6 +67,8 @@ public class TimeTool extends ContentPanel {
 
 	private static final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
 		
+	/** The time elapsed label string */
+	private static final String ELAPSED = "Time Elapsed";
 	/** The execution time label string */
 	private static final String EXEC = "Execution";
 	/** The sleep time label string */
@@ -137,6 +139,8 @@ public class TimeTool extends ContentPanel {
 	private JLabel optimalPulseLabel;
 	/** The label for rff pulse width. */
 	private JLabel refPulseLabel;
+	/** The label for elapsed time. */
+	private JLabel elapsedTimeLabel;
 	/** The label for execution time. */
 	private JLabel execTimeLabel;
 	/** The label for sleep time. */
@@ -299,6 +303,8 @@ public class TimeTool extends ContentPanel {
 				"The sleep time [ms] of the last tick");
 		desiredPulseMSLabel = speedPane.addTextField(DESIRED_PULSE_WDITH_MS, "", 
 				"The desired pulse width [ms]");
+		elapsedTimeLabel = speedPane.addTextField(ELAPSED, "", 
+				"The real elapsed time between each frame");
 		actualTRLabel = speedPane.addTextField(ACTUAL_TIME_RATIO, "",
 				"Master clock's actual time ratio");
 		desireTRLabel = speedPane.addTextField(DESIRE_TR, "",
@@ -586,10 +592,13 @@ public class TimeTool extends ContentPanel {
 			spinnerModel5.setValue(value5);
 		}
 		
+		// Update elapsed time label
+		long elapsedTime = masterClock.getRealElapsedMillisec();
+		elapsedTimeLabel.setText(StyleManager.DECIMAL_PLACES1.format(elapsedTime) + MS);
 		
 		// Update execution time label
-		int execTime = masterClock.getExecutionTime();
-		execTimeLabel.setText(execTime + MS);
+		float execTime = masterClock.getExecutionTime();
+		execTimeLabel.setText(StyleManager.DECIMAL_PLACES1.format(execTime) + MS);
 
 		// Update sleep time label
 		float sleepTime = masterClock.getSleepTime();
