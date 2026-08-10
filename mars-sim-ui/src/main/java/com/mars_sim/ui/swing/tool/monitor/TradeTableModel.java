@@ -139,7 +139,7 @@ class TradeTableModel extends CategoryTableModel<Good> {
 
 				CategoryKey<Good> key = new CategoryKey<>(s, g);
 
-				entityValueUpdated(key, MASS_COL, MASS_COL);
+				entityValueUpdated(key, QUANTITY_COL, MASS_COL);
 			}
 		}
 	}

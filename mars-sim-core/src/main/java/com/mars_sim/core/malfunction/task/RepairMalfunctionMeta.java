@@ -217,7 +217,6 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 	 * 
 	 * @param source Source of repair tasks
 	 * @param partStore Where any needed Parts come from
-	 * @param settlement 
 	 */
     private List<RepairNeeded> getRepairTasks(Collection<Malfunctionable> source, EquipmentOwner partStore) {
 
@@ -233,14 +232,18 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 
 			// Get the malfunction manager
 			MalfunctionManager manager = entity.getMalfunctionManager();
-			if (manager.hasMalfunction()) {
-				// Create repair tasks for all active malfunctions
-				var active = manager.getMalfunctions().stream()
-						.map(m -> createRepair(partStore, entity, m, MalfunctionRepairWork.INSIDE))
-						.filter(m -> m != null)
-						.toList();
+			
+			// Create repair tasks for all active malfunctions
+			for(var m : manager.getMalfunctions()) {
+				var inside = createRepair(partStore, entity, m, MalfunctionRepairWork.INSIDE);
+				if (inside != null) {
+					tasks.add(inside);
+				}
 
-				tasks.addAll(active);
+				var outside = createRepair(partStore, entity, m, MalfunctionRepairWork.EVA);
+				if (outside != null) {
+					tasks.add(outside);
+				}
 			}
 		}
 		return tasks;

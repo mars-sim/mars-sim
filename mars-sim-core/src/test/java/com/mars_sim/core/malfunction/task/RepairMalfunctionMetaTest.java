@@ -27,7 +27,7 @@ class RepairMalfunctionMetaTest extends MarsSimUnitTest {
         MalfunctionManager.setNoFailures(true);
     }
 
-    private void byuldMalfunction(String fault, Malfunctionable b, EquipmentOwner eqmInv) {
+    private void buldMalfunction(String fault, Malfunctionable b, EquipmentOwner eqmInv) {
         
         var mm = getConfig().getMalfunctionConfiguration().getMalfunctionList().stream()
                 .filter(m -> m.getName().equals(fault))
@@ -52,7 +52,7 @@ class RepairMalfunctionMetaTest extends MarsSimUnitTest {
         var tasks = mt.getSettlementTasks(s);
         assertTrue(tasks.isEmpty(), "No tasks should be available when there are no malfunctions");
 
-        byuldMalfunction(FIRE, b, s.getEquipmentInventory());
+        buldMalfunction(FIRE, b, s.getEquipmentInventory());
 
         tasks = mt.getSettlementTasks(s);
         assertEquals(1, tasks.size(), "Tasks should be available when resources are available");
@@ -69,7 +69,7 @@ class RepairMalfunctionMetaTest extends MarsSimUnitTest {
         var tasks = mt.getTaskJobs(p);
         assertTrue(tasks.isEmpty(), "No tasks should be available when there are no malfunctions");
 
-        byuldMalfunction(FIRE, v, s.getEquipmentInventory());
+        buldMalfunction(FIRE, v, s.getEquipmentInventory());
 
         tasks = mt.getTaskJobs(p);
         assertEquals(1, tasks.size(), "Tasks should be available when resources are available");
