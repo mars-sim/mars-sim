@@ -415,12 +415,16 @@ class VehicleGood extends Good {
 		
 		double partDemand = 0;
 		
+		double num = vs.getParts().size();
+		
 		Set<Integer> setIDs = vs.getParts();
 		if (setIDs != null && !setIDs.isEmpty()) {
 			for (int id : setIDs) {
 				partDemand += owner.getDemandScoreWithID(id);
 			}
 		}
+		
+		partDemand = partDemand / num;
 		
 		int potentialVehicle = 0;
 		boolean soldFlag = false;

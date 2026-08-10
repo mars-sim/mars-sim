@@ -27,6 +27,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementConfig.ResourceLimits;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -150,7 +151,10 @@ public class GoodsManager implements Serializable {
 	private static final double PERCENT_90 = .9;
 	private static final double PERCENT_81 = .81;
 
-
+	private static final double DELTA = MarketData.DELTA;
+	private static final double LIMIT = 1 - DELTA;
+	private static final double FREQUENCY = MarketManager.FREQUENCY;
+	
 	// Fixed weights to apply to updates to commerce factors.
 	private static final Map<CommerceType, Double> FACTOR_WEIGHTS = Map.of(CommerceType.RESEARCH, 1.5D);
 
@@ -188,6 +192,7 @@ public class GoodsManager implements Serializable {
 
 	private static UnitManager unitManager;
 	private static MarketManager marketManager;
+	private static MasterClock masterClock;
 
 
 	/**
@@ -357,14 +362,20 @@ public class GoodsManager implements Serializable {
 		
 			double totalSupply = supplyCache.get(id);
 			double oldDemand = demandCache.get(id);
+			double newDemand = oldDemand;
+				
+			int msol = masterClock.getMarsTime().getMillisolInt();
 			
-			// Adjust the market demand
-			double marketDemand = adjustMarketDemand(good, oldDemand);
-			double newDemand = .95 *  oldDemand + .05 * marketDemand;
-	
-			// Save the demand if it has changed
-			if (oldDemand != newDemand) {
-				setDemandScore(good, newDemand);
+			if (msol % FREQUENCY == 0) {
+				// Adjust the market demand
+				double marketDemand = adjustMarketDemand(good, oldDemand);
+				
+				newDemand =	LIMIT * oldDemand + DELTA * marketDemand;
+				
+				// Save the demand if it has changed
+				if (oldDemand != newDemand) {
+					setDemandScore(good, newDemand);
+				}
 			}
 			
 			// Calculate the good value
@@ -382,17 +393,21 @@ public class GoodsManager implements Serializable {
 				updateDeflationMap(id, newGoodValue, good.getCategory(), false);
 			}
 
+			
 			// Check for inflation and deflation adjustment due to other resources
 			newGoodValue = checkDeflation(id, newGoodValue);
 			
-			// Adjust the market VP
-			double marketVP = adjustMarketVP(good, newGoodValue);
-			newGoodValue = .95 *  newGoodValue + .05 * marketVP;
-
-			// Save the value point if it has changed
-			double oldValue = goodsValues.get(id);
-			if (oldValue != newGoodValue) {
-				setGoodValue(good, newGoodValue);
+			if (msol % FREQUENCY == 0) {
+				// Adjust the market VP
+				double marketVP = adjustMarketVP(good, newGoodValue);
+				newGoodValue = LIMIT * newGoodValue + DELTA * marketVP;
+				
+				// Save the value point if it has changed
+				double oldValue = goodsValues.get(id);
+				
+				if (oldValue != newGoodValue) {
+					setGoodValue(good, newGoodValue);
+				}
 			}
 
 			return newGoodValue;
@@ -895,8 +910,8 @@ public class GoodsManager implements Serializable {
     		double stored = settlement.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
     		
     		double diff = (reserve - stored) / (1 + stored);
-    		if (diff < 1)
-    			diff = 1;
+    		if (diff < .1)
+    			diff = .1;
     		
     		double amount = diff * vp;
     		
@@ -948,27 +963,27 @@ public class GoodsManager implements Serializable {
 //		}
 		else if (stored >= 2 * reserve) {
 			surplus = stored - 2 * reserve;
-			delta = .25 * Math.sqrt(.25 * surplus);
+			delta = .2 * Math.sqrt(.2 * surplus);
 		}
 		else if (stored >= 1.5 * reserve) {
 			surplus = stored - 1.5 * reserve;
-			delta = .35 * Math.sqrt(.5 * surplus);
+			delta = .4 * Math.sqrt(.6 * surplus);
 		}
 		else if (stored >= reserve) {
 			surplus = stored - reserve;
-			delta = .55 * Math.sqrt(surplus);
+			delta = .6 * Math.sqrt(surplus);
 		}
 		else if (stored < .5 * reserve) {
 			lacking = .5 * reserve - stored;
-			delta = .75 * Math.sqrt(2 * lacking);
+			delta = .8 * Math.sqrt(2 * lacking);
 		}
 		else if (stored < .25 * reserve) {
 			lacking = .25 * reserve - stored;
-			delta = 1.5 * Math.sqrt(8 * lacking);
+			delta = 2 * Math.sqrt(8 * lacking);
 		}
 		else if (stored < reserve) {
 			lacking = reserve - stored;
-			delta = Math.sqrt(4 * lacking);
+			delta = 1.5 * Math.sqrt(4 * lacking);
 		}
 		
 		double fraction = delta / demand;
@@ -1129,12 +1144,14 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 *
+	 * @param ms
 	 * @param s  {@link SimulationConfg}
 	 * @param u  {@link UnitManager}
 	 * @param mm  {@link MarketManager}
 	 */
-	public static void initializeInstances(SimulationConfig sc, UnitManager u, MarketManager mm) {
+	public static void initializeInstances(MasterClock ms, SimulationConfig sc, UnitManager u, MarketManager mm) {
 		unitManager = u;
+		masterClock = ms;
 		Good.initializeInstances(sc, u);
 		CommerceUtil.initializeInstances(u);
 		marketManager = mm;

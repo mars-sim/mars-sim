@@ -496,27 +496,28 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// Favors to produce the output resource
 				score = 10;
 				
-				// Gets the remaining amount of this resource
-				double remain = settlement.getRemainingSpecificCapacity(resource);
-
-				if (remain < 50)
-					remain = 50;
-
-				double rate = processSpec.getBaseOutputRate(resource);
-
-				// For output value
-				if (vp > remain) {
-					// This limits the vp to match the remaining space 
-					// that can accommodate this output resource
-					vp = remain;
-				}
+//				// Gets the remaining amount of this resource
+//				double remain = settlement.getRemainingSpecificCapacity(resource);
+//
+//				if (remain < 50)
+//					remain = 50;
+//
+//				// For output value
+//				if (vp > remain) {
+//					// This limits the vp to match the remaining space 
+//					// that can accommodate this output resource
+//					vp = remain;
+//				}
 
 				// Calculate the modified mass rate
 				// Note: divided by (supply + 0.001) make sense in two scenarios : 
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
+				double vp2 = vp * vp;
 
-				double mrate = rate * vp * vp * vp * .5;
+				double rate = processSpec.getBaseOutputRate(resource);
+				
+				double mrate = rate * vp2 * vp2 * .25;
 				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),

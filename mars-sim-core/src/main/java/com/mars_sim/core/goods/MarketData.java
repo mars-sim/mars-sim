@@ -15,7 +15,7 @@ public class MarketData implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	private static final double DELTA = 0.0001;
+	static final double DELTA = 0.005;
 	private static final double LIMIT = 1 - DELTA;
 	
 	private double goodValue = 0.0;

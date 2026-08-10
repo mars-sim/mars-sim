@@ -1153,7 +1153,7 @@ public class MasterClock implements Serializable {
 				// Get the desired number of pulses per second
 				// [pulse per sec] = [millisol per sec] / [millisol per pulse] 
 				float desiredPulsesPerSec = (float) (desiredMsolPerSec * 10 / 
-						(optMilliSolPerPulse + 9 * referencePulse));
+						(optMilliSolPerPulse + 8 * referencePulse + leadPulseTime));
 				
 				// Cache the pulse
 				millisecPerPulseCache = millisecPerPulse;
@@ -1175,7 +1175,7 @@ public class MasterClock implements Serializable {
 				// Get the desired number of pulses per second
 				// [pulse per sec] = [millisol per sec] / [millisol per pulse] 
 				float desiredPulsesPerSec = (float) (desiredMsolPerSec * 10 / 
-						(optMilliSolPerPulse + 9 * referencePulse));
+						(optMilliSolPerPulse + 8 * referencePulse + leadPulseTime));
 				
 				// Cache the pulse
 				millisecPerPulseCache = millisecPerPulse;

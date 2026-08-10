@@ -486,8 +486,9 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		return (int) containerSet.stream().filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
-								.count();
+		return (int) containerSet.stream()
+					.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
+					.count();
 	}
 
 	/**

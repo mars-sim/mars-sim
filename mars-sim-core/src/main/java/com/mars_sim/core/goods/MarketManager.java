@@ -27,7 +27,7 @@ public class MarketManager implements Serializable, Temporal {
 	/** default logger. */
 	// May add back private static SimLogger logger = SimLogger.getLogger(MarketManager.class.getName());
 
-	private static final int FREQUENCY = 13;
+	static final int FREQUENCY = 13;
 	
 	/** A map of Goods and the global market data. */
 	private Map<Good, MarketData> globalMarketBook;
@@ -62,7 +62,7 @@ public class MarketManager implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 	
-		if (pulse.isNewHalfSol() || pulse.getMarsTime().getMillisolInt() % FREQUENCY == 0) {
+		if (pulse.isNewHalfSol()) { // || pulse.getMarsTime().getMillisolInt() % FREQUENCY == 0) {
 			updateMarket();
 		}
 		

@@ -25,7 +25,7 @@ class TestGoodsUtil {
         SimulationConfig config = SimulationConfig.loadConfig();
   
         // Don't need a full GoodsManager initialisation
-        GoodsManager.initializeInstances(config, null, null);
+        GoodsManager.initializeInstances(null, config, null, null);
     }
 
 	@Test

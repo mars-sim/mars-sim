@@ -387,12 +387,14 @@ public class EquipmentGood extends Good {
 	private static double getWholeEVASuitDemand(GoodsManager owner) {
 		double demand = 0;
 	
+		double num = ItemResourceUtil.evaSuitPartIDs.size();
+		
 		if (ItemResourceUtil.evaSuitPartIDs != null && !ItemResourceUtil.evaSuitPartIDs.isEmpty()) {
 			for (int id : ItemResourceUtil.evaSuitPartIDs) {
 				demand += owner.getDemandScoreWithID(id);
 			}
 		}
-		return demand;
+		return demand / num;
 	}
 	
 	/**

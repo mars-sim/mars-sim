@@ -345,7 +345,7 @@ public class Simulation implements ClockPulseListener, Serializable {
         // Initialize RoleUtil
         RoleUtil.initialize();
      
-		GoodsManager.initializeInstances(simulationConfig, unitManager, marketManager);
+		GoodsManager.initializeInstances(masterClock, simulationConfig, unitManager, marketManager);
 					
 		medicalManager = new MedicalManager();
 		MedicalManager.initializeInstances(mc);
@@ -509,7 +509,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		Relation.initializeInstances(unitManager);
 				
-		GoodsManager.initializeInstances(simulationConfig, unitManager, marketManager);
+		GoodsManager.initializeInstances(masterClock, simulationConfig, unitManager, marketManager);
 		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -623,7 +623,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 	
 		Relation.initializeInstances(unitManager);
 				
-		GoodsManager.initializeInstances(simulationConfig, unitManager, marketManager);
+		GoodsManager.initializeInstances(masterClock, simulationConfig, unitManager, marketManager);
 				
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
