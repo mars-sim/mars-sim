@@ -187,12 +187,12 @@ public class Building extends FixedUnit implements Malfunctionable,
 		this.width = bounds.getWidth();
 		this.length = bounds.getLength();
 
-		if (name.toLowerCase().contains(_HAB) || name.toLowerCase().contains(_HUB)) {
-			// For Habs and Hubs that have a circular footprint
-			this.floorArea = Math.PI * (.5 * length) * (.5 * length);
-		}
-		else
+		com.mars_sim.core.building.config.BuildingSpec spec = BuildingManager.getBuildingConfig().getBuildingSpec(buildingType);
+		if (spec != null) {
+			this.floorArea = spec.getArea();
+		} else {
 			this.floorArea = length * width;
+		}
 		
 		areaFactor = Math.sqrt(floorArea) / 2;
 				
@@ -1420,8 +1420,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 	// TODO this is wrong as names can change. This is just used to identify if there are multiple floors.
 	public boolean isAHabOrHub() {
-        return buildingType.contains(" Hab")
-                || buildingType.contains(" Hub");
+        com.mars_sim.core.building.config.BuildingSpec spec = BuildingManager.getBuildingConfig().getBuildingSpec(buildingType);
+        return spec != null && "circular".equalsIgnoreCase(spec.getShape());
     }
 
 	/**
