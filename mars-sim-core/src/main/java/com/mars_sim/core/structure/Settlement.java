@@ -61,7 +61,6 @@ import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
-import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.map.location.Coordinates;
@@ -2120,9 +2119,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public boolean addEquipment(Equipment e) {
-		boolean success = eqmInventory.addEquipment(e);
-		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(e.getIdentifier()));
-		return success;
+		return eqmInventory.addEquipment(e);
 	}
 
 	/**
@@ -2132,9 +2129,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public boolean removeEquipment(Equipment e) {
-		boolean success = eqmInventory.removeEquipment(e);
-		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(e.getIdentifier()));
-		return success;
+		return eqmInventory.removeEquipment(e);
 	}
 
 	/**
@@ -2145,12 +2140,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public boolean addBin(Bin bin) {
-		if (eqmInventory.addBin(bin)) {
-			fireUnitUpdate(EntityEventType.ADD_ASSOCIATED_BIN_EVENT, this);
-			fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(bin.getID()));
-			return true;
-		}
-		return false;
+		return eqmInventory.addBin(bin);
 	}
 
 	/**
@@ -3081,9 +3071,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public int storeItemResource(int resource, int quantity) {
-		int num = eqmInventory.storeItemResource(resource, quantity);
-		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(resource));
-		return num;
+		return eqmInventory.storeItemResource(resource, quantity);
 	}
 
 	/**
@@ -3095,9 +3083,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public int retrieveItemResource(int resource, int quantity) {
-		int num = eqmInventory.retrieveItemResource(resource, quantity);
-		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(resource));
-		return num;
+		return eqmInventory.retrieveItemResource(resource, quantity);
 	}
 
 	/**
@@ -3120,9 +3106,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
-		double amt = eqmInventory.storeAmountResource(resource, quantity);
-		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(resource));
-		return amt;
+		return eqmInventory.storeAmountResource(resource, quantity);
 	}
 
 	/**
@@ -3134,9 +3118,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
-		double amt = eqmInventory.retrieveAmountResource(resource, quantity);
-		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(resource));
-		return amt;
+		return eqmInventory.retrieveAmountResource(resource, quantity);
 	}
 
 	/**

@@ -79,31 +79,32 @@ class FoodTableModel extends CategoryTableModel<Food> {
 	 */
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (event.getTarget() instanceof Good g
-				&& event.getSource() instanceof Settlement s) {
+		String eventType = event.getType();
+
+		if (event.getSource() instanceof Settlement s) {
+			if (event.getTarget() instanceof Good g) {
+				// Target is a Good
+				Food f = FoodUtil.convertGoodToFood(g);
+				CategoryKey<Food> key = new CategoryKey<>(s, f);
 			
-			String eventType = event.getType();
-			Food f = FoodUtil.convertGoodToFood(g);
-			CategoryKey<Food> key = new CategoryKey<>(s, f);
-		
-			if (EntityEventType.DEMAND_EVENT.equals(eventType)) {
-				entityValueUpdated(key, LOCAL_DEMAND_COL); 
-			} else if (EntityEventType.MARKET_VALUE_EVENT.equals(eventType)) {
-				entityValueUpdated(key, MARKET_DEMAND_COL);
-			} else if (EntityEventType.SUPPLY_EVENT.equals(eventType)) {
-				entityValueUpdated(key, SUPPLY_COL);
-			} else if (EntityEventType.MASS_EVENT.equals(eventType)) {
+				switch(eventType) {
+					case EntityEventType.DEMAND_EVENT -> entityValueUpdated(key, LOCAL_DEMAND_COL);
+					case EntityEventType.MARKET_VALUE_EVENT -> {
+						entityValueUpdated(key, MARKET_DEMAND_COL);
+						entityValueUpdated(key, MARKET_VP_COL);
+					}
+					case EntityEventType.SUPPLY_EVENT -> entityValueUpdated(key, SUPPLY_COL);
+					case EntityEventType.VALUE_EVENT -> entityValueUpdated(key, LOCAL_VP_COL);
+					case EntityEventType.COST_EVENT -> entityValueUpdated(key, COST_COL);
+					case EntityEventType.PRICE_EVENT -> entityValueUpdated(key, PRICE_COL);
+					default -> entityValueUpdated(key, NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
+				}
+			}
+			else if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(eventType)
+					&& event.getTarget() instanceof Integer resourceID) {
+				Food f = FoodUtil.convertResourceToFood(resourceID);
+				CategoryKey<Food> key = new CategoryKey<>(s, f);
 				entityValueUpdated(key, MASS_COL);
-			} else if (EntityEventType.VALUE_EVENT.equals(eventType)) {
-				entityValueUpdated(key, LOCAL_VP_COL);
-			} else if (EntityEventType.MARKET_VALUE_EVENT.equals(eventType)) {
-				entityValueUpdated(key, MARKET_VP_COL);
-			} else if (EntityEventType.COST_EVENT.equals(eventType)) {
-				entityValueUpdated(key, COST_COL);
-			} else if (EntityEventType.PRICE_EVENT.equals(eventType)) {
-				entityValueUpdated(key, PRICE_COL);
-			} else {
-				entityValueUpdated(key, NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 			}
 		}
 	}

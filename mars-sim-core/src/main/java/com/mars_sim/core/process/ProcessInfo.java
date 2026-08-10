@@ -9,8 +9,6 @@ package com.mars_sim.core.process;
 import java.io.Serializable;
 import java.util.List;
 
-import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.Settlement;
 
@@ -231,9 +229,7 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 					break;
 				default:
 					throw new IllegalArgumentException("Process input: " + item.getType() + " not a valid type.");
-			}
-			
-			settlement.fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(item.getId()));
+			}			
 		}
 	}
 	
