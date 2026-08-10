@@ -894,7 +894,11 @@ public class GoodsManager implements Serializable {
     		
     		double stored = settlement.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
     		
-    		double amount = reserve / stored + 1 / vp;
+    		double diff = (reserve - stored) / (1 + stored);
+    		if (diff < 1)
+    			diff = 1;
+    		
+    		double amount = diff * vp;
     		
     		map.put(resourceID, amount);
     	}
@@ -944,27 +948,27 @@ public class GoodsManager implements Serializable {
 //		}
 		else if (stored >= 2 * reserve) {
 			surplus = stored - 2 * reserve;
-			delta = .5 * Math.sqrt(.5 * surplus);
+			delta = .25 * Math.sqrt(.25 * surplus);
 		}
 		else if (stored >= 1.5 * reserve) {
 			surplus = stored - 1.5 * reserve;
-			delta = .5 * Math.sqrt(surplus + 1);
+			delta = .35 * Math.sqrt(.5 * surplus);
 		}
 		else if (stored >= reserve) {
 			surplus = stored - reserve;
-			delta = .5 * Math.sqrt(2 * surplus + 2);
+			delta = .55 * Math.sqrt(surplus);
 		}
 		else if (stored < .5 * reserve) {
 			lacking = .5 * reserve - stored;
-			delta = .5 * Math.sqrt(16 * lacking + 16);
+			delta = .75 * Math.sqrt(2 * lacking);
 		}
 		else if (stored < .25 * reserve) {
 			lacking = .25 * reserve - stored;
-			delta = .5 * Math.sqrt(8 * lacking + 8);
+			delta = 1.5 * Math.sqrt(8 * lacking);
 		}
 		else if (stored < reserve) {
 			lacking = reserve - stored;
-			delta = .5 * Math.sqrt(4 * lacking + 4);
+			delta = Math.sqrt(4 * lacking);
 		}
 		
 		double fraction = delta / demand;

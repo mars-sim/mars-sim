@@ -516,7 +516,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
 
-				double mrate = rate * vp * vp * .25;
+				double mrate = rate * vp * vp * vp * .5;
 				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),
