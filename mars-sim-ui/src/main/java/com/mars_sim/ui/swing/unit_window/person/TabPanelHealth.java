@@ -181,17 +181,27 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		muscleSorenessLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getMuscleSoreness(), 0.1);
 		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.muscle.soreness"), muscleSorenessLabel, null);
 	
-		leptinLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, circadianClock.getLeptin());
-		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.leptin"), leptinLabel, null);
+		leptinLabel = new JDoubleLabel(StyleManager.DECIMAL_NG_ML, circadianClock.getLeptin());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.leptin"), leptinLabel, 
+				"<html>Leptin is a safety hormone, produced by fat cells, to signal <br>"
+				+ "satiety to the brain, with levels proportional to body <br>"
+				+ "fat mass. It decreases our appetite and our desire to sleep.</html>");
 		
-		ghrelinLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, circadianClock.getGhrelin());
-		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.ghrelin"), ghrelinLabel, null);
+		ghrelinLabel = new JDoubleLabel(StyleManager.DECIMAL_PG_ML, circadianClock.getGhrelin());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.ghrelin"), ghrelinLabel, 
+				"<html>Ghrelin is produced by the stomach and rises before meals <br>"
+				+ "to stimulate appetite, falling after eating.</html>");
 		
-		leptinTLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, circadianClock.getLeptinT());
-		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.leptin.threshold"), leptinTLabel, null);
+		leptinTLabel = new JDoubleLabel(StyleManager.DECIMAL_NG_ML, circadianClock.getLeptinT());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.leptin.threshold"), leptinTLabel, 
+				"<html>The Leptin threshold is the maximum level of Leptin for that <br> "
+				+ "person. Leptin functions on a proportional scale based on fat mass.</html>");
 		
-		ghrelinTLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, circadianClock.getGhrelinT());
-		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.ghrelin.threshold"), ghrelinTLabel, null);
+		ghrelinTLabel = new JDoubleLabel(StyleManager.DECIMAL_PG_ML, circadianClock.getGhrelinT());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.ghrelin.threshold"), ghrelinTLabel, 
+				"<html>The Ghrelin threshold is the maximum level of Ghrelin for <br> "
+				+ "that person. Ghrelin mainly operates on a surge mechanism with <br>"
+				+ "hunger trigger.</html>");
 		
 		northPanel.add(Box.createVerticalStrut(7));
 		

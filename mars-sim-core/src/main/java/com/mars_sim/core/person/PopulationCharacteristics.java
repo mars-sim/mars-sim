@@ -104,8 +104,8 @@ public class PopulationCharacteristics{
 
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
-		double dadWeight = RandomUtil.getGaussianPositive(maleWeight, maleWeight / 13.5);
-		double momWeight = RandomUtil.getGaussianPositive(femaleWeight, femaleWeight / 10.5);
+		double dadWeight = RandomUtil.getGaussianPositive(maleWeight, maleWeight / 14.5);
+		double momWeight = RandomUtil.getGaussianPositive(femaleWeight, femaleWeight / 11.5);
 		
 		double geneticFactor = .65;
 		double sexFactor = (maleWeight - averageWeight) / averageWeight; 

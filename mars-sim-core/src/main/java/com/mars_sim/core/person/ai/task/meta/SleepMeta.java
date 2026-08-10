@@ -93,7 +93,7 @@ public class SleepMeta extends FactoryMetaTask {
             
         	// the desire to go to bed increase linearly after 6 hours of wake time
             result += Math.max((fatigue - 250), 0) * 10 + stress * 10 
-            		+ (ghrelin - leptin)
+            		+ (ghrelin - leptin * CircadianClock.LEPTIN_STEP * 2)
             		// High hunger/thirst makes it harder to fall asleep
             		// Therefore, limit the contribution to a max of 300
             		- Math.min(hunger/2, 300)

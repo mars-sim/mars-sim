@@ -362,7 +362,7 @@ public class PhysicalCondition implements Serializable {
 	void updateMaxEnergy() {
 		// Update personal max energy
 		personalMaxEnergy = MathUtils.between(STANDARD_DAILY_ENERGY_INTAKE * (1 + appetite/2),
-				STANDARD_DAILY_ENERGY_INTAKE / 10, STANDARD_DAILY_ENERGY_INTAKE * 2);;
+				STANDARD_DAILY_ENERGY_INTAKE / 10, STANDARD_DAILY_ENERGY_INTAKE * 2);
 	}
 	
 	/**
@@ -380,11 +380,11 @@ public class PhysicalCondition implements Serializable {
 		// Get the Ghrelin level
 		double GhrelinLevel = circadian.getGhrelin();
 		
-		double mod = (GhrelinLevel - leptinLevel)/200.0;
+		double mod = (GhrelinLevel - leptinLevel * CircadianClock.LEPTIN_STEP)/250.0;
 		// Get eating pref 
 		double eatingPref = person.getPreference().getPreferenceScore(eatMealMeta)/10.0;
 		// Derive the appetite
-		appetite = (35.0 + ageFactor)/70.0 + massFactor + eatingPref + mod;
+		appetite = ageFactor/70.0 + massFactor + eatingPref + mod;
 		// Limit to between 0 and 1
 		appetite = MathUtils.between(appetite, 0, 1);
 	}
@@ -428,13 +428,12 @@ public class PhysicalCondition implements Serializable {
 			if (!isRadiationPoisoned) {
 				checkRadiationPoisoning(pulse.getElapsed());
 			}
-			
-			// Update the personal appetite
-			updateAppetite();
 		}
 		
 		// Check once a day only
 		if (pulse.isNewHalfSol()) {	
+			// Update the personal appetite
+			updateAppetite();
 			// Update personal max energy
 			updateMaxEnergy();
 		}

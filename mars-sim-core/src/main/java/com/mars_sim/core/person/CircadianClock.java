@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.LifeSupportInterface;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.data.SolSingleMetricDataLogger;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -38,6 +38,12 @@ public class CircadianClock implements Serializable {
 	/** Sleep Habit Map resolution. */
 	private static final double SLEEP_INFLATION = 1.15;
 
+	/** The leotin step change factor. */
+	public static final double LEPTIN_STEP = 500.0 / 400 * 10; // = 12.5
+
+	/** Ghrelin step change factor. */
+	private static final double GHRELIN_STEP = 500.0 / 800 * 550; // = 343.75
+			
 	
 	private boolean awake = true;
 
@@ -71,9 +77,12 @@ public class CircadianClock implements Serializable {
 	 * The leptin threshold of each person is tuned by genetics. 
 	 * Leptin, aka the safety hormone, is a hormone, made by fat cells, that 
 	 * decreases our appetite.
+	 * 
+	 * Leptin levels generally range from 3 to 18 nanograms per milliliter (ng/mL), 
+	 * often being higher in women than men, and can reach up to 30 ng/mL in individuals with obesity.
 	 */
-	private double leptinThreshold = 400;
-
+	private double leptinThreshold = 12; // 400
+	
 	/** 
 	 * The current ghrelin level. 
 	 * Ghrelin, the appetite/sleep increaser, is released primarily in the stomach 
@@ -86,8 +95,11 @@ public class CircadianClock implements Serializable {
 	 * The ghrelin threshold of each person is tuned by genetics. 
 	 * Ghrelin is a hormone that increases appetite, and makes us wanting to eat. 
 	 * It also plays a role in body weight.
+	 * 
+	 * Ghrelin levels typically range from 300 to 800 picograms per milliliter (pg/mL) 
+	 * in the blood, with lower levels indicating fullness and higher levels triggering hunger.
 	 */
-	private double ghrelinThreshold = 400;
+	private double ghrelinThreshold = 550; //400;
 
 	private Person person;
 	
@@ -121,8 +133,34 @@ public class CircadianClock implements Serializable {
 		double ghrelin = Math.max(hunger * .5, ghrelinThreshold);
 		ghrelinLevel = RandomUtil.getRandomDouble(ghrelin * .5 , ghrelin * .75);
 		
-		double leptin = Math.max(hunger * .5, leptinThreshold);
+		double leptin = Math.max(hunger * .07, leptinThreshold);
 		leptinLevel = RandomUtil.getRandomDouble(leptin * .5 , leptin * .75);
+	}
+
+	/**
+	 * Calculates the initial thresholds.
+	 * 
+	 * @param person
+	 */
+	private void modifyThresholds(Person person) {
+	
+		double genderFactor = 1.3;
+		if (GenderType.MALE == person.getGender())
+			genderFactor = 1;
+		double dev = MathUtils.between(Math.sqrt(person.getPhysicalCondition().getBodyMassIndex()/14), 
+				genderFactor * .7, genderFactor * 1.7); 
+
+		// Leptin threshold, the appetite/sleep suppressor, are lower when you're thin
+		// and higher when you're fat.
+		leptinThreshold *= dev;
+
+		// But many obese people have built up a resistance to the appetite-suppressing
+		// effects of leptin.
+
+		// Ghrelin levels have been found to increase in children with anorexia nervosa
+		// and decrease in children who are obese.
+		if (person.getAge() <= 21)
+			ghrelinThreshold /= dev;
 	}
 	
 	
@@ -155,33 +193,6 @@ public class CircadianClock implements Serializable {
 		}
 	}
 
-	/**
-	 * Calculates the initial thresholds.
-	 * 
-	 * @param person
-	 */
-	private void modifyThresholds(Person person) {
-		var pc = SimulationConfig.instance().getPersonConfig();
-
-		var averageHeight = pc.getDefaultPhysicalChars().getAverageHeight();
-		var averageWeight = pc.getDefaultPhysicalChars().getAverageWeight();
-
-		double dev = Math.sqrt(
-				person.getBaseMass() / averageWeight * person.getHeight() / averageHeight); 
-
-		// Leptin threshold, the appetite/sleep suppressor, are lower when you're thin
-		// and higher when you're fat.
-		leptinThreshold *= dev;
-
-		// But many obese people have built up a resistance to the appetite-suppressing
-		// effects of leptin.
-
-		// Ghrelin levels have been found to increase in children with anorexia nervosa
-		// and decrease in children who are obese.
-		if (person.getAge() <= 21)
-			ghrelinThreshold /= dev;
-	}
-	
 
 	/**
 	 * Gets the key of the Sleep Cycle Map with the highest weight
@@ -427,49 +438,53 @@ public class CircadianClock implements Serializable {
 	 * 
 	 * @param time
 	 */
-	private void increaseLeptinToThreshold(double time) {
-		if (leptinLevel + time * leptinThreshold / 500.0 >= leptinThreshold)
+	private void increaseLeptinLevel(double time) {
+		leptinLevel += time * leptinThreshold / LEPTIN_STEP / LEPTIN_STEP / LEPTIN_STEP;
+		
+		if (leptinLevel > leptinThreshold)
 			leptinLevel = leptinThreshold;
-		else
-			leptinLevel += time * leptinThreshold / 500.0;
 	}
 
-	private void increaseGhrelinToThreshold(double time) {
-		if (ghrelinLevel + time * ghrelinThreshold / 500.0 >= ghrelinThreshold)
+	private void increaseGhrelinLevel(double time) {
+		ghrelinLevel += time * ghrelinThreshold / GHRELIN_STEP;
+		
+		if (ghrelinLevel > ghrelinThreshold)
 			ghrelinLevel = ghrelinThreshold;
-		else
-			ghrelinLevel += time * ghrelinThreshold / 500.0;
 	}
 	
-	private void decreaseLeptinBounded(double time) {
-		if (leptinThreshold > .01 * time)
-			leptinThreshold -= .01 * time;
-		else
-			leptinThreshold = .01 * time;
+	private void decreaseLeptinLevel(double time) {
+		leptinLevel -= time * leptinThreshold / LEPTIN_STEP / LEPTIN_STEP / LEPTIN_STEP;
+		
+		if (leptinLevel < 0.1)
+			leptinLevel = 0.1;
 	}
 
-	private void increaseGhrelinBounded(double time) {
-		if (ghrelinThreshold + .01 * time >= 1000D)
-			ghrelinThreshold = 1000D;
-		else
-			ghrelinThreshold += .01 *  time;
-	}
-
-	private void decreaseGhrelinBounded(double time) {
-		if (ghrelinThreshold > .01 * time)
-			ghrelinThreshold -= .01 * time;
-		else
-			ghrelinThreshold = .01 * time;
+	private void decreaseGhrelinLevel(double time) {
+		ghrelinLevel -= time * ghrelinThreshold / GHRELIN_STEP;
+		
+		if (ghrelinLevel < 30)
+			ghrelinLevel = 30;
 	}
 	
-	private void decreaseLeptin(double time) {
-		if (leptinLevel >= time * leptinThreshold / 500.0)
-			leptinLevel -= time * leptinThreshold / 500.0;
+	private void decreaseLeptinBound(double time) {
+		leptinThreshold -= time / LEPTIN_STEP / LEPTIN_STEP / LEPTIN_STEP;
+			
+		if (leptinThreshold < .1)
+			leptinThreshold = .1;
 	}
-
-	private void decreaseGhrelin(double time) {
-		if (ghrelinLevel >= time * ghrelinThreshold / 500.0)
-			ghrelinLevel -= time * ghrelinThreshold / 500.0;
+	
+	private void decreaseGhrelinBound(double time) {
+		ghrelinThreshold -= time / GHRELIN_STEP;
+		
+		if (ghrelinThreshold < 50)
+			ghrelinThreshold = 50;
+	}
+	
+	private void increaseGhrelinBound(double time) {
+		ghrelinThreshold = ghrelinThreshold + time/ GHRELIN_STEP;
+		
+		if (ghrelinThreshold > 1000)
+			ghrelinThreshold = 1000;
 	}
 
 	/**
@@ -514,11 +529,11 @@ public class CircadianClock implements Serializable {
 	public void eatFood(double time) {
 		// When eating food, the level of leptin increases in order to 
 		// keep you from over-eating
-		increaseLeptinToThreshold(time);
+		increaseLeptinLevel(time);
 		// When one is hungry, stomach is (g)rowling because ghrelin is released.
 		// Ghrelin is released from the stomach when the stomach is empty
 		// When eating food, the level of ghrelin decreases.
-		decreaseGhrelin(time);
+		decreaseGhrelinLevel(time);
 	}
 
 	/**
@@ -531,21 +546,21 @@ public class CircadianClock implements Serializable {
 		// exercise, boosting endurance and influencing food intake.
 		// In general, exercise increases the production of ghrelin as 
 		// workouts naturally make you hungry, in order to replace lost fuel stores. 
-		increaseGhrelinToThreshold(time * 0.5);
+		increaseGhrelinLevel(time * 0.5);
 		
 		// Acute exercise significantly lowers plasma ghrelin levels, with higher 
 		// intensity exercise associated with greater ghrelin suppression. 
-		decreaseGhrelinBounded(time);
+		decreaseGhrelinBound(time);
 		
 		// When leptin levels are low we become hungry and when leptin levels are 
 		// high we should be satisfied.
 		// In a study done on rats, leptin levels decreased following four weeks of 
 		// voluntary wheel running
-		decreaseLeptin(time * .5);
+		decreaseLeptinLevel(time * .5);
 		
 		// Physically fit people have less adipose tissues and thus having lower 
 		// level leptin to be released.
-		decreaseLeptinBounded(time);
+		decreaseLeptinBound(time);
 	
 		// In future, model leptin and insulin sensivity as follows: 
 		// One way leptin sensitivity can be regained is through proper exercise. 
@@ -567,14 +582,14 @@ public class CircadianClock implements Serializable {
 	public void setRested(double time) {
 		// During sleep, levels of ghrelin decrease, 
 		// because sleep requires far less energy than being awake does.
-		decreaseGhrelin(time);
+		decreaseGhrelinLevel(time);
 		
 		// During sleep, leptin levels increase, telling your brain you have plenty of
 		// energy for the time being and there's no need to trigger the feeling of 
 		// hunger or the burning of calories.
 		
 		// Increase leptin to threshold
-		increaseLeptinToThreshold(time);
+		increaseLeptinLevel(time);
 	}
 
 	/**
@@ -590,14 +605,14 @@ public class CircadianClock implements Serializable {
 		// When you don't get enough sleep, you end up with too little leptin
 		// in your body, which, through a series of steps, makes your brain think
 		// you don't have enough energy for your needs.
-		decreaseLeptin(time *.5);
+		decreaseLeptinLevel(time *.5);
 		
 		// A single night of sleep deprivation increases ghrelin levels and 
 		// feelings of hunger in normal-weight healthy men
-		increaseGhrelinToThreshold(time *.5);
+		increaseGhrelinLevel(time *.5);
 		
 		// Level of ghrelin bound increase
-		increaseGhrelinBounded(time * .5);
+		increaseGhrelinBound(time * .5);
 	}
 	
 	public double getGhrelin() {

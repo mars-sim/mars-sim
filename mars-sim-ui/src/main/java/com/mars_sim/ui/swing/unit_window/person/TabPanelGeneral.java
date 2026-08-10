@@ -62,25 +62,32 @@ class TabPanelGeneral extends EntityTabPanel<Person> {
 		infoPanel.addTextField(Msg.getString("person.birthDate"),
 					birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)), null);
 		
-		// Prepare country of origin textfield
+		// Prepare country of origin 
 		String country = person.getCountry();
 		infoPanel.addTextField(Msg.getString("country.singular"), //$NON-NLS-1$
 				country, null);
+		
+		// Prepare authority
 		infoPanel.addLabelledItem(Msg.getString("authority.singular"),
 						new EntityLabel(person.getReportingAuthority(), getContext()));
 
-		// Prepare weight textfield
+		// Prepare weight 
 		infoPanel.addTextField(Msg.getString("person.weight"), //$NON-NLS-1$
-				  							  StyleManager.DECIMAL_KG.format(person.getBaseMass()), null);
+				  	StyleManager.DECIMAL_KG.format(person.getBaseMass()), null);
 		
 		// Prepare height name label
 		infoPanel.addTextField(Msg.getString("person.height"), //$NON-NLS-1$
-					 StyleManager.DECIMAL_PLACES1.format(person.getHeight()) + " cm", null);
+					StyleManager.DECIMAL_PLACES1.format(person.getHeight()) + " cm", null);
 
+		// Prepare body mass deviation label
+		infoPanel.addTextField(Msg.getString("person.bodyMassDev"), //$NON-NLS-1$
+					StyleManager.DECIMAL_PLACES1.format(person.getPhysicalCondition().getBodyMassDeviation()), 
+				"<html>The Body Mass Deviation averages around 0.7 to 1.3. <br> "
+				+ "It's the gaussian average of the square root <br>"
+				+ "of mass / default mass * height / default height.</html>");
+		
 		// Prepare BMI label
-		double height = person.getHeight()/100D;
-		double heightSquared = height*height;
-		double bmi = person.getBaseMass()/heightSquared;
+		double bmi = person.getPhysicalCondition().getBodyMassIndex();
 		
 		// Categorize according to general weight class
 		String weightClass = "";
@@ -94,7 +101,11 @@ class TabPanelGeneral extends EntityTabPanel<Person> {
 		String bmiText = Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
 				Math.round(bmi*100.0)/100.0, weightClass);
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.bmi"), //$NON-NLS-1$
-				bmiText, null); 
+				bmiText, 
+				"<html>BMI is a screening tool that estimates body fat based <br>"
+				+ "on the relationship between weight and height. It is <br>"
+				+ "calculated by dividing a person's weight in kilograms <br>"
+				+ "by the square of their height in meters [kg/m^2].<html>"); 
 		
 		// Prepare loading cap label
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.loadCap"), //$NON-NLS-1$

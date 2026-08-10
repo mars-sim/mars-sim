@@ -14,6 +14,7 @@ import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.task.CookMeal;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.ResourceHolder;
+import com.mars_sim.core.person.CircadianClock;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ThirstLevel;
@@ -150,7 +151,7 @@ public class EatDrinkMeta extends FactoryMetaTask {
 			// Only eat a meal if person is sufficiently hungry or low on caloric energy.
 			double ghrelin = person.getCircadianClock().getGhrelin();
 			double leptin = person.getCircadianClock().getLeptin();	
-			double hungerBase = hunger + ghrelin / 2 - leptin / 2;
+			double hungerBase = hunger + ghrelin / 2 - leptin * CircadianClock.LEPTIN_STEP;
 
 			if (energy < 2525)
 				hungerBase += (2525 - energy) / 30D;
