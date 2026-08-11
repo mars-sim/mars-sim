@@ -1329,7 +1329,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 				if (partsNeededForMaintenance.containsKey(maintenance)) {
 					number += partsNeededForMaintenance.get(maintenance);
 				}
-				partsNeededForMaintenance.put(maintenance, number);
+				if (number > 0)
+					partsNeededForMaintenance.put(maintenance, number);
 			}
 		}
 		
@@ -1504,22 +1505,25 @@ public class MalfunctionManager implements Serializable, Temporal {
 			MaintenanceScope ms = entry.getKey();
 			int id = ms.getPart().getID();
 			int number = entry.getValue();
-			if (partStore.getItemResourceStored(id) >= number) {
-				logger.info(entity, 30_000L, "Maintenance parts available: " 
-						+ getPartsString(parts));
-				result = result && true;
+			if (number > 0) {
+				if (partStore.getItemResourceStored(id) >= number) {
+					logger.info(entity, 30_000L, "Maintenance parts available: " 
+							+ getPartsString(parts));
+					result = result && true;
+				}
+				else {
+					Good good = GoodsUtil.getGood(id);
+	                Part part = ItemResourceUtil.findItemResource(id);
+					// Raise the demand on this item by a certain amount
+					// Inject the demand onto this part
+	                if (entity.getAssociatedSettlement().getGoodsManager() != null)	 {
+	                	// Note: in MaintainGarageVehicleTest, good manager is null 
+	                	((PartGood)good).injectPartDemand(part, entity.getAssociatedSettlement().getGoodsManager(), number);
+	                }
+	                return false;
+				}
 			}
-			else {
-				Good good = GoodsUtil.getGood(id);
-                Part part = ItemResourceUtil.findItemResource(id);
-				// Raise the demand on this item by a certain amount
-				// Inject the demand onto this part
-                if (entity.getAssociatedSettlement().getGoodsManager() != null)	 {
-                	// Note: in MaintainGarageVehicleTest, good manager is null 
-                	((PartGood)good).injectPartDemand(part, entity.getAssociatedSettlement().getGoodsManager(), number);
-                }
-                return false;
-			}
+			
 		}
 		return result;
 	}
