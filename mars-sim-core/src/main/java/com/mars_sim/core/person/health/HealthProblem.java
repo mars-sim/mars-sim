@@ -360,7 +360,12 @@ public class HealthProblem implements Serializable {
 	 * @return
 	 */
 	public String printStatus() {
-		return getComplaint().getName() + ". " + getState().getName();
+		if (state == HealthProblemState.DEAD) {
+			return state.getName() + ": " + getComplaint().getName();
+		}
+		else {
+			return getComplaint().getName() + " - " + state;
+		}
 	}
 	
 	/**
