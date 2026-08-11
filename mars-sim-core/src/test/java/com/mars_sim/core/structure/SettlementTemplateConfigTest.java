@@ -137,7 +137,7 @@ public class SettlementTemplateConfigTest {
         assertEquals(30, plansList.get(0).delayInSols(), "First plan delay");
 
         // Second plan should be Manufacturing Workshop (delay 60) 
-        assertEquals("Manufacturing Workshop", plansList.get(1).buildingType(), "Second plan building type");
+        assertEquals("Workshop", plansList.get(1).buildingType(), "Second plan building type");
         assertEquals(60, plansList.get(1).delayInSols(), "Second plan delay");
     }
 }
