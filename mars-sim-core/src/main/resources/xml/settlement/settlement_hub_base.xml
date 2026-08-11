@@ -52,9 +52,9 @@
         </connection-list>
     </building>
     
-    <building id="MACHAB" type="Machinery Hab" xloc="-100.0" yloc="-45.5" facing="0.0">
+    <building id="MACHAB" type="Machinery Hab" xloc="-100.0" yloc="-44.5" facing="0.0">
         <connection-list>
-            <connection id="205" hatch-facing="north" />          
+            <connection id="205" hatch-facing="north" />
         </connection-list>
     </building>
 
@@ -302,22 +302,14 @@
 
     <building id="ASTRO" zone="1" type="Astronomy Observatory" xloc="-150.0" yloc="80.0" facing="0.0">
         <connection-list>
-            <connection id="1002" hatch-facing="south" />
-        </connection-list>
-    </building>
-
-    <!-- This hallway is between the EVA Airlock and the Astronomy Observatory -->
-    <building id="1002" zone="1" type="Hallway" length="4.0" xloc="-150.0" yloc="74.5" facing="0.0">
-        <connection-list>
-            <connection id="ASTRO" hatch-facing="north" />
             <connection id="EVA3" hatch-facing="south" />
         </connection-list>
     </building>
     
-        <!-- EVA Airlock is attached to the Astronomy Observatory. With hallway in between --> 
-    <building id="EVA3" zone="1" type="EVA Airlock" xloc="-150.0" yloc="69.5" facing="270.0">
+    <!-- Suit Port is attached to the Astronomy Observatory. With hallway in between --> 
+    <building id="EVA3" zone="1" type="Suit Port" xloc="-150.0" yloc="75.0" facing="180.0">
         <connection-list>
-            <connection id="1002" hatch-facing="north" />
+            <connection id="ASTRO" hatch-facing="north" />
         </connection-list>
     </building>
     

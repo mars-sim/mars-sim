@@ -234,8 +234,8 @@
         </connection-list>
     </building>
 
-    <!-- EVA Airlock is attached to the Astronomy Observatory -->
-    <building id="EVA3" zone="1" type="EVA Airlock" xloc="-48.5" yloc="-20.0" facing="0.0">
+    <!-- Suit Port is attached to the Astronomy Observatory -->
+    <building id="EVA3" zone="1" type="Suit Port" xloc="-50.0" yloc="-20.0" facing="270.0">
         <connection-list>
             <connection id="28" hatch-facing="east" />
         </connection-list>
