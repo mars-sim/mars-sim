@@ -25,6 +25,7 @@ import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.process.ProcessItem;
@@ -44,7 +45,9 @@ import com.mars_sim.core.vehicle.Vehicle;
 class AmountResourceGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
-
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(AmountResourceGood.class.getName());
+	
 	private static final double INITIAL_AMOUNT_DEMAND = 0.1;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
@@ -80,13 +83,13 @@ class AmountResourceGood extends Good {
 	
 	// Water related flattening factors
 	private static final double ICE_FLATTENING_FACTOR = 0.5;
-	private static final double WATER_FLATTENING_FACTOR = 0.75;
+	private static final double WATER_FLATTENING_FACTOR = 0.7;
 	
 	// Gases flattening factors
 	private static final double METHANOL_FLATTENING_FACTOR = 1.1;
-	private static final double METHANE_FLATTENING_FACTOR = 1.55;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 0.75;
-	private static final double OXYGEN_FLATTENING_FACTOR = 0.75;	
+	private static final double METHANE_FLATTENING_FACTOR = 1.5;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 0.7;
+	private static final double OXYGEN_FLATTENING_FACTOR = 0.7;	
 	
 
 	// Note1: must keep Carbon Monoxide demand high enough so as to start 
@@ -123,7 +126,7 @@ class AmountResourceGood extends Good {
 	
 	// types
 	private static final double CHEMICAL_FLATTENING_FACTOR = 1.1;
-	private static final int COMPOUND_FLATTENING_FACTOR = 2;
+	private static final double COMPOUND_FLATTENING_FACTOR = 1.5;
 	private static final int CONSTRUCTION_FLATTENING_FACTOR = 1;
 	private static final int ELEMENT_FLATTENING_FACTOR = 2;
 
@@ -151,7 +154,7 @@ class AmountResourceGood extends Good {
 	
 	// Demand Modifiers
     private static final double ICE_VALUE_MODIFIER = 0.75;
-	private static final double WATER_VALUE_MODIFIER = 0.25;
+	private static final double WATER_VALUE_MODIFIER = 0.2;
 	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
@@ -169,15 +172,15 @@ class AmountResourceGood extends Good {
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = 4;
-	private static final double METHANE_VALUE_MODIFIER = 0.5;
-	private static final double HYDROGEN_VALUE_MODIFIER = 0.5;
-	private static final double METHANOL_VALUE_MODIFIER = 0.05;
+	private static final double OXYGEN_VALUE_MODIFIER = 3.5;
+	private static final double METHANE_VALUE_MODIFIER = 0.55;
+	private static final double HYDROGEN_VALUE_MODIFIER = 1.2;
+	private static final double METHANOL_VALUE_MODIFIER = 0.7;
 	
 	// Chemicals
 	private static final int CLEANING_AGENT_MODIFIER = 1;
 	private static final int ETHYLENE_MODIFIER = 10;
-	private static final int STYRENE_MODIFIER = 12;
+	private static final int STYRENE_MODIFIER = 7;
 	private static final int PROPYLENE_MODIFIER = 3;
 	private static final int ETHANE_MODIFIER = 2;
 	private static final int H2O2_MODIFIER = 4;
@@ -276,6 +279,10 @@ class AmountResourceGood extends Good {
 					) {
 				mod *= PLASTIC_RELATED_FLATTENING_FACTOR;
 			}
+			else if (name.equalsIgnoreCase("Ethylene glycol")
+				) {
+				mod *= 0.5;
+				}
 			
 			mod *= switch(id) {
 				case ResourceUtil.ETHYLENE_ID ->  ETHYLENE_FLATTENING_FACTOR;
@@ -641,14 +648,20 @@ class AmountResourceGood extends Good {
 			+ getMetalDemand(owner, settlement)
 			// Get the chemical demand.
 			+ getChemicalDemand(owner, settlement);
-					
+				
+		double projectedCache = owner.getProjectedDemandScore(this);
+		
+		if (newProjDemand == Double.NaN) {
+			logger.severe(ResourceUtil.findAmountResourceName(id) + "newProjDemand is NaN.");
+			newProjDemand = projectedCache;
+		}
+		
 		double projected = newProjDemand 
 			// Flatten certain types of demand.
 			* flattenDemand
 			// Adjust the demand on various waste products with the disposal cost.
 			* modifyWasteResource();
-		
-		double projectedCache = owner.getProjectedDemandScore(this);
+
 		if (projectedCache == INITIAL_AMOUNT_DEMAND) {
 			projectedCache = projected;
 		}
@@ -1131,7 +1144,7 @@ class AmountResourceGood extends Good {
 			case ResourceUtil.SOIL_ID -> Crop.NEW_SOIL_NEEDED_PER_SQM * factor;
 			// Estimate fertilizer needed for average number of crop plantings for total growing area.
 			// Estimate fertilizer needed when grey water not available.
-			case ResourceUtil.FERTILIZER_ID -> (Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * Crop.FERTILIZER_NEEDED_WATERING * solsInOrbit) * factor * 5;
+			case ResourceUtil.FERTILIZER_ID -> (Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * Crop.FERTILIZER_NEEDED_WATERING * solsInOrbit) * factor * 15;
 			// NOTE: how to properly get rid of grey water? it should NOT be considered an
 			// economically vital resource
 			// Average grey water consumption rate of crops per orbit using total growing
@@ -1176,7 +1189,7 @@ class AmountResourceGood extends Good {
 				case ResourceUtil.FOOD_ID -> personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
 				case ResourceUtil.METHANE_ID -> personConfig.getWaterConsumptionRate() * METHANE_VALUE_MODIFIER;
 				case ResourceUtil.CO2_ID -> CO2_VALUE_MODIFIER;
-				case ResourceUtil.HYDROGEN_ID -> personConfig.getWaterConsumptionRate() / 2 * HYDROGEN_VALUE_MODIFIER;
+				case ResourceUtil.HYDROGEN_ID -> personConfig.getWaterConsumptionRate() * HYDROGEN_VALUE_MODIFIER;
 				default -> 0D;
 			};
 			
@@ -1487,7 +1500,7 @@ class AmountResourceGood extends Good {
 					double fuelDemand = v.getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
-				demand = demand * transFactor * METHANOL_VALUE_MODIFIER * 10 / pop;
+				demand = demand * transFactor * METHANOL_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;
 			} break;
 		
 			case ResourceUtil.METHANE_ID: {
@@ -1495,11 +1508,11 @@ class AmountResourceGood extends Good {
 					double fuelDemand = v.getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
-				demand = demand * transFactor * METHANE_VALUE_MODIFIER * 3 / pop;
+				demand = demand * transFactor * METHANE_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;
 			} break;
 
 			case ResourceUtil.HYDROGEN_ID: {
-				demand =  transFactor * HYDROGEN_VALUE_MODIFIER / 20;
+				demand =  transFactor * HYDROGEN_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;
 			} break;
 		}
 

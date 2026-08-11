@@ -27,8 +27,8 @@
 <!-- Vital Resources -->
 	<resource name="Food" type="derived" phase="solid" life-support="true" demand="0.75" edible="true">
 		Represents thermo-stabilized food that is not perishable.</resource>
-	<resource name="Water" type="compound" phase="liquid" life-support="true" demand="0.75" >Potable water</resource>
-	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand="1.05" />
+	<resource name="Water" type="compound" phase="liquid" life-support="true" demand="0.7" >Potable water</resource>
+	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand="0.95" />
 	<resource name="Carbon dioxide" type="compound" phase="gas" life-support="true"/>
 
 	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich underground permafrost</resource>
@@ -39,7 +39,7 @@
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand="1.0" />
 
-	<resource name="Methane" type="compound" phase="gas" life-support="true" demand="1.25" />
+	<resource name="Methane" type="compound" phase="gas" life-support="true" demand="1.15" />
 	<resource name="Methanol" type="compound" phase="liquid" life-support="true" demand="0.75" >
 	  Methanol CH3OH can be used as a fuel source, solvent, pesticide, or 
 	  a chemical feedstock for production of a range of important industrial

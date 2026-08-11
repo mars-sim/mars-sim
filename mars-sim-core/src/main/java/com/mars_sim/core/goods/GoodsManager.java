@@ -856,7 +856,10 @@ public class GoodsManager implements Serializable {
 	 * Reset the reviews essential resources.
 	 */
 	public void resetEssentialsReview() {
+		
 		reviewedEssentials.clear();
+		
+		selectResourceForReview();
 	}
 
 	/**
@@ -908,12 +911,34 @@ public class GoodsManager implements Serializable {
     		double vp = getGoodValuePoint(resourceID);
     		
     		double stored = settlement.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
+ 		
+    		double value = 0;
+    		if (stored > 2 * reserve) {
+    			value = 2 * (stored - 2 * reserve) / Math.sqrt(1 + stored);
+    		}
+    		else if (stored > 1.5 * reserve) {
+    			value = 4 * (stored - 1.5 * reserve) / Math.sqrt(1 + stored);
+    		}
+    		else if (stored > reserve) {
+    			value = 6 * (stored - reserve) / Math.sqrt(1 + stored);
+    		}
+    		else if (stored > .5 * reserve) {
+    			value = 8 * (stored - .5 * reserve) / Math.sqrt(1 + stored);
+    		}
+    		else if (stored <= .125 * reserve) {
+    			value = 40 * (1.25 * reserve - stored) / Math.sqrt(1 + stored);
+    		}
+    		else if (stored <= .25 * reserve) {
+    			value = 20 * (.25 * reserve - stored) / Math.sqrt(1 + stored);
+    		}
+    		else if (stored <= .5 * reserve) {
+    			value = 12 * (.5 * reserve - stored) / Math.sqrt(1 + stored);
+    		}
     		
-    		double diff = (reserve - stored) / (1 + stored);
-    		if (diff < .1)
-    			diff = .1;
+    		if (value < 1)
+    			value = 1;
     		
-    		double amount = diff * vp;
+    		double amount = 100 * value * value * vp;
     		
     		map.put(resourceID, amount);
     	}
@@ -975,15 +1000,15 @@ public class GoodsManager implements Serializable {
 		}
 		else if (stored < .5 * reserve) {
 			lacking = .5 * reserve - stored;
-			delta = .8 * Math.sqrt(2 * lacking);
+			delta = 2 * Math.sqrt(2 * lacking);
 		}
 		else if (stored < .25 * reserve) {
 			lacking = .25 * reserve - stored;
-			delta = 2 * Math.sqrt(8 * lacking);
+			delta = 8 * Math.sqrt(8 * lacking);
 		}
 		else if (stored < reserve) {
 			lacking = reserve - stored;
-			delta = 1.5 * Math.sqrt(4 * lacking);
+			delta = 4 * Math.sqrt(4 * lacking);
 		}
 		
 		double fraction = delta / demand;

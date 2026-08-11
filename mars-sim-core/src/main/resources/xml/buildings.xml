@@ -2190,11 +2190,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- 7 industrial chemical ingredients -->	
 				<process-engine name="CO2 Electroreduction from H2O to Ethylene and O2" number-modules="50"/>
 				<process-engine name="CO2 Electroreduction from H2 to Ethylene and H2O" number-modules="10"/>
-				<process-engine name="Produce Polyethylene from Ethylene" number-modules="10"/>
-				<process-engine name="Produce Styrene from Ethylene" number-modules="5"/>
-				<process-engine name="Produce Polystyrene from Styrene" number-modules="10"/>
-				<process-engine name="Produce Polypropylene from Propylene" number-modules="10"/>
-				<process-engine name="Methanol-to-Olefin (MTO) process" number-modules="10"/>
+				<process-engine name="Produce Polyethylene from Ethylene" number-modules="20"/>
+				<process-engine name="Produce Styrene from Ethylene" number-modules="20"/>
+				<process-engine name="Produce Polystyrene from Styrene" number-modules="20"/>
+				<process-engine name="Produce Polypropylene from Propylene" number-modules="20"/>
+				<process-engine name="Methanol-to-Olefin (MTO) process" number-modules="20"/>
 									
 				<process-engine name="Esterification into BHET" number-modules="4"/>									
 				<process-engine name="Polycondensation of BHET" number-modules="4"/>	
