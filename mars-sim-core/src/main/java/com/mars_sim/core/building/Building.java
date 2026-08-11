@@ -187,12 +187,13 @@ public class Building extends FixedUnit implements Malfunctionable,
 		this.width = bounds.getWidth();
 		this.length = bounds.getLength();
 
-		this.floorArea = length * width;
-		
-		areaFactor = Math.sqrt(floorArea) / 2;
-				
-		if (floorArea <= 0) {
-			throw new IllegalArgumentException("Floor area cannot be -ve (w=" + width + ", l=" + length + ").");
+		if (length != 1D && width != 1D) {
+			this.floorArea = length * width;			
+			areaFactor = Math.sqrt(floorArea) / 2;
+			
+			if (floorArea <= 0) {
+				throw new IllegalArgumentException(this + " in constructor 1, Floor area: " + floorArea + "  Width: " + width + "  Length: " + length + ".");
+			}
 		}
 	}
 
@@ -212,6 +213,13 @@ public class Building extends FixedUnit implements Malfunctionable,
 		this(owner, id, zone, name, buildingSpec.getValidBounds(bounds), buildingSpec.getName(), buildingSpec.getCategory());
 		
 		this.floorArea = buildingSpec.getArea();
+		
+		if (floorArea <= 0.0) {
+			floorArea = length * width;
+			if (floorArea <= 0.0)
+				throw new IllegalArgumentException(this + " in constructor 2, Floor area: " + floorArea + "  Width: " + width + "  Length: " + length + ".");
+		}
+
 		this.areaFactor = Math.sqrt(this.floorArea) / 2;
 		
 		constructionType = buildingSpec.getConstruction();

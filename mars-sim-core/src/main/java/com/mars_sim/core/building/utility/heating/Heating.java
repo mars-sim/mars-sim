@@ -499,7 +499,7 @@ public class Heating implements Serializable {
 
 		// 4b1: Find activeVentHeat in kW
 		double activeVentHeat = calculateActiveVentHeat(diffHeatGainLoss, inTCelsius, millisols);
-
+//		logger.warning(building, 2_000, "activeVentHeat: " + Math.round(activeVentHeat * 100.0) / 100.0 + ".");
 		// if activeVentHeat is positive, suck hotter air from adjacent buildings, thus
 		// having hotter air
 		// to come in and raise this building temperature
@@ -523,7 +523,8 @@ public class Heating implements Serializable {
 		}
 
 		diffHeatGainLoss += activeVentHeat;
-
+//		logger.warning(building, 2_000, "diffHeatGainLoss: " + Math.round(diffHeatGainLoss * 100.0) / 100.0 + ".");
+		
 		error = checkError("activeVentHeat", activeVentHeat, 30) || error;
 		// Set the active heat initiated by this building
 		setActiveVentHeat(activeVentHeat);
@@ -1844,7 +1845,7 @@ public class Heating implements Serializable {
 		 */
 //		if (totalHeat > 20 || totalHeat < -20) {
 //			// speedFactor: 0.022  areaFactor: 2.711
-//			logger.info(building, "2. At " + Math.round(deg * 10.0)/10.0 
+//			logger.info(building, "2. At " + Math.round(currentTemperature * 10.0)/10.0 
 //					+ " deg, totalHeat: " + Math.round(totalHeat * 1000.0)/1000.0
 //					+ "  speedFactor: "+ Math.round(speedFactor * 1000.0)/1000.0
 //					+ "  areaFactor: " + Math.round(areaFactor * 1000.0)/1000.0);

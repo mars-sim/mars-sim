@@ -74,8 +74,8 @@ public class PopulationCharacteristics{
   	 */
     public double getRandomHeight(GenderType gender) {
 
-		double dadHeight = RandomUtil.getGaussianPositive(maleHeight, maleHeight / 7D);
-		double momHeight = RandomUtil.getGaussianPositive(femaleHeight, femaleHeight / 10D);
+		double dadHeight = RandomUtil.getGaussianPositive(maleHeight, maleHeight / 5D);
+		double momHeight = RandomUtil.getGaussianPositive(femaleHeight, femaleHeight / 8D);
 	
 		double geneticFactor = .65;
 		double sexFactor = (maleHeight - averageHeight) / averageHeight;
@@ -104,12 +104,12 @@ public class PopulationCharacteristics{
 
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
-		double dadWeight = RandomUtil.getGaussianPositive(maleWeight, maleWeight / 14.5);
-		double momWeight = RandomUtil.getGaussianPositive(femaleWeight, femaleWeight / 11.5);
+		double dadWeight = RandomUtil.getGaussianPositive(maleWeight, maleWeight / 10.5);
+		double momWeight = RandomUtil.getGaussianPositive(femaleWeight, femaleWeight / 9.5);
 		
 		double geneticFactor = .65;
 		double sexFactor = (maleWeight - averageWeight) / averageWeight; 
-		double heightFactor = height / averageHeight;
+		double heightFactor = height / averageHeight / RandomUtil.getRandomDouble(0.9, 1.5);
 
 		// Add arbitrary (US-based) sex and genetic factor
 		if (gender == GenderType.MALE)

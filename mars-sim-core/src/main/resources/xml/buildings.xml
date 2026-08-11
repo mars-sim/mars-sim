@@ -683,7 +683,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of EVA Airlock -->
 
-	<building type="Central Hub A" width="20.0" length="20.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
+	<building type="Central Hub A" shape="circular" width="20.0" length="20.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
 		wear-lifetime="3340000" maintenance-time="300" room-temperature="20.0" base-mass="10000">
 		<description> The Central Hub A serves to a nexus for connecting other building modules. It has a flexible air dome and is 
 		designed to be a place of gathering and relaxation.</description>
@@ -4276,7 +4276,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!-- The buildings below are constructed with in-situ materials, primarly 
 	underground and are used primarily for trading and mining settlements -->
 
-	<building type="Outpost Hub" shape="circular" width="10.0" length="10.0" north-south-alignment="length" 
+	<building type="Outpost Hub" width="10.0" length="10.0" north-south-alignment="length" 
 			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
 		<description> The Outpost Hub is a vaulted brick building that acts
