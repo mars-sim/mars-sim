@@ -494,7 +494,7 @@
 		make the process energy-intensive in practice.
 		
 		</description> 
-		<input resource="Carbon monoxide" rate="140.0" ambient="false" />
+		<input resource="Carbon monoxide" rate="140.0" ambient="true" />
 		<input resource="hydrogen" rate="10.0"  />
 		
 		<output resource="water" rate="90.0"  />
@@ -1721,7 +1721,7 @@
 		
 		<output resource="ethylene" rate="28.0" />
 		<output resource="water" rate="72.0"/>
-	</process>
+	</process> <!-- "CO2 Electroreduction from H2 to Ethylene and H2O" -->
 	
 	<process name="CO2 Electroreduction from H2O to Ethylene and O2" kW-required="0.005" >
 		<description>
@@ -1755,7 +1755,7 @@
 		
 		<output resource="ethylene" rate="28.0" />
 		<output resource="oxygen" rate="96.0"/>
-	</process>
+	</process> <!-- "CO2 Electroreduction from H2O to Ethylene and O2" -->
 
 	<process name="Produce Polyethylene from Ethylene" kW-required="0.01" >
 		<description>

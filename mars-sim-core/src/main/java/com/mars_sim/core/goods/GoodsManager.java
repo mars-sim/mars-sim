@@ -113,6 +113,7 @@ public class GoodsManager implements Serializable {
 		@Override
 		public int execute(MarsTime now) {
 			resetEssentialsReview();
+			selectResourceForReview();
 			return REVIEW_PERIOD;
 		}	
 	}
@@ -855,11 +856,8 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Reset the reviews essential resources.
 	 */
-	public void resetEssentialsReview() {
-		
+	public void resetEssentialsReview() {	
 		reviewedEssentials.clear();
-		
-		selectResourceForReview();
 	}
 
 	/**

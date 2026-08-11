@@ -364,16 +364,25 @@ public class HealthProblem implements Serializable {
 	}
 	
 	/**
-	 * This method generates a string representation of this problem. It contains
+	 * Generates a string representation of this problem. It contains
 	 * the illness and the health rating.
+	 * 
+	 * @return String description.
+	 */
+	public String getNameString() {
+		return "Sufferer: " + getSufferer().getName()
+				+ ". Problem: " + getComplaint().getName()
+				+ ". State: " + state + ".";
+	}
+	
+	/**
+	 * Returns a string representation of this problem.
 	 * 
 	 * @return String description.
 	 */
 	@Override
 	public String toString() {
-		return "Sufferer=" + getSufferer().getName()
-				+ " Problem=" + getComplaint().getName()
-				+ " State=" + state;
+		return getNameString();
 	}
 	
 	/**

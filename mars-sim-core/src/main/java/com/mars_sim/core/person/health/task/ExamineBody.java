@@ -273,7 +273,7 @@ public class ExamineBody extends MedicalAidTask {
 			// Add exam time as modified by skill
 			deathInfo.addTimeSpentExam(workTime);
 			
-			logger.log(worker, Level.INFO, 30_000, "Performing a postmortem exam on " 
+			logger.log(worker, Level.INFO, 30_000, "Performing postmortem exam on " 
 					+ deceasedPerson.getName() + ".");
 		}
 		
@@ -330,12 +330,12 @@ public class ExamineBody extends MedicalAidTask {
 		String problemStr = problem.toString();
 		
 		if (!cause.contains(problemStr)) {
-			cause += problemStr;
+			cause += ". " + problemStr;
 			deathInfo.setCause(cause);
 		}
 			
-		logger.log(worker, Level.WARNING, 1000, "Completed the postmortem exam on " 
-					+ deceasedPerson.getName() + ". Cause of death : " + cause);
+		logger.log(worker, Level.WARNING, 0, "Completed postmortem exam on " 
+					+ deceasedPerson.getName() + ". Cause of death: " + cause);
 
 		// Create medical event for performing an post-mortem exam
 		problem.registerHistoricalEvent(HistoricalEventType.MEDICAL_POSTMORTEM_EXAM); 

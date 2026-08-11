@@ -463,17 +463,19 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isAmbientInputResource(resource)
 						&& ResourceUtil.isCO(resource)) {
 					// Note: 'Ambient' is used mostly for CO & CO2 only - needed to slow down certain processes
-					score += mrate * MEGA;
+					score += mrate * SUPREME;
 				} else if (ResourceUtil.isRawMaterial(resource)   			// all ores, all minerals, sand)
 					|| ResourceUtil.isChemical(resource)) {					// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 
 					score += mrate / MEGA;
+				} else if (ResourceUtil.isCO2(resource)) { 					// CO2	
+					score += mrate * SUPER;
 				} else if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
 					score += mrate * HOVERING;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
 					score += mrate * TRENDY;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
 					score += mrate * TRENDY;
-				} else if (ResourceUtil.isTier3Resource(resource)) {  		// oxygen
+				} else if (ResourceUtil.isOxygen(resource)) {  				// oxygen
 					score += mrate * SUPER;
 				} else if (ResourceUtil.isDerivedResource(resource)) { 		// glucose, leaves, soil 
 					score += mrate / MEGA;
@@ -481,7 +483,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					|| ResourceUtil.isInSitu(resource)						// all regolith types
 					|| ResourceUtil.isWasteProduct(resource)) { 			// grey water, black water, * waste
 					score += mrate / SUPER;
-				} else if (ResourceUtil.isTier2Resource(resource)) { 		// water
+				} else if (ResourceUtil.isWater(resource)) { 		// water
 					score += mrate;
 				} else if (ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick	
 					score += mrate / MID;
@@ -517,7 +519,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 				double rate = processSpec.getBaseOutputRate(resource);
 				
-				double mrate = rate * vp2 * vp2 * .25;
+				double mrate = rate * vp2 * vp2 * .2;
 				
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),
@@ -532,7 +534,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					score += mrate * SUPREME;
 				} else if (ResourceUtil.isMethanol(resource)) { 		// methanol
 					score += mrate * SUPREME;
-				} else if (ResourceUtil.isTier3Resource(resource)) {	// oxygen
+				} else if (ResourceUtil.isOxygen(resource)) {			// oxygen
 					score += mrate * MID;
 				} else if (ResourceUtil.isRawElement(resource)      	// carbon, iron powder, iron oxide
 					|| ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick, gypsum plaster			
@@ -548,8 +550,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil
 					|| ResourceUtil.isCriticalResource(resource)) {		// glass
 					score += mrate * SUPREME;
-				} else if (ResourceUtil.isTier2Resource(resource)) { 	// water
-					score += mrate *  TRENDY;
+				} else if (ResourceUtil.isWater(resource)) { 			// water
+					score += mrate * EXTREME;
 				} else if (ResourceUtil.isRawMaterial(resource)) { 		// all ores, all minerals, sand
 					score += mrate * GOD_BIAS;
 				} else

@@ -517,6 +517,19 @@ public class ResourceUtil {
 	}
 	
 	/**
+	 * Is this CO2 ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isCO2(int resource) {
+		return switch (resource) {
+			case CO2_ID -> true;
+			default -> false;
+		};
+	}
+	
+	/**
 	 * Is this tier 1 resource ?
 	 * 
 	 * @param resource
@@ -570,12 +583,12 @@ public class ResourceUtil {
 	}
 
 	/**
-	 * Is this tier 2 resource ?
+	 * Is this water ?
 	 * 
 	 * @param resource
 	 * @return
 	 */
-	public static boolean isTier2Resource(int resource) {
+	public static boolean isWater(int resource) {
 		return switch (resource) {
 			case WATER_ID -> true;
 			default -> false;
@@ -584,12 +597,12 @@ public class ResourceUtil {
 	
 	
 	/**
-	 * Is this tier 3 resource ?
+	 * Is this oxygen ?
 	 * 
 	 * @param resource
 	 * @return
 	 */
-	public static boolean isTier3Resource(int resource) {
+	public static boolean isOxygen(int resource) {
 		return switch (resource) {
 			case OXYGEN_ID -> true;
 			default -> false;

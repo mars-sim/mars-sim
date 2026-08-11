@@ -602,7 +602,8 @@ public class RadiationExposure implements Serializable, Temporal {
 					// making it easier to avoid
 					double strength = RandomUtil.getRandomDouble(shieldOff) * SEP_SWING_FACTOR * base;
 					double mean = RandomUtil.getRandomDouble(strength / 50, strength); 
-					sep = RandomUtil.getGaussianPositive(mean, mean / 4);
+					if (mean > 0)
+						sep = RandomUtil.getGaussianPositive(mean, mean / 4);
 					if (sep > 0) {
 						rad = addDose(radiationType, bodyRegionType, sep);
 					}	

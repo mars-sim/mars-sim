@@ -113,7 +113,7 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
         assertTrue(task.isDone(), "Task found no resource");
 
         gm.resetEssentialsReview();
-        assertEquals(resources, gm.getResourceReviewDue(), "Resoruces reset");
+        assertEquals(resources, gm.getResourceReviewDue(), "Resources reset");
     }
 
     @Test
