@@ -53,14 +53,26 @@ public class TimeTool extends ContentPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final int WIDTH = 320;
+	private static final int HEIGHT = 650;
+	
+	
 	public static final String NAME = "time";
 	public static final String ICON = "time";
 	public static final String TITLE = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 
-	private static final int WIDTH = 320;
-	private static final int HEIGHT = 650;
-	
 	// Label Strings
+	private static final String SPRING = "Spring";
+	private static final String SPRING_STRING = Msg.getString("TimeWindow.season.spring");
+	private static final String SUMMER = "Summer";
+	private static final String SUMMER_STRING = Msg.getString("TimeWindow.season.summer");
+	private static final String AUTUMN = "Autumn";
+	private static final String AUTUMN_STRING = Msg.getString("TimeWindow.season.autumn");
+	private static final String WINTER = "Winter";
+	private static final String WINTER_STRING = Msg.getString("TimeWindow.season.winter");
+	
+	private static final String DEG = Msg.getString("direction.degreeSign");
+	
 	private static final String X_END = " x";
 	private static final String DESIRE_TR = "Desired TR";
 	private static final String AVERAGE_TPS = "Average TPS";
@@ -279,8 +291,8 @@ public class TimeTool extends ContentPanel {
 		southernSeasonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.southernHemisphere"), //$NON-NLS-1$
 													"", null);
 		// Create areocentric longitude header label
-		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricLon"), "", null);
-		lonLabel.setToolTipText("The Areocentric Longitude (L_s) of Mars with respect to the Sun");
+		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricLon"), "", 
+				"The Areocentric Longitude [0 to 360 degrees] of Mars with respect to the Sun");
 		
 		JPanel paramPane = new JPanel(new BorderLayout());
 		mainPane.add(paramPane, BorderLayout.CENTER);
@@ -656,8 +668,8 @@ public class TimeTool extends ContentPanel {
 	 * Sets and updates the season labels.
 	 */
 	private void updateSeason() {
-  String southernSeasonTip = "";
-  String northernSeasonTip ="";
+		String southernSeasonTip = "";
+		String northernSeasonTip ="";
 		String northernSeason = orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE);
 		String southernSeason = orbitInfo.getSeason(OrbitInfo.SOUTHERN_HEMISPHERE);
 	
@@ -690,14 +702,14 @@ public class TimeTool extends ContentPanel {
 	 * @param hemi the northern or southern hemisphere
 	 */
 	private static String getSeasonTip(String hemi) {
-		if (hemi.contains("Spring"))
-			return Msg.getString("TimeWindow.season.spring");
-		else if (hemi.contains("Summer"))
-			return Msg.getString("TimeWindow.season.summer");
-		else if (hemi.contains("Autumn"))
-			return Msg.getString("TimeWindow.season.autumn");
-		else if (hemi.contains("Winter"))
-			return Msg.getString("TimeWindow.season.winter");
+		if (hemi.contains(SPRING))
+			return SPRING_STRING;
+		else if (hemi.contains(SUMMER))
+			return SUMMER_STRING;
+		else if (hemi.contains(AUTUMN))
+			return AUTUMN_STRING;
+		else if (hemi.contains(WINTER))
+			return WINTER_STRING;
 		else
 			return null;
 	}
@@ -718,7 +730,7 @@ public class TimeTool extends ContentPanel {
 		// Update the calendar
 		calendarDisplay.update(mc.getMarsTime());
 		// Update areocentric longitude
-		lonLabel.setText(Math.round(orbitInfo.getSunAreoLongitude() * 10_000.0)/10_000.0 + "");	
+		lonLabel.setText(Math.round(orbitInfo.getSunAreoLongitude() * 10_000.0)/10_000.0 + DEG); //"\u00B0");	
 		
 		int sol = mc.getMarsTime().getMissionSol();
 		// Note: must use the local solCache for updating UI element

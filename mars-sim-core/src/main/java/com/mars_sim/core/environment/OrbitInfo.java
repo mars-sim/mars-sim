@@ -28,6 +28,27 @@ public class OrbitInfo implements Serializable, Temporal {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(OrbitInfo.class.getName());
 	
+	// From https://www.teuse.net/games/mars/mars_dates.html
+	//
+	// Demios only takes 30hrs, and Phobos 7.6 hrs to rotate around mars
+	// Spring lasts 193.30 sols
+	// Summer lasts 178.64 sols
+	// Autumn lasts 142.70 sols
+	// Winter lasts 153.94 sols
+	// Note that they don't add up exactly to 668.5921 sols.
+	
+	// We could derive 4 "holidays" for Mars. 
+	// Note: round off the fractional sol.
+	//
+	// Spring Equinox at sol 1,
+	// Summer Solstice at sol 193,
+	// Autumnal equinox sol 372,
+	// Winter solstice at sol 515,
+	// Spring again sol 669 or 1 new annus or orbit.
+
+	public static final int NORTHERN_HEMISPHERE = 1;
+	public static final int SOUTHERN_HEMISPHERE = 2;
+	
 	// Static data members.
 	// See https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html
 	/** Mars orbit semi-major axis in au. */
@@ -59,9 +80,6 @@ public class OrbitInfo implements Serializable, Temporal {
 	// On earth, use 15; On Mars, use 14.6 instead.
 //	private static final double ANGLE_TO_HOURS = 90D / HALF_PI  / 14.6D; // (or = 24 hrs / (2*pi) * 15 / 14.6)
 //	private static final double HRS_TO_MILLISOLS = 1 / MarsTime.HOURS_PER_MILLISOL; //1.0275D * MarsTime.MILLISOLS_PER_DAY / 24D; 
-
-	// Date of the 2000K start second
-	private static final LocalDateTime Y2K = LocalDateTime.of(2000,1,1,0,0);
 	
 	// There's a different between civil and nautical dawn/dusk as the angle of the sun below the horizon 
 	// for calculating the zenith angle at dawn/dusk.
@@ -102,26 +120,6 @@ public class OrbitInfo implements Serializable, Temporal {
 	/** The twilight angle [in radians] is set to the civil dawn angle. */
 	private static final double TWILIGHT_RADIANS = CIVIL_DAWN_ANGLE * DEGREE_TO_RADIAN;
 	
-	// From https://www.teuse.net/games/mars/mars_dates.html
-	//
-	// Demios only takes 30hrs, and Phobos 7.6 hrs to rotate around mars
-	// Spring lasts 193.30 sols
-	// Summer lasts 178.64 sols
-	// Autumn lasts 142.70 sols
-	// Winter lasts 153.94 sols
-	// Note that they don't add up exactly to 668.5921 sols.
-	
-	// We could derive 4 "holidays" for Mars. 
-	// Note: round off the fractional sol.
-	//
-	// Spring Equinox at sol 1,
-	// Summer Solstice at sol 193,
-	// Autumnal equinox sol 372,
-	// Winter solstice at sol 515,
-	// Spring again sol 669 or 1 new annus or orbit.
-
-	public static final int NORTHERN_HEMISPHERE = 1;
-	public static final int SOUTHERN_HEMISPHERE = 2;
 	private static final String EARLY = "Early ";
 	private static final String MID = "Mid ";
 	private static final String LATE = "Late ";
@@ -130,6 +128,9 @@ public class OrbitInfo implements Serializable, Temporal {
 	private static final String AUTUMN = "Autumn";
 	private static final String WINTER = "Winter";
 
+	// Date of the 2000K start second
+	private static final LocalDateTime Y2K = LocalDateTime.of(2000,1,1,0,0);
+	
 	// Data members
 	/** The total time in the current orbit (in seconds). */
 	private double orbitTime;
@@ -199,15 +200,16 @@ public class OrbitInfo implements Serializable, Temporal {
 	/** Constructs an {@link OrbitInfo} object */
 	public OrbitInfo(MasterClock clock, SimulationConfig simulationConfig) {
 		// Set orbit coordinates to start of orbit.
-	
 		orbitTime = 0D;
 //		theta = 0D;
 		this.clock = clock;
-
-		earthTime = simulationConfig.getEarthStartDate();
-		// Compute initial L_s based on the earth start date/time in simulation.xml		
+		// Load the initial earth time
+		earthTime = clock.getInitialEarthTime();
+		// Compute initial L_s
 		double L_s = computeSunAreoLongitude(earthTime);
 
+		sunAreoLongitude = L_s;
+		
 		logger.config("Earth Start Time: " + earthTime);
 		
 		logger.config("Areocentric Longitude (L_s): " + Math.round(L_s * 1_000_000.0)/1_000_000.0 + " deg");
@@ -461,7 +463,7 @@ public class OrbitInfo implements Serializable, Temporal {
 		//    finding the Time Offset from J2000 epoch (TT).
 		double timeOffsetJ2000 = getDaysSinceJ2kEpoch(earthTime);
 
-		// B. Mars Parmeters of Date
+		// B. Mars Parameters of Date
 		//    Step B-1: find Mars Mean Anomaly
 		double M = (19.3871 + 0.52402073 * timeOffsetJ2000) * DEGREE_TO_RADIAN;
 		//    Step B-2: find Angle of Fiction Mean Sun
@@ -493,8 +495,7 @@ public class OrbitInfo implements Serializable, Temporal {
 		} 
 		else if (L_s >= 360)
 			L_s = L_s - 360;
-		
-		sunAreoLongitude = L_s;
+
 		return L_s;
 	}
 

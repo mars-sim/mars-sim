@@ -22,7 +22,7 @@ public class OrbitViewerMain {
 		frame.setSize(1024, 1024);
 
 		var config = SimulationConfig.loadConfig();
-		var masterClock = new MasterClock(config, 10);
+		var masterClock = new MasterClock(config, 10, null);
 
 		orbitViewer = new OrbitViewer(masterClock);
 		frame.setLayout(new BorderLayout());

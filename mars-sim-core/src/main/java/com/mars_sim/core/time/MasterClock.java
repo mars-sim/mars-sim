@@ -1,13 +1,15 @@
 /*
  * Mars Simulation Project
  * MasterClock.java
- * @date 2025-08-05
+ * @date 2026-08-11
  * @author Scott Davis
  */
 package com.mars_sim.core.time;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.Collection;
 import java.util.Collections;
@@ -191,9 +193,10 @@ public class MasterClock implements Serializable {
 	 *
 	 * @param config The configuration that controls default clock settings
 	 * @param userTimeRatio the time ratio defined by user
+	 * @param timestamp (if 0, it's now; if 1, use default config time; if 2, use user timestamp
 	 * @throws Exception if clock could not be constructed.
 	 */
-	public MasterClock(SimulationConfig config, int userTimeRatio) {
+	public MasterClock(SimulationConfig config, int userTimeRatio, String timestamp) {
 	
 		// Create a Martian clock
 		marsTime = MarsTimeFormat.fromDateString(config.getMarsStartDateTime());
@@ -201,8 +204,23 @@ public class MasterClock implements Serializable {
 		// Save a copy of the initial Mars time
 		initialMarsTime = marsTime;
 
-		// Create an Earth clock
-		initialEarthTime = config.getEarthStartDate();
+		
+		try {
+			// Create an Earth clock
+			if (timestamp == null || timestamp.equals(""))
+				initialEarthTime = LocalDateTime.now();
+			else if (timestamp.equals("default"))
+				initialEarthTime = config.getEarthStartDate();
+			else 
+				initialEarthTime = LocalDateTime.parse(timestamp,
+						DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss.SSS"));
+
+		} catch (DateTimeParseException e) {
+			logger.severe("Invalid earth timestamp '" + timestamp + "'. Ensure this format yyyy-MM-dd kk:mm:ss.SSS is being utilized. Switch to the machine time now.");
+			initialEarthTime = LocalDateTime.now();
+		}
+	
+		// Set the earth time
 		earthTime = initialEarthTime;
 
 		// Create an Uptime Timer
@@ -454,7 +472,16 @@ public class MasterClock implements Serializable {
 	public LocalDateTime getEarthTime() {
 		return earthTime;
 	}
-
+	/**
+	 * 
+	 * Returns the initial Earth date.
+	 *
+	 * @return initial Earth date
+	 */
+	public LocalDateTime getInitialEarthTime() {
+		return initialEarthTime;
+	}
+	
 	/**
 	 * Returns uptime timer.
 	 *

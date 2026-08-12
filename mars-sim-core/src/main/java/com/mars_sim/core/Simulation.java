@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Simulation.java
- * @date 2025-08-26
+  * @date 2026-08-11
  * @author Scott Davis
  */
 package com.mars_sim.core;
@@ -241,7 +241,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 	/**
 	 * Creates a new simulation instance.
 	 */
-	public void createNewSimulation(int timeRatio) {
+	public void createNewSimulation(int timeRatio, String timestamp) {
 		isUpdating = true;
 
 		logger.config(Msg.getString("Simulation.log.createNewSim")); //-NLS-1$
@@ -256,7 +256,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		sim.initialSimulationCreated = true;
 
 		// Initialize intransient data members.
-		sim.initializeIntransientData(timeRatio);
+		sim.initializeIntransientData(timeRatio, timestamp);
 
 		// Preserve the build version tag for future build
 		// comparison when loading a saved sim
@@ -269,7 +269,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 	public void runSocietySim() {
 		
 		// Create marsClock instance
-		masterClock = new MasterClock(simulationConfig, 256);
+		masterClock = new MasterClock(simulationConfig, 256, null);
 		scheduledEvents = new ScheduledEventManager(masterClock);
 		metricManager = new MemoryMetricManager(2);
 
@@ -299,7 +299,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Should this method call the initialiseTransient method ?
 
 		// Create marsClock instance
-		masterClock = new MasterClock(simulationConfig, 256);
+		masterClock = new MasterClock(simulationConfig, 256, null);
 		scheduledEvents = new ScheduledEventManager(masterClock);
 		metricManager = new MemoryMetricManager(2);
 
@@ -388,8 +388,11 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 	/**
 	 * Initializes intransient data in the simulation.
+	 * 
+	 * @param timeRatio
+	 * @param timestamp
 	 */
-	private void initializeIntransientData(int timeRatio) {
+	private void initializeIntransientData(int timeRatio, String timestamp) {
 
 
 		// Gets config file instances
@@ -400,7 +403,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 		
 		// Clock is always first
-		masterClock = new MasterClock(simulationConfig, timeRatio);
+		masterClock = new MasterClock(simulationConfig, timeRatio, timestamp);
 
 		// Set log data
 		DataLogger.changeTime(masterClock.getMarsTime());
@@ -533,12 +536,15 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 	/**
 	 *  Recreates a few instances after loading from a saved sim.
+	 * 
+	 * @param userTimeRatio
+	 * @param timestamp
 	 */
-	public void recreateSomeInstances(int userTimeRatio) {
+	public void recreateSomeInstances(int userTimeRatio, String timestamp) {
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		// Clock is always first
-		masterClock = new MasterClock(simulationConfig, userTimeRatio);
+		masterClock = new MasterClock(simulationConfig, userTimeRatio, timestamp);
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
 	}

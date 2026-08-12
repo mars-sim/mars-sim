@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimulationBuilder.java
- * @date 2025-07-26
+ * @date 2026-08-11
  * @author Barry Evans
  */
 package com.mars_sim.core;
@@ -40,6 +40,7 @@ public class SimulationBuilder {
 	private static final String LOG_ARG = "log";
 	private static final String CONFIG_ARG = "configdir";
 	private static final String TIMERATIO_ARG = "timeratio";
+	private static final String TIMESTAMP_ARG = "timestamp";
 	private static final String TEMPLATE_ARG = "template";
 	private static final String DATADIR_ARG = "datadir";  
 	private static final String BASEURL_ARG = "baseurl";  
@@ -52,14 +53,18 @@ public class SimulationBuilder {
 	private static final Logger logger = Logger.getLogger(SimulationBuilder.class.getName());
 	
 	private int userTimeRatio = 0; // zero means not defined
+	
+	private boolean useCrews = true;
+	private boolean newAllowed = false;
+	
+	private String timestamp;
 	private String template;
 	private String authorityName = null;
-	private boolean newAllowed = false;
+	private String scenarioName;
+	
 	private File simFile;
 	private Coordinates location = null;
-	private boolean useCrews = true;
 	private CrewConfig crewConfig;
-	private String scenarioName;
 	private ScenarioConfig scenarioConfig;
 
 	public SimulationBuilder() {
@@ -75,6 +80,15 @@ public class SimulationBuilder {
 		this.userTimeRatio = timeRatio;
 	}
 
+	/**
+	 * Sets the time ratio to a specific rate.
+	 * 
+	 * @param timeRatio
+	 */
+	private void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+	}
+	
 	/**
 	 * Sets the loading of the crews.
 	 * 
@@ -155,11 +169,12 @@ public class SimulationBuilder {
 					.desc("Enable file logging").get());
 		options.add(Option.builder(TIMERATIO_ARG).argName("Ratio (power of 2)").hasArg()
 								.desc("Define the time ratio of the simulation").get());
+		options.add(Option.builder(TIMESTAMP_ARG).argName("Earth timestamp").hasArg()
+				.desc("The timestamp of the earth time at the start of the simulation").get());
 		options.add(Option.builder(DATADIR_ARG).argName("path to data directory").hasArg()
 				.desc("Path to the data directory for simulation files (defaults to user.home)").get());
 		options.add(Option.builder(BASEURL_ARG).argName("URL to remote content").hasArg()
 				.desc("URL to the remote content repository (defaults to master in GitHub)").get());
-		
 		options.add(Option.builder(NEW_ARG)
 						.desc("Create a new simulation if one is not present").get());
 		options.add(Option.builder(SCENARIO_ARG).argName("scenario name").hasArg()
@@ -192,6 +207,9 @@ public class SimulationBuilder {
 		}
 		if (line.hasOption(TIMERATIO_ARG)) {
 			setTimeRatio(Integer.parseInt(line.getOptionValue(TIMERATIO_ARG)));
+		}
+		if (line.hasOption(TIMESTAMP_ARG)) {
+			setTimestamp(line.getOptionValue(TIMESTAMP_ARG));
 		}
 		if (line.hasOption(NEW_ARG)) {
 			newAllowed = true;
@@ -255,7 +273,7 @@ public class SimulationBuilder {
 		
 		if (!loaded) {
 			// Create a new simulation
-			sim.createNewSimulation(userTimeRatio); 
+			sim.createNewSimulation(userTimeRatio, timestamp); 
 			
 			SettlementBuilder builder = new SettlementBuilder(sim,
 					simConfig, statusConsumer);
@@ -320,7 +338,7 @@ public class SimulationBuilder {
 			
 			// Question : Why does it have to create some of the class instances in recreateSomeInstances(), 
 			// only later be rewritten in loadSimulation() ?
-			sim.recreateSomeInstances(userTimeRatio);
+			sim.recreateSomeInstances(userTimeRatio, timestamp);
 			// Note: if skipping createNewSimulation(), it would not be deserialized correctly
 			sim.loadSimulation(simFile);		
 			

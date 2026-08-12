@@ -37,7 +37,7 @@ public class MasterClockTest {
 
     @Test
     void testAddClockPulseListener() {
-        var clock = new MasterClock(config, 1);
+        var clock = new MasterClock(config, 1, null);
 
         var listener = new TestClockPulseListener();
 
@@ -58,7 +58,7 @@ public class MasterClockTest {
 
     @Test
     void testRemoveClockPulseListener() {
-        var clock = new MasterClock(config, 1);
+        var clock = new MasterClock(config, 1, null);
 
         var baseline = new TestClockPulseListener();
         var removed = new TestClockPulseListener();
@@ -80,7 +80,7 @@ public class MasterClockTest {
 
     @Test
     void testPausedPulses() {
-        var clock = new MasterClock(config, 1);
+        var clock = new MasterClock(config, 1, null);
 
         var baseline = new TestClockPulseListener();
         clock.addClockPulseListener(baseline);
@@ -149,7 +149,7 @@ public class MasterClockTest {
 
     @Test
     void testSetDesiredTimeRatio() {
-        var clock = new MasterClock(config, 1);
+        var clock = new MasterClock(config, 1, null);
 
         var baseline = new TestClockListener();
         clock.addClockListener(baseline);
@@ -163,7 +163,7 @@ public class MasterClockTest {
     
     @Test
     void testSetPaused() {
-        var clock = new MasterClock(config, 1);
+        var clock = new MasterClock(config, 1, null);
 
         var baseline = new TestClockListener();
         clock.addClockListener(baseline);
