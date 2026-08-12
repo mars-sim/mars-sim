@@ -24,6 +24,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.parameter.ParameterCategories;
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterCategory.ParameterSpec;
@@ -37,8 +38,10 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
-@SuppressWarnings("serial")
 class TabPanelPreferences extends EntityTableTabPanel<Settlement> {
+
+	/** Default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(TabPanelPreferences.class.getName());
 
 	/**
 	 * Represents a renderable version for a Parameter Key with a displayable label.
@@ -133,8 +136,8 @@ class TabPanelPreferences extends EntityTableTabPanel<Settlement> {
 	@Override
 	protected void setColumnDetails(TableColumnModel cModel) {
 		// Override default cell renderer for formatting double values.
-		cModel.getColumn(0).setPreferredWidth(30);
-		cModel.getColumn(2).setPreferredWidth(20);
+		cModel.getColumn(0).setPreferredWidth(27);
+		cModel.getColumn(2).setPreferredWidth(30);
 	}
 
 	/**
@@ -206,7 +209,7 @@ class TabPanelPreferences extends EntityTableTabPanel<Settlement> {
 				.filter(k -> k.getCategory().getSpec(k) == null)
 				.toList();
 			if (!missing.isEmpty()) {
-				System.out.println("Preference keys with missing specs: " + missing);
+				logger.warning("Preference keys with missing specs: " + missing);
 			}
 
 			items = new ArrayList<>(target.getValues().keySet().stream()
@@ -300,7 +303,7 @@ class TabPanelPreferences extends EntityTableTabPanel<Settlement> {
 					newValue = Boolean.parseBoolean((String)value);
 					break;
 				case DOUBLE:
-					newValue = Math.round(Double.parseDouble((String)value) * 10.0)/10.0;
+					newValue = Math.round(Double.parseDouble((String)value) * 100.0)/100.0;
 					break;
 				case INTEGER:
 					newValue = Integer.parseInt((String)value);

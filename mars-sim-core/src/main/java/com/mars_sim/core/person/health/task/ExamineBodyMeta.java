@@ -61,7 +61,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	private static final String NAME = Msg.getString("Task.description.examineBody"); //$NON-NLS-1$
 
 	// High score so that it gets done soon
-	private static final double DEFAULT_SCORE = 500D;
+	private static final double DEFAULT_SCORE = 200D;
 
 	// Extra score for every day body not examined
 	private static final double MOD_SCORE = 2;
@@ -69,7 +69,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	private static MedicalManager medicalManager;
 
     public ExamineBodyMeta() {
-		super(NAME, WorkerType.ROBOT, TaskScope.ANY_HOUR);
+		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 
 		setTrait(TaskTrait.MEDICAL, TaskTrait.TREATMENT);
 		setPreferredJob(JobType.MEDICS);
@@ -141,12 +141,15 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		List<SettlementTask>  tasks = new ArrayList<>();
 		List<DeathInfo> deaths = medicalManager.getPostmortemExam(settlement);
 
-		if (!deaths.isEmpty()) { // && hasNeedyMedicalAidsAtSettlement(settlement)) {
+		if (!deaths.isEmpty()) {
 			for(DeathInfo info : deaths) {
 				if (!info.getExamDone() 
 						&& isVehicleContainerUnitSettlement(info.getPerson())) {
 					RatingScore score = new RatingScore(DEFAULT_SCORE);
-					score.addBase("due", 
+					int num = getNeedyNumPatients(settlement);
+					if (num > 0)
+						score.addBase("patients", num * 100);
+					score.addBase("deceased", 
 							getMarsTime().getTimeDiff(info.getTimeOfDeath()) * MOD_SCORE);
 					tasks.add(new ExamineBodyJob(this, settlement, info, score));
 				}
@@ -201,6 +204,23 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		return false;
 	}
 
+	/**
+	 * Gets the needy patients at medical aids at a settlement that have people waiting for
+	 * treatment.
+	 *
+	 * @param settlement the settlement.
+	 * @return return the number of needy patients without doctors
+	 */
+	private int getNeedyNumPatients(Settlement settlement) {
+		int sum = 0;
+		// Check all medical care buildings.
+		for (Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE)) {
+			sum += b.getMedical().getPatientNum() - b.getMedical().getPhysicianNum();
+		}
+
+		return sum;
+	}
+	
 	public static void initialiseInstances(MedicalManager mm) {
 		medicalManager = mm;
 	}
