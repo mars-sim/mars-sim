@@ -33,6 +33,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * The subclass defines which columns are to be rendered.
  * The model automatically monitors the entities for changes and updates the table as needed.
  */
+@SuppressWarnings("serial")
 public abstract class AbstractEntityModel<T extends MonitorableEntity> extends AbstractTableModel
     implements EnhancedTableModel, EntityListener, EntityModel, StatefulComponent {
 

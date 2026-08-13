@@ -26,6 +26,10 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
 @SuppressWarnings("serial")
 public abstract class BasePersonModel extends AbstractEntityModel<Person> {
 
+	private static final int SETTLEMENT_VICINITY_VAL = 96;
+	private static final int VEHICLE_VICINITY_VAL = 97;
+    private static final int IN_SETTLEMENT_VAL = 98;
+    private static final int IN_VEHICLE_VAL = 99;
     private static final int INSIDE_VAL = 100;
 	private static final int HEALTH_VAL = 101;
     private static final int ENERGY_VAL = 102;
@@ -48,9 +52,19 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
     protected static final EntityColumnSpec MISSION = BaseWorkerModel.MISSION;
 
     // Display whether the Person is inside based on a changed of container
-    protected static final EntityColumnSpec INSIDE = new EntityColumnSpec(new ColumnSpec(INSIDE_VAL, "Inside", Boolean.class),
+    
+
+    protected static final EntityColumnSpec SETTLEMENT_VICINITY = new EntityColumnSpec(new ColumnSpec(SETTLEMENT_VICINITY_VAL, "S Vinicity", Boolean.class),
+    											Set.of(MobileUnit.CONTAINER_EVENT));
+    protected static final EntityColumnSpec VEHICLE_VICINITY = new EntityColumnSpec(new ColumnSpec(VEHICLE_VICINITY_VAL, "V Vinicity", Boolean.class),
+    											Set.of(MobileUnit.CONTAINER_EVENT));
+	protected static final EntityColumnSpec IN_SETTLEMENT = new EntityColumnSpec(new ColumnSpec(IN_SETTLEMENT_VAL, "Indoor", Boolean.class),
+	        									Set.of(MobileUnit.CONTAINER_EVENT));
+    protected static final EntityColumnSpec IN_VEHICLE = new EntityColumnSpec(new ColumnSpec(IN_VEHICLE_VAL, "In Vehicle", Boolean.class),
                                                 Set.of(MobileUnit.CONTAINER_EVENT));
-	protected static final EntityColumnSpec HEALTH = new EntityColumnSpec(new ColumnSpec(HEALTH_VAL, Msg.getString("person.health"), String.class),
+    protected static final EntityColumnSpec INSIDE = new EntityColumnSpec(new ColumnSpec(INSIDE_VAL, "Inside", Boolean.class),
+    											Set.of(MobileUnit.CONTAINER_EVENT));
+    protected static final EntityColumnSpec HEALTH = new EntityColumnSpec(new ColumnSpec(HEALTH_VAL, Msg.getString("person.health"), String.class),
                                                 Set.of(PhysicalCondition.ILLNESS_EVENT, EntityEventType.DEATH_EVENT,
                                                     EntityEventType.BURIAL_EVENT, EntityEventType.REVIVED_EVENT));
 	protected static final EntityColumnSpec ENERGY = new EntityColumnSpec(new ColumnSpec(ENERGY_VAL, Msg.getString("person.energy"), String.class),
@@ -95,7 +109,10 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
         boolean isDead = pc.isDead();
         
         return switch(valueIndex) {
-            case INSIDE_VAL -> entity.isInside();  
+	        case VEHICLE_VICINITY_VAL -> entity.getLocationTag().isInVehicleVicinity();
+	        case SETTLEMENT_VICINITY_VAL -> entity.getLocationTag().isInSettlementVicinity();
+            case IN_VEHICLE_VAL -> entity.isInVehicle();
+            case IN_SETTLEMENT_VAL -> entity.isInSettlement();
             case ENERGY_VAL -> isDead ? null : pc.getHungerLevel().getName();
 			case WATER_VAL -> isDead ? null : pc.getThirstLevel().getName();
             case FATIGUE_VAL -> isDead ? null : pc.getFatigueLevel().getName();

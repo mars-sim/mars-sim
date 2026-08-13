@@ -1739,7 +1739,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				}
 			}
 			
-			if (distanceCurrentLegRemaining != dist) {
+			if (Double.compare(distanceCurrentLegRemaining, dist) != 0) {
 				distanceCurrentLegRemaining = dist;
 				fireMissionUpdate(DISTANCE_EVENT);
 			}
@@ -1796,7 +1796,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				}
 			}
 			
-			if (distanceCurrentLegTravelled != dist) {
+			if (Double.compare(distanceCurrentLegTravelled, dist) != 0) {
 				distanceCurrentLegTravelled = dist;
 				fireMissionUpdate(DISTANCE_EVENT);
 			}
@@ -1814,8 +1814,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @throws MissionException if error determining distance.
 	 */
 	public final double getDistanceCurrentLegRemaining() {
-		double legRemaining = computeDistanceCurrentLegRemaining();
-		return distanceCurrentLegRemaining;
+		return computeDistanceCurrentLegRemaining();
 	}
 	
 	/**
@@ -1825,8 +1824,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @throws MissionException if error determining distance.
 	 */
 	public final double getDistanceCurrentLegTravelled() {
-		double legTravelled = computeDistanceCurrentLegTravelled();
-		return distanceCurrentLegTravelled;
+		return computeDistanceCurrentLegTravelled();
 	}
 	
 	/**
@@ -1842,7 +1840,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				result += navPoints.get(x).getPointToPointDistance();
 			}
 			
-			if (distanceProposed != result) {
+			if (Double.compare(distanceProposed, result) != 0) {
 				// Record the distance
 				distanceProposed = result;
 				// Update the distance event
@@ -1885,7 +1883,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		
 		double total = legRemaining + remainingNavPointDistance;
 			
-		if (distanceTotalRemaining != total) {
+		if (Double.compare(distanceTotalRemaining, total) != 0) {
 			// Record the distance
 			distanceTotalRemaining = total;
 			// Update the distance event
@@ -1927,7 +1925,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	                 .mapToDouble(NavPoint::getActualTravelled)
 	                 .sum();
 					
-			if (newDist != distanceTravelled) {
+			if (Double.compare(distanceTravelled, newDist) != 0) {
 				// Record the distance
 				distanceTravelled = newDist;
 				// Update the distance event
