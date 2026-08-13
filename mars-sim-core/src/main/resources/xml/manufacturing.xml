@@ -1655,7 +1655,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<description> The rover windshield use a double stack of aerogel tiles between two layers 
 		of glass for insulation. </description>
 		<inputs>
-			<part name="aerogel tile" number="8" />	
+			<part name="Aerogel tile" number="8" />	
 			<part name="steel ingot" number="1" />			
 			<part name="glass sheet" number="2" />		
 		</inputs>
@@ -1669,7 +1669,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<description> Each window panel use a double stack of aerogel tiles between two layers 
 		of glass for trapping heat. </description>
 		<inputs>
-			<part name="aerogel tile" number="8" />
+			<part name="Aerogel tile" number="8" />
 			<part name="steel ingot" number="1" />			
 			<part name="glass sheet" number="1" />		
 		</inputs>
@@ -2184,7 +2184,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="acetylene" amount="1.0" />
 			<resource name="polystyrene" amount="5" />	
-			<part name="aerogel tile" number="20" />
+			<part name="Aerogel tile" number="20" />
 			<part name="utility vehicle control panel" number="1" />		
 			<part name="vehicle frame small" number="2" />
 			<part name="vehicle chassis panel" number="3" />
@@ -2218,7 +2218,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="acetylene" amount="2.0" />		
 			<resource name="polystyrene" amount="15" />			
-			<part name="aerogel tile" number="80" />					
+			<part name="Aerogel tile" number="80" />					
 			<part name="rover control panel" number="1" />			
 			<part name="vehicle frame large" number="3" />
 			<part name="vehicle chassis panel" number="6" />
@@ -2257,7 +2257,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="acetylene" amount="3.0" />		
 			<resource name="polystyrene" amount="20" />	
-			<part name="aerogel tile" number="120" />
+			<part name="Aerogel tile" number="120" />
 			<part name="rover control panel" number="1" />			
 			<part name="vehicle frame large" number="5" />
 			<part name="vehicle chassis panel" number="10" />
@@ -2295,7 +2295,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="acetylene" amount="3.0" />
 			<resource name="polystyrene" amount="30" />	
-			<part name="aerogel tile" number="120" />
+			<part name="Aerogel tile" number="120" />
 			<part name="rover control panel" number="1" />
 			<part name="vehicle frame large" number="5" />
 			<part name="vehicle chassis panel" number="12" />
@@ -3531,7 +3531,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</description>
 		<inputs>
 			<resource name="Polycarbonate resin" amount="3.5" />
-			<part name="aerogel tile" number="8" />
+			<part name="Aerogel tile" number="8" />
 		</inputs>
 		<outputs>
 			<part name="polycarbonate roofing" number="3" />
@@ -3858,7 +3858,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polystyrene" amount=".5" />				
 		</inputs>
 		<outputs>
-			<part name="aerogel tile" number="20" />
+			<part name="Aerogel tile" number="20" />
 		</outputs>
 	</process>
 

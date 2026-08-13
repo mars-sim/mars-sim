@@ -876,9 +876,11 @@ public class PartGood extends Good {
 	 * @param previousDemand
 	 * @return new demand
 	 */
-	private double getMaintenancePartsDemand(int previousNum, Settlement settlement, Part part, double previousDemand) {
-		int num = settlement.getBuildingManager().getMaintenanceDemand(part);
-		return previousDemand * (1 + (1 + num) * PARTS_MAINTENANCE_VALUE / (1.0 + previousNum));
+	double getMaintenancePartsDemand(int previousNum, Settlement settlement, Part part, double previousDemand) {
+		int numRequest = settlement.getBuildingManager().getMaintenanceDemand(part);
+		
+		// Q: how to avoid calling this repetitively. the new demand would easily go to 10000 and max out.
+		return previousDemand * (1 + (numRequest + 1) * PARTS_MAINTENANCE_VALUE / Math.sqrt(1.0 + previousNum)) / 2;
 	}
 	
 	/**

@@ -2366,7 +2366,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		}
 
 		if (!transferred) {
-			logger.warning(this, 60_000L, "Cannot be retrieved from " + cu + ".");
+			logger.warning(this, 20_000L, "Cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action			
 		}
 		else {
@@ -2382,7 +2382,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 			}
 
 			if (!transferred) {
-				logger.warning(this, 60_000L, "Cannot be stored into " + destination + ".");
+				logger.warning(this, 20_000L, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
 			else {

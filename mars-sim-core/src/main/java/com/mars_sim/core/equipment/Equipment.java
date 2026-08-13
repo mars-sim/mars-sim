@@ -339,23 +339,24 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 				canStore = true;
 			}
 
-			if (cu != null && !canStore) {
-				logger.warning(this, 60_000L, "Could not be stored into '"
-						+ destination + "'.");
-				
-				// Need to go back the original container
-				boolean canStoreBack = ((EquipmentOwner)cu).addEquipment(this);
-				if (canStoreBack) {
-					logger.warning(this, 60_000L, "Just stored back into '"
-							+ cu + "'.");
-				}
-				else {
-					logger.warning(this, 60_000L, "Could not be stored back into '"
-							+ cu + "'.");
-				}
-			}
-			else {
-				
+//			if (cu != null && !canStore) {
+//				logger.warning(this, 60_000L, "Could not be stored into '"
+//						+ destination + "'.");
+//				
+//				// Need to go back the original container
+//				boolean canStoreBack = ((EquipmentOwner)cu).addEquipment(this);
+//				if (canStoreBack) {
+//					logger.warning(this, 60_000L, "Just stored back into '"
+//							+ cu + "'.");
+//				}
+//				else {
+//					logger.warning(this, 60_000L, "Could not be stored back into '"
+//							+ cu + "'.");
+//				}
+//			}
+//			else {
+			
+			if (canStore) {	
 				// Note: in future, we may add ownership history for certain equipment 
 				// So far, only EVASuit records ownership history
 

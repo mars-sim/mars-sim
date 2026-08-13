@@ -1,4 +1,4 @@
-package com.mars_sim.core.structure.goods;
+package com.mars_sim.core.goods;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -12,9 +12,6 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.goods.GoodsManager;
-import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 
 class TestGoodsUtil {

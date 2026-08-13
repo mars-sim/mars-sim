@@ -33,8 +33,7 @@ public class EquipmentInventory
 
 	private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName());
 
-	private Unit owner;
-
+	/** The general cargo capacity. */
 	private double cargoCapacity;
 
 	/** Locally held EVA suit set. */
@@ -46,7 +45,10 @@ public class EquipmentInventory
 	/** Locally held amount resource bin set. */
 	private Set<AmountResourceBin> amountResourceBinSet;
 
-	/** The MicroInventory instance. */
+	/** The owner of this equipment inventory. */
+	private Unit owner;
+	
+	/** The MicroInventory inside this equipment inventory. */
 	private MicroInventory microInventory;
 
 	/**
@@ -186,69 +188,75 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean addEquipment(Equipment equipment) {
-		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
-			return addToSet(suitSet, equipment);
-		}
+		owner.fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, equipment);
 		
-		return addToSet(containerSet, equipment);
+		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
+			return suitSet.add(equipment);
+		}
+
+		return containerSet.add(equipment); 
 	}
 	
-	/**
-	 * Adds the equipment (suit or container) to a particular equipment set.
-	 * 
-	 * @param set
-	 * @param equipment
-	 * @return true if this unit can carry it
-	 */
-	private boolean addToSet(Set<Equipment> set, Equipment equipment) {
-		boolean contained = set.contains(equipment);
-		if (!contained) {
-			
-			double suitMass = 0;
-			for (Equipment e: suitSet) {
-				suitMass += e.getMass();
-			}
-			
-			double containerMass = 0;
-			String containerName = "";
-			
-			for (Equipment e: containerSet) {
-				Container c = (Container)e;
-				Set<Integer> ids = c.getSpecificResourceStoredIDs();
-				String arNames = "";
-				for (int i: ids) {
-					arNames += ResourceUtil.findAmountResourceName(i) 
-							+ " (" + Math.round(c.getSpecificAmountResourceStored(i) * 100.0)/100.0 + ")";
-				}
-				containerName += e.getName() + " [" + arNames + "]";
-				containerMass += e.getMass();
-			}
-
-			double microInvMass = microInventory.getStoredMass();
-			
-			double totalStored = suitMass + containerMass + microInvMass;
-			
-			double newCapacity = cargoCapacity - totalStored - equipment.getMass();
-			if (newCapacity >= 0D) {
-				owner.fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, equipment);
-				return set.add(equipment);
-			}
-			else {
-				logger.warning(owner, 60_000L, "No capacity to hold " + equipment.getName()
-								+ " - cargoCapacity: " + cargoCapacity 
-								+ ", container name: " + containerName
-								+ ", totalStored: " + totalStored 
-								+ ", microInvMass: " + microInvMass
-								+ ", containerMass: " + containerMass 
-								+ ", suitMass: " + suitMass
-								+ ", equipmentMass: " + equipment.getMass() 
-								+ ".");
-				return false;
-			}
-		}
-		
-		return !contained;
-	}
+//	/**
+//	 * Adds the equipment (suit or container) to a particular equipment set.
+//	 * 
+//	 * @param set
+//	 * @param equipment
+//	 * @return true if this unit can carry it
+//	 */
+//	private boolean addToSet(Set<Equipment> set, Equipment equipment) {
+//		boolean contained = set.contains(equipment);
+//		
+//		if (contained) {
+//			return false;
+//		}
+//		
+//		if (!contained) {
+//			double suitMass = 0;
+//			for (Equipment e: suitSet) {
+//				suitMass += e.getMass();
+//			}
+//			
+//			double containerMass = 0;
+//			String containerName = "";
+//			
+//			for (Equipment e: containerSet) {
+//				Container c = (Container)e;
+//				Set<Integer> ids = c.getSpecificResourceStoredIDs();
+//				String arNames = "";
+//				for (int i: ids) {
+//					arNames += ResourceUtil.findAmountResourceName(i) 
+//							+ " (" + Math.round(c.getSpecificAmountResourceStored(i) * 100.0)/100.0 + ")";
+//				}
+//				containerName += e.getName() + " [" + arNames + "]";
+//				containerMass += e.getMass();
+//			}
+//
+//			double microInvMass = microInventory.getStoredMass();
+//			
+//			double totalStored = suitMass + containerMass + microInvMass;
+//			
+//			double newCapacity = cargoCapacity - totalStored - equipment.getMass();
+//			if (newCapacity >= 0D) {
+//				owner.fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, equipment);
+//				return set.add(equipment);
+//			}
+//			else {
+//				logger.warning(owner, 60_000L, "No capacity to hold " + equipment.getName()
+//								+ " - cargoCapacity: " + cargoCapacity 
+//								+ ", container name: " + containerName
+//								+ ", totalStored: " + totalStored 
+//								+ ", microInvMass: " + microInvMass
+//								+ ", containerMass: " + containerMass 
+//								+ ", suitMass: " + suitMass
+//								+ ", equipmentMass: " + equipment.getMass() 
+//								+ ".");
+//				return false;
+//			}
+//		}
+//		
+//		return !contained;
+//	}
 
 	/**
 	 * Removes an equipment.
@@ -258,9 +266,11 @@ public class EquipmentInventory
 	@Override
 	public boolean removeEquipment(Equipment equipment) {
 		owner.fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, equipment);
+		
 		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
 			return suitSet.remove(equipment);
 		}
+		
 		return containerSet.remove(equipment);
 	}
 
