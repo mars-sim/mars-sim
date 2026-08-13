@@ -320,7 +320,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
 
         // Start recovery by changing hunger level
         physicalCondition.setHunger(HungerLevel.COMFY.getMaxValue() - 1);
-        physicalCondition.timePassing(createPulse(10), s);
+        physicalCondition.timePassing(createPulse(3), s);
         assertEquals(1, problems.size(), "Still starving but recovering");
         assertEquals(HealthProblemState.RECOVERING, starvation.getState(), "Starvation should be recovering");
 
