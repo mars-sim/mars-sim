@@ -1680,7 +1680,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<base-power power-priority="7" base-full-power="4.0" base-low-power="0.4" />
 
 		<functions>
-			<farming crops="50" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="500.0">
+			<farming crops="40" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="400.0">
 				<activity>
 					<activity-spot xloc="1.6" yloc="1" />
 					<activity-spot xloc="1.6" yloc="-1" />
@@ -1708,7 +1708,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<fishery capacity="5000">
+			<fishery capacity="4000">
 				<activity>
 					<activity-spot xloc="1.6" yloc="5" />
 					<activity-spot xloc="-1.6" yloc="3" />
@@ -1954,10 +1954,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<recreation capacity="4">
 				<activity>
-					<activity-spot xloc="1.0" yloc="-1.9" />
-					<activity-spot xloc="1.0" yloc="1.9" />
-					<activity-spot xloc="-1.0" yloc="-1.9" />
-					<activity-spot xloc="-1.0" yloc="-1.9" />	
+					<activity-spot xloc=".95" yloc="-1.9" />
+					<activity-spot xloc=".95" yloc="1.9" />
+					<activity-spot xloc="-.95" yloc="-1.9" />
+					<activity-spot xloc="-.95" yloc="1.9" />	
 				</activity>
 			</recreation>
 			

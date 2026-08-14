@@ -8,14 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.goods.GoodCategory;
-import com.mars_sim.core.goods.GoodsManager;
-import com.mars_sim.core.goods.GoodsUtil;
-import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.resource.ItemResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.vehicle.VehicleType;

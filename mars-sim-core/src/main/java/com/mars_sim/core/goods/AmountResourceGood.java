@@ -159,13 +159,14 @@ class AmountResourceGood extends Good {
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
 	private static final double SAND_VALUE_MODIFIER = 2.5;
-	private static final double ORES_VALUE_MODIFIER = 1.0;
+	private static final double ORES_VALUE_MODIFIER = 0.9;
+	
+	private static final double MINERAL_VALUE_MODIFIER = 0.9;
+	private static final double ROCK_VALUE_MODIFIER = 0.2;
+	private static final double METEORITE_VALUE_MODIFIER = 100;
 	
 	private static final double CONCRETE_VALUE_MODIFIER = 1.0;
 	private static final double CEMENT_VALUE_MODIFIER = 0.45;
-	private static final double MINERAL_VALUE_MODIFIER = 1.2;
-	private static final double ROCK_VALUE_MODIFIER = 0.2;
-	private static final double METEORITE_VALUE_MODIFIER = 100;
 	
 	private static final double ROCK_SALT_VALUE_MODIFIER = 1.5;
 	private static final double EPSOM_SALT_VALUE_MODIFIER = .05;
