@@ -36,7 +36,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
         var crew = buildEVACrew(getContext(), s, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
 
         List<MineralSite> sites = buildSites(s, 2);
-        var m = (VehicleMission) mt.constructInstance(crew, sites);
+        var m = (VehicleMission) mt.constructInstance(crew, false, sites);
 
         assertNotNull(m, "Exploration mission instance should not be null");
         assertFalse(m.isDone(), "Exploration mission should not be done upon construction");
@@ -60,7 +60,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
 
         var crew = buildEVACrew(getContext(), s, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
 
-        List<MineralSite> sites = buildSites(s, 3);
+        var sites = buildSites(s, mt.getExpectedSites(s) + 1);
 
         var m = (VehicleMission) mt.constructInstance(crew, false);
 
@@ -100,7 +100,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
 
 
     /**
-     * This build a Roster crew for an EVA mission needing an optional set of Containers.
+     * This builds a Roster crew for an EVA mission needing an optional set of Containers.
      * @param context The test context to build the crew.
      * @param s The settlement to build the crew in.
      * @param containterType The type of container to build for the mission; optional if containerCount is 0.

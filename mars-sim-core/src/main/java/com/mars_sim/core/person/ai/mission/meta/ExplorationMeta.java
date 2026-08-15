@@ -90,7 +90,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 			throw new MissionCreationException("mission.exploration.nosites");
 		}
 			
-		return constructInstance(crew, sites);
+		return constructInstance(crew, needsReview, sites);
 	}
 
 	/**
@@ -232,11 +232,12 @@ public class ExplorationMeta extends AbstractMetaMission {
 	/**
 	 * Constructs a new instance of the Exploration mission with the given crew and exploration sites.
 	 * @param crew the roster of crew members for the mission.
+	 * @param needsReview whether the mission requires review before execution.
 	 * @param sites the list of mineral sites to be explored during the mission.
 	 * @return a new instance of the Exploration mission.
 	 */
-	public Mission constructInstance(Roster crew, List<MineralSite> sites) {
-		return new Exploration(crew, false, sites);
+	public Mission constructInstance(Roster crew, boolean needsReview, List<MineralSite> sites) {
+		return new Exploration(crew, needsReview, sites);
 	}
 
 	@Override
@@ -295,7 +296,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 	}
 
 	/**
-	 * Hopw many sites should be explroed for this Settlement.
+	 * How many sites should be explored for this Settlement.
 	 * Default returns 2
 	 * @param s Settlement leading exploration
 	 * @return
