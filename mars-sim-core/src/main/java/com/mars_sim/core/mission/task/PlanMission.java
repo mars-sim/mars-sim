@@ -148,7 +148,7 @@ public class PlanMission extends Task {
 		double remainingTime = 0;
 		
 		Mission mission = person.getMind().getMission();
-		if (mission == null) {	
+		if (mission == null) {
 			if (is70Completed()) {
 				// Simulate to have at least 70% of the time spent in selecting a mission plan to submit
 				mission = person.getMind().startNewMission();

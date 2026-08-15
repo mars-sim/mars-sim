@@ -231,14 +231,17 @@ public class BuildingMapLayer extends AbstractMapLayer {
      */
     private void drawHatch(Hatch hatch, MapViewPoint viewpoint) {
         if (!hatch.isBrick() && hatchSVG != null) {
+//        	GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG("hallway");
             // Draw hatch.
             drawStructure(hatch, hatchSVG, null, null, viewpoint);
         }
         else if (hatch.isBrick() && brickHatchSVG != null) {
+//        	GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG("brickway");
             // Draw brick hatch.
             drawStructure(hatch, brickHatchSVG, null, null, viewpoint);
         }
         else {
+//            drawStructure(hatch, hatchSVG, null, null, viewpoint);
             // Otherwise draw colored rectangle for hatch.
             drawRectangle(hatch, CONN_COLOR, null, viewpoint);
         }

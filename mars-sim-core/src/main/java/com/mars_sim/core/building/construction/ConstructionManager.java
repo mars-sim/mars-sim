@@ -58,6 +58,12 @@ public class ConstructionManager implements Serializable {
 		private String buildingType;
 		private MarsTime valid;
 
+		/**
+		 * Constructor for BuildingSchedule.
+		 * 
+		 * @param buildingType
+		 * @param valid
+		 */
 		private BuildingSchedule(String buildingType, MarsTime valid) {
 			this.buildingType = buildingType;
 			this.valid = valid;
@@ -80,7 +86,8 @@ public class ConstructionManager implements Serializable {
 		}
 
 		/**
-		 * Is this schedule ready to start building
+		 * Is this schedule ready to start building ?
+		 * 
 		 * @return
 		 */
 		public boolean isReady() {
@@ -177,7 +184,8 @@ public class ConstructionManager implements Serializable {
 		if (station != null) {
 			occupants.addAll(station.getRobotOccupants());
 		}
-		occupants.forEach(this::moveWorker);
+		
+		occupants.forEach(this::relocateWorker);
 
 		// What about people 
 		buildingManager.removeBuilding(demolish);
@@ -187,7 +195,7 @@ public class ConstructionManager implements Serializable {
 			throw new IllegalStateException("No construction stages found for " + demolish.getBuildingType());
 		}
 
-		// Salvage so rotate the phases as demonlishing
+		// Salvage so rotate the phases as demolishing
 		Collections.reverse(bldStage);
 		var phases = bldStage.stream()
 				.map(s -> new ConstructionPhase(s, false))
@@ -197,7 +205,12 @@ public class ConstructionManager implements Serializable {
 		createNewConstructionSite(demolish.getBuildingType(), demolish, phases);
 	}
 
-	private void moveWorker(Worker w) {
+	/**
+	 * Relocates the worker from the salvaged building to another building.
+	 * 
+	 * @param w
+	 */
+	private void relocateWorker(Worker w) {
 		// Must be working in the affected Building
 		w.getTaskManager().endCurrentTask();
 
@@ -278,28 +291,37 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
-	 * Remove a previously added building from the queue
+	 * Removes a previously added building from the queue.
+	 * 
 	 * @param item Schedule to be removed
-	 * @return Was teh item found and removed
+	 * @return Was the item found and removed
 	 */
 	public boolean removeBuildingFromQueue(BuildingSchedule item) {
 		return queue.remove(item);
 	}
 
 	/**
-	 * Get the building schedule
+	 * Gets the building schedule.
+	 * 
 	 * @return
 	 */
 	public List<BuildingSchedule> getBuildingSchedule() {
 		return queue;
 	}
 
+	/**
+	 * Gets the building spec.
+	 * 
+	 * @param buildingType
+	 * @return
+	 */
 	private static BuildingSpec getBuildingSpec(String buildingType) {
 		return SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
 	}
 
 	/**
-	 * Find the construction stages needed to build a building.
+	 * Finds the construction stages needed to build a building.
+	 * 
 	 * @param buildingType Type to create
 	 * @return list starting for first to last
 	 */
@@ -307,7 +329,7 @@ public class ConstructionManager implements Serializable {
 		var consConfig = SimulationConfig.instance().getConstructionConfiguration();
 
 		List<ConstructionStageInfo> results = new ArrayList<>();
-		// Get the top level Building stage and walkbacks
+		// Get the top level Building stage
 		var stageInfo = consConfig.getConstructionStageInfoByName(buildingType);
 		while(stageInfo != null) {
 			results.add(0, stageInfo);
@@ -318,14 +340,8 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		sites.clear();
-	}
-
-	/**
-	 * Can this building be demolished; it needs an associate ConstructionInfo
+	 * Can this building be demolished; it needs an associate ConstructionInfo ?
+	 * 
 	 * @param b
 	 * @return
 	 */
@@ -334,7 +350,8 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
-	 * Remove a site
+	 * Removes a site.
+	 * 
 	 * @param site
 	 */
     public void removeSite(ConstructionSite site) {
@@ -344,4 +361,11 @@ public class ConstructionManager implements Serializable {
 			Simulation.instance().getUnitManager().removeUnit(site);
 		}
     }
+
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		sites.clear();
+	}
 }

@@ -74,7 +74,7 @@
         </connection-list>
     </building>
   
-    <building id="F1" type="Algae Pond" xloc="-21.0"
+    <building id="F1" type="Fish Farm" xloc="-21.0"
         yloc="26.0" facing="270.0">
         <connection-list>
             <connection id="F0" hatch-facing="west" />

@@ -15,6 +15,7 @@ import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
@@ -72,6 +73,30 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	
 		Settlement settlement = person.getSettlement();
 		
+		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+		
+		if (skill == 0)
+			return RatingScore.ZERO_RATING;
+		
+		var cm = settlement.getConstructionManager();
+		var sites = cm.getConstructionSites();
+		var potentials = sites.stream()
+				.filter(s -> s.getWorkOnSite() == null)
+				.filter(s -> s.getCurrentConstructionStage().getInfo().getBaseLevel() <= skill)
+				.toList();
+		// Note: using .getConstructionSitesNeedingMission() would return zero sites
+		int need = potentials.size() * SITE_BASE;
+
+		if (need == 0) {
+			need = (int) cm.getBuildingSchedule().stream()
+					.filter(s -> s.isReady())
+					.count() * QUEUE_BASE;
+	
+			if (need == 0) {
+				return RatingScore.ZERO_RATING;
+			}
+		}
+		
 		// Find people not on a mission and healthy		
 		long availablePeopleNum = settlement.getIndoorPeople().stream()
 					.filter(p -> !p.getMind().hasActiveMission()
@@ -86,22 +111,11 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 			return RatingScore.ZERO_RATING;
 		}
 		
-		var cm = settlement.getConstructionManager();
-		int need = cm.getConstructionSites() 
-				// Note: using .getConstructionSitesNeedingMission() returns zero sites
-				.size() * SITE_BASE;
-
-		if (need == 0) {
-			need = (int) cm.getBuildingSchedule().stream()
-					.filter(s -> s.isReady())
-					.count() * QUEUE_BASE;
-
-			if (need == 0) {
-				return RatingScore.ZERO_RATING;
-			}
-		}
 		var missionProbability = new RatingScore(need);
 
+	    
+        missionProbability.addModifier("skill", skill * 50);
+		
        	RoleType roleType = person.getRole().getType();
         double roleModifier = switch(roleType) {
             case ENGINEERING_SPECIALIST -> 1.5;

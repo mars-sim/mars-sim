@@ -104,19 +104,15 @@ public class ConstructionMission extends AbstractMission {
 
 	/**
 	 * Constructor 2: Player manually creates this mission.
-	 *
+	 * 
 	 * @param members
 	 * @param settlement
-	 * @param no_site
-	 * @param stageInfo
-	 * @param xLoc
-	 * @param yLoc
-	 * @param facing
+	 * @param choosenSite
 	 * @param vehicles
 	 */
 	public ConstructionMission(Collection<Worker> members, Settlement settlement,
-			ConstructionSite choosenSite,
-			List<LightUtilityVehicle> vehicles) {
+			ConstructionSite choosenSite, List<LightUtilityVehicle> vehicles) {
+		
 		if (choosenSite == null) {
 			throw new IllegalArgumentException("Choosen site is missing");
 		}
@@ -137,8 +133,15 @@ public class ConstructionMission extends AbstractMission {
 		createObjectives(choosenSite, vehicles);
 	}
 	
+	/**
+	 * Creates the objective instance.
+	 * 
+	 * @param site
+	 * @param constructionVehicles
+	 */
 	private void createObjectives(ConstructionSite site, List<LightUtilityVehicle> constructionVehicles) {
 		var settlement = site.getAssociatedSettlement();
+		
 		site.setWorkOnSite(this);
 
 		// Site prepare time
@@ -205,7 +208,11 @@ public class ConstructionMission extends AbstractMission {
 	
 	/**
 	 * Retrieves LUV attachment parts from the settlement.
-	 * @return 
+	 * 
+	 * @param settlement
+	 * @param stage
+	 * @param reserved
+	 * @return
 	 */
 	public List<Integer> retrieveConstructionLUVParts(Settlement settlement, ConstructionStage stage, List<LightUtilityVehicle> reserved) {
 		List<Integer> luvAttachmentParts = new ArrayList<>();
@@ -295,7 +302,8 @@ public class ConstructionMission extends AbstractMission {
 	}
 	
 	/**
-	 * Are all the prerequistes meet to start construction
+	 * Are all the prerequisites meet to start construction ?
+	 * 
 	 * @param site
 	 * @return
 	 */
@@ -313,7 +321,7 @@ public class ConstructionMission extends AbstractMission {
 	/**
 	 * Performs the task in 'Prepares site' phase.
 	 *
-	 * @param member the mission member performing the phase.
+	 * @param site the ConstructionSite of interest.
 	 */
 	private void prepareSitePhase(ConstructionSite site) {
 		if (!isPreReqsAvailable(site)) {
@@ -375,8 +383,9 @@ public class ConstructionMission extends AbstractMission {
 
 	/**
 	 * Checks if this construction stage is complete.
+	 * 
 	 * @param site 
-	 * @param constructionStage 
+	 * @param stage 
 	 */
 	private void checkConstructionStageComplete(ConstructionSite site, ConstructionStage stage) {
 		if (stage.isComplete()) {
@@ -459,6 +468,7 @@ public class ConstructionMission extends AbstractMission {
 	
 	/**
 	 * Reserves a light utility vehicle for the mission.
+	 * 
 	 * @param settlement 
 	 *
 	 * @return reserved light utility vehicle or null if none.
@@ -478,6 +488,9 @@ public class ConstructionMission extends AbstractMission {
 
 	/*
 	 * Unreserves and store back all LUV attachment parts in settlement.
+	 * 
+	 * @param parts
+	 * @param settlement
 	 */
 	private void unreserveLUVparts(List<Integer> parts, Settlement settlement) {
 		parts.forEach(p -> settlement.storeItemResource(p, 1));

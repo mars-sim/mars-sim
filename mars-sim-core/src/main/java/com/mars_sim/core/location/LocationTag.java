@@ -253,7 +253,7 @@ public class LocationTag implements Serializable {
 	 * @return {@link Vehicle}
 	 */
 	public Vehicle findVehicleVicinity() {
-		if (unit.isInSettlement() || isInSettlementVicinity())
+		if (unit.isInside() || isInSettlementVicinity())
 			return null;
 		Coordinates c = unit.getCoordinates();
 		Settlement settlement = unit.getAssociatedSettlement();
@@ -274,7 +274,7 @@ public class LocationTag implements Serializable {
 	 * @return {@link Vehicle}
 	 */
 	public boolean isInVehicleVicinity() {
-		if (unit.isInSettlement() || isInSettlementVicinity())
+		if (unit.isInside() || isInSettlementVicinity() )
 			return false;
 		Coordinates c = unit.getCoordinates();
 		

@@ -199,7 +199,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @param name       the person's name
 	 * @param settlement {@link Settlement} the settlement the person is at
 	 * @param gender     the person's gender
-	 * @param age		 Uhe person's age, can be optional of -1
+	 * @param age		 the person's age, can be optional of -1
 	 * @param ethnicity Optional parameter of the ethnicity influences physical characteristics
 	 * @param initialAttrs 
 	 * @param personAttrs Persons attributes.
