@@ -8,14 +8,15 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.test.MarsSimUnitTest;
 
-public class EquipmentFactoryTest extends MarsSimUnitTest {
+class EquipmentFactoryTest extends MarsSimUnitTest {
     @Test
     public void testCreateEquipment() {
         var s = buildSettlement("Eqm");
+        var rh = s.getEquipmentInventory();
 
         for(EquipmentType et : EquipmentType.values()) {
             var e = EquipmentFactory.createEquipment(et, s);
-            assertTrue(s.getEquipmentSet().contains(e), et.name() + " created in Settlement");
+            assertTrue(rh.getEquipmentSet().contains(e), et.name() + " created in Settlement");
             assertEquals(et, e.getEquipmentType(), et.name() + " equipment type");
         }
     }

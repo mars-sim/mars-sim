@@ -15,7 +15,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 
-public class TendAlgaePondTest extends MarsSimUnitTest {
+class TendAlgaePondTest extends MarsSimUnitTest {
     private Building buildAlgaePond(Settlement s) {
         return buildFunction(s.getBuildingManager(), "Algae Pond", BuildingCategory.FARMING,
                             FunctionType.ALGAE_FARMING, LocalPosition.DEFAULT_POSITION, 0D, true);
@@ -55,8 +55,9 @@ public class TendAlgaePondTest extends MarsSimUnitTest {
 
         assertTrue(task.isDone(), "Harvesting task completed");       
 
-        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.SPIRULINA_ID) >0D, "Algae harvest created");
-        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FOOD_WASTE_ID) >0D, "Food waste created");
+        var rh = s.getEquipmentInventory();
+        assertTrue(rh.getSpecificAmountResourceStored(ResourceUtil.SPIRULINA_ID) >0D, "Algae harvest created");
+        assertTrue(rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_WASTE_ID) >0D, "Food waste created");
     }
     
 }

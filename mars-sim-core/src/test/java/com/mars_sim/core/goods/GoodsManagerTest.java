@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 
-public class GoodsManagerTest extends MarsSimUnitTest {
+class GoodsManagerTest extends MarsSimUnitTest {
 
     @Test
     public void testResetCommerceFactor() {
@@ -40,7 +40,7 @@ public class GoodsManagerTest extends MarsSimUnitTest {
         int reserved = gm.selectResourceForReview();
 
         // Add a resource with 1 kg
-        s.storeAmountResource(reserved, 1D);
+        s.getEquipmentInventory().storeAmountResource(reserved, 1D);
         reviewDue = gm.getResourceReviewDue();
         assertEquals(ess.keySet().size()-1, reviewDue, "Essential resources needing review after reserve");
 

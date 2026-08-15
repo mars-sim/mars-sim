@@ -90,12 +90,13 @@ class WorkshopProcessTest extends MarsSimUnitTest {
 
         var canister = EquipmentFactory.createEquipment(EquipmentType.GAS_CANISTER, s);
 
+        var rh = s.getEquipmentInventory();
 
         var p = new SalvageProcess(processInfo, w, canister);
         p.startProcess();
         assertTrue(p.isActive(), "Salvage process started");
         assertTrue(w.getProcesses().contains(p), "Workshop has process");
-        assertFalse(s.getEquipmentSet().contains(canister), "Canister not registered");
+        assertFalse(rh.getEquipmentSet().contains(canister), "Canister not registered");
 
         assertFalse(p.addWorkTime(processInfo.getWorkTimeRequired(), 1), "Process active after Work");
 
@@ -104,19 +105,21 @@ class WorkshopProcessTest extends MarsSimUnitTest {
 
         for(var i: processInfo.getOutputList()) {
             if (i.getType() == ItemType.PART) {
-                assertTrue(s.getItemResourceStored(i.getId()) > 0D, "Settlement has output " + i.getName());
+                assertTrue(rh.getItemResourceStored(i.getId()) > 0D, "Settlement has output " + i.getName());
             }
         }
     }
 
     private void assertResources(Settlement s, List<ProcessItem> processItems) {
+        var rh = s.getEquipmentInventory();
+
         for(var i: processItems) {
             switch(i.getType()) {
                 case AMOUNT_RESOURCE:
-                    assertTrue(s.getSpecificAmountResourceStored(i.getId()) >= i.getAmount(), "Settlement has output " + i.getName());
+                    assertTrue(rh.getSpecificAmountResourceStored(i.getId()) >= i.getAmount(), "Settlement has output " + i.getName());
                     break;
                 case PART:
-                    assertTrue(s.getItemResourceStored(i.getId()) >= i.getAmount(), "Settlement has output " + i.getName());
+                    assertTrue(rh.getItemResourceStored(i.getId()) >= i.getAmount(), "Settlement has output " + i.getName());
                     break;
                 default:
             }

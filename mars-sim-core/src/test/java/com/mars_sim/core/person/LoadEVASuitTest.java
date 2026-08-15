@@ -27,13 +27,13 @@ import com.mars_sim.core.structure.Settlement;
 /**
  * Tests the ability of a person to load resources into an EVA suit.
  */
-public class LoadEVASuitTest extends MarsSimUnitTest {
+class LoadEVASuitTest extends MarsSimUnitTest {
 
 	/*
 	 * Test if a person don an EVA suit and load it with resources.
 	 */
 	@Test
-	public void testLoadingEVA() throws Exception {
+	public void testLoadingEVA() {
 		Settlement settlement = buildSettlement("mock");
 		Person person = buildPerson("Loader", settlement);
 
@@ -56,14 +56,13 @@ public class LoadEVASuitTest extends MarsSimUnitTest {
 		
 		EquipmentOwner personOwner = (EquipmentOwner)person;
 		
-		EVASuit suitPerson = EVASuitUtil.findEVASuitWithResources(settlement, person);
+		var rh = settlement.getEquipmentInventory();
+		EVASuit suitPerson = EVASuitUtil.findEVASuitWithResources(rh, person);
 		
 		assertEquals(suitSettlement.getName(), suitPerson.getName(), "EVA suit name not matched.");
 		
 		double mass = Math.round(suitPerson.getBaseMass() * 100D)/100D;
-		
-		System.out.println(suitSettlement.getName() + " has empty mass of " + mass + " kg");
-		
+				
 		assertEquals(16.18, mass, "EVA suit's empty mass is incorrect.");
 
 		// 1. Transfer the EVA suit from settlement/vehicle to person
@@ -78,7 +77,7 @@ public class LoadEVASuitTest extends MarsSimUnitTest {
 		
 		for (int i: requiredResourcesMap.keySet()) {
 			double amount = (double) requiredResourcesMap.get(i);
-			settlement.storeAmountResource(i, amount) ; 
+			rh.storeAmountResource(i, amount) ; 
 		}
 		
 		EquipmentOwner settlementOwner = (EquipmentOwner)settlement;
@@ -86,7 +85,7 @@ public class LoadEVASuitTest extends MarsSimUnitTest {
 		// 1. Transfer the EVA suit from to person to settlement
 		suitPerson.transfer(settlement);
 		// 2. Get the instance of the suit
-		suitSettlement = EVASuitUtil.findEVASuitWithResources(settlement, person);
+		suitSettlement = EVASuitUtil.findEVASuitWithResources(rh, person);
 		assertNotNull(suitSettlement, "Selected Suit from Settlement");		
 
 		// 3. Load resources

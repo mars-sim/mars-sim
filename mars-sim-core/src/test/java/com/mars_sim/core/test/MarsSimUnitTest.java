@@ -250,11 +250,20 @@ public abstract class MarsSimUnitTest {
 		return settlement;
 	}
 
-	public static void loadSettlementAmounts(Settlement target, Map<Integer, Double> resourcesMap) {
+	public static void loadSettlementAmounts(Settlement source, Map<Integer, Double> resourcesMap) {
+		var target = source.getEquipmentInventory();
 		for (Entry<Integer, Double> resource : resourcesMap.entrySet()) {
 			// Add extra to the stored to give a tolerance
 			double amount = resource.getValue().doubleValue() + 0.01D;
 			target.storeAmountResource(resource.getKey(), amount);
+		}
+	}
+
+	
+	public static void loadSettlementItems(Settlement source, Map<Integer, Integer> resourcesMap) {
+		var target = source.getEquipmentInventory();
+		for (Entry<Integer, Integer> resource : resourcesMap.entrySet()) {
+			target.storeItemResource(resource.getKey(), resource.getValue().intValue());
 		}
 	}
 

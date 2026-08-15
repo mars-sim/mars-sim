@@ -111,9 +111,10 @@ class ConstructionSiteTest extends MarsSimUnitTest {
 
         stage.reclaimParts(100);
         var parts = stage.getParts();
+        var rh = s.getEquipmentInventory();
         for(var e : parts.entrySet()) {
             assertTrue(e.getValue().getAvailable() > 0, "Reclaimed " + e.getKey());
-            assertTrue(s.getItemResourceStored(e.getKey()) > 0, "Settlement " + e.getKey());
+            assertTrue(rh.getItemResourceStored(e.getKey()) > 0, "Settlement " + e.getKey());
         }
     }
 
@@ -129,6 +130,8 @@ class ConstructionSiteTest extends MarsSimUnitTest {
         assertTrue(stage.hasMissingConstructionMaterials(), "Stage without resources");
         assertFalse(stage.loadAvailableConstructionMaterials(s), "Load without resources");
 
+        var rh = s.getEquipmentInventory();
+
         // Partial loading; 1 quantity of each material
         for(var e : resources.entrySet()) {
             var resId = e.getKey();
@@ -136,7 +139,7 @@ class ConstructionSiteTest extends MarsSimUnitTest {
             assertEquals(foundationInfo.getResources().get(resId), mat.getRequired(), "Resource required " + resId);
             assertEquals(mat.getRequired(), mat.getMissing(), "Resource missing " + resId);
 
-            s.storeAmountResource(resId, PARTIAL_LOAD);
+            rh.storeAmountResource(resId, PARTIAL_LOAD);
         }
         for(var e : parts.entrySet()) {
             var partId = e.getKey();
@@ -144,7 +147,7 @@ class ConstructionSiteTest extends MarsSimUnitTest {
             assertEquals(foundationInfo.getParts().get(partId).intValue(), (int)mat.getRequired(), "Part required " + partId);
             assertEquals(mat.getRequired(), mat.getMissing(), "Part missing " + partId);
 
-            s.storeItemResource(partId, (int) PARTIAL_LOAD);
+            rh.storeItemResource(partId, (int) PARTIAL_LOAD);
         }
 
         // Some loaded but not all
@@ -155,13 +158,13 @@ class ConstructionSiteTest extends MarsSimUnitTest {
             var resId = e.getKey();
             var mat = e.getValue();
             assertEquals(PARTIAL_LOAD, mat.getAvailable(), "Resource partial required " + resId);
-            s.storeAmountResource(resId, mat.getMissing());
+            rh.storeAmountResource(resId, mat.getMissing());
         }
         for(var e : parts.entrySet()) {
             var partId = e.getKey();
             var mat = e.getValue();
             assertEquals(PARTIAL_LOAD, mat.getAvailable(), "Part partial required " + partId);
-            s.storeItemResource(partId, (int) mat.getMissing());
+            rh.storeItemResource(partId, (int) mat.getMissing());
         }
 
         // Should nto complete load

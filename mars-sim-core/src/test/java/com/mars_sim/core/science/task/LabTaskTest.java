@@ -19,7 +19,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 
-public class LabTaskTest extends MarsSimUnitTest {
+class LabTaskTest extends MarsSimUnitTest {
 
     static ScientificStudy buildStudyToResearchPhase(Settlement s, MarsSimContext context,
                                 ScienceType science, JobType researchJob) {
@@ -39,7 +39,7 @@ public class LabTaskTest extends MarsSimUnitTest {
 
         // Add some rocks to test
         int rockId = ResourceUtil.ROCK_IDS[0];
-        s.storeAmountResource(rockId, 100D);
+        s.getEquipmentInventory().storeAmountResource(rockId, 100D);
 
         var task  = StudyFieldSamples.createTask(p);
         assertNotNull(task, "Task created");
@@ -137,7 +137,7 @@ public class LabTaskTest extends MarsSimUnitTest {
 
         // Add some rocks to test
         int rockId = ResourceUtil.ROCK_IDS[0];
-        s.storeAmountResource(rockId, 100D);
+        s.getEquipmentInventory().storeAmountResource(rockId, 100D);
 
         var mmt = new StudyFieldSamplesMeta();
         assertFalse(mmt.getTaskJobs(p).isEmpty(), "Found tasks for Study Field meta tasks");

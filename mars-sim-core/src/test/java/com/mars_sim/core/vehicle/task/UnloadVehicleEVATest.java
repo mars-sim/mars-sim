@@ -49,7 +49,8 @@ class UnloadVehicleEVATest extends MarsSimUnitTest {
         // Move onsite
         EVAOperationTest.executeEVAWalk(getContext(), eva, task);
 
-        double storedO2Settlement0 = s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+        var rh = s.getEquipmentInventory();
+        double storedO2Settlement0 = rh.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
         
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 3000);
@@ -59,15 +60,15 @@ class UnloadVehicleEVATest extends MarsSimUnitTest {
         assertEquals(0D, mass, "Final stored mass");
         assertFalse(v.haveStatusType(StatusType.UNLOADING), "Vehicle has UNLOADING");
 
-        double storedO2Settlement1 = s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+        double storedO2Settlement1 = rh.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
         
         assertLessThan("Oxygen unloaded", storedO2Settlement0 + RESOURCE_AMOUNT, storedO2Settlement1);
         
-        double storedFood = s.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+        double storedFood = rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
         
         assertEquals(RESOURCE_AMOUNT, storedFood, "Food unloaded");
         
-        int storedGarment = s.getItemResourceStored(ItemResourceUtil.GARMENT_ID);
+        int storedGarment = rh.getItemResourceStored(ItemResourceUtil.GARMENT_ID);
         
         assertEquals(ITEM_AMOUNT, storedGarment, "Garments unloaded");
 

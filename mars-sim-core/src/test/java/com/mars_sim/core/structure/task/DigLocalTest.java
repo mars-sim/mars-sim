@@ -21,7 +21,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class DigLocalTest extends MarsSimUnitTest {
+class DigLocalTest extends MarsSimUnitTest {
     @Test
     public void testCreateRegolithTask() {
         var s = buildSettlement("Dig base");
@@ -55,8 +55,9 @@ public class DigLocalTest extends MarsSimUnitTest {
 
         // Add up reg resources
         double collected = 0D;
+        var rh = s.getEquipmentInventory();
         for(int i : ResourceUtil.REGOLITH_TYPES_IDS) {
-            collected += s.getSpecificAmountResourceStored(i);
+            collected += rh.getSpecificAmountResourceStored(i);
         }
         assertGreaterThan("Collected Regolith", 0D, collected);
     }
@@ -93,7 +94,7 @@ public class DigLocalTest extends MarsSimUnitTest {
         executeTaskUntilPhase(p, task, 1000);
 
         // Add up reg resources
-        double collected = s.getSpecificAmountResourceStored(ResourceUtil.ICE_ID);
+        double collected = s.getEquipmentInventory().getSpecificAmountResourceStored(ResourceUtil.ICE_ID);
         assertGreaterThan("Collected Ice", 0D, collected);
     }
 
@@ -145,11 +146,12 @@ public class DigLocalTest extends MarsSimUnitTest {
  
         assertTrue(task.isEVA(), "Task is EVA");
 
-        double cap = s.getSpecificCapacity(ResourceUtil.ICE_ID);
-        assertTrue(cap == 0.0, "Capacity is zero");
+        var rh = s.getEquipmentInventory();
+        double cap = rh.getSpecificCapacity(ResourceUtil.ICE_ID);
+        assertEquals(0.0, cap, "Capacity is zero");
         
         // Fill capacity
-        s.storeAmountResource(ResourceUtil.ICE_ID, 5);
+        rh.storeAmountResource(ResourceUtil.ICE_ID, 5);
         tasks = mt.getSettlementTasks(s);
         assertFalse(tasks.isEmpty(), "Has Tasks even if no capacity");
     }

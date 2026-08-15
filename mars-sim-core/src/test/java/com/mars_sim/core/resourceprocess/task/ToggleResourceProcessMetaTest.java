@@ -14,7 +14,7 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 
-public class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
+class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
 
     static Building buildProcessing(MarsSimContext context, BuildingManager buildingManager, LocalPosition pos, double facing) {
         // ERV-1 only has 2 processes so simpler
@@ -45,13 +45,14 @@ public class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
         assertTrue(results.isEmpty(), "No tasks without resources");
 
         // Pick a process and add resources to the specific storage
+        var rh = s.getEquipmentInventory();
         var p = r.getProcesses().get(0);
         for (var i : p.getInputResources()) {
-            double excess = s.storeAmountResource(i, 100D);
+            double excess = rh.storeAmountResource(i, 100D);
             assertEquals(0, excess, "excess mass0");
         }
         
-        double stored = s.getStoredMass();
+        double stored = rh.getStoredMass();
         assertEquals(100D, stored, "Stored mass0");
         
         // Set zero cargo capacity
@@ -60,15 +61,15 @@ public class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
         // Pick a process and add resources
         p = r.getProcesses().get(0);
         for (var i : p.getInputResources()) {
-            double excess = s.storeAmountResource(i, 100D);
+            double excess = rh.storeAmountResource(i, 100D);
             assertEquals(0, excess, "excess mass1");
         }
         
-        stored = s.getStoredMass();
+        stored = rh.getStoredMass();
         assertEquals(200D, stored, "Stored mass1");
         
         for (var o : p.getOutputResources()) {
-            s.getGoodsManager().setSupplyScore(o, 100);  // Force a value output value
+            s.getGoodsManager().setSupplyScore(o, 100);  // Force a valid output value
         }
 
         results = mt.getSettlementTasks(s);

@@ -112,9 +112,9 @@ public class TendFishTankTest extends MarsSimUnitTest {
         assertTrue(task.isDone(), "Fishing catching task completed");
      
         double reducedWeight = tank.getTotalFishMass();
-        
-        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FISH_MEAT_ID) > 0D, "Fish meat created");
-//        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FISH_OIL_ID) > 0D, "Fish oil created");
+ 
+        var rh = s.getEquipmentInventory();
+        assertTrue(rh.getSpecificAmountResourceStored(ResourceUtil.FISH_MEAT_ID) > 0D, "Fish meat created");
         assertTrue(weight >= reducedWeight, "Fish count has reduced");
     }
 }
