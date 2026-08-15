@@ -10,6 +10,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.unit.UnitHolder;
+import com.mars_sim.core.vehicle.Rover;
 
 /**
  * Context that allows creating simulation entities for unit tests
@@ -32,5 +33,7 @@ public interface MarsSimContext {
             FunctionType medicalCare, LocalPosition defaultPosition, double d, boolean b);
 
     UnitHolder getSurface();
+
+    Rover buildRover(Settlement settlement, String name, LocalPosition defaultPosition, String roverType);
 
 }
