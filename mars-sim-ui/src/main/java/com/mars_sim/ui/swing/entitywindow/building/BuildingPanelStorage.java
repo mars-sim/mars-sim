@@ -53,7 +53,7 @@ class BuildingPanelStorage extends EntityTableTabPanel<Building> implements Temp
 		
 		public StorageTableModel(Storage storage) {	
 			this.storage = storage;
-			holder = storage.getBuilding().getAssociatedSettlement();
+			holder = storage.getBuilding().getAssociatedSettlement().getEquipmentInventory();
 			
 			updateResources();
 		}
@@ -78,20 +78,23 @@ class BuildingPanelStorage extends EntityTableTabPanel<Building> implements Temp
 			Collections.sort(nameList);
 		}
 
-		
+		@Override
 		public int getRowCount() {
 			return nameList.size();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 4;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int column) {
 			if (column == 0) return String.class;
 			else return Double.class;
 		}
 
+		@Override
 		public String getColumnName(int column) {
 			return switch (column) {
 				case 0 -> "Resource";

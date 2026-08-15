@@ -524,8 +524,9 @@ public abstract class DigLocal extends EVAOperation {
 		}
 		
 		// Remove pressure suit and put on garment
-		if (person.unwearPressureSuit(settlement)) {
-			person.wearGarment(settlement);
+		var eo = settlement.getEquipmentInventory();
+		if (person.unwearPressureSuit(eo)) {
+			person.wearGarment(eo);
 		}
 	
 		// Assign thermal bottle
@@ -542,9 +543,6 @@ public abstract class DigLocal extends EVAOperation {
 	public static boolean canDigLocal(Person person) {
 
 		// Note: check egress airlock is already covered by another method 
-		
-//		if (getWalkableAvailableEgressAirlock(person) == null)
-//			return false;
 
 		// Check if sunlight is insufficient
 		if (EVAOperation.isGettingDark(person))

@@ -102,11 +102,12 @@ class CookMealMetaTest extends MarsSimUnitTest {
         // Add people to generate a demand for Meals
         buildPerson("Hungry 1", s);
 
+        var rh = s.getEquipmentInventory();
         // Add ingreidents for a meal
         var mealConf = getConfig().getMealConfiguration();
         var gBread = mealConf.getHotMeal("Garlic Bread");
         for(var i : gBread.getIngredientList()) {
-            s.storeAmountResource(i.getAmountResourceID(), 1000);
+            rh.storeAmountResource(i.getAmountResourceID(), 1000);
         }
     }
 

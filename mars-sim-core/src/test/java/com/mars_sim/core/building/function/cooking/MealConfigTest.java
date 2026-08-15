@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.test.MarsSimUnitTest;
 
-public class MealConfigTest extends MarsSimUnitTest {
+class MealConfigTest extends MarsSimUnitTest {
 
     @Test
     public void testGetDishList() {
@@ -59,8 +59,8 @@ public class MealConfigTest extends MarsSimUnitTest {
 
         var ingredients = dish.getIngredientList();
         assertEquals(2, ingredients.size(), "Ingredients");
-        assertEquals(ingredients.get(0).getName(), "Strawberry", "Ingredient 0");
-        assertEquals(ingredients.get(1).getName(), "Glucose", "Ingredient 1");
+        assertEquals("Strawberry", ingredients.get(0).getName(), "Ingredient 0");
+        assertEquals("Glucose", ingredients.get(1).getName(), "Ingredient 1");
     }
 
     @Test
@@ -97,10 +97,12 @@ public class MealConfigTest extends MarsSimUnitTest {
 
         assertFalse(meal.isIngredientsAvailable(s), "Ingredients not available");
     
+        var rh = s.getEquipmentInventory();
+
         // Add just optional ingredients    
         for(var i : meal.getIngredientList()) {
             if (!i.isMandatory()) {
-                s.storeAmountResource(i.getAmountResourceID(), i.getDryMass());
+                rh.storeAmountResource(i.getAmountResourceID(), i.getDryMass());
             }
         }
         assertFalse(meal.isIngredientsAvailable(s), "Mandatory ingredients not available");
@@ -108,7 +110,7 @@ public class MealConfigTest extends MarsSimUnitTest {
         // Add mandatory ingredients    
         for(var i : meal.getIngredientList()) {
             if (i.isMandatory()) {
-                s.storeAmountResource(i.getAmountResourceID(), i.getDryMass());
+                rh.storeAmountResource(i.getAmountResourceID(), i.getDryMass());
             }
         }
         assertTrue(meal.isIngredientsAvailable(s), "All ingredients available");
@@ -120,23 +122,24 @@ public class MealConfigTest extends MarsSimUnitTest {
         var meal = mealConf.getHotMeal("Garlic Tofu and Potatoes");
 
         var s = buildSettlement("mock");
+        var rh = s.getEquipmentInventory();
 
         // Add mandatory ingredients    
         for(var i : meal.getIngredientList()) {
             if (i.isMandatory()) {
-                s.storeAmountResource(i.getAmountResourceID(), i.getDryMass());
+                rh.storeAmountResource(i.getAmountResourceID(), i.getDryMass());
             }
         }
 
         // CLaim all ingredients
         var minimalQuality = meal.retrieveIngredients(s);
         for(var i : meal.getIngredientList()) {
-            assertEquals(0D, s.getSpecificAmountResourceStored(i.getAmountResourceID()), "Ingredient stored " + i.getName());
+            assertEquals(0D, rh.getSpecificAmountResourceStored(i.getAmountResourceID()), "Ingredient stored " + i.getName());
         }
 
         // Add all ingriedients
         for(var i : meal.getIngredientList()) {
-            s.storeAmountResource(i.getAmountResourceID(), i.getDryMass());
+            rh.storeAmountResource(i.getAmountResourceID(), i.getDryMass());
         }
         var bestQuality = meal.retrieveIngredients(s);
         assertLessThan("Meal quality",  bestQuality, minimalQuality);

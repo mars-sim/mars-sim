@@ -165,7 +165,7 @@ public class ReturnLightUtilityVehicle extends Task {
     			// Add the luv to the settlement
 				done = s.addVicinityVehicle(luv);
 				// Unload any attachment parts or inventory from light utility vehicle.
-				unloadLUVInventory(s);
+				unloadLUVInventory(s.getEquipmentInventory());
 			}
 	
 			if (done) {

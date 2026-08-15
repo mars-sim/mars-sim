@@ -16,7 +16,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.StatusType;
 
-public class UnloadVehicleGarageTest extends MarsSimUnitTest {
+class UnloadVehicleGarageTest extends MarsSimUnitTest {
     private static final int ITEM_AMOUNT = 10;
     private static final int RESOURCE_AMOUNT = 10;
 
@@ -32,7 +32,6 @@ public class UnloadVehicleGarageTest extends MarsSimUnitTest {
         v.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
         
         double mass = v.getStoredMass();
-//        System.out.println("mass: " + mass);
         
         assertGreaterThan("Initial stored mass", 0D, mass);
 
@@ -47,12 +46,12 @@ public class UnloadVehicleGarageTest extends MarsSimUnitTest {
         executeTaskUntilPhase(p, task, 1000);
         
         mass = v.getStoredMass();
-//        System.out.println("mass: " + mass);
-        
+
+        var rh = s.getEquipmentInventory();
         assertEquals(0.0, mass, "Final stored mass");
-        assertEquals(RESOURCE_AMOUNT, Math.round(s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)), "Oxygen unloaded");
-        assertEquals(RESOURCE_AMOUNT, Math.round(s.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID)), "Food unloaded");
-        assertEquals(ITEM_AMOUNT, s.getItemResourceStored(ItemResourceUtil.GARMENT_ID), "Garments unloaded");
+        assertEquals(RESOURCE_AMOUNT, Math.round(rh.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)), "Oxygen unloaded");
+        assertEquals(RESOURCE_AMOUNT, Math.round(rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID)), "Food unloaded");
+        assertEquals(ITEM_AMOUNT, rh.getItemResourceStored(ItemResourceUtil.GARMENT_ID), "Garments unloaded");
         assertFalse(v.haveStatusType(StatusType.UNLOADING), "Vehicle has UNLOADING");
 
         // Return to base

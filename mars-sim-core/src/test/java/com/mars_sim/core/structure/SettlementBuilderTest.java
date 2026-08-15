@@ -53,7 +53,7 @@ class SettlementBuilderTest extends MarsSimUnitTest{
                 .collect(Collectors.groupingBy(name -> name, Collectors.reducing(0, e -> 1, (a,b) -> a+b)));
         assertEquals(template.getSupplies().getVehicles(), actualVehicles, "Vehicle count");
 
-        Map<String,Integer> actualEquipment = settlement.getEquipmentSet().stream()
+        Map<String,Integer> actualEquipment = settlement.getEquipmentInventory().getEquipmentSet().stream()
                 .map(e -> e.getEquipmentType().getName().toLowerCase())
                 .collect(Collectors.groupingBy(name -> name, Collectors.reducing(0, e -> 1, (a,b) -> a+b)));
         assertEquals(template.getSupplies().getEquipment(), actualEquipment, "Equipment count");

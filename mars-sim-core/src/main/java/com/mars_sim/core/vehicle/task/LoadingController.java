@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
@@ -69,6 +70,7 @@ public class LoadingController implements Serializable {
 	private Map<Integer, Integer> optionalEquipmentManifest;
 	private Map<Integer, Integer> itemManifest;
 	private Map<Integer, Integer> optionalItemManifest;
+	private EquipmentInventory stores;
 	private Settlement settlement;
 	private Vehicle vehicle;
 
@@ -86,6 +88,7 @@ public class LoadingController implements Serializable {
 	public LoadingController(Settlement settlement, Vehicle vehicle,
 							 SuppliesManifest manifest) {
 		this.settlement = settlement;
+		this.stores = settlement.getEquipmentInventory();
 		this.vehicle = vehicle;
 
 		// Take copies to form the manifest as the quantities will be reduced
@@ -334,7 +337,7 @@ public class LoadingController implements Serializable {
 
 		if (amountToLoad > 0) {
 			// Check if enough resource in settlement inventory.
-			double settlementStored = settlement.getAllAmountResourceStored(resource);
+			double settlementStored = stores.getAllAmountResourceStored(resource);
 
 			// Settlement has enough stored resource?
 			if (settlementStored < amountToLoad) {
@@ -378,7 +381,7 @@ public class LoadingController implements Serializable {
 			// Load resource from settlement inventory to vehicle inventory.
 			if (amountToLoad > 0) {
 				// Take resource from the settlement
-				settlement.retrieveAmountResource(resource, amountToLoad);
+				stores.retrieveAmountResource(resource, amountToLoad);
 				// Store resource in the vehicle
 				vehicle.storeAmountResource(resource, amountToLoad);
 			}
@@ -427,7 +430,7 @@ public class LoadingController implements Serializable {
 		int amountToLoad = Math.min(amountNeeded, amountCouldLoad);
 		if (amountToLoad > 0) {
 			// Check if enough resource in settlement inventory.
-			int settlementStored = settlement.getItemResourceStored(id);
+			int settlementStored = stores.getItemResourceStored(id);
 
 			// Settlement has enough stored resource?
 			if (settlementStored < amountToLoad) {
@@ -465,7 +468,7 @@ public class LoadingController implements Serializable {
 			// Load item from settlement inventory to vehicle inventory.
 			try {
 				// Take resource from the settlement
-				settlement.retrieveItemResource(id, amountToLoad);
+				stores.retrieveItemResource(id, amountToLoad);
 				// Store resource in the vehicle
 				vehicle.storeItemResource(id, amountToLoad);
 			} catch (Exception e) {
@@ -512,7 +515,7 @@ public class LoadingController implements Serializable {
 				EquipmentType eType = EquipmentType.convertID2Type(equipmentType);
 
 				// Must take a copy
-				List<Equipment> list = new ArrayList<>(getEquipmentSet(settlement, eType));
+				List<Equipment> list = new ArrayList<>(getEquipmentSet(stores, eType));
 				for (Equipment eq : list) {
 					if (eq.isEmpty(true)) {
 						// Put this equipment into a vehicle

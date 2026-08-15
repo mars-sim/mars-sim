@@ -56,9 +56,7 @@ public class EnterAirlock extends Task {
 	private static final TaskPhase CLEAN_UP = new TaskPhase(Msg.getString("Task.phase.cleanUp")); //$NON-NLS-1$
 	private static final TaskPhase LEAVE_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.leaveAirlock")); //$NON-NLS-1$
 
-	private static final String ALL_CHAMBERS_OCCUPIED = "All chambers occupied.";
 	private static final String COULDNT_ENTER = "Couldn't enter ";
-	private static final String COULDNT_WALK_TO = "Couldn't walk to ";
 	
 	// Static members
 	/** The standard time for doffing the EVA suit. */
@@ -756,7 +754,7 @@ public class EnterAirlock extends Task {
 			EquipmentOwner housing = null;
 
 			if (inSettlement)
-				housing = ((Building) airlock.getEntity()).getSettlement();
+				housing = ((Building) airlock.getEntity()).getSettlement().getEquipmentInventory();
 			else
 				housing = (Vehicle) airlock.getEntity();
 

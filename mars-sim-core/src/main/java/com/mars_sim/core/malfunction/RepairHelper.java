@@ -136,7 +136,7 @@ public final class RepairHelper {
 			partStore = repairer.getVehicle();
 		}
 		else {
-			partStore = repairer.getSettlement();
+			partStore = repairer.getSettlement().getEquipmentInventory();
 		}
 
 		return partStore;

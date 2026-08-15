@@ -32,12 +32,13 @@ class EatDrinkTest extends MarsSimUnitTest {
     @Test
     void testSettlementWater() {
         var s = buildSettlement("mock");
+        var rh = s.getEquipmentInventory();
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
-        s.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
+        rh.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
 
         testWater(p, s);
-        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
+        assertTrue(rh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
     }
 
     @Test
@@ -93,7 +94,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
 
-        testHunger(p, s);
+        testHunger(p, s.getEquipmentInventory());
     }
 
     @Test
@@ -106,7 +107,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         pc.setThirst(PhysicalCondition.MAX_THIRST);
         var initialThirst = pc.getThirst();
 
-        testHunger(p, s);
+        testHunger(p, s.getEquipmentInventory());
 
         assertTrue(pc.getThirst() < initialThirst, "Person is less thirsty");
 

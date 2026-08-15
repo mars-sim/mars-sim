@@ -6,33 +6,29 @@
  */
 
 package com.mars_sim.core.vehicle.task;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.authority.NationSpecConfig;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.person.GenderType;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
-import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -41,16 +37,14 @@ import com.mars_sim.core.vehicle.Vehicle;
 /**
  * Tests the loading controller operation for vehicles.
  */
-public class LoadControllerTest {
+public class LoadControllerTest extends MarsSimUnitTest {
 
 	// Extra amount to add to resource to handle double arithmetic mismatch
-	private static final double EXTRA_RESOURCE = 0.01D;
 	private static final String SMALL_HAMMER = "small hammer";
 	private static final String FIRE_EXTINGUSHER = "fire extinguisher";
 	private static final String PIPE_WRENCH = "pipe wrench";
 
 	private Settlement settlement = null;
-	private UnitManager unitManager;
 	private Vehicle vehicle;
 	private Person person;
 	private Integer pipeWrenchID;
@@ -59,27 +53,12 @@ public class LoadControllerTest {
 
 	@BeforeEach
 	void setUp() {
-
-        SimulationConfig config = SimulationConfig.loadConfig();
-        Simulation.instance().testRun();
-
-        unitManager = Simulation.instance().getUnitManager();
+		super.init();
 
 		// Create test settlement.
-		settlement = new MockSettlement();
-		
-		unitManager.addUnit(settlement);
-
-		vehicle = new Rover("Test Cargo Rover",
-							config.getVehicleConfiguration().getVehicleSpec("cargo rover"), settlement);
-
-		unitManager.addUnit(vehicle);
-
-		person = Person.create("Jim Loader", settlement, GenderType.MALE)
-				.setCountry(new NationSpecConfig(config).getItem("Norway"))
-				.build();
-		
-		settlement.addACitizen(person);
+		settlement = buildSettlement("Mock");
+		vehicle = buildRover(settlement, "V", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
+		person = buildPerson("Fred", settlement);
 	
 		// Make the person strong to get loading quicker
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 40);
@@ -506,19 +485,5 @@ public class LoadControllerTest {
 		loadSettlementEquipment(target, requiredResourcesMap.getEquipment(false));
 		loadSettlementItems(target, requiredResourcesMap.getItems(true));
 		loadSettlementItems(target, requiredResourcesMap.getItems(false));
-	}
-
-	private static void loadSettlementAmounts(Settlement target, Map<Integer, Double> resourcesMap) {
-		for (Entry<Integer, Double> resource : resourcesMap.entrySet()) {
-			// Add extra to the stored to give a tolerance
-			double amount = resource.getValue().doubleValue() + EXTRA_RESOURCE;
-			target.storeAmountResource(resource.getKey(), amount);
-		}
-	}
-
-	private static void loadSettlementItems(Settlement target, Map<Integer, Integer> resourcesMap) {
-		for (Entry<Integer, Integer> resource : resourcesMap.entrySet()) {
-			target.storeItemResource(resource.getKey(), resource.getValue().intValue());
-		}
 	}
 }

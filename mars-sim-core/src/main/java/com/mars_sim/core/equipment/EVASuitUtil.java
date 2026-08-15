@@ -45,23 +45,29 @@ public final class EVASuitUtil {
 	 * @param person
 	 * @param entity
 	 * @param inSettlement
-	 * @param disqualified
+	 * @param disqualified  true if the person is disqualified from EVA.
 	 */
 	public static void checkIn(Person person, Object entity, boolean inSettlement, boolean disqualified) {
-		Entity housingEntity = (Entity)entity;
-		EquipmentOwner housing = null;
-		
-		if (inSettlement)
-			housing = ((Building)entity).getSettlement();
-		else
-			housing = (Vehicle)entity;
+		UnitHolder housingEntity;
+		EquipmentOwner eo;
+		switch (entity) {
+			case Building b -> {
+				housingEntity = b.getSettlement();
+				eo = b.getSettlement().getEquipmentInventory();
+			}
+			case Vehicle v -> {
+				housingEntity = v;
+				eo = v;
+			}
+			default -> throw new IllegalArgumentException("Entity must be a Building or Vehicle.");
+		}
 		
 		EVASuit suit = person.getSuit();
 		
 		// Transfer the EVA suit from person to the new destination
 		if (suit != null) {
 			// Doff this suit.
-			boolean success = suit.transfer((UnitHolder)housing);
+			boolean success = suit.transfer(housingEntity);
 			
 			if (!success) {
 				logger.warning(person, 4_000,
@@ -72,13 +78,13 @@ public final class EVASuitUtil {
 		if (disqualified) {
 			// Remove pressure suit and put on garment
 			if (inSettlement) {
-				if (person.unwearPressureSuit(housing)) {
-					person.wearGarment(housing);
+				if (person.unwearPressureSuit(eo)) {
+					person.wearGarment(eo);
 				}
 			}
 			// Note: vehicle may or may not have garment available
-			else if (((Rover)housing).hasGarment() && person.unwearPressureSuit(housing)) {
-				person.wearGarment(housing);
+			else if (((Rover)eo).hasGarment() && person.unwearPressureSuit(eo)) {
+				person.wearGarment(eo);
 			}
 	
 			// Assign thermal bottle
@@ -286,7 +292,7 @@ public final class EVASuitUtil {
 	 * @return
 	 */
 	public static boolean fetchEVASuitFromSettlement(Person person, Vehicle vehicle, Settlement settlement) {
-		EVASuit suit1 = EVASuitUtil.findEVASuitWithResources(settlement, person);
+		EVASuit suit1 = EVASuitUtil.findEVASuitWithResources(settlement.getEquipmentInventory(), person);
 		// Note: In future, will need to handle this officially by coming up 
 		// with a list of parts that are missing and have a person carries them to the vehicle
 		// instead of cheating this way

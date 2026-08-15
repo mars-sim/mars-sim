@@ -17,7 +17,7 @@ import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class UnloadHelperTest extends MarsSimUnitTest{
+class UnloadHelperTest extends MarsSimUnitTest{
     @Test
     public void testReleaseTowedVehicle() {
         var s = buildSettlement("towing");
@@ -64,10 +64,11 @@ public class UnloadHelperTest extends MarsSimUnitTest{
         var inv = v.getEquipmentInventory();
         assertEquals(suits, inv.getSuitSet().size(), "EVASuits loaded");
 
+        var rh = s.getEquipmentInventory();
         UnloadHelper.unloadEVASuits(v, s, 1000D, 1);
         assertEquals(1, inv.getSuitSet().size(), "EVASuits left");
-        assertEquals(suits - 1, s.getEquipmentInventory().getSuitSet().size(), "EVASuits in settlement");
-        assertGreaterThan("Settlement oxygen", 0D, s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
+        assertEquals(suits - 1, rh.getSuitSet().size(), "EVASuits in settlement");
+        assertGreaterThan("Settlement oxygen", 0D, rh.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
     }
 
     @Test
@@ -86,23 +87,21 @@ public class UnloadHelperTest extends MarsSimUnitTest{
         v.storeItemResource(part1, 10);
 
         double mass = v.getStoredMass();
-//        System.out.println("mass: " + mass);
         
         assertGreaterThan("Initial stored mass", 0D, mass);
 
         double amountNotUsed = UnloadHelper.unloadInventory(v, s, mass);
-//        System.out.println("amountNotUsed: " + amountNotUsed);
         assertEquals(0D, amountNotUsed, "All efforts being used up");
         
         mass = v.getStoredMass();
-//        System.out.println("mass: " + mass);
         v.getEquipmentInventory().printMicroInventoryStoredMass();
         
         assertEquals(0D, mass, "Final stored mass");
         
-        assertEquals(10D, s.getSpecificAmountResourceStored(res1), "Settlement res1");
-        assertEquals(10D, s.getSpecificAmountResourceStored(res2), "Settlement res2");
-        assertEquals(10, s.getItemResourceStored(part1), "Settlement part1");
+        var rh = s.getEquipmentInventory();
+        assertEquals(10D, rh.getSpecificAmountResourceStored(res1), "Settlement res1");
+        assertEquals(10D, rh.getSpecificAmountResourceStored(res2), "Settlement res2");
+        assertEquals(10, rh.getItemResourceStored(part1), "Settlement part1");
 
     }
 }

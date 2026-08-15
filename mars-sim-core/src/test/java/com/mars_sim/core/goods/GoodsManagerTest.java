@@ -13,10 +13,10 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
-public class GoodsManagerTest extends MarsSimUnitTest {
+class GoodsManagerTest extends MarsSimUnitTest {
 	
-    Settlement s = null;
-    GoodsManager gm = null;
+    private Settlement s = null;
+    private GoodsManager gm = null;
     
 	@BeforeEach
     void setUp() {
@@ -26,8 +26,6 @@ public class GoodsManagerTest extends MarsSimUnitTest {
 	
     @Test
     public void testResetCommerceFactor() {
-//        var s = buildSettlement("mock");
-//        var gm = new GoodsManager(s);
 
         double newValue = 1.5D;
         gm.setCommerceFactor(CommerceType.BUILDING, newValue);
@@ -39,9 +37,6 @@ public class GoodsManagerTest extends MarsSimUnitTest {
     
     @Test
     public void testPartGoodDemand() {
-//        var s = buildSettlement("mock");
-//        var gm = new GoodsManager(s);
-
         Part sheet = (Part) ItemResourceUtil.findItemResource("Steel sheet");
 
         int previousNum = 1;
@@ -60,23 +55,20 @@ public class GoodsManagerTest extends MarsSimUnitTest {
         
         pg.injectPartDemand(sheet, gm, needNum); 
         
-        int storedNum = s.getItemResourceStored(sheet.getID());
+        int storedNum = s.getEquipmentInventory().getItemResourceStored(sheet.getID());
         
         double demandScore = gm.getDemandScore(pg);
         
-        assertTrue(previousNum == storedNum); 
+        assertEquals(previousNum, storedNum, "Stored number matches previous number");
         
-        assertTrue(newDemand == demandScore); 
+        assertEquals(newDemand, demandScore, "Demand score matches new demand");
     }
     
     @Test
     public void testGetResourceReviewDue() {
         // Build a settlement with some people to generate demand
-        var s = buildSettlement("mock");
         buildPerson("P1", s);
         buildPerson("P2", s);
-
-        var gm = new GoodsManager(s);
 
         var ess = getConfig().getSettlementConfiguration().getEssentialResources();
 
@@ -86,7 +78,7 @@ public class GoodsManagerTest extends MarsSimUnitTest {
         int reserved = gm.selectResourceForReview();
 
         // Add a resource with 1 kg
-        s.storeAmountResource(reserved, 1D);
+        s.getEquipmentInventory().storeAmountResource(reserved, 1D);
         reviewDue = gm.getResourceReviewDue();
         assertEquals(ess.keySet().size()-1, reviewDue, "Essential resources needing review after reserve");
 

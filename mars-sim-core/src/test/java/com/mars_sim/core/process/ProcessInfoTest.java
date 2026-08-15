@@ -52,12 +52,14 @@ public class ProcessInfoTest extends MarsSimUnitTest {
      * Load a Settlement with the resources needed for a process
      */
     public static void loadSettlement(Settlement s, ProcessInfo process) {
+        var rh = s.getEquipmentInventory();
+
 		for(ProcessItem item : process.getInputList()) {
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
-                s.storeAmountResource(item.getId(), item.getAmount() * 1.1D);
+                rh.storeAmountResource(item.getId(), item.getAmount() * 1.1D);
             }
 			else if (ItemType.PART == item.getType()) {
-                s.storeItemResource(item.getId(), (int)(item.getAmount() * 1.1D));
+                rh.storeItemResource(item.getId(), (int)(item.getAmount() * 1.1D));
             }
         }
     }

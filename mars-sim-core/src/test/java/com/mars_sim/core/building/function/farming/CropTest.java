@@ -94,7 +94,7 @@ class CropTest extends MarsSimUnitTest {
         
         double cropCache = crop.getCropCache();
         
-        assertEquals(cropCache + s.getSpecificAmountResourceStored(spec.getCropID()), harvested.value(), 0.01, cropName + " stored");
+        assertEquals(cropCache + s.getEquipmentInventory().getSpecificAmountResourceStored(spec.getCropID()), harvested.value(), 0.01, cropName + " stored");
    
         return crop;
     }

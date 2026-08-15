@@ -108,7 +108,7 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
             case POWER_GEN_VAL -> entity.getPowerGrid().getGeneratedPower();
             case POWER_LOAD_VAL -> entity.getPowerGrid().getPowerLoad();
             case ENERGY_STORED_VAL -> entity.getPowerGrid().displayStoredEnergy();
-            default -> InventoryColumnHelper.getValue(entity, valueIndex);
+            default -> InventoryColumnHelper.getValue(entity.getEquipmentInventory(), valueIndex);
         };
     }
 }

@@ -196,7 +196,7 @@ public class Storage extends Function {
 	}
 
 	private void removeResources() {
-		ResourceHolder s = getBuilding().getSettlement();
+		var s = getBuilding().getSettlement().getEquipmentInventory();
 
 		// Remove excess amount resources that can no longer be stored.
 		for (var e : resourceCapacities.entrySet()) {
@@ -243,7 +243,7 @@ public class Storage extends Function {
 		boolean result = false;
 
 		if (amount > 0) {
-			ResourceHolder rh = b.getSettlement();
+			ResourceHolder rh = b.getSettlement().getEquipmentInventory();
 			double excess = rh.storeAmountResource(id, amount);
 			
 			if (excess == 0.0) {
@@ -286,7 +286,7 @@ public class Storage extends Function {
 	static boolean retrieveAnResource(double amount, int id, Building b, boolean isRetrieving) {
 		boolean result = false;
 		if (amount > 0) {
-			ResourceHolder rh = b.getSettlement();
+			ResourceHolder rh = b.getSettlement().getEquipmentInventory();
 			double amountStored = rh.getSpecificAmountResourceStored(id);
 
 			if (amountStored < 0.00001) {

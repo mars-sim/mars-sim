@@ -34,9 +34,6 @@ import com.mars_sim.core.tool.RandomUtil;
  */
 public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask {
 
-	// Default logger
-	// May add back private static final SimLogger logger = SimLogger.getLogger(MaintainBuildingMeta.class.getName());
-
 	/**
      * Represents a Job needed for internal maintenance on a building.
      */
@@ -128,7 +125,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 			if (!hasMalfunction) {
 			
 				boolean partsPosted = building.getMalfunctionManager()
-						.hasMaintenancePartsInStorage(settlement);
+						.hasMaintenancePartsInStorage(settlement.getEquipmentInventory());
 				
 				RatingScore score = MaintenanceUtil.scoreMaintenance(manager, building, partsPosted);
 	

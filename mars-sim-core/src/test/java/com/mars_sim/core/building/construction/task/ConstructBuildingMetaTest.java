@@ -42,12 +42,13 @@ class ConstructBuildingMetaTest extends MarsSimUnitTest {
     private static void loadMaterials(Settlement s, ConstructionSite site) {
 
         var stage = site.getCurrentConstructionStage();
+        var rh = s.getEquipmentInventory();
 
         for(var r : stage.getResources().entrySet()) {
-            s.storeAmountResource(r.getKey(), r.getValue().getRequired() * 1.2);
+            rh.storeAmountResource(r.getKey(), r.getValue().getRequired() * 1.2);
         }
         for(var p :stage.getParts().entrySet()) {
-            s.storeItemResource(p.getKey(), (int)(p.getValue().getRequired() * 1.2));
+            rh.storeItemResource(p.getKey(), (int)(p.getValue().getRequired() * 1.2));
         }
 
         stage.loadAvailableConstructionMaterials(s);
