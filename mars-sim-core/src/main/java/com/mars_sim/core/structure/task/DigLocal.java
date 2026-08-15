@@ -303,7 +303,7 @@ public abstract class DigLocal extends EVAOperation {
 				setPhase(WALK_TO_BIN);
 			}
 			else
-				endEVA("Found no resources.");
+				endEVA("Failing readiness.");
 			return time;
 		}
 			

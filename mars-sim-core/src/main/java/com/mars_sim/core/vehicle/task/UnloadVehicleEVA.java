@@ -129,6 +129,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		double remainingTime = 0;
 		
 		if (checkReadiness(time) > 0) {
+			endEVA("Failing readiness.");
 			return time;
 		}
 

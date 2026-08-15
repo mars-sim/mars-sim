@@ -168,8 +168,10 @@ public class ExploreSite extends EVAOperation {
 	private double exploringPhase(double time) {
 		double remainingTime = 0;
 		
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time) > 0) {
+			endEVA("Failing readiness.");
 			return time;
+		}	
 
 		// Add to the cumulative combined site time
 		((Exploration)mission).addSiteTime(time);

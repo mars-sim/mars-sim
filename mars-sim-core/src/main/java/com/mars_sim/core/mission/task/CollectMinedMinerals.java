@@ -168,6 +168,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	private double collectMineralsPhase(double time) {
 
 		if (checkReadiness(time) > 0) {
+			endEVA("Failing readiness.");
 			return time;
 		}
 

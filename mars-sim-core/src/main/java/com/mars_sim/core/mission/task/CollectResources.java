@@ -224,6 +224,7 @@ public class CollectResources extends EVAOperation {
 	private double collectResources(double time) {
 		
 		if (checkReadiness(time) > 0) {
+			endEVA("Failing readiness.");
 			return time;
 		}
 

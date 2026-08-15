@@ -317,7 +317,6 @@ public class EVASuit extends Equipment
 				return false;
 			}
 
-
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minO2Pressure) {
 				logger.log(this, Level.WARNING, 30_000,

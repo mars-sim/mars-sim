@@ -1442,6 +1442,12 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	public void setOperator(Worker vehicleOperator) {
 		this.vehicleOperator = vehicleOperator;
+		
+		if (vehicleOperator != null) {
+			LocalPosition pos = operatorActivitySpots.get(0);
+			vehicleOperator.setPosition(pos);
+		}
+		
 		fireUnitUpdate(EntityEventType.OPERATOR_EVENT, vehicleOperator);
 	}
 

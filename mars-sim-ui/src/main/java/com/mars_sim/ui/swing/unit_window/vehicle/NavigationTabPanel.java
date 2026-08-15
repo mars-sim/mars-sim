@@ -187,7 +187,6 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
             }
         }
         
-        
         if (!hasDestination) {
             // If destination is none, add destination text label.
             destinationTextCache = "";

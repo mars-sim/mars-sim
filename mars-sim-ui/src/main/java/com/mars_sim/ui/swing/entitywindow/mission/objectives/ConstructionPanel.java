@@ -245,7 +245,7 @@ public class ConstructionPanel extends JPanel implements EntityListener, Objecti
             // Populate originalMap.
             ConstructionStage stage = objective.getStage();
             if (stage != null) {
-                materials = new HashMap<>();
+                materials.clear(); //  = new HashMap<>();
                 materials.putAll(stage.getParts().entrySet().stream()
                         .collect(Collectors.toMap(e -> GoodsUtil.getGood(e.getKey()), Entry::getValue)));
                

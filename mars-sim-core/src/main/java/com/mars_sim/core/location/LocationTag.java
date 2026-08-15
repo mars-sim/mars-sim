@@ -87,7 +87,7 @@ public class LocationTag implements Serializable {
 	 * @return the name string of the extended location
 	 */
 	public String getExtendedLocation() {
-		String mobileLoc = getMobileContainerUnit();
+		String mobileLoc = getContainerUnitLocation();
 		String locale = getLocale();
 
 		// a special case
@@ -110,7 +110,7 @@ public class LocationTag implements Serializable {
 	 *
 	 * @return the name string of the immediate location
 	 */
-	public String getMobileContainerUnit() {
+	public String getContainerUnitLocation() {
 		String result = UNKNOWN;
 		
 		var container = unit.getContainerUnit();

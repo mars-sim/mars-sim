@@ -70,7 +70,6 @@ public class ConstructBuilding extends EVAOperation {
 		super(NAME, person, RandomUtil.getRandomDouble(10) + 150D, CONSTRUCTION);
 
 		if (person.isSuperUnfit()) {
-			resetLUV();
 			endEVA("Super Unfit.");
         	return;
 		}
@@ -89,8 +88,7 @@ public class ConstructBuilding extends EVAOperation {
 		}
 
 		else {
-			resetLUV();
-			endTask();
+			endEVA("Unable to construct.");
 		}
 	}
 
@@ -114,7 +112,6 @@ public class ConstructBuilding extends EVAOperation {
 		this.vehicles = vehicles;
 
 		if (person.isSuperUnfit()) {
-			resetLUV();
 			endEVA("Super Unfit.");
         	return;
 		}
@@ -188,7 +185,7 @@ public class ConstructBuilding extends EVAOperation {
 	private double constructionPhase(double time) {
 
 		if (checkReadiness(time) > 0) {
-			resetLUV();
+			endEVA("Failing readiness.");
 			return time;
 		}
 		
@@ -228,27 +225,16 @@ public class ConstructBuilding extends EVAOperation {
 
 			logger.info(person, site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 10.0)/10.0);		
 			// End operating light utility vehicle.
-			resetLUV();
 			endEVA("Stage completed.");
 			return workTime;
 		}
-
 		
 		if (person.isSuperUnfit()) {
-			resetLUV();
 			endEVA("Super Unfit.");
-			return time;
+			return workTime;
 		}
 		
 		return 0;
-	}
-
-	/**
-	 * Ends the task.
-	 */
-	public void endTask() {
-		resetLUV();
-		super.endTask();
 	}
 	
 	/**
@@ -278,6 +264,13 @@ public class ConstructBuilding extends EVAOperation {
 		}
 	}
 
+	/**
+	 * Ends the task.
+	 */
+	public void endTask() {
+		resetLUV();
+		super.endTask();
+	}
 	
 	/**
 	 * Reset the LUV.
@@ -286,9 +279,10 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	private void resetLUV() {
 		if (luv != null) {
-			luv.removeOccupant(person);
+			person.transfer(unitManager.getMarsSurface());
+//			luv.removeOccupant(person);
 			operatingLUV = false;
-			logger.info(person, "Released " + luv.getName() + ".");
+			logger.info(person, "Releasing " + luv.getName() + ".");
 		}
 	}
 

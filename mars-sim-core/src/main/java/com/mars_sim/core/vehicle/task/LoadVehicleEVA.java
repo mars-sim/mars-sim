@@ -127,6 +127,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		}
 		
 		if (checkReadiness(time) > 0) {
+			endEVA("Failing readiness.");
 			return time;
 		}
 		

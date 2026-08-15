@@ -103,8 +103,10 @@ extends EVAOperation {
 	 */
 	private double maintainPhase(double time) {
 		
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time) > 0) {
+			endEVA("Failing readiness.");
 			return time;
+		}
 		
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();

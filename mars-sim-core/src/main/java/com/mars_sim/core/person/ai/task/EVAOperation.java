@@ -521,7 +521,7 @@ public abstract class EVAOperation extends Task {
 
         // Check if there is a reason to cut short and return.
 		if (shouldEndEVAOperation()) {
-			endEVA("Premature.");
+			endEVA("Should end EVAOperation.");
 			return time;
 		}
 		
@@ -556,11 +556,10 @@ public abstract class EVAOperation extends Task {
 	 */
 	@Override
 	public void endTask() {		
-		if (person.isOutside()) {
-			logger.warning(worker, "Outside.");
-            endEVA("Outside.");
-		}
-    	else
+//		if (person.isOutside()) {
+//            endEVA("Outside.");
+//		}
+//    	else
         	super.endTask();
 	}
 	
@@ -581,9 +580,9 @@ public abstract class EVAOperation extends Task {
 			// Check if EVA suit is at 15% of its oxygen capacity.
 			double oxygenCap = suit.getSpecificCapacity(ResourceUtil.OXYGEN_ID);
 			double oxygen = suit.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
-			if (oxygen <= (oxygenCap * .2D)) {
+			if (oxygen <= (oxygenCap * .1D)) {
 				logger.log(person, Level.WARNING, 20_000,
-						suit.getName() + " reported less than 20% O2 left when "
+						suit.getName() + " reported less than 10% O2 left when "
 								+ person.getTaskDescription() + ".");
 				result = true;
 			}
@@ -591,7 +590,7 @@ public abstract class EVAOperation extends Task {
 			// Check if EVA suit is at 15% of its water capacity.
 			double waterCap = suit.getSpecificCapacity(ResourceUtil.WATER_ID);
 			double water = suit.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
-			if (water <= (waterCap * .10D)) {
+			if (water <= (waterCap * .1D)) {
 				logger.log(person, Level.WARNING, 20_000,
 						suit.getName() + " reported less than 10% water left when "
 										+ person.getTaskDescription() + ".");
@@ -607,7 +606,7 @@ public abstract class EVAOperation extends Task {
 			}
 		} catch (Exception e) {
 			logger.severe(person, 20_000,
-					person.getTaskDescription() + " ended : " + suit.getName() + " failed the system check.", e);
+					person.getTaskDescription() + " ended : " + suit.getName() + " unable to complete life support system check.", e);
 		}
 
 		// Check if suit has any malfunctions.

@@ -112,10 +112,12 @@ public class MaintainEVAVehicle extends EVAOperation {
      */
     private double maintainVehiclePhase(double time) {        
         var settlement = vehicle.getAssociatedSettlement();
+        
 		if (checkReadiness(time) > 0) {
 			vehicle.setReservedForMaintenance(false);
             vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
-			return time;	
+			endEVA("Failing readiness.");
+			return time;
 		}
 		
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {

@@ -157,27 +157,21 @@ public class ReturnLightUtilityVehicle extends Task {
 			if (returnContainer.getUnitType() == UnitType.VEHICLE) {
 				r = (Rover)returnContainer;
 				done = r.setLUV(luv);
+				// Transfer the luv to the rover
+				done = worker.transfer(r);
 				// Unload any attachment parts or inventory from light utility vehicle.
 				unloadLUVInventory(r);
 			}
 			else if (returnContainer.getUnitType() == UnitType.SETTLEMENT) {
 				s = (Settlement)returnContainer;
-    			// Add the luv to the settlement
-				done = s.addVicinityVehicle(luv);
+    			// Transfer the luv to the settlement
+				done = worker.transfer(s);
+//				done = s.addVicinityVehicle(luv);
 				// Unload any attachment parts or inventory from light utility vehicle.
 				unloadLUVInventory(s.getEquipmentInventory());
 			}
 	
-			if (done) {
-				if (luv != null) {
-					done = luv.removeOccupant(person);
-				}
-				if (!done) {
-					logger.severe(luv, "Could not remove occupant "
-							+ person.getName() + ".");
-				}
-				
-			} else {
+			if (!done) {
 				logger.severe(luv, "Could not be stored in "
 						+ returnContainer.getName());
 			}

@@ -120,7 +120,7 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
 			case PERFORMANCE_VAL -> isDead ? null : pc.getPerformanceLevel().getName();
 			case EMOTION_VAL -> isDead ? null : entity.getMind().getEmotion().getDescription();
 			case HEALTH_VAL -> entity.getPhysicalCondition().getStatus();
-			case MOBILE_LOC_VAL -> entity.getLocationTag().getMobileContainerUnit();
+			case MOBILE_LOC_VAL -> entity.getLocationTag().getContainerUnitLocation();
 			case LOCALE_VAL -> entity.getLocationTag().getLocale();
 
 			case ROLE_VAL -> {

@@ -135,7 +135,7 @@ public class LightUtilityVehicle extends GroundVehicle {
 	public boolean removeOccupant(Worker worker) {
 		if (isCrewmember(worker)) {
 			occupant = null;
-			if (getOperator() != null) {// && getOperator().equals(worker))
+			if (getOperator() != null) {
 				setOperator(null);
 			}
 			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, worker);

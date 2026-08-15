@@ -662,11 +662,13 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			boolean becomeDriver = false;
 
+			Worker operator = vehicle.getOperator();
+			
 			if (!lowPower && operateVehicleTask != null) {
 				// Someone should be driving or it's me !!!
 				becomeDriver = vehicle != null &&
-					((vehicle.getOperator() == null)
-						|| (vehicle.getOperator().equals(member)));
+					((operator == null)
+						|| (operator.equals(member)));
 			}
 			else {
 				// None is driving
