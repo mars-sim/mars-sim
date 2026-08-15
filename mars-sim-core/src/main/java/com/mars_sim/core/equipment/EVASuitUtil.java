@@ -44,15 +44,22 @@ public final class EVASuitUtil {
 	 * @param person
 	 * @param entity
 	 * @param inSettlement
-	 * @param disqualified
+	 * @param disqualified  true if the person is disqualified from EVA.
 	 */
 	public static void checkIn(Person person, Object entity, boolean inSettlement, boolean disqualified) {
-		UnitHolder housingEntity = (UnitHolder)entity;
-		EquipmentOwner eo = switch (entity) {
-				case Building b -> b.getSettlement().getEquipmentInventory();
-				case Vehicle v -> v;
-				default -> throw new IllegalArgumentException("Entity must be a Building or Vehicle.");
-				};
+		UnitHolder housingEntity;
+		EquipmentOwner eo;
+		switch (entity) {
+			case Building b -> {
+				housingEntity = b.getSettlement();
+				eo = b.getSettlement().getEquipmentInventory();
+			}
+			case Vehicle v -> {
+				housingEntity = v;
+				eo = v;
+			}
+			default -> throw new IllegalArgumentException("Entity must be a Building or Vehicle.");
+		}
 		
 		EVASuit suit = person.getSuit();
 		

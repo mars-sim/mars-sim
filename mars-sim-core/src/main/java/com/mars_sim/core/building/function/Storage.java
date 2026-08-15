@@ -196,7 +196,7 @@ public class Storage extends Function {
 	}
 
 	private void removeResources() {
-		ResourceHolder s = getBuilding().getSettlement().getEquipmentInventory();
+		var s = getBuilding().getSettlement().getEquipmentInventory();
 
 		// Remove excess amount resources that can no longer be stored.
 		for (var e : resourceCapacities.entrySet()) {
