@@ -30,8 +30,6 @@ import com.mars_sim.core.tool.Msg;
  * Meta task for the maintaining robots task.
  */
 public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
-	// Default logger
-	// May add back private static final SimLogger logger = SimLogger.getLogger(MaintainRobotMeta.class.getName());
 
 	/**
      * Represents a job needed for internal maintenance on a robot.
@@ -116,11 +114,13 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 
 		RatingScore score = RatingScore.ZERO_RATING;
 		
+		var eo = settlement.getEquipmentInventory();
+
 		for (Robot robot : getAllDownRobotCandidates(settlement)) {
 			
 			MalfunctionManager manager = robot.getMalfunctionManager();
 			
-			boolean partsPosted = manager.hasMaintenancePartsInStorage(settlement);
+			boolean partsPosted = manager.hasMaintenancePartsInStorage(eo);
 			
 			score = MaintenanceUtil.scoreMaintenance(manager, robot, partsPosted);
 
@@ -168,7 +168,7 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 			//       malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
 			if (!hasMalfunction) {
 			
-				boolean partsPosted = manager.hasMaintenancePartsInStorage(settlement);
+				boolean partsPosted = manager.hasMaintenancePartsInStorage(eo);
 				
 				score = MaintenanceUtil.scoreMaintenance(manager, robot, partsPosted);
 	

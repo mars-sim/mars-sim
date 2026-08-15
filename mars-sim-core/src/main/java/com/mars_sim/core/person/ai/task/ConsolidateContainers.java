@@ -145,7 +145,7 @@ extends Task {
 	 */
 	private static EquipmentOwner getBestOwner(Worker u) {
 		if (u.isInSettlement()) {
-            return u.getSettlement();
+            return u.getSettlement().getEquipmentInventory();
         }
         else if (u.isInVehicle()) {
             return u.getVehicle();
@@ -202,7 +202,7 @@ extends Task {
 	                    Iterator<Equipment> k = parent.getContainerSet().iterator();
 	                    while (k.hasNext() && (remainingAmountLoading > 0D) && (sourceAmount > 0D)) {
 	                    	Container otherUnit = (Container)k.next();
-	                        if (otherUnit != source) { // && otherUnit instanceof Container) {
+	                        if (otherUnit != source) {
 	                            double otherAmount = otherUnit.getSpecificAmountResourceStored(resourceID);
 	                            if (otherAmount > 0D) {
 	                                double otherRemainingCapacity = otherUnit.getRemainingCombinedCapacity(resourceID);

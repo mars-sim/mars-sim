@@ -109,7 +109,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
     @Override
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
         List<SettlementTask> result = Collections.emptyList();
-        if (needsConsolidation(settlement, true)) {
+        if (needsConsolidation(settlement.getEquipmentInventory(), true)) {
             // Create a real list
             result = new ArrayList<>();
             result.add(new ConsolidateTaskJob(this, settlement, new RatingScore(DEFAULT_SCORE)));

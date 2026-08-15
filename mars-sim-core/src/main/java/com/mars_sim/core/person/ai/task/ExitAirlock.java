@@ -910,7 +910,7 @@ public class ExitAirlock extends Task {
 			EquipmentOwner housing = null;
 			
 			if (inSettlement)
-				housing = ((Building)airlock.getEntity()).getSettlement();
+				housing = ((Building)airlock.getEntity()).getSettlement().getEquipmentInventory();
 			else
 				housing = (Vehicle)airlock.getEntity();
 	

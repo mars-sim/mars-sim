@@ -38,9 +38,6 @@ import com.mars_sim.core.vehicle.Vehicle;
  * Meta task for the MaintainGarageVehicle task.
  */
 public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask {
-	// Default logger
-	// May add back private static final SimLogger logger = SimLogger.getLogger(MaintainVehicleMeta.class.getName());
-
 	/**
      * Represents a Job needed for internal maintenance on a vehicle.
      */
@@ -119,6 +116,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		Vehicle worstVehicle = null;
 		double highestScore = 0;
 		RatingScore score = new RatingScore(0);
+		var eo = settlement.getEquipmentInventory();
 				
 		for (Vehicle vehicle : getAllDownVehicleCandidates(settlement, false)) {
 				
@@ -131,7 +129,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 			if (!hasMalfunction) {
 			
 				boolean partsPosted = vehicle.getMalfunctionManager()
-						.hasMaintenancePartsInStorage(settlement);
+						.hasMaintenancePartsInStorage(eo);
 				
 				score = MaintenanceUtil.scoreMaintenance(manager, vehicle, partsPosted);
 	
@@ -166,7 +164,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 			if (!hasMalfunction) {
 			
 				boolean partsPosted = vehicle.getMalfunctionManager()
-						.hasMaintenancePartsInStorage(settlement);
+						.hasMaintenancePartsInStorage(eo);
 				
 				score = MaintenanceUtil.scoreMaintenance(manager, vehicle, partsPosted);
 	

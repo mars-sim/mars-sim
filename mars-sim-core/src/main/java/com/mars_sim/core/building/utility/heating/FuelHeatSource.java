@@ -280,8 +280,9 @@ public class FuelHeatSource extends HeatSource {
 				consumed = deltaFuel;
 			}
 			else {
-				double fuelStored = getSettlement().getSpecificAmountResourceStored(ResourceUtil.METHANE_ID);
-				double o2Stored = getSettlement().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				var rh = getSettlement().getEquipmentInventory();
+				double fuelStored = rh.getSpecificAmountResourceStored(ResourceUtil.METHANE_ID);
+				double o2Stored = rh.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				
 				double transferFuel = tankCap + deltaFuel - reserveFuel;
 				
@@ -290,8 +291,8 @@ public class FuelHeatSource extends HeatSource {
 					reserveFuel = tankCap;
 					reserveOxidizer = tankCap * RATIO;
 					
-					getSettlement().retrieveAmountResource(ResourceUtil.METHANE_ID, transferFuel);
-					getSettlement().retrieveAmountResource(ResourceUtil.OXYGEN_ID, transferFuel * RATIO);
+					rh.retrieveAmountResource(ResourceUtil.METHANE_ID, transferFuel);
+					rh.retrieveAmountResource(ResourceUtil.OXYGEN_ID, transferFuel * RATIO);
 					
 					consumed = deltaFuel;
 				}

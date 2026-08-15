@@ -45,7 +45,6 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -1145,13 +1144,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public void inspectEntityTrackParts(double time) {
 		
-		Settlement containerUnit = entity.getAssociatedSettlement();
-		
-		boolean partsPosted = hasMaintenancePartsInStorage(containerUnit);
+		var eo = entity.getAssociatedSettlement().getEquipmentInventory();
+		boolean partsPosted = hasMaintenancePartsInStorage(eo);
 		
 		if (partsPosted) {
 			
-			int shortfall = consumeMaintenanceParts(containerUnit);
+			int shortfall = consumeMaintenanceParts(eo);
 			
 			String shortfallMsg = switch(shortfall) {
 				case -1 -> "No spare part(s) available for maintenance on " + entity + ".";
