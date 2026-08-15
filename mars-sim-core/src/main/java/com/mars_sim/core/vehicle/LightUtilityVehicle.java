@@ -107,7 +107,7 @@ public class LightUtilityVehicle extends GroundVehicle {
 	 * @param true if the worker can be added
 	 */
 	public boolean addOccupant(Worker worker) {
-		if (!isFull() && !isCrewmember(worker) && occupant == null && getOperator() == null) {
+		if (!isFull() && !isCrewmember(worker)) {
 			occupant = worker;
 			setOperator(worker);
 			// Fire the unit event type
@@ -135,8 +135,9 @@ public class LightUtilityVehicle extends GroundVehicle {
 	public boolean removeOccupant(Worker worker) {
 		if (isCrewmember(worker)) {
 			occupant = null;
-			if (getOperator() != null && getOperator().equals(worker))
+			if (getOperator() != null) {// && getOperator().equals(worker))
 				setOperator(null);
+			}
 			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, worker);
 			return true;
 		}

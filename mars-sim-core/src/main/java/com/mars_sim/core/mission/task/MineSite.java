@@ -129,10 +129,7 @@ public class MineSite extends EVAOperation {
 	public void endEVA(String reason) {
 		// End operating light utility vehicle.
 		if (operatingLUV) {
-			var luv = objectives.getLUV();
-			logger.info(person, "Release " + luv.getName());
-			luv.removeOccupant(person);
-			operatingLUV = false;
+			resetLUV();
 		}
 
 		super.endEVA(reason);
@@ -151,6 +148,7 @@ public class MineSite extends EVAOperation {
 		// Note: need to call addTimeOnSite() ahead of checkReadiness() since
 		// checkReadiness's addTimeOnSite() lacks the details of handling LUV
 		if (checkReadiness(time) > 0) {
+			resetLUV();
 			return time;
 		}
 
@@ -183,6 +181,7 @@ public class MineSite extends EVAOperation {
 		checkForAccident(time);
 		
 		if (person.isSuperUnfit()) {
+			resetLUV();
 			endEVA("Super Unfit.");
 			return time;
 		}
@@ -222,6 +221,8 @@ public class MineSite extends EVAOperation {
 
 	@Override
 	protected void clearDown() {
+		resetLUV();
+		
 		// Just fire one event at the end of the task
 		eventSource.fireMissionUpdate(MissionObjective.CHANGE_EVENT, "extracted");
 
@@ -270,5 +271,18 @@ public class MineSite extends EVAOperation {
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Reset the LUV.
+	 *
+	 * @throws Exception if error returning construction vehicle.
+	 */
+	private void resetLUV() {
+		if (objectives.getLUV() != null) {
+			objectives.getLUV().removeOccupant(person);
+			operatingLUV = false;
+			logger.info(person, "Released " + objectives.getLUV().getName() + ".");
+		}
 	}
 }

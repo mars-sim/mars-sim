@@ -70,6 +70,7 @@ public class ConstructBuilding extends EVAOperation {
 		super(NAME, person, RandomUtil.getRandomDouble(10) + 150D, CONSTRUCTION);
 
 		if (person.isSuperUnfit()) {
+			resetLUV();
 			endEVA("Super Unfit.");
         	return;
 		}
@@ -88,6 +89,7 @@ public class ConstructBuilding extends EVAOperation {
 		}
 
 		else {
+			resetLUV();
 			endTask();
 		}
 	}
@@ -112,6 +114,7 @@ public class ConstructBuilding extends EVAOperation {
 		this.vehicles = vehicles;
 
 		if (person.isSuperUnfit()) {
+			resetLUV();
 			endEVA("Super Unfit.");
         	return;
 		}
@@ -184,8 +187,10 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	private double constructionPhase(double time) {
 
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time) > 0) {
+			resetLUV();
 			return time;
+		}
 		
 		// Operate light utility vehicle if no one else is operating it.
 		if (!operatingLUV) {
@@ -221,20 +226,16 @@ public class ConstructBuilding extends EVAOperation {
 		if (person != null
 			&& (stage.isComplete() || !availableWork)) {
 
-			logger.info(person, site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 10.0)/10.0);
-			
+			logger.info(person, site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 10.0)/10.0);		
 			// End operating light utility vehicle.
-			if (luv != null
-				&& ((LightUtilityVehicle)luv).isCrewmember(person)) {
-				resetLUV();
-			}
-
+			resetLUV();
 			endEVA("Stage completed.");
 			return workTime;
 		}
 
 		
 		if (person.isSuperUnfit()) {
+			resetLUV();
 			endEVA("Super Unfit.");
 			return time;
 		}
@@ -287,6 +288,7 @@ public class ConstructBuilding extends EVAOperation {
 		if (luv != null) {
 			luv.removeOccupant(person);
 			operatingLUV = false;
+			logger.info(person, "Released " + luv.getName() + ".");
 		}
 	}
 
