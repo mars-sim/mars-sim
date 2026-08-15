@@ -2,18 +2,30 @@ package com.mars_sim.core.goods;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.Part;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.test.MarsSimUnitTest;
 
 class GoodsManagerTest extends MarsSimUnitTest {
-
+	
+    private Settlement s = null;
+    private GoodsManager gm = null;
+    
+	@BeforeEach
+    void setUp() {
+        s = buildSettlement("mock");
+        gm = new GoodsManager(s);
+	}
+	
     @Test
     public void testResetCommerceFactor() {
-        var s = buildSettlement("mock");
-        var gm = new GoodsManager(s);
 
         double newValue = 1.5D;
         gm.setCommerceFactor(CommerceType.BUILDING, newValue);
@@ -22,15 +34,41 @@ class GoodsManagerTest extends MarsSimUnitTest {
         gm.resetCommerceFactors();
         assertEquals(1D, gm.getCommerceFactor(CommerceType.BUILDING), "Reset commerce");
     }
+    
+    @Test
+    public void testPartGoodDemand() {
+        Part sheet = (Part) ItemResourceUtil.findItemResource("Steel sheet");
 
+        int previousNum = 1;
+        
+        s.storeItemResource(sheet.getID(), previousNum);
+        
+        PartGood pg = new PartGood(sheet);
+        
+        double previousDemand = 10;
+        
+        double newDemand = pg.getMaintenancePartsDemand(previousNum, s, sheet, previousDemand); // newDemand is 1xxx
+
+        assertTrue(newDemand > previousDemand); // Demand has increased;
+        
+        int needNum = 2;
+        
+        pg.injectPartDemand(sheet, gm, needNum); 
+        
+        int storedNum = s.getEquipmentInventory().getItemResourceStored(sheet.getID());
+        
+        double demandScore = gm.getDemandScore(pg);
+        
+        assertEquals(previousNum, storedNum, "Stored number matches previous number");
+        
+        assertEquals(newDemand, demandScore, "Demand score matches new demand");
+    }
+    
     @Test
     public void testGetResourceReviewDue() {
         // Build a settlement with some people to generate demand
-        var s = buildSettlement("mock");
         buildPerson("P1", s);
         buildPerson("P2", s);
-
-        var gm = new GoodsManager(s);
 
         var ess = getConfig().getSettlementConfiguration().getEssentialResources();
 

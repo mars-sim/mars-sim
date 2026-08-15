@@ -43,7 +43,7 @@ public class LocationTag implements Serializable {
 	}
 
 	/**
-	 * Prints the settlement, Mars Surface, or Mars Surface's coordinates of the unit.
+	 * Prints the settlement, Mars Surface, or surface coordinates of the unit.
 	 *
 	 * @return the general (nearby) location
 	 */
@@ -119,7 +119,8 @@ public class LocationTag implements Serializable {
 			if (container instanceof Settlement s) {
 				if (p.getBuildingLocation() != null)
 					result = p.getBuildingLocation().getName();
-				result = s.getName();
+				else
+					result = s.getName();
 			}
 			else if (container instanceof Vehicle v) {
 				result = v.getName();
@@ -222,10 +223,10 @@ public class LocationTag implements Serializable {
 	 * @return {@link Settlement}
 	 */
 	public boolean isInSettlementVicinity() {
-		
+
 		if (unit instanceof Person p) {
 			if (p.getSettlement() != null)
-				return true;
+				return false;
 			
 			if (p.isBuried())
 				return true;			
@@ -252,6 +253,8 @@ public class LocationTag implements Serializable {
 	 * @return {@link Vehicle}
 	 */
 	public Vehicle findVehicleVicinity() {
+		if (unit.isInside() || isInSettlementVicinity())
+			return null;
 		Coordinates c = unit.getCoordinates();
 		Settlement settlement = unit.getAssociatedSettlement();
 		
@@ -263,5 +266,25 @@ public class LocationTag implements Serializable {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Is this unit in vehicle vicinity ?
+	 *
+	 * @return {@link Vehicle}
+	 */
+	public boolean isInVehicleVicinity() {
+		if (unit.isInside() || isInSettlementVicinity() )
+			return false;
+		Coordinates c = unit.getCoordinates();
+		
+		Collection<Vehicle> list = unit.getAssociatedSettlement().getAllAssociatedVehicles();
+		for (Vehicle v : list) {
+			Coordinates coord = v.getCoordinates();
+			if (coord.equals(c) || coord == c)
+				return true;
+		}
+		
+		return false;
 	}
 }

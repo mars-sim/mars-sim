@@ -32,7 +32,7 @@ class MissionTableModel extends BaseMissionModel implements MonitorModel {
 	 */
 	public MissionTableModel() {
 		super(NAME, PHASE, DATE_FILED, DATE_EMBARKED, DATE_COMPLETED, SETTLEMENT, LEADER,
-				DESIGNATION, VEHICLE, MEMBER_NUM,
+				DESIGNATION, VEHICLE, STATUS, MEMBER_NUM,
 				REMAINING_TO_NAVPOINT, REMAINING_TO_END,
 				ACTUAL_TRAVELLED);
 	}

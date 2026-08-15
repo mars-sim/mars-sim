@@ -1,4 +1,4 @@
-package com.mars_sim.core.structure.goods;
+package com.mars_sim.core.goods;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,10 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.goods.GoodCategory;
-import com.mars_sim.core.goods.GoodsManager;
-import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.resource.ItemResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -76,6 +72,8 @@ class TestGood {
 		testGoodsBasics(g, GoodCategory.AMOUNT_RESOURCE);
 	}
 
+
+    
 	private void testGoodsBasics(Good good, GoodCategory category) {
 		var name = good.getName();
 

@@ -160,7 +160,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		if (person.isInSettlement()) {
 			logger.log(startingMember, Level.INFO, 0,
-					"Began organizing " + name + ", members " + members.size());
+					"Began organizing " + name + ". (Members: " + members.size() + ").");
 
 			// Add starting member to mission.
 			startingMember.setMission(this);

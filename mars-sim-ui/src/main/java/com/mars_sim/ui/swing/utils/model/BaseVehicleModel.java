@@ -33,6 +33,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  * The subclass defines which columns are to be rendered.
  * The model automatically monitors the Vehicle for changes and updates the table as needed.
  */
+@SuppressWarnings("serial")
 public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
 
     // Forwarded events from the VehicleMission to the Vehicle

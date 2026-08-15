@@ -27,6 +27,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  * The subclass defines which columns are to be rendered.
  * The model automatically monitors the Mission for changes and updates the table as needed.
  */
+@SuppressWarnings("serial")
 public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
 
     private static final int NAME_VAL = 0;
@@ -38,10 +39,11 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
     private static final int LEADER_VAL = 6;
     private static final int DESIGNATION_VAL = 7;
     private static final int VEHICLE_VAL = 8;
-    private static final int MEMBER_NUM_VAL = 9;
-    private static final int REMAINING_TO_NAVPOINT_VAL = 10;
-    private static final int REMAINING_TO_END_VAL = 11;
-    private static final int ACTUAL_TRAVELLED_VAL = 12;
+    private static final int STATUS_VAL = 9;
+    private static final int MEMBER_NUM_VAL = 10;
+    private static final int REMAINING_TO_NAVPOINT_VAL = 11;
+    private static final int REMAINING_TO_END_VAL = 12;
+    private static final int ACTUAL_TRAVELLED_VAL = 13;
 
     // Show Mission name, passive and unchanging
     protected static final EntityColumnSpec NAME = new EntityColumnSpec(new ColumnSpec(NAME_VAL, Msg.getString("entity.name"), String.class),
@@ -62,6 +64,8 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
                                                             null);
     protected static final EntityColumnSpec VEHICLE = new EntityColumnSpec(new ColumnSpec(VEHICLE_VAL, Msg.getString("vehicle.singular"), String.class),
                                                             Set.of(VehicleMission.VEHICLE_EVENT));
+    protected static final EntityColumnSpec STATUS = new EntityColumnSpec(new ColumnSpec(STATUS_VAL, Msg.getString("vehicle.status"), String.class),
+            												Set.of(EntityEventType.STATUS_EVENT)); 
     protected static final EntityColumnSpec MEMBER_NUM = new EntityColumnSpec(new ColumnSpec(MEMBER_NUM_VAL, Msg.getString("mission.members"), Integer.class),
                                                             Set.of(Mission.ADD_MEMBER_EVENT, Mission.REMOVE_MEMBER_EVENT));
 
@@ -85,9 +89,10 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
     }
 
     /**
-     * Attachs listener to an associated Vehicle.
+     * Attaches listener to an associated Vehicle.
+     * 
      * @param entity Source of events
-     * @param activate Activiate listeners
+     * @param activate Activate listeners
      */
     @Override
     protected void enableListener(Mission entity, boolean activate) {
@@ -103,13 +108,13 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
             }
         }
 
-        // Always disabke if Mission is done
+        // Always disable if Mission is done
         super.enableListener(entity, activate && !entity.isDone());
     }
 
     /**
      * This catches Vehicle COORDINATE_EVENT and converts into a DISTANCE_EVENT makes them appears as they have comes from the associated VehicleMission.
-     * Also if the Mission Vehicle changes it triggers adding/remving listener on the Vehicle
+     * Also if the Mission Vehicle changes it triggers adding/removing listener on the Vehicle
      */
     @Override
     public void entityUpdate(EntityEvent event) {
@@ -145,9 +150,11 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
 
         super.entityUpdate(event);
     }
+    
     /**
-     * Get a cell value for the associated Mission. Column index maps to the associated ColumnSpec where the id
+     * Gets a cell value for the associated Mission. Column index maps to the associated ColumnSpec where the id
      * is used to determine the value to return.
+     * 
      * @param entity The Mission entity.
      * @param valueIndex Column index. 
      * @return Associated value.
@@ -163,6 +170,8 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
                     return vm.getTotalDistanceRemaining();
                 case ACTUAL_TRAVELLED_VAL:
                     return vm.getTotalDistanceTravelled();
+                case STATUS_VAL:
+                	return vm.getVehicle().printStatusTypes();
                 default:
                     break;
             }
