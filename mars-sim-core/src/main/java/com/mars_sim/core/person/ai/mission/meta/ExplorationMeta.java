@@ -190,8 +190,9 @@ public class ExplorationMeta extends AbstractMetaMission {
 				}
 			}
 		}
-		// TODO
-		//return getMinimalPath(startingLocation, selectedLocns);
+		
+		// Original used route optimisation
+		// getMinimalPath(startingLocation, selectedLocns)
 
 		return claimedSites;
 	}
