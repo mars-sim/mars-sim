@@ -19,6 +19,7 @@ import com.mars_sim.core.building.config.VehicleMaintenanceSpec;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
@@ -269,6 +270,11 @@ public class VehicleMaintenance extends Function {
 				r.transfer(building);
 			}
 		}
+		else if (vehicle instanceof LightUtilityVehicle luv 
+				&& !luv.hasNoCrew()) {
+			Worker occupant = luv.getOccupant();
+            occupant.transfer(building);
+		}
 	}
 	
 
@@ -387,6 +393,11 @@ public class VehicleMaintenance extends Function {
 			for (Robot r: new ArrayList<>(c.getRobotCrew())) {
 				r.transfer(vehicle);
 			}
+		}
+		else if (vehicle instanceof LightUtilityVehicle luv 
+				&& !luv.hasNoCrew()) {
+			Worker occupant = luv.getOccupant();
+            occupant.transfer(vehicle);
 		}
 	}
 

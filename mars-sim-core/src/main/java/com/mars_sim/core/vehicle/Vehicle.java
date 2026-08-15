@@ -530,6 +530,14 @@ public abstract class Vehicle extends AbstractMobileUnit
                 result.put(crewmember, crewPos);
             }
 		}
+		else if (this instanceof LightUtilityVehicle luv) {
+			Worker occupant = luv.getOccupant();
+			if (occupant != null && occupant instanceof Person p) {
+				result = new HashMap<>(luv.getCrewNum());
+				LocalPosition crewPos = LocalAreaUtil.convert2LocalPos(occupant.getPosition(), this);
+				result.put(p, crewPos);
+			}
+		}
 
 		return result;
 	}
@@ -551,6 +559,14 @@ public abstract class Vehicle extends AbstractMobileUnit
                 result.put(robotCrewmember, crewPos);
             }
 		}
+		else if (this instanceof LightUtilityVehicle luv) {
+			Worker occupant = luv.getOccupant();
+			if (occupant != null && occupant instanceof Robot r) {
+				result = new HashMap<>(luv.getCrewNum());
+				LocalPosition crewPos = LocalAreaUtil.convert2LocalPos(occupant.getPosition(), this);
+				result.put(r, crewPos);
+			}
+		}
 
 		return result;
 	}
@@ -570,6 +586,15 @@ public abstract class Vehicle extends AbstractMobileUnit
                 crewmember.setPosition(settlementLoc);
             }
 		}
+		else if (this instanceof LightUtilityVehicle luv) {
+			Worker occupant = luv.getOccupant();
+			if (occupant != null) {
+				LocalPosition currentCrewPos = currentCrewPositions.get(occupant);
+                LocalPosition settlementLoc = LocalAreaUtil.convert2SettlementPos(currentCrewPos,
+                        this);
+                occupant.setPosition(settlementLoc);
+			}
+		}
 	}
 
 	/**
@@ -586,6 +611,15 @@ public abstract class Vehicle extends AbstractMobileUnit
                         this);
                 robotCrewmember.setPosition(settlementLoc);
             }
+		}
+		else if (this instanceof LightUtilityVehicle luv) {
+			Worker occupant = luv.getOccupant();
+			if (occupant != null) {
+				LocalPosition currentCrewPos = currentRobotCrewPositions.get(occupant);
+                LocalPosition settlementLoc = LocalAreaUtil.convert2SettlementPos(currentCrewPos,
+                        this);
+                occupant.setPosition(settlementLoc);
+			}
 		}
 	}
 
@@ -2351,37 +2385,37 @@ public abstract class Vehicle extends AbstractMobileUnit
 	@Override
 	public boolean transfer(UnitHolder destination) {
 		boolean departingFromHome = false;
-		boolean transferred = false;
+		boolean canTransferOut = false;
 		var cu = getContainerUnit();
 		// Note: at startup, a vehicle has Mars Surface as the container unit by default
 		
 		if (cu instanceof MarsSurface ms) {
-			transferred = ms.removeVehicle(this);
+			canTransferOut = ms.removeVehicle(this);
 		}
 		
 		else if (cu instanceof Settlement s) {
 			// The vehicle is about to depart either from the settlement vicinity or from a garage in a settlement 
-			transferred = s.removeVicinityParkedVehicle(this);
+			canTransferOut = s.removeVicinityParkedVehicle(this);
 			departingFromHome = true;
 		}
 
-		if (!transferred) {
+		if (!canTransferOut) {
 			logger.warning(this, 20_000L, "Cannot be retrieved from " + cu + ".");
 			// NOTE: need to revert back the retrieval action			
 		}
 		else {
 			if (destination instanceof MarsSurface ms) {
 				// Vehicle is leaving the settlement vicinity onto the surface of mars
-				transferred = ms.addVehicle(this);
+				canTransferOut = ms.addVehicle(this);
 				departingFromHome = true;
 			}
 			else if (destination instanceof Settlement s) {
     			// Add the vehicle to the settlement vicinity
 				// After this, the vehicle may enter a garage
-				transferred = s.addVicinityVehicle(this);
+				canTransferOut = s.addVicinityVehicle(this);
 			}
 
-			if (!transferred) {
+			if (!canTransferOut) {
 				logger.warning(this, 20_000L, "Cannot be stored into " + destination + ".");
 				// NOTE: need to revert back the storage action
 			}
@@ -2398,6 +2432,13 @@ public abstract class Vehicle extends AbstractMobileUnit
 				                crewmember.transfer(this);
 				            }
 						}
+						else if (this instanceof LightUtilityVehicle luv 
+								&& !luv.hasNoCrew()) {
+							Worker occupant = luv.getOccupant();
+							if (occupant != null && luv.getOperator().equals(occupant)) {
+								occupant.transfer(this);
+							}
+						}
 						
 						// Transfer each piece of equipment 
 						for (Equipment equipment : getEquipmentSet()) {
@@ -2410,7 +2451,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 				setContainerUnit(destination);
 			}
 		}
-		return transferred;
+		return canTransferOut;
 	}
 
 	/**

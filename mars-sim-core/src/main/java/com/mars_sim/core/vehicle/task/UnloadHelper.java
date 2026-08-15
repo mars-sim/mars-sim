@@ -18,11 +18,13 @@ import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.mission.task.CollectMinedMinerals;
 import com.mars_sim.core.mission.task.CollectResources;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -60,6 +62,25 @@ public final class UnloadHelper {
     		}
     		else {
     			UnloadVehicleEVA.logger.warning(p, "failed to retrieve the dead body from " + crewable.getName());
+    		}
+    	}
+    }
+    
+    /**
+     * Unloads an dead bodies from the luv.
+     * 
+     * @param crewable
+     * @param dest
+     */
+    static void unloadDeceased(LightUtilityVehicle luv, Settlement dest) {
+    	Worker occupant = luv.getOccupant();
+    	if (occupant instanceof Person p) {
+    		if (p.transfer(dest)) {
+    			BuildingManager.addPatientToMedicalBed(p, dest);			
+    			UnloadVehicleEVA.logger.info(p, "dead body from " + luv.getName());
+    		}
+    		else {
+    			UnloadVehicleEVA.logger.warning(p, "failed to retrieve the dead body from " + luv.getName());
     		}
     	}
     }

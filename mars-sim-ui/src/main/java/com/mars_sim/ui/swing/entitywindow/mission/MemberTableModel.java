@@ -14,9 +14,11 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.model.BaseWorkerModel;
@@ -24,10 +26,17 @@ import com.mars_sim.ui.swing.utils.model.BaseWorkerModel;
 /**
  * Table model for mission members. Shows them on board or in an airlock
  */
+@SuppressWarnings("serial")
 public class MemberTableModel extends BaseWorkerModel {
-	private static final int BOARDED_VAL = 201;
-	private static final int AIRLOCK_VAL = 202;
+	private static final int MISSION_MEMBER_VAL = 201;
+	private static final int BOARDED_VAL = 202;
+	private static final int AIRLOCK_VAL = 203;
 
+	protected static final EntityColumnSpec MISSION_MEMBER = new EntityColumnSpec(new ColumnSpec(MISSION_MEMBER_VAL, Msg.getString("MainDetailPanel.column.missionMember"),
+            										Boolean.class), Set.of(
+            												Mission.ADD_MEMBER_EVENT,
+            												Mission.REMOVE_MEMBER_EVENT,
+            												Mission.END_MISSION_EVENT));	
 	protected static final EntityColumnSpec BOARDED = new EntityColumnSpec(new ColumnSpec(BOARDED_VAL, Msg.getString("MainDetailPanel.column.boarded"),
                                                     Boolean.class), Set.of(MobileUnit.CONTAINER_EVENT));	
 	protected static final EntityColumnSpec AIRLOCK = new EntityColumnSpec(new ColumnSpec(AIRLOCK_VAL, Msg.getString("MainDetailPanel.column.airlock"),
@@ -41,7 +50,7 @@ public class MemberTableModel extends BaseWorkerModel {
 	 * Constructor.
 	 */
 	public MemberTableModel(Mission mission) {
-		super(NAME, TASK, BOARDED, AIRLOCK);
+		super(NAME, TASK, MISSION_MEMBER, BOARDED, AIRLOCK);
         this.mission = mission;
 		if ((mission instanceof VehicleMission vm)
                 && (vm.getVehicle() instanceof Crewable c)) {
@@ -51,7 +60,7 @@ public class MemberTableModel extends BaseWorkerModel {
 	}
 
     public MemberTableModel(Crewable crewable) {
-        super(NAME, TASK, BOARDED, AIRLOCK);
+        super(NAME, TASK, MISSION_MEMBER, BOARDED, AIRLOCK);
         this.v = crewable;
 
         updateOccupantList();
@@ -60,6 +69,7 @@ public class MemberTableModel extends BaseWorkerModel {
 	@Override
 	protected Object getEntityValue(Worker entity, int valueIndex) {
 		return switch(valueIndex) {
+			case MISSION_MEMBER_VAL -> isMissionMember(entity);
 			case BOARDED_VAL -> isBoarded(entity);
 			case AIRLOCK_VAL -> isInAirlock(entity);
 			default -> BaseWorkerModel.getWorkerValue(entity, valueIndex);
@@ -73,8 +83,16 @@ public class MemberTableModel extends BaseWorkerModel {
 	 * @return Is the worker boarded ?
 	 */
 	private boolean isBoarded(Worker member) {
-		if (member instanceof Person p && v != null) {
-			return v.isCrewmember(p);
+		if (v != null) {
+			if (v instanceof Crewable c) {
+				if (member instanceof Person p)
+					return c.isCrewmember(p);
+				else if (member instanceof Robot r)
+					return c.isRobotCrewmember(r);
+			}
+			else if (v instanceof LightUtilityVehicle luv) {
+				return luv.isCrewmember(member);
+			}
 		}
 		return false;
 	}
@@ -88,9 +106,20 @@ public class MemberTableModel extends BaseWorkerModel {
 	private boolean isInAirlock(Worker member) {
 		return (member instanceof Person p && v instanceof Rover r && r.isInAirlock(p));
 	}
-
+	
+	/**
+	 * Is this a mission member ?
+	 *
+	 * @param member	 Worker member.
+	 * @return Is the worker in the airlock ?
+	 */
+	private boolean isMissionMember(Worker member) {
+		return (member.getMission() != null && member.getMission().equals(mission));
+	}
+	
     /**
-     * Set the mission for this model.
+     * Sets the mission for this model.
+     * 
      * @param mission
      */
     public void setMission(Mission mission) {
@@ -99,6 +128,11 @@ public class MemberTableModel extends BaseWorkerModel {
     }
 
     
+    /**
+     * Gets the mission.
+     * 
+     * @return
+     */
     public Mission getMission() {
         return mission;
     }

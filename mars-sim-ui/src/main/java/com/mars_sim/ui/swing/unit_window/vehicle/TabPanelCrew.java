@@ -28,7 +28,6 @@ import com.mars_sim.ui.swing.entitywindow.mission.MemberTableModel;
 /**
  * The TabPanelCrew is a tab panel for a vehicle's crew information.
  */
-@SuppressWarnings("serial")
 public class TabPanelCrew extends EntityTableTabPanel<Vehicle> implements EntityListener {
 
 	private static final String CREW_ICON = "people"; //$NON-NLS-1$

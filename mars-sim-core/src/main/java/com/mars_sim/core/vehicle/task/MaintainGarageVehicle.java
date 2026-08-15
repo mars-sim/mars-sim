@@ -238,11 +238,13 @@ public class MaintainGarageVehicle extends Task {
 					if (vehicle instanceof Rover rover) {
 						garage.removeRover(rover, transCrew);
 					}
-					else if (vehicle instanceof LightUtilityVehicle luv) {
-						garage.removeUtilityVehicle(luv, transCrew);
-					}
 					
-				} else if (vehicle instanceof Drone d) {
+				} 
+				else if (vehicle instanceof LightUtilityVehicle luv) {
+					boolean transCrew = !luv.hasNoCrew();
+					garage.removeUtilityVehicle(luv, transCrew);
+				}
+				else if (vehicle instanceof Drone d) {
 					garage.removeFlyer(d, true);
 				}
 			}

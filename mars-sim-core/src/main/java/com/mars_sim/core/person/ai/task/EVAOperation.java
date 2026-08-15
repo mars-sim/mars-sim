@@ -528,12 +528,15 @@ public abstract class EVAOperation extends Task {
 	 * 
 	 * @param reason Reason for ending.
 	 */
-	protected void endEVA(String reason) {
+	public void endEVA(String reason) {
 		if (person.isOutside()) {
+			logger.warning(worker, 1_000L, "Walking back in: " + reason);
             setPhase(WALK_BACK_INSIDE);
 		}
-    	else
+    	else {
+			logger.warning(worker, 1_000L, "Ending EVA: " + reason);
         	endTask();
+    	}
 	}
 
 	/**
@@ -544,7 +547,7 @@ public abstract class EVAOperation extends Task {
 	public void endTask() {		
 		if (person.isOutside()) {
 			logger.warning(worker, "Prematurely ending a task during an EVA.");
-            endEVA("Premature endTask");
+            endEVA("Premature endTask.");
 		}
     	else
         	super.endTask();

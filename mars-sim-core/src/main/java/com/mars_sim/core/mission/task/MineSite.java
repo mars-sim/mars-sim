@@ -131,8 +131,7 @@ public class MineSite extends EVAOperation {
 		if (operatingLUV) {
 			var luv = objectives.getLUV();
 			logger.info(person, "Release " + luv.getName());
-			luv.setOperator(null);
-			luv.removePerson(person);
+			luv.removeOccupant(person);
 			operatingLUV = false;
 		}
 
@@ -154,18 +153,24 @@ public class MineSite extends EVAOperation {
 		if (checkReadiness(time) > 0) {
 			return time;
 		}
+
 		
 		// Operate light utility vehicle if no one else is operating it.
 		var luv = objectives.getLUV();
 		if (!luv.getMalfunctionManager().hasMalfunction()
-				&& (luv.getOperator() == null)) {
+				&& !luv.isFull() && luv.getOperator() == null) {
 
-			luv.addPerson(person);
-			luv.setOperator(person);
-			logger.info(person, "Operating " + luv.getName());
+			// Warning: do not call addOccupant directly
+			boolean canTransfer = person.transfer(luv);	
+			if (canTransfer) {
+				logger.info(person, "Operating " + luv.getName());
 
-			operatingLUV = true;
-			setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // -NLS-1$
+				operatingLUV = true;
+				setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // -NLS-1$
+			}
+			else {
+				
+			}
 		}
 
 		// Excavate minerals.
@@ -176,7 +181,12 @@ public class MineSite extends EVAOperation {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
-
+		
+		if (person.isSuperUnfit()) {
+			endEVA("Super Unfit.");
+			return time;
+		}
+		
 		return remainingTime;
 	}
 

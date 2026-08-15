@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -81,6 +82,7 @@ import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -1057,7 +1059,14 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			}
 		} 
 		else if (isInVehicle()) {
-			localGroup = ((Crewable) getVehicle()).getCrew();
+			if (getVehicle() instanceof Crewable c) {
+				localGroup = c.getCrew();
+			}
+			else if (getVehicle() instanceof LightUtilityVehicle) {
+				Set<Person> set = new HashSet<>();
+				set.add(this);
+				localGroup = set;
+			}	
 		}
 
 		if (localGroup == null) {
@@ -1834,6 +1843,9 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		if (cu instanceof Crewable c) {
 			transferred = c.removePerson(this);
 		}
+		else if (cu instanceof LightUtilityVehicle luv) {
+			transferred = luv.removeOccupant(this);
+		}
 		else if (cu instanceof MarsSurface ms) {
 			transferred = ms.removePerson(this);
 		}
@@ -1855,7 +1867,12 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		else {
 			// Check if the destination is a vehicle
 			if (destination instanceof Crewable c) {
-				transferred = c.addPerson(this);
+				transferred =  c.addPerson(this);
+				// Note: will call setContainerUnit(c) below. no need of calling it here
+			}
+			else if (destination instanceof LightUtilityVehicle luv
+					&& luv.getOperator() == null) {
+				transferred =  luv.addOccupant(this);
 				// Note: will call setContainerUnit(c) below. no need of calling it here
 			}
 			else if (destination instanceof MarsSurface ms) {

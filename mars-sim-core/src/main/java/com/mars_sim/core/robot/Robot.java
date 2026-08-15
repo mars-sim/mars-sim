@@ -59,6 +59,7 @@ import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
 /**
  * The robot class represents operating a robot on Mars.
@@ -1228,6 +1229,9 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		if (cu instanceof Crewable c) {
 			transferred = c.removeRobot(this);
 		}
+		else if (cu instanceof LightUtilityVehicle luv) {
+			transferred = luv.removeOccupant(this);
+		}
 		else if (cu instanceof MarsSurface ms) {
 			transferred = ms.removeRobot(this);
 		}
@@ -1250,7 +1254,12 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		else {
 			// Check if the destination is a vehicle
 			if (destination instanceof Crewable c) {
-				transferred = c.addRobot(this);
+				transferred =  c.addRobot(this);
+			}
+			else if (destination instanceof LightUtilityVehicle luv
+					&& luv.getOperator() == null) {
+				transferred =  luv.addOccupant(this);
+				// Note: will call setContainerUnit(c) below. no need of calling it here
 			}
 			else if (destination instanceof MarsSurface ms) {
 				transferred = ms.addRobot(this);

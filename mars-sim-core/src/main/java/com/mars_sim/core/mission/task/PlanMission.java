@@ -200,6 +200,13 @@ public class PlanMission extends Task {
 			if (mission != null) {
 				MissionPlanning plan = mission.getPlan();
 				
+//				if (mission instanceof ConstructionMission) {
+//					// No mission found so stop planning for now
+//					logger.log(worker, Level.INFO, 10_000, "No need of a mission plan for " + mission.getName() + ".");
+//					
+//					endTask();
+//				}
+				
 				if (plan == null) {
 					// No mission found so stop planning for now
 					logger.log(worker, Level.INFO, 10_000, "No plan in place for " + mission.getName() + " just yet.");

@@ -177,7 +177,7 @@ public final class MalfunctionFactory implements Serializable {
 		}
 		
 		// Note: Must filter out drones
-		if (entity instanceof Rover || entity instanceof LightUtilityVehicle) {
+		if (entity instanceof Rover) {
 			Collection<Robot> inventoryUnits1 = ((Crewable)entity).getRobotCrew();
 			for (Unit unit : inventoryUnits1) {
 				if (unit instanceof Malfunctionable u) {
@@ -186,6 +186,12 @@ public final class MalfunctionFactory implements Serializable {
 			}
 		}
 
+		if (entity instanceof LightUtilityVehicle luv && luv.getOccupant() instanceof Robot r) {
+			if (r instanceof Malfunctionable u) {
+				entities.add(u);
+			}
+		}
+		
 		else if (entity instanceof Settlement s) {
 			entities.addAll(getBuildingMalfunctionables(s));
 		}

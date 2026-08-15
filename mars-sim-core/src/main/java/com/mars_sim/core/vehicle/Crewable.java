@@ -82,6 +82,14 @@ public interface Crewable {
 	public boolean isRobotCrewmember(Robot robot);
 	
 	/**
+	 * is it full ?
+	 * 
+	 * @return
+	 */
+	public boolean isFull();
+	
+	
+	/**
 	 * Removes a person as crewmember.
 	 * 
 	 * @param person

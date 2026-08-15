@@ -20,6 +20,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -150,6 +151,11 @@ public final class EVASuitUtil {
 					otherPeopleNum = s.getIndoorPeopleCount() - 1;
 				else if (location instanceof Crewable c)
 					otherPeopleNum = c.getCrewNum();
+				else if (location instanceof LightUtilityVehicle luv 
+						&& !luv.hasNoCrew()) {
+					otherPeopleNum = 1;
+				}
+				
 				hasEnoughResources = hasEnoughResourcesForSuit(inv, suit, otherPeopleNum);
 
 			} catch (Exception ex) {

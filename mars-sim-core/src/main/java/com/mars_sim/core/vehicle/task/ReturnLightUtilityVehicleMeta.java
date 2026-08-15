@@ -46,6 +46,7 @@ public class ReturnLightUtilityVehicleMeta extends FactoryMetaTask {
         double result = 0D;
 
         if (person.isInVehicle() && person.getVehicle() instanceof LightUtilityVehicle) {
+
             result = 500D;
 
 	        if (result > 0)

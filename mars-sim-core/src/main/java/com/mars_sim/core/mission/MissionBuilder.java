@@ -20,6 +20,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -188,6 +189,10 @@ public class MissionBuilder {
 
 			if (vehicle instanceof Crewable crewable) {
 				maxMembers = Math.min(maxMembers, crewable.getCrewCapacity());
+			}
+			else if (vehicle instanceof LightUtilityVehicle luv 
+					&& !luv.hasNoCrew()) {
+				maxMembers = Math.min(maxMembers, 1);
 			}
 		}
 

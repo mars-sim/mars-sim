@@ -34,6 +34,7 @@ import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
 /**
  * This is a task for teaching a student a task.
@@ -432,16 +433,24 @@ public class Teach extends Task {
 					people.add(inhabitant);
 				}
 			}
-		} else if (worker.isInVehicle()) {
-			Crewable rover = (Crewable) worker.getVehicle();
-			Iterator<Person> i = rover.getCrew().iterator();
-			while (i.hasNext()) {
-				Person crewmember = i.next();
-				if (worker.equals(crewmember)) {
-					people.add(crewmember);
+		} 
+		else if (worker.isInVehicle()) {
+			if (worker.getVehicle() instanceof Crewable c) {
+				Iterator<Person> i = c.getCrew().iterator();
+				while (i.hasNext()) {
+					Person crewmember = i.next();
+					if (worker.equals(crewmember)) {
+						people.add(crewmember);
+					}
 				}
 			}
+			else if (worker.getVehicle() instanceof LightUtilityVehicle luv) {
+				if (luv.getOccupant() != null && luv.getOccupant().equals(worker)) {
+					people.add((Person)worker);
+				}
+			}	
 		}
+	
 
 		return people;
 	}

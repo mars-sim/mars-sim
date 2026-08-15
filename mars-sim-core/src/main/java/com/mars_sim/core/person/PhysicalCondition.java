@@ -1562,6 +1562,10 @@ public class PhysicalCondition implements Serializable {
 		// Add the person's death info to the postmortem exam waiting list
 		// Note: what if a person died in a settlement outside of home town ?
 		medicalManager.addPostmortemExam(person.getAssociatedSettlement(), deathDetails);
+		
+		// Vacate the role of being the operator of the vehicle he used to have
+		if (person.getVehicle() != null)
+			person.getVehicle().setOperator(null);
 	}
 
 	/**

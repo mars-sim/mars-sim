@@ -10,6 +10,7 @@ import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.role.RoleType;
@@ -24,7 +25,9 @@ class ConstructionMissionMetaTest extends MarsSimUnitTest {
         var s = buildSettlement("mock", 10);
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
         architect.setRole(RoleType.ENGINEERING_SPECIALIST);
-        for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
+        architect.getSkillManager().addNewSkill(SkillType.CONSTRUCTION, 1);
+        
+        for (int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
             buildPerson("P" + i, s);
         }
 
@@ -53,6 +56,8 @@ class ConstructionMissionMetaTest extends MarsSimUnitTest {
 
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
         architect.setRole(RoleType.ENGINEERING_SPECIALIST);
+        architect.getSkillManager().addNewSkill(SkillType.CONSTRUCTION, 1);
+        
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
             buildPerson("P" + i, s);
         }
@@ -72,6 +77,8 @@ class ConstructionMissionMetaTest extends MarsSimUnitTest {
         var s = buildSettlement("mock", 10);
         var doctor = buildPerson("worker", s, JobType.DOCTOR);
         doctor.setRole(RoleType.AGRICULTURE_SPECIALIST);
+        doctor.getSkillManager().addNewSkill(SkillType.CONSTRUCTION, 1);
+        
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
             buildPerson("P" + i, s);
         }
@@ -99,6 +106,8 @@ class ConstructionMissionMetaTest extends MarsSimUnitTest {
         var s = buildSettlement("mock", 10);
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
         architect.setRole(RoleType.ENGINEERING_SPECIALIST);
+        architect.getSkillManager().addNewSkill(SkillType.CONSTRUCTION, 1);
+        
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
             buildPerson("P" + i, s);
         }
