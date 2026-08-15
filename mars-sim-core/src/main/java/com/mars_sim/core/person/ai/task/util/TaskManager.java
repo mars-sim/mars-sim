@@ -21,6 +21,7 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.science.task.RespondToStudyInvitation;
 import com.mars_sim.core.time.MarsTime;
@@ -228,13 +229,27 @@ public abstract class TaskManager implements Serializable {
 	 * Ends the current task.
 	 */
 	public void endCurrentTask() {
-		if (currentTask != null) {
+		if (currentTask != null) {	
 			currentTask.endTask();
 			currentTask = null;
 			worker.fireUnitUpdate(TASK_EVENT, null);
 		}
 	}
-
+	
+	/**
+	 * Ends the current EVA task.
+	 */
+	public void endCurrentEVATask(String reason) {
+		if (currentTask != null) {
+			if (currentTask instanceof EVAOperation eo) {
+				eo.endEVA(reason);
+			}
+			else {
+				logger.warning(worker, "Ending " + currentTask.getName() + ": " + reason + ".");
+				endCurrentTask();
+			}
+		}
+	}
 	/**
 	 * Clears a specific task.
 	 * 

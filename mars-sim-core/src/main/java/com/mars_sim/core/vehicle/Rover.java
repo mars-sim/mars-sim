@@ -337,16 +337,22 @@ public class Rover extends GroundVehicle implements Crewable,
 	}
 
 	/**
+	 * is it full ?
+	 * 
+	 * @return
+	 */
+	public boolean isFull() {
+		return this.getCrewCapacity() <= getCrewNum();
+	}
+	
+	/**
 	 * Adds a person as crewmember.
 	 *
 	 * @param person
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (isCrewmember(person)) {
-			return true;
-		}
-		if (occupants.add(person)) {
+		if (!isFull() && !isCrewmember(person) && occupants.add(person)) {
 			// Fire the unit event type
 			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, person);
 			return true;
@@ -361,10 +367,9 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param true if the person can be removed
 	 */
 	public boolean removePerson(Person person) {
-		if (!isCrewmember(person)) {
-			return true;
-		}
-		if (occupants.remove(person)) {
+		if (isCrewmember(person) && occupants.remove(person)) {
+			if (getOperator() != null && getOperator().equals(person))
+				setOperator(null);
 			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, person);
 			return true;
 		}

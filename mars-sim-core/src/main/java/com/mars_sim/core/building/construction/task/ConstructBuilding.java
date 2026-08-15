@@ -24,7 +24,6 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
 /**
@@ -55,6 +54,7 @@ public class ConstructBuilding extends EVAOperation {
 
 	private ConstructionStage stage;
 	private ConstructionSite site;
+	/** The LUV chosen by this person for the construction. */
 	private LightUtilityVehicle luv;
 
 	private List<LightUtilityVehicle> vehicles;
@@ -70,6 +70,7 @@ public class ConstructBuilding extends EVAOperation {
 		super(NAME, person, RandomUtil.getRandomDouble(10) + 150D, CONSTRUCTION);
 
 		if (person.isSuperUnfit()) {
+			resetLUV();
 			endEVA("Super Unfit.");
         	return;
 		}
@@ -88,6 +89,7 @@ public class ConstructBuilding extends EVAOperation {
 		}
 
 		else {
+			resetLUV();
 			endTask();
 		}
 	}
@@ -112,6 +114,7 @@ public class ConstructBuilding extends EVAOperation {
 		this.vehicles = vehicles;
 
 		if (person.isSuperUnfit()) {
+			resetLUV();
 			endEVA("Super Unfit.");
         	return;
 		}
@@ -184,8 +187,10 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	private double constructionPhase(double time) {
 
-		if (checkReadiness(time) > 0)
+		if (checkReadiness(time) > 0) {
+			resetLUV();
 			return time;
+		}
 		
 		// Operate light utility vehicle if no one else is operating it.
 		if (!operatingLUV) {
@@ -214,28 +219,38 @@ public class ConstructBuilding extends EVAOperation {
 		// Check if an accident happens during construction.
 		checkForAccident(workTime);
 		
-		boolean availableWork = stage.getRequiredWorkTime() > stage.getCompletedWorkTime();
+		boolean availableWork = stage.getRequiredWorkTime() >= stage.getCompletedWorkTime();
 
 		// Check if site duration has ended or there is reason to cut the construction
 		// phase short and return to the rover.
 		if (person != null
 			&& (stage.isComplete() || !availableWork)) {
 
-			logger.info(person, site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 10.0)/10.0);
-			
+			logger.info(person, site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 10.0)/10.0);		
 			// End operating light utility vehicle.
-			if (luv != null
-				&& ((Crewable)luv).isCrewmember(person)) {
-				returnVehicle();
-			}
-
+			resetLUV();
 			endEVA("Stage completed.");
 			return workTime;
 		}
 
+		
+		if (person.isSuperUnfit()) {
+			resetLUV();
+			endEVA("Super Unfit.");
+			return time;
+		}
+		
 		return 0;
 	}
 
+	/**
+	 * Ends the task.
+	 */
+	public void endTask() {
+		resetLUV();
+		super.endTask();
+	}
+	
 	/**
 	 * Obtains a construction vehicle from the settlement if possible.
 	 *
@@ -244,39 +259,37 @@ public class ConstructBuilding extends EVAOperation {
 	private void obtainVehicle() {
 		Iterator<LightUtilityVehicle> i = vehicles.iterator();
 		while (i.hasNext() && (luv == null)) {
-			LightUtilityVehicle vehicle = i.next();
-			if (!vehicle.getMalfunctionManager().hasMalfunction()
-				&& (vehicle.getOperator() == null)) {
+			LightUtilityVehicle v = i.next();
+			if (!v.getMalfunctionManager().hasMalfunction()
+				&& !v.isFull() && v.getOperator() == null) {
 
-					// Warning: do not call addPerson directly
-//					vehicle.addPerson(person);
-					
-					// Call transfer()
-					person.transfer(vehicle);
-				
-					vehicle.setOperator(person);
-
-					luv = vehicle;
+				// Warning: do not call addOccupant directly
+				boolean canTransfer = person.transfer(v);	
+				if (canTransfer) {
+					luv = v;
 					operatingLUV = true;
-
 					// Place light utility vehicles at random location in construction site.
 					LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
 					luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+				}
 
-					break;
+				break;
 			}
 		}
 	}
 
+	
 	/**
-	 * Returns the construction vehicle used to the settlement.
+	 * Reset the LUV.
 	 *
 	 * @throws Exception if error returning construction vehicle.
 	 */
-	private void returnVehicle() {
-		luv.removePerson(person);
-		luv.setOperator(null);
-		operatingLUV = false;
+	private void resetLUV() {
+		if (luv != null) {
+			luv.removeOccupant(person);
+			operatingLUV = false;
+			logger.info(person, "Released " + luv.getName() + ".");
+		}
 	}
 
 	@Override

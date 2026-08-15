@@ -1,26 +1,23 @@
 /*
  * Mars Simulation Project
  * LightUtilityVehicle.java
- * @date 2025-09-06
+ * @date 2026-08-15
  * @author Sebastien Venot
  */
 package com.mars_sim.core.vehicle;
 
 import java.util.Collection;
-import java.util.Set;
 
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.data.UnitSet;
-import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 
 /**
  * A light utility vehicle that can be used for construction, loading and
  * mining.
  */
-public class LightUtilityVehicle extends GroundVehicle implements Crewable {
+public class LightUtilityVehicle extends GroundVehicle {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -33,16 +30,14 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	
 	// Data members.
 	/** The LightUtilityVehicle's capacity for crewmembers. */
-	private int crewCapacity = 0;
-	private int robotCrewCapacity = 0;
+	private int crewCapacity = 1;
+//	private int robotCrewCapacity = 0;
 	private int slotNumber = 0;
 	
 	/** A collections of attachment parts */
 	private Collection<Part> attachments;
-	/** The occupants. */
-	private Set<Person> occupants;
-	/** The robot occupants. */
-	private Set<Robot> robotOccupants;
+//	/** The occupant. */
+	private	Worker occupant;
 	
 	public LightUtilityVehicle(String name, VehicleSpec spec, Settlement settlement) {
 		// Use GroundVehicle constructor.
@@ -52,13 +47,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 			attachments = spec.getAttachableParts();
 			slotNumber = spec.getAttachmentSlots();
 		}
-
-		occupants = new UnitSet<>();
-		robotOccupants = new UnitSet<>();
-		
-		// Set crew capacity
-		crewCapacity = spec.getCrewSize();
-		robotCrewCapacity = spec.getCrewSize();
 	}
 
 	/**
@@ -66,153 +54,92 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * 
 	 * @return capacity
 	 */
-	@Override
+//	@Override
 	public int getCrewCapacity() {
 		return crewCapacity;
 	}
 
 	/**
-	 * Gets the number of crewmembers the vehicle can carry.
-	 * 
-	 * @return capacity
-	 */
-	@Override
-	public int getRobotCrewCapacity() {
-		return robotCrewCapacity;
-	}
-
-	/**
 	 * Gets the current number of crewmembers.
 	 * 
 	 * @return number of crewmembers
 	 */
-	@Override
+//	@Override
 	public int getCrewNum() {
-		if (!getCrew().isEmpty())
-			return occupants.size();
+		if (occupant != null)
+			return 1;
 		return 0;
 	}
 
 	/**
-	 * Gets the current number of crewmembers.
+	 * Checks if worker is a crewmember.
 	 * 
-	 * @return number of crewmembers
+	 * @param worker the worker to check
+	 * @return true if worker is a crewmember
 	 */
-	@Override
-	public int getRobotCrewNum() {
-		if (!getRobotCrew().isEmpty())
-			return robotOccupants.size();
-		return 0;
-	}
-
-	/**
-	 * Gets a set of the robot crewmembers.
-	 * 
-	 * @return robot crewmembers as Collection
-	 */
-	@Override
-	public Set<Person> getCrew() {
-		if (occupants == null || occupants.isEmpty())
-			return new UnitSet<>();
-		return occupants;
-	}
-
-	/**
-	 * Gets a set of the robot crewmembers.
-	 * 
-	 * @return robot crewmembers as Collection
-	 */
-	@Override
-	public Set<Robot> getRobotCrew() {
-		if (robotOccupants == null || robotOccupants.isEmpty())
-			return new UnitSet<>();
-		return robotOccupants;
-	}
-
-	/**
-	 * Checks if person is a crewmember.
-	 * 
-	 * @param person the person to check
-	 * @return true if person is a crewmember
-	 */
-	@Override
-	public boolean isCrewmember(Person person) {
-		return occupants.contains(person);
-	}
-
-	/**
-	 * Checks if robot is a crewmember.
-	 * 
-	 * @param robot the robot to check
-	 * @return true if robot is a crewmember
-	 */
-	@Override
-	public boolean isRobotCrewmember(Robot robot) {
-		return robotOccupants.contains(robot);
+//	@Override
+	public boolean isCrewmember(Worker worker) {
+		if (occupant == null)
+			return false;
+		return occupant.equals(worker);
 	}
 
 	/**
 	 * Does the luv have no occupants ?
 	 */
 	public boolean hasNoCrew() {
-		return robotOccupants.isEmpty() && occupants.isEmpty();
+		return occupant == null;
 	}
 	
 	/**
-	 * Adds a person as crewmember.
+	 * is it full ?
 	 * 
-	 * @param person
-	 * @param true if the person can be added
+	 * @return
 	 */
-	public boolean addPerson(Person person) {
-		if (occupants.size() < crewCapacity) {
+	public boolean isFull() {
+		return this.getCrewCapacity() <= getCrewNum();
+	}
+	
+	/**
+	 * Adds a worker as crewmember.
+	 *
+	 * @param worker
+	 * @param true if the worker can be added
+	 */
+	public boolean addOccupant(Worker worker) {
+		if (!isFull() && !isCrewmember(worker)) {
+			occupant = worker;
+			setOperator(worker);
 			// Fire the unit event type
-			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, person);
-			return occupants.add(person);
+			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, worker);
+			return true;
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Removes a person as crewmember.
+	 * Gets the occupant.
 	 * 
-	 * @param person
-	 * @param true if the person can be removed
+	 * @return
 	 */
-	public boolean removePerson(Person person) {
-		if (isCrewmember(person)) {
-			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, person);
-			return occupants.remove(person);
-		}
-		return false;
+	public Worker getOccupant() {
+		return occupant;
 	}
 	
 	/**
-	 * Adds a robot as crewmember.
-	 * 
-	 * @param robot
-	 * @param true if the robot can be added
+	 * Removes a worker as crewmember.
+	 *
+	 * @param worker
+	 * @param true if the worker can be removed
 	 */
-	public boolean addRobot(Robot robot) {
-		if (robotOccupants.size() < robotCrewCapacity) {
-			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, robot);
-			return robotOccupants.add(robot);
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Removes a robot as crewmember.
-	 * 
-	 * @param robot
-	 * @param true if the robot can be removed
-	 */
-	@Override
-	public boolean removeRobot(Robot robot) {
-		if (isRobotCrewmember(robot)) {
-			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, robot);
-			return robotOccupants.remove(robot);
+	public boolean removeOccupant(Worker worker) {
+		if (isCrewmember(worker)) {
+			occupant = null;
+			if (getOperator() != null) {// && getOperator().equals(worker))
+				setOperator(null);
+			}
+			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, worker);
+			return true;
 		}
 		return false;
 	}
@@ -242,11 +169,8 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		attachments.clear();
 		attachments = null;	
 
-		occupants.clear();
-		occupants = null;
-		
-		robotOccupants.clear();
-		robotOccupants = null;
+		occupant = null;
+
 	}
 	 
 }

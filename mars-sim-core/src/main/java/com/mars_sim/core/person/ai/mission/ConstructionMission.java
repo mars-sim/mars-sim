@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionMission.java
- * @date 2023-06-06
+ * @date 2026-08-15
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -33,7 +33,6 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementParameters;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -67,9 +66,10 @@ public class ConstructionMission extends AbstractMission {
 	/** Time (millisols) required to prepare construction site for stage. */
 	private static final double SITE_PREPARE_TIME = 250D;
 
+	private double sitePrepTime;
+	
 	private ConstructionObjective objective;
 
-	private double sitePrepTime;
 	
 	/**
 	 * Constructor 1 for Case 1: Determined by the need of the settlement.
@@ -168,6 +168,10 @@ public class ConstructionMission extends AbstractMission {
 
 	/**
 	 * Reserves construction vehicles for the mission.
+	 * 
+	 * @param settlement
+	 * @param stage
+	 * @return
 	 */
 	private List<LightUtilityVehicle> reserveConstructionVehicles(Settlement settlement, ConstructionStage stage) {
 		// Construct a new list of construction vehicles
@@ -253,12 +257,11 @@ public class ConstructionMission extends AbstractMission {
 		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
-
 			if (vehicle.getVehicleType() == VehicleType.LUV) {
 				boolean usable = !vehicle.isReserved();
                 usable = usable && vehicle.isVehicleReady() && !vehicle.isBeingTowed();
 
-				if (((Crewable) vehicle).getCrewNum() > 0)
+				if (((LightUtilityVehicle) vehicle).isFull())
 					usable = false;
 
 				if (usable)
@@ -295,7 +298,7 @@ public class ConstructionMission extends AbstractMission {
 	protected void performPhase(Worker member) {
 		super.performPhase(member);
 		if (PREPARE_SITE_PHASE.equals(getPhase())) {
-			prepareSitePhase(objective.getSite());
+			prepareSitePhase(member, objective.getSite());
 		} else if (CONSTRUCTION_PHASE.equals(getPhase())) {
 			constructionPhase(member);
 		}
@@ -307,12 +310,12 @@ public class ConstructionMission extends AbstractMission {
 	 * @param site
 	 * @return
 	 */
-	private boolean isPreReqsAvailable(ConstructionSite site) {
+	private boolean isPreReqsAvailable(Worker member, ConstructionSite site) {
 		var settlement = site.getAssociatedSettlement();
 		var stage = objective.getStage();
 
 		if (!stage.loadAvailableConstructionMaterials(settlement)) {
-			logger.info(site, 60_000, "Materials not ready at " + site.getName() + ".");
+			logger.info(site, 30_000, member + " found construction materials not ready at " + site.getName() + ".");
 			return false;
 		}
 		return true;
@@ -323,10 +326,12 @@ public class ConstructionMission extends AbstractMission {
 	 *
 	 * @param site the ConstructionSite of interest.
 	 */
-	private void prepareSitePhase(ConstructionSite site) {
-		if (!isPreReqsAvailable(site)) {
+	private void prepareSitePhase(Worker member, ConstructionSite site) {
+		if (!isPreReqsAvailable(member, site)) {
 			return;
 		}
+		
+		// Future: add the work of bringing it construction material next to the site
 		
 		// Check if site preparation time has expired
 		if (getPhaseTimeElapse() >= sitePrepTime) {
@@ -337,25 +342,32 @@ public class ConstructionMission extends AbstractMission {
 	/**
 	 * Performs the construction phase.
 	 *
-	 * @param member the mission member performing the phase.
+	 * @param worker the mission member performing the phase.
 	 */
-	private void constructionPhase(Worker member) {
+	private void constructionPhase(Worker worker) {
 		var site = objective.getSite();
 
-		if (!isPreReqsAvailable(site)) {
+		if (!isPreReqsAvailable(worker, site)) {
 			setPhase(PREPARE_SITE_PHASE, site.getAssociatedSettlement().getName());
 			return;
 		}
-
-		// Display the LUV(s)
-		showLightUtilityVehicle();
 		
-		// Anyone in the crew or a single person at the home settlement has a
-		// dangerous illness, end phase.
-		if (hasEmergency()) {
-			setPhaseEnded(true);
-		}
-
+//		// Anyone in the crew or a single person at the home settlement has a
+//		// dangerous illness, end phase.
+//		if (hasEmergency()) {
+//			logger.info(worker, 1_000, " had medical emergency at " + site.getName() + ".");
+//			// End the ConstructBuilding task and return to the settlement to take care of things
+////			((Person) worker).getMind().getTaskManager().clearSpecificTask(ConstructBuilding.class.getSimpleName());
+////			((Person) worker).getMind().getTaskManager().endCurrentEVATask("Medical Emergency");
+//		}
+//
+//		if (((Person) worker).isSuperUnfit()) {
+//			logger.info(worker, 1_000, " no longer fit enough to continue construction at " + site.getName() + ".");
+//			// End the ConstructBuilding task and return to the settlement to take care of things
+////			((Person) worker).getMind().getTaskManager().clearSpecificTask(ConstructBuilding.class.getSimpleName());
+////			((Person) worker).getMind().getTaskManager().endCurrentEVATask("Super Unfit");
+//		}
+		
 		// Check if further work can be done on construction stage.
 		var stage = objective.getStage();
 		if (stage.getRequiredWorkTime() <= stage.getCompletedWorkTime()) {
@@ -365,19 +377,23 @@ public class ConstructionMission extends AbstractMission {
 		boolean canAssign = false;
 		if (!getPhaseEnded()) {
 			// Assign construction task to member.
-			Person p = (Person) member;
+			Person p = (Person) worker;
 			if (p.isInSettlement() && RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
 				&& ConstructBuilding.canConstruct(p, site)) {
 				canAssign = assignTask(p, new ConstructBuilding(p, stage, site, objective.getConstructionVehicles()));
 			}
 			if (canAssign) {
-				logger.info(member, 20_000L, "Assigned to construct " + site.getName() + ".");
+				logger.info(worker, 1_000L, "Assigned to construct " + site.getName() + ".");
 			}
-			else {
-				logger.info(member, 20_000L, "Unable to assign to construct " + site.getName() + ".");
-			}
+//			else {
+//				logger.info(member, 20_000L, "Unable to assign to construct " + site.getName() + ".");
+//			}
 		}
 
+		// Display the LUV(s)
+		if (worker.isInVehicle())
+			showLightUtilityVehicle(worker);
+		
 		checkConstructionStageComplete(site, stage);
 	}
 
@@ -457,12 +473,14 @@ public class ConstructionMission extends AbstractMission {
 	 *
 	 * @return reserved light utility vehicle or null if none.
 	 */
-	private void showLightUtilityVehicle() {
+	private void showLightUtilityVehicle(Worker worker) {
 		var site = objective.getSite();
-		for(LightUtilityVehicle luv : objective.getConstructionVehicles()) {
-			// Place light utility vehicles at random location in construction site.
-			LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
-			luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+		for (LightUtilityVehicle luv : objective.getConstructionVehicles()) {
+			if (luv.isCrewmember(worker)) {
+				// Place light utility vehicles at random location in construction site.
+				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
+				luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+			}
 		}
 	}
 	
@@ -476,7 +494,7 @@ public class ConstructionMission extends AbstractMission {
 	private LightUtilityVehicle reserveLightUtilityVehicle(Settlement settlement) {
 		for(var vehicle : settlement.getParkedGaragedVehicles()) {
 			if (vehicle instanceof LightUtilityVehicle luvTemp && ((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
-						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
+						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0)) {
 				luvTemp.setReservedForMission(true);
 				return luvTemp;
 			}	
@@ -484,7 +502,6 @@ public class ConstructionMission extends AbstractMission {
 
 		return null;
 	}
-
 
 	/*
 	 * Unreserves and store back all LUV attachment parts in settlement.

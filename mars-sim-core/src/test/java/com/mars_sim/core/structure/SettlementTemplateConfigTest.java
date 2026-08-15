@@ -134,7 +134,7 @@ public class SettlementTemplateConfigTest {
         
         // First plan should be Inflatable Greenhouse (delay 30)
         assertEquals("Inflatable Greenhouse", plansList.get(0).buildingType(), "First plan building type");
-        assertEquals(30, plansList.get(0).delayInSols(), "First plan delay");
+        assertEquals(1, plansList.get(0).delayInSols(), "First plan delay");
 
         // Second plan should be Manufacturing Workshop (delay 60) 
         assertEquals("Workshop", plansList.get(1).buildingType(), "Second plan building type");

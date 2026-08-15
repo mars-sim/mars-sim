@@ -110,9 +110,10 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 	@Override
 	protected void setColumnDetails(TableColumnModel columnModel) {
 		columnModel.getColumn(0).setPreferredWidth(60);
-		columnModel.getColumn(1).setPreferredWidth(90);
-		columnModel.getColumn(2).setPreferredWidth(20);
-		columnModel.getColumn(3).setPreferredWidth(20);
+		columnModel.getColumn(1).setPreferredWidth(80);
+		columnModel.getColumn(2).setPreferredWidth(15);
+		columnModel.getColumn(3).setPreferredWidth(15);
+		columnModel.getColumn(4).setPreferredWidth(15);
 	}
 
 	/**

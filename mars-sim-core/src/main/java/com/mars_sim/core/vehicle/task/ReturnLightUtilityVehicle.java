@@ -169,17 +169,16 @@ public class ReturnLightUtilityVehicle extends Task {
 			}
 	
 			if (done) {
-				if (person != null)
-					// Remove person from light utility vehicle.
-					luv.removePerson(person);
-				else if (robot != null)
-					// Remove robot from light utility vehicle.
-					luv.removeRobot(robot);
-
-				luv.setOperator(null);
+				if (luv != null) {
+					done = luv.removeOccupant(person);
+				}
+				if (!done) {
+					logger.severe(luv, "Could not remove occupant "
+							+ person.getName() + ".");
+				}
 				
 			} else {
-				logger.severe(luv, "Light utility vehicle: could not be stored in "
+				logger.severe(luv, "Could not be stored in "
 						+ returnContainer.getName());
 			}
 		}
@@ -188,7 +187,7 @@ public class ReturnLightUtilityVehicle extends Task {
 
 		return time;
 	}
-
+	
 	/**
 	 * Unload all attachment parts and inventory from light utility vehicle.
 	 */

@@ -22,6 +22,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -169,7 +170,10 @@ public class UnloadVehicleGarage extends Task {
 			if (vehicle instanceof Crewable crewable) {
 				UnloadHelper.unloadDeceased(crewable, settlement);
 			}
-
+			else if (vehicle instanceof LightUtilityVehicle luv) {
+				UnloadHelper.unloadDeceased(luv, settlement);
+			}
+			
 			if (isFullyUnloaded(vehicle)) {
 				vehicle.removeSecondaryStatus(StatusType.UNLOADING);
 

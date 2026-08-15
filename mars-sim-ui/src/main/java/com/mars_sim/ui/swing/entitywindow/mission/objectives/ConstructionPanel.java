@@ -226,11 +226,11 @@ public class ConstructionPanel extends JPanel implements EntityListener, Objecti
             if (row < goodsList.size()) {
                 Good good = goodsList.get(row);
                 return switch (column) {
-                  case 0 ->  good.getName();
-                  case 1 ->  good.getCategory().getName();
+                  case 0 -> good.getName();
+                  case 1 -> good.getCategory().getName();
                   case 2 -> materials.get(good).getRequired();
-                  case 3 -> materials.get(good).getAvailable();
-                  default -> materials.get(good).getMissing();
+                  case 3 -> Math.round(materials.get(good).getAvailable() * 10.0)/10.0;
+                  default -> Math.round(materials.get(good).getMissing() * 10.0)/10.0;
                 };
             }
 

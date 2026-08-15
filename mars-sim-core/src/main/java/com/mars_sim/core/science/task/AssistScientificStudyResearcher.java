@@ -28,6 +28,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 
 /**
@@ -232,8 +233,16 @@ public class AssistScientificStudyResearcher extends Task {
 			potentials = person.getAssociatedSettlement().getIndoorPeople();
 		}
 		else if (person.isInVehicle()) {
-			Crewable rover = (Crewable) person.getVehicle();
-			potentials = rover.getCrew();
+			if (person.getVehicle() instanceof Crewable c) {
+				potentials = c.getCrew();
+			}
+			else if (person.getVehicle() instanceof LightUtilityVehicle luv) {
+				if (luv.getOccupant() != null && luv.getOccupant().equals(person)) {
+					Set<Person> set = new HashSet<>();
+					set.add(person);
+					potentials = set;
+				}
+			}
 		}
 
 		Collection<Person> people = null;

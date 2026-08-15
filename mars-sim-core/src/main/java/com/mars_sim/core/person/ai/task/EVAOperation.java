@@ -425,18 +425,26 @@ public abstract class EVAOperation extends Task {
 
 		// Check for any EVA problems.
 		if (hasEVASuitProblem(person)) {
+			logger.info(person, "EVA Suit problem.");
 			return true;
 		}
 
 		// Check if it is at meal time and the person is doubly hungry
 		if (isHungryAtMealTime(person, 0)) {
+			logger.info(person, "Too hungry at meal time.");
 			return true;
 		}
 
-        // Checks if the person is physically drained
-		if (isExhausted(person)) {
+//        // Checks if the person is physically drained
+//		if (isExhausted(person)) {
+//			logger.info(person, "Exhausted.");
+//			return true;
+//		}
+		
+		if (isInEmergency(person)) {
+			logger.info(person, "Medical Emergency.");
 			return true;
-		}
+		}	
 		
 		return result;
 	}
@@ -450,11 +458,14 @@ public abstract class EVAOperation extends Task {
 	protected boolean shouldEndEVAOperation() {
 
 		// Check end EVA flag.
-		if (endEVARequested)
+		if (endEVARequested) {
+			logger.info(person, "endEVARequested is true.");
 			return true;
+		}
 
 		// Check for sunlight
 		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
+			logger.info(person, "Sunlight below threshold.");
 			return true;
 		}
 
@@ -510,7 +521,7 @@ public abstract class EVAOperation extends Task {
 
         // Check if there is a reason to cut short and return.
 		if (shouldEndEVAOperation()) {
-			endEVA("EVA ended prematurely.");
+			endEVA("Premature.");
 			return time;
 		}
 		
@@ -528,12 +539,15 @@ public abstract class EVAOperation extends Task {
 	 * 
 	 * @param reason Reason for ending.
 	 */
-	protected void endEVA(String reason) {
+	public void endEVA(String reason) {
 		if (person.isOutside()) {
+			logger.warning(worker, 1_000L, "Walking back in: " + reason);
             setPhase(WALK_BACK_INSIDE);
 		}
-    	else
+    	else {
+			logger.warning(worker, 1_000L, "Ending EVA: " + reason);
         	endTask();
+    	}
 	}
 
 	/**
@@ -543,8 +557,8 @@ public abstract class EVAOperation extends Task {
 	@Override
 	public void endTask() {		
 		if (person.isOutside()) {
-			logger.warning(worker, "Prematurely ending a task during an EVA.");
-            endEVA("Premature endTask");
+			logger.warning(worker, "Outside.");
+            endEVA("Outside.");
 		}
     	else
         	super.endTask();
@@ -622,22 +636,23 @@ public abstract class EVAOperation extends Task {
         		&& person.getPhysicalCondition().isDoubleHungry();
     }
 
-	/**
-	 * Checks if the person's settlement is physically drained.
-	 *
-	 * @param person
-	 * @return
-	 */
-	public static boolean isExhausted(Person person) {
-		if (isInEmergency(person)) {
-			return false;
-		}	
-		
-        return person.getPhysicalCondition().isDoubleHungry()
-				&& person.getPhysicalCondition().getThirstLevel().isDoubleThirsty()
-                && person.getPhysicalCondition().getFatigueLevel().isSleepy()
-				&& person.getPhysicalCondition().getStressLevel().isStressedOut();
-    }
+//	/**
+//	 * Checks if the person's settlement is physically drained.
+//	 *
+//	 * @param person
+//	 * @return
+//	 */
+//	public static boolean isExhausted(Person person) {
+//		if (isInEmergency(person)) {
+//			logger.info(person, "Medical Emergency.");
+//			return true;
+//		}	
+//
+//        return person.getPhysicalCondition().isDoubleHungry()
+//				&& person.getPhysicalCondition().getThirstLevel().isDoubleThirsty()
+//                && person.getPhysicalCondition().getFatigueLevel().isSleepy()
+//				&& person.getPhysicalCondition().getStressLevel().isStressedOut();
+//    }
 
 	/**
 	 * Checks if the person is physically fit for heavy EVA tasks.

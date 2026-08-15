@@ -129,11 +129,7 @@ public class MineSite extends EVAOperation {
 	public void endEVA(String reason) {
 		// End operating light utility vehicle.
 		if (operatingLUV) {
-			var luv = objectives.getLUV();
-			logger.info(person, "Release " + luv.getName());
-			luv.setOperator(null);
-			luv.removePerson(person);
-			operatingLUV = false;
+			resetLUV();
 		}
 
 		super.endEVA(reason);
@@ -152,20 +148,27 @@ public class MineSite extends EVAOperation {
 		// Note: need to call addTimeOnSite() ahead of checkReadiness() since
 		// checkReadiness's addTimeOnSite() lacks the details of handling LUV
 		if (checkReadiness(time) > 0) {
+			resetLUV();
 			return time;
 		}
+
 		
 		// Operate light utility vehicle if no one else is operating it.
 		var luv = objectives.getLUV();
 		if (!luv.getMalfunctionManager().hasMalfunction()
-				&& (luv.getOperator() == null)) {
+				&& !luv.isFull() && luv.getOperator() == null) {
 
-			luv.addPerson(person);
-			luv.setOperator(person);
-			logger.info(person, "Operating " + luv.getName());
+			// Warning: do not call addOccupant directly
+			boolean canTransfer = person.transfer(luv);	
+			if (canTransfer) {
+				logger.info(person, "Operating " + luv.getName());
 
-			operatingLUV = true;
-			setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // -NLS-1$
+				operatingLUV = true;
+				setDescription(Msg.getString("Task.description.mineSite.detail", luv.getName())); // -NLS-1$
+			}
+			else {
+				
+			}
 		}
 
 		// Excavate minerals.
@@ -176,7 +179,13 @@ public class MineSite extends EVAOperation {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
-
+		
+		if (person.isSuperUnfit()) {
+			resetLUV();
+			endEVA("Super Unfit.");
+			return time;
+		}
+		
 		return remainingTime;
 	}
 
@@ -212,6 +221,8 @@ public class MineSite extends EVAOperation {
 
 	@Override
 	protected void clearDown() {
+		resetLUV();
+		
 		// Just fire one event at the end of the task
 		eventSource.fireMissionUpdate(MissionObjective.CHANGE_EVENT, "extracted");
 
@@ -260,5 +271,18 @@ public class MineSite extends EVAOperation {
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Reset the LUV.
+	 *
+	 * @throws Exception if error returning construction vehicle.
+	 */
+	private void resetLUV() {
+		if (objectives.getLUV() != null) {
+			objectives.getLUV().removeOccupant(person);
+			operatingLUV = false;
+			logger.info(person, "Released " + objectives.getLUV().getName() + ".");
+		}
 	}
 }

@@ -20,6 +20,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -160,6 +161,9 @@ public class UnloadVehicleEVA extends EVAOperation {
 		// Retrieve, examine and bury any dead bodies
 		if (vehicle instanceof Crewable crewable) {
 			UnloadHelper.unloadDeceased(crewable, settlement);
+		}
+		else if (vehicle instanceof LightUtilityVehicle luv) {
+			UnloadHelper.unloadDeceased(luv, settlement);
 		}
 				
         // Add experience points

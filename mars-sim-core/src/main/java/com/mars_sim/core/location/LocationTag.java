@@ -134,6 +134,25 @@ public class LocationTag implements Serializable {
 				result = container.getName();
 			}
 		}
+		else if (unit instanceof Vehicle v) {
+			if (container instanceof Settlement s) {
+				if (v.getBuildingLocation() != null)
+					result = v.getBuildingLocation().getName();
+				else
+					result = s.getName();
+			}
+			else if (container instanceof Vehicle vv) {
+				result = vv.getName();
+			}
+			else if (container instanceof MarsSurface) {
+				// Print out MarsSurface
+				result = container.getName();
+			}
+			else if (container != null) {
+				// Print out container
+				result = container.getName();
+			}
+		}
 		else if (unit instanceof Robot r) {
 			if (container instanceof Settlement s) {
 				if (r.getBuildingLocation() != null)

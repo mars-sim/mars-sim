@@ -32,7 +32,6 @@ import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
@@ -195,7 +194,7 @@ public class Mining extends EVAMission
 				boolean usable = !vehicle.isReserved();				
                 usable = usable && vehicle.isVehicleReady() && !vehicle.isBeingTowed();
 
-				if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0)
+				if (((LightUtilityVehicle) vehicle).isFull())
 					usable = false;
 
 				if (usable)
@@ -572,7 +571,7 @@ public class Mining extends EVAMission
 			if (vehicle instanceof LightUtilityVehicle luvTemp
 					&& ((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
 					&& !luvTemp.isReserved()
-					&& (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
+					&& (luvTemp.getCrewNum() == 0)) {
 				claimVehicle(luvTemp);
 				return luvTemp;
 			}
