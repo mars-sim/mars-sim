@@ -6,14 +6,13 @@
  */
 package com.mars_sim.core.person.ai.mission;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.mission.task.ExploreSite;
@@ -44,7 +43,7 @@ public class Exploration extends EVAMission
 	private static final double STANDARD_TIME_PER_SITE = 1000.0;
 	
 	/** Exploration Site */
-	private static final String EXPLORATION_SITE = "Exploration Site ";
+	private static final String EXPLORATION_SITE = "Explore ";
 
 	
 	/** Mission Type enum. */
@@ -63,7 +62,7 @@ public class Exploration extends EVAMission
 	private ExplorationObjective objective;
 	
 	/** The set of sites to be claimed by this mission. */
-	private Set<MineralSite> claimedSites = new HashSet<>();
+	private List<MineralSite> claimedSites = new ArrayList<>();
 	
 
 	/**
@@ -90,8 +89,8 @@ public class Exploration extends EVAMission
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX, newContainerNum);
 	
 		// Set exploration navpoints.
-		var coords = explorationSites.stream().map(MineralSite::getCoordinates).toList();
-		addNavpoints(coords, (i -> EXPLORATION_SITE + (i+1)));
+		explorationSites.forEach(es -> addNavpoint(es.getCoordinates(), EXPLORATION_SITE + es.getName()));
+		claimedSites.addAll(explorationSites);
 
 		// Add home navpoint.
 		Settlement s = getStartingSettlement();
@@ -117,13 +116,14 @@ public class Exploration extends EVAMission
 	 */
 	private MineralSite retrieveASiteToClaim() {
 		
-		Coordinates current = getCurrentMissionLocation();
-		for (MineralSite e: claimedSites) {
-			if (e.getLocation().equals(current))
-				return e;
+		int idx = getCurrentNavpointIndex();
+		idx--; // Decrement to allow for starting
+
+		if (idx < 0 || idx >= claimedSites.size()) {
+			logger.severe(this, "Cannot find Mineral site for navpoint index " + idx);
+			return null;
 		}
-		logger.severe(this, "Cannot find Mineral site for " + current.getFormattedString());
-		return null;
+		return claimedSites.get(idx);
 	}
 
 	/**
@@ -138,6 +138,15 @@ public class Exploration extends EVAMission
 		
 		// If person can explore the site, start that task.
 		if (ExploreSite.canExploreSite(person)) {
+			
+			// Add new explored site if just starting exploring.
+			if (currentSite == null) {
+				currentSite = retrieveASiteToClaim();
+				if (currentSite == null) {
+					abortMission(INVALID_EXPLORATION_SITE);
+					return false;
+				}
+			}
 			canAssign = assignTask(person, new ExploreSite(person, currentSite, getRover(), this));
 			
 			if (canAssign) {
@@ -154,22 +163,6 @@ public class Exploration extends EVAMission
 		else if (completion < 0D) {
 			completion = 0D;
 		}		
-
-		// Add new explored site if just starting exploring.
-		if (currentSite == null) {
-	
-			// Question: how to check if EVA is supposed to be ended and gracefully terminate calling performEVA
-			// prior to calling currentSite below ?
-			
-			// For instance, currentSite becomes null due to medical emergency in AbstractVehicleMission's
-			// determineEmergencyDestination()
-			
-			currentSite = retrieveASiteToClaim();
-			if (currentSite == null) {
-				abortMission(INVALID_EXPLORATION_SITE);
-				return false;
-			}
-		}
 		
 		fireMissionUpdate(SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 
@@ -208,7 +201,7 @@ public class Exploration extends EVAMission
 	 *
 	 * @return list of explored sites.
 	 */
-	public Set<MineralSite> getExploredSites() {
+	public List<MineralSite> getExploredSites() {
 		return claimedSites;
 	}
 

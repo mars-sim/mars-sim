@@ -117,8 +117,8 @@ public class ExploredCommand extends AbstractSettlementCommand {
 		response.appendText(" A total of " + locations.size() + " mineral sites have been identified.");
 		response.appendText("");
 		
-		response.appendTableHeading("Location", CommandHelper.COORDINATE_WIDTH,
-									"Authority", 18, 
+		response.appendTableHeading("Name", 10, "Location", CommandHelper.COORDINATE_WIDTH,
+									"Authority", 10, 
 									"Status*", "Reviews", "Mineral with highest %");
 		for (MineralSite s : locations) {
 			String mineral = "";
@@ -131,7 +131,7 @@ public class ExploredCommand extends AbstractSettlementCommand {
 			
 			String status = (s.isMinable() ? "M" : "-") +  (s.isExplored() ? "E" : "-") + (s.isClaimed() ? "C" : "-") +(s.isReserved() ? "R" : "-") + "  ";
 			var owner = s.getOwner();
-			response.appendTableRow(s.getLocation().getFormattedString(),
+			response.appendTableRow(s.getName(), s.getLocation().getFormattedString(),
 									(owner != null ? owner.getName() : ""),
 									status,
 									s.getNumEstimationImprovement(),

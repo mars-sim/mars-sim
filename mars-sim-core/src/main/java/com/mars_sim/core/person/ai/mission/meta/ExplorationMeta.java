@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -128,7 +129,6 @@ public class ExplorationMeta extends AbstractMetaMission {
 		double possibleRange = getTripTimeRange(numSites, theoreticalMaxTripTime, getAverageVehicleSpeed(crew));
 		double range = Math.min(theorticalMaxRange, possibleRange);
 
-
 		// Determine the first exploration site.
 		var starting = crew.leader().getAssociatedSettlement();
 		
@@ -161,7 +161,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 		// Pick some new ones if still space but limit the attempts
 		if (claimedSites.size() < numSites) {
 			var explorationMgr = starting.getExplorations();
-			var claimedLocns = claimedSites.stream().map(MineralSite::getLocation).toList();
+			var claimedLocns = new HashSet<>(claimedSites.stream().map(MineralSite::getLocation).toList());
 			int unplannedAttempts = 10;
 			int areologySkill = crew.leader().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 
@@ -183,6 +183,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 					claimedSites.add(el);
 
 					// Add to the list
+					claimedLocns.add(newLocn);
 					remainingRange -= newLocn.getDistance(currentLocation);
 					currentLocation = newLocn;
 					returnDist = currentLocation.getDistance(homeLocation);

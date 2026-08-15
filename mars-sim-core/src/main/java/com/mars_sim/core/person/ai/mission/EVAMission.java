@@ -88,25 +88,28 @@ abstract class EVAMission extends RoverMission {
 	/**
 	 * Can the EVA phase be started ?
 	 * 
-	 * @param member
-	 * @return 
+	 * @return False means EVA not startable
 	 */
 	private boolean canStartEVA() {
-		boolean result = true;
-		// Note: checking for EVA has caused too many Exploration mission to terminate EVA
-		MarsTime sunrise = surfaceFeatures.getOrbitInfo().getSunrise(getCurrentMissionLocation());
-		if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
-				|| (sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
-			// No point waiting, move to next site
-			logger.info(getVehicle(), "Continue to travel since sunrise is too late " + sunrise.getTruncatedDateTimeStamp());
-			addMissionLog(NOT_ENOUGH_SUNLIGHT, getStartingPerson().getName());
-			startTravellingPhase();
-		}
-		else {
-			// Wait for sunrise
-			logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
-			setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
-			// May call this the first time but how to avoid duplicate entry : addMissionLog(WAIT_SUNLIGHT.getName(), getStartingPerson().getName()) 
+		boolean result = isEnoughSunlightForEVA();
+		if (!result) {
+			// Not enough sunlight so what to do
+			// Note: checking for EVA has caused too many Exploration mission to terminate EVA
+			MarsTime sunrise = surfaceFeatures.getOrbitInfo().getSunrise(getCurrentMissionLocation());
+			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
+					|| (sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
+				// No point waiting, move to next site
+				logger.info(getVehicle(), "Continue to travel since sunrise is too late " + sunrise.getTruncatedDateTimeStamp());
+				addMissionLog(NOT_ENOUGH_SUNLIGHT, getStartingPerson().getName());
+				startTravellingPhase();
+				result = false;
+			}
+			else {
+				// Wait for sunrise
+				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
+				setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
+				result = false;
+			}
 		}
 		return result;
 	}
