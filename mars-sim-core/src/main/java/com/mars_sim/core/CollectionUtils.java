@@ -11,11 +11,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.UnitSet;
-import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
@@ -34,30 +31,6 @@ public class CollectionUtils {
 	private CollectionUtils() {
 		// nothing
 	}
-	
-	public static Collection<Equipment> getEquipment(
-		Collection<Unit> units
-	) {
-		return units
-				.stream()
-				.filter(u -> UnitType.CONTAINER == u.getUnitType()
-							|| UnitType.EVA_SUIT == u.getUnitType())
-				.map(Equipment.class::cast)
-				.filter(u -> !u.isSalvaged())
-				.collect(Collectors.toList());
-	}
-
-	
-	public static Collection<Robot> getRobot(
-		Collection<Unit> units
-	) {
-
-		return units
-				.stream()
-				.filter(u-> UnitType.ROBOT == u.getUnitType())
-				.map(Robot.class::cast)
-				.collect(Collectors.toList());
-	}
 
 	/**
 	 * Gets the base mass of a vehicle type.
@@ -70,45 +43,6 @@ public class CollectionUtils {
 			simulationConfig = SimulationConfig.instance();
 		
 		return simulationConfig.getVehicleConfiguration().getVehicleSpec(vehicleType.getName()).getEmptyMass();
-	}
-	
-	
-	/**
-	 * Finds the settlement's unique id based on its name
-	 *
-	 * @param name
-	 * @return
-	 */
-	public static int findSettlementID(String name) {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
-
-		Collection<Settlement> ss = unitManager.getSettlements();
-		for (Settlement s : ss) {
-			if (s.getName().equals(name))
-				return s.getIdentifier();
-		}
-
-		return -1;
-	}
-
-	/**
-	 * Finds the settlement instance based on its name
-	 *
-	 * @param name
-	 * @return
-	 */
-	public static Settlement findSettlement(String name) {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
-
-		Collection<Settlement> ss = unitManager.getSettlements();
-		for (Settlement s : ss) {
-			if (s.getName().equals(name))
-				return s;
-		}
-
-		return null;
 	}
 	
 	/**
@@ -144,21 +78,6 @@ public class CollectionUtils {
 			unitManager = Simulation.instance().getUnitManager();
 
 		return unitManager.findSettlement(c);
-	}
-	
-	/**
-	 * Sorts by name.
-	 * 
-	 * @param <T>
-	 * @param collection
-	 * @return
-	 */
-	public static <T extends Unit> Collection<T> sortByName(Collection<T> collection) {
-		ConcurrentSkipListSet<T> sorted = new ConcurrentSkipListSet<>(
-				(o1, o2) -> o1.getName().compareTo(o2.getName()));
-
-		sorted.addAll(collection);
-		return sorted;
 	}
 
 	/**
@@ -342,7 +261,7 @@ public class CollectionUtils {
 		int result = 0;
 		// Obtain the total # of this part in used from all settlements
 		for (Settlement s : unitManager.getSettlements()) {
-			int num = s.getItemResourceStored(id);
+			int num = s.getEquipmentInventory().getItemResourceStored(id);
 			result += num;
 		}
 

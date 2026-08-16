@@ -424,7 +424,7 @@ public abstract class DigLocal extends EVAOperation {
         Container container = person.findContainer(containerType, false, resourceID);
         if (container == null) {
         	// Doesn't have a container
-        	container = settlement.findContainer(containerType, true, resourceID);
+        	container = settlement.getEquipmentInventory().findContainer(containerType, true, resourceID);
 	        if (container != null) {
             	boolean successful = container.transfer(person);
             	if (!successful) {

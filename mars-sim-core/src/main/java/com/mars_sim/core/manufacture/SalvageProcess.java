@@ -78,7 +78,7 @@ public class SalvageProcess extends WorkshopProcess {
 		// Retrieve salvaged unit and remove from unit manager.
 		switch(salvagedUnit) {
 			case Equipment e: {
-				settlement.removeEquipment(e);
+				settlement.getEquipmentInventory().removeEquipment(e);
 			} break;
 			case Robot r: {
 				settlement.removeOwnedRobot(r);

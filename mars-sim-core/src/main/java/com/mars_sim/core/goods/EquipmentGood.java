@@ -149,7 +149,7 @@ public class EquipmentGood extends Good {
 		double number = 0D;
 
 		// Get number of the equipment in settlement storage.
-		number += settlement.findNumEmptyContainersOfType(equipmentType, false);
+		number += settlement.getEquipmentInventory().findNumEmptyContainersOfType(equipmentType, false);
 
 		// Get number of equipment out on mission vehicles.
 		for (Mission mission : settlement.getMissionControl().getActiveMissions()) {
@@ -233,7 +233,7 @@ public class EquipmentGood extends Good {
 		
 		owner.setProjectedDemandScore(this, projectedCache);
 		
-		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType));
+		double totalSupply = getAverageEquipmentSupply(settlement.getEquipmentInventory().findNumContainersOfType(equipmentType));
 				
 		owner.setSupplyScore(this, totalSupply);
 		
@@ -359,7 +359,7 @@ public class EquipmentGood extends Good {
 	private double computeUsageFactor(Settlement settlement) {
 		int numUsed = 0;
 
-		Collection<Container> equipmentList = settlement.findContainersOfType(equipmentType);
+		Collection<Container> equipmentList = settlement.getEquipmentInventory().findContainersOfType(equipmentType);
 
 		for (Mission mission : settlement.getMissionControl().getActiveMissions()) {
 			if (mission instanceof VehicleMission vehicleMission) {

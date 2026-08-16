@@ -229,7 +229,7 @@ public final class MalfunctionFactory implements Serializable {
 		// }
 
 		// Get entities carried by people on EVA.
-		for (Equipment e: settlement.getSuitSet()) {
+		for (Equipment e: settlement.getEquipmentInventory().getSuitSet()) {
 			EVASuit suit = (EVASuit)e;
 			if (suit.getMalfunctionManager().hasMalfunction())
 				entities.add(suit);

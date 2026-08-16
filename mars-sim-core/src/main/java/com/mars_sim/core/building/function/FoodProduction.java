@@ -401,7 +401,8 @@ public class FoodProduction extends Function {
 	 */
 	private void checkPrinters() {
 		// Gets the available number of printers in storage
-		int numAvailable = building.getSettlement().getItemResourceStored(PRINTER_ID);
+		var ih = building.getSettlement().getEquipmentInventory();
+		int numAvailable = ih.getItemResourceStored(PRINTER_ID);
 
 		// Malfunction of a 3D-printer should trigger this
 		// NOTE: it's reasonable to create a settler's task to install 
@@ -422,7 +423,7 @@ public class FoodProduction extends Function {
 				for (int i=0; i<size; i++) {
 					numPrintersInUse++;
 					numAvailable--;
-					int lacking = building.getSettlement().retrieveItemResource(PRINTER_ID, 1);
+					int lacking = ih.retrieveItemResource(PRINTER_ID, 1);
 					if (lacking > 0) {
 						logger.info(getBuilding(), 20_000,
 								"No 3D-printer available for " + getBuilding() + ".");
@@ -447,12 +448,8 @@ public class FoodProduction extends Function {
 	
 	@Override
 	public void destroy() {
+
+		processes.forEach(i -> i.destroy());
 		super.destroy();
-
-		Iterator<FoodProductionProcess> i = processes.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
-
 	}
 }

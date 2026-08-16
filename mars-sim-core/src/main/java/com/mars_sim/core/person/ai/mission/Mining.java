@@ -215,10 +215,11 @@ public class Mining extends EVAMission
 		boolean result = true;
 
 		try {
-			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
+			var ih = settlement.getEquipmentInventory();
+			if (!ih.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
 				result = false;
 			}
-			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
+			if (!ih.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
 				result = false;
 			}
 		} catch (Exception e) {
@@ -241,12 +242,13 @@ public class Mining extends EVAMission
 		if (!isDone() && (getRover().getTowedVehicle() == null)) {
 
 			Settlement settlement = getStartingSettlement();
+			var ih = settlement.getEquipmentInventory();
 
 			var luv = attachLUV(true);
 			settlement.removeVicinityParkedVehicle(luv);
 
-			if (!settlement.hasItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID)
-					|| !settlement.hasItemResource(ItemResourceUtil.BACKHOE_ID)) {
+			if (!ih.hasItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID)
+					|| !ih.hasItemResource(ItemResourceUtil.BACKHOE_ID)) {
 				logger.warning(luv, 
 						"Could not load LUV and/or its attachment parts for mission " + getName());
 				endMission(LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
@@ -254,10 +256,10 @@ public class Mining extends EVAMission
 			}
 			
 			// Load light utility vehicle with attachment parts.
-			settlement.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
+			ih.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
 			luv.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
 
-			settlement.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
+			ih.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
 			luv.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
 		}
 	}
@@ -277,6 +279,7 @@ public class Mining extends EVAMission
 		// Unload towed light utility vehicle.
 		if (!isDone() && (getRover().getTowedVehicle() != null)) {
 			Settlement settlement = getStartingSettlement();
+			var ih = settlement.getEquipmentInventory();
 
 			var luv = attachLUV(false);
 			settlement.removeVicinityParkedVehicle(luv);
@@ -284,10 +287,10 @@ public class Mining extends EVAMission
 
 			// Unload attachment parts.
 			luv.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
-			settlement.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
+			ih.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
 
 			luv.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
-			settlement.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
+			ih.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
 		}
 	}
 

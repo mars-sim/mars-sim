@@ -41,7 +41,7 @@ class GoodsManagerTest extends MarsSimUnitTest {
 
         int previousNum = 1;
         
-        s.storeItemResource(sheet.getID(), previousNum);
+        s.getEquipmentInventory().storeItemResource(sheet.getID(), previousNum);
         
         PartGood pg = new PartGood(sheet);
         

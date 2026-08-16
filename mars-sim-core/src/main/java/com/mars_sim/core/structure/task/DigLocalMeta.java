@@ -87,14 +87,15 @@ public abstract class DigLocalMeta extends MetaTask
      */
     protected List<SettlementTask> getSettlementTaskJobs(int resourceId, Settlement settlement,
                             double collectionProbability) {
+        var rh = settlement.getEquipmentInventory();
 
         // Check preconditions
         // - an airlock is available for egress
         // - at least one EVA suit at settlement.
         // - at least one empty bag at settlement.
     	if ((collectionProbability == 0.0)
-            || (settlement.getNumEVASuit() == 0)
-            || (settlement.findNumContainersOfType(containerType) == 0)) {                
+            || rh.getSuitSet().isEmpty()
+            || (rh.findNumContainersOfType(containerType) == 0)) {                
     		return Collections.emptyList();
         }
 
@@ -127,7 +128,6 @@ public abstract class DigLocalMeta extends MetaTask
   
         // Should use the demand & resources stored to influence the score. 50% capacity is
         // the unmodified baseline
-		var rh = settlement.getEquipmentInventory();
 		var capacity = (rh.getRemainingCombinedCapacity(resourceId)
 									/ rh.getSpecificCapacity(resourceId));
         if (capacity <= MIN_CAPACITY) {

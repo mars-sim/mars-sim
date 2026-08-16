@@ -72,7 +72,7 @@ public final class EquipmentFactory {
 		unitManager.addUnit(newEqm);
 
 		// Add this equipment as being placed in this settlement
-		settlement.addEquipment(newEqm);
+		settlement.getEquipmentInventory().addEquipment(newEqm);
 		return newEqm;
 	}
 

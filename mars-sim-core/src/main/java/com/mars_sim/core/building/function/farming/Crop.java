@@ -323,10 +323,11 @@ public class Crop implements Comparable<Crop>, Entity {
 			startingPhase = category.getPhases().get(0);
 			currentPhaseWorkRequired = startingPhase.getWorkRequired() * 1000D;
 			if (tissuePercent <= 0) {
+				var ih = building.getSettlement().getEquipmentInventory();
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				// Need a petri dish
-				if (building.getSettlement().hasItemResource(PETRI_DISH_ID)) {
-					building.getSettlement().retrieveItemResource(PETRI_DISH_ID, 1);
+				if (ih.hasItemResource(PETRI_DISH_ID)) {
+					ih.retrieveItemResource(PETRI_DISH_ID, 1);
 				}
 				else
 					logger.warning(this, 60_000, "No petri dish left for growing " + cropSpec.getName()
@@ -435,13 +436,13 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * Sets up mushroom.
 	 */
 	private void setupMushroom() {
-		Settlement s = building.getSettlement();
-		if (s.hasItemResource(MUSHROOM_BOX_ID)) {
-			s.retrieveItemResource(MUSHROOM_BOX_ID, 1);
+		var ih = building.getSettlement().getEquipmentInventory();
+		if (ih.hasItemResource(MUSHROOM_BOX_ID)) {
+			ih.retrieveItemResource(MUSHROOM_BOX_ID, 1);
 		}
 		// Need a petri dish
-		if (s.hasItemResource(PETRI_DISH_ID)) {
-			s.retrieveItemResource(PETRI_DISH_ID, 1);
+		if (ih.hasItemResource(PETRI_DISH_ID)) {
+			ih.retrieveItemResource(PETRI_DISH_ID, 1);
 		}
 		else
 			logger.warning(this, 60_000, 

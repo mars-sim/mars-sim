@@ -258,7 +258,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 
 			// 1. Check if there are enough specimen containers at the settlement for
 			// collecting rock samples.
-        	int stored = settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX);
+        	int stored = settlement.getEquipmentInventory().findNumContainersOfType(EquipmentType.SPECIMEN_BOX);
             int needed = Exploration.REQUIRED_SPECIMEN_CONTAINERS;
 	        if (stored < needed) {
 				BuildingManager.injectEquipmentDemand(EquipmentType.SPECIMEN_BOX, settlement, stored, needed);

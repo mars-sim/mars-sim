@@ -110,13 +110,14 @@ public class MiningMeta extends AbstractMetaMission {
 			if (!Mining.isLUVAvailable(settlement))
 				return RatingScore.ZERO_RATING;
 
-			// Check if LUV attachment parts available.            
+			// Check if LUV attachment parts available.   
+			var eo = settlement.getEquipmentInventory();         
 			if (!Mining.areAvailableAttachmentParts(settlement)) {
-				if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
+				if (!eo.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
 					BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID),
 							settlement, 1);
 				}
-				if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
+				if (!eo.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
 					BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.BACKHOE_ID),
 							settlement, 1);
 				}
@@ -125,7 +126,7 @@ public class MiningMeta extends AbstractMetaMission {
 			}
 
 			// Check if there are enough bags at the settlement for collecting minerals.
-			int stored = settlement.findNumContainersOfType(EquipmentType.LARGE_BAG);
+			int stored = eo.findNumContainersOfType(EquipmentType.LARGE_BAG);
 			int needed = Mining.NUMBER_OF_LARGE_BAGS;
 			if (stored < needed) {
 				BuildingManager.injectEquipmentDemand(EquipmentType.LARGE_BAG, settlement, stored, needed);

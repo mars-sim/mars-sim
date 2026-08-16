@@ -398,7 +398,8 @@ public final class CommerceUtil {
 
 		EquipmentType containerType = ContainerUtil.getEquipmentTypeNeeded(resource.getPhase());
 
-		int containersStored = settlement.findNumEmptyCopyContainersOfType(containerType, false);
+		var eo = settlement.getEquipmentInventory();
+		int containersStored = eo.findNumEmptyCopyContainersOfType(containerType, false);
 
 		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		int containersTraded = 0;
@@ -406,7 +407,7 @@ public final class CommerceUtil {
 			containersTraded = tradedGoods.get(containerGood);
 
 		if (containersStored > containersTraded)
-			result = settlement.findContainer(containerType, true, resource.getID());
+			result = eo.findContainer(containerType, true, resource.getID());
 
 		return result;
 	}

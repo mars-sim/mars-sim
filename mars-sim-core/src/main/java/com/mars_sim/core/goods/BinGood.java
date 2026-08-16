@@ -126,7 +126,7 @@ public class BinGood extends Good {
 		// Determine average demand.
 		double average = determineBinDemand(owner, settlement);
 
-		double totalSupply = getAverageBinSupply(settlement.findNumBinsOfType(binType));
+		double totalSupply = getAverageBinSupply(settlement.getEquipmentInventory().findNumBinsOfType(binType));
 		
 		owner.setSupplyScore(this, totalSupply);
 		

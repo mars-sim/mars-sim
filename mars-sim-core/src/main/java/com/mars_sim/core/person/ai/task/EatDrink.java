@@ -68,8 +68,6 @@ public class EatDrink extends Task {
 	private static final double PACKED_PRESERVED_FOOD_CARRIED = .2; 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.2D;
-	/** Mass (kg) of single napkin for meal. */
-	private static final double NAPKIN_MASS = .0025D;
 
 	private double foodConsumedPerServing;
 
@@ -843,18 +841,5 @@ public class EatDrink extends Task {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Throws away any napkins.
-	 */
-	@Override
-	protected void clearDown() {
-		
-		if (person.getSettlement() != null && person.getSettlement()
-				.retrieveAmountResource(ResourceUtil.NAPKIN_ID, NAPKIN_MASS) > 0) {
-			// Throw away napkin waste if one was used.
-			((ResourceHolder)containerUnit).storeAmountResource(ResourceUtil.SOLID_WASTE_ID, NAPKIN_MASS);
-		}
 	}
 }

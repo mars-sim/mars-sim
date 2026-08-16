@@ -187,11 +187,12 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 	 * @return
 	 */
 	public boolean isResourcesAvailable(Settlement source) {
+		var eo = source.getEquipmentInventory();
 		for(ProcessItem item : inputList) {
 			if (((ItemType.AMOUNT_RESOURCE == item.getType()) 
-					&& (source.getSpecificAmountResourceStored(item.getId()) < item.getAmount()))
+					&& (eo.getSpecificAmountResourceStored(item.getId()) < item.getAmount()))
 				|| ((ItemType.PART == item.getType())
-					&& (source.getItemResourceStored(item.getId()) < (int) item.getAmount()))) {
+					&& (eo.getItemResourceStored(item.getId()) < (int) item.getAmount()))) {
 				return false;
 			}
 		}

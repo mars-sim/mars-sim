@@ -124,7 +124,7 @@ public class ProcessItem implements Serializable {
 				int number = (int) outputAmount;
 				for (int x = 0; x < number; x++) {
 					Bin bin = BinFactory.createBins(name, settlement);
-					settlement.addBin(bin);
+					rh.addBin(bin);
 				}
 			} break;
 		
