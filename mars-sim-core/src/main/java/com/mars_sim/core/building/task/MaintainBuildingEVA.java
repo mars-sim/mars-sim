@@ -104,7 +104,7 @@ extends EVAOperation {
 	private double maintainPhase(double time) {
 		
 		if (checkReadiness(time) > 0) {
-			endEVA("Failing readiness.");
+//			endEVA("Failing readiness.");
 			return time;
 		}
 		
@@ -112,7 +112,7 @@ extends EVAOperation {
 		boolean malfunction = manager.hasMalfunction();
 
 		if (malfunction) {
-			endEVA("Building had malfunction.");
+			endEVA("Malfunction.");
 			return time;
 		}
 

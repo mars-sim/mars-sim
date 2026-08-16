@@ -58,7 +58,7 @@ public class EVAOperationTest extends MarsSimUnitTest{
 	}
 
     /**
-     * Prepare context for a person to do an EVA. Create the EVA in teh settlemetn and put the Person
+     * Prepare context for a person to do an EVA. Create the EVA in the settlement and put the Person
      * within the Building. Creates an EVASuit and loads it with required resources.
      */
     public static EVA prepareForEva(MarsSimContext context, Person p) {

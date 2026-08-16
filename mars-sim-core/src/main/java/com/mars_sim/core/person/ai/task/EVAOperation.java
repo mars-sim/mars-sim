@@ -514,7 +514,7 @@ public abstract class EVAOperation extends Task {
 		}
 		
 		// Check fitness only if it's not in the state of emergency
-		if (isNominallyFit()) {
+		if (!isNominallyFit()) {
 			endEVA("Nominally Unfit.");
 			return time;
 		}	
@@ -556,10 +556,11 @@ public abstract class EVAOperation extends Task {
 	 */
 	@Override
 	public void endTask() {		
-		if (person.isOutside()) {
-            setPhase(WALK_BACK_INSIDE);
-		}
-    	else
+//		if (person.isOutside()) {
+//			logger.warning(worker, 1_000L, "Walking back inside.");
+//            setPhase(WALK_BACK_INSIDE);
+//		}
+//    	else
         	super.endTask();
 	}
 	
