@@ -364,15 +364,16 @@ public final class SettlementBuilder {
 	 * @throws Exception if error storing resources
 	 */
 	private void createResources(SettlementSupplies template, Settlement settlement) {
+		var rh = settlement.getEquipmentInventory();
 
 		Map<AmountResource, Double> resourceMap = template.getResources();
 		for (Entry<AmountResource, Double> value : resourceMap.entrySet()) {
 			AmountResource resource = value.getKey();
 			double amount = value.getValue();
-			double capacity = settlement.getRemainingCombinedCapacity(resource.getID());
+			double capacity = rh.getRemainingCombinedCapacity(resource.getID());
 			if (amount > capacity)
 				amount = capacity;
-			settlement.storeAmountResource(resource.getID(), amount);
+			rh.storeAmountResource(resource.getID(), amount);
 		}
 	}
 

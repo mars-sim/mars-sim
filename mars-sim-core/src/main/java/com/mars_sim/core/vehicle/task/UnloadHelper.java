@@ -211,16 +211,17 @@ public final class UnloadHelper {
 	 * @param equipment the equipment.
 	 */
 	private static void unloadResourcesHolder(ResourceHolder rh, Settlement settlement) {
+		var settlementRh = settlement.getEquipmentInventory();
 
 		// Note: only unloading amount resources at the moment.
         for (int resource : rh.getAllAmountResourceStoredIDs()) {
             double amount = rh.getAllAmountResourceStored(resource);
-            double capacity = settlement.getRemainingCombinedCapacity(resource);
+			double capacity = settlementRh.getRemainingCombinedCapacity(resource);
             if (amount > capacity) {
                 amount = capacity;
             }
             rh.retrieveAmountResource(resource, amount);
-            settlement.storeAmountResource(resource, amount);
+			settlementRh.storeAmountResource(resource, amount);
         }
 	}
 

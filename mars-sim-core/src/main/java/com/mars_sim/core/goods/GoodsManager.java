@@ -890,6 +890,7 @@ public class GoodsManager implements Serializable {
     public int selectResourceForReview() {
 
 		Set<Integer> unreviewed = getResourceForReview();
+		var rh = settlement.getEquipmentInventory();
 
 		// Everything has been reviewed
 		if (unreviewed.isEmpty()) {
@@ -908,7 +909,7 @@ public class GoodsManager implements Serializable {
     		int reserve = reservePerPop;
     		double vp = getGoodValuePoint(resourceID);
     		
-    		double stored = settlement.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
+	    	double stored = rh.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
  		
     		double value = 0;
     		if (stored > 2 * reserve) {
@@ -957,6 +958,7 @@ public class GoodsManager implements Serializable {
 	 * @return the new demand 
 	 */
 	public double moderateLifeResourceDemand(int resourceID) {
+		var rh = settlement.getEquipmentInventory();
 		
 		var limits = resLimits.get(resourceID);
 		if (limits == null) {
@@ -970,7 +972,7 @@ public class GoodsManager implements Serializable {
 		int reserve = reservePerPop;
 		double demand = getDemandScoreWithID(resourceID);	
 	
-		double stored = settlement.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
+		double stored = rh.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
 		double surplus = 0;
 		double lacking = 0;
 		double delta = 0;

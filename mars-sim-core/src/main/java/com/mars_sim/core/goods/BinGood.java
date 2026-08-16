@@ -10,6 +10,7 @@ import java.util.Collection;
 
 import com.mars_sim.core.equipment.Bin;
 import com.mars_sim.core.equipment.BinFactory;
+import com.mars_sim.core.equipment.BinHolder;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -166,12 +167,13 @@ public class BinGood extends Good {
 	 */
 	private double determineBinDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = 1;
+		var rh = settlement.getEquipmentInventory();
 
 		double botanistFactor = (1 + JobUtil.numJobs(JobType.BOTANIST, settlement)) / 3.0;	
 		double cookFactor = (1 + JobUtil.numJobs(JobType.CHEF, settlement)) / 3.0;	
 		double traderFactor = (1 + JobUtil.numJobs(JobType.TRADER, settlement)) / 3.0;
 		
-		double numAvailable = settlement.findNumBinsOfType(binType);
+		double numAvailable = rh.findNumBinsOfType(binType);
 		
 		// Determine the number of bins that are needed.
 		double binCapacity = BinFactory.getBinCapacity(binType);
@@ -180,7 +182,7 @@ public class BinGood extends Good {
 		// Scan resources that can be held in this Container
 		for (AmountResource resource : ResourceUtil.getAmountResources()) {
 			if (BinFactory.getBinTypeForResource(resource.getID()) == binType) {
-				double settlementCapacity = settlement.getSpecificCapacity(resource.getID());
+				double settlementCapacity = rh.getSpecificCapacity(resource.getID());
 
 				double resourceDemand = owner.getDemandScoreWithID(resource.getID());
 
@@ -193,7 +195,7 @@ public class BinGood extends Good {
 
 		baseDemand += totalPhaseOverfill * binCapacity - numAvailable;
 
-		double ratio = computeUsageFactor(settlement);
+		double ratio = computeUsageFactor(rh);
 
 		switch (binType) {
 			case BASKET:
@@ -218,7 +220,7 @@ public class BinGood extends Good {
 	 * @param containerType
 	 * @return the usage factor
 	 */
-	private double computeUsageFactor(Settlement settlement) {
+	private double computeUsageFactor(BinHolder settlement) {
 		double totalAmount = 0;
 
 		Collection<Bin> binList = settlement.findBinsOfType(binType);

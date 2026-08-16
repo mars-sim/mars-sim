@@ -470,7 +470,7 @@ public class Cooking extends Function {
 		mealQuality = Math.round((mealQuality + culinarySkillPerf + cleanliness) * 10D) / 15D;
 
 		// consume salt
-		s.retrieveAmountResource(ResourceUtil.TABLE_SALT_ID, hotMeal.getSalt());
+		s.getEquipmentInventory().retrieveAmountResource(ResourceUtil.TABLE_SALT_ID, hotMeal.getSalt());
 
 		// consume water
 		consumeWater();
@@ -543,7 +543,7 @@ public class Cooking extends Function {
 		}
 		else {
 			// Note: this way, it won't have to call retrieveAmountResource() excessively
-			double shortfall = s.retrieveAmountResource(resource, cap);
+			double shortfall = s.getEquipmentInventory().retrieveAmountResource(resource, cap);
 			double available = cap - shortfall + tank;
 			
 			if (available >= consuming) {
@@ -587,7 +587,7 @@ public class Cooking extends Function {
 		if (canStore >= cap) {
 			// Drain the whole tank
 			// Note: this way, it won't have to call storeAmountResource() excessively
-			double excess = s.storeAmountResource(resource, canStore);
+			double excess = s.getEquipmentInventory().storeAmountResource(resource, canStore);
 			// Update what can be stored
 			canStore = canStore - excess;
 			
@@ -620,12 +620,13 @@ public class Cooking extends Function {
 	 * @return
 	 */
 	private static boolean consumeOil(double oilRequired, Settlement s) {
+		var rh = s.getEquipmentInventory();
 		var oil = ResourceUtil.getOilResources().stream()
-						.filter(o -> s.getSpecificAmountResourceStored(o) > oilRequired)
+						.filter(o -> rh.getSpecificAmountResourceStored(o) > oilRequired)
 						.findAny()
 						.orElse(-1);
 		if (oil != -1) {
-			s.retrieveAmountResource(oil, oilRequired);
+			rh.retrieveAmountResource(oil, oilRequired);
 			return true;
 		}
 		// oil is not available
@@ -757,11 +758,12 @@ public class Cooking extends Function {
 	 */
 	private void cleanUpKitchen() {
 		var s = building.getSettlement();
+		var rh = s.getEquipmentInventory();
 		double amountAgent = CLEANING_AGENT_PER_SOL;		 
-		double lackingAgent = s.retrieveAmountResource(ResourceUtil.CLEANING_AGENT_ID, amountAgent);
+		double lackingAgent = rh.retrieveAmountResource(ResourceUtil.CLEANING_AGENT_ID, amountAgent);
 
 		double amountWater = 10 * amountAgent;
-		double lackingWater = s.retrieveAmountResource(ResourceUtil.WATER_ID, amountWater);
+		double lackingWater = rh.retrieveAmountResource(ResourceUtil.WATER_ID, amountWater);
 		
 		// Track water consumption
 		s.addWaterConsumption(WaterUseType.CLEAN_MEAL, amountWater - lackingWater);
@@ -788,7 +790,7 @@ public class Cooking extends Function {
 	 */
 	private void preserveFood() {
 		// Note: turn this into a task
-		building.getSettlement().retrieveAmountResource(ResourceUtil.TABLE_SALT_ID, AMOUNT_OF_SALT_PER_MEAL);
+		building.getSettlement().getEquipmentInventory().retrieveAmountResource(ResourceUtil.TABLE_SALT_ID, AMOUNT_OF_SALT_PER_MEAL);
 		if (DRY_MASS_PER_SERVING > 0)
 			store(DRY_MASS_PER_SERVING, ResourceUtil.FOOD_ID, "Cooking::preserveFood");
 	}

@@ -178,6 +178,7 @@ public class LoadVehicleGarage extends Task {
 		// Check input parameters.
 		if (settlement == null)
 			throw new IllegalArgumentException("settlement is null");
+		var rh = settlement.getEquipmentInventory();
 
 		boolean roverInSettlement = false;
 		// Check defensively to make sure the vehicle is NOT parked in the settlement vicinity
@@ -192,7 +193,7 @@ public class LoadVehicleGarage extends Task {
 			int resource = required.getKey();
 			if (ResourceType.getType(resource) == ResourceType.AMOUNT_RESOURCE) {
 
-				double stored = settlement.getAllAmountResourceStored(resource);
+				double stored = rh.getAllAmountResourceStored(resource);
 				double needed = required.getValue().doubleValue();
 				double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
 				double loaded = vehicle.getAllAmountResourceStored(resource);
@@ -211,8 +212,8 @@ public class LoadVehicleGarage extends Task {
 				int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
 				int numLoaded = vehicle.getItemResourceStored(resource);
 				int totalNeeded = needed + settlementNeed - numLoaded;
-				if (settlement.getItemResourceStored(resource) < totalNeeded) {
-					int stored = settlement.getItemResourceStored(resource);
+				if (rh.getItemResourceStored(resource) < totalNeeded) {
+					int stored = rh.getItemResourceStored(resource);
 					if (logger.isLoggable(Level.INFO))
 						logSettlementShortageNum(vehicle, ItemResourceUtil.findItemResourceName(resource),
 								numLoaded, needed, settlementNeed, stored);
@@ -230,7 +231,7 @@ public class LoadVehicleGarage extends Task {
 			int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
 			int numLoaded = vehicle.findNumEmptyContainersOfType(eType, false);
 			int totalNeeded = needed + settlementNeed - numLoaded;
-			int stored = settlement.findNumEmptyContainersOfType(eType, false);
+			int stored = rh.findNumEmptyContainersOfType(eType, false);
 			if (stored < totalNeeded) {	
 				if (logger.isLoggable(Level.INFO)) {
 					logSettlementShortageNum(vehicle, eType.toString(),

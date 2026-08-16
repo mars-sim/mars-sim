@@ -127,8 +127,9 @@ public abstract class DigLocalMeta extends MetaTask
   
         // Should use the demand & resources stored to influence the score. 50% capacity is
         // the unmodified baseline
-        var capacity = (settlement.getRemainingCombinedCapacity(resourceId)
-                                    / settlement.getSpecificCapacity(resourceId));
+		var rh = settlement.getEquipmentInventory();
+		var capacity = (rh.getRemainingCombinedCapacity(resourceId)
+									/ rh.getSpecificCapacity(resourceId));
         if (capacity <= MIN_CAPACITY) {
             return Collections.emptyList();
         }

@@ -383,6 +383,7 @@ public abstract class DigLocal extends EVAOperation {
 	 * @param effort
 	 */
     private void unloadContainer(Container container, double amount, double effort) {
+		var rh = settlement.getEquipmentInventory();
  
 		// Retrieve this amount from the container
 		container.retrieveAmountResource(resourceID, amount);
@@ -408,7 +409,7 @@ public abstract class DigLocal extends EVAOperation {
 		// Add to the daily output
 		settlement.addOutput(newResourceID, amount, effort);
 		// Store the amount in the settlement
-		settlement.storeAmountResource(newResourceID, amount);
+		rh.storeAmountResource(newResourceID, amount);
 	}
 
 	/**

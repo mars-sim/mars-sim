@@ -502,9 +502,10 @@ public class EatDrink extends Task {
 				
 		// Check directly from settlement
 		if (person.isInSettlement()) {
+			var rh = person.getSettlement().getEquipmentInventory();
 			
 			// Take preserved food from settlement if it is available.
-			double shortfall = person.getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
+			double shortfall = rh.retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
 			// Retrieve a portion from the settlement and store in the person
 			if (proportion * 0.1 - shortfall > 0) {
 				person.storeAmountResource(ResourceUtil.FOOD_ID, proportion * 0.1 - shortfall);
@@ -520,8 +521,9 @@ public class EatDrink extends Task {
 			if (person.isInVehicle()) {
 		
 				if (person.getVehicle().isInGarage()) {
+					var rh = person.getVehicle().getSettlement().getEquipmentInventory();
 					// Take preserved food from settlement if it is available.
-					double shortfall = person.getVehicle().getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
+					double shortfall = rh.retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
 					// Retrieve a portion from the settlement and store in the person
 					if (proportion * 0.1 - shortfall > 0) {
 						person.storeAmountResource(ResourceUtil.FOOD_ID, proportion * 0.1 - shortfall);
@@ -565,8 +567,9 @@ public class EatDrink extends Task {
 		// Note: only allow this 'luxury' when a person is in a settlement  
 		// If on mission, food is limited and should be 'shared'
 		if (person.isInSettlement()) {	
+			var rh = person.getSettlement().getEquipmentInventory();
 			// Take preserved food from container and store it in a person if it is available 
-			double shortfall = person.getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED);
+			double shortfall = rh.retrieveAmountResource(ResourceUtil.FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED);
 			if (shortfall > 0) {
 				if (shortfall - PACKED_PRESERVED_FOOD_CARRIED < MIN) {
 					logger.info(person, 20_000L, "No preserved food available.");
@@ -576,7 +579,7 @@ public class EatDrink extends Task {
 					double excess = person.storeAmountResource(ResourceUtil.FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED - shortfall);
 					if (excess > 0) {
 						// Transfer any excess that a person cannot carry back to the settlement
-						person.getSettlement().storeAmountResource(ResourceUtil.FOOD_ID, excess);
+						rh.storeAmountResource(ResourceUtil.FOOD_ID, excess);
 					}
 				}
 			}

@@ -37,8 +37,7 @@ public class Rationing implements Serializable {
 	
 	/** The player adjustable rationing level that would trigger the state of emergency for the settlement. */
 	private int emergencyLevel = 100;
-	/** The name of the resource to be ration. */
-//	private String resource;
+
 	/** The associated settlement. */
 	private Settlement settlement;
 	
@@ -150,7 +149,8 @@ public class Rationing implements Serializable {
 	 * @return level difference
 	 */
 	public int reviewRationingLevel() {
-		double stored = settlement.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+		var rh = settlement.getEquipmentInventory();
+		double stored = rh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		int reserve = settlement.getNumCitizens() * Settlement.MIN_WATER_RESERVE;
 		
 		// Assuming a 90-day supply of this resource and including industrial usage 

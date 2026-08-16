@@ -101,6 +101,7 @@ public class Storage extends Function {
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
 		double value = 0;
+		var rh = settlement.getEquipmentInventory();
 
 		var spec = buildingConfig.getFunctionSpec(buildingName, FunctionType.STORAGE);
 		if (spec instanceof StorageSpec ss) { 
@@ -108,11 +109,11 @@ public class Storage extends Function {
 				Integer resource = e.getKey();
 				double storageAmount = e.getValue();
 				
-				double settlementCap = settlement.getSpecificCapacity(resource);
+				double settlementCap = rh.getSpecificCapacity(resource);
 
 				double resourceValue = settlement.getGoodsManager().getGoodValuePoint(resource);
 				
-				double settlementStored = settlement.getSpecificAmountResourceStored(resource);
+				double settlementStored = rh.getSpecificAmountResourceStored(resource);
 
 				for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.STORAGE)) {
 					Storage storageFunction = building.getStorage();
@@ -151,6 +152,7 @@ public class Storage extends Function {
 
 		var spec = buildingConfig.getFunctionSpec(building.getBuildingType(), FunctionType.STORAGE);
 		if (spec instanceof StorageSpec ss) { 
+			var rh = building.getAssociatedSettlement().getEquipmentInventory();
 			for (Entry<Integer, Double> e : ss.getCapacityResources().entrySet()) {
 				Integer resource = e.getKey();
 
@@ -158,13 +160,13 @@ public class Storage extends Function {
 				
 				double buildingCap = resourceCapacities.getOrDefault(resource, 0D) * wearModifier;
 
-				double settlementCap = building.getAssociatedSettlement().getSpecificCapacity(resource);
+				double settlementCap = rh.getSpecificCapacity(resource);
 
 				double supply = buildingCap;
 				
 				double resourceValue = building.getGoodsManager().getGoodValuePoint(resource);
 				
-				double settlementStored = building.getSpecificAmountResourceStored(resource);
+				double settlementStored = rh.getSpecificAmountResourceStored(resource);
 
 				// Assume settlementCap include buildings that have no wear and tear
 				double buildingStored = buildingCap / settlementCap * settlementStored;

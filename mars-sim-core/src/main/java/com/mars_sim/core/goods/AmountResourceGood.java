@@ -533,9 +533,10 @@ class AmountResourceGood extends Good {
     @Override
     public double getNumberForSettlement(Settlement settlement) {
         double amount = 0D;
+		var rh = settlement.getEquipmentInventory();
 
 		// Get amount of resource in settlement storage.
-		amount += settlement.getSpecificAmountResourceStored(getID());
+		amount += rh.getSpecificAmountResourceStored(getID());
         
         // Get amount of resource out on mission vehicles.
         amount += getVehiclesOnMissions(settlement)
@@ -560,7 +561,6 @@ class AmountResourceGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-//		double totalMass = Math.round(settlement.getSpecificAmountResourceStored(getID()) * 100.0)/100.0;
 		double supply = settlement.getGoodsManager().getSupplyScore(getID());
 		double factor = 1.5 / (2 + Math.log(supply));
 	    double price = getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
@@ -597,6 +597,7 @@ class AmountResourceGood extends Good {
 		double previousDemand = owner.getDemandScore(this);
 
         Settlement settlement = owner.getSettlement();
+		var rh = settlement.getEquipmentInventory();
  
         if (constantManufacturingDemand == -1D) {
         	// At startup, compute manufacturingDemand
@@ -608,7 +609,7 @@ class AmountResourceGood extends Good {
         }
         
 		// Calculate total supply
-		double totalSupply = getAverageAmountSupply(settlement.getSpecificAmountResourceStored(id));
+		double totalSupply = getAverageAmountSupply(rh.getSpecificAmountResourceStored(id));
 
 		// Store the average supply
 		owner.setSupplyScore(this, totalSupply);

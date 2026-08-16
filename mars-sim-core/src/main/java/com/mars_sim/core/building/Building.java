@@ -92,9 +92,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
-
-	private static final String _HAB = " hab";
-	private static final String _HUB = " hub";
 		
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
@@ -1315,8 +1312,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private void checkPersonImpact(Malfunction mal) {
 
 		String victimNames = null;
-//		var settlement = getAssociatedSettlement();
-		
+
 		// check if someone under this roof may have seen/affected by the impact
 		for (Person person : getOccupants()) {
 			
@@ -1457,7 +1453,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public double getSpecificAmountResourceStored(int resource) {
-		return getAssociatedSettlement().getSpecificAmountResourceStored(resource);
+		return getAssociatedSettlement().getEquipmentInventory().getSpecificAmountResourceStored(resource);
 	}
 
 	/**
@@ -1468,7 +1464,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public double getAllSpecificAmountResourceStored(int resource) {
-		return getAssociatedSettlement().getAllSpecificAmountResourceStored(resource);
+		return getAssociatedSettlement().getEquipmentInventory().getAllSpecificAmountResourceStored(resource);
 	}
 	
 	/**
@@ -1479,7 +1475,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public double getAllAmountResourceStored(int resource) {
-		return getAssociatedSettlement().getAllAmountResourceStored(resource);
+		return getAssociatedSettlement().getEquipmentInventory().getAllAmountResourceStored(resource);
 	}
 	
 	/**
@@ -1491,7 +1487,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
-		return getAssociatedSettlement().storeAmountResource(resource, quantity);
+		return getAssociatedSettlement().getEquipmentInventory().storeAmountResource(resource, quantity);
 	}
 
 	/**
@@ -1503,7 +1499,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
-		return getAssociatedSettlement().retrieveAmountResource(resource, quantity);
+		return getAssociatedSettlement().getEquipmentInventory().retrieveAmountResource(resource, quantity);
 	}
 
 	/**
@@ -1514,7 +1510,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public double getSpecificCapacity(int resource) {
-		return getAssociatedSettlement().getSpecificCapacity(resource);
+		return getAssociatedSettlement().getEquipmentInventory().getSpecificCapacity(resource);
 	}
 
 	/**
@@ -1525,7 +1521,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public double getRemainingCombinedCapacity(int resource) {
-		return getAssociatedSettlement().getRemainingCombinedCapacity(resource);
+		return getAssociatedSettlement().getEquipmentInventory().getRemainingCombinedCapacity(resource);
 	}
 
 	/**
@@ -1536,7 +1532,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public double getRemainingSpecificCapacity(int resource) {
-		return getAssociatedSettlement().getRemainingSpecificCapacity(resource);
+		return getAssociatedSettlement().getEquipmentInventory().getRemainingSpecificCapacity(resource);
 	}
 	
 	/**
@@ -1547,7 +1543,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return getAssociatedSettlement().hasAmountResourceRemainingCapacity(resource);
+		return getAssociatedSettlement().getEquipmentInventory().hasAmountResourceRemainingCapacity(resource);
 	}
 	
 	/**
@@ -1557,7 +1553,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public Set<Integer> getSpecificResourceStoredIDs() {
-		return getAssociatedSettlement().getSpecificResourceStoredIDs();
+		return getAssociatedSettlement().getEquipmentInventory().getSpecificResourceStoredIDs();
 	}
 	
 	/**
@@ -1567,23 +1563,23 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public Set<Integer> getAllAmountResourceStoredIDs() {
-		return getAssociatedSettlement().getAllAmountResourceStoredIDs();
+		return getAssociatedSettlement().getEquipmentInventory().getAllAmountResourceStoredIDs();
 	}
 
 	@Override
 	public int storeItemResource(int resource, int quantity) {
-		return getAssociatedSettlement().storeItemResource(resource, quantity);
+		return getAssociatedSettlement().getEquipmentInventory().storeItemResource(resource, quantity);
 	}
 
 	@Override
 	public int retrieveItemResource(int resource, int quantity) {
-		return getAssociatedSettlement().retrieveItemResource(resource, quantity);
+		return getAssociatedSettlement().getEquipmentInventory().retrieveItemResource(resource, quantity);
 	}
 
 
 	@Override
 	public int getItemResourceStored(int resource) {
-		return getAssociatedSettlement().getItemResourceStored(resource);
+		return getAssociatedSettlement().getEquipmentInventory().getItemResourceStored(resource);
 	}
 
 	/**
@@ -1594,12 +1590,12 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	@Override
 	public int getItemResourceRemainingQuantity(int resource) {
-		return getAssociatedSettlement().getItemResourceRemainingQuantity(resource);
+		return getAssociatedSettlement().getEquipmentInventory().getItemResourceRemainingQuantity(resource);
 	}
 
 	@Override
 	public Set<Integer> getItemResourceIDs() {
-		return getAssociatedSettlement().getItemResourceIDs();
+		return getAssociatedSettlement().getEquipmentInventory().getItemResourceIDs();
 	}
 	
 	@Override

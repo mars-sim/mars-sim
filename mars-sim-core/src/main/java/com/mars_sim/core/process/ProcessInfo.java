@@ -218,14 +218,15 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 	 * @param settlement
 	 */
 	public void retrieveInputs(Settlement settlement) {
+		var rh = settlement.getEquipmentInventory();
 		// Consume inputs.
 		for (var item : inputList) {
 			switch(item.getType()) {
 				case AMOUNT_RESOURCE:
-					settlement.retrieveAmountResource(item.getId(), item.getAmount());
+					rh.retrieveAmountResource(item.getId(), item.getAmount());
 					break;
 				case PART:
-					settlement.retrieveItemResource(item.getId(), (int) item.getAmount());
+					rh.retrieveItemResource(item.getId(), (int) item.getAmount());
 					break;
 				default:
 					throw new IllegalArgumentException("Process input: " + item.getType() + " not a valid type.");

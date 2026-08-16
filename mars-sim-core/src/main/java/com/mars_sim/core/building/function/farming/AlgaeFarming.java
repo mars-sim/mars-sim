@@ -447,12 +447,13 @@ public class AlgaeFarming extends Function {
 		// Calculate O2 and CO2 usage kg per sol
 		double o2Modifier = 0;
 		double co2Modifier = 0;
+		var rh = building.getSettlement().getEquipmentInventory();
 
 		// A. During the night when light level is low
 		if (watt < 40) {
 
 			double o2Required = compositeFactor * averageOxygenNeeded;
-			double o2Available = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			double o2Available = rh.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			double o2Used = o2Required;
 
 			o2Modifier = o2Available / o2Required;
@@ -473,7 +474,7 @@ public class AlgaeFarming extends Function {
 
 			// Determine harvest modifier by amount of carbon dioxide available.
 			double cO2Req = compositeFactor * averageCarbonDioxideNeeded;
-			double cO2Available = building.getSettlement().getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
+			double cO2Available = rh.getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
 			double cO2Used = cO2Req;
 
 			// Future: allow higher concentration of co2 to be pumped to increase the harvest

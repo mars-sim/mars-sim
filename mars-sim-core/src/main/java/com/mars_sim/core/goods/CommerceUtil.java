@@ -356,15 +356,16 @@ public final class CommerceUtil {
 	 * @throws Exception if error getting number of goods in inventory.
 	 */
 	public static double getNumInInventory(Good good, Settlement settlement) {
+		var rh = settlement.getEquipmentInventory();
 		switch(good.getCategory()) {
 			case AMOUNT_RESOURCE:
-				return settlement.getSpecificAmountResourceStored(good.getID());
+				return rh.getSpecificAmountResourceStored(good.getID());
 			
 			case ITEM_RESOURCE:
-				return settlement.getItemResourceStored(good.getID());
+				return rh.getItemResourceStored(good.getID());
 			
 			case EQUIPMENT, CONTAINER:
-				return settlement.findNumEmptyContainersOfType(((EquipmentGood) good).getEquipmentType(), false);
+				return rh.findNumEmptyContainersOfType(((EquipmentGood) good).getEquipmentType(), false);
 			
 			case VEHICLE:
 				int count = 0;

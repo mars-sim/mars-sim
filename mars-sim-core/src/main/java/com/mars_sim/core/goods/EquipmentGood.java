@@ -287,6 +287,7 @@ public class EquipmentGood extends Good {
 	 */
 	private double determineEquipmentDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = 1;
+		var rh = settlement.getEquipmentInventory();
 		
 		double areologistFactor = (1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement)) / 3.0;
 
@@ -305,7 +306,7 @@ public class EquipmentGood extends Good {
 		// Scan resources that can be held in this Container
 		for (AmountResource resource : ResourceUtil.getAmountResources()) {
 			if (ContainerUtil.getEquipmentTypeForContainer(resource.getID()) == equipmentType) {
-				double settlementCapacity = settlement.getSpecificCapacity(resource.getID());
+				double settlementCapacity = rh.getSpecificCapacity(resource.getID());
 
 				double resourceDemand = owner.getDemandScoreWithID(resource.getID());
 

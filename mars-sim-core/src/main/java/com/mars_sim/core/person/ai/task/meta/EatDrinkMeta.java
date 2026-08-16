@@ -112,13 +112,14 @@ public class EatDrinkMeta extends FactoryMetaTask {
 			
 			if (vehicle.isInGarage()) {
 				inSettlement = true;
+				var rh = vehicle.getSettlement().getEquipmentInventory();
 
 				// How to make a person walk out of vehicle back to settlement 
 				// if hunger is >500 ?
 				if (foodAmount < EatDrink.MIN)
-					foodAmount = vehicle.getSettlement().getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+					foodAmount = rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 				if (waterAmount < EatDrink.MIN)
-					waterAmount = vehicle.getSettlement().getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+					waterAmount = rh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 	
 				needFood = (hungry && (foodAmount >= EatDrink.MIN || dFactor > 1));
 			}
