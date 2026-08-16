@@ -9,7 +9,6 @@ package com.mars_sim.core.person.health;
 import java.io.Serializable;
 
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 
 /**

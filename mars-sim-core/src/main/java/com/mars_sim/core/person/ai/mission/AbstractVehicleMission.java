@@ -533,11 +533,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		super.performPhase(member);
 
 		MissionPhase phase = getPhase();
-		if (LOADING.equals(phase)) {
+		if (LOADING.equals(phase)) {			
+			checkVehicleMaintenance();
 			performLoadingPhase(member);
 
 		} else if (DEPARTING.equals(phase)) {
-			checkVehicleMaintenance();
+
 			performDepartingFromSettlementPhase(member);
 		}
 		else if (TRAVELLING.equals(phase)) {
@@ -581,7 +582,22 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			return;
 		}
 
-		if (!isVehicleLoaded()) {
+		if (loadCargo(member)) {
+			setPhaseEnded(true);
+		}
+	}
+
+	/**
+	 * Loads the resources.
+	 * 
+	 * @param member
+	 * @return
+	 */
+	protected boolean loadCargo(Worker member) {
+		boolean loaded = isVehicleLoaded();
+		if (!loaded) {
+			Vehicle v = getVehicle();
+			Settlement settlement = v.getSettlement();
 			// Load vehicle if not fully loaded.
 			if (member.isInSettlement()
 				// Note: randomly select this member to load resources for the rover
@@ -605,11 +621,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		        }
 			}
 		}
-		else {
-			setPhaseEnded(true);
-		}
+		return loaded;
 	}
-
+	
 	/**
 	 * Performs the travel phase of the mission.
 	 *

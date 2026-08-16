@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;

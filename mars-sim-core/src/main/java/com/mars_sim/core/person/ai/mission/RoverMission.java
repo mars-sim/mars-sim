@@ -272,13 +272,24 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private void createEjectedList(List<Person> ejectedMembers, Rover rover) {
 		for (Worker m : getMembers()) {
 			Person p = (Person) m;
-			if (!rover.isCrewmember(p)) {
+			
+			// Remove dead members
+			if (p.isDeclaredDead()) {
+				ejectedMembers.add(p);
+			}
+			
+			else if (!rover.isCrewmember(p)) {
 				ejectedMembers.add(p);
 			}
 		}
 		
 		for (Person crewmember : rover.getCrew()) {
 			if (!getMembers().contains(crewmember)) {
+				ejectedMembers.add(crewmember);
+			}
+			
+			// Remove dead crew
+			else if (crewmember.isDeclaredDead()) {
 				ejectedMembers.add(crewmember);
 			}
 		}
@@ -469,6 +480,11 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 		if (canDepart) {
 			canDepart = evaluateDepartureCriteria(member, v, settlement);
+		}
+		
+		// Note: should double check in loading up consumable resources again here prior to departure
+		if (canDepart) {
+			canDepart = loadCargo(member);
 		}
 		
 		if (canDepart) {	
