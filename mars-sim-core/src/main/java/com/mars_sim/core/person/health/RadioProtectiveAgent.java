@@ -51,7 +51,7 @@ public class RadioProtectiveAgent extends Medication {
     
     @Override
     public boolean timePassing(ClockPulse pulse) {
-        super.timePassing(pulse);
+        super.timePassing(pulse.getElapsed());
         
         // Find an region
         BodyRegionType region = getExposedRegion();

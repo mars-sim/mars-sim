@@ -45,7 +45,7 @@ public class AnxietyMedication extends Medication {
     
     @Override
     public boolean timePassing(ClockPulse pulse) {
-        super.timePassing(pulse);
+        super.timePassing(pulse.getElapsed());
         
         // Reduce person's stress.
         condition.reduceStress(STRESS_REDUCTION * pulse.getElapsed());

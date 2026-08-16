@@ -452,6 +452,7 @@ public class PhysicalCondition implements Serializable {
 			pTime = remaining;
 		}
 		while (remaining > 0) {
+			// Limit the time to be added to checkVitals to be no larger than pTime
 			if (remaining > pTime) {
 				// Call takeAction to perform a task and consume the pulse time.
 				checkVitals(pulse, pTime, support);
@@ -491,7 +492,7 @@ public class PhysicalCondition implements Serializable {
 		// Check life support system
 		checkLifeSupport(time, currentO2Consumption, support);
 		// Update the existing health problems
-		checkHealth(pulse, isResting);
+		checkHealth(pulse, time, isResting);
 		// Calculate performance and most mostSeriousProblem illness.
 		recalculatePerformance();
 		// Check radiation 
@@ -501,7 +502,7 @@ public class PhysicalCondition implements Serializable {
 	 /**
 	  * Checks and updates existing health problems
 	  */
-	private void checkHealth(ClockPulse pulse, boolean isResting) {
+	private void checkHealth(ClockPulse pulse, double time, boolean isResting) {
 
 		if (!problems.isEmpty()) {
 
@@ -513,7 +514,7 @@ public class PhysicalCondition implements Serializable {
 				// Advance each problem, they may change into a worse problem.
 				// If the current is completed or a new problem exists then
 				// remove this one.
-				Complaint nextComplaintPhase = problem.timePassing(pulse.getElapsed(), this);
+				Complaint nextComplaintPhase = problem.timePassing(time, this);
 
 				// After sleeping sufficiently, the high fatigue collapse should no longer exist.
 				if ((problem.getState() == HealthProblemState.CURED) || (nextComplaintPhase != null)) {
@@ -540,12 +541,12 @@ public class PhysicalCondition implements Serializable {
 
 		// Generates any random illnesses.
 		if (!isResting) {
-			checkForRandomAilments(pulse);
+			checkForRandomAilments(pulse, time);
 		}
 
 		// Add time to all medications affecting the person.
 		for (Medication med : getMedicationList()) {
-			med.timePassing(pulse);
+			med.timePassing(time);
 		}
 	}
 
@@ -1145,6 +1146,9 @@ public class PhysicalCondition implements Serializable {
 	
 	/**
 	 * Checks if a person suffers from stress related health problem.
+	 * 
+	 * @param time
+	 * @param factor
 	 */
 	private void checkStress(double time, double factor) {				
 		// Always check for panic attack
@@ -1264,10 +1268,10 @@ public class PhysicalCondition implements Serializable {
 	 * Checks for any random ailments that a person comes down with over a period of
 	 * time.
 	 *
+	 * @param pulse
 	 * @param time the time period (millisols).
 	 */
-	private void checkForRandomAilments(ClockPulse pulse) {
-		double time  = pulse.getElapsed();
+	private void checkForRandomAilments(ClockPulse pulse, double time) {
 
 		Task activeTask = person.getTaskManager().getTask();
 
@@ -1564,8 +1568,8 @@ public class PhysicalCondition implements Serializable {
 		medicalManager.addPostmortemExam(person.getAssociatedSettlement(), deathDetails);
 		
 		// Vacate the role of being the operator of the vehicle he used to have
-		if (person.getVehicle() != null)
-			person.getVehicle().setOperator(null);
+//		if (person.getVehicle() != null)
+//			person.getVehicle().setOperator(null);
 	}
 
 	/**
@@ -1644,8 +1648,8 @@ public class PhysicalCondition implements Serializable {
 	 * 
 	 * @return
 	 */
-	public boolean isEVAFit() {
-        return !isUnfitByLevel(500, 50, 500, 350);
+	public boolean isEVAUnFit() {
+        return isUnfitByLevel(400, 40, 400, 300);
 	}
 	
 	/**

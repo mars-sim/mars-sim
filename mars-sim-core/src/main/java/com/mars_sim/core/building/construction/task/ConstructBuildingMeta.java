@@ -15,6 +15,8 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.mission.ConstructionMission;
+import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.shift.ShiftManager;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
@@ -64,8 +66,9 @@ public class ConstructBuildingMeta extends MetaTask implements SettlementMetaTas
     If above this value, the person will not consider picking this task. */
     private static final double MAX_SHIFT_FRACTION = 0.66D;
  
-	private static final double PHASE_WEIGHT = 0.2D;
-    private static final int SITE_BASE_SCORE = 100;
+	private static final double PHASE_WEIGHT = 0.5D;
+    private static final int SITE_BASE_SCORE = 300;
+    private static final int MISSION_WEIGHT = 10;
 
     public ConstructBuildingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -140,6 +143,24 @@ public class ConstructBuildingMeta extends MetaTask implements SettlementMetaTas
         // Add a negative base to model Person fitness
         result.addBase("fitness", -(stress * 2 + fatigue + hunger + thirst + exerciseMillisols));
 
+        Mission currentMission = p.getMission();
+        
+        if (currentMission != null && currentMission instanceof ConstructionMission cm) {
+			var activeSites = p.getAssociatedSettlement()
+					.getConstructionManager().getConstructionSites()
+	                .stream()
+	                .filter(cs -> cs.getWorkOnSite() != null)
+	                .toList();
+	
+			for (ConstructionSite cs: activeSites) {
+				ConstructionMission mission = (ConstructionMission)cs.getWorkOnSite();
+				if (mission.equals(cm)) {
+					result.addModifier("mission", MISSION_WEIGHT);
+					break;
+				}
+			}
+        }
+        
         result = assessPersonSuitability(result, p);
 
         // Encourage to get this task done early in a work shift

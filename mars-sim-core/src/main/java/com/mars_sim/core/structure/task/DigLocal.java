@@ -106,7 +106,7 @@ public abstract class DigLocal extends EVAOperation {
 
         // To dig local a person must be in a Settlement
         if (!person.isInSettlement()) {
-        	endEVA("Not in a settlement to start a DigLocal Task.");
+        	endEVA("Not in a settlement.");
 			return;
         }
 

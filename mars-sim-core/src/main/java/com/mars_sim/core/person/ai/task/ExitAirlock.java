@@ -333,7 +333,7 @@ public class ExitAirlock extends Task {
 	      	return false;
 		}
 		
-		return !person.isEVAFit();
+		return person.isEVAUnFit();
 	}
 	
 	/**
@@ -491,8 +491,7 @@ public class ExitAirlock extends Task {
 		}
 
 		// Note: no longer use isEVAFit() to check for fitness
-		
-		if (inSettlement && isEVAUnfit()) {
+		if (isEVAUnfit()) {
 			walkAway(person, NOT_EVA_FIT + TO_REQUEST_EGRESS + ". Current task: " 
 					+ person.getTaskDescription() + ".");
 			return 0;
@@ -624,7 +623,7 @@ public class ExitAirlock extends Task {
 			airlock.setActivated(true);
 		}
 			
-		if (inSettlement && isEVAUnfit()) {
+		if (isEVAUnfit()) {
 			walkAway(person, NOT_EVA_FIT + TO_PRESSURIZE_CHAMBER);
 			return 0;
 		}

@@ -514,8 +514,8 @@ public abstract class EVAOperation extends Task {
 		}
 		
 		// Check fitness only if it's not in the state of emergency
-		if (isSuperUnfit()) {
-			endEVA("Super Unfit.");
+		if (isNominallyFit()) {
+			endEVA("Nominally Unfit.");
 			return time;
 		}	
 
@@ -556,10 +556,10 @@ public abstract class EVAOperation extends Task {
 	 */
 	@Override
 	public void endTask() {		
-//		if (person.isOutside()) {
-//            endEVA("Outside.");
-//		}
-//    	else
+		if (person.isOutside()) {
+            setPhase(WALK_BACK_INSIDE);
+		}
+    	else
         	super.endTask();
 	}
 	
@@ -665,7 +665,7 @@ public abstract class EVAOperation extends Task {
 			return true;
 		}	
 		
-		return person.getPhysicalCondition().isEVAFit() 
+		return !person.getPhysicalCondition().isEVAUnFit() 
 				|| person.getPhysicalCondition().computeHealthScore() > 80;
 	} 
 	
@@ -691,6 +691,15 @@ public abstract class EVAOperation extends Task {
 	public boolean isSuperUnfit() {
 		return isSuperUnfit(person);
 	} 
+	
+	/**
+	 * Is it nominally fit ?
+	 * 
+	 * @return
+	 */
+	public boolean isNominallyFit() {
+		return person.isNominallyFit();
+	}
 	
 	/**
 	 * Is the person's settlement of interest in emergency ?

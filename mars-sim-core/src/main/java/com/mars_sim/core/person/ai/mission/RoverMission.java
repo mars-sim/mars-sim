@@ -441,7 +441,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			
 			// Check if the person is EVA fit prior to boarding.
 			// If unfit, he may not be able to come out of the airlock
-			if (!getRover().isCrewmember((Person)member) && ((Person)member).isEVAFit()) {
+			if (!getRover().isCrewmember((Person)member) && !((Person)member).isEVAUnFit()) {
 				// Need to make the member board the vehicle early
 				boardVehicle(member, v);
 			}
@@ -603,7 +603,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 			if (member instanceof Person person
 				// If not aboard the rover, board the rover and be ready to depart.
-				&& !getRover().isCrewmember(person) && ((Person)member).isEVAFit()) {
+				&& !getRover().isCrewmember(person) && !((Person)member).isEVAUnFit()) {
 
 				boardVehicle(person, v);
 			}

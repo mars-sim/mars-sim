@@ -83,10 +83,10 @@ public abstract class Medication implements Serializable, Temporal, Comparable<M
 	 * 
 	 * @param time amount of time (millisols).
 	 */
-	public boolean timePassing(ClockPulse pulse) {
+	public boolean timePassing(double time) {
 
 		// Add to time elapsed.
-		timeElapsed += pulse.getElapsed();
+		timeElapsed += time;
 		
 		return true;
 	}

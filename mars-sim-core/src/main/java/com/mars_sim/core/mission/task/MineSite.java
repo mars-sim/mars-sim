@@ -174,12 +174,7 @@ public class MineSite extends EVAOperation {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
-		
-		if (person.isSuperUnfit()) {
-			endEVA("Super Unfit.");
-			return remainingTime;
-		}
-		
+	
 		return remainingTime;
 	}
 

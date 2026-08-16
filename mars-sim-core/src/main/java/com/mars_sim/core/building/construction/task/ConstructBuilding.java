@@ -60,7 +60,7 @@ public class ConstructBuilding extends EVAOperation {
 	private List<LightUtilityVehicle> vehicles;
 
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 *
 	 * @param person the person performing the task.
 	 * @param site the construction site.
@@ -69,8 +69,8 @@ public class ConstructBuilding extends EVAOperation {
 		// Use EVAOperation parent constructor.
 		super(NAME, person, RandomUtil.getRandomDouble(10) + 150D, CONSTRUCTION);
 
-		if (person.isSuperUnfit()) {
-			endEVA("Super Unfit.");
+		if (person.isEVAUnFit()) {
+			endEVA("Not EVA fit.");
         	return;
 		}
 		
@@ -84,7 +84,6 @@ public class ConstructBuilding extends EVAOperation {
 			// Determine location for construction site.
 			LocalPosition constructionSiteLoc = determineConstructionLocation();
 			setOutsideSiteLocation(constructionSiteLoc);
-	
 		}
 
 		else {
@@ -93,7 +92,7 @@ public class ConstructBuilding extends EVAOperation {
 	}
 
 	/**
-	 * Constructor. Called by ConstructionMission
+	 * Constructor 2. Called by ConstructionMission
 	 * Q: is it necessary ?
 	 *
 	 * @param person   the person performing the task.
@@ -111,8 +110,8 @@ public class ConstructBuilding extends EVAOperation {
 		this.site = site;
 		this.vehicles = vehicles;
 
-		if (person.isSuperUnfit()) {
-			endEVA("Super Unfit.");
+		if (person.isEVAUnFit()) {
+			endEVA("Not EVA fit.");
         	return;
 		}
 
@@ -136,9 +135,6 @@ public class ConstructBuilding extends EVAOperation {
 
 		// Check if person's medical condition will not allow task.
 		if (person.getPerformanceRating() < .3D)
-			return false;
-
-		if (person.isSuperUnfit())
 			return false;
 		
 		// Check if there is work that can be done on the construction stage.
@@ -226,11 +222,6 @@ public class ConstructBuilding extends EVAOperation {
 			logger.info(person, site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 10.0)/10.0);		
 			// End operating light utility vehicle.
 			endEVA("Stage completed.");
-			return workTime;
-		}
-		
-		if (person.isSuperUnfit()) {
-			endEVA("Super Unfit.");
 			return workTime;
 		}
 		

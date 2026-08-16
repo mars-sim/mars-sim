@@ -61,7 +61,7 @@ public class ConstructionMission extends AbstractMission {
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 2;
 	
-	private static final int CONSTRUCT_PERCENT_PROBABILITY = 50;
+	private static final int CONSTRUCT_PERCENT_PROBABILITY = 25;
 	
 	/** Time (millisols) required to prepare construction site for stage. */
 	private static final double SITE_PREPARE_TIME = 250D;
@@ -352,43 +352,32 @@ public class ConstructionMission extends AbstractMission {
 			return;
 		}
 		
-//		// Anyone in the crew or a single person at the home settlement has a
-//		// dangerous illness, end phase.
-//		if (hasEmergency()) {
-//			logger.info(worker, 1_000, " had medical emergency at " + site.getName() + ".");
-//			// End the ConstructBuilding task and return to the settlement to take care of things
-////			((Person) worker).getMind().getTaskManager().clearSpecificTask(ConstructBuilding.class.getSimpleName());
-////			((Person) worker).getMind().getTaskManager().endCurrentEVATask("Medical Emergency");
-//		}
-//
-//		if (((Person) worker).isSuperUnfit()) {
-//			logger.info(worker, 1_000, " no longer fit enough to continue construction at " + site.getName() + ".");
-//			// End the ConstructBuilding task and return to the settlement to take care of things
-////			((Person) worker).getMind().getTaskManager().clearSpecificTask(ConstructBuilding.class.getSimpleName());
-////			((Person) worker).getMind().getTaskManager().endCurrentEVATask("Super Unfit");
-//		}
-		
 		// Check if further work can be done on construction stage.
 		var stage = objective.getStage();
 		if (stage.getRequiredWorkTime() <= stage.getCompletedWorkTime()) {
 			setPhaseEnded(true);
 		}
 
-		boolean canAssign = false;
-		if (!getPhaseEnded()) {
-			// Assign construction task to member.
-			Person p = (Person) worker;
-			if (p.isInSettlement() && RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
-				&& ConstructBuilding.canConstruct(p, site)) {
-				canAssign = assignTask(p, new ConstructBuilding(p, stage, site, objective.getConstructionVehicles()));
-			}
-			if (canAssign) {
-				logger.info(worker, 1_000L, "Assigned to construct " + site.getName() + ".");
-			}
-//			else {
-//				logger.info(member, 20_000L, "Unable to assign to construct " + site.getName() + ".");
+//		boolean canAssign = false;
+//		if (!getPhaseEnded()) {
+//			// Assign construction task to member.
+//			Person p = (Person) worker;
+//
+//			if (p.isInSettlement() && RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
+//				// Check if the person is EVA fit. 
+//				// Note: this would allow a person fully recover in the settlement 
+//				// before attempting to go out and construct building
+//				&& !p.isEVAUnFit()
+//				&& ConstructBuilding.canConstruct(p, site)) {
+//				canAssign = assignTask(p, new ConstructBuilding(p, stage, site, objective.getConstructionVehicles()));
 //			}
-		}
+//			if (canAssign) {
+//				logger.info(worker, 1_000L, "Assigned to construct " + site.getName() + ".");
+//			}
+////			else {
+////				logger.info(member, 20_000L, "Unable to assign to construct " + site.getName() + ".");
+////			}
+//		}
 
 		// Display the LUV(s)
 		if (worker.isInVehicle())
@@ -397,6 +386,22 @@ public class ConstructionMission extends AbstractMission {
 		checkConstructionStageComplete(site, stage);
 	}
 
+	/**
+	 * Display the light utility vehicles on the settlement map.
+	 *
+	 * @return reserved light utility vehicle or null if none.
+	 */
+	private void showLightUtilityVehicle(Worker worker) {
+		var site = objective.getSite();
+		for (LightUtilityVehicle luv : objective.getConstructionVehicles()) {
+			if (luv.isCrewmember(worker)) {
+				// Place light utility vehicles at random location in construction site.
+				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
+				luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+			}
+		}
+	}
+	
 	/**
 	 * Checks if this construction stage is complete.
 	 * 
@@ -468,22 +473,6 @@ public class ConstructionMission extends AbstractMission {
 		return equipment;
 	}
 
-	/**
-	 * Display the light utility vehicles on the settlement map.
-	 *
-	 * @return reserved light utility vehicle or null if none.
-	 */
-	private void showLightUtilityVehicle(Worker worker) {
-		var site = objective.getSite();
-		for (LightUtilityVehicle luv : objective.getConstructionVehicles()) {
-			if (luv.isCrewmember(worker)) {
-				// Place light utility vehicles at random location in construction site.
-				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
-				luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
-			}
-		}
-	}
-	
 	/**
 	 * Reserves a light utility vehicle for the mission.
 	 * 

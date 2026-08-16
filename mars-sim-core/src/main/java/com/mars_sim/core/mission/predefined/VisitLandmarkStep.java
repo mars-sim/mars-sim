@@ -72,7 +72,7 @@ class VisitLandmarkStep extends MissionStep {
 
         // Must be a Person
         if (worker instanceof Person p && !objective.isEVADone(worker)
-            && p.getPhysicalCondition().isEVAFit()) {
+            && !p.getPhysicalCondition().isEVAUnFit()) {
             // Do EVA to visit the landmark
             var newTask = new LandmarkEVA(p, getMission(), objective);
             assignTask(worker, newTask);

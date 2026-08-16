@@ -97,7 +97,8 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     private List<Integer> resources = new ArrayList<>();
 
     /**
-     * Create a generic vehicle model with the specified columns.
+     * Creates a generic vehicle model with the specified columns.
+     * 
      * @param columns Columns to show.
      */
     protected BaseVehicleModel(EntityColumnSpec... columns) {
@@ -105,7 +106,8 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     }
 
     /**
-     * Add resource columns to the model. The resource columns are created for the specified list of resource IDs.
+     * Adds resource columns to the model. The resource columns are created for the specified list of resource IDs.
+     * 
      * @param resources Resource IDs to add
      */
     protected void addResourceColumns(List<Integer> resources) {
@@ -114,9 +116,10 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     }
 
     /**
-     * Attachs listener to an associated Mission.
+     * Attaches listener to an associated Mission.
+     * 
      * @param entity Source of events
-     * @param activate Activiate listeners
+     * @param activate Activate listeners
      */
     @Override
     protected void enableListener(Vehicle entity, boolean activate) {
@@ -135,11 +138,11 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     }
 
     /**
-     * Also if the Vehicle's Mission changes it triggers adding/removing listener on the Mission
+     * Updates entity. Also if the Vehicle's Mission changes it triggers adding/removing listener on the Mission
      */
     @Override
     public void entityUpdate(EntityEvent event) {
-        // Trap evetns from Mission
+        // Trap events from Mission
         if (event.getSource() instanceof VehicleMission vm) {
             if (FORWARED_EVENTS.contains(event.getType())) {
                 // Make the model refresh vehicle distances
@@ -159,7 +162,6 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
                 vehicleToMission.put(v, vm);
             }
             else {
-                // Missiongone
                 var oldMission = vehicleToMission.remove(v);
                 if (oldMission != null) {
                     oldMission.removeEntityListener(this);
@@ -178,8 +180,9 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     }
 
     /**
-     * Get a cell value for the associated Vehicle. Column index maps to the associated ColumnSpec where the id
+     * Gets a cell value for the associated Vehicle. Column index maps to the associated ColumnSpec where the id
      * is used to determine the value to return.
+     * 
      * @param entity The Vehicle entity.
      * @param valueIndex Column index. 
      * @return Associated value.
@@ -189,7 +192,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
         return switch(valueIndex) {
             case NAME_VAL -> entity.getName();
             case MISSION_VAL -> (entity.getMission() != null) ? entity.getMission().getName() : "";
-            case TYPE_VAL -> entity.getVehicleType().getName();
+            case TYPE_VAL -> entity.getVehicleSpec().getName(); //.getVehicleType().getName();
             case STATUS_VAL -> entity.printStatusTypes();
             case SETTLEMENT_VAL -> entity.getAssociatedSettlement().getName();
 			case SPEED_VAL  -> entity.getSpeed();
@@ -267,7 +270,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     @Override
     protected String getEntityDescription(Vehicle entity, int valueIndex) {
         if (valueIndex == MISSION_VAL && entity.getMission() != null) {
-            return "Phase: " +entity.getMission().getPhaseDescription();
+            return "Phase: " + entity.getMission().getPhaseDescription();
         }
         else if (valueIndex == BATTERY_VAL) {
             return StyleManager.DECIMAL_PERC.format(entity.getController().getBattery().getBatteryPercent());

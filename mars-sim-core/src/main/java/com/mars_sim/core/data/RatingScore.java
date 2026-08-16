@@ -134,7 +134,7 @@ public class RatingScore implements Rating {
     }
     
     /**
-     * Recalculates the score by multiplying the base with the known modifiers.
+     * Adds a score to the base.
      * If having the same key, it will replace the value.
      * Note: base values are added.
      * 

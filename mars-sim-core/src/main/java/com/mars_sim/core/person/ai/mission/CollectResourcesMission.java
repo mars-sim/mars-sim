@@ -302,7 +302,7 @@ public abstract class CollectResourcesMission extends EVAMission
         			"Asleep in " + person.getContainerUnit() + " and not to be disturbed.");
 		}
 		
-		else if (!person.isEVAFit()) {
+		else if (person.isEVAUnFit()) {
 			logger.info(person, 4_000, "Not EVA fit to exit " + getRover() +  ".");
 			
 			// Note: How to take care of the person if he does not have high fatigue but other health issues ?

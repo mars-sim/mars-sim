@@ -313,7 +313,7 @@ public class Mining extends EVAMission
 			return false;
 		}
 		
-		if (person.isEVAFit()) {
+		if (!person.isEVAUnFit()) {
 			attachLUV(false);
 
 			boolean doMining = true;

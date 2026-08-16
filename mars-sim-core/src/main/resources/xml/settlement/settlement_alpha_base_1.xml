@@ -27,6 +27,7 @@
             <connection id="1" hatch-facing="south" />
             <connection id="3" hatch-facing="north" />
             <connection id="7" hatch-facing="east" />
+            <connection id="EVA0" hatch-facing="west" />
         </connection-list>
     </building>
     <building id="3" type="Hallway" length="4.0" xloc="0.0"
@@ -88,20 +89,38 @@
         yloc="32.5" facing="0.0">
         <connection-list>
             <connection id="4" xloc="0.0" yloc="-2.0" />
-            <connection id="12" xloc="0.0" yloc="2.0" />
+            <connection id="LAB" xloc="0.0" yloc="2.0" />
         </connection-list>
     </building>
-    <building id="12" type="Laboratory" xloc="0.0"
+    <building id="LAB" type="Laboratory" xloc="0.0"
         yloc="38" facing="90.0">
         <connection-list>
             <connection id="11" hatch-facing="south" />
             <connection id="13" hatch-facing="east" />
+            <connection id="HALL0" hatch-facing="north" />
         </connection-list>
     </building>
+    
+    
+    <building id="HALL0" type="Hallway" length="4.0" xloc="0.0"
+        yloc="43.5" facing="0.0">
+        <connection-list>
+            <connection id="LAB" hatch-facing="south" />
+            <connection id="LG" hatch-facing="north" />
+        </connection-list>
+    </building>
+    <building id="LG" type="Large Greenhouse" xloc="0.0"
+        yloc="54.5" facing="0.0">
+        <connection-list>
+            <connection id="HALL0" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+    
     <building id="13" type="Hallway" length="2.0" xloc="-5.5"
         yloc="38" facing="270.0">
         <connection-list>
-            <connection id="12" xloc="0.0" yloc="1.0" />
+            <connection id="LAB" xloc="0.0" yloc="1.0" />
             <connection id="14" xloc="0.0" yloc="-1.0" />
         </connection-list>
     </building>
@@ -138,7 +157,6 @@
         <connection-list>
             <connection id="17" xloc="0.0" yloc="4.5" />
             <connection id="19" xloc="0.0" yloc="-4.5" />
-            <connection id="23" xloc="-3.5" yloc="0.0" />
         </connection-list>
     </building>
     <building id="19" type="Hallway" length="2.0" xloc="-38.5"
@@ -159,56 +177,51 @@
         yloc="38" facing="270.0">
         <connection-list>
             <connection id="20" xloc="0.0" yloc="1.0" />
-            <connection id="22" xloc="0.0" yloc="-1.0" />
+            <connection id="WS" xloc="0.0" yloc="-1.0" />
         </connection-list>
     </building>
-    <building id="22" type="Workshop" xloc="-55.0" yloc="38"
+    <building id="WS" type="Workshop" xloc="-55.0" yloc="38"
         facing="270.0">
         <connection-list>
             <connection id="21" hatch-facing="west"/>
-            <connection id="HG1" hatch-facing="north" />
-            <connection id="HG2" hatch-facing="south" />
+            <connection id="HALL1" hatch-facing="north" />
+            <connection id="HALL2" hatch-facing="south" />
         </connection-list>
     </building>
-    <building id="23" type="Hallway" length="4.0" xloc="-33.0"
-        yloc="44.0" facing="0.0">
-        <connection-list>
-            <connection id="18" xloc="0.0" yloc="-2.0" />
-            <connection id="24" xloc="0.0" yloc="2.0" />
-        </connection-list>
-    </building>
-    <building id="24" type="Large Greenhouse" xloc="-33.0"
-        yloc="55.0" facing="0.0">
-        <connection-list>
-            <connection id="23" xloc="0.0" yloc="-9.0" />
-        </connection-list>
-    </building>
-    <building id="HG1" type="Hallway" length="4.0" xloc="-55.0"
+ 
+ 
+ 
+    <building id="HALL1" type="Hallway" length="4.0" xloc="-55.0"
         yloc="43.5" facing="0.0">
         <connection-list>
-            <connection id="22" hatch-facing="south" />
+            <connection id="WS" hatch-facing="south" />
             <connection id="G1" hatch-facing="north" />
         </connection-list>
     </building>
     <building id="G1" type="Garage" xloc="-55.0" yloc="53.5"
         facing="0.0">
         <connection-list>
-            <connection id="HG1" hatch-facing="south" />
+            <connection id="HALL1" hatch-facing="south" />
         </connection-list>
     </building>
-    <building id="HG2" type="Hallway" length="4.0" xloc="-55.0"
+    
+    
+    
+    <building id="HALL2" type="Hallway" length="4.0" xloc="-55.0"
         yloc="32.5" facing="0.0">
         <connection-list>
-            <connection id="22" hatch-facing="north"/>
-            <connection id="G2" hatch-facing="south" />
+            <connection id="G2" hatch-facing="south"/>
+            <connection id="WS" hatch-facing="north" />
         </connection-list>
     </building>    
     <building id="G2" type="Garage" xloc="-55.0" yloc="22.5"
         facing="180.0">
         <connection-list>
-            <connection id="HG2" hatch-facing="north" />
+            <connection id="HALL2" hatch-facing="north" />
         </connection-list>
     </building>
+
+
 
     <!-- EVA Airlock is attached to the 1st lander hab -->
     <building id="EVA1" type="EVA Airlock" xloc="7.5" yloc="0.0" facing="0.0">
@@ -217,6 +230,13 @@
         </connection-list>
     </building>
 
+    <!-- EVA Airlock is attached to the 2nd lander hab -->
+    <building id="EVA0" type="EVA Airlock" xloc="7.5" yloc="13.0" facing="0.0">
+        <connection-list>
+            <connection id="2" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
     <!-- EVA Airlock is attached to the 3rd lander hab -->
     <building id="EVA2" type="EVA Airlock" xloc="7.5" yloc="26.0" facing="0.0">
         <connection-list>

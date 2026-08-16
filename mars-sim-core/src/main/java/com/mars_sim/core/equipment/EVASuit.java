@@ -406,7 +406,7 @@ public class EVASuit extends Equipment
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
 		if (oxygenLeft < massO2NominalLimit) {
 			double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
-			logger.log(this, Level.WARNING, 30_000,
+			logger.log(this, Level.WARNING, 3_000,
 					"Only " + Math.round(oxygenLeft*1000.0)/1000.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*1000.0)/1000.0 + " kPa.");
 			return pp;

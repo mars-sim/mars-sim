@@ -136,7 +136,7 @@ public class ExploreSite extends EVAOperation {
 		// Note: hasEVASuitProblem requires a person to have donned the suit already
 		// and thus is not suitable for calling (EVAOperation.hasEVASuitProblem()) here
 		
-		if (member instanceof Person person && !person.isEVAFit()) {
+		if (member instanceof Person person && person.isEVAUnFit()) {
 			logger.info(person, 20_000, "Not EVA fit to explore the site.");
 			return false;
 		}

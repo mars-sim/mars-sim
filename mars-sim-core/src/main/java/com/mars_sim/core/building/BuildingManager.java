@@ -2518,7 +2518,8 @@ public class BuildingManager implements Serializable {
         	Part part = ms.getPart();
             int num = parts.get(ms);      
             // Inject the demand onto this part
-            injectPartDemand(part, settlement, num);
+            if (num > 0)
+            	injectPartDemand(part, settlement, num);
         }
 	}
 	

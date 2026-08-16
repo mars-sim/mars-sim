@@ -1078,7 +1078,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	/**
 	 * Checks if a person is super unfit.
 	 *
-	 * @return true if a person is super fit
+	 * @return true if a person is not super fit
 	 */
 	public boolean isSuperUnfit() {
 		return condition.isSuperUnfit();
@@ -1087,10 +1087,10 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	/**
 	 * Checks if a person is EVA fit.
 	 *
-	 * @return true if a person is EVA fit
+	 * @return true if a person is not EVA fit
 	 */
-	public boolean isEVAFit() {
-        return condition.isEVAFit();
+	public boolean isEVAUnFit() {
+        return condition.isEVAUnFit();
     }
 	
 	/**
