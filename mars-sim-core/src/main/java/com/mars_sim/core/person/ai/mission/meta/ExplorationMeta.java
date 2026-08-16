@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,19 +17,26 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.MetaMission;
+import com.mars_sim.core.mission.MissionCreationException;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Exploration;
+import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.comparators.LabRangeComparator;
+import com.mars_sim.core.vehicle.task.OperateVehicle;
 
 /**
  * A meta mission for the Exploration mission.
@@ -42,6 +50,8 @@ public class ExplorationMeta extends AbstractMetaMission {
 
 	/** Starting sol for this mission to commence. */
 	private static final int MIN_STARTING_SOL = 2;
+	private static final double STANDARD_TIME_PER_SITE = 1000.0;
+
 
 	private static final double VALUE = 20D;
 
@@ -71,27 +81,164 @@ public class ExplorationMeta extends AbstractMetaMission {
 	 * @return a new instance of the Exploration mission.
 	 */
 	@Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
-		return new Exploration(crew, needsReview);
+	public Mission constructInstance(Roster crew, boolean needsReview) throws MissionCreationException{
+
+		var numSites = getExpectedSites(crew.leader().getAssociatedSettlement());
+		List<MineralSite> sites = determineExplorationSites(crew, numSites);
+
+		if (sites.isEmpty()) {
+			throw new MissionCreationException("mission.exploration.nosites");
+		}
+			
+		return constructInstance(crew, needsReview, sites);
+	}
+
+	/**
+	 * Gets a list of candidate MineralSites known to a settlement.
+	 * Filter for those that needs estimation improvement.
+	 * 
+	 * @return
+	 */
+	private List<MineralSite> findClaimedCandidateSites(Settlement settlement) {
+
+		var home = settlement.getReportingAuthority();
+
+		// Get any locations that belong to this home Settlement and need further
+		// exploration before mining
+		return settlement.getExplorations().getDeclaredROIs()
+				.stream()
+				.filter(e -> e.getNumEstimationImprovement() < 
+						RandomUtil.getRandomInt(0, Mining.MATURE_ESTIMATE_NUM * 10))
+				.filter(s -> home.equals(s.getOwner()))
+				.toList();
+	}
+
+	/**
+	 * Determines the locations of the exploration sites.
+	 *
+	 * @param crew		  the roster of crew members for the mission
+	 * @param numSites      the number of exploration sites
+	 */
+	private List<MineralSite> determineExplorationSites(MetaMission.Roster crew, int numSites) {
+
+		Rover rover = (Rover)crew.vehicle();	
+		double theorticalMaxRange = rover.getEstimatedRange();
+		double theoreticalMaxTripTime = rover.getTotalTripTimeLimit(true);
+
+		// Determining the actual traveling range.
+		double possibleRange = getTripTimeRange(numSites, theoreticalMaxTripTime, getAverageVehicleSpeed(crew));
+		double range = Math.min(theorticalMaxRange, possibleRange);
+
+		// Determine the first exploration site.
+		var starting = crew.leader().getAssociatedSettlement();
+		
+		// Find mature sites to explore
+		List<MineralSite> knownSites = findClaimedCandidateSites(starting);
+
+		// Determine remaining exploration sites.
+		Coordinates homeLocation = starting.getCoordinates();
+		Coordinates currentLocation = homeLocation;
+		double remainingRange = range;
+		double returnDist = 0D;
+		List<MineralSite> claimedSites = new ArrayList<>();
+
+		// Add in some existing ones first
+		int knownId = 0;
+		while ((claimedSites.size() < numSites)
+				&& (remainingRange > returnDist)
+				&& (knownId < knownSites.size())) {
+			// Take the next one off the front
+			var site = knownSites.get(knownId++);
+			claimedSites.add(site);
+
+			// Calc what distance is left
+			Coordinates nextLocation = site.getCoordinates();
+			remainingRange -= nextLocation.getDistance(currentLocation);
+			currentLocation = nextLocation;
+			returnDist = currentLocation.getDistance(homeLocation);
+		}
+
+		// Pick some new ones if still space but limit the attempts
+		if (claimedSites.size() < numSites) {
+			var explorationMgr = starting.getExplorations();
+			var claimedLocns = new HashSet<>(claimedSites.stream().map(MineralSite::getLocation).toList());
+			int unplannedAttempts = 10;
+			int areologySkill = crew.leader().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+
+			while ((claimedSites.size() < numSites)
+					&& (remainingRange > returnDist)
+					&& (unplannedAttempts-- > 0)) {
+				// Find minerals near base
+				var unplannedLimit = (remainingRange - returnDist) / 2D;
+				var newLocn = explorationMgr.getUnexploredLocalSites(false, unplannedLimit);
+
+				// Check not in the current list
+				if ((newLocn == null) || claimedLocns.contains(newLocn)) {
+					continue;
+				}
+
+				// Is it good enough to create MineralSite
+				var el = explorationMgr.createROI(newLocn, areologySkill);
+				if (el != null) {
+					claimedSites.add(el);
+
+					// Add to the list
+					claimedLocns.add(newLocn);
+					remainingRange -= newLocn.getDistance(currentLocation);
+					currentLocation = newLocn;
+					returnDist = currentLocation.getDistance(homeLocation);
+				}
+			}
+		}
+		
+		// Original used route optimisation
+		// getMinimalPath(startingLocation, selectedLocns)
+
+		return claimedSites;
+	}
+
+	/**
+	 * What is the travelling speed for this crew. This may be sharable?
+	 * @param crew Crew travelling
+	 * @return
+	 */
+	private static double getAverageVehicleSpeed(Roster crew) {
+
+		var v = crew.vehicle();
+		double totalSpeed = OperateVehicle.getAverageVehicleSpeed(v, crew.leader());
+
+		totalSpeed += crew.members().stream()
+				.mapToDouble(member -> OperateVehicle.getAverageVehicleSpeed(v, member))
+				.sum();
+	
+		return totalSpeed / (crew.members().size() + 1);
+	}
+
+	/**
+	 * Gets the range of a trip based on its time limit and exploration sites.
+	 *
+	 * @param numSites
+	 * @param currentSiteTime
+	 * @param tripTimeLimit time (millisols) limit of trip.
+	 * @param averageSpeed  the average speed of the vehicle.
+	 * @return range (km) limit.
+	 */
+	private double getTripTimeRange(int numSites, double tripTimeLimit, double averageSpeed) {
+		double tripTimeTravellingLimit = tripTimeLimit - (numSites * STANDARD_TIME_PER_SITE);
+		double millisolsInHour = MarsTime.convertSecondsToMillisols(60D * 60D);
+		double averageSpeedMillisol = averageSpeed / millisolsInHour;
+		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 
 	/**
 	 * Constructs a new instance of the Exploration mission with the given crew and exploration sites.
 	 * @param crew the roster of crew members for the mission.
+	 * @param needsReview whether the mission requires review before execution.
 	 * @param sites the list of mineral sites to be explored during the mission.
 	 * @return a new instance of the Exploration mission.
 	 */
-	public Mission constructInstance(Roster crew, List<MineralSite> sites) {
-		var locations = sites.stream().map(MineralSite::getLocation).toList();
-
-		return new Exploration(getMembers(crew), locations, (Rover) crew.vehicle());
-	}
-
-	private static List<Worker> getMembers(Roster crew) {
-		List<Worker> members = new ArrayList<>();
-		members.add(crew.leader());
-		members.addAll(crew.members());
-		return members;
+	public Mission constructInstance(Roster crew, boolean needsReview, List<MineralSite> sites) {
+		return new Exploration(crew, needsReview, sites);
 	}
 
 	@Override
@@ -147,5 +294,15 @@ public class ExplorationMeta extends AbstractMetaMission {
 		}
 
 		return missionProbability;
+	}
+
+	/**
+	 * How many sites should be explored for this Settlement.
+	 * Default returns 2
+	 * @param s Settlement leading exploration
+	 * @return
+	 */
+	public int getExpectedSites(Settlement s) {
+		return 2;
 	}
 }

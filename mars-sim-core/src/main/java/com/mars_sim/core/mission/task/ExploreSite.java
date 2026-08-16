@@ -174,7 +174,7 @@ public class ExploreSite extends EVAOperation {
 		}	
 
 		// Add to the cumulative combined site time
-		((Exploration)mission).addSiteTime(time);
+		mission.addSiteTime(time);
 		
 		if (totalCollected > averageRockCollected) {
 			endEVA("Rocks collected exceeded the set average.");

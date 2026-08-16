@@ -78,7 +78,7 @@ public class ExplorationManager implements Serializable {
     /** The extra search radius [in km] to be added. */
 	private double extraKM = 0D;
 
-    ExplorationManager(Settlement base) {
+    public ExplorationManager(Settlement base) {
         this.base = base;
     }
 
