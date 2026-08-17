@@ -57,7 +57,7 @@ public class LandmarkVisitPanel extends JPanel
     private void loadModel() {
         viewingModel.clear();
         objective.getEVATimes().entrySet().stream()
-            .map(e -> e.getKey() + ": " + StyleManager.DECIMAL_MSOL.format(e.getValue()))
+            .map(e -> e.getKey() + ": " + StyleManager.DECIMAL1_MSOL.format(e.getValue()))
             .sorted()
             .forEach(viewingModel::addElement);
     }

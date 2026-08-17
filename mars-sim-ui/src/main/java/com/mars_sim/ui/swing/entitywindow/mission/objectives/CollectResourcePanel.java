@@ -50,7 +50,7 @@ public class CollectResourcePanel extends JPanel implements EntityListener {
 		// Set layout.
 		setLayout(new BorderLayout());
 
-		var attrs = new AttributePanel(1);
+		var attrs = new AttributePanel();
 	  	attrs.addRow("Max. per site", StyleManager.DECIMAL_KG.format(objective.getSiteResourceGoal()));
 		add(attrs, BorderLayout.NORTH);
 

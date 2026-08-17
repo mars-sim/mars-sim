@@ -68,7 +68,7 @@ class TabPanelComputing extends EntityTableTabPanel<Settlement>
 	@Override
 	protected JPanel createInfoPanel() {
 		// Prepare heat info panel.
-		AttributePanel springPanel = new AttributePanel(4);
+		AttributePanel springPanel = new AttributePanel();
 
 		// Total Power Demand
 		double[] powerLoads = manager.getTotalCombinedLoads();

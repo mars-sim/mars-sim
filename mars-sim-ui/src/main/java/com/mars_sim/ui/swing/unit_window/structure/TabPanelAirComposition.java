@@ -117,7 +117,7 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 							indoorPressureCache, null);
 									
 		// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
-		AttributePanel gasPanel = new AttributePanel(2, 3);
+		AttributePanel gasPanel = new AttributePanel(3);
 		gasPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelAirComposition.label")));
 		topContentPanel.add(gasPanel); 
 		cO2Label = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.CO2_ID));

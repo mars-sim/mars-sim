@@ -400,7 +400,7 @@ public class CommanderWindow extends ContentPanel {
 	 */
 	private void createGeneralPanel(Colony c, JPanel generalPanel, String name) {
 		
-		AttributePanel labelGrid = new AttributePanel(3, 2);
+		AttributePanel labelGrid = new AttributePanel(2);
 		labelGrid.setBorder(new EmptyBorder(5, 5, 5, 5));
 		labelGrid.setBorder(BorderFactory.createTitledBorder(" Base Info"));
 		generalPanel.add(labelGrid, BorderLayout.NORTH);
@@ -439,7 +439,7 @@ public class CommanderWindow extends ContentPanel {
 		JPanel popPanel = new JPanel(new BorderLayout(10, 10));
 		generalPanel.add(popPanel, BorderLayout.CENTER);
 		
-		AttributePanel popGrid = new AttributePanel(3, 2);
+		AttributePanel popGrid = new AttributePanel(2);
 		popGrid.setBorder(new EmptyBorder(5, 5, 5, 5));
 		popPanel.add(popGrid, BorderLayout.NORTH);
 		popGrid.setBorder(BorderFactory.createTitledBorder(" Population Types"));
@@ -515,7 +515,7 @@ public class CommanderWindow extends ContentPanel {
 	 */
 	private void createRNDPanel(Colony c, JPanel rNDPanel) {
 				
-		AttributePanel rdGrid = new AttributePanel(6, 2);
+		AttributePanel rdGrid = new AttributePanel(2);
 		rdGrid.setBorder(new EmptyBorder(5, 5, 5, 5));
 		rdGrid.setBorder(BorderFactory.createTitledBorder(" Research and Development"));
 
@@ -1041,7 +1041,7 @@ public class CommanderWindow extends ContentPanel {
 		overrideDigLocalIceCB.setSelected(settlement.getProcessOverride(OverrideType.DIG_LOCAL_ICE));
 		overridePanel.add(overrideDigLocalIceCB);
 		
-		AttributePanel probabilityPanel = new AttributePanel(2);
+		AttributePanel probabilityPanel = new AttributePanel();
 		probabilityPanel.setAlignmentX(CENTER_ALIGNMENT);	
 		probabilityPanel.setBorder(new EmptyBorder(2, 5, 2, 5));
 		probabilityPanel.setBorder(BorderFactory.createTitledBorder(" Digging Probability "));
@@ -1072,7 +1072,7 @@ public class CommanderWindow extends ContentPanel {
 		emerPanel.setBorder(BorderFactory.createTitledBorder(" State of Emergency Thresholds "));
 		emerPanel.setToolTipText("Adjust the threshold for triggering the state of emergency for this settlement");
 	
-		AttributePanel currentPanel = new AttributePanel(2);
+		AttributePanel currentPanel = new AttributePanel();
 		currentPanel.setAlignmentX(CENTER_ALIGNMENT);	
 		emerPanel.add(currentPanel, BorderLayout.CENTER);
 			

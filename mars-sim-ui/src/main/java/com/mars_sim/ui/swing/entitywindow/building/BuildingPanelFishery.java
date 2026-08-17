@@ -81,7 +81,7 @@ class BuildingPanelFishery extends EntityTabPanel<Building>
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(13);
+		AttributePanel labelPanel = new AttributePanel();
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 		labelPanel.addTextField(Msg.getString("BuildingPanelFishery.tankSize"), 

@@ -92,7 +92,7 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 
 		missionLabel = new EntityLabel(constructionSite.getWorkOnSite(), getContext());
 		infoPanel.addLabelledItem("Work Mission", missionLabel);
-        workLeft = new JDoubleLabel(StyleManager.DECIMAL_MSOL);
+        workLeft = new JDoubleLabel(StyleManager.DECIMAL1_MSOL);
 		infoPanel.addLabelledItem("Stage Work", workLeft);
 
 		phaseModel = new PhaseTableModel();

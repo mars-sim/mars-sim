@@ -113,7 +113,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person>
 		achievementPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelScience.scientificAchievement")));
 		mainPane.add(achievementPane);
 
-		AttributePanel achievementLabelPane = new AttributePanel(3);
+		AttributePanel achievementLabelPane = new AttributePanel();
 		achievementPane.add(achievementLabelPane, BorderLayout.NORTH);
 
 		totalAchievementLabel = achievementLabelPane.addTextField(Msg.getString("TabPanelScience.totalAchievementCredit"), //$NON-NLS-1$

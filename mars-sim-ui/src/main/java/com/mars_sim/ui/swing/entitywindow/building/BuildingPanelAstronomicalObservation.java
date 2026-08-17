@@ -64,7 +64,7 @@ class BuildingPanelAstronomicalObservation extends EntityTabPanel<Building> {
 	protected void buildUI(JPanel center) {
 		
 		// Prepare label panelAstronomicalObservation
-		AttributePanel labelPanel = new AttributePanel(2);
+		AttributePanel labelPanel = new AttributePanel();
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Observer number label

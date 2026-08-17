@@ -89,10 +89,10 @@ public class AirlockPanel extends JPanel implements StatefulComponent,TemporalCo
         // Create top panel
         JPanel topPanel = new JPanel(new BorderLayout());
 
-        AttributePanel westGrid = new AttributePanel(6, 1);
+        AttributePanel westGrid = new AttributePanel();
 		topPanel.add(westGrid, BorderLayout.CENTER);
         
-		AttributePanel eastGrid = new AttributePanel(6, 1);
+		AttributePanel eastGrid = new AttributePanel();
 		topPanel.add(eastGrid, BorderLayout.EAST);	
 		
 		if (airlock.isInnerDoorLocked())

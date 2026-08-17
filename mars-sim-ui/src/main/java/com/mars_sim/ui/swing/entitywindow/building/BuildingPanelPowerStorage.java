@@ -60,7 +60,7 @@ class BuildingPanelPowerStorage extends EntityTabPanel<Building> implements Temp
 	@Override
 	protected void buildUI(JPanel center) {
 
-		AttributePanel springPanel = new AttributePanel(2);
+		AttributePanel springPanel = new AttributePanel();
 		center.add(springPanel, BorderLayout.NORTH);
 		
 		// Create capacity label.

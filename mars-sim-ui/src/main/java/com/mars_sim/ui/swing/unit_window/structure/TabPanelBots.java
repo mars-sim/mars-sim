@@ -56,7 +56,7 @@ class TabPanelBots extends EntityTableTabPanel<Settlement> implements TemporalCo
 	protected JPanel createInfoPanel() {
 
 		// Prepare count spring layout panel.
-		AttributePanel countPanel = new AttributePanel(3);
+		AttributePanel countPanel = new AttributePanel();
 
 		// Create robot num label
 		robotNumLabel = new JIntegerLabel(getEntity().getNumBots());

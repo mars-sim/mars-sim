@@ -67,7 +67,7 @@ class BuildingPanelComputation extends EntityTabPanel<Building>
 
 		var building = getEntity();
 
-		AttributePanel springPanel = new AttributePanel(4);
+		AttributePanel springPanel = new AttributePanel();
 		center.add(springPanel, BorderLayout.NORTH);
 
 		// Power Loads

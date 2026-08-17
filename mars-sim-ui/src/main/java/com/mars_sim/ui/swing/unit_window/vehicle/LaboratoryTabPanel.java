@@ -61,7 +61,7 @@ class LaboratoryTabPanel extends EntityTabPanel<Rover>
 		content.add(laboratoryPanel, BorderLayout.NORTH);
 		
 		// Prepare the top panel using spring layout.
-		AttributePanel springPanel = new AttributePanel(2);
+		AttributePanel springPanel = new AttributePanel();
 		laboratoryPanel.add(springPanel, BorderLayout.CENTER);
 		
 		// Prepare researcher number label

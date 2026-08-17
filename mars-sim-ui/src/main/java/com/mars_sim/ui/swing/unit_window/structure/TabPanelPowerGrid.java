@@ -116,7 +116,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		JPanel topContentPanel = new JPanel(new BorderLayout());
 
 		// Prepare spring layout power info panel.
-		AttributePanel powerInfoPanel = new AttributePanel(4);
+		AttributePanel powerInfoPanel = new AttributePanel();
 		topContentPanel.add(powerInfoPanel);
 
 		// Prepare power generated tf.

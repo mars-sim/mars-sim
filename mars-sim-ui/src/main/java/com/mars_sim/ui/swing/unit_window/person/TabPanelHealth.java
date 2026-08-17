@@ -81,8 +81,10 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		    " Standard Dose Limit [mSv] on Skin - 30-Day: 1000;  Annual: 4000;  Career: 6000"};
 
 	private JDoubleLabel thirstLabel;
+	private JDoubleLabel dehydrationTriggerLabel;
 	private JDoubleLabel fatigueLabel;
 	private JDoubleLabel hungerLabel;
+	private JDoubleLabel starvationTriggerLabel;
 	private JDoubleLabel energyLabel;
 	private JDoubleLabel stressLabel;
 	private JDoubleLabel performanceLabel;
@@ -141,26 +143,34 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		content.add(northPanel, BorderLayout.NORTH);	
 		
 		// Prepare condition panel
-		AttributePanel conditionPanel = new AttributePanel(8, 2);
+		AttributePanel conditionPanel = new AttributePanel(2);
 		northPanel.add(conditionPanel);
 		
-		fatigueLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, condition.getFatigue());
+		fatigueLabel = new JDoubleLabel(StyleManager.DECIMAL1_MSOL, condition.getFatigue());
 		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.fatigue"), fatigueLabel, null);
 		
 		energyLabel = new JDoubleLabel(StyleManager.DECIMAL_KJ, condition.getEnergy());
 		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.energy"), energyLabel, null);
-						
-		hungerLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, condition.getHunger());
-		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.hunger"), hungerLabel, null);
-		
-		maxDailyEnergyLabel = new JDoubleLabel(StyleManager.DECIMAL_KJ, condition.getPersonalMaxEnergy());
-		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.maxDailyEnergy"), maxDailyEnergyLabel, null);
-				
-		thirstLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, condition.getThirst());
-		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.thirst"), thirstLabel, null);
 		
 		appetiteLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getAppetite(), 0.1);
 		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.appetite"), appetiteLabel, null);
+		
+		maxDailyEnergyLabel = new JDoubleLabel(StyleManager.DECIMAL_KJ, condition.getPersonalMaxEnergy());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.maxDailyEnergy"), maxDailyEnergyLabel, null);
+							
+		
+		hungerLabel = new JDoubleLabel(StyleManager.DECIMAL1_MSOL, condition.getHunger());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.hunger"), hungerLabel, null);
+		
+		thirstLabel = new JDoubleLabel(StyleManager.DECIMAL1_MSOL, condition.getThirst());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.thirst"), thirstLabel, null);
+		
+		starvationTriggerLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, condition.getStarvationTrigger());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.starvation"), starvationTriggerLabel, null);
+		
+		dehydrationTriggerLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, condition.getDehydrationTrigger());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.dehydration"), dehydrationTriggerLabel, null);
+		
 		
 		var person = getEntity();
 		performanceLabel = new JDoubleLabel(StyleManager.DECIMAL_PERC, person.getPerformanceRating() * 100);
@@ -169,11 +179,13 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		muscleHealthLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getMuscleHealth(), 0.1);
 		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.muscle.health"), muscleHealthLabel, null);
 
+		
 		stressLabel = new JDoubleLabel(StyleManager.DECIMAL_PERC, condition.getStress());
 		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.stress"), stressLabel, null);
 		
 		muscleTorLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getMusclePainTolerance(), 0.1);
 		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.muscle.tolerance"), muscleTorLabel, null);
+		
 		
 		bodyMassDevLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getBodyMassDeviation(), 0.1);
 		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.bodyMassDev"), bodyMassDevLabel, null);
@@ -181,6 +193,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		muscleSorenessLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getMuscleSoreness(), 0.1);
 		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.muscle.soreness"), muscleSorenessLabel, null);
 	
+		
 		leptinLabel = new JDoubleLabel(StyleManager.DECIMAL_NG_ML, circadianClock.getLeptin());
 		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.leptin"), leptinLabel, 
 				"<html>Leptin is a safety hormone, produced by fat cells, to signal <br>"

@@ -72,7 +72,7 @@ public class BuildingPanelCooking extends EntityTabPanel<Building>
 	@Override
 	protected void buildUI(JPanel center) {
 		// Prepare label panel
-		AttributePanel labelPanel = new AttributePanel(4);
+		AttributePanel labelPanel = new AttributePanel();
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare cook number label

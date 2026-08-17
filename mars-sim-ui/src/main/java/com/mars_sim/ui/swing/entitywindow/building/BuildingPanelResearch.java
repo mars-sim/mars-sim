@@ -77,7 +77,7 @@ class BuildingPanelResearch extends EntityTabPanel<Building> implements Temporal
 		center.add(topPanel, BorderLayout.NORTH);
 		
 		// Prepare label panel
-		AttributePanel labelPanel = new AttributePanel(6);
+		AttributePanel labelPanel = new AttributePanel();
 		topPanel.add(labelPanel, BorderLayout.NORTH);
 	
 		// Prepare researcher number label
@@ -88,10 +88,10 @@ class BuildingPanelResearch extends EntityTabPanel<Building> implements Temporal
 					 					Integer.toString(lab.getLaboratorySize()), null);
 
 		double[] tally = lab.getTotCumulativeDailyAverage();
-		dailyAverageLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, tally[1]);
+		dailyAverageLabel = new JDoubleLabel(StyleManager.DECIMAL1_MSOL, tally[1]);
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelResearch.dailyAverage"), dailyAverageLabel);
 		
-		cumulativeTotalLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, tally[0]);
+		cumulativeTotalLabel = new JDoubleLabel(StyleManager.DECIMAL1_MSOL, tally[0]);
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelResearch.cumulativeTotal"), cumulativeTotalLabel);
 		
 		// Entropy

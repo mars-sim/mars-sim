@@ -104,7 +104,7 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 	protected void buildUI(JPanel center) {
 
 		// Prepare label panel
-		AttributePanel labelPanel = new AttributePanel(2);
+		AttributePanel labelPanel = new AttributePanel();
 
 		center.add(labelPanel, BorderLayout.NORTH);
 

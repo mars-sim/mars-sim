@@ -100,7 +100,7 @@ class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComp
         metricsPanel.add(atmPanel, BorderLayout.NORTH);
         
         // Create spring layout panel
-        AttributePanel atmSpringPanel = new AttributePanel(5);
+        AttributePanel atmSpringPanel = new AttributePanel();
         atmPanel.add(atmSpringPanel, BorderLayout.NORTH);
         var locn = getEntity().getLocation();
            
@@ -122,7 +122,7 @@ class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComp
         metricsPanel.add(sunPanel, BorderLayout.CENTER);
         
         // Create spring layout panel
-        AttributePanel sunSpringPanel = new AttributePanel(4);
+        AttributePanel sunSpringPanel = new AttributePanel();
         sunPanel.add(sunSpringPanel, BorderLayout.NORTH);
         sunPanel.setBorder(SwingHelper.createLabelBorder("Solar"));
                 

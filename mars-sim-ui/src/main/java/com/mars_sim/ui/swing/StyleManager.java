@@ -95,7 +95,8 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
     public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
     public static final DecimalFormat DECIMAL_V = new DecimalFormat("#,##0.0 V");
-    public static final DecimalFormat DECIMAL_MSOL = new DecimalFormat("#,##0.0 msol");
+    public static final DecimalFormat DECIMAL_MSOL = new DecimalFormat("#,##0 msol");
+    public static final DecimalFormat DECIMAL1_MSOL = new DecimalFormat("#,##0.0 msol");
     public static final DecimalFormat DECIMAL2_MSOL = new DecimalFormat("#,##0.00 msol");
     public static final DecimalFormat DECIMAL_NG_ML = new DecimalFormat("#,##0.0 ng/mL");
     public static final DecimalFormat DECIMAL_PG_ML = new DecimalFormat("#,##0.0 pg/mL");

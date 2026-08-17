@@ -102,7 +102,7 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(23);
+		AttributePanel labelPanel = new AttributePanel();
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algae.type"), 

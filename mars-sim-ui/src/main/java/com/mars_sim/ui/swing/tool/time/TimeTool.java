@@ -236,7 +236,7 @@ public class TimeTool extends ContentPanel {
 		martianPane.add(martianMonthPane, BorderLayout.CENTER);
 		
 		// Create Martian calendar label panel
-		AttributePanel labelPane = new AttributePanel(1, 2);
+		AttributePanel labelPane = new AttributePanel(2);
 		labelPane.setAlignmentX(SwingConstants.CENTER);
 		labelPane.setAlignmentY(SwingConstants.CENTER);
 		martianMonthPane.add(labelPane, BorderLayout.NORTH);
@@ -268,7 +268,7 @@ public class TimeTool extends ContentPanel {
 		martianPane.add(seasonPane, BorderLayout.SOUTH);
 
 		// Create Martian hemisphere panel
-		AttributePanel hemiPane = new AttributePanel(3);
+		AttributePanel hemiPane = new AttributePanel();
 		seasonPane.add(hemiPane, BorderLayout.NORTH);		
 		hemiPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.martianSeasons"))); //$NON-NLS-1$
 
@@ -327,7 +327,7 @@ public class TimeTool extends ContentPanel {
 				"The amount of real time the simulation has been running"); //$NON-NLS-1$
 	
 		// Create pulse panel
-		AttributePanel pulsePane = new AttributePanel(5);
+		AttributePanel pulsePane = new AttributePanel();
 		pulsePane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.pulseParams"))); //$NON-NLS-1$
 		attributePane.add(pulsePane, BorderLayout.CENTER);
 		

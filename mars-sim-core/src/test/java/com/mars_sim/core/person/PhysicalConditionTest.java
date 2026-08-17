@@ -54,7 +54,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
 
         var level = physicalCondition.getPerformanceLevel();
 
-        // Change to a higher level, cannot change p[erformance directly as derived]
+        // Change to a higher level, cannot change performance directly as derived
         physicalCondition.setThirst(100);
         physicalCondition.setStress(200);
         physicalCondition.timePassing(createPulse(10), s);
@@ -73,7 +73,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         physicalCondition.setStress(76);
         physicalCondition.setThirst(1000);
         physicalCondition.setHunger(2000);
-        physicalCondition.setFatigue(1600);
+        physicalCondition.setFatigue(2000);
         physicalCondition.timePassing(createPulse(10), s);
         var newPerformance = physicalCondition.getPerformanceFactor();
         assertTrue(newPerformance < originalPerformance, "Performance should decrease with high stress");
@@ -212,14 +212,14 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         PhysicalCondition physicalCondition = person.getPhysicalCondition();
 
         // Change the thirst level to max and check for dehydrated
-        var delimit = physicalCondition.getDehydrationLevel();
+        var delimit = physicalCondition.getDehydrationTrigger();
         physicalCondition.setThirst(delimit-40);
         physicalCondition.timePassing(createPulse(10), s);
         assertTrue(physicalCondition.getProblems().isEmpty(), "No problems should be present");
 
         // Change time expired to trigger dehydration
-        physicalCondition.setThirst(delimit+20);
-        physicalCondition.timePassing(createPulse(10), s);
+        physicalCondition.setThirst(delimit * 1.5);
+        physicalCondition.timePassing(createPulse(5), s);
         var problems = physicalCondition.getProblems();
         assertEquals(1, problems.size(), "Problems should be present after thirst increase");
         var dehydration = problems.get(0);
@@ -247,10 +247,10 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         
         // Change the thirst level to max and check for dehydrated
         physicalCondition.setThirst(ThirstLevel.BONE_DRY.getMaxValue() + 1);
-        physicalCondition.timePassing(createPulse(physicalCondition.getDehydrationLevel()+1), s);
+        physicalCondition.timePassing(createPulse(physicalCondition.getDehydrationTrigger()+1), s);
 
         physicalCondition.setThirst(PhysicalCondition.MAX_THIRST);
-        physicalCondition.timePassing(createPulse(physicalCondition.getDehydrationLevel() * 2), s);
+        physicalCondition.timePassing(createPulse(physicalCondition.getDehydrationTrigger()), s);
         assertTrue(physicalCondition.isDead(), "Person should be dead from dehydration");
         var death = physicalCondition.getDeathDetails();
         assertEquals(ComplaintType.DEHYDRATION, death.getIllness(), "Death should be from dehydration");

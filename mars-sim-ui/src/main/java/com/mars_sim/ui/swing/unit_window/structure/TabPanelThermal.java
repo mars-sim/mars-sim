@@ -97,7 +97,7 @@ class TabPanelThermal extends EntityTableTabPanel<Settlement>
 		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
 		
 		// Prepare heat info panel.
-		AttributePanel heatInfoPanel = new AttributePanel(10);
+		AttributePanel heatInfoPanel = new AttributePanel();
 		topContentPanel.add(heatInfoPanel);
 
 		// Prepare total heat load label.

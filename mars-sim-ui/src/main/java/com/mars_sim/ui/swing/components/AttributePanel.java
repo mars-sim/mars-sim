@@ -40,12 +40,13 @@ public class AttributePanel extends JPanel {
 	}
 
 	/**
-	 * Creates an Attribute panel that has a single column with fixed number of rows.
+	 * Creates an Attribute panel that defined number of columns
 	 * 
-	 * @param rows Number of rows; this is now redunandant
+	 * @param cols Number of cols.
 	 */
-    public AttributePanel(int rows) {
-        this();
+    public AttributePanel(int cols) {
+    	super();
+		buildLayout(cols);
     }
 
 	/**
@@ -61,17 +62,6 @@ public class AttributePanel extends JPanel {
 										new FixedAttributeLayout(this, cols));
 	}
 
-	/**
-	 * Creates an Attribute panel that has a fixed number of rows and columns.
-	 * 
-	 * @param rows Number of rows
-	 * @param cols Number of cols
-	 */
-    public AttributePanel(int rows, int cols) {
-        super();
-		buildLayout(cols);
-    }
-    
     
 	/**
 	 * Adds a text field and label to a Panel. The layout should be Spring layout.

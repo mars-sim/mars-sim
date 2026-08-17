@@ -88,7 +88,7 @@ class TabPanelCooking extends EntityTabPanel<Settlement> implements TemporalComp
 			
 		var meals = settlement.getMealTimes();
 
-		AttributePanel topPanel = new AttributePanel(3, 2);
+		AttributePanel topPanel = new AttributePanel(2);
 		northPanel.add(topPanel, BorderLayout.NORTH);
 
 		for(var m : meals.getMeals()) {

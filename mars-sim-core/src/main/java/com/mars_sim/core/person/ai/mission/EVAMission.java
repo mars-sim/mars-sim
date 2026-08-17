@@ -38,7 +38,7 @@ abstract class EVAMission extends RoverMission {
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
 
 	private static final String NOT_ENOUGH_SUNLIGHT = "No EVA - Not Enough Sunlight";
-	private static final String IN_DARK_POLAR_REGION = "EVA in Dark Polar Region";
+	private static final String IN_DARK_POLAR_REGION = "EVA ops in Dark Polar Region";
 	private static final String NO_EVA_TIME = "No More EVA Site Time";
 	
     private MissionPhase evaPhase;

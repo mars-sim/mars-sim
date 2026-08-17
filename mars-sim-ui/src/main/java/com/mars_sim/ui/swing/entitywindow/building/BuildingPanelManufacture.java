@@ -76,7 +76,7 @@ class BuildingPanelManufacture extends EntityTabPanel<Building>
 		center.add(topPanel, BorderLayout.NORTH);
 
 		// Prepare label panel
-		AttributePanel labelPanel = new AttributePanel(1, 2);
+		AttributePanel labelPanel = new AttributePanel(2);
 		topPanel.add(labelPanel, BorderLayout.NORTH);
 		labelPanel.addTextField("Tech Level", Integer.toString(workshop.getTechLevel()), null);
 		labelPanel.addTextField("Process Capacity", Integer.toString(workshop.getMaxProcesses()), null);

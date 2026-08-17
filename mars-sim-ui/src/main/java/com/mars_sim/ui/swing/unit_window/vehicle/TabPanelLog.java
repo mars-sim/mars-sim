@@ -55,7 +55,7 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
 		var vehicle = getEntity();
 
         // Create spring layout dataPanel
-        AttributePanel springPanel = new AttributePanel(2);
+        AttributePanel springPanel = new AttributePanel();
         content.add(springPanel, BorderLayout.NORTH);
 
 		odometerTF = new JDoubleLabel(StyleManager.DECIMAL2_KM, vehicle.getOdometerMileage());

@@ -73,7 +73,7 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		center.add(panel, BorderLayout.NORTH);
 		
-		AttributePanel grid1 = new AttributePanel(3, 2);
+		AttributePanel grid1 = new AttributePanel(2);
 		JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
 		panel.add(centerPanel);
 		centerPanel.add(grid1, BorderLayout.NORTH);
@@ -93,7 +93,7 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		grid1.addRow( "Peak Power", StyleManager.DECIMAL_KW.format(vSpec.getPeakPower()));
 
 		
-		AttributePanel grid = new AttributePanel(7, 2);
+		AttributePanel grid = new AttributePanel(2);
 		JPanel topPanel = new JPanel(new BorderLayout(0, 10));
 		panel.add(topPanel);
 		topPanel.add(grid, BorderLayout.NORTH);
@@ -130,7 +130,7 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		grid.addLabelledItem("Instant FE", instantFE, null);
 		
 						
-		AttributePanel grid2 = new AttributePanel(5, 2);
+		AttributePanel grid2 = new AttributePanel(2);
 		JPanel bottomPanel = new JPanel(new BorderLayout(0, 10));
 		panel.add(bottomPanel);
 		bottomPanel.add(grid2, BorderLayout.NORTH);

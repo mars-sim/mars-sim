@@ -311,13 +311,13 @@ public class SettlementTransparentPanel extends JComponent {
         }
 
         projectSunriseLabel = new JLabel(PROJECTED_SUNRISE
-                + StyleManager.DECIMAL_MSOL.format(projectSunTime[0]));
+                + StyleManager.DECIMAL1_MSOL.format(projectSunTime[0]));
 
         projectSunsetLabel = new JLabel(PROJECTED_SUNSET
-                + StyleManager.DECIMAL_MSOL.format(projectSunTime[1]));
+                + StyleManager.DECIMAL1_MSOL.format(projectSunTime[1]));
 
         projectDaylightLabel  = new JLabel(PROJECTED_DAYLIGHT
-                + StyleManager.DECIMAL_MSOL.format(projectSunTime[2]));
+                + StyleManager.DECIMAL1_MSOL.format(projectSunTime[2]));
 
         sunriseLabel = new JLabel(SUNRISE + PENDING);
         sunsetLabel = new JLabel(SUNSET + PENDING);
@@ -1029,9 +1029,9 @@ public class SettlementTransparentPanel extends JComponent {
         SunData data = weather.getSunRecord(location);
 
         // Prepare values
-        final String projRise = PROJECTED_SUNRISE + StyleManager.DECIMAL_MSOL.format(time[0]);
-        final String projSet  = PROJECTED_SUNSET  + StyleManager.DECIMAL_MSOL.format(time[1]);
-        final String projDay  = PROJECTED_DAYLIGHT+ StyleManager.DECIMAL_MSOL.format(time[2]);
+        final String projRise = PROJECTED_SUNRISE + StyleManager.DECIMAL1_MSOL.format(time[0]);
+        final String projSet  = PROJECTED_SUNSET  + StyleManager.DECIMAL1_MSOL.format(time[1]);
+        final String projDay  = PROJECTED_DAYLIGHT+ StyleManager.DECIMAL1_MSOL.format(time[2]);
 
         // Push UI writes to EDT
         SwingUtilities.invokeLater(() -> {

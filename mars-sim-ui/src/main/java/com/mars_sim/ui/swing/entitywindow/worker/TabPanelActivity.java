@@ -190,7 +190,7 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 		taskStack.setToolTipText("Show the description and phase of a task and its subtask(s)");
 		taskSubPanel.add(taskStack, BorderLayout.NORTH);
 
-		AttributePanel taskScorePanel = new AttributePanel(1);
+		AttributePanel taskScorePanel = new AttributePanel();
 		taskSubPanel.add(taskScorePanel, BorderLayout.CENTER);
 		taskScoreTextArea = taskScorePanel.addRow(BEST_SCORE, "");
 		

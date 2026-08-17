@@ -58,7 +58,7 @@ public class TabPanelCrew extends EntityTableTabPanel<Vehicle> implements Entity
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
         
 		// Create crew count panel
-		AttributePanel crewCountPanel = new AttributePanel(2);
+		AttributePanel crewCountPanel = new AttributePanel();
 		northPanel.add(crewCountPanel, BorderLayout.CENTER);
 
 		Crewable vehicle = (Crewable) getEntity();

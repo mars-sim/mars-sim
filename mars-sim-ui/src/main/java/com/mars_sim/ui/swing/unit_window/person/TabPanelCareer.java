@@ -115,7 +115,7 @@ class TabPanelCareer extends EntityTabPanel<Person>
 		var person = getEntity();
 		Mind mind = person.getMind();
 
-		AttributePanel attrPanel = new AttributePanel(4);
+		AttributePanel attrPanel = new AttributePanel();
 		northPanel.add(attrPanel, BorderLayout.NORTH);
 
 		// Prepare job combo box

@@ -155,7 +155,7 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 	protected void buildUI(JPanel center) {
 
 		// Create label panel
-		AttributePanel springPanel = new AttributePanel(10, 2);
+		AttributePanel springPanel = new AttributePanel(2);
 		center.add(springPanel, BorderLayout.CENTER);
 
 		// Prepare solar irradiance label
