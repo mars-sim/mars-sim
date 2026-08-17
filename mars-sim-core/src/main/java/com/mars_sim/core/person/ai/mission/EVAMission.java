@@ -32,6 +32,8 @@ abstract class EVAMission extends RoverMission {
 	private static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");
 	private static final MissionStatus EVA_SUIT_CANNOT_BE_LOADED = new MissionStatus("Mission.status.noEVASuits");
 
+	protected static final double MIN_EVA_SITE_TIME = 300D;
+	
 	// Maximum time to wait for sunrise
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
 
@@ -111,10 +113,11 @@ abstract class EVAMission extends RoverMission {
 		if (!result) {
 			
 			// Question: why are so many Exploration mission terminating EVA ?
-
+			String timestamp = sunrise.getTruncatedDateTimeStamp();
+			
 			if ((sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
 				// Not waiting for sunrise, skip EVA and proceed to travel
-				logger.info(getVehicle(), "Skipped EVA. Traveling to next navpoint since sunrise won't come until " + sunrise.getTruncatedDateTimeStamp());
+				logger.info(getVehicle(), "Skipped EVA. Traveling to next navpoint since sunrise won't come until " + timestamp);
 				addMissionLog(NOT_ENOUGH_SUNLIGHT, getStartingPerson().getName());
 				// No point waiting, move to next site
 				startTravellingPhase();
@@ -122,8 +125,8 @@ abstract class EVAMission extends RoverMission {
 			}
 			else {
 				// Wait for sunrise
-				logger.info(getVehicle(), "Wait for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
-				setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
+				logger.info(getVehicle(), "Wait for sunrise @ " + timestamp);
+				setPhase(WAIT_SUNLIGHT, timestamp);
 				result = false;
 			}
 		}
@@ -225,7 +228,12 @@ abstract class EVAMission extends RoverMission {
 
 		// Check if crew has been at site for more than one sol.
 		double timeDiff = getPhaseTimeElapsed();
-		if (timeDiff > 0 && timeDiff > getEstimatedTimeAtEVASite(false)) {
+		double estSiteTime =  getEstimatedTimeAtEVASite(false);
+		double remainingSitesTime = getEstimatedRemainingEVATime(false);
+		int remainingEVASites = getNumEVASites() - getNumEVASitesVisited();
+		
+		if ((remainingEVASites != 0 && timeDiff > MIN_EVA_SITE_TIME && remainingSitesTime > MIN_EVA_SITE_TIME)
+				|| (timeDiff > estSiteTime)) {
 			logger.info(getVehicle(), 10_000L, "Ran out of EVA site time.");
 			addMissionLog(NO_EVA_TIME, member.getName());
 			activeEVA = false;
@@ -267,7 +275,7 @@ abstract class EVAMission extends RoverMission {
 		// Check below if anyone has been "teleported"
 		if (checkTeleported(member)) {
 			// Note: what to do with those who are teleported ? 
-//			Nothing
+			logger.info(member, 10_000L, "Just got teleported even though it was not supposed to happen.");
 		}
 	}
 
