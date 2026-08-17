@@ -200,7 +200,9 @@ public class Sleep extends Task {
         
 		double fractionOfRest = time * TIME_FACTOR;
 
-		double f = pc.getFatigue() * time;
+		double f0 = pc.getFatigue();
+		
+		double f = f0 * time;
 
 		double residualFatigue = 0;
 		// (1) Use the residualFatigue to speed up the recuperation for higher fatigue cases
@@ -215,6 +217,7 @@ public class Sleep extends Task {
 		// The first REM cycle is usually the shortest, lasting around 10 mins, or 6.85 millisols
 		// Assume the rest of the cycles last between 90 to 120 minutes
 		
+		boolean isGoodRest = false;
 		
 		if (getTimeCompleted() <= 6.85) {
 			// first REM cycle
@@ -228,12 +231,16 @@ public class Sleep extends Task {
 		}
 		else if (getTimeCompleted() <= 6.85 + 3 * cycleLength) {
 			residualFatigue = f * RESIDUAL_MODIFIER * 2;
+			isGoodRest = true;
 		}
 		else if (getTimeCompleted() <= 6.85 + 4 * cycleLength) {
 			residualFatigue = f * RESIDUAL_MODIFIER;
+			isGoodRest = true;
 		}
 		
-		pc.reduceFatigue(fractionOfRest + residualFatigue);
+		double rest = fractionOfRest + residualFatigue;
+		
+		pc.reduceFatigue(rest, isGoodRest);
 
 		circadian.setAwake(false);
 		// Change hormones

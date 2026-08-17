@@ -148,7 +148,7 @@ public class RestingMedicalRecovery extends MedicalAidTask {
         }
 
         // Reduce person's fatigue due to bed rest.
-        person.getPhysicalCondition().reduceFatigue(3D * time);
+        person.getPhysicalCondition().reduceFatigue(3D * time, true);
 
         // If out of bed rest time, end task.
         if (timeOver) {

@@ -62,14 +62,12 @@ public class PhysicalCondition implements Serializable {
 	/** The maximum number of sols for storing stats. */
 	public static final int MAX_NUM_SOLS = 7;
 	/** The maximum number of sols in fatigue [millisols]. */
-	private static final int MAX_FATIGUE = 40_000;
-	/** The maximum number of sols in hunger [millisols]. */
-//	public static final int MAX_HUNGER = 100_000;
-	/** Reset to hunger [millisols] immediately upon eating. */
+	private static final int MAX_FATIGUE = 80_000;
+	/** The fatigue ceiling immediately after sleep [millisols]. */
+	private static final int FATIGUE_CEILING_UPON_SLEEPING = 2_000;
+	/** The hunger ceiling immediately upon eating  [millisols]. */
 	public static final int HUNGER_CEILING_UPON_EATING = 750;
-	/** The maximum number of sols in thirst [millisols]. */
-//	public static final int MAX_THIRST = 7_000;
-	/** The maximum number of sols in thirst [millisols]. */
+	/** The thirst ceiling immediately upon drinking water [millisols]. */
 	public static final int THIRST_CEILING_UPON_DRINKING = 500;
 	/** The amount of thirst threshold [millisols]. */
 	public static final int HUNGER_THRESHOLD = 250;
@@ -796,8 +794,8 @@ public class PhysicalCondition implements Serializable {
 		double ff = f;
 		if (ff > MAX_FATIGUE)
 			ff = MAX_FATIGUE;
-		else if (ff < -100)
-			ff = -100;
+		else if (ff < -50)
+			ff = -50;
 
 		fatigue = ff;
 	}
@@ -819,11 +817,15 @@ public class PhysicalCondition implements Serializable {
 	 * Reduces the fatigue for this person.
 	 *
 	 * @param delta
+	 * @param isGoodRest
 	 */
-	public void reduceFatigue(double delta) {
+	public void reduceFatigue(double delta, boolean isGoodRest) {
 		double f = fatigue - delta;
 		if (f < -50) 
 			f = -50;
+		
+		if (isGoodRest && f > FATIGUE_CEILING_UPON_SLEEPING)
+			f = FATIGUE_CEILING_UPON_SLEEPING;
 		
 		fatigue = f;
 	}

@@ -126,7 +126,7 @@ extends Task {
 		double fractionOfRest = time * TIME_FACTOR;
 		
 		// Reduce person's fatigue
-        pc.reduceFatigue(fractionOfRest);
+        pc.reduceFatigue(fractionOfRest, false);
 
         // Research indicates that listening to relaxing music during recovery 
         // periods significantly accelerates the recovery process of fatigued muscles,

@@ -153,10 +153,10 @@ extends Task {
 			double fractionOfRest = time * TIME_FACTOR;
 			
 			PhysicalCondition pc = person.getPhysicalCondition();
-			double perf = pc.getPerformanceFactor();		
+//			double perf = pc.getPerformanceFactor();		
 
 	        // Reduce person's fatigue
-	        pc.reduceFatigue(fractionOfRest);
+	        pc.reduceFatigue(fractionOfRest, false);
 	        
 	        pc.reduceMuscleSoreness(time/2);
 	        // Assume practicing relaxation techniques and cognitive rehearsal
