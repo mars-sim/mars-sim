@@ -218,7 +218,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         assertTrue(physicalCondition.getProblems().isEmpty(), "No problems should be present");
 
         // Change time expired to trigger dehydration
-        physicalCondition.setThirst(delimit * 1.5);
+        physicalCondition.setThirst(delimit+40);
         physicalCondition.timePassing(createPulse(5), s);
         var problems = physicalCondition.getProblems();
         assertEquals(1, problems.size(), "Problems should be present after thirst increase");
@@ -249,7 +249,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         physicalCondition.setThirst(ThirstLevel.BONE_DRY.getMaxValue() + 1);
         physicalCondition.timePassing(createPulse(physicalCondition.getDehydrationTrigger()+1), s);
 
-        physicalCondition.setThirst(PhysicalCondition.MAX_THIRST);
+        physicalCondition.setThirst(physicalCondition.getMaxThirst());
         physicalCondition.timePassing(createPulse(physicalCondition.getDehydrationTrigger()), s);
         assertTrue(physicalCondition.isDead(), "Person should be dead from dehydration");
         var death = physicalCondition.getDeathDetails();
@@ -352,7 +352,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         physicalCondition.setHunger(HungerLevel.TOP_OFF.getMaxValue());
         physicalCondition.timePassing(createPulse(10), s);
 
-        physicalCondition.setHunger(PhysicalCondition.MAX_HUNGER);
+        physicalCondition.setHunger(physicalCondition.getMaxHunger());
         physicalCondition.timePassing(createPulse(10), s);
         assertTrue(physicalCondition.isDead(), "Person should be dead from starvation");
         var death = physicalCondition.getDeathDetails();

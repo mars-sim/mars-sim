@@ -64,11 +64,11 @@ public class PhysicalCondition implements Serializable {
 	/** The maximum number of sols in fatigue [millisols]. */
 	private static final int MAX_FATIGUE = 40_000;
 	/** The maximum number of sols in hunger [millisols]. */
-	public static final int MAX_HUNGER = 100_000;
+//	public static final int MAX_HUNGER = 100_000;
 	/** Reset to hunger [millisols] immediately upon eating. */
 	public static final int HUNGER_CEILING_UPON_EATING = 750;
 	/** The maximum number of sols in thirst [millisols]. */
-	public static final int MAX_THIRST = 7_000;
+//	public static final int MAX_THIRST = 7_000;
 	/** The maximum number of sols in thirst [millisols]. */
 	public static final int THIRST_CEILING_UPON_DRINKING = 500;
 	/** The amount of thirst threshold [millisols]. */
@@ -145,6 +145,7 @@ public class PhysicalCondition implements Serializable {
 	private double thirst;
 	private ThirstLevel thirstLevel;
 	private int dehydrationTrigger;
+	public int maxThirst;
 
 	private double fatigue;
 	private FatigueLevel fatigueLevel;
@@ -152,6 +153,7 @@ public class PhysicalCondition implements Serializable {
 	private double hunger;
 	private HungerLevel hungerLevel;
 	private int starvationTrigger;
+	public int maxHunger;
 	
 	private double stress;
 	private StressLevel stressLevel;
@@ -294,10 +296,12 @@ public class PhysicalCondition implements Serializable {
 
 		double sTime = personConfig.getStarvationStartTime();
 		starvationTrigger = (int)(1000 * RandomUtil.getGaussianPositive((1 + endurance / 500) * sTime * bodyMassDeviation, bodyMassDeviation / 15));
+		maxHunger = starvationTrigger * 2;
 		
 		double dTime = personConfig.getDehydrationStartTime();
 		dehydrationTrigger = (int)(1000 * RandomUtil.getGaussianPositive(dTime / bodyMassDeviation, bodyMassDeviation / 15));
-
+		maxThirst = dehydrationTrigger * 2;
+		
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup
 		performance = 1.0D;
 
@@ -845,7 +849,7 @@ public class PhysicalCondition implements Serializable {
 	 * How long it takes for a person to become dehydrated (in millisols).
 	 */
 	public int getDehydrationTrigger() {
-		return (int)dehydrationTrigger;
+		return dehydrationTrigger;
 	}
 
 	/**
@@ -871,8 +875,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void setThirst(double t) {
 		double tt = t;
-		if (tt > MAX_THIRST)
-			tt = MAX_THIRST;
+		if (tt > maxThirst)
+			tt = maxThirst;
 		else if (tt < -50)
 			tt = -50;
 
@@ -901,10 +905,19 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void increaseThirst(double delta) {
 		double t = thirst + delta;
-		if (t > MAX_THIRST)
-			t = MAX_THIRST;
+		if (t > maxThirst)
+			t = maxThirst;
 		
 		thirst = t;
+	}
+	
+	/**
+	 * Gets the max thirst.
+	 * 
+	 * @return
+	 */
+	public int getMaxThirst() {
+		return maxThirst;
 	}
 	
 	/**
@@ -918,7 +931,7 @@ public class PhysicalCondition implements Serializable {
 		increaseThirst(time * bodyMassDeviation * .75 / factor);
 
 		// If thirst at critical, person is dead
-		if (thirst >= (int)(dehydrationTrigger + MAX_THIRST) / 2) {
+		if (thirst >= maxThirst) {
 			// Add operation will return existing if one already exists
 			var dehydrated = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
 			dehydrated.setState(HealthProblemState.DEAD);
@@ -929,7 +942,7 @@ public class PhysicalCondition implements Serializable {
 		// If the person's thirst at top level for a period then trigger dehydration
 		else if (thirst > dehydrationTrigger && getProblemByType(ComplaintType.DEHYDRATION) == null) {
 			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
-			logger.info(person, "Thirst: " + Math.round(thirst));
+			logger.info(person, "Dehydration triggered. Thirst: " + Math.round(thirst));
 		}
 
 		// Check change of thirst level
@@ -964,8 +977,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void setHunger(double newHunger) {
 		double h = newHunger;
-		if (h > MAX_HUNGER)
-			h = MAX_HUNGER;
+		if (h > maxHunger)
+			h = maxHunger;
 		else if (h < -100)
 			h = -100;
 
@@ -994,8 +1007,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void increaseHunger(double hungerAdded) {
 		double h = hunger + hungerAdded * (appetite * .75 + .75);
-		if (h > MAX_HUNGER)
-			h = MAX_HUNGER;
+		if (h > maxHunger)
+			h = maxHunger;
 
 		hunger = h;
 	}
@@ -1020,9 +1033,18 @@ public class PhysicalCondition implements Serializable {
 	 * Gets the hunger level where starvation is triggered.
 	 */
 	public int getStarvationTrigger() {
-		return (int)starvationTrigger;
+		return starvationTrigger;
 	}
 
+	/**
+	 * Gets the max hunger.
+	 */
+	public int getMaxHunger() {
+		return maxHunger;
+	}
+
+	
+	
 	/**
 	 * Checks for changes to hunger.
 	 * 
@@ -1034,7 +1056,7 @@ public class PhysicalCondition implements Serializable {
 		increaseHunger(time * bodyMassDeviation * .75 / factor);
 
 		// If hunger at critical, person is dead
-		if (hunger >= (int)(starvationTrigger + MAX_HUNGER) / 2) {
+		if (hunger >= maxHunger) {
 			// AddMedicalComplaint will return existing if one already exists
 			var starved = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
 			starved.setState(HealthProblemState.DEAD);
@@ -1045,7 +1067,7 @@ public class PhysicalCondition implements Serializable {
 		// If the person's hunger at top level for a period then trigger starvation
 		else if (hunger > starvationTrigger && getProblemByType(ComplaintType.STARVATION) == null) {
 			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
-			logger.info(person, "Hunger: " + Math.round(hunger));
+			logger.info(person, "Starvation triggered. Hunger: " + Math.round(hunger));
 		}
 
 		// Check change of hunger level

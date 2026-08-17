@@ -104,7 +104,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
 
         var pc = p.getPhysicalCondition();
-        pc.setThirst(PhysicalCondition.MAX_THIRST);
+        pc.setThirst(pc.getMaxThirst());
         var initialThirst = pc.getThirst();
 
         testHunger(p, s.getEquipmentInventory());
