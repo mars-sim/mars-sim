@@ -518,7 +518,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	/**
 	 * Gets time elapsed [in millisols] in the current phase.
 	 */
-	protected double getPhaseTimeElapse() {
+	protected double getPhaseTimeElapsed() {
 		return clock.getMarsTime().getTimeDiff(phaseStartTime);
 	}
 

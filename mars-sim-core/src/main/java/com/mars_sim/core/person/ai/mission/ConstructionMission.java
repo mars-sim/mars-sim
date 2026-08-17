@@ -332,7 +332,7 @@ public class ConstructionMission extends AbstractMission {
 		// Future: add the work of bringing it construction material next to the site
 		
 		// Check if site preparation time has expired
-		if (getPhaseTimeElapse() >= sitePrepTime) {
+		if (getPhaseTimeElapsed() >= sitePrepTime) {
 			setPhaseEnded(true);
 		}
 	}

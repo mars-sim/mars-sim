@@ -196,6 +196,12 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 	 */
 	private static class NavpointTableModel extends AbstractTableModel {
 		
+		private static final String NAME = Msg.getString("NavpointPanel.column.name");
+		private static final String LOCATION = Msg.getString("NavpointPanel.column.location");
+		private static final String DESCRIPTION = Msg.getString("NavpointPanel.column.description");
+		private static final String LEG = Msg.getString("NavpointPanel.column.distance.leg");
+		private static final String ACTUAL = Msg.getString("NavpointPanel.column.distance.actual");
+		
 		// Private members.
 		private List<NavPoint> navpoints;
 		private VehicleMission missionCache;
@@ -237,15 +243,15 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 		@Override
 		public String getColumnName(int columnIndex) {
             return switch (columnIndex) {
-              case 0 -> Msg.getString("NavpointPanel.column.name");
-              case 1 -> Msg.getString("NavpointPanel.column.location");
-              case 2 -> Msg.getString("NavpointPanel.column.description");
-              case 3 -> Msg.getString("NavpointPanel.column.distance.leg");
-              case 4 -> Msg.getString("NavpointPanel.column.distance.actual");
+              case 0 -> NAME;
+              case 1 -> LOCATION;
+              case 2 -> DESCRIPTION;
+              case 3 -> LEG;
+              case 4 -> ACTUAL;
               default -> "";
             };
         }
-		
+
 		/**
 		 * Returns the value for the cell at columnIndex and rowIndex.
 		 * 

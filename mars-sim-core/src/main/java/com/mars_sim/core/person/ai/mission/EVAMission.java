@@ -35,8 +35,10 @@ abstract class EVAMission extends RoverMission {
 	// Maximum time to wait for sunrise
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
 
-	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not Enough Sunlight";
-
+	private static final String NOT_ENOUGH_SUNLIGHT = "No EVA - Not Enough Sunlight";
+	private static final String IN_DARK_POLAR_REGION = "EVA in Dark Polar Region";
+	private static final String NO_EVA_TIME = "No More EVA Site Time";
+	
     private MissionPhase evaPhase;
     private boolean activeEVA = true;
 	private int containerID;
@@ -66,9 +68,14 @@ abstract class EVAMission extends RoverMission {
 				if (isCurrentNavpointSettlement()) {
 					startDisembarkingPhase();
 				}
-				else if (canStartEVA()) {
-					setPhase(evaPhase, getCurrentNavpointDescription());
-					phaseEVAStarted();
+				else {
+					if (canStartEVA()) {
+						setPhase(evaPhase, getCurrentNavpointDescription());
+						phaseEVAStarted();
+					}
+//					else {
+						// Do nothing and wait to sunrise
+//					}
 				}
 			}
 			else if (WAIT_SUNLIGHT.equals(getPhase())) {
@@ -91,26 +98,36 @@ abstract class EVAMission extends RoverMission {
 	 * @return False means EVA not startable
 	 */
 	private boolean canStartEVA() {
+		
+		MarsTime sunrise = surfaceFeatures.getOrbitInfo().getSunrise(getCurrentMissionLocation());
+		if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())) {
+			addMissionLog(IN_DARK_POLAR_REGION, getStartingPerson().getName());
+			return true;
+		}
+		
 		boolean result = isEnoughSunlightForEVA();
+
+		// Not enough sunlight
 		if (!result) {
-			// Not enough sunlight so what to do
-			// Note: checking for EVA has caused too many Exploration mission to terminate EVA
-			MarsTime sunrise = surfaceFeatures.getOrbitInfo().getSunrise(getCurrentMissionLocation());
-			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
-					|| (sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
-				// No point waiting, move to next site
-				logger.info(getVehicle(), "Continue to travel since sunrise is too late " + sunrise.getTruncatedDateTimeStamp());
+			
+			// Question: why are so many Exploration mission terminating EVA ?
+
+			if ((sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
+				// Not waiting for sunrise, skip EVA and proceed to travel
+				logger.info(getVehicle(), "Skipped EVA. Traveling to next navpoint since sunrise won't come until " + sunrise.getTruncatedDateTimeStamp());
 				addMissionLog(NOT_ENOUGH_SUNLIGHT, getStartingPerson().getName());
+				// No point waiting, move to next site
 				startTravellingPhase();
 				result = false;
 			}
 			else {
 				// Wait for sunrise
-				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
+				logger.info(getVehicle(), "Wait for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
 				setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
 				result = false;
 			}
 		}
+		
 		return result;
 	}
 
@@ -124,7 +141,7 @@ abstract class EVAMission extends RoverMission {
 			logger.info(getRover(), "Stop wait as enough sunlight");
 			setPhaseEnded(true);
 		}
-		else if (getPhaseTimeElapse() > MAX_WAIT_SUBLIGHT) {
+		else if (getPhaseTimeElapsed() > MAX_WAIT_SUBLIGHT) {
 			logger.info(getRover(), "Waited long enough");
 			setPhaseEnded(true);
 			startTravellingPhase();
@@ -207,13 +224,12 @@ abstract class EVAMission extends RoverMission {
 			return;
 
 		// Check if crew has been at site for more than one sol.
-		double timeDiff = getPhaseTimeElapse();
-		if (timeDiff > getEstimatedTimeAtEVASite(false)) {
+		double timeDiff = getPhaseTimeElapsed();
+		if (timeDiff > 0 && timeDiff > getEstimatedTimeAtEVASite(false)) {
 			logger.info(getVehicle(), 10_000L, "Ran out of EVA site time.");
-			addMissionLog("No More EVA Site Time", member.getName());
+			addMissionLog(NO_EVA_TIME, member.getName());
 			activeEVA = false;
 		}
-
 
 		// Anyone in the crew or a single person at the home settlement has a dangerous
 		// illness, end phase.
@@ -336,7 +352,8 @@ abstract class EVAMission extends RoverMission {
 	}
 
     /**
-     * Get the remaining mission time based on the travel and the remaining EVA time.
+     * Gets the remaining mission time based on the travel and the remaining EVA time.
+     * 
      * @return Mission time left.
      */
     @Override
@@ -396,7 +413,7 @@ abstract class EVAMission extends RoverMission {
 
 		// Add estimated remaining exploration time at current site if still there.
 		if (evaPhase.equals(getPhase())) {
-			double remainingTime = evaSiteTime - getPhaseTimeElapse();
+			double remainingTime = evaSiteTime - getPhaseTimeElapsed();
 			if (remainingTime > 0D)
 				result += remainingTime;
 		}

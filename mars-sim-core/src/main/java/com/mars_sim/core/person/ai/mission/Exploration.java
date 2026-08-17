@@ -155,7 +155,7 @@ public class Exploration extends EVAMission
 		}
 		
 		// Update exploration site completion.
-		double timePassed = getPhaseTimeElapse();
+		double timePassed = getPhaseTimeElapsed();
 		double completion = timePassed / STANDARD_TIME_PER_SITE;
 		if (completion > 1D) {
 			completion = 1D;

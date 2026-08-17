@@ -181,7 +181,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			startingNavPoint = new NavPoint(startingMember.getSettlement(), null);
 		}
 		else {
-			startingNavPoint = new NavPoint(getCurrentMissionLocation(), "starting location", null);
+			startingNavPoint = new NavPoint(getCurrentMissionLocation(), "Starting Location", null);
 		}
 
 		addNavpoint(startingNavPoint);

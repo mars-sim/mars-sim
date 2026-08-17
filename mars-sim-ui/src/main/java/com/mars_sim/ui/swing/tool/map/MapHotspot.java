@@ -16,7 +16,7 @@ public abstract class MapHotspot {
     private int radius;
 
     /**
-     * Create a circular map hotspot that has a cener and a radius of focus
+     * Create a circular map hotspot that has a center and a radius of focus
      */
     protected MapHotspot(IntPoint center, int radius) {
         this.center = center;

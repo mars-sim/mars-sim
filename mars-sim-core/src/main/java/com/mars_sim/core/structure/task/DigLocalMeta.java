@@ -161,11 +161,13 @@ public abstract class DigLocalMeta extends MetaTask
      */
     @Override
     public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        // Check preconditions
+        // Check preconditions :
         // - an airlock is available for egress
-        // - person is qualified for digging local
-        // - person is physically fit for heavy EVA tasks
+    	// - Not signing up for a mission
+        // - Qualified for digging local
+        // - Physically fit for heavy EVA tasks
     	if (!Walk.anyAirlocksForIngressEgress(p, false)
+    	|| p.getMission() != null
         || !DigLocal.canDigLocal(p)
         || !EVAOperation.isEVAFit(p)) {
             return RatingScore.ZERO_RATING;

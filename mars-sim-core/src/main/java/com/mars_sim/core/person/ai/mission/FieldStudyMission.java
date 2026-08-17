@@ -209,7 +209,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		double limit = range / 4D;
 		double siteDistance = RandomUtil.getRandomDouble(limit);
 		var fieldSite = startingLocation.getNewLocation(direction, siteDistance);
-		addNavpoint(fieldSite, "Field Fesearch Site");
+		addNavpoint(fieldSite, "Fesearch Site");
 	}
 
 	/**

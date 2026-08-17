@@ -28,7 +28,7 @@ public class EVAStep extends MissionStep {
 	// Maximum time to wait for sunrise
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
 
-	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not Enough Sunlight";
+	private static final String NOT_ENOUGH_SUNLIGHT = "No EVA - Not Enough Sunlight";
 	
 	private static final MissionPhase WAIT_SUNLIGHT = new MissionPhase("Mission.phase.waitSunlight");
 	private static final MissionStatus EVA_SUIT_CANNOT_BE_LOADED = new MissionStatus("Mission.status.noEVASuits");

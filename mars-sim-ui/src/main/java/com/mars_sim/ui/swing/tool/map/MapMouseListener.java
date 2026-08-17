@@ -82,7 +82,7 @@ class MapMouseListener extends MouseAdapter {
     private MapHotspot findHotspot(IntPoint mouse) {
 		var hotspots = mapPanel.getHotspots();
 		for(var h : hotspots) {
-			if (h.isWithin(mouse)) {
+			if (h != null && h.isWithin(mouse)) {
 				return h;
 			}
 		}

@@ -64,23 +64,25 @@ public class LoadingController implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(LoadingController.class.getName());
 
+	private boolean vehicleFull = false;
+	// The number of times a settlement can not have the resources
+	private int retryAttempts = MAX_SETTLEMENT_ATTEMPTS;
+
 	private Map<Integer, Double> amountManifest;
 	private Map<Integer, Double> optionalAmountManifest;
 	private Map<Integer, Integer> equipmentManifest;
 	private Map<Integer, Integer> optionalEquipmentManifest;
 	private Map<Integer, Integer> itemManifest;
 	private Map<Integer, Integer> optionalItemManifest;
+	
 	private EquipmentInventory stores;
 	private Settlement settlement;
 	private Vehicle vehicle;
 
-	// The number of times a settlement can not have the resources
-	private int retryAttempts = MAX_SETTLEMENT_ATTEMPTS;
-
-	private boolean vehicleFull = false;
 
 	/**
-	 * Load a vehicle with a manifest from a Settlement
+	 * Loads a vehicle with a manifest from a Settlement.
+	 * 
 	 * @param settlement Source of resources for the load
 	 * @param vehicle Vehicle to load
 	 * @param manifest Defines what supplies are to be loaded
@@ -116,6 +118,8 @@ public class LoadingController implements Serializable {
 	/*
 	 * Remove any equipment the Vehicle has from the manifest. Equipment completely loaded
 	 * in the vehicle will be removed from the manifest.
+	 * 
+	 * @param equipment
 	 */
 	private void removeVehicleEquipment(Map<Integer, Integer> equipment) {
 		Set<Integer> ids = new HashSet<>(equipment.keySet());
@@ -137,6 +141,8 @@ public class LoadingController implements Serializable {
 	/*
 	 * Remove any amount resources the Vehicle has from the manifest. Resource completely loaded
 	 * in the vehicle will be removed from the manifest.
+	 * 
+	 * @param resources
 	 */
 	private void removeVehicleAmounts(Map<Integer, Double> resources) {
 		Set<Integer> ids = new HashSet<>(resources.keySet());
@@ -262,7 +268,7 @@ public class LoadingController implements Serializable {
 	 * Loads the vehicle with required items from the settlement.
 	 *
 	 * @param amountLoading the amount (kg) the person can load in this time period.
-	 * @param manifest Manfiest to load from
+	 * @param manifest Manifest to load from
 	 * @return the remaining amount (kg) the person can load in this time period.
 	 * @throws Exception if problem loading resources.
 	 */
@@ -290,7 +296,7 @@ public class LoadingController implements Serializable {
 	 * Loads the vehicle with required amount resources from the settlement.
 	 *
 	 * @param amountLoading the amount (kg) the person can load in this time period.
-	 * @param manifest Manfiest to load from
+	 * @param manifest Manifest to load from
 	 * @return the remaining amount (kg) the person can load in this time period.
 	 * @throws Exception if problem loading resources.
 	 */
@@ -339,7 +345,7 @@ public class LoadingController implements Serializable {
 			// Check if enough resource in settlement inventory.
 			double settlementStored = stores.getAllAmountResourceStored(resource);
 
-			// Settlement has enough stored resource?
+			// Does the settlement have enough stored resource ?
 			if (settlementStored < amountToLoad) {
 				if (mandatory) {
 					retryAttempts--;
@@ -579,7 +585,8 @@ public class LoadingController implements Serializable {
 	}
 
 	/**
-	 * Is the loading plan completed for the mandatory details.
+	 * Is the loading plan completed for the mandatory details ?
+	 * 
 	 * @return
 	 */
 	public boolean isCompleted() {
@@ -592,6 +599,7 @@ public class LoadingController implements Serializable {
 
 	/**
 	 * Has the load failed on the mandatory items?
+	 * 
 	 * @return
 	 */
 	public boolean isFailure() {
@@ -620,7 +628,8 @@ public class LoadingController implements Serializable {
 	}
 
 	/**
-	 * The vehicle that is the target of this loading plan
+	 * Gets the vehicle that is the target of this loading plan.
+	 * 
 	 * @return
 	 */
     public Vehicle getVehicle() {

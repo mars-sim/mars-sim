@@ -265,7 +265,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 						assignTask(person, negotiationTask);
 					}
 				}
-				else if (getPhaseTimeElapse() > 1000D) {
+				else if (getPhaseTimeElapsed() > 1000D) {
 					objective.updateBought(new HashMap<>(), 0D);
 					fireMissionUpdate(Trade.BUY_LOAD_EVENT);
 					setPhaseEnded(true);
