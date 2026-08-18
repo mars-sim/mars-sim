@@ -16,11 +16,14 @@ public class MarsTimeFormat {
 	private static final String DASH = "-";
 	private static final String COLON = ":";
 	private static final String FULL_TIME_FORMAT = "%07.3f";
-	private static final String TRUNCATED_TIME_FORMAT = "%03d";
 	private static final String DATE_FORMAT = "%02d-%s-%02d";
+	private static final String TRUNCATED_TIME_FORMAT = "%03d";
+	private static final String ZONED_TIME_FORMAT = "%03d %s";
 	private static final String FULL_DATE_TIME_FORMAT = DATE_FORMAT + COLON + FULL_TIME_FORMAT;
 	private static final String TRUNCATED_DATE_TIME_FORMAT = DATE_FORMAT + COLON + TRUNCATED_TIME_FORMAT;
-
+	private static final String ZONED_DATE_TIME_FORMAT = DATE_FORMAT + COLON + ZONED_TIME_FORMAT;
+	private static final String MCT0 = "MCT+0";
+	
 	// Martian calendar static strings
 	private static final String[] MONTH_NAMES = { 
 			"Adir", "Bora", "Coan", "Detri", 
@@ -112,16 +115,30 @@ public class MarsTimeFormat {
 	}
 
 	/**
+	 * Returns a time zone labeled martian time stamp string in the format of "03-Adir-05:056 MCT+4".
+	 *
+	 * @param time {@link MarsTime} instance
+	 * @param zoneOffset
+	 * @return formatted String
+	 */
+	public static String getZonedDateTimeStamp(MarsTime time, String zoneOffset) {
+		return String.format(ZONED_DATE_TIME_FORMAT, time.getOrbit(), getMonthName(time.getMonth()),
+	            time.getSolOfMonth(), time.getMillisolInt(), zoneOffset);
+	}
+
+	/**
 	 * Returns a truncated martian time stamp string in the format of "03-Adir-05:056".
 	 *
 	 * @param time {@link MarsTime} instance
 	 * @return formatted String
 	 */
 	public static String getTruncatedDateTimeStamp(MarsTime time) {
-		return String.format(TRUNCATED_DATE_TIME_FORMAT, time.getOrbit(), getMonthName(time.getMonth()),
-	            time.getSolOfMonth(), time.getMillisolInt());
+		return getZonedDateTimeStamp(time, MCT0);
+//		return String.format(TRUNCATED_DATE_TIME_FORMAT, time.getOrbit(), getMonthName(time.getMonth()),
+//	            time.getSolOfMonth(), time.getMillisolInt());
 	}
 
+	
 	/**
 	 * Gets the martian date string in the format of e.g. "03-Adir-05".
 	 *

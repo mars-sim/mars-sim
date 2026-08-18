@@ -14,7 +14,9 @@ import com.mars_sim.core.time.MarsTimeFormat;
  */
 class MarsTimeFormatter extends NumberFormat {
 
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * Returns a string representing the value which is total millisol.
      *
      * @param millisols  the millisols.

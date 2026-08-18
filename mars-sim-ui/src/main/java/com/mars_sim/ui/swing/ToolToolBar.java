@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
@@ -62,14 +63,18 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String EXIT = "EXIT";
 	private static final String MARSCAL = "MARS-CAL";
 	private static final String AUDIO_CONTROL = "AUDIO";
-
-	private static final DateTimeFormatter EARTH_TIMESTAMP_FORMATTER = 
-			DateTimeFormatter.ofPattern("yyyy-MMM-dd (EEE) HH:mm:ss");
-
-	private static final String SOL = "Sol:";
 	private static final String MAIN_WIKI = "main-wiki";
+	private static final String WHITESPACE = " ";
 	
-	private static final String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //-NLS-1$
+	private DateTimeFormatter EARTH_TIMESTAMP_FORMATTER = 
+			DateTimeFormatter.ofPattern("EEE yyyy-MMM-dd HH:mm:ss ");
+
+	private String SOL = "Sol:";
+	
+	private String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //-NLS-1$
+
+	private Font font12 = new Font(Font.MONOSPACED, Font.ROMAN_BASELINE, 12);
+	private Font font14 = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
 	
 	private UIContext context;
@@ -175,13 +180,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		
 		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));	
 		
-		earthDate = createTextLabel(12, Font.PLAIN, false, true, "Greenwich Mean Time (GMT) for Earth. Format: Year-Month-Date (Week) Hour:Minute:Second");
+		earthDate = createTextLabel(font12, false, true, "Greenwich Mean Time (GMT) for Earth. Format: 'Week Year-Month-Date Hour:Minute:Second'");
 		timePanel.add(earthDate);
 			
-		missionSol = createTextLabel(14, Font.BOLD, false, false, "Simulation Mission Sol");
+		missionSol = createTextLabel(font14, false, false, "Simulation Mission Sol");
 		timePanel.add(missionSol);
 	
-		marsTime = createTextLabel(12, Font.PLAIN, true, true, "Mars Coordinated Time (MCT) for Mars. Format: 'Orbit-Month-Sol:Millisols (Weeksol)'");
+		marsTime = createTextLabel(font12, true, true, "Mars Coordinated Time (MCT) for Mars. Format: 'Weeksol Orbit-Month-Sol:Millisols'");
 		timePanel.add(marsTime);		
 
 		add(timePanel);
@@ -224,7 +229,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 * @param tooltip
 	 * @return
 	 */
-	private JLabel createTextLabel(int size, int style, boolean isFront, boolean haveBorder, String tooltip) {
+	private JLabel createTextLabel(Font font, boolean isFront, boolean haveBorder, String tooltip) {
 		Icon icon = null;
 		if (haveBorder) {
 			icon = new Icon() {
@@ -246,7 +251,10 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		JLabel label = new JLabel();
 		label.setVerticalAlignment(SwingConstants.CENTER);
 		label.setAlignmentY(SwingConstants.CENTER);
-		label.setFont(new Font(Font.SANS_SERIF, style, size));
+		int style = font.getStyle();
+		int size = font.getSize();
+		String fontType = font.getFontName();
+		label.setFont(new Font(fontType, style, size));
 		if (haveBorder) {
 			if (isFront) {
 				label.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 0, icon));
@@ -303,10 +311,12 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 * @param master
 	 */
 	public void incrementClocks(MasterClock master) {
-		missionSol.setText(SOL + master.getMarsTime().getMissionSol());
-		earthDate.setText(master.getEarthTime().format(EARTH_TIMESTAMP_FORMATTER));
-		marsTime.setText(master.getMarsTime().getTruncatedDateTimeStamp() 
-				+ " (" + MarsTimeFormat.getSolOfWeekString(master.getMarsTime().getSolOfWeek()) + ")");
+        SwingUtilities.invokeLater(() -> {
+    		missionSol.setText(SOL + master.getMarsTime().getMissionSol());
+    		earthDate.setText(WHITESPACE + master.getEarthTime().format(EARTH_TIMESTAMP_FORMATTER));
+    		marsTime.setText(WHITESPACE + MarsTimeFormat.getSolOfWeekString(master.getMarsTime().getSolOfWeek()) + WHITESPACE 
+    				+ master.getMarsTime().getTruncatedDateTimeStamp() + WHITESPACE);
+        });
 	}
 
 	/** 

@@ -19,8 +19,9 @@ public class EventSchedule implements Serializable {
     private int timeOfDay;
 
     /**
-     * Create a repeating schedule
-     * @param firstSol The sol of the first occurance of the event
+     * Creates a repeating schedule.
+     * 
+     * @param firstSol The sol of the first occurrence of the event
      * @param frequency Frequency in Sols of when this repeats
      * @param timeOfDay Time of day the event occurs
      */
@@ -43,8 +44,9 @@ public class EventSchedule implements Serializable {
     }
 
     /**
-     * Calaculate the time when the first event will occur from the current time.
+     * Calculates the time when the first event will occur from the current time.
      * The schedule is defined in terms of Central Mars Time.
+     * 
      * @param now Time on Mars now
      * @param zone Zone where the event is to be applied
      * @return
@@ -67,7 +69,8 @@ public class EventSchedule implements Serializable {
     }
 
     /**
-     * Get a new Schedule when the sol to the first event is changed.
+     * Gets a new Schedule when the sol to the first event is changed.
+     * 
      * @param startSol New starting sol value.
      * @return
      */

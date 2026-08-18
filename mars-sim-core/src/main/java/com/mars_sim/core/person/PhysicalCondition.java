@@ -65,8 +65,8 @@ public class PhysicalCondition implements Serializable {
 	private static final int MAX_FATIGUE = 80_000;
 	/** The fatigue ceiling immediately after sleep [millisols]. */
 	private static final int FATIGUE_CEILING_UPON_SLEEPING = 2_000;
-	/** The hunger ceiling immediately upon eating  [millisols]. */
-	public static final int HUNGER_CEILING_UPON_EATING = 750;
+	/** The hunger ceiling immediately upon eating [millisols]. */
+	public static final int HUNGER_CEILING_UPON_EATING = 1_000;
 	/** The thirst ceiling immediately upon drinking water [millisols]. */
 	public static final int THIRST_CEILING_UPON_DRINKING = 500;
 	/** The amount of thirst threshold [millisols]. */
@@ -283,7 +283,7 @@ public class PhysicalCondition implements Serializable {
 		double defaultMass = personConfig.getDefaultPhysicalChars().getAverageWeight();
 		
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
-		// bodyMassDeviation average around 0.7 to 1.3
+		// bodyMassDeviation average around 1
 		bodyMassDeviation = RandomUtil.getGaussianPositive(Math.sqrt(mass/defaultMass*height/defaultHeight), .4);						
 		bmi = mass/heightSquared;
 
@@ -294,11 +294,11 @@ public class PhysicalCondition implements Serializable {
 
 		double sTime = personConfig.getStarvationStartTime();
 		starvationTrigger = (int)(1000 * RandomUtil.getGaussianPositive((1 + endurance / 500) * sTime * bodyMassDeviation, bodyMassDeviation / 15));
-		maxHunger = starvationTrigger * 2;
+		maxHunger = starvationTrigger * 6;
 		
 		double dTime = personConfig.getDehydrationStartTime();
 		dehydrationTrigger = (int)(1000 * RandomUtil.getGaussianPositive(dTime / bodyMassDeviation, bodyMassDeviation / 15));
-		maxThirst = dehydrationTrigger * 2;
+		maxThirst = dehydrationTrigger * 4;
 		
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup
 		performance = 1.0D;
@@ -325,7 +325,7 @@ public class PhysicalCondition implements Serializable {
 			hunger = RandomUtil.getRandomRegressionInteger(50);
 		}
 		else {
-			// Peron is in perfect condition, commonly used in UnitTest
+			// Person is in perfect condition, commonly used in UnitTest
 			thirst = 0;
 			fatigue = 0;
 			stress = 0;
@@ -339,6 +339,8 @@ public class PhysicalCondition implements Serializable {
 
 		// kJoules somewhat co-relates with hunger
 		kJoules = 10000 + (50 - hunger) * 100;
+		
+		// Calculate performance
 		recalculatePerformance();
 		performanceLevel = PerformanceLevel.fromValue(performance);
 	}
@@ -427,21 +429,41 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		moderateTime(pulse, support);
-
-		int msol = pulse.getMarsTime().getMillisolInt();
-		if (msol % 7 == 0) {	
-			// Check radiation poisoning
-			if (!isRadiationPoisoned) {
-				checkRadiationPoisoning(pulse.getElapsed());
-			}
-		}
 		
-		// Check once a day only
-		if (pulse.isNewHalfSol()) {	
-			// Update the personal appetite
-			updateAppetite();
-			// Update personal max energy
-			updateMaxEnergy();
+		double time = pulse.getElapsed();
+		
+		boolean isResting = person.isRestingTask();
+
+		double currentO2Consumption = isResting ? personConfig.getLowO2ConsumptionRate()
+				: personConfig.getNominalO2ConsumptionRate();
+	
+		// Check life support system
+		checkLifeSupport(time, currentO2Consumption, support);
+		// Update the existing health problems
+		checkHealth(pulse, time, isResting);
+		// Calculate performance and most mostSeriousProblem illness.
+		recalculatePerformance();
+
+		// Check once an integer millisol only
+		if (pulse.isNewIntMillisol()) {		
+			// Check radiation 
+			radiation.timePassing(pulse);
+			
+			int msol = pulse.getMarsTime().getMillisolInt();
+			if (msol % 7 == 0) {	
+				// Check radiation poisoning
+				if (!isRadiationPoisoned) {
+					checkRadiationPoisoning(time);
+				}
+			}
+			
+			// Check once a day only
+			if (pulse.isNewHalfSol()) {	
+				// Update the personal appetite
+				updateAppetite();
+				// Update personal max energy
+				updateMaxEnergy();
+			}
 		}
 	}
 	
@@ -491,18 +513,6 @@ public class PhysicalCondition implements Serializable {
 		checkThirst(time, factor);
 		checkFatigue(time, factor);
 		checkHunger(time, factor);	
-
-		double currentO2Consumption = isResting ? personConfig.getLowO2ConsumptionRate()
-				: personConfig.getNominalO2ConsumptionRate();
-	
-		// Check life support system
-		checkLifeSupport(time, currentO2Consumption, support);
-		// Update the existing health problems
-		checkHealth(pulse, time, isResting);
-		// Calculate performance and most mostSeriousProblem illness.
-		recalculatePerformance();
-		// Check radiation 
-		radiation.timePassing(pulse);			
 	}
 
 	 /**
@@ -932,21 +942,8 @@ public class PhysicalCondition implements Serializable {
 		// Update thirst
 		increaseThirst(time * bodyMassDeviation * .75 / factor);
 
-		// If thirst at critical, person is dead
-		if (thirst >= maxThirst) {
-			// Add operation will return existing if one already exists
-			var dehydrated = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
-			dehydrated.setState(HealthProblemState.DEAD);
-			recordDead(dehydrated, false, ThirstLevel.DEATH_QUOTE);
-			return;
-		}
+		processThirst();
 		
-		// If the person's thirst at top level for a period then trigger dehydration
-		else if (thirst > dehydrationTrigger && getProblemByType(ComplaintType.DEHYDRATION) == null) {
-			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
-			logger.info(person, "Dehydration triggered. Thirst: " + Math.round(thirst));
-		}
-
 		// Check change of thirst level
 		var newThirstLevel = ThirstLevel.fromValue(thirst);
 		if (newThirstLevel == thirstLevel) {
@@ -956,7 +953,7 @@ public class PhysicalCondition implements Serializable {
 		// Update the thirst level as it's changed
 		thirstLevel = newThirstLevel;
 		person.fireUnitUpdate(THIRST_EVENT);
-
+		
 		var dehydrated = getProblemByType(ComplaintType.DEHYDRATION);
 
 		if (dehydrated != null) {
@@ -972,6 +969,25 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
+	/**
+	 * Processes thirst related illness.
+	 */
+	private void processThirst() {
+		// If thirst at critical, person is dead
+		if (thirst >= maxThirst) {
+			// Add operation will return existing if one already exists
+			var dehydrated = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
+			dehydrated.setState(HealthProblemState.DEAD);
+			recordDead(dehydrated, false, ThirstLevel.DEATH_QUOTE);
+		}
+		
+		// If the person's thirst at top level for a period then trigger dehydration
+		else if (thirst > dehydrationTrigger && getProblemByType(ComplaintType.DEHYDRATION) == null) {
+			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
+			logger.info(person, "Dehydration triggered. Thirst: " + Math.round(thirst));
+		}
+	}
+	
 	/**
 	 * Defines the hunger setting for this person.
 	 *
@@ -1057,21 +1073,8 @@ public class PhysicalCondition implements Serializable {
 		// Update hunger
 		increaseHunger(time * bodyMassDeviation * .75 / factor);
 
-		// If hunger at critical, person is dead
-		if (hunger >= maxHunger) {
-			// AddMedicalComplaint will return existing if one already exists
-			var starved = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
-			starved.setState(HealthProblemState.DEAD);
-			recordDead(starved, false, HungerLevel.DEATH_QUOTE);
-			return;
-		}
+		processHunger();
 		
-		// If the person's hunger at top level for a period then trigger starvation
-		else if (hunger > starvationTrigger && getProblemByType(ComplaintType.STARVATION) == null) {
-			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
-			logger.info(person, "Starvation triggered. Hunger: " + Math.round(hunger));
-		}
-
 		// Check change of hunger level
 		var newHungerLevel = HungerLevel.fromValue(hunger);
 		if (newHungerLevel == hungerLevel) {
@@ -1081,7 +1084,7 @@ public class PhysicalCondition implements Serializable {
 		// Update the hunger level as it's changed
 		hungerLevel = newHungerLevel;
 		person.fireUnitUpdate(HUNGER_EVENT);
-
+		
 		var starved = getProblemByType(ComplaintType.STARVATION);
 
 		if (starved != null) {
@@ -1097,6 +1100,27 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
+	/**
+	 * Processes hunger related illness.
+	 */
+	private void processHunger() {
+		
+		// If hunger at critical, person is dead
+		if (hunger >= maxHunger) {
+			// AddMedicalComplaint will return existing if one already exists
+			var starved = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
+			starved.setState(HealthProblemState.DEAD);
+			recordDead(starved, false, HungerLevel.DEATH_QUOTE);
+			return;
+		}
+		
+		// If the person's hunger at top level for a period then trigger starvation
+		else if (hunger > starvationTrigger && getProblemByType(ComplaintType.STARVATION) == null) {
+			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
+			logger.info(person, "Starvation triggered. Hunger: " + Math.round(hunger));
+		}
+	}
+	
 	/**
 	 * Sets the person's stress level.
 	 *
@@ -1177,18 +1201,14 @@ public class PhysicalCondition implements Serializable {
 	 * @param time
 	 * @param factor
 	 */
-	private void checkStress(double time, double factor) {				
-		// Always check for panic attack
-		if (stress >= 100D) {
-			HealthProblem panic = getProblemByType(ComplaintType.PANIC_ATTACK);
-			if (panic == null) {
-				addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK));
-			}
-		}
-
+	private void checkStress(double time, double factor) {
+		// Note: need to process stress first or else it would never reach 100% after
+		// calling reduceStress
+		processStress();
+		
 		// Reduce stress
 		reduceStress(time / 10 * factor);
-
+		
 		// Check change of stress level
 		var newStressLevel = StressLevel.fromValue(stress);
 		if (newStressLevel == stressLevel) {
@@ -1199,14 +1219,27 @@ public class PhysicalCondition implements Serializable {
 		stressLevel = newStressLevel;
 		person.fireUnitUpdate(STRESS_EVENT);
 		
-		// Check Panic Attack cured
+		// Check Panic Attack cured at the end of the checkStress() method
+		// Or else 
 		HealthProblem activePanic = getProblemByType(ComplaintType.PANIC_ATTACK);	
 		if (activePanic != null && !stressLevel.isStressedOut()) {
 			activePanic.setCured();
-			logger.log(person, Level.INFO, 20_000, "No longer having panic attack (case 2).");
+			logger.log(person, Level.INFO, 0, "No longer having panic attack (case 2).");
 		}
 	}
 	
+	/**
+	 * Processes stress related illness.
+	 */
+	private void processStress() {
+		// Always check for panic attack
+		if (stress >= 100D) {
+			HealthProblem panic = getProblemByType(ComplaintType.PANIC_ATTACK);
+			if (panic == null) {
+				addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK));
+			}
+		}
+	}
 	/**
 	 * Gets the health problem by a certain complaint type.
 	 *
@@ -1405,7 +1438,8 @@ public class PhysicalCondition implements Serializable {
 			freq = healthLog.get(type);
 		healthLog.put(type, freq + 1);
 		logger.log(person, Level.INFO, 0, "Suffering from " + type.getName() + ".");
-		recalculatePerformance();
+		
+//		recalculatePerformance();
 
 		person.fireUnitUpdate(ILLNESS_EVENT, c);
 
@@ -1908,7 +1942,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	private double getPainToleranceFactor() {
-		return (1 + musclePainTolerance/200);
+		return (1 + musclePainTolerance/300);
 	}
 	
 	/**
@@ -1917,7 +1951,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	private double getPainSorenessFactor() {
-		return (1 + muscleSoreness/200);
+		return (1 + muscleSoreness/300);
 	}
 	
 	/**

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -58,12 +59,16 @@ public class OrbitInfo implements Serializable, Temporal {
 	private static final double ORBIT_PERIOD = 59355072D;
 	/** Mars orbit eccentricity. */
 	public static final double ECCENTRICITY = .093377D;
-
+	/** Half of PI. */
+	private static final double HALF_PI = Math.PI / 2D;
+	/** Two PIs. */
+	private static final double TWO_PI = Math.PI * 2D;
+	
 	// INSTANTANEOUS_RADIUS_NUMERATOR = 1.510818924D
 	// public static final double INSTANTANEOUS_RADIUS_NUMERATOR = SEMI_MAJOR_AXIS
 	public static final double DEGREE_TO_RADIAN = Math.PI / 180D; // convert a number in degrees to radians
 
-	public static final double RADIANS_TO_MILLISOLS = 1000 / (2 * Math.PI);
+	public static final double RADIANS_TO_MILLISOLS = 1000 / TWO_PI;
 
 	/** Mars tilt in radians. */
 	private static final double TILT = 0.4397D; // 25.1918 deg / 180 *pi = 0.4397
@@ -73,10 +78,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	public static final double SOLAR_DAY = 88775.244D;
 	/** The area of Mars' orbit in au squared. */
 	private static final double ORBIT_AREA = 9.5340749D;
-	/** Half of PI. */
-	private static final double HALF_PI = Math.PI / 2D;
-	/** Two PIs. */
-	private static final double TWO_PI = Math.PI * 2D;
+
 	// On earth, use 15; On Mars, use 14.6 instead.
 //	private static final double ANGLE_TO_HOURS = 90D / HALF_PI  / 14.6D; // (or = 24 hrs / (2*pi) * 15 / 14.6)
 //	private static final double HRS_TO_MILLISOLS = 1 / MarsTime.HOURS_PER_MILLISOL; //1.0275D * MarsTime.MILLISOLS_PER_DAY / 24D; 
@@ -624,7 +626,9 @@ public class OrbitInfo implements Serializable, Temporal {
 	 * @param location
 	 * @return
 	 */
-	public double[] getSunTimes(Coordinates location) {
+	public double[] getSunTimes(Settlement settlement) {
+
+		Coordinates location = settlement.getCoordinates();
 		// Gets the omega value [in radians]
 		double omega = getHourAngle(location);
 		
@@ -707,7 +711,7 @@ public class OrbitInfo implements Serializable, Temporal {
 
 		if (gapTheta < 0) {
 			// Gone round the planet,
-			gapTheta += (2 * Math.PI);
+			gapTheta += TWO_PI;
 		}
 
 		// Convert time from radian to millisols
@@ -735,7 +739,6 @@ public class OrbitInfo implements Serializable, Temporal {
 
 		if (gapTheta < 0) {
 			// Gone round the planet,
-			gapTheta += (2 * Math.PI);
 		}
 
 		// Convert time from radian to millisols

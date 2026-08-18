@@ -64,6 +64,9 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.time.MarsTimeFormat;
+import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
@@ -121,14 +124,18 @@ public class SettlementTransparentPanel extends JComponent {
 
     private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
     private Font sunBoldFont = new Font(Font.MONOSPACED, Font.BOLD, 12);
-
+    private Font timeBoldFont = new Font(Font.DIALOG, Font.BOLD, 13);
+    
     private String resourceCache = "";
 
     private GameMode mode;
 
     private DisplaySingle bannerBar;
     private JSlider zoomSlider;
-
+    
+    /** label for the settlement's Mars time. */
+    private JLabel martianTimeLabel;
+    
     private JLabel emptyLabel;
     /** label for projected sunrise time. */
     private JLabel projectSunriseLabel;
@@ -165,6 +172,7 @@ public class SettlementTransparentPanel extends JComponent {
     private SurfaceFeatures surfaceFeatures;
     private OrbitInfo orbitInfo;
     private UnitManager unitManager;
+    private MasterClock masterClock;
 
     /**
      * The panel with elements that are on top of the settlement map.
@@ -178,6 +186,7 @@ public class SettlementTransparentPanel extends JComponent {
 
         Simulation sim = context.getSimulation();
         this.unitManager = sim.getUnitManager();
+        this.masterClock = sim.getMasterClock();
 
         this.weather = sim.getWeather();
         this.surfaceFeatures = sim.getSurfaceFeatures();
@@ -284,10 +293,22 @@ public class SettlementTransparentPanel extends JComponent {
      * @return panel
      */
     private JPanel buildSunPane() {
-        JPanel sunPane = new JPanel(new BorderLayout(3, 3));
+        JPanel sunPane = new JPanel(new BorderLayout(0, 1));
         sunPane.setBackground(new Color(0, 0, 0, 128));
         sunPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210, 105, 30)));
 
+        JPanel marsTimePane = new JPanel(new BorderLayout(0, 1));
+        final String ts = updateMarsTime();
+		martianTimeLabel = new JLabel(ts, JLabel.CENTER);
+		martianTimeLabel.setOpaque(false);
+		martianTimeLabel.setBackground(new Color(0, 0, 0, 128));
+//		marsTimePane.setSize(250, 30);
+		martianTimeLabel.setForeground(Color.LIGHT_GRAY);
+		martianTimeLabel.setFont(timeBoldFont);
+		marsTimePane.add(martianTimeLabel, BorderLayout.CENTER);
+		
+        sunPane.add(marsTimePane, BorderLayout.NORTH);
+        
         JPanel roundPane = new JPanel(new GridLayout(9, 1, 0, 0));
         roundPane.setBackground(new Color(0, 0, 0, 128));
         roundPane.setOpaque(false);
@@ -307,7 +328,7 @@ public class SettlementTransparentPanel extends JComponent {
 
         double []projectSunTime = {0, 0, 0};
         if (mapPanel.getSettlement() != null) {
-            projectSunTime = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());
+            projectSunTime = orbitInfo.getSunTimes(mapPanel.getSettlement());
         }
 
         projectSunriseLabel = new JLabel(PROJECTED_SUNRISE
@@ -319,6 +340,7 @@ public class SettlementTransparentPanel extends JComponent {
         projectDaylightLabel  = new JLabel(PROJECTED_DAYLIGHT
                 + StyleManager.DECIMAL1_MSOL.format(projectSunTime[2]));
 
+          
         sunriseLabel = new JLabel(SUNRISE + PENDING);
         sunsetLabel = new JLabel(SUNSET + PENDING);
         daylightLabel = new JLabel(DAYLIGHT + PENDING);
@@ -336,15 +358,16 @@ public class SettlementTransparentPanel extends JComponent {
         daylightLabel.setFont(sunFont);
 
         zenithLabel.setFont(sunFont);
-        maxSunLabel.setFont(sunFont);
+
         currentSunLabel.setFont(sunBoldFont);
+        maxSunLabel.setFont(sunFont);
 
         Color orange = Color.orange;
         Color brown = new Color(153, 102, 0).brighter();
         Color yellow = Color.yellow.brighter().brighter();
         Color white = Color.white;
         Color red = Color.pink;
-        Color lightBlue = new Color(51, 204, 255);
+        Color lightBlue = new Color(189, 240, 255);
 
         projectSunriseLabel.setForeground(red);
         sunriseLabel.setForeground(red);
@@ -368,7 +391,9 @@ public class SettlementTransparentPanel extends JComponent {
         zenithLabel.setToolTipText("The time at which the solar irradiance is at max");
         maxSunLabel.setToolTipText("The max solar irradiance of yestersol as recorded");
         currentSunLabel.setToolTipText("The current solar irradiance as recorded");
-
+       
+        roundPane.add(currentSunLabel);
+        roundPane.add(maxSunLabel);
         roundPane.add(projectSunriseLabel);
         roundPane.add(sunriseLabel);
         roundPane.add(projectSunsetLabel);
@@ -376,8 +401,6 @@ public class SettlementTransparentPanel extends JComponent {
         roundPane.add(projectDaylightLabel);
         roundPane.add(daylightLabel);
         roundPane.add(zenithLabel);
-        roundPane.add(maxSunLabel);
-        roundPane.add(currentSunLabel);
 
         return sunPane;
     }
@@ -519,11 +542,11 @@ public class SettlementTransparentPanel extends JComponent {
         if (ds != null) {
             sb.append(ds.getDescription());
         }
-        sb.append(resourceCache);
         sb.append(TEMPERATURE).append(tString);
         sb.append(WINDSPEED).append(wsString);
         sb.append(ZENITH_ANGLE).append(zaString);
         sb.append(OPTICAL_DEPTH).append(odString);
+        sb.append(resourceCache);
         return sb.toString();
     }
 
@@ -548,7 +571,7 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     private String getTemperatureString(double value) {
-        return StyleManager.DECIMAL_CELCIUS.format(value);
+        return StyleManager.DECIMAL_PLACES1.format(value);
     }
 
     private double getWindSpeed(Coordinates c) {
@@ -572,7 +595,7 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     private String getZenithAngleString(double value) {
-        return StyleManager.DECIMAL_DEG.format(value * RADIANS_TO_DEGREES);
+        return StyleManager.DECIMAL_PLACES0.format(value * RADIANS_TO_DEGREES);
     }
 
     private double getSolarIrradiance(Coordinates c) {
@@ -1016,13 +1039,27 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     /**
+     * Gets Mars Time with offset included.
+     * 
+     * @return
+     */
+    private String updateMarsTime() {
+		int offset = mapPanel.getSettlement().getTimeZone().getMSolOffset();
+		MarsTime mTime = masterClock.getMarsTimeWithOffset(offset);
+		String ts = MarsTimeFormat.getSolOfWeekString(mTime.getSolOfWeek()) 
+			+ " " + mTime.getDateTimeStamp()  
+			+ " " + mapPanel.getSettlement().getTimeZone().getId() ;
+		return ts;
+    }
+    
+    /**
      * Gets the sunlight data and display it on the top left panel of the settlement map.
      * (UI label updates are marshaled to EDT).
      * 
      * @param location
      */
     private void displaySunData(Coordinates location) {
-        double [] time = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());
+        double [] time = orbitInfo.getSunTimes(mapPanel.getSettlement());
 
         // Heavy-ish compute first
         weather.calculateSunRecord(location);
@@ -1033,8 +1070,14 @@ public class SettlementTransparentPanel extends JComponent {
         final String projSet  = PROJECTED_SUNSET  + StyleManager.DECIMAL1_MSOL.format(time[1]);
         final String projDay  = PROJECTED_DAYLIGHT+ StyleManager.DECIMAL1_MSOL.format(time[2]);
 
+        // Update Mars Time
+        final String ts = updateMarsTime();
+        
         // Push UI writes to EDT
         SwingUtilities.invokeLater(() -> {
+    		if (martianTimeLabel != null) 
+    			martianTimeLabel.setText(ts);
+    		
             if (projectSunriseLabel != null) projectSunriseLabel.setText(projRise);
             if (projectSunsetLabel  != null) projectSunsetLabel.setText(projSet);
             if (projectDaylightLabel!= null) projectDaylightLabel.setText(projDay);
@@ -1066,21 +1109,28 @@ public class SettlementTransparentPanel extends JComponent {
         }
     }
 
+    /**
+     * Updates with a new clock pulse.
+     * 
+     * @param pulse
+     */
     public void update(ClockPulse pulse) {
-        int sol = pulse.getMarsTime().getMissionSol();
+//        int sol = pulse.getMarsTime().getMissionSol();
 
-        if (solCache != sol) {
-            solCache = sol;
+        if (pulse.isNewHalfSol()) {
+//        if (solCache != sol) {
+//            solCache = sol;
             // Redo the resource string once a sol (off-EDT; only updates cache)
             prepBannerResourceString(pulse);
             // Update the sun data
-            Settlement s0 = (settlementListBox != null) ? (Settlement) settlementListBox.getSelectedItem() : null;
+//            Settlement s0 = (settlementListBox != null) ? (Settlement) settlementListBox.getSelectedItem() : null;
+            Settlement s0 = mapPanel.getSettlement();
             if (s0 != null)
                 displaySunData(s0.getCoordinates()); // EDT marshaled inside
         }
 
         if (bannerBar != null && settlementListBox != null) {
-            Settlement s = (Settlement) settlementListBox.getSelectedItem();
+            Settlement s = mapPanel.getSettlement(); //(Settlement) settlementListBox.getSelectedItem();
             // When loading from a saved sim, s may be initially null
             if (s == null)
                 return;
@@ -1091,6 +1141,13 @@ public class SettlementTransparentPanel extends JComponent {
             // Update icons on EDT
             SwingUtilities.invokeLater(this::updateIcon);
 
+            // Update the Mars Time label on EDT
+            final String ts = updateMarsTime();
+            SwingUtilities.invokeLater(() -> {
+            	if (martianTimeLabel != null) 
+        			martianTimeLabel.setText(ts);
+            });
+            
             // Update current sunlight on EDT
             updateCurrentSunlight(s);
         }
@@ -1100,6 +1157,7 @@ public class SettlementTransparentPanel extends JComponent {
      * Updates the current sunlight label safely on EDT.
      */
     private void updateCurrentSunlight(Settlement s) {
+    	
         if (currentSunLabel == null) return;
 
         int irr = (int) getSolarIrradiance(s.getCoordinates());

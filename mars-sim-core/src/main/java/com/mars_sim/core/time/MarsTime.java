@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsTime.java
- * @date 2023-06017
+ * @date 2023-06-17
  * @author Barry Evans
  */
 
@@ -48,14 +48,17 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 
 	// Mars is at aphelion (its greatest distance from the Sun, 249 million
 	// kilometers, where it moves most slowly) at Ls = 70 , near the northern
-	// summer solstice,
+	// summer solstice.
+	
 	// Mars is at perihelion (least distance from the Sun, 207 million
 	// kilometers, where it moves fastest) at Ls = 250°, near the southern
 	// summer solstice.
+	
 	// The Mars dust storm season begins just after perihelion at around Ls =
 	// 260°
 
 	// Martian/Gregorian calendar conversion
+	
 	// Note: 1 millisol = 88.775244 sec
 
 	/** Number of seconds per millisol. */
@@ -72,11 +75,13 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 	/** Number of millisols per earth day. */	
 	public static final double MILLISOLS_PER_EARTHDAY = 24 * MILLISOLS_PER_HOUR;
 	/** Number of sols per earth day */
-	public static final double SOLS_PER_EARTHDAY = MILLISOLS_PER_EARTHDAY/1000D;
+	public static final double SOLS_PER_EARTHDAY = MILLISOLS_PER_EARTHDAY / 1000D;
 
 	// Mars is near perihelion when it is summer in the southern hemisphere and
 	// winter in the north, and near aphelion when it is winter in the southern
-	// hemisphere and summer in the north. As a result, the seasons in the
+	// hemisphere and summer in the north. 
+	
+	// As a result, the seasons in the
 	// southern hemisphere are more extreme and the seasons in the northern are
 	// milder.
 
@@ -103,9 +108,10 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 
 	private transient String marsTimeString = null;
 	private transient String marsTruncatedTimeString = null;
+	private transient String marsZonedTimeString = null;
 	
 	/**
-	 * Constructor 2. Creates a MarsTime object with a given time.
+	 * Constructor 1. Creates a MarsTime object with a given time.
 	 * Note that time will NOT increment in this clock.
 	 *
 	 * @param orbit    current orbit
@@ -127,7 +133,7 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 	}
 
 	/**
-	 * Constructor 3. Creates a MarsTime object from total millisols.
+	 * Constructor 2. Creates a MarsTime object from total millisols.
 	 * This constructor converts total millisols back to orbit, month, sol, and millisol components
 	 * using the reverse logic of calculateTotalMillisols.
 	 * Note that time will NOT increment in this clock.
@@ -324,7 +330,8 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 	}
 
 	/**
-	 * Advance this time to the next occurance of the mSol. If the time is already after the mSol, then advance to the next sol.
+	 * Advances this time to the next occurrence of the mSol. If the time is already after the mSol, then advance to the next sol.
+	 * 
 	 * @param mSol the mSol for the future time (e.g. 0 for midnight, 500 for midday)
 	 * @return the new time
 	 */
@@ -371,6 +378,22 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 
 		return marsTruncatedTimeString;
 	}
+	
+	/**
+	 * Returns formatted time stamp string with zone offset in the format of e.g. "03-Adir-05:056 MCT+4".
+	 *
+	 * @param zoneOffset
+	 * @return formatted time stamp string
+	 */
+	public String getZonedDateTimeStamp(String zoneOffset) {
+		if (marsZonedTimeString == null) {
+			marsZonedTimeString = MarsTimeFormat.getZonedDateTimeStamp(this, zoneOffset);
+		}
+
+		return marsZonedTimeString;
+	}
+	
+	
 
 	public String getweekSolString() {
 		return MarsTimeFormat.getSolOfWeekString(solOfWeek);

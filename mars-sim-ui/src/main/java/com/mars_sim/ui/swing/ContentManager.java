@@ -19,7 +19,6 @@ import javax.swing.WindowConstants;
 
 import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationBuilder;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 import com.mars_sim.ui.swing.sound.AudioPlayer;

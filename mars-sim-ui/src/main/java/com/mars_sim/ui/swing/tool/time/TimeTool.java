@@ -23,6 +23,7 @@ import javax.swing.JSpinner;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -746,23 +747,27 @@ public class TimeTool extends ContentPanel {
 	 * @param mc
 	 */
 	private void updateFastLabels(MasterClock mc) {
+		// Update mars time
 		MarsTime mTime = mc.getMarsTime();
 		MarsZone zone = MarsZone.getMarsZone(new Coordinates(0,0));
-		String ts = mTime.getDateTimeStamp() + " " + MarsTimeFormat.getSolOfWeekString(mTime.getSolOfWeek()) + " " + zone.getId();
-		martianTimeLabel.setText(ts);
+		String ts = MarsTimeFormat.getSolOfWeekString(mTime.getSolOfWeek()) + " " + mTime.getDateTimeStamp() + " " +  zone.getId();
 
 		// Update average TPS label
 		double atps = mc.getAveragePulsesPerSecond();
 		StringBuilder atpsText = new StringBuilder();
 		atpsText.append(StyleManager.DECIMAL_PLACES2.format(atps));
-		averageTPSLabel.setText(atpsText.toString());
-
+		
+		// Update current ticks per second
 		double ctps = mc.getCurrentPulsesPerSecond();
 		StringBuilder ctpsText = new StringBuilder();
 		ctpsText.append(StyleManager.DECIMAL_PLACES2.format(ctps));
-		ticksPerSecLabel.setText(ctpsText.toString());
-		
-		uptimeLabel.setText(mc.getUpTimer().getUptime());
+	
+        SwingUtilities.invokeLater(() -> {
+    		martianTimeLabel.setText(ts);
+    		averageTPSLabel.setText(atpsText.toString());
+    		ticksPerSecLabel.setText(ctpsText.toString());
+    		uptimeLabel.setText(mc.getUpTimer().getUptime());
+        });
 	}
 
 	@Override

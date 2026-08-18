@@ -986,7 +986,7 @@ public class Crop implements Comparable<Crop>, Entity {
 		int sunInterval = 1; // avoid divided by zero
 		if ((pulse.getMarsTime().getMissionSol() == 1 && pulse.getMarsTime().getMillisolInt() == 0 )
 				|| isNewSol) {
-			double[] sunTimes = Simulation.instance().getOrbitInfo().getSunTimes(building.getCoordinates());
+			double[] sunTimes = Simulation.instance().getOrbitInfo().getSunTimes(building.getSettlement());
 			sunrise = (int)sunTimes[0];
 			sunset = (int)sunTimes[1];
 			sunInterval = (int)sunTimes[2];		
