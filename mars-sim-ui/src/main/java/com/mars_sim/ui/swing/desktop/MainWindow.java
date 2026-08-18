@@ -256,6 +256,10 @@ public class MainWindow extends ContentManager implements ClockListener, ClockPu
 		contentPane.add(desktop, BorderLayout.CENTER);
 		mainPane.add(contentPane, BorderLayout.CENTER);
 
+		// Prepare menu
+		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop, audio);
+		frame.setJMenuBar(mainWindowMenu);
+		
      	// Add toolbar pane
 		JPanel toolbarPane = new JPanel(new BorderLayout()); 
 		// Note: use BorderLayout for now since it has the advantage of 
@@ -303,10 +307,6 @@ public class MainWindow extends ContentManager implements ClockListener, ClockPu
 		unitToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_UNIT_BAR, false));
 		toolToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_TOOL_BAR, true));
 		useExternalBrowser = UIConfig.extractBoolean(props, EXTERNAL_BROWSER, false);
-
-		// Prepare menu
-		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop, audio);
-		frame.setJMenuBar(mainWindowMenu);
 		
 		// Close the unit bar when starting up
 		unitToolbar.setVisible(false);

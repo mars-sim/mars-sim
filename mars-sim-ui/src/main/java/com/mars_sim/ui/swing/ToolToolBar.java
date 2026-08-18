@@ -63,8 +63,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String MARSCAL = "MARS-CAL";
 	private static final String AUDIO_CONTROL = "AUDIO";
 
-	private static final DateTimeFormatter SHORT_TIMESTAMP_FORMATTER = 
-			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm");
+	private static final DateTimeFormatter EARTH_TIMESTAMP_FORMATTER = 
+			DateTimeFormatter.ofPattern("yyyy-MMM-dd (EEE) HH:mm:ss");
 
 	private static final String SOL = "Sol:";
 	private static final String MAIN_WIKI = "main-wiki";
@@ -114,19 +114,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		
 		addSeparator(new Dimension(20, 20));
 		
-		// Prepare tool buttons
-		prepareToolButtons();
-
-		createDatePanel();
-	
-		addSeparator(new Dimension(20, 20));
+////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		calendarPane = setupCalendarPanel(masterClock.getMarsTime());	
-
-		addToolButton(MARSCAL, "Mars Calendar", "schedule");
-		
-		addSeparator(new Dimension(20, 20));
-
 		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //-NLS-1$
 		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //-NLS-1$
 		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //-NLS-1$
@@ -142,13 +131,27 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		
 		addSeparator(new Dimension(20, 20));
 		
+		createCalendarPanel(masterClock.getMarsTime());	
+
+		addToolButton(MARSCAL, "Mars Calendar", "schedule");
+////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		addSeparator(new Dimension(20, 20));
+
+		createDatePanel();
+
+		addSeparator(new Dimension(20, 20));
+		
+		// Prepare tool window buttons
+		prepareToolWindowButtons();
+		
 		incrementClocks(masterClock);
 	}
 
 	/** 
-	 * Prepares tool buttons.
+	 * Prepares tool window buttons.
 	 */
-	private void prepareToolButtons() {
+	private void prepareToolWindowButtons() {
 
 		// Add Tools buttons
 		for(var ts : ToolRegistry.TOOL_INFOS) {
@@ -170,17 +173,17 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 */
 	private void createDatePanel() {
 		
-		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));	
 		
-		marsTime = createTextLabel(12, Font.PLAIN, true, true, "Mars Coordinated Time (MCT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weeksol'");
-		timePanel.add(marsTime);		
-	
-		missionSol = createTextLabel(12, Font.BOLD, false, false, "Simulation Sol Count");
-		timePanel.add(missionSol);
-		
-		earthDate = createTextLabel(12, Font.PLAIN, false, true, "Greenwich Mean Time (GMT) for Earth");
+		earthDate = createTextLabel(12, Font.PLAIN, false, true, "Greenwich Mean Time (GMT) for Earth. Format: Year-Month-Date (Week) Hour:Minute:Second");
 		timePanel.add(earthDate);
-		
+			
+		missionSol = createTextLabel(14, Font.BOLD, false, false, "Simulation Mission Sol");
+		timePanel.add(missionSol);
+	
+		marsTime = createTextLabel(12, Font.PLAIN, true, true, "Mars Coordinated Time (MCT) for Mars. Format: 'Orbit-Month-Sol:Millisols (Weeksol)'");
+		timePanel.add(marsTime);		
+
 		add(timePanel);
 	}
 	
@@ -259,7 +262,12 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		return label;
 	}
 
-	private JPanel setupCalendarPanel(MarsTime marsClock) {
+	/**
+	 * Creates the calendar.
+	 * 
+	 * @param marsClock
+	 */
+	private void createCalendarPanel(MarsTime marsClock) {
 		JPanel innerPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
 
 		calendarDisplay = new MarsCalendarDisplay(marsClock);
@@ -286,7 +294,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		monthPane.add(monthLabel, SwingConstants.CENTER);
 		midPane.add(monthPane, BorderLayout.NORTH);
 		
-    	return outerPane;
+		calendarPane = outerPane;
 	}
 
 	/**
@@ -296,8 +304,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 */
 	public void incrementClocks(MasterClock master) {
 		missionSol.setText(SOL + master.getMarsTime().getMissionSol());
-		earthDate.setText(master.getEarthTime().format(SHORT_TIMESTAMP_FORMATTER));
-		marsTime.setText(master.getMarsTime().getTruncatedDateTimeStamp());
+		earthDate.setText(master.getEarthTime().format(EARTH_TIMESTAMP_FORMATTER));
+		marsTime.setText(master.getMarsTime().getTruncatedDateTimeStamp() 
+				+ " (" + MarsTimeFormat.getSolOfWeekString(master.getMarsTime().getSolOfWeek()) + ")");
 	}
 
 	/** 

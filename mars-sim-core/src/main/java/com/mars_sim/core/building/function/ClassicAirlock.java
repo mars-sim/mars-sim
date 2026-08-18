@@ -802,6 +802,7 @@ public class ClassicAirlock extends Airlock {
 	@Override
 	public void destroy() {
 	    building = null;
+	
 	    airlockInteriorPos = null;
 	    airlockExteriorPos = null;
 

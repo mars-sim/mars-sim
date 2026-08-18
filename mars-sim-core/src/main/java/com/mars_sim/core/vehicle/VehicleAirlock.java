@@ -42,6 +42,24 @@ extends Airlock {
 	/** Pressurize/depressurize time (millisols). */
 	public static final double CYCLE_TIME = 2D; 
 	
+	// Currently, the full settlement indoor air composition consists of 58.79% oxygen.
+	// The full indoor air pressure is at 34.0 kPa (0.3 atm, 4.9 psi).
+	// The O2 partial pressure is kept at 19.9 kPa (0.2 atm, 2.9 psi).
+	
+	// For an EVA suit,
+	// one may opt for a full pressure at 56.54 kPa (8.2 psi),
+	// With 34% of O2 in air composition, 
+	// the O2 partial pressure is kept at 19.22 kPa.
+	
+	// Currently for simplicity, an EVA suit has only one gas, namely O2,
+	//                    Target O2 is at 17.0  kPa -> 0.255 kg 
+	
+	// Similarly, for a rover's cabin indoor atmosphere,
+	// one may opt for a full pressure at 56.54 kPa (8.2 psi),
+	// With 34% of O2 in air composition, 
+	// the O2 partial pressure is kept at 19.22 kPa.
+	
+	
 	// Data members.
 	/** True if airlock is activated (may elect an operator or may change the airlock state). */
 	private boolean activated;

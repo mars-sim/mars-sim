@@ -84,8 +84,9 @@ public class SimulationRuntime {
 	/** OS architecture string. */
 	private static final String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
 	public static final String SHORT_TITLE = Msg.getString("Simulation.title"); 
-	public static final String LONG_TITLE = SHORT_TITLE + " " + VERSION.getVersionTag()
-			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_CORES
+	public static final String MEDIUM_TITLE = SHORT_TITLE + " " + VERSION.getVersionTag() + " - " + OS; 
+	public static final String LONG_TITLE = MEDIUM_TITLE + " " + OS_ARCH
+			+ " " + JAVA_VERSION + " - " + NUM_CORES
 			+ ((NUM_CORES == 1) ? " Core" : " Cores"); 
 	
 	private static boolean fileLogEnabled = false;

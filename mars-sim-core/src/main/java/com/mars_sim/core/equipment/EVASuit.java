@@ -99,8 +99,10 @@ public class EVASuit extends Equipment
 	public static final double WATER_CAPACITY = 1D;
 	/** capacity (kg). */
 	public static final double CAPACITY = OXYGEN_CAPACITY + CO2_CAPACITY + WATER_CAPACITY;
-	/** Typical O2 air pressure (Pa) inside EVA suit is set to be 20.7 kPa. */
+	/** Nominal O2 air pressure (Pa) inside EVA suit is set to be 20.7 kPa. */
 	private static final double NOMINAL_O2_PRESSURE = 20.7;
+	/** Target O2 air pressure (Pa) inside EVA suit is set to be 17 kPa. */
+	private static final double TARGET_O2_PRESSURE = 17;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
 	/** The wear lifetime value is 1 orbit. */
@@ -115,6 +117,8 @@ public class EVASuit extends Equipment
 	private static double fullO2PartialPressure;
 	/** The nominal mass of O2 required to maintain the nominal partial pressure of 20.7 kPa (3.003 psi)  */
 	private static double massO2NominalLimit;
+	/** The target mass of O2 required to maintain the nominal partial pressure of 17 kPa (? psi)  */
+	private static double massO2TargetLimit;
 	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
 	private static double massO2MinimumLimit;
 
@@ -148,20 +152,49 @@ public class EVASuit extends Equipment
 		
 		massO2NominalLimit = NOMINAL_O2_PRESSURE / minO2Pressure * massO2MinimumLimit;
 		
+		massO2TargetLimit = TARGET_O2_PRESSURE / minO2Pressure * massO2MinimumLimit;
+				
 		logger.config(DASHES);
-		logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + "L");
-		logger.config("           Full Tank O2 : " + Math.round(fullO2PartialPressure*100.0)/100.0 
-					+ " kPa -> " + OXYGEN_CAPACITY + "  kg - Maximum Tank Pressure");
-		logger.config("             Nomimal O2 : " + NOMINAL_O2_PRESSURE + "  kPa -> "
-					+ Math.round(massO2NominalLimit * 100.0)/100.0  + " kg - Suit Target Pressure");
-		logger.config("             Minimum O2 : " + Math.round(minO2Pressure * 100.0)/100.0 + " kPa -> "
-					+ Math.round(massO2MinimumLimit * 100.0)/100.0  + " kg - Safety Limit");
+		
+		logger.config("  Total Gas Tank Volume : " + Math.round(TOTAL_VOLUME * 100.0)/100.0 + " L");
+		
+		logger.config("           Full Tank O2 : " + Math.round(fullO2PartialPressure * 1000.0)/1000.0 
+					+ " kPa -> " + OXYGEN_CAPACITY + "   kg - Maximum Tank Pressure");
+		
+		logger.config("             Nominal O2 : " + NOMINAL_O2_PRESSURE + "   kPa -> "
+					+ Math.round(massO2NominalLimit * 1000.0)/1000.0  
+					+ " kg - Suit Nominal Pressure");
+		
+		logger.config("              Target O2 : " + TARGET_O2_PRESSURE + "   kPa -> "
+					+ Math.round(massO2TargetLimit * 1000.0)/1000.0  
+					+ " kg - Suit Target Pressure");
+		
+		logger.config("             Minimum O2 : " + Math.round(minO2Pressure * 1000.0)/1000.0 + "  kPa -> "
+					+ Math.round(massO2MinimumLimit * 1000.0)/1000.0  
+					+ " kg - Safety Limit");
+		
 		logger.config(DASHES);
 			
-			// 66.61 kPa -> 1      kg (full tank O2 pressure)
-			// 20.7  kPa -> 0.3107 kg (nominal O2 pressure)
-			// 17    kPa -> 0.2552 kg (target O2 pressure)
-			// 11.94 kPa -> 0.1792 kg (min O2 pressure)
+//		01-Adir-01:000.000(Config) EVASuit :  -----------------------------------------------------------------------
+//		01-Adir-01:000.000(Config) EVASuit :   Total Gas Tank Volume : 3.9 L
+//		01-Adir-01:000.000(Config) EVASuit :            Full Tank O2 : 66.622 kPa -> 1.0   kg - Maximum Tank Pressure
+//		01-Adir-01:000.000(Config) EVASuit :              Nominal O2 : 20.7   kPa -> 0.311 kg - Suit Nominal Pressure
+//		01-Adir-01:000.000(Config) EVASuit :               Target O2 : 17.0   kPa -> 0.255 kg - Suit Target Pressure
+//		01-Adir-01:000.000(Config) EVASuit :              Minimum O2 : 11.94  kPa -> 0.179 kg - Safety Limit
+//		01-Adir-01:000.000(Config) EVASuit :  -----------------------------------------------------------------------
+		
+		
+		// Currently, the full settlement indoor air composition consists of 58.79% oxygen.
+		// The full indoor air pressure is at 34.0 kPa (0.3 atm, 4.9 psi).
+		// The O2 partial pressure is kept at 19.9 kPa (0.2 atm, 2.9 psi).
+		
+		// For an EVA suit,
+		// one may opt for a full pressure at 56.54 kPa (8.2 psi),
+		// With 34% of O2 in air composition, 
+		// the O2 partial pressure is kept at 19.22 kPa.
+		
+		// Currently for simplicity, an EVA suit has only one gas, namely O2,
+		//                    Target O2 is at 17.0  kPa -> 0.255 kg 
 	}
 		
 	/**
@@ -303,7 +336,7 @@ public class EVASuit extends Equipment
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
 			if (getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID) <= massO2MinimumLimit) {
 				logger.log(this, Level.WARNING, 30_000,
-						"Less than 0.1792 kg oxygen (below the safety limit).");
+						"Less than " + Math.round(massO2MinimumLimit * 1000.0)/1000.0 + " kg oxygen (below the safety limit).");
 				return false;
 			}
 
@@ -392,8 +425,8 @@ public class EVASuit extends Equipment
 	@Override
 	public double getAirPressure() {
 		// Based on some pre-calculation,
-		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure
-		// e.g. To supply a partial oxygen pressure of 20.7 kPa, one needs at least 0.3107 kg O2
+		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure.
+		// To supply a partial oxygen pressure of 20.7 kPa, one needs 0.3107 kg of O2.
 		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
 		// Note : our target o2 partial pressure is 17 kPa (not 20.7 kPa), the targeted mass of O2 is 0.2552 kg
 
@@ -407,14 +440,25 @@ public class EVASuit extends Equipment
 		if (oxygenLeft < massO2NominalLimit) {
 			double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
 			logger.log(this, Level.WARNING, 3_000,
-					"Only " + Math.round(oxygenLeft*1000.0)/1000.0
-						+ " kg O2 left at partial pressure of " + Math.round(pp*1000.0)/1000.0 + " kPa.");
+					"Only " + Math.round(oxygenLeft * 1000.0)/1000.0
+						+ " kg O2 left at partial pressure of " + Math.round(pp * 1000.0)/1000.0 + " kPa.");
 			return pp;
 		}
 //		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates())
 		return NOMINAL_O2_PRESSURE;
 	}
 
+	/**
+	 * Gets oxygen partial pressure.
+	 * 
+	 * @return
+	 */
+	private double getCurrentOxygenPartialPressure() {
+		double oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+		return AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
+	}
+	
+	
 	/**
 	 * Gets the temperature of the life support system.
 	 *

@@ -54,9 +54,7 @@ public abstract class Airlock implements Serializable {
 
 	/** The effective reservation period [in millisols]. */
 	public static final int RESERVATION_PERIOD = 40;
-	
-	private AirlockMode airlockMode = AirlockMode.EGRESS;
-	
+
 	/**
 	 * Available operational modes.
 	 */
@@ -81,6 +79,7 @@ public abstract class Airlock implements Serializable {
 		}
 	}
 		
+	private AirlockMode airlockMode = AirlockMode.EGRESS;
 	
 	/**
 	 * Available operational states.
@@ -116,6 +115,8 @@ public abstract class Airlock implements Serializable {
 	/** True if outer door is locked. */
 	private boolean outerDoorLocked;
 
+	private boolean transitioning = false;
+
 	/** The maximum number of reservations that can be made for an airlock. */
 	public int maxReserved;
 	/** Number of people who can use the airlock at once. */
@@ -137,8 +138,6 @@ public abstract class Airlock implements Serializable {
 
 	/** The occupant reservation map. */
 	private Map<Integer, Integer> reservationMap;
-
-	private boolean transitioning = false;
 
     protected static UnitManager unitManager;
     protected static MarsSurface marsSurface;
@@ -1224,6 +1223,8 @@ public abstract class Airlock implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
+		reservationMap.clear();
+		reservationMap = null;
 		occupant123IDs.clear();
 		occupant123IDs = null;
 		awaitingInnerDoor.clear();

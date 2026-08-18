@@ -48,10 +48,11 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 	private static final String AR_NAME = Msg.getString("TabPanelAirComposition.ar"); //$NON-NLS-1$
 	
 	private static final String AIR_ICON = "air";
-	private static final DecimalFormat DECIMAL_ATM = new DecimalFormat("0.0 atm");
-	private static final DecimalFormat DECIMAL_MB = new DecimalFormat("0.00 mb");
-	private static final DecimalFormat DECIMAL_PSI = new DecimalFormat("0.00 psi");
-
+	private static final DecimalFormat DECIMAL_ATM = StyleManager.DECIMAL_ATM;
+	private static final DecimalFormat DECIMAL_MB = StyleManager.DECIMAL_MB;
+	private static final DecimalFormat DECIMAL_PSI = StyleManager.DECIMAL_PSI;
+	private static final DecimalFormat DECIMAL_KPA = StyleManager.DECIMAL_KPA;
+	
 	private int numBuildingsCache;
 	
 	private String indoorPressureCache;
@@ -234,7 +235,7 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 		
 			// Update indoor pressure (complex formatting based on button selection)
 			String indoorPressure = switch (styleSelected) {
-				case SHOW_KPA -> StyleManager.DECIMAL_KPA.format(settlement.getAirPressure());
+				case SHOW_KPA -> DECIMAL_KPA.format(settlement.getAirPressure());
 				case SHOW_ATM -> DECIMAL_ATM.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM);
 				case SHOW_MB -> DECIMAL_MB.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.MB_PER_ATM);
 				case SHOW_PSI -> DECIMAL_PSI.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.PSI_PER_ATM);
