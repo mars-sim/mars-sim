@@ -88,7 +88,9 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 	private final int orbit;
 	/** The Martian month. */
 	private final int month;
-	/** The Martian day. */
+	/** The Martian day of a week. */
+	private final int solOfWeek;
+	/** The Martian day of a month. */
 	private final int solOfMonth;
 	/** The mission sol since the start of the sim. */
 	private final int missionSol;
@@ -101,20 +103,22 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 
 	private transient String marsTimeString = null;
 	private transient String marsTruncatedTimeString = null;
-
+	
 	/**
 	 * Constructor 2. Creates a MarsTime object with a given time.
 	 * Note that time will NOT increment in this clock.
 	 *
 	 * @param orbit    current orbit
 	 * @param month    current month
+	 * @param newSolOfWeek current week
 	 * @param sol      current sol
 	 * @param millisol current millisol
 	 * @param missionSol current missionSol
 	 */
-	public MarsTime(int orbit, int month, int sol, double millisol, int missionSol) {
+	public MarsTime(int orbit, int month, int newSolOfWeek, int sol, double millisol, int missionSol) {
 		this.orbit = orbit;
 		this.month = month;
+		this.solOfWeek = newSolOfWeek;
 		this.solOfMonth = sol;
 		this.millisol = millisol;
 		this.missionSol = missionSol;
@@ -136,7 +140,8 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 		double remainingMillisols = totalMillisols;
 		int currentOrbit = 0;
 		int currentMonth = 1;
-		int currentSol = 1;
+		int currentSolOfMonth = 1;
+		int currentSolOfWeek = 0;
 		int currentMissionSol = 0;
 		
 		// Calculate orbit by subtracting full orbits
@@ -167,13 +172,16 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 		// Calculate sol by subtracting full sols
 		while (remainingMillisols >= 1000D) {
 			remainingMillisols -= 1000D;
-			currentSol++;
+			currentSolOfMonth++;
 			currentMissionSol++;
 			
-			if (currentSol > MarsTimeFormat.getSolsInMonth(currentMonth, currentOrbit)) {
-				currentSol = 1;
+			if (currentSolOfMonth > MarsTimeFormat.getSolsInMonth(currentMonth, currentOrbit)) {
+				currentSolOfMonth = 1;
 			}
 		}
+		
+		// Find the week sol day
+		currentSolOfWeek = MarsTimeFormat.getSolOfWeek(currentSolOfMonth);
 		
 		// Calculate mission sol from total millisols
 		currentMissionSol = (int) (totalMillisols / 1000D) + 1; // +1 because mission starts at Sol 1
@@ -181,7 +189,8 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 		// Set final values
 		this.orbit = currentOrbit;
 		this.month = currentMonth;
-		this.solOfMonth = currentSol;
+		this.solOfWeek = currentSolOfWeek;
+		this.solOfMonth = currentSolOfMonth;
 		this.millisol = remainingMillisols;
 		this.missionSol = currentMissionSol;
 		this.intMillisol = (int) remainingMillisols;
@@ -247,20 +256,32 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 		double newMillisols = millisol + addedMillisols;
 		int newOrbit = orbit;
 		int newMissionSol = missionSol;
+		int newSolOfWeek = solOfWeek;
 		int newSolOfMonth = solOfMonth;
 		int newMonth = month;
 
 		if (addedMillisols > 0D) {
 			while (newMillisols >= 1000D) {
+				// Reset newMillisols back to the beginning for the new sol day
 				newMillisols -= 1000D;
+				
 				newSolOfMonth++;
+				newSolOfWeek++;
 				newMissionSol++;
 							
+				// Check if it's the beginning of a new month
 				if (newSolOfMonth > MarsTimeFormat.getSolsInMonth(newMonth, newOrbit)) {
 					newSolOfMonth = 1;
+					
+					// Check if it's the beginning of a new week
+					if (newSolOfWeek > MarsTimeFormat.getSolOfWeek(newSolOfMonth)) {
+						newSolOfWeek = 0;
+					}
+						
 					newMonth++;
 				}
 				
+				// Check if it's the beginning of a new orbit
 				if (newMonth > MONTHS_PER_ORBIT) {
 					newMonth = 1;
 					newOrbit++;
@@ -273,12 +294,21 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 			// e.g. A transport item was launched on 01-Adir--65:074, arriving at 01-Adir-01:074.
 			
 			while (newMillisols < 0D) {
+				// Reset newMillisols back to the previous sol day
 				newMillisols += 1000D;
+				
 				newSolOfMonth--;
+				newSolOfWeek--;
 				newMissionSol--;
 				
 				if (newMonth < 1) {
 					newMonth = MONTHS_PER_ORBIT;
+					
+					// Check if it's the beginning of a new week
+					if (newSolOfWeek < 0) {
+						newSolOfWeek = 7;
+					}
+					
 					// Future: how to handle -ve orbit years ?  
 					newOrbit--;
 				}
@@ -290,7 +320,7 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 			}
 		}
 
-		return new MarsTime(newOrbit, newMonth, newSolOfMonth, newMillisols, newMissionSol);
+		return new MarsTime(newOrbit, newMonth, newSolOfWeek, newSolOfMonth, newMillisols, newMissionSol);
 	}
 
 	/**
@@ -301,7 +331,7 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
     public MarsTime advanceToNextMSol(int mSol) {
         if (millisol < mSol) {
 			// Advance in the same sol
-			return new MarsTime(orbit, month, solOfMonth, mSol, missionSol);
+			return new MarsTime(orbit, month, solOfWeek, solOfMonth, mSol, missionSol);
 		} else {
 			return addTime((1000D - millisol) + mSol);
 		}
@@ -342,6 +372,10 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 		return marsTruncatedTimeString;
 	}
 
+	public String getweekSolString() {
+		return MarsTimeFormat.getSolOfWeekString(solOfWeek);
+	}
+	
 	/**
 	 * Returns the total number of millisols of a given time.
 	 *
@@ -411,6 +445,15 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 		return month;
 	}
 
+	/**
+	 * Returns the sol of week (0 - 6).
+	 * 
+	 * @return
+	 */
+	public int getSolOfWeek() {
+		return solOfWeek;
+	}
+	
 	/**
 	 * Returns the sol of month (1 - 28).
 	 *

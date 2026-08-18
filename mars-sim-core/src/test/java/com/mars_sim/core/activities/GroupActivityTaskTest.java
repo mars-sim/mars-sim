@@ -28,7 +28,7 @@ public class GroupActivityTaskTest extends MarsSimUnitTest {
         var s = buildSettlement("mock");
         var accom = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
-        var t = new MarsTime(1, 1, 1, 0, 1);
+        var t = new MarsTime(1, 1, 0, 1, 0, 1);
 
         var calendar = new EventSchedule(0, 0, 800);
         var info = new GroupActivityInfo("One", 10, 50, calendar, 1D, 100,

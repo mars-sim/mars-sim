@@ -43,7 +43,7 @@ class TabPanelGeneral extends EntityTabPanel<Settlement> implements TemporalComp
 	private JLabel populationCitizensLabel;
 	private JLabel populationCapacityLabel;
 	private JLabel totalBuildingValuelabel;
-	
+
 	private Map<String, JLabel> labels = new HashMap<>();
 
 	private AttributePanel valuePanel;
@@ -67,6 +67,10 @@ class TabPanelGeneral extends EntityTabPanel<Settlement> implements TemporalComp
         infoPanel.addLabelledItem(Msg.getString("authority.singular"), 
                     new EntityLabel(settlement.getReportingAuthority(), getContext()));
         infoPanel.addTextField(Msg.getString("settlement.template"), settlement.getTemplate(), null);
+        
+        infoPanel.addRow("Time Zone Code", settlement.getTimeZone().getId());
+        
+        infoPanel.addRow("Time Offset", settlement.getTimeZone().getMSolOffset() + "");
         
         // Create citizen label
      	populationCitizensLabel = infoPanel.addTextField(Msg.getString("settlement.population"),

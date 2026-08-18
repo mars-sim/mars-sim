@@ -30,10 +30,12 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.OrbitInfo;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.ClockUtils;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
+import com.mars_sim.core.time.MarsZone;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ContentPanel;
@@ -101,9 +103,6 @@ public class TimeTool extends ContentPanel {
 	private static final String ACTUAL_TIME_RATIO = Msg.getString("TimeWindow.actualTRHeader"); //$NON-NLS-1$
 	/** The execution time unit */
 	private static final String MS = " ms";
-	/** The Universal Mean Time abbreviation */
-	private static final String UMT = " (UMT) ";
-
 
 	// Data members
 	/** The time in ms when last updated. */
@@ -215,7 +214,7 @@ public class TimeTool extends ContentPanel {
 		martianTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		martianTimeLabel.setVerticalAlignment(SwingConstants.CENTER);
 		martianTimeLabel.setText("");
-		martianTimeLabel.setToolTipText("Mars Timestamp in Universal Mean Time (UMT)");
+		martianTimeLabel.setToolTipText("Mars Timestamp in Mars Central Time (MCT)");
 		martianTimePane.add(martianTimeLabel, BorderLayout.CENTER);
 		martianTimePane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.martianTime"))); //$NON-NLS-1$
 
@@ -748,7 +747,8 @@ public class TimeTool extends ContentPanel {
 	 */
 	private void updateFastLabels(MasterClock mc) {
 		MarsTime mTime = mc.getMarsTime();
-		String ts = mTime.getDateTimeStamp() + " " + MarsTimeFormat.getSolOfWeekName(mTime) + UMT;
+		MarsZone zone = MarsZone.getMarsZone(new Coordinates(0,0));
+		String ts = mTime.getDateTimeStamp() + " " + MarsTimeFormat.getSolOfWeekString(mTime.getSolOfWeek()) + " " + zone.getId();
 		martianTimeLabel.setText(ts);
 
 		// Update average TPS label

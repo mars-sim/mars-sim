@@ -27,7 +27,7 @@ public class MarsTimeFormatTest {
 
     @Test
     void testConvert() {
-        MarsTime start = new MarsTime(1, 4, 15, 123.456, 1);
+        MarsTime start = new MarsTime(1, 4, 0, 15, 123.456, 1);
         String text = MarsTimeFormat.getDateTimeStamp(start);
         MarsTime result = MarsTimeFormat.fromDateString(text);
         assertEquals(start, result, "Converted to String and back");

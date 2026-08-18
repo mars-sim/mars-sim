@@ -109,6 +109,9 @@ public class StyleManager {
     								+ Msg.getString("unit.grampercubicmeter"));
     // For air pressure
     public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 kPa");
+    public static final DecimalFormat DECIMAL_ATM = new DecimalFormat("0.000 atm");
+    public static final DecimalFormat DECIMAL_MB = new DecimalFormat("0.00 mb");
+    public static final DecimalFormat DECIMAL_PSI = new DecimalFormat("0.000 psi");
 
     private static int tabPlacement = SwingConstants.LEFT;
 

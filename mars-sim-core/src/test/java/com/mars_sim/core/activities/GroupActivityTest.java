@@ -42,7 +42,7 @@ public class GroupActivityTest extends MarsSimUnitTest {
         var s = buildSettlement("mock");
         buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
-        var t = new MarsTime(1, 1, 1, 0, 1);
+        var t = new MarsTime(1, 1, 0, 1, 0, 1);
 
         var ga = new GroupActivity(ONE, s, t);
         assertEquals(ActivityState.SCHEDULED, ga.getState(), "Scheduled actvity");
@@ -77,7 +77,7 @@ public class GroupActivityTest extends MarsSimUnitTest {
         var s = buildSettlement("mock");
         buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
-        var t = new MarsTime(1, 1, 1, 0, 1);
+        var t = new MarsTime(1, 1, 0, 1, 0, 1);
 
         var ga = new GroupActivity(REPEATING, s, t);
 
@@ -104,7 +104,7 @@ public class GroupActivityTest extends MarsSimUnitTest {
     @Test
     public void testInitialEvent() throws CoordinatesException {
         // Simplest first with zero time and no offset
-        var now = new MarsTime(1, 1, 1, 0, 1);
+        var now = new MarsTime(1, 1, 0, 1, 0, 1);
         var locn = CoordinatesFormat.fromString("0.0 90.0");
 
         var s = buildSettlement("East", false, locn);

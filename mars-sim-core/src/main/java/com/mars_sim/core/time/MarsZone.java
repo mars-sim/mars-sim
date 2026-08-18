@@ -29,7 +29,8 @@ public class MarsZone implements Serializable {
     private int offset;
 
     /**
-     * Private constructor only used by factory method
+     * Private constructor only used by factory method.
+     * 
      * @param zoneid
      */
     private MarsZone(int zoneid) {
@@ -46,7 +47,8 @@ public class MarsZone implements Serializable {
     }
 
     /**
-     * Gets the unique id for this zone
+     * Gets the unique id for this zone.
+     * 
      * @return
      */
     public String getId() {
@@ -55,6 +57,7 @@ public class MarsZone implements Serializable {
 
     /**
      * Gets the millisol offset from the Mars Central Time (MCT).
+     * 
      * @return
      */
     public int getMSolOffset() {
@@ -68,7 +71,7 @@ public class MarsZone implements Serializable {
 	 * @return
 	 */
 	public static MarsZone getMarsZone(Coordinates point) {
-		// Get the rotation about the planet and convert that to a fraction of the Sol.
+		// Get the rotation about the planet and convert that to a fraction of the sol.
 		double fraction = point.getTheta()/(Math.PI * 2D); 
 
         int zoneid = (int) Math.floor(NUM_ZONES * fraction);

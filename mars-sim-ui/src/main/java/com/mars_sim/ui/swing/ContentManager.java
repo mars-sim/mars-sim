@@ -19,6 +19,8 @@ import javax.swing.WindowConstants;
 
 import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationBuilder;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.utils.SaveDialog;
@@ -53,7 +55,7 @@ public abstract class ContentManager {
             audio = new AudioPlayer(props);
 		}
 			
-        mainFrame = new JFrame("Mars Simulation Project");
+        mainFrame = new JFrame(SimulationRuntime.MEDIUM_TITLE);
 		mainFrame.setResizable(true);
         mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         mainFrame.addWindowListener(new WindowAdapter() {

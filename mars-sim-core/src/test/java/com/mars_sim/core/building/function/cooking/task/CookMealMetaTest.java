@@ -28,7 +28,7 @@ class CookMealMetaTest extends MarsSimUnitTest {
         var schedule = s.getMealTimes();
 
         var breakfast = schedule.getMeals().get(0);
-        var preBreakfast = new MarsTime(1, 1, 1, breakfast.period().start() - (CookMeal.PREP_TIME + 1), 0);
+        var preBreakfast = new MarsTime(1, 1, 0, 1, breakfast.period().start() - (CookMeal.PREP_TIME + 1), 0);
 		getSim().getMasterClock().setMarsTime(preBreakfast);
 
         var results = mt.getSettlementTasks(s);
@@ -94,7 +94,7 @@ class CookMealMetaTest extends MarsSimUnitTest {
     private void setMidBreakfastTime(Settlement s) {
         var schedule = s.getMealTimes();
         var breakfast = schedule.getMeals().get(0);
-        var midBreakfast = new MarsTime(1, 1, 1, breakfast.period().start()+1, 0);
+        var midBreakfast = new MarsTime(1, 1, 0, 1, breakfast.period().start()+1, 0);
 		getSim().getMasterClock().setMarsTime(midBreakfast);
     }
 

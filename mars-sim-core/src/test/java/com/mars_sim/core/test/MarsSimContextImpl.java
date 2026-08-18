@@ -238,8 +238,9 @@ public class MarsSimContextImpl implements MarsSimContext {
      * @param newHalfSol Has half a sol just passed
      * @return
      */
-    public ClockPulse createPulse(int missionSol, int mSol, boolean newSol, boolean newHalfSol) {
-        MarsTime marsTime = new MarsTime(1, 1, missionSol, mSol, missionSol);
+    public ClockPulse createPulse(int missionSol, int mSol, boolean newSol, boolean newHalfSol) {	
+//    	int newSolOfWeek = MarsTimeFormat.getSolOfWeek(solOfMonth);
+        MarsTime marsTime = new MarsTime(1, 1, 0, missionSol, mSol, missionSol);
         return createPulse(marsTime, newSol, newHalfSol);
     }
 

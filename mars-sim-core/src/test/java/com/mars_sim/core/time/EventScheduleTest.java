@@ -59,7 +59,7 @@ class EventScheduleTest {
     private void assertCalendar(String message, int firstSol, int timeOfDay, Coordinates locn) {
         var zone = MarsZone.getMarsZone(locn);
         var cal = new EventSchedule(firstSol, 0, timeOfDay);
-        var now = new MarsTime(1, 1, 1, NOW_MSOL, 1);
+        var now = new MarsTime(1, 1, 0, 1, NOW_MSOL, 1);
         var event = cal.getFirstEvent(now, zone);
 
         // Check first event is correct time of day

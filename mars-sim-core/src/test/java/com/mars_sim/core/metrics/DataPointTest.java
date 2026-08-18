@@ -20,7 +20,7 @@ class DataPointTest {
     
     @BeforeEach
     void setUp() {
-        mockTime1 = new MarsTime(1, 12, 0, 0, 0);
+        mockTime1 = new MarsTime(1, 12, 0, 1, 0, 0);
         mockTime2 = mockTime1.addTime(500);
 
         value1 = 25.5;

@@ -65,17 +65,19 @@ public class MarsTimeFormat {
 		String[] subParts = parts[2].split(COLON);
 		if (subParts.length != 2)
 			throw new IllegalStateException("Invalid sol:millisol: " + parts[2]);
-		int sol = Integer.parseInt(subParts[0]);
-		if (sol < 1)
-			throw new IllegalStateException("Invalid sol number: " + sol);
+		int solOfMonth = Integer.parseInt(subParts[0]);
+		if (solOfMonth < 1)
+			throw new IllegalStateException("Invalid sol number: " + solOfMonth);
 
+		int week = getSolOfWeek(solOfMonth);
+		
 		double millisol = Double.parseDouble(subParts[1].replace(',', '.'));
 		if (millisol < 0D)
 			throw new IllegalStateException("Invalid millisol number: " + millisol);
 
 		int missionSol = 1; // the sol since the start of the sim
 
-		return new MarsTime(orbit, month, sol, millisol, missionSol);
+		return new MarsTime(orbit, month, week, solOfMonth, millisol, missionSol);
 	}
 
 	/**
@@ -138,36 +140,35 @@ public class MarsTimeFormat {
 	/*
 	 * Returns the sol name of the week.
 	 *
+	 * @param clock
 	 * @return the sol name of the week as a String
 	 */
 	public static String getSolOfWeekName(MarsTime clock) {
-		int sol = clock.getSolOfMonth();
-		int weekOfMonth = ((sol - 1) / 7) ;
-		int solOfWeek = sol - (weekOfMonth * 7);
-		return WEEK_SOL_NAMES[solOfWeek - 1];
+		int solOfMonth = clock.getSolOfMonth();
+		int solOfWeek = getSolOfWeek(solOfMonth);
+		return getSolOfWeekString(solOfWeek);
 	}
 
 	/**
-	 * Returns true if orbit is a leap orbit, false if not.
+	 * Returns the number of sols for a given week.
 	 *
-	 * @param orbit the orbit number
+	 * @param solOfMonth the week sol number
 	 */
-	static boolean isLeapOrbit(int orbit) {
-		boolean result = (orbit % 10) == 0;
-
-		// If an orbit is divisible by 10 it is a leap orbit
-
-        // If an orbit is divisible by 100, it is not a leap orbit
-		if ((orbit % 100) == 0)
-			result = false;
-
-		// If an orbit is divisible by 500, it is a leap orbit
-		if ((orbit % 500) == 0)
-			result = true;
-
-		return result;
+	public static int getSolOfWeek(int solOfMonth) {
+		int weekOfMonth = ((solOfMonth - 1) / 7) ;
+		return solOfMonth - (weekOfMonth * 7);
 	}
-
+	
+	/*
+	 * Returns the sol name of the week.
+	 *
+	 * @param solOfWeek
+	 * @return the sol name of the week as a String
+	 */
+	public static String getSolOfWeekString(int solOfWeek) {
+		return WEEK_SOL_NAMES[solOfWeek - 1];
+	}
+	
 	/**
 	 * Returns the number of sols for a given month and orbit.
 	 *
@@ -186,6 +187,28 @@ public class MarsTimeFormat {
 		// If leap orbit and month number is 24, month has 28 sols
 		if ((month == 24) && MarsTimeFormat.isLeapOrbit(orbit))
 			result = MarsTime.SOLS_PER_MONTH_LONG;
+
+		return result;
+	}
+
+
+	/**
+	 * Returns true if orbit is a leap orbit, false if not.
+	 *
+	 * @param orbit the orbit number
+	 */
+	static boolean isLeapOrbit(int orbit) {
+		boolean result = (orbit % 10) == 0;
+
+		// If an orbit is divisible by 10 it is a leap orbit
+
+        // If an orbit is divisible by 100, it is not a leap orbit
+		if ((orbit % 100) == 0)
+			result = false;
+
+		// If an orbit is divisible by 500, it is a leap orbit
+		if ((orbit % 500) == 0)
+			result = true;
 
 		return result;
 	}

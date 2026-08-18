@@ -9,7 +9,7 @@ class MarsTimeTest {
 
     @Test
     void testAddTime() {
-        MarsTime start = new MarsTime(1,1, 1, 100D, 1);
+        MarsTime start = new MarsTime(1,1,0, 1, 100D, 1);
 
         MarsTime later = start.addTime(1000D);
         assertEquals(start.getSolOfMonth() + 1, later.getSolOfMonth(), "New Sol of Month");
@@ -19,7 +19,7 @@ class MarsTimeTest {
 
     @Test
     void testAddTimeMonthEnd() {
-        MarsTime start = new MarsTime(1,1, MarsTime.SOLS_PER_MONTH_LONG, 100D, 1);
+        MarsTime start = new MarsTime(1,1,6, MarsTime.SOLS_PER_MONTH_LONG, 100D, 1);
 
         MarsTime later = start.addTime(1000D);
         assertEquals(1, later.getSolOfMonth(), "New Sol of Month");
@@ -30,7 +30,7 @@ class MarsTimeTest {
 
     @Test
     void testAddTimeMonthEndMSols() {
-        MarsTime start = new MarsTime(1,1, MarsTime.SOLS_PER_MONTH_LONG, 600D, 1);
+        MarsTime start = new MarsTime(1,1,6, MarsTime.SOLS_PER_MONTH_LONG, 600D, 1);
 
         MarsTime later = start.addTime(500D);
         assertEquals(1, later.getSolOfMonth(), "New Sol of Month");
@@ -40,26 +40,26 @@ class MarsTimeTest {
 
     @Test
     void testTimeEquals() {
-        MarsTime start = new MarsTime(1,1, MarsTime.SOLS_PER_MONTH_LONG, 600D, 1);
-        MarsTime same = new MarsTime(1,1, MarsTime.SOLS_PER_MONTH_LONG, 600D, 1);
+        MarsTime start = new MarsTime(1,1,6, MarsTime.SOLS_PER_MONTH_LONG, 600D, 1);
+        MarsTime same = new MarsTime(1,1,6, MarsTime.SOLS_PER_MONTH_LONG, 600D, 1);
 
         assertEquals(start, same, "MarsTime equals");
     }
 
     @Test
     void testDifferenceTime() {
-        MarsTime start = new MarsTime(1,1, 1, 100D, 1);
+        MarsTime start = new MarsTime(1,1,0, 1, 100D, 1);
 
-        MarsTime later = new MarsTime(1,1, 1, 150D, 1);
+        MarsTime later = new MarsTime(1,1,0, 1, 150D, 1);
         assertEquals(50D, later.getTimeDiff(start), "Difference of same sol");
 
-        later = new MarsTime(1,1, 2, 150D, 1);
+        later = new MarsTime(1,1,1, 2, 150D, 1);
         assertEquals(1050D, later.getTimeDiff(start), "Difference of different sol");
     }
 
     @Test
     void testCompare() {
-        MarsTime start = new MarsTime(1,1, 1, 100D, 1);
+        MarsTime start = new MarsTime(1,1,0, 1, 100D, 1);
 
         assertEquals(0, start.compareTo(start), "Compare same time");
 
@@ -70,18 +70,18 @@ class MarsTimeTest {
 
     @Test
     void testMarsDate() {
-        MarsTime start = new MarsTime(1,1, 1, 100D, 1);
-        MarsTime later = new MarsTime(1,1, 1, 150D, 1);
+        MarsTime start = new MarsTime(1,1,0, 1, 100D, 1);
+        MarsTime later = new MarsTime(1,1,0, 1, 150D, 1);
 
         assertEquals(start.getDate(), later.getDate(), "Difference of same mars Date");
 
-        later = new MarsTime(1,1, 2, 150D, 1);
+        later = new MarsTime(1,1,1, 2, 150D, 1);
         assertNotEquals(start.getDate(), later.getDate(), "Difference of different MarsDates");
     }
 
     @Test
     void testAdvanceToNextMSolSameSol() {
-        MarsTime start = new MarsTime(1, 1, 1, 100D, 1);
+        MarsTime start = new MarsTime(1, 1, 0, 1, 100D, 1);
 
         MarsTime later = start.advanceToNextMSol(500);
 
@@ -94,7 +94,7 @@ class MarsTimeTest {
 
     @Test
     void testAdvanceToNextMSolSameTimeGoesToNextSol() {
-        MarsTime start = new MarsTime(1, 1, 1, 600D, 1);
+        MarsTime start = new MarsTime(1, 1, 0, 1, 600D, 1);
 
         MarsTime later = start.advanceToNextMSol(500);
 
@@ -107,7 +107,7 @@ class MarsTimeTest {
 
     @Test
     void testAdvanceToNextMSolAcrossMonthBoundary() {
-        MarsTime start = new MarsTime(1, 1, MarsTime.SOLS_PER_MONTH_LONG, 900D, 1);
+        MarsTime start = new MarsTime(1, 1, 6, MarsTime.SOLS_PER_MONTH_LONG, 900D, 1);
 
         MarsTime later = start.advanceToNextMSol(100);
 

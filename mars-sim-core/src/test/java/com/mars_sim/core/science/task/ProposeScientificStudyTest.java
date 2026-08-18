@@ -59,7 +59,7 @@ public class ProposeScientificStudyTest extends MarsSimUnitTest {
 
         // Advance Study and retest
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired());
-        study.timePassing(createPulse(0, 0, false, false));
+        study.timePassing(createPulse(1, 0, false, false));
         assertEquals(StudyStatus.INVITATION_PHASE, study.getPhase(), "Study advanced to invitation phase");
         tasks = mt.getTaskJobs(p);
         assertTrue(tasks.isEmpty(), "Existing study ignored");                     
