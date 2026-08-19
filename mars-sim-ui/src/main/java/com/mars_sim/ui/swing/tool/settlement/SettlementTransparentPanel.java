@@ -64,8 +64,6 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -78,6 +76,7 @@ import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
 
 @SuppressWarnings({ "serial" })
+
 public class SettlementTransparentPanel extends JComponent {
 
     /** default logger. */
@@ -110,7 +109,7 @@ public class SettlementTransparentPanel extends JComponent {
 
     private static final String YESTERSOL_RESOURCE = "Yestersol's Resources (";
 
-    private int solCache;
+    private int solCache = 0;
 
     private double temperatureCache;
     private double opticalDepthCache;
@@ -216,7 +215,7 @@ public class SettlementTransparentPanel extends JComponent {
         buildBanner();
         buildWeatherPanel();
         JPanel sunPane = buildSunPane();
-
+        
         JPanel topPane = new JPanel(new BorderLayout(20, 20));
         topPane.setBackground(new Color(0,0,0,128));
         topPane.setOpaque(false);
@@ -394,13 +393,18 @@ public class SettlementTransparentPanel extends JComponent {
        
         roundPane.add(currentSunLabel);
         roundPane.add(maxSunLabel);
+        
         roundPane.add(projectSunriseLabel);
         roundPane.add(sunriseLabel);
+        
+        roundPane.add(zenithLabel);
+        
         roundPane.add(projectSunsetLabel);
         roundPane.add(sunsetLabel);
+        
         roundPane.add(projectDaylightLabel);
         roundPane.add(daylightLabel);
-        roundPane.add(zenithLabel);
+
 
         return sunPane;
     }
@@ -1055,6 +1059,23 @@ public class SettlementTransparentPanel extends JComponent {
     }
     
     /**
+     * Gets the adjusted time.
+     * 
+     * @param time
+     * @param offset
+     * @return
+     */
+    private double getAdjustedTime(double time, int offset) {
+    	double adjTime = time + offset;
+    	if (adjTime > 999)
+    		adjTime -= 1000;
+    	else if (adjTime < 0){
+    		adjTime += 1000;
+    	}
+    	return adjTime;
+    }
+    
+    /**
      * Gets the sunlight data and display it on the top left panel of the settlement map.
      * (UI label updates are marshaled to EDT).
      * 
@@ -1066,15 +1087,21 @@ public class SettlementTransparentPanel extends JComponent {
         // Heavy-ish compute first
         weather.calculateSunRecord(location);
         SunData data = weather.getSunRecord(location);
-
+        
+        final int offset = mapPanel.getSettlement().getTimeZone().getMSolOffset();
+        
+        double adj0 = getAdjustedTime(time[0], offset);
+        double adj1 = getAdjustedTime(time[1], offset);
+        double adj2 = getAdjustedTime(time[2], offset);
+        
         // Prepare values
-        final String projRise = PROJECTED_SUNRISE + StyleManager.DECIMAL1_MSOL.format(time[0]);
-        final String projSet  = PROJECTED_SUNSET  + StyleManager.DECIMAL1_MSOL.format(time[1]);
-        final String projDay  = PROJECTED_DAYLIGHT+ StyleManager.DECIMAL1_MSOL.format(time[2]);
+        final String projRise = PROJECTED_SUNRISE  + StyleManager.DECIMAL1_MSOL.format(adj0);
+        final String projSet  = PROJECTED_SUNSET   + StyleManager.DECIMAL1_MSOL.format(adj1);
+        final String projDay  = PROJECTED_DAYLIGHT + StyleManager.DECIMAL1_MSOL.format(adj2);
 
         // Update Mars Time
         final String ts = updateMarsTime();
-        
+
         // Push UI writes to EDT
         SwingUtilities.invokeLater(() -> {
     		if (martianTimeLabel != null) 
@@ -1089,10 +1116,17 @@ public class SettlementTransparentPanel extends JComponent {
                 return;
             }
 
-            if (sunriseLabel != null) sunriseLabel.setText(SUNRISE + data.getSunrise() + MSOL);
-            if (sunsetLabel  != null) sunsetLabel.setText(SUNSET  + data.getSunset()  + MSOL);
-            if (daylightLabel!= null) daylightLabel.setText(DAYLIGHT + data.getDaylight() + MSOL);
-            if (zenithLabel  != null) zenithLabel.setText(ZENITH + data.getZenith() + MSOL);
+            double adj3 = getAdjustedTime(data.getSunrise(), offset);
+            double adj4 = getAdjustedTime(data.getSunset(), offset);
+            double adj5 = getAdjustedTime(data.getZenith(), offset);
+            
+            if (sunriseLabel != null) sunriseLabel.setText(SUNRISE   + StyleManager.DECIMAL1_MSOL.format(adj3));
+            if (sunsetLabel  != null) sunsetLabel.setText(SUNSET     + StyleManager.DECIMAL1_MSOL.format(adj4));
+            
+            if (daylightLabel!= null) daylightLabel.setText(DAYLIGHT + StyleManager.DECIMAL1_MSOL.format(data.getDaylight()));
+            
+            if (zenithLabel  != null) zenithLabel.setText(ZENITH     + StyleManager.DECIMAL1_MSOL.format(adj5));
+            
             if (maxSunLabel  != null) maxSunLabel.setText(MAX_LIGHT + data.getMaxSun() + WM);
         });
     }
@@ -1117,11 +1151,11 @@ public class SettlementTransparentPanel extends JComponent {
      * @param pulse
      */
     public void update(ClockPulse pulse) {
-//        int sol = pulse.getMarsTime().getMissionSol();
+        int sol = pulse.getMarsTime().getMissionSol();
 
-        if (pulse.isNewHalfSol()) {
-//        if (solCache != sol) {
-//            solCache = sol;
+        if (pulse.isNewHalfSol()
+        	|| solCache != sol) {
+            solCache = sol;
             // Redo the resource string once a sol (off-EDT; only updates cache)
             prepBannerResourceString(pulse);
             // Update the sun data
@@ -1130,16 +1164,19 @@ public class SettlementTransparentPanel extends JComponent {
             if (s0 != null)
                 displaySunData(s0.getCoordinates()); // EDT marshaled inside
         }
-
+        
+        Settlement s = mapPanel.getSettlement(); //(Settlement) settlementListBox.getSelectedItem();
+        // When loading from a saved sim, s may be initially null
+        if (s == null)
+            return;
+        
         if (bannerBar != null && settlementListBox != null) {
-            Settlement s = mapPanel.getSettlement(); //(Settlement) settlementListBox.getSelectedItem();
-            // When loading from a saved sim, s may be initially null
-            if (s == null)
-                return;
-
+ 
             // Update weather-derived caches and banner text, then UI on EDT
             displayBanner(s);
-
+        }
+        
+        if (settlementListBox != null) {
             // Update icons on EDT
             SwingUtilities.invokeLater(this::updateIcon);
 

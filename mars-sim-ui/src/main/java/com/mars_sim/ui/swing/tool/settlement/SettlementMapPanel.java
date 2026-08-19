@@ -248,7 +248,7 @@ public class SettlementMapPanel extends JPanel {
 		// Ensure all Swing mutations happen on EDT
 		onEdt(() -> {
 			settlementTransparentPanel.createAndShowGUI();
-			if (settlement != null && settlementTransparentPanel.getSettlementListBox() != null) {
+			if (settlementTransparentPanel.getSettlementListBox() != null) {
 				settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
 			}
 			// Loads the value of scale possibly modified from UIConfig's Properties
@@ -432,7 +432,7 @@ public class SettlementMapPanel extends JPanel {
 	 * @param newSettlement the settlement.
 	 */
 	public synchronized void setSettlement(Settlement newSettlement) {
-		if (newSettlement != settlement) {
+		if (!newSettlement.equals(settlement)) {
 			this.settlement = newSettlement;
 			onEdt(() -> {
 				if (getSettlementTransparentPanel() != null

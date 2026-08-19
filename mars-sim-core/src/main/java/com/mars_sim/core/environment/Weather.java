@@ -753,6 +753,25 @@ public class Weather implements Serializable, Temporal {
 		return true;
 	}
 
+	/**
+	 * Compute the mid value.
+	 * 
+	 * @param t
+	 * @param tCache
+	 * @param value
+	 * @return
+	 */
+	private int computeMidValue(int t, int tCache, int value) {
+		if (t > tCache) {
+			value = (t + tCache) / 2;
+		}
+		else {
+			value = (t + 1000 - tCache) / 2;
+			if (value > 999)
+				value = value - 1000;
+		}
+		return value;
+	}
 
 	/**
 	 * Calculates the sunlight data of a settlement location.
@@ -804,13 +823,13 @@ public class Weather implements Serializable, Temporal {
 			if (current > 0) {
 				// Sun up
 				if (current > previous && previous <= 0) {
-					sunrise = t;
+					sunrise = computeMidValue(t, tCache, sunrise);
 				}
 			}
 			else {
 				// Sun down
 				if (current < previous && previous > 0) {
-					sunset = t;
+					sunset = computeMidValue(t, tCache, sunset);
 				}
 			}
 
@@ -818,15 +837,16 @@ public class Weather implements Serializable, Temporal {
 			// Gets maxIndex0 at this instant of time
 			if (current > maxSun && current > previous) {
 				maxSun = current;
-				maxIndex0 = t;
+				maxIndex0 = computeMidValue(t, tCache, maxIndex0);
 			}
 			
 			if (current < maxSun && previous == maxSun) {
-				maxIndex1 = t;
+				maxIndex1 = computeMidValue(t, tCache, maxIndex1);
 			}	
 			
+			// Back up the value of this data point
 			previous = current;
-			// Save the time of this data point
+			// Back up the time of this data point
 			tCache = t;
 		}
 		
@@ -835,15 +855,15 @@ public class Weather implements Serializable, Temporal {
 		else
 			daylight = sunset - sunrise ;
 		
-		if (sunrise > 1000)
-			sunrise = sunrise - 1000;
-		if (sunrise < 0)
-			sunrise = sunrise + 1000;
-		
-		if (sunset > 1000)
-			sunset = sunset - 1000;
-		if (sunset < 0)
-			sunset = sunset + 1000;
+//		if (sunrise > 1000)
+//			sunrise = sunrise - 1000;
+//		if (sunrise < 0)
+//			sunrise = sunrise + 1000;
+//		
+//		if (sunset > 1000)
+//			sunset = sunset - 1000;
+//		if (sunset < 0)
+//			sunset = sunset + 1000;
 		
 		if (maxIndex1 < maxIndex0)
 			maxIndex1 += 1000;
