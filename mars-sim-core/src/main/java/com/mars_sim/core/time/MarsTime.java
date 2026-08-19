@@ -8,6 +8,8 @@
 package com.mars_sim.core.time;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 // References:
 // 1. Partially based on previous research from Shaun Moss' Mars calendar.
@@ -108,7 +110,8 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 
 	private transient String marsTimeString = null;
 	private transient String marsTruncatedTimeString = null;
-	private transient String marsZonedTimeString = null;
+	
+	private transient Map<String, String> zoneTimestamp = new HashMap<>();
 	
 	/**
 	 * Constructor 1. Creates a MarsTime object with a given time.
@@ -388,15 +391,22 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 	 * @return formatted time stamp string
 	 */
 	public String getZonedDateTimeStamp(String zoneOffset) {
-		if (marsZonedTimeString == null) {
-			marsZonedTimeString = MarsTimeFormat.getZonedDateTimeStamp(this, zoneOffset);
+		if (zoneTimestamp.containsKey(zoneOffset)) {
+			return zoneTimestamp.get(zoneOffset);
 		}
-
-		return marsZonedTimeString;
+		else {
+			String ts = MarsTimeFormat.getZonedDateTimeStamp(this, zoneOffset);
+			zoneTimestamp.put(zoneOffset, ts);
+			return ts;
+		}
 	}
 	
 	
-
+	/**
+	 * Gets the weeksol string.
+	 * 
+	 * @return
+	 */
 	public String getweekSolString() {
 		return MarsTimeFormat.getSolOfWeekString(solOfWeek);
 	}
