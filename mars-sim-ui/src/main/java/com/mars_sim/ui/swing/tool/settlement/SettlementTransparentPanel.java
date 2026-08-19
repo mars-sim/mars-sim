@@ -1045,11 +1045,13 @@ public class SettlementTransparentPanel extends JComponent {
      */
     private String updateMarsTime() {
 		int offset = mapPanel.getSettlement().getTimeZone().getMSolOffset();
-		MarsTime mTime = masterClock.getMarsTimeWithOffset(offset);
-		String ts = MarsTimeFormat.getSolOfWeekString(mTime.getSolOfWeek()) 
-			+ " " + mTime.getDateTimeStamp()  
-			+ " " + mapPanel.getSettlement().getTimeZone().getId() ;
-		return ts;
+//		MarsTime mTime = masterClock.getMarsTimeWithOffset(offset);
+//		String ts = MarsTimeFormat.getSolOfWeekString(mTime.getSolOfWeek()) 
+//			+ " " + mTime.getDateTimeStamp()  
+//			+ " " + mapPanel.getSettlement().getTimeZone().getId();
+//		return ts;
+		String zoneID = mapPanel.getSettlement().getTimeZone().getId();
+		return masterClock.getMarsTimeWithOffset(offset).getZonedDateTimeStamp(zoneID);
     }
     
     /**

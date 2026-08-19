@@ -279,12 +279,12 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 				if (newSolOfMonth > MarsTimeFormat.getSolsInMonth(newMonth, newOrbit)) {
 					newSolOfMonth = 1;
 					
-					// Check if it's the beginning of a new week
-					if (newSolOfWeek > MarsTimeFormat.getSolOfWeek(newSolOfMonth)) {
-						newSolOfWeek = 0;
-					}
-						
+					newSolOfWeek = 0;
+
 					newMonth++;
+				}
+				else {
+					newSolOfWeek = MarsTimeFormat.getSolOfWeek(newSolOfMonth);
 				}
 				
 				// Check if it's the beginning of a new orbit
@@ -309,19 +309,21 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 				
 				if (newMonth < 1) {
 					newMonth = MONTHS_PER_ORBIT;
-					
-					// Check if it's the beginning of a new week
-					if (newSolOfWeek < 0) {
-						newSolOfWeek = 7;
-					}
-					
+					newSolOfWeek = 0;
+				
 					// Future: how to handle -ve orbit years ?  
 					newOrbit--;
+				}
+				
+				// Check if it's the beginning of a new week
+				if (newSolOfWeek < 0) {
+					newSolOfWeek = 6;
 				}
 				
 				if (newSolOfMonth < 1) {
 					newMonth--;
 					newSolOfMonth = MarsTimeFormat.getSolsInMonth(newMonth, newOrbit);
+					newSolOfWeek = MarsTimeFormat.getSolOfWeek(newSolOfMonth);
 				}
 			}
 		}

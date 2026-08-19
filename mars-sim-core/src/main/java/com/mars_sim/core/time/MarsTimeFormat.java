@@ -172,8 +172,8 @@ public class MarsTimeFormat {
 	 * @param solOfMonth the week sol number
 	 */
 	public static int getSolOfWeek(int solOfMonth) {
-		int weekOfMonth = ((solOfMonth - 1) / 7) ;
-		return solOfMonth - (weekOfMonth * 7);
+		int weekOfMonth = (solOfMonth - 1) / 7 ;
+		return solOfMonth - (weekOfMonth * 7) - 1;
 	}
 	
 	/*
@@ -183,7 +183,7 @@ public class MarsTimeFormat {
 	 * @return the sol name of the week as a String
 	 */
 	public static String getSolOfWeekString(int solOfWeek) {
-		return WEEK_SOL_NAMES[solOfWeek - 1];
+		return WEEK_SOL_NAMES[solOfWeek];
 	}
 	
 	/**
