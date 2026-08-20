@@ -194,7 +194,8 @@ public abstract class MarsSimUnitTest {
     }
     
     /**
-     * Build a mock settlement at a default location with no goods manager
+     * Builds a mock settlement at a default location with no goods manager.
+     * 
      * @param name
      * @return
      */
@@ -202,6 +203,17 @@ public abstract class MarsSimUnitTest {
         return buildSettlement(name, false,  MockSettlement.DEFAULT_COORDINATES);
     }
 
+    /**
+     * Builds a mock settlement at a certain location with no goods manager.
+     * 
+     * @param name
+     * @param coord
+     * @return
+     */
+    protected Settlement buildSettlement(String name, Coordinates coord) {
+        return buildSettlement(name, false, coord);
+    }
+    
 	/**
 	 * Builds a settlement.
 	 * Note: without BuildingManager.

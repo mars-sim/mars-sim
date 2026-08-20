@@ -10,6 +10,7 @@ import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionSite.ConstructionPhase;
 import com.mars_sim.core.building.construction.MockMission;
 import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
@@ -56,8 +57,8 @@ class ConstructBuildingMetaTest extends MarsSimUnitTest {
 
     @Test
     void testGetSettlementTasks() {
-        var s = buildSettlement("Construct");
-
+        var s = buildSettlement("Construct", new Coordinates("72.77", "164.58"));
+ 
         var site = buildSite(s, "Garage");
         site.setWorkOnSite(new MockMission(s));
 
@@ -66,8 +67,9 @@ class ConstructBuildingMetaTest extends MarsSimUnitTest {
         assertTrue(tasks.isEmpty(), "No tasks found without resources");
 
         loadMaterials(s, site);
+        // Note: when there is low or no sunlight, the task won't start
         tasks = meta.getSettlementTasks(s);
-        assertEquals(1, tasks.size(), "One task found with resources");
+        assertEquals(1, tasks.size(), "No task found");
 
         var t = tasks.get(0);
         assertEquals(site, t.getFocus(), "Site");
