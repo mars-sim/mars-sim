@@ -282,7 +282,6 @@ public abstract class CollectResourcesMission extends EVAMission
 		// Compute the collected resources on this person and the rover
 		double amountCollectedAtSiteSoFar0 = getCollectedAtCurrentSite();
 
-		
 		// If collected resources are sufficient for this site, end the collecting
 		// phase.
 		if (amountCollectedAtSiteSoFar0 >= objective.getSiteResourceGoal()) {
@@ -309,7 +308,7 @@ public abstract class CollectResourcesMission extends EVAMission
 			
 			// Note: if a person is not in fatigue but is hungry or thirsty, don't need to sleep
 			double fatigue = person.getPhysicalCondition().getFatigue();
-			if (fatigue > 500) {				
+			if (fatigue > 750) {				
 				boolean canSleep = assignTask(person, new Sleep(person));
 	        	if (canSleep) {
 	        		logger.log(person, Level.INFO, 4_000,

@@ -505,12 +505,14 @@ public abstract class EVAOperation extends Task {
 
 	/**
 	 * Checks if the sky light is dimming.
+	 * Note: if in dark polar region, always return false
 	 *
 	 * @param active The surface POI checking the daylight
 	 * @return
 	 */
 	public static boolean isGettingDark(SurfacePOI active) {	
-		return orbitInfo.isSunSetting(
+		return !surfaceFeatures.inDarkPolarRegion(active.getCoordinates())
+				&& orbitInfo.isSunSetting(
         		active.getCoordinates(), false);
     }
 
