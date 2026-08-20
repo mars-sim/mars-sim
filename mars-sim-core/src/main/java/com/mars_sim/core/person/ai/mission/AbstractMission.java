@@ -308,9 +308,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 			logger.info(person, "Removed from " + member.getMission() + ".");
 			
 			member.setMission(null);
-			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
-
 			
+			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
+		
 	      	if (RoleType.GUEST != person.getRole().getType() && person.getShiftSlot() != null) {      
 	      		person.getShiftSlot().setOnCall(false);
 	      	}	
@@ -368,7 +368,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			}
 			else {
 				if (!allowRobots) {
-					throw new IllegalStateException("Mission does not supprot robots");
+					throw new IllegalStateException("Mission does not support robots");
 				}
 				((Robot) member).getBotMind().setMission(this);
 			}

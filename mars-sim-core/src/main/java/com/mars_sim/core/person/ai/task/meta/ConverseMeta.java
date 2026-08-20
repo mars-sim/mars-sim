@@ -30,7 +30,7 @@ public class ConverseMeta extends FactoryMetaTask {
             Msg.getString("Task.description.converse"); //$NON-NLS-1$
 
     private static final double VALUE = 1.2;
-    private static final int CAP = 20;
+    private static final int CAP = 10;
 
     public ConverseMeta() {
         // Use inherited protected enums without importing them.

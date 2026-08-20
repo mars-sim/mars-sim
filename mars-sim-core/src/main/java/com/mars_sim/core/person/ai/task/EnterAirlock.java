@@ -604,8 +604,9 @@ public class EnterAirlock extends Task {
 				return 0;
 			}
 		}
-
 		else {
+			// A person is inside a vehicle airlock
+			
 			canProceed = true;
 		}
 

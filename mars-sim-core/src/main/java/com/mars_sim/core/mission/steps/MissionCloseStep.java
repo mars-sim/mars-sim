@@ -34,7 +34,11 @@ public class MissionCloseStep extends MissionStep {
         if (getLeader().equals(worker)) {
             // Leader is last to leave and closes the mission
             if (m.getMembers().size() == 1) {
+
                 logger.info(worker, "Leader closing mission");
+            	// Log what time and why in mission log
+                getMission().addMissionLog("Leader closing mission", worker.getName());
+                
                 worker.setMission(null);
 
                 complete(); // Will call the cleardown method to release anything

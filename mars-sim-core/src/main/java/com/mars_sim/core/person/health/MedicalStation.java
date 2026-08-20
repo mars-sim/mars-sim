@@ -106,8 +106,9 @@ public class MedicalStation implements MedicalAid {
 	 * @param person
 	 * @return
 	 */
-	public boolean isPatient(Person person) { 
+	public boolean doesPatientHaveBed(Person person) { 
 		if (bedRegistry.keySet().contains(person.getIdentifier())) {
+//				|| getPatients().contains(person)) {
 			return true;
 		}
 		return false;
@@ -120,7 +121,7 @@ public class MedicalStation implements MedicalAid {
 	 */
 	public boolean addPatientToBed(Person person) {
 		 
-		 if (isPatient(person)) {
+		 if (doesPatientHaveBed(person)) {
 			 return true;
 		 }
 		 else {
@@ -229,15 +230,15 @@ public class MedicalStation implements MedicalAid {
 		return getPatients().size();
 	}
 
-//	/**
-//	 * Checks if there are any empty beds for new patients.
-//	 * 
-//	 * @return true or false
-//	 */
-//	public boolean hasEmptyBeds() {
-//        return getPatientNum() < getSickBedNum();
-//	}
-//	
+	/**
+	 * Gets the number of medical beds being in use.
+	 * 
+	 * @return Patient count.
+	 */
+	public int getBedsInUse() {
+		return bedRegistry.size();
+	}
+	
 	/**
 	 * Gets the patients at this medical station.
 	 * 
@@ -325,6 +326,7 @@ public class MedicalStation implements MedicalAid {
 		if (problemsAwaitingTreatment.contains(problem)) {
 			// Remove the problem 
 			problemsAwaitingTreatment.remove(problem);
+			
 			if (problem.getSufferer().isInSettlement())
 				// Remove the patient from a bed
 				removePatientFromBed(problem.getSufferer());

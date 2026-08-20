@@ -165,8 +165,8 @@ public class MedicalCare extends Function implements MedicalAid {
 	 * @param person
 	 * @return
 	 */
-	public boolean isPatient(Person person) { 
-		return medicalStation.isPatient(person);
+	public boolean doesPatientHaveBed(Person person) { 
+		return medicalStation.doesPatientHaveBed(person);
 	}
     
 	/**
@@ -187,6 +187,16 @@ public class MedicalCare extends Function implements MedicalAid {
 		return medicalStation.getSickBedNum();
 	}
 
+	/**
+	 * Gets the number of medical beds being in use.
+	 * 
+	 * @return Patient count.
+	 */
+	public int getBedsInUse() {
+		return medicalStation.getBedsInUse();
+	}
+	
+	
 	/**
 	 * Gets the current number of people being treated here.
 	 * 

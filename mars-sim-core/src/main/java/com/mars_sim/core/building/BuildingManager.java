@@ -95,9 +95,9 @@ public class BuildingManager implements Serializable {
 
 	/** The settlement's total building values. */
 	private double totalBuildingValues = 0D;
-	
+
 	private double farmTimeCache = -5D;
-	
+
 	/** The id of the settlement. */
 	private int settlementID;
 
@@ -106,30 +106,30 @@ public class BuildingManager implements Serializable {
 	private Set<Building> observatories = new UnitSet<>();
 	private Set<Building> airlocks = new UnitSet<>();
 	private Set<Building> comNodes = new UnitSet<>();
-	
+
 	/** A map of each building type and its value. */
 	private transient Map<Building, Double> buildingValueMap = new HashMap<>();
 
 	/** A map of each function type and its set of buildings. */
 	private transient EnumMap<FunctionType, Set<Building>> functionSetOfBuildings;
 
-	/** A map of each building with a set of function type values.  */
+	/** A map of each building with a set of function type values. */
 	private transient Map<Building, EnumMap<FunctionType, Double>> buildingsOfFunctionTypeValues = new HashMap<>();
-	
+
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, Set<Building>> adjacentBuildingMap = new HashMap<>();
-	
+
 	/** The settlement's maintenance parts map. */
 	private Map<Malfunctionable, Map<MaintenanceScope, Integer>> partsMaint = new HashMap<>();
-	
+
 	private Set<Building> farmsNeedingWorkCache = new UnitSet<>();
-	
+
 	private transient MarsTime lastVPUpdateTime;
-		
+
 	private transient Settlement settlement;
-	
+
 	private MeteoriteImpactProperty meteorite;
-	
+
 	private static SimulationConfig simulationConfig;
 	private static MasterClock masterClock;
 	private static UnitManager unitManager;
@@ -147,23 +147,24 @@ public class BuildingManager implements Serializable {
 
 		// Construct all buildings in the settlement.
 		buildings = new UnitSet<>();
-		
+
 		if (buildingTemplates != null && !buildingTemplates.isEmpty()) {
 			for (var bt : buildingTemplates) {
-				
+
 				BuildingSpec spec = simulationConfig.getBuildingConfiguration().getBuildingSpec(bt.getBuildingType());
-				
+
 				// Check for possibility of collision
 				if (!Resupply.isTemplatePositionClear(spec, bt, this)) {
 					throw new IllegalArgumentException(bt.getBuildingName() + " collided with another building.");
-					// May relocate with bt = Resupply.clearCollision(spec, bt, Resupply.MAX_COUNTDOWN, this);
+					// May relocate with bt = Resupply.clearCollision(spec, bt,
+					// Resupply.MAX_COUNTDOWN, this);
 				}
-	
+
 				addBuilding(Building.createBuilding(bt, settlement), bt, false);
 			}
 		}
 	}
-	
+
 	/**
 	 * Initializes functions map and meteorite instance.
 	 */
@@ -171,7 +172,7 @@ public class BuildingManager implements Serializable {
 
 		if (functionSetOfBuildings == null)
 			setupBuildingFunctionsMap();
-		
+
 		meteorite = new MeteoriteImpactProperty(settlement);
 	}
 
@@ -179,29 +180,25 @@ public class BuildingManager implements Serializable {
 	 * Sets up the map for the building functions.
 	 */
 	public void setupBuildingFunctionsMap() {
-		functionSetOfBuildings = new EnumMap<>(FunctionType.class); 
+		functionSetOfBuildings = new EnumMap<>(FunctionType.class);
 
 		for (Building b : buildings) {
 			addBuildingToMap(b);
 		}
 
 		// Get a handy shortcut to a set of garages
-		garages = functionSetOfBuildings.computeIfAbsent(FunctionType.VEHICLE_MAINTENANCE,
-				ft -> new UnitSet<>());
-		
+		garages = functionSetOfBuildings.computeIfAbsent(FunctionType.VEHICLE_MAINTENANCE, ft -> new UnitSet<>());
+
 		// Get a handy shortcut to a set of observatories
 		observatories = functionSetOfBuildings.computeIfAbsent(FunctionType.ASTRONOMICAL_OBSERVATION,
 				ft -> new UnitSet<>());
-		
+
 		// Get a handy shortcut to a set of airlocks
-		airlocks = functionSetOfBuildings.computeIfAbsent(FunctionType.EVA,
-				ft -> new UnitSet<>());
-		
+		airlocks = functionSetOfBuildings.computeIfAbsent(FunctionType.EVA, ft -> new UnitSet<>());
+
 		// Get a handy shortcut to a set of airlocks
-		comNodes = functionSetOfBuildings.computeIfAbsent(FunctionType.COMPUTATION,
-				ft -> new UnitSet<>());
+		comNodes = functionSetOfBuildings.computeIfAbsent(FunctionType.COMPUTATION, ft -> new UnitSet<>());
 	}
-	
 
 	/**
 	 * Adds a building to the function map.
@@ -209,9 +206,8 @@ public class BuildingManager implements Serializable {
 	 * @param b
 	 */
 	private void addBuildingToMap(Building b) {
-		for(Function f : b.getFunctions()) {
-			functionSetOfBuildings.computeIfAbsent(f.getFunctionType(),
-						ft -> new UnitSet<>()).add(b);
+		for (Function f : b.getFunctions()) {
+			functionSetOfBuildings.computeIfAbsent(f.getFunctionType(), ft -> new UnitSet<>()).add(b);
 		}
 	}
 
@@ -239,7 +235,6 @@ public class BuildingManager implements Serializable {
 			settlement.fireUnitUpdate(EntityEventType.REMOVE_BUILDING_EVENT, oldBuilding);
 		}
 	}
-
 
 	/**
 	 * Removes the reference of this building for a functions in
@@ -306,11 +301,11 @@ public class BuildingManager implements Serializable {
 	 * @param createBuildingConnections true if automatically create building
 	 *                                  connections.
 	 */
-	public void addBuilding(Building newBuilding, BuildingTemplate buildingTemplate, boolean createBuildingConnections) {
+	public void addBuilding(Building newBuilding, BuildingTemplate buildingTemplate,
+			boolean createBuildingConnections) {
 		addBuilding(newBuilding, createBuildingConnections);
-				
-		if (!buildings.contains(newBuilding)
-			&& createBuildingConnections) {
+
+		if (!buildings.contains(newBuilding) && createBuildingConnections) {
 			// Process the building template and make connections with adjacent building
 			getBuildingConnectorManager().processBuildingTemplate(settlement, buildingTemplate);
 		}
@@ -328,12 +323,12 @@ public class BuildingManager implements Serializable {
 			unitManager.addUnit(newBuilding);
 
 			buildings.add(newBuilding);
-			
+
 			// Insert this new building into buildingFunctionsMap
 			refreshFunctionMapForBuilding(newBuilding);
 
 			settlement.fireUnitUpdate(EntityEventType.ADD_BUILDING_EVENT, newBuilding);
-			
+
 			if (createBuildingConnections) {
 				// Note: at the star of the sim, BuildingConnectorManager is still null
 				getBuildingConnectorManager().createBuildingConnections(newBuilding);
@@ -342,11 +337,11 @@ public class BuildingManager implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Adds a new mock building to the settlement.
 	 *
-	 * @param newBuilding               the building to add.
+	 * @param newBuilding the building to add.
 	 */
 	public void addMockBuilding(Building newBuilding) {
 		if (!buildings.contains(newBuilding)) {
@@ -391,18 +386,16 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of settlement's buildings (not including hallway, tunnel or observatory)
-	 * having a particular function type.
+	 * Gets a list of settlement's buildings (not including hallway, tunnel or
+	 * observatory) having a particular function type.
 	 *
 	 * @param functionType
 	 * @return list of buildings
 	 */
 	public List<Building> getBuildingsNoHallwayTunnelObservatory(FunctionType functionType) {
 		// Filter off hallways and tunnels
-		return getBuildings(functionType).stream().filter(b ->
-				b.getCategory() != BuildingCategory.CONNECTION
-				&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
-				).toList();
+		return getBuildings(functionType).stream().filter(b -> b.getCategory() != BuildingCategory.CONNECTION
+				&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)).toList();
 	}
 
 	/**
@@ -424,14 +417,13 @@ public class BuildingManager implements Serializable {
 	public Building getBuildingByTemplateID(String id) {
 		Building result = null;
 
-        for (Building b : buildings) {
-            if (b.getTemplateID().equalsIgnoreCase(id)) {
-                result = b;
-            }
-        }
+		for (Building b : buildings) {
+			if (b.getTemplateID().equalsIgnoreCase(id)) {
+				result = b;
+			}
+		}
 		return result;
 	}
-
 
 	/**
 	 * Gets the buildings in a settlement that has a given function.
@@ -465,7 +457,6 @@ public class BuildingManager implements Serializable {
 		}
 	}
 
-
 	/**
 	 * Gets a list of buildings in a settlement that does not have a given function.
 	 *
@@ -473,38 +464,30 @@ public class BuildingManager implements Serializable {
 	 * @return list of buildings
 	 */
 	public Set<Building> getBuildingsWithoutFctNotAstro(FunctionType bf) {
-		return buildings.stream().filter(b -> 
-			!b.hasFunction(bf)
-			&& !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)
-			).collect(Collectors.toSet());
+		return buildings.stream()
+				.filter(b -> !b.hasFunction(bf) && !b.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
+				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Gets a list of buildings in a settlement that has a given science type.
 	 * 
 	 * @param type ScienceType
 	 * @return list of buildings
 	 */
-	public Set<Building>getBuildingsWithScienceType(Person person, ScienceType type) {
+	public Set<Building> getBuildingsWithScienceType(Person person, ScienceType type) {
 		Building origin = person.getBuildingLocation();
 		if (origin != null) {
-			return buildings
-					.stream()
-					.filter(b -> b.hasSpecialty(type)
-							&& isGoodZone(origin, b)
-							&& !b.getMalfunctionManager().hasMalfunction())
+			return buildings.stream().filter(
+					b -> b.hasSpecialty(type) && isGoodZone(origin, b) && !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		}
-		
-		return buildings
-				.stream()
-				.filter(b -> b.hasSpecialty(type)
-						// This avoid a person to go to astronomy observatory (in zone 1)
-						// needlessly
-						&& b.getZone() == 0
-						&& !b.getMalfunctionManager().hasMalfunction())
-				.collect(Collectors.toSet());		
-		
+
+		return buildings.stream().filter(b -> b.hasSpecialty(type)
+				// This avoid a person to go to astronomy observatory (in zone 1)
+				// needlessly
+				&& b.getZone() == 0 && !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
+
 	}
 
 	/**
@@ -516,11 +499,11 @@ public class BuildingManager implements Serializable {
 	 */
 	private boolean isGoodZone(Building origin, Building destination) {
 		// Assuming zone 0 is the main zone, where most service are available,
-		// this will allow someone in astronomy observatory (in zone 1) to come back home
-		return (destination.getZone() == 0 
-				|| (destination.getZone() == origin.getZone())); 
+		// this will allow someone in astronomy observatory (in zone 1) to come back
+		// home
+		return (destination.getZone() == 0 || (destination.getZone() == origin.getZone()));
 	}
-	
+
 	/**
 	 * Gets an available building that the person can use.
 	 *
@@ -533,54 +516,50 @@ public class BuildingManager implements Serializable {
 		// If this person is located in the settlement
 		if (person.isInSettlement()) {
 			Set<Building> buildings = null;
-	
+
 			if (sType != null) {
 				if (sType == ScienceType.ASTRONOMY) {
-					
+
 					buildings = person.getSettlement().getBuildingManager()
 							.getBuildingsOfSameCategoryZone0(BuildingCategory.ASTRONOMY);
-					
+
 					if (buildings.isEmpty()) {
 						buildings = person.getSettlement().getBuildingManager()
 								.getBuildingsOfSameCategory(BuildingCategory.ASTRONOMY);
 					}
-				}
-				else 
-					buildings = person.getSettlement().getBuildingManager()
-						.getBuildingsWithScienceType(person, sType);
+				} else
+					buildings = person.getSettlement().getBuildingManager().getBuildingsWithScienceType(person, sType);
 			}
-			
+
 			if (buildings != null && !buildings.isEmpty()) {
-				Map<Building, Double> possibleBuildings = BuildingManager.
-						getBestRelationshipBuildings(person, buildings);
+				Map<Building, Double> possibleBuildings = BuildingManager.getBestRelationshipBuildings(person,
+						buildings);
 				b = RandomUtil.getWeightedRandomObject(possibleBuildings);
 			}
-			
+
 			if (b == null && buildings != null && !buildings.isEmpty()) {
 				List<Building> bldg = new ArrayList<>(buildings);
 				b = bldg.get(0);
 			}
 			if (b == null) {
-				b = getBuildingWithSpot(person, FunctionType.RESEARCH,
-						FunctionType.ADMINISTRATION,
-						FunctionType.DINING,
+				b = getBuildingWithSpot(person, FunctionType.RESEARCH, FunctionType.ADMINISTRATION, FunctionType.DINING,
 						FunctionType.LIVING_ACCOMMODATION);
-			}	
+			}
 		}
-		
+
 		return b;
 	}
-	
+
 	/**
 	 * Gets a building with one of the spot.
 	 * 
 	 * @param person
 	 * @return
 	 */
-	private static Building getBuildingWithSpot(Person person, FunctionType type1,
-			FunctionType type2, FunctionType type3, FunctionType type4) {
+	private static Building getBuildingWithSpot(Person person, FunctionType type1, FunctionType type2,
+			FunctionType type3, FunctionType type4) {
 		Set<Building> buildings = null;
-		
+
 		if (buildings == null || buildings.isEmpty()) {
 			buildings = getBuildingsinSameZone(person, type1);
 		}
@@ -593,20 +572,19 @@ public class BuildingManager implements Serializable {
 		if (buildings == null || buildings.isEmpty()) {
 			buildings = getBuildingsinSameZone(person, type4);
 		}
-	
+
 		if (buildings != null && !buildings.isEmpty()) {
-			Map<Building, Double> possibleBuildings = BuildingManager.
-					getBestRelationshipBuildings(person, buildings);
+			Map<Building, Double> possibleBuildings = BuildingManager.getBestRelationshipBuildings(person, buildings);
 			return RandomUtil.getWeightedRandomObject(possibleBuildings);
 		}
-		
+
 		List<Building> bldg = new ArrayList<>(buildings);
 		if (bldg.size() > 0)
 			return bldg.get(0);
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Gets a list of non-malfunctioned diners in the same zone.
 	 * 
@@ -615,22 +593,18 @@ public class BuildingManager implements Serializable {
 	 */
 	public Set<Building> getDiningBuildings(Person person) {
 		Building origin = person.getBuildingLocation();
-		
+
 		if (origin != null) {
-			return getBuildingSet(FunctionType.DINING)
-					.stream()
-					.filter(b -> isGoodZone(origin, b)
-							&& !b.getMalfunctionManager().hasMalfunction())
+			return getBuildingSet(FunctionType.DINING).stream()
+					.filter(b -> isGoodZone(origin, b) && !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		}
-		
-		return getBuildingSet(FunctionType.DINING)
-				.stream()
-				.filter(b -> b.getZone() == 0
-						&& !b.getMalfunctionManager().hasMalfunction())
+
+		return getBuildingSet(FunctionType.DINING).stream()
+				.filter(b -> b.getZone() == 0 && !b.getMalfunctionManager().hasMalfunction())
 				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Gets an available dining building.
 	 *
@@ -643,65 +617,60 @@ public class BuildingManager implements Serializable {
 		Building bldg = null;
 
 		if (settlement != null) {
-			
-			List<Building> list = settlement.getBuildingManager().getBuildingSet(FunctionType.DINING)
-					.stream()
-					.filter(b -> b.getZone() == zone 
-						&& !b.getMalfunctionManager().hasMalfunction())
+
+			List<Building> list = settlement.getBuildingManager().getBuildingSet(FunctionType.DINING).stream()
+					.filter(b -> b.getZone() == zone && !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toList());
 
 			if (!list.isEmpty()) {
 				bldg = list.get(0);
 			}
 		}
-		
+
 		return bldg;
 	}
-	
+
 	/**
-	 * Gets an available kitchen for a worker.
-	 * DO NOT DELETE. LEAVE HERE AS A REFERENCE
+	 * Gets an available kitchen for a worker. DO NOT DELETE. LEAVE HERE AS A
+	 * REFERENCE
 	 * 
 	 * @param worker
 	 * @param functionType
 	 * @return
 	 */
 	public static Building getAvailableKitchen(Worker worker) {
-		Building result = null;		
-		
+		Building result = null;
+
 		if (worker.isInSettlement()) {
 			BuildingManager manager = worker.getSettlement().getBuildingManager();
-			
+
 			Set<Building> kitchenBuildings = null;
-					
+
 			if (worker.getBuildingLocation() != null) {
-				kitchenBuildings = manager.getBuildings(FunctionType.COOKING)
-						.stream()
+				kitchenBuildings = manager.getBuildings(FunctionType.COOKING).stream()
 						.filter(b -> b.getZone() == worker.getBuildingLocation().getZone()
 								&& !b.getMalfunctionManager().hasMalfunction())
 						.collect(Collectors.toSet());
+			} else {
+				kitchenBuildings = manager.getBuildings(FunctionType.COOKING).stream()
+						.filter(b -> b.getZone() == 0 && !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
 			}
-			else {
-				kitchenBuildings = manager.getBuildings(FunctionType.COOKING)
-						.stream()
-						.filter(b -> b.getZone() == 0
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());		
-			}
-			
+
 			if (UnitType.PERSON == worker.getUnitType()) {
 				kitchenBuildings = getLeastCrowdedBuildings(kitchenBuildings);
 
 				if (!kitchenBuildings.isEmpty()) {
-					Map<Building, Double> selectedBldgs = getBestRelationshipBuildings((Person)worker, kitchenBuildings);
+					Map<Building, Double> selectedBldgs = getBestRelationshipBuildings((Person) worker,
+							kitchenBuildings);
 					result = RandomUtil.getWeightedRandomObject(selectedBldgs);
 				}
-			} 
-			
+			}
+
 			else {
 				if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
 					kitchenBuildings = getLeastCrowded4BotBuildings(kitchenBuildings);
-	
+
 				if (!kitchenBuildings.isEmpty()) {
 					result = RandomUtil.getARandSet(kitchenBuildings);
 				}
@@ -710,12 +679,12 @@ public class BuildingManager implements Serializable {
 
 		return result;
 	}
-	
+
 	/**
 	 * Gets an available dining building that the person can use. Returns null if no
 	 * dining building is currently available.
 	 *
-	 * @param person the person
+	 * @param person  the person
 	 * @param canChat
 	 * @return available dining building
 	 * @throws BuildingException if error finding dining building.
@@ -724,31 +693,29 @@ public class BuildingManager implements Serializable {
 		Building b = null;
 
 		// If this person is located in the settlement
-		Settlement settlement = person.getSettlement();	
+		Settlement settlement = person.getSettlement();
 		if (settlement != null) {
-			
+
 			Set<Building> list0 = settlement.getBuildingManager().getDiningBuildings(person);
 			if (list0.isEmpty())
 				return null;
-			
-            if (canChat) {
+
+			if (canChat) {
 				// Choose between the most crowded or the least crowded dining hall
 				BuildingManager.getChattyBuildings(list0);
-            }
-			else {
+			} else {
 				BuildingManager.getLeastCrowdedBuildings(list0);
 			}
 
 			if (!list0.isEmpty()) {
-				Map<Building, Double> probs = BuildingManager
-						.getBestRelationshipBuildings(person, list0);
+				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person, list0);
 				b = RandomUtil.getWeightedRandomObject(probs);
 			}
 		}
-		
+
 		return b;
 	}
-	
+
 	/**
 	 * Gets a list of non-malfunctioned buildings with a particular function type.
 	 *
@@ -756,36 +723,32 @@ public class BuildingManager implements Serializable {
 	 * @param functionType
 	 * @return
 	 */
-	public static Set<Building> getBuildingsinSameZone(Worker worker, FunctionType functionType) {		
+	public static Set<Building> getBuildingsinSameZone(Worker worker, FunctionType functionType) {
 		if (worker.getBuildingLocation() != null) {
-			return worker.getSettlement().getBuildingManager().getBuildingSet(functionType)
-					.stream()
+			return worker.getSettlement().getBuildingManager().getBuildingSet(functionType).stream()
 					.filter(b -> b.getZone() == worker.getBuildingLocation().getZone()
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		}
-		
-		return worker.getSettlement().getBuildingManager().getBuildingSet(functionType)
-				.stream()
+
+		return worker.getSettlement().getBuildingManager().getBuildingSet(functionType).stream()
 				// Not possible to nail down the same zone
-				.filter(b -> b.getZone() == 0
-						&& !b.getMalfunctionManager().hasMalfunction())
-				.collect(Collectors.toSet());		
+				.filter(b -> b.getZone() == 0 && !b.getMalfunctionManager().hasMalfunction())
+				.collect(Collectors.toSet());
 	}
-	
+
 	/**
-	 * Gets the buildings in the same zone as the person in a settlement that 
-	 * has function f1 and have no f2.
+	 * Gets the buildings in the same zone as the person in a settlement that has
+	 * function f1 and have no f2.
 	 *
 	 * @param p
-	 * @param f1 the required function 
+	 * @param f1 the required function
 	 * @param f2 the excluded function
 	 * @return list of buildings
 	 */
 	public Set<Building> getSameZoneBuildingsF1NoF2(Person p, FunctionType f1, FunctionType f2) {
-		return buildings.stream()
-				.filter(b -> b.hasFunction(f1) && !b.hasFunction(f2)
-						&& p.getBuildingLocation().getZone() == b.getZone())
+		return buildings.stream().filter(
+				b -> b.hasFunction(f1) && !b.hasFunction(f2) && p.getBuildingLocation().getZone() == b.getZone())
 				.collect(Collectors.toSet());
 	}
 
@@ -796,25 +759,20 @@ public class BuildingManager implements Serializable {
 	 * @return list of buildings.
 	 */
 	public List<Building> getBuildingsNoF1F2(FunctionType f1, FunctionType f2) {
-		return buildings.stream()
-				.filter(b -> !b.hasFunction(f1) && !b.hasFunction(f2))
-				.toList();
+		return buildings.stream().filter(b -> !b.hasFunction(f1) && !b.hasFunction(f2)).toList();
 	}
-	
+
 	/**
-	 * Gets the buildings in a settlement have function f1 but with no functions f2 and f3.
+	 * Gets the buildings in a settlement have function f1 but with no functions f2
+	 * and f3.
 	 *
 	 * @param functions the array of required functions {@link BuildingFunctions}.
 	 * @return list of buildings.
 	 */
 	public List<Building> getBuildingsF1NoF2F3(FunctionType f1, FunctionType f2, FunctionType f3) {
-		return buildings.stream()
-				.filter(b -> b.hasFunction(f1) && !b.hasFunction(f2) && !b.hasFunction(f3))
-				.toList();
+		return buildings.stream().filter(b -> b.hasFunction(f1) && !b.hasFunction(f2) && !b.hasFunction(f3)).toList();
 	}
-	
-	
-	
+
 	/**
 	 * Gets the buildings in the settlement with a given building category.
 	 *
@@ -824,13 +782,12 @@ public class BuildingManager implements Serializable {
 	public Set<Building> getBuildingsOfSameCategory(BuildingCategory category) {
 		// Called by Resupply.java and BuildingConstructionMission.java
 		// for putting new building next to the same building "type".
-		return buildings.stream()
-				.filter(b -> b.getCategory() == category)
-				.collect(Collectors.toSet());
+		return buildings.stream().filter(b -> b.getCategory() == category).collect(Collectors.toSet());
 	}
 
 	/**
-	 * Gets the buildings in the settlement with a given building category and in zone 0.
+	 * Gets the buildings in the settlement with a given building category and in
+	 * zone 0.
 	 *
 	 * @param category the building type.
 	 * @return list of buildings.
@@ -838,12 +795,10 @@ public class BuildingManager implements Serializable {
 	public Set<Building> getBuildingsOfSameCategoryZone0(BuildingCategory category) {
 		// Called by Resupply.java and BuildingConstructionMission.java
 		// for putting new building next to the same building "type".
-		return buildings.stream()
-				.filter(b -> b.getCategory() == category
-						&& b.getZone() == 0)
+		return buildings.stream().filter(b -> b.getCategory() == category && b.getZone() == 0)
 				.collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Gets the buildings in the settlement with a given building type.
 	 *
@@ -853,9 +808,7 @@ public class BuildingManager implements Serializable {
 	public List<Building> getBuildingsOfSameType(String buildingType) {
 		// Called by Resupply.java and BuildingConstructionMission.java
 		// for putting new building next to the same building "type".
-		return buildings.stream()
-				.filter(b -> b.getBuildingType().equalsIgnoreCase(buildingType))
-				.toList();
+		return buildings.stream().filter(b -> b.getBuildingType().equalsIgnoreCase(buildingType)).toList();
 	}
 
 	/**
@@ -885,13 +838,11 @@ public class BuildingManager implements Serializable {
 	 * @return a building.
 	 */
 	public Building getABuilding(FunctionType f1, FunctionType f2) {
-		Optional<Building> value = buildings.stream()
-				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
-				.findAny(); //  .findFirst();
+		Optional<Building> value = buildings.stream().filter(b -> b.hasFunction(f1) && b.hasFunction(f2)).findAny(); // .findFirst();
 
-        return value.orElse(null);
+		return value.orElse(null);
 
-    }
+	}
 
 	/**
 	 * Gets the number of buildings at the settlement.
@@ -914,8 +865,8 @@ public class BuildingManager implements Serializable {
 			functionSetOfBuildings = new EnumMap<>(FunctionType.class);
 			setupBuildingFunctionsMap();
 		}
-		
-		if (pulse.isNewSol()) {		
+
+		if (pulse.isNewSol()) {
 			// Update the impact probability for each settlement based on the size and speed
 			// of the new meteorite
 			meteorite.calculateMeteoriteProbability();
@@ -929,8 +880,7 @@ public class BuildingManager implements Serializable {
 		for (Building b : buildings) {
 			try {
 				b.timePassing(pulse);
-			}
-			catch (RuntimeException rte) {
+			} catch (RuntimeException rte) {
 				logger.severe(b, "Problem applying pulse to Building", rte);
 			}
 		}
@@ -955,36 +905,34 @@ public class BuildingManager implements Serializable {
 	 */
 	public static boolean addPatientToMedicalBed(Person p, Settlement s) {
 		boolean success = false;
-		
-		Building building = s.getBuildingManager()
-				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
+
+		Building building = s.getBuildingManager().getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 
 		if (building != null) {
 
-			success = building.getMedical().isPatient(p);
-			
+			success = building.getMedical().doesPatientHaveBed(p);
+
 			if (!success) {
 				success = building.getMedical().addPatientToBed(p);
 			}
-			
+
 			if (success) {
 				p.setCurrentBuilding(building);
-				
+
 				logger.info(p, 10_000L, "Sent to a medical bed in " + building.getName() + ".");
-			}
-			else {
+			} else {
 				logger.info(p, 10_000L, "Unable to send to a medical bed in " + building.getName() + ".");
 			}
 		}
 
 		else {
 			// Send to his/her registered bed
-			logger.log(p, Level.WARNING, 10_000L,	"No medical facility available for "
-							+ p.getName() + ". Go to his/her bed.");
-			
-			success = walkToBed(p, s);	
+			logger.log(p, Level.WARNING, 10_000L,
+					"No medical facility available for " + p.getName() + ". Go to his/her bed.");
+
+			success = walkToBed(p, s);
 		}
-		
+
 		return success;
 	}
 
@@ -997,36 +945,36 @@ public class BuildingManager implements Serializable {
 	 */
 	public static boolean walkToBed(Person p, Settlement s) {
 		boolean success = false;
-		
+
 		AllocatedSpot bed = p.getBed();
-		
+
 		if (bed == null) {
 			// It will look for a permanent bed if possible
 			AllocatedSpot tempBed = Sleep.findABed(s, p);
-						
+
 			if (tempBed == null) {
 				// Assign a temporary bed to this person
-				bed = LivingAccommodation.allocateBed(p.getSettlement(), p, false);	
-			}	
+				bed = LivingAccommodation.allocateBed(p.getSettlement(), p, false);
+			}
 		}
-		
+
 		if (bed != null) {
-				
+
 			Building b = bed.getOwner();
 			// Question: does it still need to claim since this is already his own bed ?
 			success = b.getLivingAccommodation().claimActivitySpot(bed.getAllocated().getPos(), p);
-			
-			if (success) {			
+
+			if (success) {
 				logger.log(p, Level.INFO, 10_000L, "Able to claim the activity spot of a bed.");
 			}
 		}
-		
+
 		if (bed == null) {
 			logger.log(p, Level.INFO, 10_000L, "Unsuccessful in finding a bed.");
-			
+
 			return success;
 		}
-		
+
 		if (success) {
 			// Check my own position
 			LocalPosition myLoc = p.getPosition();
@@ -1034,94 +982,86 @@ public class BuildingManager implements Serializable {
 			p.setActivitySpot(bed);
 
 			LocalPosition bedLoc = bed.getAllocated().getPos();
-			
+
 			if (myLoc.equals(bedLoc)) {
 				// Already at that location and no need to walk further
 				return success;
-			}
-			else {
+			} else {
 				// Create subtask for walking to destination.
 				return createWalkingSubtask(p, bed.getOwner(), bedLoc, false, true);
 			}
 		}
-		
+
 		else {
 			logger.log(p, Level.INFO, 10_000L, "Unsuccessful claiming the activity spot of a bed.");
 		}
-		
+
 		return success;
 	}
-	
-	
+
 	/**
 	 * Creates a walk to an interior position in a building or vehicle.
 	 * 
-	 * @Note: need to ensure releasing the old activity spot prior to calling this method
-	 * and take in the new activity spot after this method.
+	 * @Note: need to ensure releasing the old activity spot prior to calling this
+	 *        method and take in the new activity spot after this method.
 	 * @param interiorObject the destination interior object.
-	 * @param sLoc the settlement local position destination.
-	 * @param allowFail true if walking is allowed to fail.
+	 * @param sLoc           the settlement local position destination.
+	 * @param allowFail      true if walking is allowed to fail.
 	 * @param needEVA
 	 */
-	public static boolean createWalkingSubtask(Worker worker, LocalBoundedObject interiorObject, LocalPosition sLoc, 
+	public static boolean createWalkingSubtask(Worker worker, LocalBoundedObject interiorObject, LocalPosition sLoc,
 			boolean allowFail, boolean needEVA) {
 		// Check my own position
 		LocalPosition myLoc = worker.getPosition();
 
 		if (myLoc.equals(sLoc)) {
-			// May add back checking: logger.info(worker, 4_000, "Already at the spot and no need to walk further.")
+			// May add back checking: logger.info(worker, 4_000, "Already at the spot and no
+			// need to walk further.")
 			return true;
 		}
-		
+
 		Walk walkingTask = Walk.createWalkingTask(worker, sLoc, interiorObject, needEVA);
 
 		if (walkingTask != null) {
-			
-	        // Walk back home
-			worker.getTaskManager().directlyAssignTask(walkingTask, false);			
+
+			// Walk back home
+			worker.getTaskManager().directlyAssignTask(walkingTask, false);
 			return true;
-		}
-		else {
+		} else {
 			if (!allowFail) {
 				logger.log(worker, Level.INFO, 4_000, "Failed to walk to " + interiorObject + ".");
-			} 
-			else {
+			} else {
 				logger.log(worker, Level.INFO, 4_000, "Unable to walk to " + interiorObject + ".");
 			}
 		}
 
 		return false;
 	}
-	
-	
+
 	/**
-	 * Adds a person to a random habitable building activity spot within a settlement.
-	 * Note: excluding the EVA (and astronomical observation) building
+	 * Adds a person to a random habitable building activity spot within a
+	 * settlement. Note: excluding the EVA (and astronomical observation) building
 	 *
-	 * @param person the person to add.
+	 * @param person     the person to add.
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if person cannot be added to any building.
 	 */
 	public static void addPersonToRandomBuildingSpot(Person person, Settlement settlement) {
-		
+
 		// Go to the default zone 0 only
 		Set<Building> bldgSet = person.getAssociatedSettlement().getBuildingManager()
-					.getBuildingSet(FunctionType.LIFE_SUPPORT)
-					.stream()
-					.filter(b -> b.getZone() == 0
-							&& b.getCategory() != BuildingCategory.EVA
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
+				.getBuildingSet(FunctionType.LIFE_SUPPORT).stream().filter(b -> b.getZone() == 0
+						&& b.getCategory() != BuildingCategory.EVA && !b.getMalfunctionManager().hasMalfunction())
+				.collect(Collectors.toSet());
 
 		if (bldgSet.isEmpty()) {
 			return;
 		}
-		
+
 		boolean found = false;
-		
-		for (Building building: bldgSet) {
-			if (!found && building != null
-					&& building.getCategory() != BuildingCategory.CONNECTION
+
+		for (Building building : bldgSet) {
+			if (!found && building != null && building.getCategory() != BuildingCategory.CONNECTION
 					&& building.getCategory() != BuildingCategory.EVA) {
 				// Add the person to a building activity spot
 				found = addToActivitySpot(person, building, null);
@@ -1134,38 +1074,35 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds a person to a random habitable building within a settlement.
-	 * Note: excluding the EVA building (and astronomical observation) building
+	 * Adds a person to a random habitable building within a settlement. Note:
+	 * excluding the EVA building (and astronomical observation) building
 	 *
-	 * @param person       the person to add.
+	 * @param person     the person to add.
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if person cannot be added to any building.
 	 */
 	public static void addPersonToRandomBuilding(Person person, Settlement settlement) {
-		
+
 		// Go to the default zone 0 only
-		Set<Building> bldgSet = settlement.getBuildingManager()
-					.getBuildingSet(FunctionType.LIFE_SUPPORT)
-					.stream()
-					.filter(b -> b.getZone() == 0
-							&& b.getCategory() != BuildingCategory.EVA
-							&& !b.getMalfunctionManager().hasMalfunction())
-					.collect(Collectors.toSet());
+		Set<Building> bldgSet = settlement
+				.getBuildingManager().getBuildingSet(FunctionType.LIFE_SUPPORT).stream().filter(b -> b.getZone() == 0
+						&& b.getCategory() != BuildingCategory.EVA && !b.getMalfunctionManager().hasMalfunction())
+				.collect(Collectors.toSet());
 
 		if (bldgSet.isEmpty()) {
 			return;
 		}
-				
-		for (Building building: bldgSet) {
+
+		for (Building building : bldgSet) {
 			if (building.getCategory() != BuildingCategory.CONNECTION
 					&& building.getCategory() != BuildingCategory.EVA) {
-				
+
 				// Add the person to the life support
 				if (building.getLifeSupport() != null) {
 					building.getLifeSupport().addPerson(person);
 
 					person.setCurrentBuilding(building);
-					
+
 					return;
 				}
 			}
@@ -1173,64 +1110,61 @@ public class BuildingManager implements Serializable {
 
 		logger.warning(person, "No habitable buildings with life support available in zone 0.");
 	}
-	
+
 	/**
 	 * Adds a robot to a random habitable building within a settlement.
 	 *
-	 * @param unit       the robot to add.
-	 * @param s the settlement to find a building.
+	 * @param unit the robot to add.
+	 * @param s    the settlement to find a building.
 	 * @throws BuildingException if robot cannot be added to any building.
 	 */
 	public static void addRobotToRandomBuilding(Robot robot, Settlement s) {
 		BuildingManager manager = s.getBuildingManager();
-		
+
 		final FunctionType functionType = FunctionType.getDefaultFunction(robot.getRobotType());
-		
+
 		Set<Building> functionBuildings = manager.getBuildingSet(functionType);
 
 		Building destination = null;
 		boolean canAdd = false;
-		
+
 		for (Building bldg : functionBuildings) {
 			// Go to the default zone 0 only
 			if (!canAdd && bldg.getZone() == 0
-					// Do not add robot to EVA airlock, hallway and tunnel
-					&& bldg.getCategory() != BuildingCategory.EVA
-					&& bldg.getCategory() != BuildingCategory.CONNECTION
+			// Do not add robot to EVA airlock, hallway and tunnel
+					&& bldg.getCategory() != BuildingCategory.EVA && bldg.getCategory() != BuildingCategory.CONNECTION
 					&& bldg.getFunction(functionType).hasEmptyActivitySpot()) {
-					destination = bldg;
-					canAdd = addToActivitySpot(robot, destination, functionType);
+				destination = bldg;
+				canAdd = addToActivitySpot(robot, destination, functionType);
 			}
 		}
 
 		functionBuildings = manager.getBuildingSet(FunctionType.ROBOTIC_STATION);
 		for (Building bldg : functionBuildings) {
-			if (!canAdd && bldg.getZone() == 0
-					&& bldg.getCategory() != BuildingCategory.EVA
+			if (!canAdd && bldg.getZone() == 0 && bldg.getCategory() != BuildingCategory.EVA
 					&& bldg.getFunction(FunctionType.ROBOTIC_STATION).hasEmptyActivitySpot()) {
 				destination = bldg;
 				canAdd = addToActivitySpot(robot, destination, FunctionType.ROBOTIC_STATION);
 			}
-		}	
-		
+		}
+
 		Set<Building> buildings = manager.getBuildingSet();
 		for (Building bldg : buildings) {
 			// Avoid going inside an EVA Airlock that will interfere its intricate operation
 			if (bldg.getCategory() != BuildingCategory.EVA) {
-				for (Function function: bldg.getFunctions()) {
-					if (!canAdd && bldg.getZone() == 0
-							&& function.hasEmptyActivitySpot()) {
-						destination = bldg;		
+				for (Function function : bldg.getFunctions()) {
+					if (!canAdd && bldg.getZone() == 0 && function.hasEmptyActivitySpot()) {
+						destination = bldg;
 						canAdd = addToActivitySpot(robot, destination, function.getFunctionType());
 					}
 				}
 			}
 		}
 	}
-	
+
 	/**
-	 * Adds a vehicle to a random ground vehicle maintenance building within
-	 * a settlement.
+	 * Adds a vehicle to a random ground vehicle maintenance building within a
+	 * settlement.
 	 *
 	 * @param vehicle    the vehicle to add.
 	 * @param settlement the settlement to find a building.
@@ -1243,111 +1177,94 @@ public class BuildingManager implements Serializable {
 		if (garages.isEmpty()) {
 			return null;
 		}
-		
-		if (vehicle.isBeingTowed() 
-			|| (VehicleType.isRover(vehicle.getVehicleType())
-					&& ((Rover)vehicle).isTowingAVehicle())) {
+
+		if (vehicle.isBeingTowed()
+				|| (VehicleType.isRover(vehicle.getVehicleType()) && ((Rover) vehicle).isTowingAVehicle())) {
 			return null;
 		}
 
 		for (Building garageBuilding : garages) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-		
-			 if (vehicle instanceof Rover r) {
+
+			if (vehicle instanceof Rover r) {
 				if (garage.containsRover(r)) {
-					logger.info(r, 60_000,
-							"Already inside " + garageBuilding.getName() + ".");
+					logger.info(r, 60_000, "Already inside " + garageBuilding.getName() + ".");
 
 					return garageBuilding;
-				}
-				else { 
+				} else {
 					boolean vacated = false;
-					
+
 					// If there is no garage space, check if an existing rover can leave
 					// the garage to make room for a new rover to come in
 					if (garage.getAvailableRoverCapacity() == 0) {
-						// Try removing a non-reserved vehicle inside a garage		
-						for (Rover rover: garage.getRovers()) {
-							if (!vacated && !rover.isReserved() 
-								&& !rover.isReservedForMaintenance()
-								&& rover.getMission() == null
-								&& rover.hasNoCrew()
-								&& garage.removeRover(rover, true)) {
-									vacated = true;
-									break;
+						// Try removing a non-reserved vehicle inside a garage
+						for (Rover rover : garage.getRovers()) {
+							if (!vacated && !rover.isReserved() && !rover.isReservedForMaintenance()
+									&& rover.getMission() == null && rover.hasNoCrew()
+									&& garage.removeRover(rover, true)) {
+								vacated = true;
+								break;
 							}
 						}
 					}
-					
-					if ((garage.getAvailableRoverCapacity() > 0)
-						&& garage.addRover(r, true)) {
-						
+
+					if ((garage.getAvailableRoverCapacity() > 0) && garage.addRover(r, true)) {
+
 						return garageBuilding;
 					}
 				}
 			}
-			
+
 			else if (vehicle instanceof Flyer f) {
-				
+
 				if (garage.containsFlyer(f)) {
-					logger.info(f, 60_000,
-							"Already inside " + garageBuilding.getName() + ".");
+					logger.info(f, 60_000, "Already inside " + garageBuilding.getName() + ".");
 
 					return garageBuilding;
-				}
-				else { 
+				} else {
 					boolean vacated = false;
-					
+
 					// If there is no garage space, check if an existing flyer can leave
 					// the garage to make room for a new flyer to come in
 					if (garage.getAvailableFlyerCapacity() == 0) {
-						// Try removing a non-reserved drone inside a garage		
-						for (Flyer flyer: garage.getFlyers()) {
-							if (!vacated && !flyer.isReserved() 
-								&& !flyer.isReservedForMaintenance()
-								&& flyer.getMission() == null
-								&& garage.removeFlyer(flyer, true)) {
-									vacated = true;
-									break;
+						// Try removing a non-reserved drone inside a garage
+						for (Flyer flyer : garage.getFlyers()) {
+							if (!vacated && !flyer.isReserved() && !flyer.isReservedForMaintenance()
+									&& flyer.getMission() == null && garage.removeFlyer(flyer, true)) {
+								vacated = true;
+								break;
 							}
 						}
 					}
-					
-					if (garage.getAvailableFlyerCapacity() > 0 
-							&& garage.addFlyer(f, true)) {
+
+					if (garage.getAvailableFlyerCapacity() > 0 && garage.addFlyer(f, true)) {
 
 						return garageBuilding;
 					}
 				}
 			}
-				
+
 			else if (vehicle instanceof LightUtilityVehicle luv) {
 				if (garage.containsUtilityVehicle(luv)) {
-					logger.info(luv, 60_000,
-							"Already inside " + garageBuilding.getName() + ".");
+					logger.info(luv, 60_000, "Already inside " + garageBuilding.getName() + ".");
 
 					return garageBuilding;
-				}
-				else { 
+				} else {
 					boolean vacated = false;
-					
+
 					if (garage.getAvailableUtilityVehicleCapacity() == 0) {
-						// Try removing a non-reserved vehicle inside a garage		
-						for (LightUtilityVehicle l: garage.getUtilityVehicles()) {
-							if (!vacated && !l.isReserved() 
-								&& !l.isReservedForMaintenance()
-								&& l.getMission() == null
-								&& l.hasNoCrew()
-								&& garage.removeUtilityVehicle(l, false)) {
-									vacated = true;
-									break;
+						// Try removing a non-reserved vehicle inside a garage
+						for (LightUtilityVehicle l : garage.getUtilityVehicles()) {
+							if (!vacated && !l.isReserved() && !l.isReservedForMaintenance() && l.getMission() == null
+									&& l.hasNoCrew() && garage.removeUtilityVehicle(l, false)) {
+								vacated = true;
+								break;
 							}
 						}
 					}
-					
-					if ((garage.getAvailableUtilityVehicleCapacity() > 0)
-						&& garage.addUtilityVehicle(luv, true)) {
-						
+
+					if ((garage.getAvailableUtilityVehicleCapacity() > 0) && garage.addUtilityVehicle(luv, true)) {
+
 						return garageBuilding;
 					}
 				}
@@ -1356,10 +1273,10 @@ public class BuildingManager implements Serializable {
 
 		return null;
 	}
-	
+
 	/**
-	 * Adds a vehicle to a random ground vehicle maintenance building within
-	 * a settlement.
+	 * Adds a vehicle to a random ground vehicle maintenance building within a
+	 * settlement.
 	 *
 	 * @param vehicle    the vehicle to add.
 	 * @param settlement the settlement to find a building.
@@ -1369,9 +1286,9 @@ public class BuildingManager implements Serializable {
 	 */
 	public boolean addToGarage(Vehicle vehicle) {
 		// Check if the vehicle is already inside garage
-		// Note: use vehicle.isInGarage() to check since it returns the boolean value 
-		//       of isInGarage instead of having to go through the long steps of 
-		//       BuildingManager's isInGarage() as shown below.
+		// Note: use vehicle.isInGarage() to check since it returns the boolean value
+		// of isInGarage instead of having to go through the long steps of
+		// BuildingManager's isInGarage() as shown below.
 		if (vehicle.isInGarage()) {
 			return true;
 		}
@@ -1385,34 +1302,30 @@ public class BuildingManager implements Serializable {
 	 */
 	public boolean isInGarage(Vehicle vehicle) {
 		// Note: do not use vehicle.isInGarage() here
-		
+
 		if (getGarages().isEmpty())
 			return false;
-		
+
 		for (Building garageBuilding : getGarages()) {
 			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 			if (garage == null) {
 				continue;
 			}
-			
-			if (vehicle instanceof Rover r
-				&& garage.containsRover(r)) {
+
+			if (vehicle instanceof Rover r && garage.containsRover(r)) {
 				return true;
 			}
-			
-			if (vehicle instanceof Drone d
-				&& garage.containsFlyer(d)) {
+
+			if (vehicle instanceof Drone d && garage.containsFlyer(d)) {
 				return true;
 			}
-			
-			if (vehicle instanceof LightUtilityVehicle luv
-				&& garage.containsUtilityVehicle(luv)) {
+
+			if (vehicle instanceof LightUtilityVehicle luv && garage.containsUtilityVehicle(luv)) {
 				return true;
 			}
 		}
 		return false;
 	}
-
 
 	/**
 	 * Gets an available vehicle maintenance building for resource hookup.
@@ -1440,41 +1353,37 @@ public class BuildingManager implements Serializable {
 		if (garage == null) {
 			return false;
 		}
-		
-		if (vehicle instanceof Rover rover
-			&& garage.getVehicleMaintenance().removeRover(rover, true)) {
-				return true;
-		}
-		else if (vehicle instanceof Flyer flyer
-			&& garage.getVehicleMaintenance().removeFlyer(flyer, true)) {
-				return true;
-		}
-		else if (vehicle instanceof LightUtilityVehicle luv
-			&& garage.getVehicleMaintenance().removeUtilityVehicle(luv, true)) {
-				return true;
+
+		if (vehicle instanceof Rover rover && garage.getVehicleMaintenance().removeRover(rover, true)) {
+			return true;
+		} else if (vehicle instanceof Flyer flyer && garage.getVehicleMaintenance().removeFlyer(flyer, true)) {
+			return true;
+		} else if (vehicle instanceof LightUtilityVehicle luv
+				&& garage.getVehicleMaintenance().removeUtilityVehicle(luv, true)) {
+			return true;
 		}
 
 		return false;
 	}
-	
+
 	/**
 	 * Gets the building a person or robot is in.
 	 *
 	 * @return building or null if none.
 	 */
 	public static Building getBuilding(Worker worker) {
-		
+
 		if (worker.isInSettlement()) {
 			return worker.getBuildingLocation();
 		}
-		
+
 		if (worker.isInVehicleInGarage()) {
 			return worker.getVehicle().getGarage();
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Gets a list of the least crowded buildings from a given list of buildings
 	 * with life support.
@@ -1501,8 +1410,7 @@ public class BuildingManager implements Serializable {
 					leastCrowded = crowded;
 					result = new UnitSet<>();
 					result.add(b0);
-				}
-				else if (crowded == leastCrowded) {
+				} else if (crowded == leastCrowded) {
 					result.add(b0);
 				}
 			}
@@ -1527,18 +1435,17 @@ public class BuildingManager implements Serializable {
 		int leastCrowded = Integer.MAX_VALUE;
 		for (Building building : buildingSet) {
 //			if (building.getCategory() != BuildingCategory.EVA) {
-				RoboticStation roboticStation = building.getRoboticStation();
-				int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
-				if (crowded < -1)
-					crowded = -1;
-				if (crowded < leastCrowded) {
-					leastCrowded = crowded;
-					result = new UnitSet<>();
-					result.add(building);
-				}
-				else if (crowded == leastCrowded) {
-					result.add(building);
-				}
+			RoboticStation roboticStation = building.getRoboticStation();
+			int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
+			if (crowded < -1)
+				crowded = -1;
+			if (crowded < leastCrowded) {
+				leastCrowded = crowded;
+				result = new UnitSet<>();
+				result.add(building);
+			} else if (crowded == leastCrowded) {
+				result.add(building);
+			}
 //			}
 		}
 
@@ -1561,7 +1468,7 @@ public class BuildingManager implements Serializable {
 				LifeSupport lifeSupport = building.getLifeSupport();
 				double buildingRelationships = 0D;
 				int numPeople = 0;
-	
+
 //				List<Person> occupants = lifeSupport.getOccupants()
 //						  .stream()
 //						  .collect(Collectors.toList());
@@ -1572,17 +1479,15 @@ public class BuildingManager implements Serializable {
 //						numPeople++;
 //					}
 //				}
-				
-				Optional<Person> found = lifeSupport.getOccupants().stream()
-					    .filter(e -> person.equals(e))
-					    .findFirst();
-				
+
+				Optional<Person> found = lifeSupport.getOccupants().stream().filter(e -> person.equals(e)).findFirst();
+
 				if (found.isPresent()) {
 					Person occupant = found.get();
 					buildingRelationships += RelationshipUtil.getOpinionOfPerson(person, occupant);
 					numPeople++;
-				} 
-				
+				}
+
 				double prob = 50D;
 				if (numPeople > 0) {
 					prob = buildingRelationships / numPeople;
@@ -1640,7 +1545,7 @@ public class BuildingManager implements Serializable {
 
 		if (building != null) {
 			if (worker instanceof Person person) {
-	
+
 				if (building.getLifeSupport() != null) {
 					building.getLifeSupport().addPerson(person);
 
@@ -1650,10 +1555,10 @@ public class BuildingManager implements Serializable {
 
 			else {
 				Robot robot = (Robot) worker;
-		
+
 				if (building.getRoboticStation() != null) {
 					building.getRoboticStation().addRobot(robot);
-					
+
 					robot.setCurrentBuilding(building);
 				}
 			}
@@ -1664,22 +1569,22 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Transfers the worker from one building to another 
-	 * Note: Will add to or remove from life support/robotic station.
+	 * Transfers the worker from one building to another Note: Will add to or remove
+	 * from life support/robotic station.
 	 *
-	 * @param worker   the worker to add.
-	 * @param origin   the building to leave behind.
+	 * @param worker      the worker to add.
+	 * @param origin      the building to leave behind.
 	 * @param destination the building to go
 	 */
 	public static void transferFromBuildingToBuilding(Worker worker, Building origin, Building destination) {
 
 		if (destination != null) {
 			if (worker instanceof Person person) {
-				
+
 				if (origin != null && origin.getLifeSupport() != null) {
 					origin.getLifeSupport().removePerson(person);
 				}
-				
+
 				if (destination.getLifeSupport() != null) {
 					destination.getLifeSupport().addPerson(person);
 
@@ -1689,14 +1594,14 @@ public class BuildingManager implements Serializable {
 
 			else {
 				Robot robot = (Robot) worker;
-				
+
 				if (origin != null && origin.getRoboticStation() != null) {
-					origin.getRoboticStation().removeRobot(robot);	
+					origin.getRoboticStation().removeRobot(robot);
 				}
 
 				if (destination.getRoboticStation() != null) {
 					destination.getRoboticStation().addRobot(robot);
-					
+
 					robot.setCurrentBuilding(destination);
 				}
 			}
@@ -1705,10 +1610,10 @@ public class BuildingManager implements Serializable {
 		else
 			logger.severe(worker, 2000, "The destination building is null.");
 	}
-	
+
 	/**
-	 * Adds a worker to the building if possible.
-	 * Note: it will add the worker to life support / robotic station as well.
+	 * Adds a worker to the building if possible. Note: it will add the worker to
+	 * life support / robotic station as well.
 	 *
 	 * @param worker   the worker to add.
 	 * @param building the building to add.
@@ -1716,51 +1621,54 @@ public class BuildingManager implements Serializable {
 	public static boolean addToBuilding(Worker worker, Building building) {
 		return addToActivitySpot(worker, building, null);
 	}
-	
+
 	/**
-	 * Adds a worker to the building if possible.
-	 * Note: it will add the worker to life support / robotic station as well.
+	 * Adds a worker to the building if possible. Note: it will add the worker to
+	 * life support / robotic station as well.
 	 *
 	 * @param worker   the worker to add.
 	 * @param building the building to add.
-	 * @param type the function type
+	 * @param type     the function type
 	 * @return
 	 */
 	public static boolean addToActivitySpot(Worker worker, Building building, FunctionType type) {
 		boolean result = false;
-		
+
 		Building originBuilding = worker.getBuildingLocation();
-		
+
 		if (originBuilding == null) {
-			// Instantly set the worker's current building and add occupant since this worker has
-			// just been added to the settlement or just returned to the settlement from outside
-			setToBuilding(worker, building);	
+			// Instantly set the worker's current building and add occupant since this
+			// worker has
+			// just been added to the settlement or just returned to the settlement from
+			// outside
+			setToBuilding(worker, building);
 		}
-		
+
 		FunctionType functionType = type;
-		
-		if (functionType == null) {		
+
+		if (functionType == null) {
 			// Look for a function with empty activity spot
 			Function f = building.getEmptyActivitySpotFunction();
 			if (f != null) {
 				functionType = f.getFunctionType();
 			}
-			
+
 			if (functionType != null) {
 				// Try claiming a spot
 				result = claimActivitySpot(worker, building, functionType);
 			}
-			
+
 			else {
 				// Note: this happens frequently at the start of a sim
-				
+
 				// if type is not null and yet there's no empty activity spot
-				logger.info(worker, 20_000L, "No available functions with an activty spot in " + building.getName() + ".");
-				
+				logger.info(worker, 20_000L,
+						"No available functions with an activty spot in " + building.getName() + ".");
+
 				return false;
 			}
 		}
-		
+
 		else {
 			// Try claiming a spot
 			result = claimActivitySpot(worker, building, functionType);
@@ -1771,23 +1679,23 @@ public class BuildingManager implements Serializable {
 			AllocatedSpot as = worker.getActivitySpot();
 			// Set robot's location
 			worker.setPosition(as.getAllocated().getPos());
-			
+
 			if (originBuilding != null && !originBuilding.equals(building)) {
 				// Instantly transfer the worker to the new building
 				transferFromBuildingToBuilding(worker, originBuilding, building);
 			}
 		}
-		
+
 		else if (functionType != null) {
-				
-			logger.info(worker, 20_000L, "Unable to claim a spot at " + functionType.getName() + " in " + building.getName() + ".");
+
+			logger.info(worker, 20_000L,
+					"Unable to claim a spot at " + functionType.getName() + " in " + building.getName() + ".");
 
 			return false;
 		}
-		
+
 		return result;
 	}
-
 
 	/**
 	 * Claims an activity spot.
@@ -1798,21 +1706,22 @@ public class BuildingManager implements Serializable {
 	 * @return
 	 */
 	public static boolean claimActivitySpot(Worker worker, Building building, FunctionType functionType) {
-		
-		Function f = building.getFunction(functionType);	
 
-		LocalPosition loc = f.getAvailableActivitySpot();	
-		
+		Function f = building.getFunction(functionType);
+
+		LocalPosition loc = f.getAvailableActivitySpot();
+
 		if (loc != null) {
 			// Note: if the following log is enabled, it will be excessive.
-			// May add back: logger.info(worker, 10_000L, "Available loc " + loc + " found. Trying to claim it.")
+			// May add back: logger.info(worker, 10_000L, "Available loc " + loc + " found.
+			// Trying to claim it.")
 			// Claim this activity spot
 			return f.claimActivitySpot(loc, worker);
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Removes the person from a building if possible.
 	 *
@@ -1824,13 +1733,13 @@ public class BuildingManager implements Serializable {
 			building.getLifeSupport().removePerson(person);
 			person.setCurrentBuilding(null);
 			person.leaveActivitySpot(false);
-		} 
+		}
 	}
 
 	/**
 	 * Removes the robot from a building if possible.
 	 *
-	 * @param robot   the robot to remove.
+	 * @param robot    the robot to remove.
 	 * @param building the building to remove the robot from.
 	 */
 	public static void removeRobotFromBuilding(Robot robot, Building building) {
@@ -1838,57 +1747,57 @@ public class BuildingManager implements Serializable {
 			building.getRoboticStation().removeRobot(robot);
 			robot.setCurrentBuilding(null);
 			robot.leaveActivitySpot(false);
-		} 
+		}
 	}
-	
+
 	/**
 	 * Gets the values of each building type at the settlement.
 	 *
 	 * @return a map of building values.
 	 */
 	public Map<Building, Double> getAllBuildingTypeValues() {
-		
+
 		// Update building values cache once per Sol.
 		MarsTime now = masterClock.getMarsTime();
-		if (totalBuildingValues == 0D || (lastVPUpdateTime == null) 
+		if (totalBuildingValues == 0D || (lastVPUpdateTime == null)
 				|| (now.getTimeDiff(lastVPUpdateTime) > BUILDING_VALUES_UPDATE)) {
 
 			buildingValueMap.clear();
 			lastVPUpdateTime = now;
-			
+
 			computeAllFunctionTypeValues();
 		}
 
 		return buildingValueMap;
 	}
+
 	/**
 	 * 
 	 * Computes all the function type values for all buildings.
 	 */
 	private void computeAllFunctionTypeValues() {
 		double total = 0;
-		for (Building building: getBuildingSet()) {
+		for (Building building : getBuildingSet()) {
 			total += computeOneBuildingFunctionTypeValues(building);
 		}
 		totalBuildingValues = total;
 	}
-	
+
 	/**
 	 * Computes a map of function value of a building.
 	 *
 	 * @param building the building.
 	 * @return a map of each function type with function value.
 	 */
-	public Map<FunctionType, Double> computeFunctionTypeValue(Building building) {	
-		
-		if (!buildingsOfFunctionTypeValues.containsKey(building)
-				|| computeSumOfFunctionTypeValue(building) == 0D) {
+	public Map<FunctionType, Double> computeFunctionTypeValue(Building building) {
+
+		if (!buildingsOfFunctionTypeValues.containsKey(building) || computeSumOfFunctionTypeValue(building) == 0D) {
 			computeOneBuildingFunctionTypeValues(building);
 		}
-		
+
 		return buildingsOfFunctionTypeValues.get(building);
 	}
-	
+
 	/**
 	 * Computes the sum of all function type values.
 	 * 
@@ -1898,43 +1807,44 @@ public class BuildingManager implements Serializable {
 	public double computeSumOfFunctionTypeValue(Building building) {
 		return buildingsOfFunctionTypeValues.get(building).values().stream().mapToDouble(Double::doubleValue).sum();
 	}
-	
+
 	/**
 	 * Computes all the function type values for one single buildings.
 	 * 
 	 * @param building
 	 */
 	private double computeOneBuildingFunctionTypeValues(Building building) {
-		
+
 		double totalValue = 0D;
-		
+
 		/** A map of each function type and its value. */
-		EnumMap<FunctionType, Double> functionTypeValues = new EnumMap<>(FunctionType.class); 
-		
+		EnumMap<FunctionType, Double> functionTypeValues = new EnumMap<>(FunctionType.class);
+
 		for (Function f : building.getFunctions()) {
-			
+
 			FunctionType ft = f.getFunctionType();
-			
+
 			double value = f.getFunctionValue();
-			
+
 			totalValue += value;
-			
-			// Note: Remove the wear condition modification in each getFunctionValue() in a Function subclass
-			
+
+			// Note: Remove the wear condition modification in each getFunctionValue() in a
+			// Function subclass
+
 			// Modify building value by its wear condition.
 //			double wearCondition = building.getMalfunctionManager().getWearCondition();
 //			value *= (wearCondition / 100D) * .75D + .25D;
-			
+
 			functionTypeValues.put(ft, value);
 		}
-		
+
 		buildingsOfFunctionTypeValues.put(building, functionTypeValues);
-		
+
 		buildingValueMap.put(building, totalValue);
-		
+
 		return totalValue;
 	}
-	
+
 	/**
 	 * Gets the values of each building type at the settlement.
 	 *
@@ -1943,7 +1853,7 @@ public class BuildingManager implements Serializable {
 	public double getTotalBuildingValues() {
 		return totalBuildingValues;
 	}
-	
+
 	/**
 	 * Checks if a proposed building location is open or intersects with existing
 	 * buildings or construction sites.
@@ -1956,20 +1866,18 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Checks if a proposed building location is open and without intersecting with 
+	 * Checks if a proposed building location is open and without intersecting with
 	 * any existing buildings or construction sites.
 	 *
 	 * @param position New building position
-	 * @param site   the new construction site or null if none.
+	 * @param site     the new construction site or null if none.
 	 * @return true if new building location is open.
 	 */
 	public boolean isBuildingLocationOpen(BoundedObject position, ConstructionSite site) {
 		boolean goodLocation = true;
 
 		goodLocation = LocalAreaUtil.isObjectCollisionFree(site, position.getWidth(), position.getLength(),
-														   position.getXLocation(), position.getYLocation(),
-														   position.getFacing(),
-														   settlement.getCoordinates());
+				position.getXLocation(), position.getYLocation(), position.getFacing(), settlement.getCoordinates());
 
 		return goodLocation;
 	}
@@ -1982,7 +1890,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public int getNextTemplateID(String buildingType) {
 		return buildings.size();
-		// Note: check  with getUniqueName() and getUniqueNum() methods below for comparison	
+		// Note: check with getUniqueName() and getUniqueNum() methods below for
+		// comparison
 	}
 
 	/**
@@ -1991,7 +1900,7 @@ public class BuildingManager implements Serializable {
 	 * @return a unique nick name
 	 */
 	public String getUniqueName(String buildingType) {
-		return buildingType + " " + getUniqueNum(buildingType) ;
+		return buildingType + " " + getUniqueNum(buildingType);
 	}
 
 	/**
@@ -2001,10 +1910,9 @@ public class BuildingManager implements Serializable {
 	 */
 	public int getUniqueNum(String buildingType) {
 		long id = buildings.stream().filter(b -> b.getBuildingType().equals(buildingType)).count() + 1;
-		return (int)id;
+		return (int) id;
 	}
-	
-	
+
 	/**
 	 * Gets total combined power loads from all computing nodes in a settlement.
 	 * 
@@ -2015,8 +1923,8 @@ public class BuildingManager implements Serializable {
 		double nonloadTotal = 0;
 		Set<Building> nodeBldgs = getComNodes();
 		if (nodeBldgs.isEmpty())
-			return new double[] {0, 0};
-		for (Building b: nodeBldgs) {
+			return new double[] { 0, 0 };
+		for (Building b : nodeBldgs) {
 			Computation node = b.getComputation();
 			double[] combined = node.getSeparatePowerLoadNonLoad();
 			double load = combined[0];
@@ -2024,9 +1932,9 @@ public class BuildingManager implements Serializable {
 			loadTotal += load;
 			nonloadTotal += nonload;
 		}
-		return new double[] {loadTotal, nonloadTotal};
+		return new double[] { loadTotal, nonloadTotal };
 	}
-	
+
 	/**
 	 * Gets usage percentage from all computing nodes in a settlement.
 	 * 
@@ -2035,15 +1943,15 @@ public class BuildingManager implements Serializable {
 	public double[] getPeakCurrentPercent() {
 		double peak = 0;
 		double current = 0;
-		for (Building b: getComNodes()) {
+		for (Building b : getComNodes()) {
 			Computation node = b.getComputation();
 			current += node.getCurrentCU();
 			peak += node.getPeakCU();
 		}
-		
-		return new double[] {current, peak};
+
+		return new double[] { current, peak };
 	}
-	
+
 	/**
 	 * Gets total entropy of all computing nodes in a settlement.
 	 * 
@@ -2051,13 +1959,13 @@ public class BuildingManager implements Serializable {
 	 */
 	public double getTotalEntropy() {
 		double entropy = 0;
-		for (Building b: getComNodes()) {
+		for (Building b : getComNodes()) {
 			Computation node = b.getComputation();
 			entropy += node.getEntropy();
 		}
 		return entropy;
 	}
-	
+
 	/**
 	 * Gets total entropy of all computing nodes in a settlement.
 	 * 
@@ -2067,15 +1975,15 @@ public class BuildingManager implements Serializable {
 		double entropy = 0;
 		Set<Building> nodeBldgs = getComNodes();
 		if (nodeBldgs.isEmpty())
-			return new double[]{0, 0};		
+			return new double[] { 0, 0 };
 		int size = nodeBldgs.size();
-		for (Building b: nodeBldgs) {
+		for (Building b : nodeBldgs) {
 			Computation node = b.getComputation();
 			entropy += node.getEntropy();
 		}
-		return new double[]{size, entropy};
+		return new double[] { size, entropy };
 	}
-	
+
 	/**
 	 * Gets total entropy per CU of all computing nodes in a settlement.
 	 * 
@@ -2086,15 +1994,15 @@ public class BuildingManager implements Serializable {
 		Set<Building> nodeBldgs = getComNodes();
 		int size = nodeBldgs.size();
 		if (nodeBldgs.isEmpty())
-			return new double[]{0, 0};	
-		for (Building b: nodeBldgs) {
+			return new double[] { 0, 0 };
+		for (Building b : nodeBldgs) {
 			Computation node = b.getComputation();
 			double ePerCU = node.getEntropyPerCU();
 			entropyPerCU += ePerCU;
 		}
-		return new double[]{size, entropyPerCU};
+		return new double[] { size, entropyPerCU };
 	}
-	
+
 	/**
 	 * Gets a computing node for having the worst entropy by probability.
 	 * 
@@ -2105,65 +2013,55 @@ public class BuildingManager implements Serializable {
 	public Computation getWorstEntropyComputingNodeByProbability(Person person, boolean anyZones) {
 		Map<Computation, Double> scores = new HashMap<>();
 		Set<Building> bldgs = getComNodes();
-				
+
 		if (bldgs.isEmpty())
 			return null;
 
 		if (person.getBuildingLocation() != null) {
 			int personZone = person.getBuildingLocation().getZone();
-			
+
 			if (anyZones) {
 				bldgs = bldgs.stream()
 						// Condition: the building doesn't need to be in the same zone as the person
-						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}
-			else {
-				bldgs = bldgs.stream()
-						.filter(b -> 
-							// Condition: the building must be in the same zone as the person
-							// Note: the condition below needs to be true 
-							b.getZone() == personZone
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
+						.filter(b -> !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
+			} else {
+				bldgs = bldgs.stream().filter(b ->
+				// Condition: the building must be in the same zone as the person
+				// Note: the condition below needs to be true
+				b.getZone() == personZone && !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
 			}
 
-		}
-		else {
+		} else {
 			if (anyZones) {
 				bldgs = bldgs.stream()
-						// Condition: the building doesn't need to be in the same zone as the person						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						// Condition: the building doesn't need to be in the same zone as the person
+						// .filter(b -> !b.getMalfunctionManager().hasMalfunction())
 						.collect(Collectors.toSet());
+			} else {
+				bldgs = bldgs.stream().filter(b ->
+				// Condition: the building must be in the same zone as the person
+				// Note: only buildings in zone 0 will be chosen
+				b.getZone() == 0 && !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
 			}
-			else {
-				bldgs = bldgs.stream()
-						.filter(b -> 
-							// Condition: the building must be in the same zone as the person
-							// Note: only buildings in zone 0 will be chosen
-							b.getZone() == 0
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}	
 		}
 
 		if (bldgs.isEmpty()) {
 			return null;
 		}
-		
-		for (Building b: bldgs) {
+
+		for (Building b : bldgs) {
 			Computation node = b.getComputation();
 			double entropy = node.getEntropy();
 			scores.put(node, entropy);
 		}
-		
+
 		return RandomUtil.getWeightedRandomObject(scores);
 	}
-	
 
 	/**
 	 * Gets a computing center for having the most free resources by probability.
 	 * 
-	 * @param need CU(s) per millisol
+	 * @param need      CU(s) per millisol
 	 * @param startTime
 	 * @param endTime
 	 * @return
@@ -2171,20 +2069,20 @@ public class BuildingManager implements Serializable {
 	public Computation getMostFreeComputingNode(double need, int startTime, int endTime) {
 		Map<Computation, Double> scores = new HashMap<>();
 
-		for (Building b: getComNodes()) {
+		for (Building b : getComNodes()) {
 			Computation node = b.getComputation();
 			double score = node.evaluateScheduleTask(need, startTime, endTime);
 			if (score > 0)
 				scores.put(node, score);
 		}
-		
+
 		if (scores.isEmpty())
 			return null;
-		
-		// Note: Use probability selection	
+
+		// Note: Use probability selection
 		return RandomUtil.getWeightedRandomObject(scores);
 	}
-	
+
 	/**
 	 * Gets total entropy of all computing nodes in a settlement.
 	 * 
@@ -2193,18 +2091,18 @@ public class BuildingManager implements Serializable {
 	public double getTotalEntropyPerLab() {
 		double entropy = 0;
 		Set<Building> bldgs = getBuildingSet(FunctionType.RESEARCH);
-		
+
 		if (bldgs.isEmpty())
-			return 0;	
-		
+			return 0;
+
 		int size = bldgs.size();
-		for (Building b: bldgs) {
+		for (Building b : bldgs) {
 			Research lab = b.getResearch();
 			entropy += lab.getEntropy();
 		}
-		return entropy/size;
+		return entropy / size;
 	}
-	
+
 	/**
 	 * Gets a lab for having the worst entropy by probability.
 	 * 
@@ -2215,62 +2113,51 @@ public class BuildingManager implements Serializable {
 	public Research getWorstEntropyLabByProbability(Person person, boolean anyZones) {
 		Map<Research, Double> scores = new HashMap<>();
 		Set<Building> bldgs = getBuildingSet(FunctionType.RESEARCH);
-		
+
 		if (bldgs.isEmpty())
 			return null;
 
 		if (person.getBuildingLocation() != null) {
 			int personZone = person.getBuildingLocation().getZone();
-			
+
 			if (anyZones) {
 				bldgs = bldgs.stream()
 						// Condition: the building doesn't need to be in the same zone as the person
-						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}
-			else {
-				bldgs = bldgs.stream()
-						.filter(b -> 
-							// Condition: the building must be in the same zone as the person
-							// Note: the condition below needs to be true 
-							b.getZone() == personZone
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
+						.filter(b -> !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
+			} else {
+				bldgs = bldgs.stream().filter(b ->
+				// Condition: the building must be in the same zone as the person
+				// Note: the condition below needs to be true
+				b.getZone() == personZone && !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
 			}
 
-		}
-		else {
+		} else {
 			if (anyZones) {
 				bldgs = bldgs.stream()
-						// Condition: the building doesn't need to be in the same zone as the person						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						// Condition: the building doesn't need to be in the same zone as the person
+						// .filter(b -> !b.getMalfunctionManager().hasMalfunction())
 						.collect(Collectors.toSet());
+			} else {
+				bldgs = bldgs.stream().filter(b ->
+				// Condition: the building must be in the same zone as the person
+				// Note: only buildings in zone 0 will be chosen
+				b.getZone() == 0 && !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
 			}
-			else {
-				bldgs = bldgs.stream()
-						.filter(b -> 
-							// Condition: the building must be in the same zone as the person
-							// Note: only buildings in zone 0 will be chosen
-							b.getZone() == 0
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}	
 		}
 
 		if (bldgs.isEmpty()) {
 			return null;
 		}
-		
-		
-		for (Building b: bldgs) {
+
+		for (Building b : bldgs) {
 			Research lab = b.getResearch();
 			double entropy = lab.getEntropy();
 			scores.put(lab, entropy);
 		}
-		
+
 		return RandomUtil.getWeightedRandomObject(scores);
 	}
 
-	
 	/**
 	 * Gets a set of farm buildings needing work from a list of buildings with the
 	 * farming function.
@@ -2305,89 +2192,70 @@ public class BuildingManager implements Serializable {
 
 			farmsNeedingWorkCache = result;
 		}
-		
+
 		return result;
 	}
-		
+
 	/**
-	 * Gets an available building with a particular function in the same zone. 
+	 * Gets an available building with a particular function in the same zone.
 	 *
 	 * @param person the person looking for a facility.
 	 * @return an available space or null if none found.
 	 */
-	public static Building getAvailableFunctionTypeBuilding(
-			Person person, FunctionType functionType) {
+	public static Building getAvailableFunctionTypeBuilding(Person person, FunctionType functionType) {
 		return getAvailableFunctionBuilding(person, functionType, false);
 	}
 
 	/**
-	 * Gets an available building with a particular function in a particular zone. 
+	 * Gets an available building with a particular function in a particular zone.
 	 *
-	 * @param person the person looking for a facility.
+	 * @param person       the person looking for a facility.
 	 * @param functionType
 	 * @param anyZones
 	 * @return
 	 */
-	public static Building getAvailableFunctionBuilding(
-			Person person, FunctionType functionType, boolean anyZones) {
-		
+	public static Building getAvailableFunctionBuilding(Person person, FunctionType functionType, boolean anyZones) {
+
 		Set<Building> buildings = null;
-		
+
 		if (person.getBuildingLocation() != null) {
 			int personZone = person.getBuildingLocation().getZone();
-			
+
 			if (anyZones) {
-				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
-						.stream()
+				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType).stream()
 						// Condition: the building doesn't need to be in the same zone as the person
-						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}
-			else {
-				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
-						.stream()
-						.filter(b -> 
-							// Condition: the building must be in the same zone as the person
-							// Note: the condition below needs to be true 
-							b.getZone() == personZone
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
+						.filter(b -> !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
+			} else {
+				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType).stream().filter(b ->
+				// Condition: the building must be in the same zone as the person
+				// Note: the condition below needs to be true
+				b.getZone() == personZone && !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
 			}
 
-		}
-		else {
+		} else {
 			if (anyZones) {
-				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
-						.stream()
-						// Condition: the building doesn't need to be in the same zone as the person						
-						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}
-			else {
-				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
-						.stream()
-						
-						.filter(b -> 
+				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType).stream()
+						// Condition: the building doesn't need to be in the same zone as the person
+						.filter(b -> !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
+			} else {
+				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType).stream()
+
+						.filter(b ->
 						// Condition: the building must be in the same zone as the person
 						// Note: only buildings in zone 0 will be chosen
-							b.getZone() == 0
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}	
+						b.getZone() == 0 && !b.getMalfunctionManager().hasMalfunction()).collect(Collectors.toSet());
+			}
 		}
-		
+
 		buildings = getLeastCrowdedBuildings(buildings);
 
 		if (!buildings.isEmpty()) {
 			return RandomUtil.getWeightedRandomObject(getBestRelationshipBuildings(person, buildings));
 		}
-		
+
 		return null;
 	}
-	
-		
 
-	
 	/**
 	 * Is the astronomy observatory the owner of this EVA Airlock ?
 	 * 
@@ -2398,12 +2266,12 @@ public class BuildingManager implements Serializable {
 		if (airlockBuilding.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION))
 			return true;
 
- 		for (Building bb : createAdjacentBuildings(airlockBuilding)) {
- 			if (bb.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)) {
- 				return true;
- 			}
- 		}
- 		
+		for (Building bb : createAdjacentBuildings(airlockBuilding)) {
+			if (bb.hasFunction(FunctionType.ASTRONOMICAL_OBSERVATION)) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 
@@ -2430,8 +2298,8 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Creates a map of buildings with their lists of building connectors attached to
-	 * it.
+	 * Creates a map of buildings with their lists of building connectors attached
+	 * to it.
 	 */
 	public void createAdjacentBuildingMap() {
 		if (adjacentBuildingMap == null)
@@ -2442,7 +2310,6 @@ public class BuildingManager implements Serializable {
 		}
 	}
 
-	
 	/**
 	 * Gets a set of buildings attached to this building.
 	 *
@@ -2453,57 +2320,56 @@ public class BuildingManager implements Serializable {
 		if (adjacentBuildingMap == null) {
 			createAdjacentBuildingMap();
 		}
-		
+
 		if (!adjacentBuildingMap.containsKey(building)) {
 			return new UnitSet<>();
 		}
 
 		return adjacentBuildingMap.get(building);
 	}
-		
-	 /**
-	  * Retrieves maintenance parts from all entities associated with this settlement. 
-	  */
-	public void retrieveAllEntitiesMaintParts() {
-        for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
-        	retrieveMaintParts(entity);
-        }
-	}
-	
+
 	/**
-	 * Retrieves maintenance parts from an entity. 
+	 * Retrieves maintenance parts from all entities associated with this
+	 * settlement.
+	 */
+	public void retrieveAllEntitiesMaintParts() {
+		for (Malfunctionable entity : MalfunctionFactory.getAssociatedMalfunctionables(settlement)) {
+			retrieveMaintParts(entity);
+		}
+	}
+
+	/**
+	 * Retrieves maintenance parts from an entity.
 	 * 
 	 * @param entity
 	 */
 	public void retrieveMaintParts(Malfunctionable entity) {
-      
-       Map<MaintenanceScope, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
 
-       if (!parts.isEmpty()) {
+		Map<MaintenanceScope, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
 
-           if (!partsMaint.isEmpty()) {
-               Map<MaintenanceScope, Integer> partsMaintEntry = partsMaint.get(entity);
-               if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
-                   // Post the parts and inject the demand
-                   injectMaintenancePartsDemand(entity, parts);
-               }
-               
-               if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
+		if (!parts.isEmpty()) {
+
+			if (!partsMaint.isEmpty()) {
+				Map<MaintenanceScope, Integer> partsMaintEntry = partsMaint.get(entity);
+				if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
+					// Post the parts and inject the demand
+					injectMaintenancePartsDemand(entity, parts);
+				}
+
+				if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
 //						logger.info(entity, 30_000L, "Both are already equal: " + partsMaintEntry + " and " + parts);
-               } 
-               else {
-                   // Post the parts and inject the demand
-                   injectMaintenancePartsDemand(entity, parts);
-               }   
-           } 
-           else {
-               logger.info(entity, 30_000L, "The maint list was empty. " + parts + " just got posted.");
-               // Post the parts and inject the demand
-               injectMaintenancePartsDemand(entity, parts);
-           }
-       }
+				} else {
+					// Post the parts and inject the demand
+					injectMaintenancePartsDemand(entity, parts);
+				}
+			} else {
+				logger.info(entity, 30_000L, "The maint list was empty. " + parts + " just got posted.");
+				// Post the parts and inject the demand
+				injectMaintenancePartsDemand(entity, parts);
+			}
+		}
 	}
-	
+
 	/**
 	 * Posts the part and injects the demand.
 	 * 
@@ -2512,17 +2378,17 @@ public class BuildingManager implements Serializable {
 	 */
 	public void injectMaintenancePartsDemand(Malfunctionable entity, Map<MaintenanceScope, Integer> parts) {
 		// Post it up as maintenance parts
-        partsMaint.put(entity, parts);
-        // Inject demand
-        for (MaintenanceScope ms : parts.keySet()) {
-        	Part part = ms.getPart();
-            int num = parts.get(ms);      
-            // Inject the demand onto this part
-            if (num > 0)
-            	injectPartDemand(part, settlement, num);
-        }
+		partsMaint.put(entity, parts);
+		// Inject demand
+		for (MaintenanceScope ms : parts.keySet()) {
+			Part part = ms.getPart();
+			int num = parts.get(ms);
+			// Inject the demand onto this part
+			if (num > 0)
+				injectPartDemand(part, settlement, num);
+		}
 	}
-	
+
 	/**
 	 * Injects part demand directly.
 	 * 
@@ -2534,7 +2400,7 @@ public class BuildingManager implements Serializable {
 		Good good = GoodsUtil.getGood(part.getID());
 		((PartGood) good).injectPartDemand(part, settlement.getGoodsManager(), num);
 	}
-	
+
 	/**
 	 * Injects equipment demand directly.
 	 * 
@@ -2547,7 +2413,7 @@ public class BuildingManager implements Serializable {
 		Good good = GoodsUtil.getGood(EquipmentType.getResourceID(type));
 		((EquipmentGood) good).injectEquipmentDemand(type, settlement.getGoodsManager(), stored, needNum);
 	}
-	
+
 	/**
 	 * Updates the needed maintenance parts for a entity.
 	 * 
@@ -2556,10 +2422,9 @@ public class BuildingManager implements Serializable {
 	public void updateMaintenancePartsMap(Malfunctionable requestEntity, Map<MaintenanceScope, Integer> newParts) {
 		if (partsMaint.isEmpty()) {
 			partsMaint.put(requestEntity, newParts);
-			logger.info(requestEntity, 20_000L, "Maintenance parts updated: " 
-					+ MalfunctionManager.getPartsString(newParts));	
-		}
-		else {
+			logger.info(requestEntity, 20_000L,
+					"Maintenance parts updated: " + MalfunctionManager.getPartsString(newParts));
+		} else {
 			Iterator<Malfunctionable> i = partsMaint.keySet().iterator();
 			while (i.hasNext()) {
 				Malfunctionable entity = i.next();
@@ -2568,12 +2433,11 @@ public class BuildingManager implements Serializable {
 						// This means that this part has been consumed
 						i.remove();
 						logger.info(entity, 20_000L, "Maintenance parts installed.");
-					}
-					else {
+					} else {
 						// Overwrite with the parts that are still in shortfall
 						partsMaint.put(entity, newParts);
-						logger.info(entity, 20_000L, "Maintenance parts updated: " 
-								+ MalfunctionManager.getPartsString(newParts));
+						logger.info(entity, 20_000L,
+								"Maintenance parts updated: " + MalfunctionManager.getPartsString(newParts));
 					}
 				}
 			}
@@ -2590,16 +2454,16 @@ public class BuildingManager implements Serializable {
 
 		if (partsMaint.isEmpty())
 			return 0;
-		
+
 		int numRequest = 0;
 
-        for (Malfunctionable entity : partsMaint.keySet()) {
-            Map<MaintenanceScope, Integer> partMap = partsMaint.get(entity);
-            for (MaintenanceScope ms: partMap.keySet()) {
-            	if (ms.getPart().equals(part))
-                	numRequest += partMap.get(ms);
-            }
-        }
+		for (Malfunctionable entity : partsMaint.keySet()) {
+			Map<MaintenanceScope, Integer> partMap = partsMaint.get(entity);
+			for (MaintenanceScope ms : partMap.keySet()) {
+				if (ms.getPart().equals(part))
+					numRequest += partMap.get(ms);
+			}
+		}
 
 		return numRequest;
 	}
@@ -2646,7 +2510,7 @@ public class BuildingManager implements Serializable {
 	public Set<Building> getObservatories() {
 		return observatories;
 	}
-	
+
 	/**
 	 * Gets a handy set of airlocks for the settlement.
 	 *
@@ -2655,7 +2519,7 @@ public class BuildingManager implements Serializable {
 	public Set<Building> getAirlocks() {
 		return airlocks;
 	}
-	
+
 	/**
 	 * Gets a handy set of computational nodes for the settlement.
 	 *
@@ -2668,11 +2532,10 @@ public class BuildingManager implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 *
-	 * @param {@link MasterClock}
+	 * @param {@link  MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(SimulationConfig sc, MasterClock c0,
-			UnitManager u) {
+	public static void initializeInstances(SimulationConfig sc, MasterClock c0, UnitManager u) {
 		simulationConfig = sc;
 		masterClock = c0;
 		unitManager = u;
@@ -2681,32 +2544,31 @@ public class BuildingManager implements Serializable {
 	public static BuildingConfig getBuildingConfig() {
 		return simulationConfig.getBuildingConfiguration();
 	}
-	
+
 	/**
 	 * Reconstructs the building lists after loading from a saved sim.
 	 */
 	public void reinit() {
 		settlement = unitManager.getSettlementByID(settlementID);
-		
+
 		// Re-initializes maps and meteorite instance
 		initializeFunctionsNMeteorite();
-		
+
 		// Re-create adjacent building map
 		createAdjacentBuildingMap();
 	}
-
 
 	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
-        for (Building building : buildings) {
-            building.destroy();
-        }
-    	garages = null;
-    	observatories = null;
-    	airlocks = null;
-    	comNodes = null;
+		for (Building building : buildings) {
+			building.destroy();
+		}
+		garages = null;
+		observatories = null;
+		airlocks = null;
+		comNodes = null;
 		buildings = null;
 		partsMaint = null;
 		lastVPUpdateTime = null;

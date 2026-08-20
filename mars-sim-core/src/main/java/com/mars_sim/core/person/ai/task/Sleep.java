@@ -285,7 +285,13 @@ public class Sleep extends Task {
 		// If person is in rover, walk to passenger activity spot.
 		if (person.getVehicle() instanceof Rover rover) {
 			
-			walkToPassengerActivitySpotInRover(rover, true);
+			if (person.getMission() != null) {
+				walkToPassengerActivitySpotInRover(rover, true);
+			}
+			else {
+				// Go to his own bed
+				walkToBed(person, effortDriven);
+			}
 		}
 
 		// If person is in a settlement, try to find a living accommodation building.

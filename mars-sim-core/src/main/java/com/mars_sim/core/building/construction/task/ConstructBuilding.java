@@ -21,14 +21,12 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.ExitAirlock;
-import com.mars_sim.core.person.ai.task.Relax;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
-import com.mars_sim.core.vehicle.Rover;
 
 /**
  * Task for constructing a building construction site stage.

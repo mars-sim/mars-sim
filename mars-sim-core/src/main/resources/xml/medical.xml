@@ -111,7 +111,7 @@
 
 		<!-- Heat stroke is an environmentally triggered condition -->
 		<medical-complaint name="Heat Stroke">
-			<seriousness value="40" />
+			<seriousness value="51" />
 			<degrade-time value="0.2"/>
 			<recovery-time min="1" />
 			<performance-percent value="60.0" />
@@ -121,11 +121,11 @@
 
 		<!-- Freezing is an environmentally triggered condition -->
 		<medical-complaint name="Freezing">
-			<seriousness value="50" />
+			<seriousness value="30" />
 			<degrade-time value="0.250"/>
 			<recovery-time min="1" />
 			<performance-percent value="50.0" />
-			<bed-rest-recovery value="true" />
+			<bed-rest-recovery value="false" />
 			<environmental value="true" />
 		</medical-complaint>
 		
@@ -165,7 +165,7 @@
 		<!-- A pulled/muscle is a minor and common medical complaint. -->
 		<!-- It affects performance but does not require medical treatment. -->
 		<medical-complaint name="Pulled Muscle/Tendon">
-			<seriousness value="1" />
+			<seriousness value="10" />
 			<recovery-time min="2.0" />
 			<probability value="3.0" />
 			<performance-percent value="70.0" />
@@ -228,7 +228,7 @@
 
 		<!-- A laceration is a deep cut that can result in gangrene if left untreated. -->
 		<medical-complaint name="Laceration">
-			<seriousness value="50" />
+			<seriousness value="51" />
 			<degrade-time value="7.0" />
 			<recovery-time min="2.0" />
 			<probability value="3.0" />
@@ -286,7 +286,7 @@
 		<!-- and possibly low air pressure. It is more serious than frostnip and -->
 		<!-- can turn into gangrene if left untreated. -->
 		<medical-complaint name="Frostbite">
-			<seriousness value="50" />
+			<seriousness value="51" />
 			<degrade-time value="10.0" />
 			<recovery-time min="10.0" />			
 			<performance-percent value="60.0" />

@@ -72,7 +72,7 @@ public class SelfTreatHealthProblem extends TreatHealthProblem {
 
         // Has the treatment been queued
         if (!aid.getProblemsAwaitingTreatment().contains(problem)) {
-            logger.info(healer, problem + " requesting treatment treatment.");
+            logger.info(healer, problem + ". Requesting treatment.");
             aid.requestTreatment(problem);
         }
         

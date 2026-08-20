@@ -84,7 +84,7 @@ public class EntityContentFactory {
 	public static Entity getEntity(Simulation sim, Properties settings) {
 		String stringId = settings.getProperty(EntityContentPanel.ENTITY_ID);
 
-        // Resolver may throw exceptino in failure
+        // Resolver may throw exception in failure
         try {
             EntityIdentifier identifier = EntityResolver.fromString(stringId);
             return EntityResolver.resolve(sim, identifier);

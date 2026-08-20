@@ -2390,7 +2390,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	@Override
 	public boolean transfer(UnitHolder destination) {
-		boolean departingFromHome = false;
+
 		boolean canTransferOut = false;
 		var cu = getContainerUnit();
 		// Note: at startup, a vehicle has Mars Surface as the container unit by default
@@ -2401,8 +2401,11 @@ public abstract class Vehicle extends AbstractMobileUnit
 		
 		else if (cu instanceof Settlement s) {
 			// The vehicle is about to depart either from the settlement vicinity or from a garage in a settlement 
+			if (isInGarage()) {
+				BuildingManager.removeFromGarage(this);
+			}
+
 			canTransferOut = s.removeVicinityParkedVehicle(this);
-			departingFromHome = true;
 		}
 
 		if (!canTransferOut) {
@@ -2413,7 +2416,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 			if (destination instanceof MarsSurface ms) {
 				// Vehicle is leaving the settlement vicinity onto the surface of mars
 				canTransferOut = ms.addVehicle(this);
-				departingFromHome = true;
+
 			}
 			else if (destination instanceof Settlement s) {
     			// Add the vehicle to the settlement vicinity
@@ -2426,35 +2429,27 @@ public abstract class Vehicle extends AbstractMobileUnit
 				// NOTE: need to revert back the storage action
 			}
 			else {
-				if (departingFromHome) {
-					
-					if (isInGarage()) {
-						BuildingManager.removeFromGarage(this);
-					}
-					else {
-						// Transfer each occupant 
-						if (this instanceof Crewable crewable) {
-				            for (Person crewmember : crewable.getCrew()) {
-				                crewmember.transfer(this);
-				            }
-						}
-						else if (this instanceof LightUtilityVehicle luv 
-								&& !luv.hasNoCrew()) {
-							Worker occupant = luv.getOccupant();
-							if (occupant != null && luv.getOperator().equals(occupant)) {
-								occupant.transfer(this);
-							}
-						}
-						
-						// Transfer each piece of equipment 
-						for (Equipment equipment : getEquipmentSet()) {
-							equipment.transfer(this);
-			            }	
-					}
-				}
-				
 				// Set the container unit for this vehicle
 				setContainerUnit(destination);
+				
+//				// Transfer each occupant 
+//				if (this instanceof Crewable crewable) {
+//		            for (Person crewmember : crewable.getCrew()) {
+//		                crewmember.transfer(this);
+//		            }
+//				}
+//				else if (this instanceof LightUtilityVehicle luv 
+//						&& !luv.hasNoCrew()) {
+//					Worker occupant = luv.getOccupant();
+//					if (occupant != null && luv.getOperator().equals(occupant)) {
+//						occupant.transfer(this);
+//					}
+//				}
+//				
+//				// Transfer each piece of equipment 
+//				for (Equipment equipment : getEquipmentSet()) {
+//					equipment.transfer(this);
+//	            }	
 			}
 		}
 		return canTransferOut;

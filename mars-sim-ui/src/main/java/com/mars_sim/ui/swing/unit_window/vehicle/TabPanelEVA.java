@@ -24,7 +24,6 @@ import com.mars_sim.ui.swing.utils.AirlockPanel;
 /**
  * The TabPanelEVA class represents the EVA airlock function of a vehicle.
  */
-@SuppressWarnings("serial")
 class TabPanelEVA extends EntityTabPanel<Rover> implements TemporalComponent{
 
 	private static final String SUIT_ICON = "eva"; 
@@ -60,7 +59,7 @@ class TabPanelEVA extends EntityTabPanel<Rover> implements TemporalComponent{
     protected void buildUI(JPanel content) {
 	
 		airlockPanel = new AirlockPanel(vehicleAirlock, getContext());
-        content.add(airlockPanel, BorderLayout.CENTER);
+        content.add(airlockPanel, BorderLayout.NORTH);
     }
 
 	/**

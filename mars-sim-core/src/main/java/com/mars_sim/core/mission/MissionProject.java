@@ -91,7 +91,9 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
         }
         
         this.leader = leader;
+        
         leader.setMission(this);
+        
         this.log = new MissionLog();
 
         // Inviite them in
@@ -407,6 +409,8 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
             List<Worker> oldmembers = new ArrayList<>(members);
             for(Worker w : oldmembers) {
                 logger.warning(w, "Still attached to Mission " + getName() + " at clear down");
+            	// Log what time and why in mission log
+                addMissionLog("Clear down", w.getName());
                 w.setMission(null);
             }
         }

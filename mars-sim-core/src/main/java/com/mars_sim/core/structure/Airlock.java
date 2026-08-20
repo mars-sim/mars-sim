@@ -825,10 +825,11 @@ public abstract class Airlock implements Serializable {
 			if (getZoneOccupants(1).contains(id)
 				|| getZoneOccupants(2).contains(id)
 				|| getZoneOccupants(3).contains(id)) {
-				// If this person is not physically in zone 1, 2, or 3, remove his id
+				// If this person is physically in zone 1, 2, or 3, do nothing
 				continue;
 			}
 			else
+				// If this person is not physically in zone 1, 2, or 3, remove his id
 				occupant123IDs.remove(id);
 		}
 	}

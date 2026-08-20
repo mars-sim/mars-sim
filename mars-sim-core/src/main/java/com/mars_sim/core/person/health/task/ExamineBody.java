@@ -174,11 +174,14 @@ public class ExamineBody extends MedicalAidTask {
 				// Send the worker as a patient to a medical bed
 				boolean toSend = BuildingManager.addPatientToMedicalBed(deceasedPerson, worker.getSettlement());
 
-				String name = deathInfo.getDoctorRetrievingBody();
-				
-				if (toSend && name == null) {
-				
-					deathInfo.setDoctorRetrievingBody(worker.getName());
+				if (toSend) {
+
+					String name = deathInfo.getDoctorRetrievingBody();
+					
+					if (name == null) {
+						
+						deathInfo.setDoctorRetrievingBody(worker.getName());
+					}
 					
 					logger.info(worker, "Just retrieved and transferred the body of " + deceasedPerson.getName() + " to the medical facility.");
 					
@@ -211,8 +214,11 @@ public class ExamineBody extends MedicalAidTask {
 				else {
 					logger.info(worker, "Unable to retrieve and transfer the body of " + deceasedPerson.getName() + " to the medical facility.");
 					
-					// Set it back to null
-					deathInfo.setDoctorRetrievingBody(null);
+					String name = deathInfo.getDoctorRetrievingBody();
+					
+					if (name != null)
+						// Set it back to null
+						deathInfo.setDoctorRetrievingBody(null);
 					
 					endTask();
 				}

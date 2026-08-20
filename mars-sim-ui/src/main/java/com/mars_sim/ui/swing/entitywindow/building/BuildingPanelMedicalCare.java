@@ -29,7 +29,6 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * The MedicalCareBuildingPanel class is a building function panel representing
  * the medical info of a settlement building.
  */
-@SuppressWarnings("serial")
 public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> implements TemporalComponent {
 
 	private static final String MEDICAL_ICON = "medical";
@@ -37,17 +36,28 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 	// Data members
 	/** The medical care. */
 	private MedicalCare medical;
-	/** Label of number of physicians. */
-	private JLabel physicianLabel;
 	/** Table of medical info. */
 	private MedicalTableModel medicalTableModel;
 
+	/** Label of number of physicians. */
+	private JLabel physicianLabel;
+	/** Label of number of patient. */
+	private JLabel patientLabel;
+	/** Label of number of beds in use. */
+	private JLabel bedInUseLabel;
+	
 	// Data cache
 	/** Cache of number of physicians. */
 	private int physicianCache;
-
+	/** Cache of number of patients. */
+	private int patientCache;
+	/** Cache of number of beds in use. */
+	private int bedInUseCache;
+	
+	
 	/**
 	 * Constructor.
+	 * 
 	 * @param medical the medical care building this panel is for.
 	 * @param context the UI context
 	 */
@@ -66,7 +76,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 	}
 	
 	/**
-	 * Build the UI
+	 * Builds the UI.
 	 */
 	@Override
 	protected JPanel createInfoPanel() {
@@ -82,6 +92,15 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 		physicianCache = medical.getPhysicianNum();
 		physicianLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfPhysicians"),
 									  Integer.toString(physicianCache), null);
+		
+		patientCache = medical.getPatientNum();
+		patientLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfPatients"),
+									  Integer.toString(patientCache), null);
+		
+		bedInUseCache = medical.getBedsInUse();
+		bedInUseLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfBedsInUse"),
+									  Integer.toString(bedInUseCache), null);
+		
 		return labelPanel;
 	}
 
@@ -89,6 +108,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 	protected TableModel createModel() {
 		// Prepare medical table model
 		medicalTableModel = new MedicalTableModel(medical);
+		
 		return medicalTableModel;
 	}
 
@@ -102,6 +122,18 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 			physicianLabel.setText(Integer.toString(physicianCache));
 		}
 
+		// Update patient label
+		if (patientCache != medical.getPatientNum()) {
+			patientCache = medical.getPatientNum();
+			patientLabel.setText(Integer.toString(patientCache));
+		}
+		
+		// Update beds in use label
+		if (bedInUseCache != medical.getBedsInUse()) {
+			bedInUseCache = medical.getBedsInUse();
+			bedInUseLabel.setText(Integer.toString(bedInUseCache));
+		}
+		
 		// Update medical table model.
 		medicalTableModel.update();
 	}
@@ -118,9 +150,11 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 		private MedicalCare medical;
 		private java.util.List<HealthProblem> healthProblems;
 
+
 		private MedicalTableModel(MedicalCare medical) {
 			this.medical = medical;
 			healthProblems = medical.getProblemsBeingTreated();
+			healthProblems.addAll(medical.getProblemsAwaitingTreatment());
 		}
 
 		public int getRowCount() {
@@ -128,7 +162,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 		}
 
 		public int getColumnCount() {
-			return 2;
+			return 3;
 		}
 
 		@Override
@@ -136,6 +170,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 			return switch (columnIndex) {
 				case 0 -> String.class;
 				case 1 -> String.class;
+				case 2 -> Boolean.class;
 				default -> Object.class;
 			};
 		}
@@ -145,6 +180,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 			return switch (columnIndex) {
 				case 0 -> "Patient";
 				case 1 -> "Condition";
+				case 2 -> "Have Bed";
 				default -> "unknown";
 			};
 		}
@@ -157,14 +193,16 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 			return switch (column) {
 				case 0 -> problem.getSufferer().getName();
 				case 1 -> problem.toString();
+				case 2 -> medical.doesPatientHaveBed(problem.getSufferer());
+				
 				default -> "unknown";
 			};
 		}
 
 		public void update() {
-			if (!healthProblems.equals(medical.getProblemsBeingTreated()))
-				healthProblems = medical.getProblemsBeingTreated();
-
+			healthProblems = medical.getProblemsBeingTreated();
+			healthProblems.addAll(medical.getProblemsAwaitingTreatment());
+			
 			fireTableDataChanged();
 		}
 
