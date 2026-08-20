@@ -262,14 +262,14 @@ public class MineSite extends EVAOperation {
 	}
 	
 
-	/**
-	 * Ends the task.
-	 */
-	public void endTask() {
-		resetLUV();
-		super.endTask();
-	}
-	
+//	/**
+//	 * Ends the task.
+//	 */
+//	public void endTask() {
+//		resetLUV();
+//		super.endTask();
+//	}
+
 	/**
 	 * Reset the LUV.
 	 *
