@@ -79,7 +79,7 @@ public class SleepMeta extends FactoryMetaTask {
     	// lowers leptin levels in the blood.
     	// Take a break from sleep if it's too hungry and too low energy
     	if (fatigue > PhysicalCondition.FATIGUE_MIN || energy < PhysicalCondition.ENERGY_THRESHOLD
-    			&& (stress > 50 || ghrelinS > 0 || leptinS == 0)) {
+    			&& (stress > 50 || ghrelinS > 100 || leptinS < 1)) {
     		
         	int rand = RandomUtil.getRandomInt(1);
             proceed = rand != 1 ;

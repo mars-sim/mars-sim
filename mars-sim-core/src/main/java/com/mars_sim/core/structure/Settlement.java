@@ -352,6 +352,8 @@ public class Settlement extends Unit implements Temporal,
 	private Set<Robot> robotsWithin;
 	/** The list of tourists registered with the settlement. */
 	private Set<Person> touristPool;
+	/** The settlement's list of dead people. */
+	private Set<Person> deathRegistry;
 	
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(80);
@@ -372,7 +374,7 @@ public class Settlement extends Unit implements Temporal,
 
 
 	/**
-	 * Constructor 2A called by MockSettlement for maven testing.
+	 * Constructor 1 called by MockSettlement for maven testing.
 	 *
 	 * @param name
 	 * @param location
@@ -395,7 +397,8 @@ public class Settlement extends Unit implements Temporal,
 		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
-	
+		deathRegistry = new UnitSet<>();
+		
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
@@ -411,7 +414,7 @@ public class Settlement extends Unit implements Temporal,
 	}
 	
 	/**
-	 * Constructor 2B called by MockSettlement for maven testing.
+	 * Constructor 2 called by MockSettlement for maven testing.
 	 *
 	 * @param name
 	 * @param location
@@ -433,6 +436,7 @@ public class Settlement extends Unit implements Temporal,
 		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
+		deathRegistry = new UnitSet<>();
 		
 		// Create equipment inventory
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
@@ -486,6 +490,8 @@ public class Settlement extends Unit implements Temporal,
 		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
+		deathRegistry = new UnitSet<>();
+		
 		allowTradeMissionSettlements = new HashMap<>();
 		
 		logger.info(name + " (" + settlementCode + ")");
@@ -1105,6 +1111,8 @@ public class Settlement extends Unit implements Temporal,
 					}
 					remove.add(p);
 				}
+				
+				deathRegistry.add(p);
 			}
 			else {
 				p.timePassing(pulse);
@@ -1717,6 +1725,16 @@ public class Settlement extends Unit implements Temporal,
 		return citizens;
 	}
 
+	/**
+	 * Gets all people in the death registry.
+	 *
+	 * @return collection of dead people.
+	 */
+	public Collection<Person> getDeathRegistry() {
+		return deathRegistry;
+	}
+	
+	
 	/**
 	 * Returns a collection of people buried outside this settlement.
 	 *

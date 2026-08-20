@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
@@ -143,9 +142,14 @@ public class WalkOutside extends Task {
 			// Check for radiation exposure during the EVA operation.
 			// checkForRadiation(time);
 			// If there are any EVA problems, end walking outside task.
-			if (!ignoreEndEVA && (hasEVAProblem(person) || EVAOperation.isGettingDark(person))) {
-				endTask();
-				return time;
+			if (!ignoreEndEVA && (EVAOperation.hasEVASuitProblem(person) || EVAOperation.isGettingDark(person))) {
+				
+				// Note: it should not call endTask. It should allow a person to walk back in.
+				// Instead, hurry up walking back in
+//				endTask();
+//				return time;
+				
+				speedKPH = Walk.PERSON_WALKING_SPEED * person.getWalkSpeedMod();
 			}
 			else
 				speedKPH = Walk.PERSON_WALKING_SPEED * person.getWalkSpeedMod() * EVA_MOD;
@@ -228,17 +232,7 @@ public class WalkOutside extends Task {
 		
         return 0;
 	}
-
-	/**
-	 * Checks if there is an EVA problem for a person.
-	 *
-	 * @param person the person.
-	 * @return true if an EVA problem.
-	 */
-	public boolean hasEVAProblem(Person person) {
-		return EVAOperation.hasEVASuitProblem(person);
-	}
-
+	
 	/**
 	 * Walks in a given direction for a given distance.
 	 *

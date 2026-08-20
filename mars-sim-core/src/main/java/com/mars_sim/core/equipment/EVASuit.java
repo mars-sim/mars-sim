@@ -150,9 +150,9 @@ public class EVASuit extends Equipment
 		
 		massO2MinimumLimit = minO2Pressure / fullO2PartialPressure * OXYGEN_CAPACITY;
 		
-		massO2NominalLimit = NOMINAL_O2_PRESSURE / minO2Pressure * massO2MinimumLimit;
+		massO2NominalLimit = NOMINAL_O2_PRESSURE / fullO2PartialPressure * OXYGEN_CAPACITY;
 		
-		massO2TargetLimit = TARGET_O2_PRESSURE / minO2Pressure * massO2MinimumLimit;
+		massO2TargetLimit = TARGET_O2_PRESSURE / fullO2PartialPressure * OXYGEN_CAPACITY;
 				
 		logger.config(DASHES);
 		
@@ -333,12 +333,6 @@ public class EVASuit extends Equipment
 	@Override
 	public boolean lifeSupportCheck() {
 		try {
-			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
-			if (getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID) <= massO2MinimumLimit) {
-				logger.log(this, Level.WARNING, 30_000,
-						"Less than " + Math.round(massO2MinimumLimit * 1000.0)/1000.0 + " kg oxygen (below the safety limit).");
-				return false;
-			}
 
 			if (getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 				logger.log(this, Level.WARNING, 30_000,
@@ -351,11 +345,24 @@ public class EVASuit extends Equipment
 			}
 
 			double p = getAirPressure();
-			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minO2Pressure) {
+			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE) {
 				logger.log(this, Level.WARNING, 30_000,
-						"Detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
+						"Detected improper oxygen partial pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
 				return false;
 			}
+			else if (p <= minO2Pressure) {
+				logger.log(this, Level.WARNING, 30_000,
+						"Dwindling amount of oxygen at " + Math.round(p * 100.0D) / 100.0D
+						+ " kPa, already below the minimum safety partial pressure of " + minO2Pressure + " kPa.");
+			return false;
+			}
+			else if (p <= (minO2Pressure + TARGET_O2_PRESSURE) / 2) {
+				logger.log(this, Level.WARNING, 30_000,
+						"Dwindling amount of oxygen at " + Math.round(p * 100.0D) / 100.0D 
+						+ " kPa, already below the target partial pressure of " + TARGET_O2_PRESSURE + " kPa.");
+				return false;
+			}
+			
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
 				logger.log(this, Level.WARNING, 30_000,
@@ -369,6 +376,56 @@ public class EVASuit extends Equipment
 		return true;
 	}
 
+	/**
+	 * Gets the air pressure of the life support system.
+	 *
+	 * @return air pressure (Pa)
+	 */
+	@Override
+	public double getAirPressure() {
+		// Based on some pre-calculation,
+		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure.
+		// To supply a partial oxygen pressure of 20.7 kPa, one needs 0.3107 kg of O2.
+		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
+		// Note : our target o2 partial pressure is 17 kPa (not 20.7 kPa), the targeted mass of O2 is 0.2552 kg
+
+		// 66.61 kPa -> 1      kg (full tank O2 pressure)
+		// 20.7  kPa -> 0.3107 kg
+		// 17    kPa -> 0.2552 kg (target O2 pressure)
+		// 11.94 kPa -> 0.1792 kg (min O2 pressure)
+
+		double oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+		
+		double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
+		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
+		if (oxygenLeft < massO2TargetLimit) {
+			
+			logger.log(this, Level.WARNING, 30_000,
+					"<Alert> " + Math.round(oxygenLeft * 1000.0)/1000.0
+						+ " kg O2 left at " + Math.round(pp * 1000.0)/1000.0 + " kPa, going below the target partial pressure of " + TARGET_O2_PRESSURE + " kPa.");
+			return pp;
+		}		
+		else if (oxygenLeft < massO2NominalLimit) {
+			
+			logger.log(this, Level.WARNING, 30_000,
+					"<Alert> " + Math.round(oxygenLeft * 1000.0)/1000.0
+					+ " kg O2 left at " + Math.round(pp * 1000.0)/1000.0 + " kPa, going below the nominal partial pressure of " + NOMINAL_O2_PRESSURE + " kPa.");
+			return pp;
+		}
+		
+		return pp;
+	}
+
+	/**
+	 * Gets oxygen partial pressure.
+	 * 
+	 * @return
+	 */
+	private double getCurrentOxygenPartialPressure() {
+		double oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+		return AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
+	}
+	
 	/**
 	 * Gets the number of people the life support can provide for.
 	 *
@@ -417,47 +474,6 @@ public class EVASuit extends Equipment
 		return waterTaken - lacking;
 	}
 
-	/**
-	 * Gets the air pressure of the life support system.
-	 *
-	 * @return air pressure (Pa)
-	 */
-	@Override
-	public double getAirPressure() {
-		// Based on some pre-calculation,
-		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure.
-		// To supply a partial oxygen pressure of 20.7 kPa, one needs 0.3107 kg of O2.
-		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg
-		// Note : our target o2 partial pressure is 17 kPa (not 20.7 kPa), the targeted mass of O2 is 0.2552 kg
-
-		// 66.61 kPa -> 1      kg (full tank O2 pressure)
-		// 20.7  kPa -> 0.3107 kg
-		// 17    kPa -> 0.2552 kg (target O2 pressure)
-		// 11.94 kPa -> 0.1792 kg (min O2 pressure)
-
-		double oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
-		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
-		if (oxygenLeft < massO2NominalLimit) {
-			double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
-			logger.log(this, Level.WARNING, 3_000,
-					"Only " + Math.round(oxygenLeft * 1000.0)/1000.0
-						+ " kg O2 left at partial pressure of " + Math.round(pp * 1000.0)/1000.0 + " kPa.");
-			return pp;
-		}
-//		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates())
-		return NOMINAL_O2_PRESSURE;
-	}
-
-	/**
-	 * Gets oxygen partial pressure.
-	 * 
-	 * @return
-	 */
-	private double getCurrentOxygenPartialPressure() {
-		double oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
-		return AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
-	}
-	
 	
 	/**
 	 * Gets the temperature of the life support system.
@@ -466,6 +482,7 @@ public class EVASuit extends Equipment
 	 */
 	@Override
 	public double getTemperature() {
+		// Future: Will implement suit internal temperature regulation 
 		return NORMAL_TEMP;
 	}
 

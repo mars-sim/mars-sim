@@ -688,7 +688,7 @@ public class Walk extends Task {
 				boolean canAdd = addSubTask(new WalkOutside(worker, worker.getPosition(), step.loc, true));
 				if (!canAdd) {
 					logger.log(worker, Level.WARNING, 4_000,
-							". Unable to add subtask WalkOutside.");
+							"Unable to add WalkOutside subtask.");
 					// Note: may call below many times
 					endTask();
 				}

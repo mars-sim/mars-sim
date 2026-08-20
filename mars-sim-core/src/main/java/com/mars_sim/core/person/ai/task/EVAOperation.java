@@ -302,7 +302,7 @@ public abstract class EVAOperation extends Task {
 				boolean canAdd = addSubTask(walkingTask);
 				if (!canAdd) {
 					logger.log(person, Level.WARNING, 4_000,
-							". Unable to add subtask Walk.createWalkingTask.");
+							"Case 1: Unable to add Walk.createWalkingTask subtask.");
 					// Note: may call below many times
 					endTask();
 				}
@@ -316,8 +316,15 @@ public abstract class EVAOperation extends Task {
         		// FUTURE: how to get the walk time and return the remaining time ?
         		  
         		// Note that addSubTask() will internally check if the task is a duplicate
-        		addSubTask(new WalkOutside(person, person.getPosition(),
-            				outsideSitePos, false));   		
+ 
+				boolean canAdd = addSubTask(new WalkOutside(person, person.getPosition(),
+        				outsideSitePos, false));
+				if (!canAdd) {
+					logger.log(person, Level.WARNING, 4_000,
+							"Case 2: Unable to add WalkOutside subtask.");
+					// Note: may call below many times
+					endTask();
+				}
         	}
         	else {
                 // Set to collectionPhase
@@ -355,12 +362,12 @@ public abstract class EVAOperation extends Task {
 			}
 
 			if (interiorObject == null) {
-				logger.log(person, Level.SEVERE, 30_000, "Trying to walk somewhere. interiorObject is null.");
+				logger.log(person, Level.WARNING, 30_000, "Trying to walk somewhere. interiorObject is null.");
 
 				boolean canAdd = addSubTask(new Walk(person));
 				if (!canAdd) { 
 					logger.log(person, Level.WARNING, 4_000,
-							". Unable to add subtask Walk.");
+							"Case 1: Unable to add Walk subtask in walkBackInsidePhase.");
 					// Note: may call below many times
 					endTask();
 				}
@@ -374,9 +381,15 @@ public abstract class EVAOperation extends Task {
 						!LocalAreaUtil.isPositionWithinLocalBoundedObject(
 								returnInsideLoc, interiorObject)) {
 
-					logger.log(person, Level.SEVERE, 30_000, 
+					logger.log(person, Level.WARNING, 10_000, 
 							"Trying to walk somewhere. returnInsideLoc failed.");
-					addSubTask(new Walk(person));
+					boolean canAdd = addSubTask(new Walk(person));
+					if (!canAdd) { 
+						logger.log(person, Level.WARNING, 10_000,
+								"Case 2: Unable to add Walk subtask in walkBackInsidePhase.");
+						// Note: may call below many times
+						endTask();
+					}
 				}
 			}
 
@@ -386,24 +399,42 @@ public abstract class EVAOperation extends Task {
 
 				Walk walkingTask = Walk.createWalkingTask(person, returnInsideLoc, interiorObject, true);
 				if (walkingTask != null) {
-					addSubTask(walkingTask);
+					boolean canAdd = addSubTask(walkingTask);
+					if (!canAdd) { 
+						logger.log(person, Level.WARNING, 10_000,
+								"Case 3: Unable to add Walk subtask in walkBackInsidePhase.");
+						// Note: may call below many times
+						endTask();
+					}
 				}
 				else {
-					logger.log(person, Level.SEVERE, 30_000, 
+					logger.log(person, Level.SEVERE, 10_000, 
 							"Trying to walk somewhere. cannot walk all steps.");
-					addSubTask(new Walk(person));
+					boolean canAdd = addSubTask(new Walk(person));
+					if (!canAdd) { 
+						logger.log(person, Level.WARNING, 4_000,
+								"Case 4: Unable to add Walk subtask in walkBackInsidePhase.");
+						// Note: may call below many times
+						endTask();
+					}
 				}
 			}
 
 			else {
-				logger.log(person, Level.SEVERE, 30_000, 
+				logger.log(person, Level.SEVERE, 10_000, 
 						"Trying to walk somewhere. interiorObject is null or close to returnInsideLoc.");
-				addSubTask(new Walk(person));
+				boolean canAdd = addSubTask(new Walk(person));
+				if (!canAdd) { 
+					logger.log(person, Level.WARNING, 4_000,
+							"Case 5: Unable to add Walk subtask in walkBackInsidePhase.");
+					// Note: may call below many times
+					endTask();
+				}
 			}
 		}
 
 		else { // if a person is already inside, end the task gracefully here
-			logger.log(person, Level.FINE, 4_000,
+			logger.log(person, Level.WARNING, 10_000,
 					"Walked back inside. Ended '" 
 							+ person.getTaskDescription() + "'.");
 			endTask();
@@ -513,9 +544,9 @@ public abstract class EVAOperation extends Task {
 			return time;
 		}
 		
-		// Check fitness only if it's not in the state of emergency
-		if (!isNominallyFit()) {
-			endEVA("Nominally Unfit.");
+		// Check fitness
+		if (person.isSuperUnfit()) {
+			endEVA("Super EVA Unfit.");
 			return time;
 		}	
 
@@ -582,7 +613,7 @@ public abstract class EVAOperation extends Task {
 			double oxygenCap = suit.getSpecificCapacity(ResourceUtil.OXYGEN_ID);
 			double oxygen = suit.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			if (oxygen <= (oxygenCap * .1D)) {
-				logger.log(person, Level.WARNING, 20_000,
+				logger.log(person, Level.WARNING, 30_000,
 						suit.getName() + " reported less than 10% O2 left when "
 								+ person.getTaskDescription() + ".");
 				result = true;
@@ -592,7 +623,7 @@ public abstract class EVAOperation extends Task {
 			double waterCap = suit.getSpecificCapacity(ResourceUtil.WATER_ID);
 			double water = suit.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 			if (water <= (waterCap * .1D)) {
-				logger.log(person, Level.WARNING, 20_000,
+				logger.log(person, Level.WARNING, 30_000,
 						suit.getName() + " reported less than 10% water left when "
 										+ person.getTaskDescription() + ".");
 				// Running out of water should not stop a person from doing EVA
@@ -600,19 +631,19 @@ public abstract class EVAOperation extends Task {
 
 			// Check if life support system in suit is working properly.
 			if (!suit.lifeSupportCheck()) {
-				logger.warning(person, 20_000,
+				logger.warning(person, 30_000,
 						person.getTaskDescription() + " ended : " + suit.getName()
-								+ " failed the life support check.");
+								+ " failed EVA life support check.");
 				result = true;
 			}
 		} catch (Exception e) {
-			logger.severe(person, 20_000,
+			logger.severe(person, 30_000,
 					person.getTaskDescription() + " ended : " + suit.getName() + " unable to complete life support system check.", e);
 		}
 
 		// Check if suit has any malfunctions.
 		if (suit.getMalfunctionManager().hasMalfunction()) {
-			logger.warning(person, 20_000,
+			logger.warning(person, 30_000,
 					person.getTaskDescription() + "ended : " + suit.getName() + " has malfunction.");
 			result = true;
 		}

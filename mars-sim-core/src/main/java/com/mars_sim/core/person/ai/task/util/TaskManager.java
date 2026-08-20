@@ -702,9 +702,10 @@ public abstract class TaskManager implements Serializable {
 	/**
 	 * This is used to directly assign a Task to this work. The subclass may impose some extra rules.
 	 * Commonly used in Missions to allocated work as part of a Mission.
+	 * 
 	 * @param task Task to assign
 	 * @param allowSameTask Can this be the same as the current task
-	 * @return Was it successfull assigned
+	 * @return Was it successful assigned
 	 */
 	public abstract boolean directlyAssignTask(Task task, boolean allowSameTask);
 	

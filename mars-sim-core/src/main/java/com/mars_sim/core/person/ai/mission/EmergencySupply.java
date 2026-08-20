@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodCategory;
@@ -153,40 +152,22 @@ public class EmergencySupply extends RoverMission {
 	 */
 	private void performSupplyDeliveryDisembarkingPhase(Worker member) {
 
-		var emergencySettlement = supplies.getDestination();
+		var settlement = supplies.getDestination();
 		
 		// If rover is not parked at settlement, park it.
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
-			// Add the vehicle to the emergency settlement
-			emergencySettlement.addVicinityVehicle(getVehicle());
+			// Add this vehicle to the vicinity pool
+			settlement.addVicinityVehicle(getVehicle());
 		}
 
 		// Have member exit rover if necessary.
-		if (member.isInSettlement()) {
+		if (!member.isInSettlement()) {
 
-			// Get random inhabitable building at emergency settlement.
-			Building destinationBuilding = emergencySettlement.getBuildingManager().getRandomAirlockBuilding();
-			if (destinationBuilding != null) {
-				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
-
-				if (member instanceof Person person) {
-					
-					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
-					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
-					
-					if (canWalk) {
-						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
-						if (!canDo) {
-							logger.severe("Unable to start walking to building " + destinationBuilding);
-						}
-					}
-					else {
-						logger.severe("Unable to walk to building " + destinationBuilding);
-					}
-				}
-			}
-			else {
-				endMissionProblem(emergencySettlement, "No inhabitable buildings");
+			boolean canWalk = walkToAirlock((Rover)getVehicle(), member, settlement);
+			
+			if (!canWalk) {
+//				endMissionProblem(emergencySettlement, "No airlocks found to be available.");
+				logger.warning(member, 4_000, "No airlocks found to be available at " + settlement + ".");
 			}
 		}
 

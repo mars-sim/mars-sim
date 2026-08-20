@@ -23,6 +23,7 @@ import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -97,6 +98,8 @@ public class DeathInfo implements Serializable {
 	/** The robot. */
 	private Robot robot;
 	
+	private Settlement settlement;
+	
 	/** Name of mission stage at time of death. */
 	private Stage missionStage;
 	/** The person's job at time of death. */
@@ -161,6 +164,12 @@ public class DeathInfo implements Serializable {
 		else
 			this.causeOfDeath = cause + "; " + medicalCause;
 		
+		settlement = person.getAssociatedSettlement();
+		if (settlement == null)
+			settlement = person.getBuriedSettlement();
+		
+		coordinates = person.getCoordinates();
+		
 		// Record the place of death
 		if (person.isInVehicle()) {
 			// such as died inside a vehicle
@@ -168,22 +177,12 @@ public class DeathInfo implements Serializable {
 		}
 
 		else if (person.isOutside()) {
-			placeOfDeath = person.getCoordinates().toString();
-		}
-
-		else if (person.isInSettlement()) {
-			placeOfDeath = person.getSettlement().getName();
-		}
-
-		else if (person.isBuried()) {
-			placeOfDeath = person.getBuriedSettlement().getName();
+			placeOfDeath = coordinates.toString();
 		}
 
 		else {
-			placeOfDeath = "Unspecified";
+			placeOfDeath = settlement.getName();
 		}
-
-		coordinates = person.getCoordinates();
 
 		Mind mind = person.getMind();
 		

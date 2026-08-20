@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.logging.SimLogger;
@@ -20,11 +21,14 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.ExitAirlock;
+import com.mars_sim.core.person.ai.task.Relax;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Airlock;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
+import com.mars_sim.core.vehicle.Rover;
 
 /**
  * Task for constructing a building construction site stage.
@@ -270,8 +274,24 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	private void resetLUV() {
 		if (luv != null) {
-			person.transfer(unitManager.getMarsSurface());
-//			luv.removeOccupant(person);
+			
+			Settlement s = luv.getSettlement();
+			Building garage = s.getBuildingManager().addToGarageBuilding(luv);
+			
+			if (garage != null) {
+				boolean canTransfer = person.transfer(luv.getGarage());	
+				if (canTransfer) {
+					logger.info(luv, "Done transferring to " + s.getName() + " in " + garage + ".");
+				}
+				else {
+					logger.info(luv, "Unable to transfer to " + s.getName() + " in " + garage + ".");
+				}
+			}
+			else {
+				logger.info(luv, "Unable to find a garage with parking in " + s.getName() + ".");
+			}
+			// if not, calling endEVA() should take care of walking back inside automatically
+
 			operatingLUV = false;
 			logger.info(person, "Releasing " + luv.getName() + ".");
 		}

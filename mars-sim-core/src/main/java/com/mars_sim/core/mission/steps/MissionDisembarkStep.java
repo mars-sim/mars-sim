@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core.mission.steps;
 
+import java.util.Set;
+
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -16,12 +18,15 @@ import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Walk;
+import com.mars_sim.core.person.ai.task.WalkingSteps;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.person.health.task.RequestMedicalTreatment;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.StatusType;
@@ -126,6 +131,7 @@ public class MissionDisembarkStep extends MissionStep {
             // Shouldn't happen
             destBuilding = target.getBuildingManager().getRandomAirlockBuilding();
         }
+  
         BuildingManager.setToBuilding(w, destBuilding);
         return false;
     }
@@ -134,28 +140,98 @@ public class MissionDisembarkStep extends MissionStep {
      * Leaves a vehicle and walk to a building airlock.
      * 
      * @param w Worker wanting to leave
-     * @param target Settlement to reach
+     * @param disembarkSettlement Settlement to reach
      * @return Assign a task
      */
-    private boolean walkToAirLock(Worker w, Settlement target) {
-        Building destinationBuilding = target.getBuildingManager().getRandomAirlockBuilding();
-        if (destinationBuilding == null) {
-            logger.warning(w, "Cannot find an airlock in " + target.getName());
-            return false;
-        }
+    private boolean walkToAirLock(Worker w, Settlement disembarkSettlement) {
+    	Person person = (Person)w;
+    	
+		boolean hasStrength = person.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 
-        if (w instanceof Person p) {
-			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
-            Walk walk = Walk.createWalkingTask(p, adjustedLoc, destinationBuilding, true);
-            if (walk != null) {
-                // walk back home
-                return assignTask(p, walk);
-            }
-            else {
-                logger.warning(w, "No path to EVA from vehicle.");
-            }
-        }
-        return false;
+		if (!hasStrength) {
+			// Note 1: Help this person put on an EVA suit
+			// Note 2: consider inflatable medical tent for emergency transport of incapacitated personnel
+			logger.info(person, 10_000, 
+					 Msg.getString("RoverMission.log.emergencyEnterSettlement", person.getName(),
+							disembarkSettlement.getName())); //$NON-NLS-1$
+
+			logger.info(person, 10_000, ""
+					+ "Currently at "
+					+ person.getLocationTag().getExtendedLocation()); 
+
+			// Initiate an rescue operation
+			// Note: Gets a lead person to perform it and give him a rescue badge
+			// rescueOperation((Rover)getVehicle(), person, disembarkSettlement);
+
+//			logger.info(person, 10_000, "" + "Transported to "
+//					+ person.getLocationTag().getExtendedLocation()); 
+			
+			// Note: how to force the person to receive some form of medical treatment ?
+	
+			Task currentTask = person.getMind().getTaskManager().getTask();
+			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
+				person.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
+			}
+			
+			return false;
+		}
+	
+		Set<Building> airlocks = disembarkSettlement.getBuildingManager().getAirlocks();
+			
+		if (airlocks != null && airlocks.isEmpty()) {
+			logger.severe(person, 10_000, "No airlock found at " + disembarkSettlement);
+		}
+		
+		boolean canDo = false;
+				
+		for (Building destinationBuilding: airlocks) {
+			
+			// Get random airlock building at settlement.
+	//		Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
+		
+			if (destinationBuilding != null) {
+				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
+	
+				WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
+				boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
+				
+				if (canWalk) {
+					canDo = assignTask(person, new Walk(person, walkingSteps));
+					if (!canDo) {
+						logger.warning(person, 20_000, "Unable to walk back to " + disembarkSettlement + " via " + destinationBuilding + ".");
+					}
+					else
+						return true;
+				}
+			}
+		}
+		
+		if (!canDo) {
+			logger.warning(person, 20_000, "Currently no airlock was found available to walk back to " + disembarkSettlement + ".");
+		}
+		
+		return canDo;
+//		
+//    	
+//        Building destinationBuilding = target.getBuildingManager().getRandomAirlockBuilding();
+//        if (destinationBuilding == null) {
+//            logger.warning(w, "Cannot find an airlock in " + target.getName());
+//            return false;
+//        }
+//
+//        if (w instanceof Person p) {
+//			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
+//            Walk walk = Walk.createWalkingTask(p, adjustedLoc, destinationBuilding, true);
+//            if (walk != null) {
+//                // walk back home
+//                return assignTask(p, walk);
+//            }
+//            else {
+//                logger.warning(w, "No path to EVA from vehicle.");
+//            }
+//        }
+//        
+//        return false;
     }
 
     /**

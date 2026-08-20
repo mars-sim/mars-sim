@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -20,6 +21,7 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.shift.ShiftManager;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
+import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
@@ -86,13 +88,21 @@ public class ConstructBuildingMeta extends MetaTask implements SettlementMetaTas
      */
     @Override
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+    	
+    	Coordinates coord = settlement.getCoordinates();
+
+		List<SettlementTask> tasks = new ArrayList<>();
+
+		if (!surfaceFeatures.inDarkPolarRegion(coord)
+			&& !EVAOperation.isSunlightAboveLevel(coord, LightLevel.LOW)) {
+			return tasks;
+		}
+		
 		var activeSites = settlement
 				.getConstructionManager().getConstructionSites()
                 .stream()
                 .filter(cs -> cs.getWorkOnSite() != null)
                 .toList();
-
-		List<SettlementTask> tasks = new ArrayList<>();
 
 		for (ConstructionSite cs: activeSites) {
             var stage = cs.getCurrentConstructionStage();

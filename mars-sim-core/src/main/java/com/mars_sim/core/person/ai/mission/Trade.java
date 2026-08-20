@@ -14,15 +14,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.goods.CommerceMission;
 import com.mars_sim.core.goods.CommerceUtil;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.mission.task.NegotiateTrade;
 import com.mars_sim.core.person.Person;
@@ -30,7 +29,6 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.WalkingSteps;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
@@ -231,41 +229,21 @@ public class Trade extends RoverMission implements CommerceMission {
 	 * @param member the mission member performing the mission.
 	 */
 	private void performTradeDisembarkingPhase(Worker member) {
-		var tradingSettlement = objective.getTradingVenue();
 		
-		// Have member exit rover if necessary.
+		var settlement = objective.getTradingVenue();
+		
+		// If rover is not parked at settlement, park it.
+		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
+			// Add this vehicle to the vicinity pool
+			settlement.addVicinityVehicle(getVehicle());
+		}
+		
 		if (!member.isInSettlement()) {
 
-			// Get random inhabitable building at trading settlement.
-			Building destinationBuilding = tradingSettlement.getBuildingManager().getRandomAirlockBuilding();
-			if (destinationBuilding != null) {
-				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
-				if (member instanceof Person person) {
-					
-					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
-					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
-					if (canWalk) {
-						assignTask(person, new Walk(person, walkingSteps));
-					}
-					else {
-						logger.severe("Unable to walk to building " + destinationBuilding);
-					}
-				}
-				else if (member instanceof Robot robot) {
-					
-					WalkingSteps walkingSteps = new WalkingSteps(robot, adjustedLoc, destinationBuilding);
-					boolean canWalk = Walk.canWalkAllSteps(robot, walkingSteps);
-					
-					if (canWalk) {
-						assignTask(robot, new Walk(robot, walkingSteps));
-					}
-					else {
-						logger.severe("Unable to walk to building " + destinationBuilding);
-					}
-				}
-			}
-			else {
-				endMissionProblem(tradingSettlement, "No inhabitable buildings");
+			boolean canWalk = walkToAirlock((Rover)getVehicle(), member, settlement);
+			
+			if (!canWalk) {
+				logger.warning(member, 4_000, "No airlocks found to be available at " + settlement + ".");
 			}
 		}
 
