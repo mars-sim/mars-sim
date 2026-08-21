@@ -167,7 +167,7 @@ abstract class EVAMission extends RoverMission {
 
 		// This is equivalent of a 1% sun ratio as below
 		return (EVAOperation.isSunlightAboveLevel(locn, minSunlight)
-					&& !surfaceFeatures.inDarkPolarRegion(locn));
+					|| surfaceFeatures.inDarkPolarRegion(locn));
 	}
 
 	/**

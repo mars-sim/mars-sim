@@ -495,7 +495,9 @@ public abstract class EVAOperation extends Task {
 		}
 
 		// Check for sunlight
-		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
+		
+		if (!(EVAOperation.isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)
+				|| surfaceFeatures.inDarkPolarRegion(person.getCoordinates()))) {
 			logger.info(person, "Sunlight below threshold.");
 			return true;
 		}

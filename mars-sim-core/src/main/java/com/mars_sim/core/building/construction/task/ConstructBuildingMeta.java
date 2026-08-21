@@ -93,7 +93,7 @@ public class ConstructBuildingMeta extends MetaTask implements SettlementMetaTas
 
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		if (!surfaceFeatures.inDarkPolarRegion(coord)
+		if (!surfaceFeatures.inDarkPolarRegion(coord) 
 			&& !EVAOperation.isSunlightAboveLevel(coord, LightLevel.LOW)) {
 			return tasks;
 		}

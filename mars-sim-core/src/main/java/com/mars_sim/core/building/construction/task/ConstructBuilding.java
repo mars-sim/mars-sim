@@ -199,12 +199,13 @@ public class ConstructBuilding extends EVAOperation {
 		if (skill == 0) {
 			workTime /= 2;
 		} else if (skill > 1) {
-			workTime += workTime * (.2D * skill);
+			workTime += workTime * (.25D * skill);
 		}
 
 		// Work on construction.
 		stage.addWorkTime(workTime);
-
+		
+		logger.info(person, "At " + site.getName() + ", work time: " + Math.round(workTime * 1000.0)/1000.0);	
 		// Keep track of cumulative work time
 		cumulativeWorkTime += workTime;
 		
@@ -221,7 +222,7 @@ public class ConstructBuilding extends EVAOperation {
 		if (person != null
 			&& (stage.isComplete() || !availableWork)) {
 
-			logger.info(person, site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 10.0)/10.0);		
+			logger.info(person, site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 100.0)/100.0);		
 			// End operating light utility vehicle.
 			endEVA("Stage completed.");
 			return workTime;
