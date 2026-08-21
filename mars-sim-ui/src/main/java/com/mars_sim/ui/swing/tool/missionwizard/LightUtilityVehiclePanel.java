@@ -73,7 +73,7 @@ class LightUtilityVehiclePanel extends WizardItemStep<MissionDataBean,LightUtili
 		private VehicleTableModel(MissionDataBean state) {
 			super(NAME, STATUS, MISSION);
 
-			var l = state.getStartingSettlement().getParkedGaragedVehicles().stream()
+			var l = state.getStartingSettlement().getParkedNGaragedVehicles().stream()
 						.filter(LightUtilityVehicle.class::isInstance)
 						.map(LightUtilityVehicle.class::cast)
 						.toList();

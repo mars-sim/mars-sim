@@ -79,22 +79,22 @@ public final class MedicalHelper {
     }
 
     /**
-     * Can this Medical Aid cure a specific health problem ?
+     * Can this Medical Care cure a specific health problem ?
      * 
      * @param medicalCare Care center available
      * @param curable Set of problem to cure
      * @return
      */
-    private static boolean canTreat(MedicalAid medicalCare, Set<HealthProblem> curable) {
+    private static boolean canTreat(MedicalAid medicalAid, Set<HealthProblem> curable) {
         // Check if enough beds for patient.
-        if (medicalCare.getPatientNum() >= medicalCare.getSickBedNum()) {
+        if (medicalAid.getOpenBedNum() == 0) {
             return false;
         }
     
         // Check if any of the health problems can be treated in building.
         // Or if no problem; then anything
         return curable.isEmpty() || curable.stream()
-                        .anyMatch(medicalCare::canTreatProblem);
+                        .anyMatch(medicalAid::canTreatProblem);
     }
 
     /**

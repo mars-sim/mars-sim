@@ -252,20 +252,17 @@ public class ConstructionMission extends AbstractMission {
 	public static boolean isLUVAvailable(Settlement settlement) {
 		boolean result = false;
 
-		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
+		Iterator<LightUtilityVehicle> i = settlement.getLUVs().iterator();
 		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			if (vehicle.getVehicleType() == VehicleType.LUV) {
-				boolean usable = !vehicle.isReserved();
-                usable = usable && vehicle.isVehicleReady() && !vehicle.isBeingTowed();
+			LightUtilityVehicle luv = i.next();
+			boolean usable = !luv.isReserved();				
+            usable = usable && luv.isVehicleReady() && !luv.isBeingTowed();
 
-				if (((LightUtilityVehicle) vehicle).isFull())
-					usable = false;
+			if (luv.isFull())
+				usable = false;
 
-				if (usable)
-					result = true;
-
-			}
+			if (usable)
+				result = true;
 		}
 
 		return result;
@@ -479,8 +476,8 @@ public class ConstructionMission extends AbstractMission {
 	 * @return reserved light utility vehicle or null if none.
 	 */
 	private LightUtilityVehicle reserveLightUtilityVehicle(Settlement settlement) {
-		for(var vehicle : settlement.getParkedGaragedVehicles()) {
-			if (vehicle instanceof LightUtilityVehicle luvTemp && ((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
+		for (LightUtilityVehicle luvTemp : settlement.getLUVs()) {
+			if (((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
 						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0)) {
 				luvTemp.setReservedForMission(true);
 				return luvTemp;

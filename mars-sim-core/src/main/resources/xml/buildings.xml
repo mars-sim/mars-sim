@@ -163,6 +163,7 @@
 	<!ELEMENT bed-location EMPTY>
 	<!ATTLIST bed-location xloc CDATA #REQUIRED>
 	<!ATTLIST bed-location yloc CDATA #REQUIRED>
+	<!ATTLIST bed-location name CDATA #IMPLIED>
 ]>
 
 <!--
@@ -333,13 +334,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- beds: the number of patients the infirmary can support. -->
 			<medical-care tech-level="4" bed="2">
 				<activity>
-					<activity-spot xloc="2.2" yloc="1.63" />
-					<activity-spot xloc="2.65" yloc="1.97" />
+					<activity-spot xloc="2.2" yloc="1.63" name="Physician 1"  />
+					<activity-spot xloc="2.65" yloc="1.97" name="Physician 2" />
+					<activity-spot xloc="3.44" yloc="1.81" />
+					<activity-spot xloc="2.49" yloc="2.96" />
 				</activity>
-				<bed>
-					<bed-location xloc="2.5" yloc="2.4" />
-					<bed-location xloc="3.6" yloc="1.8" />
-				</bed>
 			</medical-care>
 
 			<!-- The building if capable of producing electrical power. -->
@@ -2909,19 +2908,29 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<medical-care tech-level="5" bed="8">
 				<activity>
 					<!-- inner bed :  activity-spot xloc="1.8" yloc="2.4" /-->
-					<activity-spot xloc="-0.98" yloc="3.14" />
-					<activity-spot xloc="-1.72" yloc="3.14" />										
-				</activity>
-				<bed>
-					<bed-location xloc="2.0" yloc="1.35" />					
-					<bed-location xloc="2.0" yloc="-.15" />
-					<bed-location xloc="2.0" yloc="-1.65" />
-					<bed-location xloc="2.0" yloc="-3.15" />
-					<bed-location xloc="-2.0" yloc="1.35" />
-					<bed-location xloc="-2.0" yloc="-.15" />
-					<bed-location xloc="-2.0" yloc="-1.65" />
-					<bed-location xloc="-2.0" yloc="-3.15" />
-				</bed>				
+					<activity-spot xloc="-0.98" yloc="3.14" name="Physician 1" />
+					<activity-spot xloc="-1.72" yloc="3.14" name="Physician 2" />	
+					
+					<activity-spot xloc="-2.09" yloc="2.58" name="Physician 3" />
+					<activity-spot xloc="1.79" yloc="1.45" name="Physician 4" />
+					
+					<activity-spot xloc="1.79" yloc="2.49" />		
+								
+					<activity-spot xloc="2.0" yloc="-.15" />
+					
+					<activity-spot xloc="2.0" yloc="-1.65" />
+					
+					<activity-spot xloc="2.0" yloc="-3.15" />
+					
+					<activity-spot xloc="-2.0" yloc="1.35" />
+					
+					<activity-spot xloc="-2.0" yloc="-.15" />
+					
+					<activity-spot xloc="-2.0" yloc="-1.65" />
+					
+					<activity-spot xloc="-2.0" yloc="-3.15" />	
+													
+				</activity>			
 			</medical-care>
 			<!-- The infirmary has both the solar power source and fuel power source -->			
 			<power-generation>
@@ -4046,14 +4055,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="12" />
 			<medical-care tech-level="4" bed="2">
 				<activity>
-					<activity-spot xloc="-0.197" yloc="1.784" />
-					<activity-spot xloc="-0.478" yloc="1.411" />	
+					<activity-spot xloc="-0.197" yloc="1.784" name="Physician 1" />
+					<activity-spot xloc="-0.478" yloc="1.411" name="Physician 2" />	
 					
+					<activity-spot xloc="3.55" yloc="-.42" />
+					<activity-spot xloc="2.26" yloc="2.61" />					
 				</activity>
-				<bed>
-					<bed-location xloc="3.55" yloc="-.42" />
-					<bed-location xloc="2.26" yloc="2.61" />
-				</bed>
+
 			</medical-care>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -4335,13 +4343,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<management capacity="4">
 				<activity>
-					<activity-spot xloc="3.4" yloc="0.53" />
+					<activity-spot xloc="3.17" yloc="1.22" />
 				</activity>
 			</management>
 
 			<manufacture tech-level="4" concurrent-processes="1">
 				<activity>
-					<activity-spot xloc="-1.43" yloc="-1.87" />
+					<activity-spot xloc="-3.65" yloc="-3.7" />
+					<activity-spot xloc="-2.4" yloc="-3.7" />
 				</activity>
 				<tooling name="3D printer" number="1" />
 				<tooling name="soldering" number="1"/>
@@ -4349,6 +4358,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<medical-care tech-level="2" bed="1">
 				<activity>
+					<activity-spot xloc="3.41" yloc="3.55" name="Physician 1" />
 					<activity-spot xloc="3.7" yloc="4.2" />
 				</activity>
 			</medical-care>
@@ -4361,17 +4371,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<power-storage capacity="40" discharge-rate="1.25"/>
 			
-			<recreation capacity="10">
+			<recreation capacity="5">
 				<activity>
 					<activity-spot xloc="-2.15" yloc="1.35" />
 					<activity-spot xloc="-1.9" yloc=".5" />
 					<activity-spot xloc="-1.9" yloc="0.0" />
 					<activity-spot xloc="-1.9" yloc="-.5" />
 					<activity-spot xloc="-2.15" yloc="-1.35" />
-					<activity-spot xloc="3.17" yloc="1.22" />
-					<activity-spot xloc="3.17" yloc="-1.02" />
-					<activity-spot xloc="4.05" yloc=".18" />
-					<activity-spot xloc="2.36" yloc=".18" />
 				</activity>
 			</recreation>
 
@@ -4388,9 +4394,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="PSYCHOLOGY" />
 
 				<activity>
-					<activity-spot xloc="-1.0" yloc="-3.0" />
-					<activity-spot xloc="-0.4" yloc="-3.1" />
-					<activity-spot xloc="1.8"  yloc="-2.6" />
+					<activity-spot xloc="3.17" yloc="-1.02" />
+					<activity-spot xloc="4.05" yloc=".18" />
+					<activity-spot xloc="2.36" yloc=".18" />
 				</activity>
 			</research>
 
@@ -4435,7 +4441,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
 												
 				<activity>
-					<activity-spot xloc="-2.6" yloc="-2.13" />
+					<activity-spot xloc="-3.48" yloc="-3.76" />
+					<activity-spot xloc="-4.12" yloc="-3.76" />
 				</activity>
 			</resource-processing>
 

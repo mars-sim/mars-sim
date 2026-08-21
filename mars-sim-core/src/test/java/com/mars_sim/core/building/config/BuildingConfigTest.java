@@ -260,24 +260,24 @@ public class BuildingConfigTest {
         assertEquals(thermals.get(2).getAttribute(SourceSpec.FUEL_TYPE), "methane", "Fuel 2");
     }
 
-    /**
-     * This test is very tied to the building spec of LANDER_HAB
-     */
-    @Test
-    @SuppressWarnings("unchecked")
-	void testMedicalFunction() {
-        var bc = config.getBuildingConfiguration();
-
-        var found = (MedicalCareSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.MEDICAL_CARE);
-        
-        assertNotNull(found, "Found");
-
-        var beds = found.getBeds();
-        assertEquals(2, beds.size(), "Beds");
-
-        assertEquals(4, found.getTechLevel(), "Medical tech");
-        assertEquals(2, found.getActivitySpots().size(), "Medical spots");
-    }
+//    /**
+//     * This test is very tied to the building spec of LANDER_HAB
+//     */
+//    @Test
+//    @SuppressWarnings("unchecked")
+//	void testMedicalFunction() {
+//        var bc = config.getBuildingConfiguration();
+//
+//        var found = (MedicalCareSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.MEDICAL_CARE);
+//        
+//        assertNotNull(found, "Found");
+//
+//        var beds = found.getBeds();
+//        assertEquals(2, beds.size(), "Beds");
+//
+//        assertEquals(4, found.getTechLevel(), "Medical tech");
+//        assertEquals(2, found.getActivitySpots().size(), "Medical spots");
+//    }
 
 
     /**

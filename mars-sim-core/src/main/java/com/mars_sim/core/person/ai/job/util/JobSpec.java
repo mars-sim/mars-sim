@@ -136,7 +136,7 @@ public abstract class JobSpec {
 	 */
 	protected double getMissionScienceDemand(Settlement settlement, ScienceType type, double scale) {
 		double result = 0D;
-		Collection<Vehicle> parked = settlement.getParkedGaragedVehicles();
+		Collection<Vehicle> parked = settlement.getParkedNGaragedRovers();
 		
 		for (Mission mission : settlement.getMissionControl().getActiveMissions()) {
 			if (mission instanceof RoverMission rm) {
@@ -161,7 +161,7 @@ public abstract class JobSpec {
 	protected double getParkedVehicleScienceDemand(Settlement settlement, ScienceType type, double scale) {
 		double result = 0D;
 		
-		for (Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
+		for (Vehicle vehicle : settlement.getParkedNGaragedRovers()) {
 			if (vehicle instanceof Rover r) {
 				result += getRoverScienceScore(r, type, scale);
 			}

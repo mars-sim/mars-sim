@@ -103,7 +103,7 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
         return switch (valueIndex) {
             case NAME_VAL -> entity.getName();
             case POP_VAL -> entity.getNumCitizens();
-            case PARKED_VAL -> entity.getNumParkedVehicles();
+            case PARKED_VAL -> entity.getNumParkedNGaragedVehicles();
             case MISSION_VAL -> entity.getMissionControl().getActiveMissions().size();
             case POWER_GEN_VAL -> entity.getPowerGrid().getGeneratedPower();
             case POWER_LOAD_VAL -> entity.getPowerGrid().getPowerLoad();

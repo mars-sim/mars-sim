@@ -78,6 +78,11 @@ public class MedicalManager implements Serializable {
 		return medicalConfig.getTreatmentsByLevel(level);
 	}
 
+	/**
+	 * Adds a death info object to the death registry in a settlement.
+	 * @param s
+	 * @param death
+	 */
 	public void addDeathRegistry(Settlement s, DeathInfo death) {
 		int id = s.getIdentifier();
 		if (awaitingPostmortemExam.containsKey(id)) {
@@ -93,10 +98,22 @@ public class MedicalManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Returns the death registry list.
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public List<DeathInfo> getDeathRegistry(Settlement s) {
 		return deathRegistry.getOrDefault(s.getIdentifier(), null);
 	}
 
+	/**
+	 * Adds a death info instance to the post mortem exam for a settlement.
+	 * 
+	 * @param s
+	 * @param death
+	 */
 	public void addPostmortemExam(Settlement s, DeathInfo death) {
 		int id = s.getIdentifier();
 		if (awaitingPostmortemExam.containsKey(id)) {
@@ -108,6 +125,12 @@ public class MedicalManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Gets a list of death info instances.
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public List<DeathInfo> getPostmortemExam(Settlement s) {
 		if (awaitingPostmortemExam.containsKey(s.getIdentifier())) {
 			return awaitingPostmortemExam.get(s.getIdentifier());

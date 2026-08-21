@@ -2396,6 +2396,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		// Note: at startup, a vehicle has Mars Surface as the container unit by default
 		
 		if (cu instanceof MarsSurface ms) {
+			// Remove vehicle from Mars surface's container unit
 			canTransferOut = ms.removeVehicle(this);
 		}
 		
@@ -2404,8 +2405,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 			if (isInGarage()) {
 				BuildingManager.removeFromGarage(this);
 			}
-
-			canTransferOut = s.removeVicinityParkedVehicle(this);
+			// Remove vehicle from settlement's container unit
+			canTransferOut = s.removeParkedNGaragedVehicle(this);
 		}
 
 		if (!canTransferOut) {
@@ -2420,8 +2421,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 			}
 			else if (destination instanceof Settlement s) {
     			// Add the vehicle to the settlement vicinity
-				// After this, the vehicle may enter a garage
-				canTransferOut = s.addVicinityVehicle(this);
+				// After this, the vehicle may enter a garage if available
+				canTransferOut = s.addParkedNGaragedVehicle(this);
 			}
 
 			if (!canTransferOut) {

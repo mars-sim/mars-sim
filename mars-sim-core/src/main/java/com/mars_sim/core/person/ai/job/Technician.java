@@ -62,7 +62,7 @@ public class Technician extends JobSpec {
 		result += settlement.getBuildingManager().getNumBuildings() / 12D;
 
 		// Add number of vehicles parked at settlement.
-		result += settlement.getNumParkedVehicles() / 12D;
+		result += settlement.getNumParkedNGaragedVehicles() / 12D;
 
 		result = (result + population / 8D) / 2.0;
 				

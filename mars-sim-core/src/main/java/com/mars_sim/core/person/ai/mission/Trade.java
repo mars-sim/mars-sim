@@ -235,7 +235,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		// If rover is not parked at settlement, park it.
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
 			// Add this vehicle to the vicinity pool
-			settlement.addVicinityVehicle(getVehicle());
+			settlement.addParkedNGaragedVehicle(getVehicle());
 		}
 		
 		if (!member.isInSettlement()) {
@@ -352,7 +352,7 @@ public class Trade extends RoverMission implements CommerceMission {
 			
 			towed.setTowingVehicle(null);
 			// Add the towed vehicle to the settlement
-			r.getSettlement().addVicinityVehicle(towed);
+			r.getSettlement().addParkedNGaragedVehicle(towed);
 		}
 	}
 
@@ -365,7 +365,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					buyVehicle.setReservedForMission(true);
 					getRover().setTowedVehicle(buyVehicle);
 					buyVehicle.setTowingVehicle(getRover());
-					buyVehicle.getSettlement().removeVicinityParkedVehicle(buyVehicle);
+					buyVehicle.getSettlement().removeParkedNGaragedVehicle(buyVehicle);
 				} else {
 					logger.warning(getRover(), "Selling vehicle (" + vehicleType + ") is not available (Trade).");
 					endMission(SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
@@ -472,7 +472,7 @@ public class Trade extends RoverMission implements CommerceMission {
 				vehicleSource = objective.getTradingVenue();
 			}
 
-			result = vehicleSource.getParkedGaragedVehicles().stream()
+			result = vehicleSource.getParkedNGaragedVehicles().stream()
 					.filter( v -> vehicleType.equalsIgnoreCase(v.getDescription())
 											&& (v != getVehicle())
 											&& !v.isReserved() && v.isEmpty())

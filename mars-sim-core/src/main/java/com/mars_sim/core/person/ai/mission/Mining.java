@@ -35,8 +35,6 @@ import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
-import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Mission for mining mineral concentrations at an explored site.
@@ -187,19 +185,17 @@ public class Mining extends EVAMission
 	public static boolean isLUVAvailable(Settlement settlement) {
 		boolean result = false;
 
-		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
+		Iterator<LightUtilityVehicle> i = settlement.getLUVs().iterator();
 		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			if (vehicle.getVehicleType() == VehicleType.LUV) {
-				boolean usable = !vehicle.isReserved();				
-                usable = usable && vehicle.isVehicleReady() && !vehicle.isBeingTowed();
+			LightUtilityVehicle luv = i.next();
+			boolean usable = !luv.isReserved();				
+            usable = usable && luv.isVehicleReady() && !luv.isBeingTowed();
 
-				if (((LightUtilityVehicle) vehicle).isFull())
-					usable = false;
+			if (luv.isFull())
+				usable = false;
 
-				if (usable)
-					result = true;
-			}
+			if (usable)
+				result = true;
 		}
 
 		return result;
@@ -243,7 +239,7 @@ public class Mining extends EVAMission
 			Settlement settlement = getStartingSettlement();
 
 			var luv = attachLUV(true);
-			settlement.removeVicinityParkedVehicle(luv);
+			settlement.removeParkedNGaragedVehicle(luv);
 
 			if (!settlement.hasItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID)
 					|| !settlement.hasItemResource(ItemResourceUtil.BACKHOE_ID)) {
@@ -279,7 +275,7 @@ public class Mining extends EVAMission
 			Settlement settlement = getStartingSettlement();
 
 			var luv = attachLUV(false);
-			settlement.removeVicinityParkedVehicle(luv);
+			settlement.removeParkedNGaragedVehicle(luv);
 			luv.findNewParkingLoc();
 
 			// Unload attachment parts.
@@ -567,9 +563,8 @@ public class Mining extends EVAMission
 	 * @return reserved light utility vehicle or null if none.
 	 */
 	private LightUtilityVehicle reserveLightUtilityVehicle() {
-		for(Vehicle vehicle : getStartingSettlement().getParkedGaragedVehicles()) {
-			if (vehicle instanceof LightUtilityVehicle luvTemp
-					&& ((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
+		for(LightUtilityVehicle luvTemp : getStartingSettlement().getLUVs()) {
+			if (((luvTemp.getPrimaryStatus() == StatusType.PARKED) || (luvTemp.getPrimaryStatus() == StatusType.GARAGED))
 					&& !luvTemp.isReserved()
 					&& (luvTemp.getCrewNum() == 0)) {
 				claimVehicle(luvTemp);

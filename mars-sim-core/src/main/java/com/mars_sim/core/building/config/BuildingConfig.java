@@ -97,6 +97,8 @@ public class BuildingConfig {
 	
 	private static final Set<String> DEFAULT_SOURCE_ATTR = Set.of(TYPE, MODULES, CONVERSION, PERCENT_LOADING);
 
+	public final static String BAY = "Bay";
+	
 	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 	
 	private Set<FunctionType> activityFunctions  = new HashSet<>();
@@ -243,7 +245,7 @@ public class BuildingConfig {
 			case LIVING_ACCOMMODATION -> "Bunk";
 			case MANAGEMENT -> "Mgt";
 			case MANUFACTURE -> "Slot";
-			case MEDICAL_CARE -> "Bay";
+			case MEDICAL_CARE -> BAY;
 			case RECREATION -> "Rec";
 			case RESEARCH -> "Lab";
 			case RESOURCE_PROCESSING -> "Pipe";
@@ -339,7 +341,7 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Create a spec for an EVA function
+	 * Creates a spec for an EVA function.
 	 */
 	private FunctionSpec createEVASpec(FunctionSpec base, Element evaElement) {
 		var central = ConfigHelper.parseRelativePosition(evaElement.getChild("center-position"));
@@ -350,7 +352,9 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Create a medical care by further passing specific medical properties
+	 * Creates a medical care by further passing specific medical properties.
+	 * Note: DO NOT DELETE THIS YET. RETAIN FOR FUTURE USE
+	 *       for now, this method is not used because bed-location are incorporated into activity spots.
 	 */
 	private FunctionSpec createMedicalCareSpec(FunctionSpec base, Element medElement, double width, double length) {
 		var beds = parseNamedPositions(medElement,  "bed", "Bed", width, length);
@@ -358,7 +362,7 @@ public class BuildingConfig {
 	}
 		
 	/**
-	 * Parse the vehicle maintenance specific elements
+	 * Parses the vehicle maintenance specific elements.
 	 */
 	private FunctionSpec createVehicleMaintenanceSpec(FunctionSpec base, Element maintElement, double width, double length) {
 

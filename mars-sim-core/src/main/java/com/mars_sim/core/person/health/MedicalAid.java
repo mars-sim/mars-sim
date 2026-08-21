@@ -89,7 +89,7 @@ public interface MedicalAid extends Serializable {
      */
     public void stopTreatment(HealthProblem problem);
 
-    public int getSickBedNum();
-
+    public int getOpenBedNum();
+    
     public int getPatientNum();
 }

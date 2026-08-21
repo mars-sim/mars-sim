@@ -1516,10 +1516,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	public static boolean hasBackupRover(Settlement settlement) {
 		int availableVehicleNum = 0;
-		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedNGaragedRovers().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
-			if ((vehicle instanceof Rover) && !vehicle.isReservedForMission())
+			if (!vehicle.isReservedForMission())
 				availableVehicleNum++;
 		}
 		return (availableVehicleNum >= 2);

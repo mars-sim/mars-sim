@@ -166,7 +166,7 @@ public class LoadVehicleMeta extends MetaTask
 		List<SettlementTask> tasks = new ArrayList<>();
 
         // Find all parked Vehicles with an active loading plan
-		for (var vehicle : settlement.getParkedGaragedVehicles()) {
+		for (var vehicle : settlement.getParkedNGaragedVehicles()) {
 			if (vehicle.haveStatusType(StatusType.LOADING)) {
 				LoadingController plan = vehicle.getLoadingPlan();
 

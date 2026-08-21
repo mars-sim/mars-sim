@@ -157,7 +157,7 @@ public class EmergencySupply extends RoverMission {
 		// If rover is not parked at settlement, park it.
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
 			// Add this vehicle to the vicinity pool
-			settlement.addVicinityVehicle(getVehicle());
+			settlement.addParkedNGaragedVehicle(getVehicle());
 		}
 
 		// Have member exit rover if necessary.

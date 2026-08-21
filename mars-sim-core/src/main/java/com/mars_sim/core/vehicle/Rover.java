@@ -168,11 +168,12 @@ public class Rover extends GroundVehicle implements Crewable,
 		
 		// Construct sick bay.
 		if (spec.hasSickbay()) {
-			sickbay = new SickBay(this, spec.getSickbayTechLevel(),
-					spec.getSickbayBeds());
-
+		
 			// Initialize sick bay activity spots.
 			sickBayActivitySpots = spec.getSickBayActivitySpots();
+			
+			sickbay = new SickBay(this, spec.getSickbayTechLevel(), sickBayActivitySpots.size());
+
 		}
 
 		// Construct lab.

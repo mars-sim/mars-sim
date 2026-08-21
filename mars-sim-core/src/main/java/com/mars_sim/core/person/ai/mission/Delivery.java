@@ -221,7 +221,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 		if ((v != null) && (v.getSettlement() == null)) {
 			var tradingSettlement = objective.getTradingVenue();
 
-			tradingSettlement.addVicinityVehicle(v);
+			tradingSettlement.addParkedNGaragedVehicle(v);
 
 			// Add vehicle to a garage if available.
 			tradingSettlement.getBuildingManager().addToGarage(v);

@@ -29,7 +29,7 @@ class UnloadHelperTest extends MarsSimUnitTest{
         UnloadHelper.releaseTowedVehicle(towing, s);
         assertNull(towing.getTowedVehicle(), "Towed vehicle");
         assertNull(towed.getTowingVehicle(), "Towing vehicle");
-        assertTrue(s.getParkedGaragedVehicles().contains(towed), "Parked");
+        assertTrue(s.getParkedNGaragedVehicles().contains(towed), "Parked");
     }
 
     @Test

@@ -142,7 +142,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
 		List<SettlementTask> tasks = new ArrayList<>();
   
         // Check non-mission vehicles
-        for (Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
+        for (Vehicle vehicle : settlement.getParkedNGaragedVehicles()) {
             if (vehicle.haveStatusType(StatusType.UNLOADING)) {
 				
    				boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(

@@ -72,7 +72,7 @@ class VehiclePanel extends WizardItemStep<MissionDataBean, Vehicle> {
 			var prefered = state.getMetaMission().getPreferredVehicle();
 
 			var startingSettlement = state.getStartingSettlement();
-			var r = startingSettlement.getParkedGaragedVehicles().stream()
+			var r = startingSettlement.getParkedNGaragedVehicles().stream()
 					.filter(v -> prefered.contains(v.getVehicleType()))
 					.toList();
 			setEntities(r);

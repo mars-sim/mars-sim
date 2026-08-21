@@ -111,7 +111,8 @@ public class VehicleSpecCommand extends ChatCommand {
 		if (source instanceof Medical) {
 			SickBay sickbay = ((Medical) source).getSickBay();
 			if (sickbay != null) {
-				buffer.appendLabelledDigit("# Beds (Sick Bay)", sickbay.getSickBedNum());
+				buffer.appendLabelledDigit("Bed Capacity (Sick Bay)", sickbay.getBedCapacity());
+				buffer.appendLabelledDigit("# Open Beds (Sick Bay)", sickbay.getOpenBedNum());
 				buffer.appendLabelledDigit("Tech Level (Sick Bay)", sickbay.getTreatmentLevel());
 			}
 		}

@@ -142,7 +142,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		List<DeathInfo> deaths = medicalManager.getPostmortemExam(settlement);
 
 		if (!deaths.isEmpty()) {
-			for(DeathInfo info : deaths) {
+			for (DeathInfo info : deaths) {
 				if (!info.getExamDone() 
 						&& isVehicleContainerUnitSettlement(info.getPerson())) {
 					RatingScore score = new RatingScore(DEFAULT_SCORE);

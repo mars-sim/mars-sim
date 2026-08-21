@@ -99,6 +99,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Drone;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
@@ -344,8 +345,8 @@ public class Settlement extends Unit implements Temporal,
 	private Set<Robot> ownedRobots;
 	/** The settlement's list of owned vehicles. */
 	private Set<Vehicle> ownedVehicles;
-	/** The settlement's list of parked vehicles. */
-	private Set<Vehicle> vicinityParkedVehicles;
+	/** The settlement's list of parked vehicles in vicinity and garaged. */
+	private Set<Vehicle> parkedNGaragedVehicles;
 	/** The list of people currently within the settlement. */
 	private Set<Person> indoorPeople;
 	/** The settlement's list of robots within. */
@@ -393,7 +394,7 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		vicinityParkedVehicles = new UnitSet<>();
+		parkedNGaragedVehicles = new UnitSet<>();
 		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
@@ -432,7 +433,7 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		vicinityParkedVehicles = new UnitSet<>();
+		parkedNGaragedVehicles = new UnitSet<>();
 		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
@@ -486,7 +487,7 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		vicinityParkedVehicles = new UnitSet<>();
+		parkedNGaragedVehicles = new UnitSet<>();
 		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
@@ -2027,17 +2028,17 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Adds a vicinity parked vehicle.
+	 * Adds a vicinity parked or garaged vehicle.
 	 *
 	 * @param vehicle
 	 * return true if the vicinity parked vehicle can be added
 	 */
-	public boolean addVicinityVehicle(Vehicle vehicle) {
-		if (vicinityParkedVehicles.contains(vehicle)) {
+	public boolean addParkedNGaragedVehicle(Vehicle vehicle) {
+		if (parkedNGaragedVehicles.contains(vehicle)) {
 			return true;
 		}
 		
-		if (vicinityParkedVehicles.add(vehicle)) {
+		if (parkedNGaragedVehicles.add(vehicle)) {
 			
 			boolean canGarage = getBuildingManager().addToGarage(vehicle);
 	
@@ -2057,28 +2058,28 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Removes a vicinity parked vehicle.
+	 * Removes a vicinity parked and garaged vehicle.
 	 *
 	 * @param vehicle
 	 * return true if the vicinity parked vehicle can be removed
 	 */
-	public boolean removeVicinityParkedVehicle(Vehicle vehicle) {
-		if (!vicinityParkedVehicles.contains(vehicle))
+	public boolean removeParkedNGaragedVehicle(Vehicle vehicle) {
+		if (!parkedNGaragedVehicles.contains(vehicle))
 			return true;
 		
 		fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
 
-		return vicinityParkedVehicles.remove(vehicle);
+		return parkedNGaragedVehicles.remove(vehicle);
 	}
 
 	/**
-	 * Does it have this vicinity vehicle parked at the settlement ?
+	 * Does it have this vicinity vehicle parked and garaged at the settlement ?
 	 *
 	 * @param vehicle
 	 * @return
 	 */
-	public boolean containsVicinityParkedVehicle(Vehicle vehicle) {
-		return vicinityParkedVehicles.contains(vehicle);
+	public boolean containsParkedNGaragedVehicle(Vehicle vehicle) {
+		return parkedNGaragedVehicles.contains(vehicle);
 	}
 	
 	/**
@@ -2092,7 +2093,7 @@ public class Settlement extends Unit implements Temporal,
 			return true;
 		if (ownedVehicles.add(vehicle)) {			
 			// Add this vehicle as parked
-			addVicinityVehicle(vehicle);
+			addParkedNGaragedVehicle(vehicle);
 			// Update the numOwnedVehicles
 			numOwnedVehicles = ownedVehicles.size();
 
@@ -2238,19 +2239,19 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Gets a collection of drones parked or garaged at the settlement.
+	 * Gets a collection of drones parked in vicinity and garaged at the settlement.
 	 *
 	 * @return Collection of parked or garaged drones
 	 */
-	public Collection<Drone> getParkedGaragedDrones() {
-		return vicinityParkedVehicles.stream()
+	public Collection<Drone> getParkedNGaragedDrones() {
+		return parkedNGaragedVehicles.stream()
 				.filter(v -> VehicleType.isDrone(v.getVehicleType()))
 				.map(Drone.class::cast)
 				.toList();
 	}
 	
 	/**
-	 * Gets a collection of vehicles parked or garaged at the settlement.
+	 * Gets a collection of vehicles owned by the settlement.
 	 *
 	 * @return Collection of Unit
 	 */
@@ -2260,6 +2261,30 @@ public class Settlement extends Unit implements Temporal,
 				.toList();
 	}
 
+	/**
+	 * Gets a collection of parked and garaged rovers in the settlement.
+	 *
+	 * @return Collection of parked and garaged rovers
+	 */
+	public Collection<Vehicle> getParkedNGaragedRovers() {
+		return parkedNGaragedVehicles.stream()
+				.filter(v -> VehicleType.isRover(v.getVehicleType()))
+				.toList();
+	}
+
+	/**
+	 * Gets a collection of parked and garaged LUVs in the settlement.
+	 *
+	 * @return Collection of parked and garaged LUVs.
+	 */
+	public Collection<LightUtilityVehicle> getLUVs() {
+		return getParkedNGaragedVehicles().stream()
+				.filter(LightUtilityVehicle.class::isInstance)
+				.map(LightUtilityVehicle.class::cast)
+				.toList();
+	}
+
+	
 	/**
 	 * Finds the number of vehicles of a particular type.
 	 *
@@ -2274,33 +2299,33 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Finds the number of parked rovers.
+	 * Finds the number of rovers parked in vicinity and garaged.
 	 *
 	 * @return number of parked rovers
 	 */
 	public int findNumParkedRovers() {
-		return (int)vicinityParkedVehicles
+		return (int)parkedNGaragedVehicles
 					.stream()
 					.filter(v -> VehicleType.isRover(v.getVehicleType()))
 					.count();
 	}
 
 	/**
-	 * Gets a collection of vehicles parked or garaged at the settlement.
+	 * Gets a collection of vehicles parked in vicinity and garaged at the settlement.
 	 *
 	 * @return Collection of parked or garaged vehicles
 	 */
-	public Collection<Vehicle> getParkedGaragedVehicles() {
-		return vicinityParkedVehicles;
+	public Collection<Vehicle> getParkedNGaragedVehicles() {
+		return parkedNGaragedVehicles;
 	}
 
 	/**
-	 * Gets the number of vehicles (rovers, LUVs, and drones) parked or garaged at the settlement.
+	 * Gets the number of vehicles (rovers, LUVs, and drones) parked in vicinity and garaged at the settlement.
 	 *
 	 * @return parked vehicles number
 	 */
-	public int getNumParkedVehicles() {
-		return vicinityParkedVehicles.size();
+	public int getNumParkedNGaragedVehicles() {
+		return parkedNGaragedVehicles.size();
 	}
 
 	/**

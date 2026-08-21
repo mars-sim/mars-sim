@@ -61,6 +61,11 @@ public class FunctionSpec {
 		return type;
 	}
 	
+	/**
+	 * Gets a set of activity spots.
+	 * 
+	 * @return
+	 */
 	public Set<NamedPosition> getActivitySpots() {
 		return spots;
 	}

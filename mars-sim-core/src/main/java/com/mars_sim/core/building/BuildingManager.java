@@ -910,18 +910,22 @@ public class BuildingManager implements Serializable {
 
 		if (building != null) {
 
-			success = building.getMedical().doesPatientHaveBed(p);
-
-			if (!success) {
-				success = building.getMedical().addPatientToBed(p);
-			}
-
+			success = addToActivitySpot(p, building, FunctionType.MEDICAL_CARE);
+			
 			if (success) {
-				p.setCurrentBuilding(building);
-
-				logger.info(p, 10_000L, "Sent to a medical bed in " + building.getName() + ".");
-			} else {
-				logger.info(p, 10_000L, "Unable to send to a medical bed in " + building.getName() + ".");
+				
+				success = building.getMedical().addToBed(); 
+	
+				if (success) {
+					logger.info(p, 10_000L, "Sent to a medical bed in " + building.getName() + ".");
+				}
+				else {	
+					building.getMedical().removeFromBed();				
+					logger.info(p, 10_000L, "Unable to find a bed or an activity spot in " + building.getName() + ".");
+				}
+			}
+			else {
+				logger.info(p, 10_000L, "No spare medical bed available in " + building.getName() + ".");
 			}
 		}
 

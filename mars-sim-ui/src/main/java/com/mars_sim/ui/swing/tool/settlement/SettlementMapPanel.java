@@ -846,7 +846,7 @@ public class SettlementMapPanel extends JPanel {
 	 * @return selectedVehicle
 	 */
 	private Vehicle selectVehicleAt(LocalPosition settlementPosition) {
-		for (Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
+		for (Vehicle vehicle : settlement.getParkedNGaragedVehicles()) {
 			double width = vehicle.getWidth(); // width is on y-axis ?
 			double length = vehicle.getLength(); // length is on x-axis ?
 			double newRange;

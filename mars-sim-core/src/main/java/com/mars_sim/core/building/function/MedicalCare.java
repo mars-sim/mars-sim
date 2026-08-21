@@ -9,13 +9,13 @@ package com.mars_sim.core.building.function;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.config.FunctionSpec;
-import com.mars_sim.core.building.config.MedicalCareSpec;
+import com.mars_sim.core.building.config.NamedPosition;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -42,8 +42,6 @@ public class MedicalCare extends Function implements MedicalAid {
 	
 	private int techLevel;
 	
-	private int beds;
-	
 	private MedicalStation medicalStation;
 
 	/**
@@ -59,19 +57,29 @@ public class MedicalCare extends Function implements MedicalAid {
 
 		techLevel = spec.getTechLevel();
 		
-		// THis is not good. all details should be in the FunctionSpec
-		var medSpec = (MedicalCareSpec) spec;
-
-		var bedSet = medSpec.getBeds().stream()
-				.map(np -> np.position().toPosition(building))
-				.collect(Collectors.toSet());
+		int bedCapacity = 0;
+		int physicianStationCapacity = 0;
 		
-		beds = bedSet.size();
+		for (NamedPosition np: spec.getActivitySpots()) {
+			if (np.name().contains(BuildingConfig.BAY))
+				bedCapacity++;
+			else
+				physicianStationCapacity++;
+		}		
+		
+		// Note: DO NOT DELETE THIS YET. RETAIN FOR FUTURE USE
+		// for now, this method is not used because bed-location are incorporated into activity spots.//
+//		var medSpec = (MedicalCareSpec) spec;
+//
+//		var bedSet = medSpec.getBeds().stream()
+//				.map(np -> np.position().toPosition(building))
+//				.collect(Collectors.toSet());
+		
+//		medicalStation.setMedicalBeds(bedSet);
+//		beds = bedSet.size();
 
 		// NOTE: distinguish between activity spots and bed locations
-		medicalStation = new MedicalStation(building.getName(), techLevel, beds);
-		
-		medicalStation.setMedicalBeds(bedSet);
+		medicalStation = new MedicalStation(building.getName(), techLevel, bedCapacity, physicianStationCapacity);
 	}
 	
 	/**
@@ -100,9 +108,9 @@ public class MedicalCare extends Function implements MedicalAid {
 			} else {
 				MedicalCare medFunction = building.getMedical();
 				double tech = medFunction.getTechLevel();
-				double beds = medFunction.getSickBedNum();
+//				double beds = medFunction.getSickBedNum();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += tech * beds * wearModifier;
+				supply += tech * wearModifier;
 			}
 		}
 
@@ -125,7 +133,7 @@ public class MedicalCare extends Function implements MedicalAid {
 		
 		double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 		
-		supply += techLevel * beds * wearModifier;
+		supply += techLevel * building.getMedical().getOpenBedNum() * wearModifier;
 
 		return demand / (supply + 1D) / 10D;
 	}
@@ -159,44 +167,26 @@ public class MedicalCare extends Function implements MedicalAid {
 	    return success;
     }
     
-	/**
-	 * Checks if this person is a patient.
-	 * 
-	 * @param person
-	 * @return
-	 */
-	public boolean doesPatientHaveBed(Person person) { 
-		return medicalStation.doesPatientHaveBed(person);
-	}
+    public int getOpenBedNum() {
+    	return medicalStation.getOpenBedNum();
+    }
     
-	/**
-	 * Adds a patient to a medical bed.
-	 * 
-	 * @return
-	 */
-	public boolean addPatientToBed(Person person) {
-		return medicalStation.addPatientToBed(person);
-	}
-	
-	/**
-	 * Gets the number of sick beds.
-	 * 
-	 * @return Sick bed count.
-	 */
-	public int getSickBedNum() {
-		return medicalStation.getSickBedNum();
-	}
-
-	/**
-	 * Gets the number of medical beds being in use.
-	 * 
-	 * @return Patient count.
-	 */
-	public int getBedsInUse() {
-		return medicalStation.getBedsInUse();
-	}
-	
-	
+    public boolean removeFromBed() {
+    	return medicalStation.removeFromBed();
+    }
+    
+    public boolean addToBed() {
+    	return medicalStation.addToBed();
+    }
+    
+    public int getBedCapacity() {
+    	return medicalStation.getBedCapacity();
+    }
+    
+    public int getBedInUse() {
+    	return medicalStation.getBedInUse();
+    }
+    
 	/**
 	 * Gets the current number of people being treated here.
 	 * 
@@ -322,7 +312,7 @@ public class MedicalCare extends Function implements MedicalAid {
 	public double getMaintenanceTime() {
 		double result = medicalStation.getTreatmentLevel() * .5;
 		// Add maintenance for number of sick beds.
-		result *= medicalStation.getSickBedNum() * .5;
+		result *= medicalStation.getBedCapacity() * .5;
 
 		return result;
 	}

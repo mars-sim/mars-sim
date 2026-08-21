@@ -50,6 +50,7 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
         assertEquals(HealthProblemState.DEGRADING, hp.getState(), "Complaint in degrading");
 
         var task = SelfTreatHealthProblem.createTask(p);
+        
         assertFalse(task.isDone(), "Task created");
         assertTrue(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem waiting at Medical care");
         assertFalse(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem not treated at Medical care");
@@ -78,7 +79,7 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
         var s = buildSettlement("Hospital");
         buildMediCare(getContext(), s);  // Build a settlement medical center to make sure there is no teleporting
         var r = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-        var p = buildPerson("Mr. Physician 1", s, JobType.DOCTOR);
+        var p = buildPerson("Mr. Physician", s, JobType.DOCTOR);
         p.transfer(r);
         assertTrue(p.isInVehicle(), "Person starts in Vehicle");
 

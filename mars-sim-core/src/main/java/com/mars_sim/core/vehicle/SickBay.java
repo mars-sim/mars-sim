@@ -26,11 +26,11 @@ public class SickBay extends MedicalStation {
 	 * 
 	 * @param vehicle The vehicle the sickbay is in.
 	 * @param treatmentLevel The treatment level of the medical station.
-	 * @param sickBedNum Number of sickbeds. 
+	 * @param bedCapacity
 	 */
-	public SickBay(Vehicle vehicle, int treatmentLevel, int sickBedNum) {
+	public SickBay(Vehicle vehicle, int treatmentLevel, int bedCapacity) {
 		// Use MedicalStation constructor
-		super(vehicle.getName(), treatmentLevel, sickBedNum);
+		super(vehicle.getName(), treatmentLevel, bedCapacity, 0);
 
 		this.vehicle = vehicle;
 	}

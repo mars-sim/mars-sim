@@ -29,7 +29,7 @@ class ExamineBodyTest extends MarsSimUnitTest {
         
         Set<ActivitySpot> spots = sb.getFunction(FunctionType.MEDICAL_CARE).getActivitySpots();
         
-        assertEquals(2, spots.size(), "# of spots");
+        assertEquals(12, spots.size(), "# of spots");
         
         var patient = buildPerson("Patient", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
         assertEquals(sb, patient.getBuildingLocation(), "Patient is at ");

@@ -86,7 +86,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 		
 		// Create sick bed label
 		labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfsickBeds"),
-					 				Integer.toString(medical.getSickBedNum()), null);
+					 				Integer.toString(medical.getBedCapacity()), null);
 
 		// Create physician label
 		physicianCache = medical.getPhysicianNum();
@@ -97,7 +97,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 		patientLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfPatients"),
 									  Integer.toString(patientCache), null);
 		
-		bedInUseCache = medical.getBedsInUse();
+		bedInUseCache = medical.getBedInUse();
 		bedInUseLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfBedsInUse"),
 									  Integer.toString(bedInUseCache), null);
 		
@@ -129,8 +129,8 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 		}
 		
 		// Update beds in use label
-		if (bedInUseCache != medical.getBedsInUse()) {
-			bedInUseCache = medical.getBedsInUse();
+		if (bedInUseCache != medical.getBedInUse()) {
+			bedInUseCache = medical.getBedInUse();
 			bedInUseLabel.setText(Integer.toString(bedInUseCache));
 		}
 		
@@ -162,7 +162,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 		}
 
 		public int getColumnCount() {
-			return 3;
+			return 2;
 		}
 
 		@Override
@@ -170,7 +170,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 			return switch (columnIndex) {
 				case 0 -> String.class;
 				case 1 -> String.class;
-				case 2 -> Boolean.class;
+//				case 2 -> Boolean.class;
 				default -> Object.class;
 			};
 		}
@@ -180,7 +180,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 			return switch (columnIndex) {
 				case 0 -> "Patient";
 				case 1 -> "Condition";
-				case 2 -> "Have Bed";
+//				case 2 -> "Have Bed";
 				default -> "unknown";
 			};
 		}
@@ -193,8 +193,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 			return switch (column) {
 				case 0 -> problem.getSufferer().getName();
 				case 1 -> problem.toString();
-				case 2 -> medical.doesPatientHaveBed(problem.getSufferer());
-				
+//				case 2 -> medical.doesPatientHaveBed(problem.getSufferer());
 				default -> "unknown";
 			};
 		}

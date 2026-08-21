@@ -114,7 +114,7 @@ class TabPanelVehicles extends EntityTabPanel<Settlement>
 		}
 
 		public void update() {
-			setEntities(settlement.getParkedGaragedVehicles());
+			setEntities(settlement.getParkedNGaragedVehicles());
 		}
 	}
 }
