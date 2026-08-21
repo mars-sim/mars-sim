@@ -223,4 +223,13 @@ public class RequestMedicalTreatment extends MedicalAidTask {
 
         return remainingTime;
     }
+    
+    public void endTask() {
+        // Clear the bed
+    	getMedicalAid().removeFromBed();
+    	
+    	super.endTask();
+    }
+    
+    
 }

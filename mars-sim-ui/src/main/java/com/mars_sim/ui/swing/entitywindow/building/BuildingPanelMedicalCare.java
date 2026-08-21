@@ -85,9 +85,13 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 		AttributePanel labelPanel = new AttributePanel();
 		
 		// Create sick bed label
-		labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfsickBeds"),
+		labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.BedCapacity"),
 					 				Integer.toString(medical.getBedCapacity()), null);
-
+		
+		bedInUseCache = medical.getBedInUse();
+		bedInUseLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfBedsInUse"),
+									  Integer.toString(bedInUseCache), null);
+		
 		// Create physician label
 		physicianCache = medical.getPhysicianNum();
 		physicianLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfPhysicians"),
@@ -96,11 +100,7 @@ public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> impl
 		patientCache = medical.getPatientNum();
 		patientLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfPatients"),
 									  Integer.toString(patientCache), null);
-		
-		bedInUseCache = medical.getBedInUse();
-		bedInUseLabel = labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfBedsInUse"),
-									  Integer.toString(bedInUseCache), null);
-		
+
 		return labelPanel;
 	}
 

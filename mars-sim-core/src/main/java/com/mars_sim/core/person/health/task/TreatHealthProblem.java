@@ -41,9 +41,19 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
                             NaturalAttributeType.EXPERIENCE_APTITUDE, PhysicalEffort.NONE,
                             0.2D, SkillType.MEDICINE);
 
-    private HealthProblem healthProblem;
     private double treatmentDuration;
+    
+    private HealthProblem healthProblem;
 
+
+    /**
+     * Constructor 1.
+     * 
+     * @param name
+     * @param doctor
+     * @param hospital
+     * @param condition
+     */
     protected TreatHealthProblem(String name, Worker doctor, MedicalAid hospital, HealthProblem condition) {
         super(name, doctor, hospital, IMPACT, 0D);
         
@@ -87,7 +97,6 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
         }
     }
 
-
     /**
      * Dispatches to a medical facility in response to a medical need.
      * 
@@ -99,11 +108,11 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
     	double timeLeft = 0D;
     	
 		// Check if the doctor is already at a medical activity spot	
-		boolean success = MedicalCare.dispatchToMedical(worker);
+		boolean success = walkToDoctorStation(true);
 
 		if (!success) {
 			// First walk to a medical activity spot
-			success = walkToDoctorStation(true);
+			success = MedicalCare.dispatchToMedical(worker);
 			
 			if (!success) {
 				// If no medical activity spot is available, end the task
@@ -116,6 +125,8 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
 			}
 		}
 		else {
+			logger.info(worker, 10_000, "Dispatched to Doctor's station successfully to treat health problem.");
+			
 			setPhase(TREATMENT);
 		}
 		
@@ -146,8 +157,12 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
         if (!aid.getProblemsBeingTreated().contains(healthProblem)) {
             aid.startTreatment(healthProblem, treatmentDuration);
 
-        	logger.log(worker, Level.INFO, 0, "Treating " + healthProblem.getSufferer().getName()
-        			+ " for " + healthProblem.getComplaint().getType().getName());
+            if (worker.getName().equals(healthProblem.getSufferer().getName())) {
+            	logger.log(worker, Level.INFO, 0, "Self-treating for " + healthProblem.getComplaint().getType().getName() + ".");
+            }
+            else
+            	logger.log(worker, Level.INFO, 0, "Treating " + healthProblem.getSufferer().getName()
+        			+ " for " + healthProblem.getComplaint().getType().getName() + ".");
         }
 
         // Check for accident in medical aid.

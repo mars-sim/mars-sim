@@ -60,6 +60,7 @@ public class ExamineBody extends MedicalAidTask {
     
     private DeathInfo deathInfo;
 	private Person deceasedPerson;
+	private MedicalAid aid;
 	
 	
 	static ExamineBody createTask(Robot examiner, DeathInfo body) {
@@ -89,6 +90,8 @@ public class ExamineBody extends MedicalAidTask {
 	private ExamineBody(Worker examiner, DeathInfo body, MedicalAid aid) {
 		super(NAME, examiner, aid, IMPACT, 0D);
 
+		this.aid = aid;
+		
 		if (!examiner.isInSettlement()) {
 			endTask();
 			return;
@@ -122,10 +125,15 @@ public class ExamineBody extends MedicalAidTask {
 			success = MedicalCare.dispatchToMedical(worker);
 			
 			if (!success) {
+				logger.info(worker, 10_000, "Dispatched to Doctor's station unsuccessfully to examine " + deceasedPerson.getName() + ".");
 				// If no medical activity spot is available, end the task
 				endTask();
+				// Note: should be able to 'remotely' treat a patient
 				return ;
 			}
+		} 
+		else {
+			logger.info(worker, 10_000, "Arrived at Doctor's station successfully to examine " + deceasedPerson.getName() + ".");
 		}
 		
 		// Initialize phase.
@@ -256,6 +264,7 @@ public class ExamineBody extends MedicalAidTask {
 					
 		if (timeExam >= deathInfo.getEstTimeExam()
 				&& deathInfo.getDoctorSigningCertificate() == null) {
+			
 			logger.log(worker, Level.INFO, 0, "Postmortem exam on " 
 						+ deceasedPerson.getName() + " completed.");
 			
@@ -275,7 +284,6 @@ public class ExamineBody extends MedicalAidTask {
 		}
 
 		else {
-			
 			// Add exam time as modified by skill
 			deathInfo.addTimeSpentExam(workTime);
 			
@@ -321,6 +329,8 @@ public class ExamineBody extends MedicalAidTask {
 		// Add experience.
 		addExperience(time);
 
+		aid.removeFromBed();
+		
 		endTask();
 		
 		return remainingTime;

@@ -167,6 +167,8 @@ public class RestingMedicalRecovery extends MedicalAidTask {
         var aid = getMedicalAid();
         if ((aid != null) && aid.getRestingRecoveryPeople().contains(person)) {
             aid.stopRestingRecovery(person);
+            // Clear the bed
+            aid.removeFromBed();
         }
 
         super.clearDown();

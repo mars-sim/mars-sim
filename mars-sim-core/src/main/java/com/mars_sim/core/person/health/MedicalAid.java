@@ -92,4 +92,6 @@ public interface MedicalAid extends Serializable {
     public int getOpenBedNum();
     
     public int getPatientNum();
+    
+    public boolean removeFromBed();
 }

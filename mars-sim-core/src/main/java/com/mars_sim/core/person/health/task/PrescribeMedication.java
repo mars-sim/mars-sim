@@ -10,7 +10,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
 
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -27,6 +29,9 @@ import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.SickBay;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * A task in which a doctor prescribes (and provides) a medication to a patient.
@@ -76,13 +81,26 @@ public class PrescribeMedication extends Task {
             // If in settlement, move doctor to building patient is in.
             else if (patient.isInSettlement() && patient.getBuildingLocation() != null) {
 
-                // Walk to patient's building.
-            	walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
-            	
-    			Task currentTask = patient.getMind().getTaskManager().getTask();
-    			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
-                	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
-    			}
+            	// First walk to a medical activity spot 
+        		boolean success = walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
+	
+        		if (!success) {
+        			logger.info(worker, 10_000, "Tried to walk to Doctor's station unsuccessfully.");
+        			// Note: Avoid calling this to instantly send the doctor there.
+        			// Check if the doctor is already at a medical activity spot	
+        			success = MedicalCare.dispatchToMedical(worker);
+        			
+        			if (!success) {
+        				logger.info(worker, 10_000, "Dispatched to Doctor's station unsuccessfully.");
+        				// If no medical activity spot is available, end the task
+        				endTask();
+        				// Note: should be able to 'remotely' treat a patient
+        				return ;
+        			}
+        		} 
+        		else {
+        			logger.info(worker, 10_000, "Arrived at Doctor's station successfully.");
+        		}
             }
             else {
             	logger.info(patient, "Not in settlement.");
@@ -99,6 +117,7 @@ public class PrescribeMedication extends Task {
         setPhase(MEDICATING);
     }
 
+    
     /**
      * Returns the patient being treated.
      * 
