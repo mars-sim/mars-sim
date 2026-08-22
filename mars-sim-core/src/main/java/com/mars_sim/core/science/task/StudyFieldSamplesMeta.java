@@ -65,8 +65,8 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 		// Check that there are available field samples to study.
 		double mostStored = 0D;
 
-		var container = person.getContainerUnit();
-		if (container instanceof ResourceHolder rh) {
+		var rh = ResourceHolder.getAttached(person.getContainerUnit());
+		if (rh != null) {
 			for (int i: ResourceUtil.ROCK_IDS) {
 				double stored = rh.getSpecificAmountResourceStored(i);
 				mostStored = Math.max(stored, mostStored);

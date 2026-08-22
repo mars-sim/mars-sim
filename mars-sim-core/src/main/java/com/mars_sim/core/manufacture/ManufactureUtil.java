@@ -174,6 +174,7 @@ public final class ManufactureUtil {
 	public static double getManufactureProcessItemGoodValuePoint(ProcessItem item, Settlement settlement,
 			boolean isOutput) {
 		double result = 0;
+		var rh = settlement.getEquipmentInventory();
 
 		GoodsManager manager = settlement.getGoodsManager();
 		switch(item.getType()) {
@@ -181,7 +182,7 @@ public final class ManufactureUtil {
 				int id = item.getId();
 				double amount = item.getAmount();
 				if (isOutput) {
-					double remainingCapacity = settlement.getRemainingCombinedCapacity(id);
+					double remainingCapacity = rh.getRemainingCombinedCapacity(id);
 					if (amount > remainingCapacity) {
 						amount = remainingCapacity;
 					}

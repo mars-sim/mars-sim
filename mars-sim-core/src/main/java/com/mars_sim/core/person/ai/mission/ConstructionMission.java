@@ -219,6 +219,7 @@ public class ConstructionMission extends AbstractMission {
 	public List<Integer> retrieveConstructionLUVParts(Settlement settlement, ConstructionStage stage, List<LightUtilityVehicle> reserved) {
 		List<Integer> luvAttachmentParts = new ArrayList<>();
 		int vehicleIndex = 0;
+		var ih = settlement.getEquipmentInventory();
 		for(var k : stage.getInfo().getVehicles()) {
 			Vehicle vehicle = null;
 			if (reserved.size() > vehicleIndex) {
@@ -227,7 +228,7 @@ public class ConstructionMission extends AbstractMission {
 
 			for(Integer part : k.getAttachmentParts()) {
 				try {
-					settlement.retrieveItemResource(part, 1);
+					ih.retrieveItemResource(part, 1);
 					if (vehicle != null) {
 						vehicle.storeItemResource(part, 1);
 					}
@@ -494,7 +495,8 @@ public class ConstructionMission extends AbstractMission {
 	 * @param settlement
 	 */
 	private void unreserveLUVparts(List<Integer> parts, Settlement settlement) {
-		parts.forEach(p -> settlement.storeItemResource(p, 1));
+		var ih = settlement.getEquipmentInventory();
+		parts.forEach(p -> ih.storeItemResource(p, 1));
 	}
 
 	/**

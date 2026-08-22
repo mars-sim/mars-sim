@@ -82,7 +82,8 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 		Malfunctionable owner = null;
 		
 		// If EquipmentHOwner then check if the Equipment should be source
-		if (source instanceof EquipmentOwner eo) {
+		var eo = EquipmentOwner.getAttached(source);
+		if (eo != null) {
 			// Get the smart equipment that have failures
 			List<Malfunctionable> smartEqm = eo.getEquipmentSet().stream()
 										.filter(Malfunctionable.class::isInstance)

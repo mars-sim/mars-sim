@@ -52,11 +52,10 @@ class LoadEVASuitTest extends MarsSimUnitTest {
 		
 		EVASuit suitSettlement = (EVASuit)EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, settlement);
 		
-		settlement.addEquipment(suitSettlement);
+		var rh = settlement.getEquipmentInventory();
 		
 		EquipmentOwner personOwner = (EquipmentOwner)person;
 		
-		var rh = settlement.getEquipmentInventory();
 		EVASuit suitPerson = EVASuitUtil.findEVASuitWithResources(rh, person);
 		
 		assertEquals(suitSettlement.getName(), suitPerson.getName(), "EVA suit name not matched.");
@@ -79,9 +78,7 @@ class LoadEVASuitTest extends MarsSimUnitTest {
 			double amount = (double) requiredResourcesMap.get(i);
 			rh.storeAmountResource(i, amount) ; 
 		}
-		
-		EquipmentOwner settlementOwner = (EquipmentOwner)settlement;
-		
+				
 		// 1. Transfer the EVA suit from to person to settlement
 		suitPerson.transfer(settlement);
 		// 2. Get the instance of the suit
@@ -89,7 +86,7 @@ class LoadEVASuitTest extends MarsSimUnitTest {
 		assertNotNull(suitSettlement, "Selected Suit from Settlement");		
 
 		// 3. Load resources
-		percentageFull = suitSettlement.loadResources(settlementOwner);
+		percentageFull = suitSettlement.loadResources(rh);
 		
 		
 		// 4. Loads the resources into the EVA suit

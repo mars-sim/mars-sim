@@ -168,7 +168,8 @@ public final class MalfunctionFactory implements Serializable {
 
 		entities.add(entity);
 
-		if (entity instanceof EquipmentOwner eo) {
+		var eo = EquipmentOwner.getAttached(entity);
+		if (eo != null) {
 			for (Equipment e : eo.getEquipmentSet()) {
 				if (e instanceof Malfunctionable m) {
 					entities.add(m);
@@ -229,7 +230,7 @@ public final class MalfunctionFactory implements Serializable {
 		// }
 
 		// Get entities carried by people on EVA.
-		for (Equipment e: settlement.getSuitSet()) {
+		for (Equipment e: settlement.getEquipmentInventory().getSuitSet()) {
 			EVASuit suit = (EVASuit)e;
 			if (suit.getMalfunctionManager().hasMalfunction())
 				entities.add(suit);

@@ -97,7 +97,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 				) {
 
 			// Check if there are enough barrel at the settlement for collecting ice.
-			int stored = settlement.findNumContainersOfType(EquipmentType.BARREL);
+			int stored = settlement.getEquipmentInventory().findNumContainersOfType(EquipmentType.BARREL);
 			int needed = CollectIce.REQUIRED_BARRELS;
 			if (stored < needed) {
 				BuildingManager.injectEquipmentDemand(EquipmentType.BARREL, settlement, stored, needed);

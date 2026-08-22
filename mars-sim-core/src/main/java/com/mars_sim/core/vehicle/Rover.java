@@ -446,8 +446,9 @@ public class Rover extends GroundVehicle implements Crewable,
 			}
 
 			else if (getSettlement() != null)  {
+				var rh = getSettlement().getEquipmentInventory();
 
-				double o2 = getSettlement().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				double o2 = rh.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				if (o2 < SMALL_AMOUNT) {
 					logger.log(this, Level.WARNING, 60_000,
 						"No more oxygen.");
@@ -461,7 +462,7 @@ public class Rover extends GroundVehicle implements Crewable,
 					return false;
 				}
 
-				if (getSettlement().getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
+				if (rh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 					logger.log(this, Level.WARNING, 60_000,
 							"Ran out of water.");
 					return false;
@@ -563,8 +564,9 @@ public class Rover extends GroundVehicle implements Crewable,
 			}
 
 			else if (isInSettlement()) {
-				lacking = getSettlement().retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
-				getSettlement().storeAmountResource(ResourceUtil.CO2_ID, gasRatio * (oxygenTaken - lacking));
+				var rh = getSettlement().getEquipmentInventory();
+				lacking = rh.retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
+				rh.storeAmountResource(ResourceUtil.CO2_ID, gasRatio * (oxygenTaken - lacking));
 			}
 		}
 
@@ -598,7 +600,8 @@ public class Rover extends GroundVehicle implements Crewable,
 			}
 
 			else if (isInSettlement()) {
-				lacking = getSettlement().retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
+				var rh = getSettlement().getEquipmentInventory();
+				lacking = rh.retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
 			}
 		}
 		else {
@@ -633,7 +636,8 @@ public class Rover extends GroundVehicle implements Crewable,
 				oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		}
 		else {
-			oxygenLeft = getSettlement().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			var rh = getSettlement().getEquipmentInventory();
+			oxygenLeft = rh.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		}
 
 		if (oxygenLeft < SMALL_AMOUNT) {

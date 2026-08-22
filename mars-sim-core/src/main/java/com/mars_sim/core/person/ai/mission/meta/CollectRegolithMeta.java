@@ -92,7 +92,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 
 
 			// Check if there are enough large bag at the settlement for collecting regolith.
-			int stored = settlement.findNumContainersOfType(EquipmentType.LARGE_BAG);
+			int stored = settlement.getEquipmentInventory().findNumContainersOfType(EquipmentType.LARGE_BAG);
 			int needed = CollectRegolith.REQUIRED_LARGE_BAGS;
 			if (stored < needed) {
 				BuildingManager.injectEquipmentDemand(EquipmentType.LARGE_BAG, settlement, stored, needed);

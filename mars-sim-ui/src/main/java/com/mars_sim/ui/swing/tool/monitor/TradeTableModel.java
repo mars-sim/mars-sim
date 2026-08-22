@@ -50,12 +50,6 @@ class TradeTableModel extends CategoryTableModel<Good> {
 	
 	private static final int VALUE_COL 			= MARKET_DEMAND_COL + 1;
 	private static final int MARKET_VALUE_COL 	= VALUE_COL + 1;
-	
-//	private static final int COST_COL 			= MARKET_VALUE_COL + 1;
-//	private static final int MARKET_COST_COL 	= COST_COL + 1;
-//			
-//	private static final int PRICE_COL 			= MARKET_COST_COL + 1;
-//	private static final int MARKET_PRICE_COL 	= PRICE_COL + 1;
 
 	private static final int COLUMNCOUNT = MARKET_VALUE_COL + 1;
 
@@ -78,12 +72,6 @@ class TradeTableModel extends CategoryTableModel<Good> {
 		
 		COLUMNS[VALUE_COL] = new ColumnSpec ("Value", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Double.class, ColumnSpec.STYLE_DIGIT2);
-		
-//		COLUMNS[COST_COL] = new ColumnSpec ("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
-//		COLUMNS[MARKET_COST_COL] = new ColumnSpec ("Market Cost ", Double.class, ColumnSpec.STYLE_CURRENCY);
-//		
-//		COLUMNS[PRICE_COL] = new ColumnSpec ("Price", Double.class, ColumnSpec.STYLE_CURRENCY);
-//		COLUMNS[MARKET_PRICE_COL] = new ColumnSpec ("Market Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 		
 		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flattened", Double.class, ColumnSpec.STYLE_DIGIT2);
@@ -186,14 +174,6 @@ class TradeTableModel extends CategoryTableModel<Good> {
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedGood.getID());
 			case MARKET_VALUE_COL:
 				return marketManager.getGlobalMarketGoodValue(selectedGood);
-//			case COST_COL:
-//				return selectedGood.getCostOutput();
-//			case MARKET_COST_COL:
-//				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getCost();
-//			case PRICE_COL:
-//				return selectedGood.getPrice();
-//			case MARKET_PRICE_COL:
-//				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getPrice();
 			default:
 				return null;
 		}
@@ -242,19 +222,20 @@ class TradeTableModel extends CategoryTableModel<Good> {
 	 * @return
 	 */
     private Object getQuantity(Settlement settlement, int id) {
+		var eo = settlement.getEquipmentInventory();
 		switch(ResourceType.getType(id)) {
 			case ResourceType.AMOUNT_RESOURCE: return null;
-			case ResourceType.ITEM_RESOURCE: return settlement.getItemResourceStored(id);
+			case ResourceType.ITEM_RESOURCE: return eo.getItemResourceStored(id);
 			case ResourceType.VEHICLE_RESOURCE: return settlement.findNumVehiclesOfType(VehicleType.convertID2Type(id));
 			case ResourceType.EQUIPMENT_RESOURCE: {
 				// For Equipment
 				EquipmentType type = EquipmentType.convertID2Type(id);
 				if (type == EquipmentType.EVA_SUIT)
-					return settlement.getNumEVASuit();
-				return settlement.findNumContainersOfType(type);
+					return eo.getSuitSet().size();
+				return eo.findNumContainersOfType(type);
 			}
 			case ResourceType.ROBOT_RESOURCE: return settlement.getNumBots();
-			case ResourceType.BIN_RESOURCE: return settlement.findNumBinsOfType(BinType.convertID2Type(id));
+			case ResourceType.BIN_RESOURCE: return eo.findNumBinsOfType(BinType.convertID2Type(id));
 			default: return null;
 		}
     }
@@ -267,17 +248,15 @@ class TradeTableModel extends CategoryTableModel<Good> {
 	 * @return
 	 */
     private Object getTotalMass(Settlement settlement, Good good) {
+		var eo = settlement.getEquipmentInventory();
     	int id = good.getID(); 
     	switch(ResourceType.getType(id)) {
-			case ResourceType.AMOUNT_RESOURCE: {
-      			// For Amount Resource
-    			return Math.round(settlement.getSpecificAmountResourceStored(id) * 100.0)/100.0;
-    		}
+			case ResourceType.AMOUNT_RESOURCE: return eo.getSpecificAmountResourceStored(id);
 			case ResourceType.ITEM_RESOURCE: {
 				// For Item Resource
 				Part p = ItemResourceUtil.findItemResource(id);
 				if (p != null) {
-					return settlement.getItemResourceStored(id) * p.getMassPerItem();
+					return eo.getItemResourceStored(id) * p.getMassPerItem();
 				}
 				return 0.0;
 			}
@@ -294,9 +273,9 @@ class TradeTableModel extends CategoryTableModel<Good> {
 				EquipmentType type = EquipmentType.convertID2Type(id);
 
 				if (type == EquipmentType.EVA_SUIT)
-					return settlement.getNumEVASuit() * EquipmentFactory.getEquipmentMass(type);
+					return eo.getSuitSet().size() * EquipmentFactory.getEquipmentMass(type);
 				
-				return settlement.findNumContainersOfType(type) * EquipmentFactory.getEquipmentMass(type);		
+				return eo.findNumContainersOfType(type) * EquipmentFactory.getEquipmentMass(type);		
 			}
 			case ResourceType.ROBOT_RESOURCE: {
 				// For Robots   
@@ -306,7 +285,7 @@ class TradeTableModel extends CategoryTableModel<Good> {
 			case ResourceType.BIN_RESOURCE: {
 				// For Bins   		
 				BinType type = BinType.convertID2Type(id);
-				return settlement.findNumBinsOfType(type) * BinFactory.getBinMass(type);	
+				return eo.findNumBinsOfType(type) * BinFactory.getBinMass(type);	
 			}
 			default: return null;
 		}

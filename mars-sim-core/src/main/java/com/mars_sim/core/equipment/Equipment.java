@@ -311,8 +311,8 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	public boolean transfer(UnitHolder destination) {
 		boolean canRetrieve = false;
 		boolean canStore = false;
-		var cu = getContainerUnit();
-		if (cu instanceof EquipmentOwner deo) {
+		var deo = EquipmentOwner.getAttached(getContainerUnit());
+		if (deo != null) {
 			canRetrieve = deo.removeEquipment(this);
 		}
 		else {
@@ -322,39 +322,25 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 
 		if (!canRetrieve) {
 				logger.warning(this, 60_000L, "Could not be retrieved/transferred from '"
-						+ cu + "'.");
+						+ getContainerUnit() + "'.");
 		}
 		else {	
+			// Does the dest
 			if (destination instanceof Building b) {
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
 				destination = b.getAssociatedSettlement();
 			}
 
-			if (destination instanceof EquipmentOwner eo) {
-				canStore = eo.addEquipment(this);
+			// Destination has a proper inventory
+			var destEO = EquipmentOwner.getAttached(destination);
+			if (destEO != null) {
+				canStore = destEO.addEquipment(this);
 			}
 			else {
 				// do nothing. mars surface currently doesn't track equipment
 				canStore = true;
 			}
-
-//			if (cu != null && !canStore) {
-//				logger.warning(this, 60_000L, "Could not be stored into '"
-//						+ destination + "'.");
-//				
-//				// Need to go back the original container
-//				boolean canStoreBack = ((EquipmentOwner)cu).addEquipment(this);
-//				if (canStoreBack) {
-//					logger.warning(this, 60_000L, "Just stored back into '"
-//							+ cu + "'.");
-//				}
-//				else {
-//					logger.warning(this, 60_000L, "Could not be stored back into '"
-//							+ cu + "'.");
-//				}
-//			}
-//			else {
 			
 			if (canStore) {	
 				// Note: in future, we may add ownership history for certain equipment 

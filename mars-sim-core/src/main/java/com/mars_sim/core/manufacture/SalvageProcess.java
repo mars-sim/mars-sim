@@ -78,7 +78,7 @@ public class SalvageProcess extends WorkshopProcess {
 		// Retrieve salvaged unit and remove from unit manager.
 		switch(salvagedUnit) {
 			case Equipment e: {
-				settlement.removeEquipment(e);
+				settlement.getEquipmentInventory().removeEquipment(e);
 			} break;
 			case Robot r: {
 				settlement.removeOwnedRobot(r);
@@ -107,6 +107,7 @@ public class SalvageProcess extends WorkshopProcess {
 		var settlement = building.getSettlement();
 
 		Map<Integer, Integer> partsSalvaged = new HashMap<>();
+		var rh = settlement.getEquipmentInventory();
 
 		if (premature) {
 			returnInputs();
@@ -144,9 +145,9 @@ public class SalvageProcess extends WorkshopProcess {
 					partsSalvaged.put(id, totalNumber);
 
 					double mass = totalNumber * part.getMassPerItem();
-					double capacity = settlement.getCargoCapacity();
+					double capacity = rh.getCargoCapacity();
 					if (mass <= capacity)
-						settlement.storeItemResource(id, totalNumber);
+						rh.storeItemResource(id, totalNumber);
 
 					Good good = GoodsUtil.getGood(part.getName());
 					if (good == null) {

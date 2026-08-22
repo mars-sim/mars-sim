@@ -14,6 +14,7 @@ import java.util.Set;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.mission.task.CollectMinedMinerals;
 import com.mars_sim.core.mission.task.CollectResources;
@@ -111,7 +112,7 @@ public final class UnloadHelper {
      * @param amountUnloading Maximum amount to unloaded
      * @return Amount not used
      */
-    private static double unloadItems(Vehicle source, Settlement dest, double amountUnloading) {
+    private static double unloadItems(Vehicle source, ItemHolder dest, double amountUnloading) {
     	for(int id : source.getItemResourceIDs()) {
     		Part part = ItemResourceUtil.findItemResource(id);
     		double mass = part.getMassPerItem();
@@ -142,12 +143,13 @@ public final class UnloadHelper {
      * @return Amount not used
      */
     private static double unloadResources(Vehicle source, Settlement dest, double amountUnloading) {
+		var destStore = dest.getEquipmentInventory();
     	for (int id : source.getAllAmountResourceStoredIDs()) {
     		double amount = source.getAllAmountResourceStored(id);
     		if (amount > amountUnloading) {
     			amount = amountUnloading;
     		}
-    		double capacity = dest.getRemainingCombinedCapacity(id);
+    		double capacity = destStore.getRemainingCombinedCapacity(id);
 
     		if (capacity < amount) {
     			amount = capacity;
@@ -155,7 +157,7 @@ public final class UnloadHelper {
 
     		// Transfer the amount resource from vehicle to settlement
     		source.retrieveAmountResource(id, amount);
-    		dest.storeAmountResource(id, amount);
+    		destStore.storeAmountResource(id, amount);
     		
     		// Resources count towards the output ??
     		if (!UnloadHelper.EXCLUDE_OUTPUTS.contains(id)) {
@@ -211,16 +213,17 @@ public final class UnloadHelper {
 	 * @param equipment the equipment.
 	 */
 	private static void unloadResourcesHolder(ResourceHolder rh, Settlement settlement) {
+		var settlementRh = settlement.getEquipmentInventory();
 
 		// Note: only unloading amount resources at the moment.
         for (int resource : rh.getAllAmountResourceStoredIDs()) {
             double amount = rh.getAllAmountResourceStored(resource);
-            double capacity = settlement.getRemainingCombinedCapacity(resource);
+			double capacity = settlementRh.getRemainingCombinedCapacity(resource);
             if (amount > capacity) {
                 amount = capacity;
             }
             rh.retrieveAmountResource(resource, amount);
-            settlement.storeAmountResource(resource, amount);
+			settlementRh.storeAmountResource(resource, amount);
         }
 	}
 
@@ -237,7 +240,8 @@ public final class UnloadHelper {
 		// Take own copy as the equipment list changes as we remove items. ??
 		List<Equipment> held = new ArrayList<>(source.getEquipmentSet());
 		for(Equipment equipment : held) {
-			if (equipment instanceof ResourceHolder rh) {
+			var rh = ResourceHolder.getAttached(equipment);
+			if (rh != null) {
 				// Unload inventories of equipment (if possible)
 				unloadResourcesHolder(rh, dest);
 			}
@@ -260,7 +264,8 @@ public final class UnloadHelper {
      * @return Amount not used
      */
     public static double unloadInventory(Vehicle vehicle, Settlement settlement, double amountUnloading) {
-		amountUnloading = unloadItems(vehicle, settlement, amountUnloading);
+		var destStore = settlement.getEquipmentInventory();
+		amountUnloading = unloadItems(vehicle, destStore, amountUnloading);
 		if (amountUnloading > 0) {
 			amountUnloading = unloadResources(vehicle, settlement, amountUnloading);
 			if (amountUnloading > 0) {

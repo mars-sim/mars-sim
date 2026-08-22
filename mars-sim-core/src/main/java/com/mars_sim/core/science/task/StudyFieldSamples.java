@@ -95,7 +95,8 @@ public class StudyFieldSamples extends LabTask {
 		// Take field samples from inventory.
 		double mostStored = 0D;
 		int bestID = 0;
-		if (person.getContainerUnit() instanceof ResourceHolder rh) {
+		var rh = ResourceHolder.getAttached(person.getContainerUnit());
+		if (rh != null) {
 			for (int i: ResourceUtil.ROCK_IDS) {
 				double stored = rh.getSpecificAmountResourceStored(i);
 				if (mostStored < stored) {

@@ -75,13 +75,14 @@ public class ProcessItem implements Serializable {
     void deposit(Settlement settlement, ProcessInfo context, boolean updateGoods) {
 		int outputId = -1;
 		double outputAmount = amount;
+		var rh = settlement.getEquipmentInventory();
 		
 		switch(type) {
 			case AMOUNT_RESOURCE: {
 
 				// Produce amount resources.
 				outputId = id;
-				double capacity = settlement.getRemainingCombinedCapacity(outputId);
+				double capacity = rh.getRemainingCombinedCapacity(outputId);
 				if (outputAmount> capacity) {
 					double overAmount = amount - capacity;
 					logger.severe(settlement, "Process " + context.getName() + " Not enough storage capacity to store " 
@@ -89,7 +90,7 @@ public class ProcessItem implements Serializable {
 							+ " from '" + name + "'.");
 					outputAmount = capacity;
 				}
-				settlement.storeAmountResource(outputId, outputAmount);
+				rh.storeAmountResource(outputId, outputAmount);
 			} break;
 
 			case PART: {
@@ -98,9 +99,9 @@ public class ProcessItem implements Serializable {
 				Part part = ItemResourceUtil.findItemResource(outputId);
 				int num = (int)outputAmount;
 				double mass = num * part.getMassPerItem();
-				double capacity = settlement.getCargoCapacity();
+				double capacity = rh.getCargoCapacity();
 				if (mass <= capacity) {
-					settlement.storeItemResource(outputId, num);
+					rh.storeItemResource(outputId, num);
 				}
 				else {
 					outputId = -1;
@@ -123,7 +124,7 @@ public class ProcessItem implements Serializable {
 				int number = (int) outputAmount;
 				for (int x = 0; x < number; x++) {
 					Bin bin = BinFactory.createBins(name, settlement);
-					settlement.addBin(bin);
+					rh.addBin(bin);
 				}
 			} break;
 		

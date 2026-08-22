@@ -32,6 +32,8 @@ import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.EquipmentFactory;
+import com.mars_sim.core.equipment.ItemHolder;
+import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Crew;
@@ -165,6 +167,8 @@ public final class SettlementBuilder {
 	 * @param supplies The definition of the Supplies
 	 */
 	public void createSupplies(SettlementSupplies supplies, Settlement settlement) {
+		var eo = settlement.getEquipmentInventory();
+
 		createVehicles(supplies, settlement);
 
 		createRobots(supplies, settlement);
@@ -173,9 +177,9 @@ public final class SettlementBuilder {
 
 		createBins(supplies, settlement);
 		
-		createResources(supplies, settlement);
+		createResources(supplies, eo);
 
-		createParts(supplies, settlement);
+		createParts(supplies, eo);
 	}
 
 	/**
@@ -360,19 +364,18 @@ public final class SettlementBuilder {
 	 * any initial resources set in buildings.
 	 * 
 	 * @param template
-	 * @param settlement
-	 * @throws Exception if error storing resources
+	 * @param rh Resource store to deposit the resources into
 	 */
-	private void createResources(SettlementSupplies template, Settlement settlement) {
+	private void createResources(SettlementSupplies template, ResourceHolder rh) {
 
 		Map<AmountResource, Double> resourceMap = template.getResources();
 		for (Entry<AmountResource, Double> value : resourceMap.entrySet()) {
 			AmountResource resource = value.getKey();
 			double amount = value.getValue();
-			double capacity = settlement.getRemainingCombinedCapacity(resource.getID());
+			double capacity = rh.getRemainingCombinedCapacity(resource.getID());
 			if (amount > capacity)
 				amount = capacity;
-			settlement.storeAmountResource(resource.getID(), amount);
+			rh.storeAmountResource(resource.getID(), amount);
 		}
 	}
 
@@ -380,16 +383,15 @@ public final class SettlementBuilder {
 	 * Creates initial parts for a settlement.
 	 * 
 	 * @param template
-	 * @param settlement
-	 * @throws Exception if error creating parts
+	 * @param store Store to deposit the parts into
 	 */
-	private void createParts(SettlementSupplies template, Settlement settlement) {
+	private void createParts(SettlementSupplies template, ItemHolder store) {
 
 		Map<Part, Integer> partMap = template.getParts();
 		for (Entry<Part, Integer> item : partMap.entrySet()) {
 			Part part = item.getKey();
 			Integer number = item.getValue();
-			settlement.storeItemResource(part.getID(), number);
+			store.storeItemResource(part.getID(), number);
 		}
 	}
 

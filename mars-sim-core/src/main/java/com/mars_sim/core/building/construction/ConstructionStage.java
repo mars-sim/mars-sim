@@ -217,12 +217,13 @@ public class ConstructionStage implements Serializable {
         boolean createEvent = false;
 
 		// Load amount resources.
+        var rh = settlement.getEquipmentInventory();
 		for(var r : resources.entrySet()) {
 			int resource = r.getKey();
 			var material = r.getValue();
             var amountNeeded = material.getMissing();
             if (amountNeeded > 0) {
-                double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
+                double amountAvailable = rh.getSpecificAmountResourceStored(resource);
                 // Load as much of the remaining resource as possible into the construction site
                 // stage.
                 if (amountNeeded > amountAvailable) {
@@ -231,7 +232,7 @@ public class ConstructionStage implements Serializable {
                 }
                 if (amountNeeded > 0) {
                     // Retrieve this materials now
-                    settlement.retrieveAmountResource(resource, amountNeeded);
+                    rh.retrieveAmountResource(resource, amountNeeded);
                     // Store the materials at this site
                     material.addAmount(amountNeeded);
                     createEvent = true;
@@ -245,7 +246,7 @@ public class ConstructionStage implements Serializable {
 			var material = r.getValue();
             var amountNeeded = (int)material.getMissing();
             if (amountNeeded > 0) {
-                int amountAvailable = settlement.getItemResourceStored(part);
+                int amountAvailable = rh.getItemResourceStored(part);
                 // Load as much of the remaining parts as possible into the construction site
                 // stage.
                 if (amountNeeded > amountAvailable) {
@@ -254,7 +255,7 @@ public class ConstructionStage implements Serializable {
                 }
                 if (amountNeeded > 0) {
                     // Retrieve this materials now
-                    settlement.retrieveItemResource(part, amountNeeded);
+                    rh.retrieveItemResource(part, amountNeeded);
                     // Store the materials at this site
                     material.addAmount(amountNeeded);
                     createEvent = true;
@@ -275,16 +276,16 @@ public class ConstructionStage implements Serializable {
 	 * @return true if missing materials available.
 	 */
 	public boolean hasMissingConstructionMaterials() {
-        var  settlement = site.getAssociatedSettlement();
+        var  rh = site.getAssociatedSettlement().getEquipmentInventory();
         if (resources.entrySet().stream()
             .anyMatch(e -> (e.getValue().getMissing() > 0)
-                   && (e.getValue().getMissing() > settlement.getSpecificAmountResourceStored(e.getKey())))) {
+                   && (e.getValue().getMissing() > rh.getSpecificAmountResourceStored(e.getKey())))) {
             return true;
         }
 
         return parts.entrySet().stream()
             .anyMatch(e -> (e.getValue().getMissing() > 0)
-                    && (e.getValue().getMissing() > settlement.getItemResourceStored(e.getKey())));
+                    && (e.getValue().getMissing() > rh.getItemResourceStored(e.getKey())));
     }
 
     @Override
@@ -299,7 +300,7 @@ public class ConstructionStage implements Serializable {
      * @param reclaimChance
      */
     void reclaimParts(double reclaimChance) {
-        var settlement = site.getAssociatedSettlement();
+        var rh = site.getAssociatedSettlement().getEquipmentInventory();
 
 		// Salvage construction parts.
 		for(var e : parts.entrySet()) {
@@ -314,7 +315,7 @@ public class ConstructionStage implements Serializable {
 
 			if (salvagedNumber > 0) {
 				material.addAmount(salvagedNumber);
-				settlement.storeItemResource(part, salvagedNumber);
+				rh.storeItemResource(part, salvagedNumber);
 			}
 		}
     }

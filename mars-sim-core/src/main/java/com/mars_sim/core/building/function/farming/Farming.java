@@ -321,10 +321,10 @@ public class Farming extends Function {
 	public String chooseCrop2Extract(double amount) {
 		List<CropSpec> list = new ArrayList<>(cropConfig.getCropTypes());
 		Collections.shuffle(list);
+		var rh = building.getSettlement().getEquipmentInventory();
 
 		list = list.stream()
-				.filter(c -> building.getSettlement()
-				.getAllAmountResourceStored(c.getCropID()) > amount)
+				.filter(c -> rh.getAllAmountResourceStored(c.getCropID()) > amount)
 				.collect(Collectors.toList());
 
 		List<AmountResource> tissues = new ArrayList<>();
@@ -334,7 +334,7 @@ public class Farming extends Function {
 			String tissueName = cropName + Farming.TISSUE;
 			AmountResource tissue = ResourceUtil.findAmountResource(tissueName);
 			if (tissue != null) {	
-				double amountTissue = building.getSettlement().getSpecificAmountResourceStored(tissue.getID());
+				double amountTissue = rh.getSpecificAmountResourceStored(tissue.getID());
 				if (amountTissue < LOW_AMOUNT_TISSUE_CULTURE)
 					tissues.add(tissue);
 			}
@@ -346,9 +346,9 @@ public class Farming extends Function {
 				String tissueName = ar.getName();
 				cropName = tissueName.replace(" tissue", "");
 				int cropId = ResourceUtil.findIDbyAmountResourceName(cropName);
-				double amountCrop = building.getSettlement().getSpecificAmountResourceStored(cropId);
+				double amountCrop = rh.getSpecificAmountResourceStored(cropId);
 				if (amountCrop > CROP_AMOUNT_FOR_TISSUE_EXTRACTION) {
-					building.getSettlement().retrieveAmountResource(cropId, CROP_AMOUNT_FOR_TISSUE_EXTRACTION);
+					rh.retrieveAmountResource(cropId, CROP_AMOUNT_FOR_TISSUE_EXTRACTION);
 					break;
 				}
 				else
@@ -365,7 +365,7 @@ public class Farming extends Function {
 			double selectedTissueAmount = 0;
 			
 			for (AmountResource ar: tissues) {
-				double tissueAmount = building.getSettlement().getSpecificAmountResourceStored(ar.getID());
+				double tissueAmount = rh.getSpecificAmountResourceStored(ar.getID());
 				if (tissueAmount <= selectedTissueAmount) {
 					selectedTissueAmount = tissueAmount;
 					selectedTissueName = ar.getName();
@@ -374,7 +374,7 @@ public class Farming extends Function {
 			}
 			
 			if (selectedTissueName != null) {
-				building.getSettlement().retrieveAmountResource(selectedTissueid, STANDARD_AMOUNT_TISSUE_CULTURE);
+				rh.retrieveAmountResource(selectedTissueid, STANDARD_AMOUNT_TISSUE_CULTURE);
 				return selectedTissueName.replace(" tissue", "");
 			}
 		}
@@ -612,6 +612,7 @@ public class Farming extends Function {
 	 */
 	private double useTissueCulture(CropSpec cropType, double cropArea) {
 		double percent = 0;
+		var rh = building.getSettlement().getEquipmentInventory();
 
 		double requestedAmount = cropArea * cropType.getEdibleBiomass() * TISSUE_PER_SQM;
 
@@ -622,7 +623,7 @@ public class Farming extends Function {
 		boolean available = false;
 
 		try {
-			double amountStored = building.getSettlement().getSpecificAmountResourceStored(tissueID);
+			double amountStored = rh.getSpecificAmountResourceStored(tissueID);
 
 			if (amountStored < MIN) {
 				logger.log(building, Level.INFO, 1000, "Running out of " + tissueName + ".");
@@ -646,7 +647,7 @@ public class Farming extends Function {
 			}
 
 			if (available) {
-				building.getSettlement().retrieveAmountResource(tissueID, requestedAmount);
+				rh.retrieveAmountResource(tissueID, requestedAmount);
 			}
 
 		} catch (Exception e) {

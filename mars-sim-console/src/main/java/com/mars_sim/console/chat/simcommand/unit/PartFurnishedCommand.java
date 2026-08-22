@@ -31,42 +31,41 @@ public class PartFurnishedCommand extends AbstractUnitCommand {
 	 */
 	@Override
 	protected boolean execute(Conversation context, String input, Unit source) {
-		boolean result = false;
-		if (!(source instanceof EquipmentOwner)) {
-			context.println("Sorry this Unit does not hold parts");
+		var eo = EquipmentOwner.getAttached(source);
+		if (eo == null) {
+			context.println("Sorry this Unit does not have an inventory");
+			return false;
 		}
-		else if (input == null) {
+		if (input == null) {
 			context.println("Specify '[command] [part]:[quantity]'. e.g. /fu steel ingot:2");
-		}
-		else {
-			String [] args = input.split(":");
-			if (args.length != 2) {
-				context.println("Argument format is '[command] [part]:[quantity]'. e.g. /fu steel ingot:2");
-			}
-			else {
-				EquipmentOwner eo = (EquipmentOwner) source;
-		
-				Part part = (Part) ItemResourceUtil.findItemResource(args[0]);
-				if (part == null) {
-					context.println(input + " is an unknown part.");
-				}
-				else {
-					int existingQuantity = eo.getItemResourceStored(part.getID());
-					
-					int quantity = Integer.parseInt(args[1]);
-					eo.storeItemResource(part.getID(), quantity);
-					
-					int newQuantity = eo.getItemResourceStored(part.getID());
-					
-					context.println(quantity + "x " + part.getName() + " added.");
-							
-					context.println(part.getName() + ": " 
-							+ existingQuantity 
-							+ "x -> " + newQuantity + "x.");
-				}
-			}
+			return false;
 		}
 
-		return result;
+		String [] args = input.split(":");
+		if (args.length != 2) {
+			context.println("Argument format is '[command] [part]:[quantity]'. e.g. /fu steel ingot:2");
+			return false;
+		}
+		
+		Part part = (Part) ItemResourceUtil.findItemResource(args[0]);
+		if (part == null) {
+			context.println(input + " is an unknown part.");
+			return false;
+		}
+		
+		int existingQuantity = eo.getItemResourceStored(part.getID());
+		
+		int quantity = Integer.parseInt(args[1]);
+		eo.storeItemResource(part.getID(), quantity);
+		
+		int newQuantity = eo.getItemResourceStored(part.getID());
+		
+		context.println(quantity + "x " + part.getName() + " added.");
+				
+		context.println(part.getName() + ": " 
+				+ existingQuantity 
+				+ "x -> " + newQuantity + "x.");
+
+		return true;
 	}
 }

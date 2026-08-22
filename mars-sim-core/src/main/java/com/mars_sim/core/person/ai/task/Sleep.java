@@ -27,7 +27,6 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Rover;
 
 /**
@@ -99,8 +98,8 @@ public class Sleep extends Task {
 
 			walkToDestination();
 			
-			UnitHolder uh = person.getContainerUnit();
-			if (uh instanceof EquipmentOwner eo) {
+			var eo = EquipmentOwner.getAttached(person.getContainerUnit());
+			if (eo != null) {
 				// Finally assign essentials for sleeping
 				person.wearGarment(eo);
 				person.assignThermalBottle();
@@ -156,7 +155,7 @@ public class Sleep extends Task {
 		Building currentBuilding = BuildingManager.getBuilding(person);
 		if (currentBuilding != null && currentBuilding.hasFunction(FunctionType.EVA)) {
 			// Future: need to rework this method to find the two emergency beds in EVA Airlock
-			// This is not the right way to find the medical bed walkToActivitySpotInBuilding(currentBuilding, FunctionType.EVA, true);
+			// This is not the right way to find the medical bed walkToActivitySpotInBuilding(currentBuilding, FunctionType.EVA, true)
 			// Model after MedicalStation's bedRegistry for the EVA bed
 			// May add a helper method in BuildingManager such as BuildingManager::addPatientToMedicalBed.
 		}
@@ -319,13 +318,11 @@ public class Sleep extends Task {
 				if (!canWalk) {
 					logger.severe(person, 10_000, "Unable to walk to his/her own bed.");
 					endTask();
-					return;
 				}
 			}
 			else {
 				logger.severe(person, 10_000, "Unable to find a bed.");
 				endTask();
-				return;
 			}
 		}
 	}

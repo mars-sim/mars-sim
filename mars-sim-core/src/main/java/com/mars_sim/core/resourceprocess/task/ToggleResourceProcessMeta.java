@@ -136,17 +136,13 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private static final double GOD_BIAS = 2048;	
 	private static final double OMNI_BIAS = 1792;
 	private static final double HOVERING = 1536;
-	private static final double GREAT_BIAS = 1280;	
-	private static final double UNBELIEVABLE = 1024;	
 	private static final double EXCEEDING = 512;	
 	private static final double SUPREME = 256;	
 	private static final double TRENDY = 192;	
 	private static final double EXTREME = 128;
 	private static final double MEGA = 64;
 	private static final double SUPER = 32;
-	private static final double HIGH = 16;
 	private static final double MID = 8;
-	private static final double LOW = 4;
 	
 	private static Map<Integer, Double> moduleFactor = new HashMap<>();
 	
@@ -356,8 +352,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @return false if any input resources are empty.
 	 */
 	private static boolean isInputsPresent(Settlement settlement, ResourceProcessSpec processSpec) {
+		var rh = settlement.getEquipmentInventory();
 		for (var amount : processSpec.getMinimumInputs().entrySet()) {
-			if (amount.getValue() > settlement.getSpecificAmountResourceStored(amount.getKey())) {
+			if (amount.getValue() > rh.getSpecificAmountResourceStored(amount.getKey())) {
 				return false;
 			}
 		}
@@ -374,6 +371,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private static ResourceProcessAssessment computeWasteProcessOutputScore(Settlement settlement,
 							ResourceProcessSpec process) {
 		double percentage = 0;
+		var rh = settlement.getEquipmentInventory();
 
 		// For now, consider only the input resource for waste processes
 		for (int id : process.getInputResources()) {
@@ -382,8 +380,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				percAvailable = 1;
 			}
 			else {
-				double cap = settlement.getSpecificCapacity(id);
-				double stored = settlement.getSpecificAmountResourceStored(id);
+				double cap = rh.getSpecificCapacity(id);
+				double stored = rh.getSpecificAmountResourceStored(id);
 				
 				double rate = process.getBaseInputRate(id); // per sol
 				double perSol = process.getProcessTime() / 100D; // by default process time is 100

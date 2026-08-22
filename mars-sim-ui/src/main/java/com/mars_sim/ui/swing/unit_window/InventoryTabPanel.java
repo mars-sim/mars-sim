@@ -89,14 +89,14 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> implements TemporalC
 		rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		
         // Create resources panel
-		var unit = getEntity();
-		if (unit instanceof ResourceHolder) {
+		var rh = ResourceHolder.getAttached(getEntity());
+		if (rh != null) {
 			JScrollPane resourcesPanel = new JScrollPane();
 			resourcesPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 			inventoryContentPanel.add(resourcesPanel);
 
 			// Create resources table model
-			resourceTableModel = new ResourceTableModel(unit);
+			resourceTableModel = new ResourceTableModel(rh);
 
 			// Create resources table
 			JTable resourceTable = new JTable(resourceTableModel) {
@@ -126,13 +126,14 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> implements TemporalC
 		}
 
         // Create item panel
-		if (unit instanceof ItemHolder iHolder) {
+		var ih = ItemHolder.getAttached(getEntity());
+		if (ih != null) {
 			JScrollPane itemPanel = new JScrollPane();
 			itemPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 			inventoryContentPanel.add(itemPanel);
 
 			// Create item table model
-			itemTableModel = new ItemTableModel(iHolder);
+			itemTableModel = new ItemTableModel(ih);
 
 			// Create item table
 			JTable itemTable = new JTable(itemTableModel) {
@@ -165,7 +166,8 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> implements TemporalC
 		}
 		
         // Create equipment panel
-        if (unit instanceof EquipmentOwner eo) {
+		var eo = EquipmentOwner.getAttached(getEntity());
+        if (eo != null) {
             JScrollPane equipmentPanel = new JScrollPane();
             equipmentPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
             inventoryContentPanel.add(equipmentPanel);
@@ -312,8 +314,8 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> implements TemporalC
 
 		private ResourceHolder holder;
 
-        private ResourceTableModel(Unit unit) {
-        	this.holder = (ResourceHolder) unit;
+        private ResourceTableModel(ResourceHolder unit) {
+        	this.holder = unit;
         	loadResources(keys, stored, capacity);
         }
 

@@ -16,9 +16,9 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.PreparedDish;
 import com.mars_sim.core.building.function.cooking.task.CookMeal;
-import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -30,7 +30,6 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -68,8 +67,6 @@ public class EatDrink extends Task {
 	private static final double PACKED_PRESERVED_FOOD_CARRIED = .2; 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -1.2D;
-	/** Mass (kg) of single napkin for meal. */
-	private static final double NAPKIN_MASS = .0025D;
 
 	private double foodConsumedPerServing;
 
@@ -91,7 +88,7 @@ public class EatDrink extends Task {
 	private PreparedDish cookedMeal;
 	private Cooking kitchen;
 	private PhysicalCondition pc;
-	private UnitHolder containerUnit;
+	private ResourceHolder localStores;
 
 	/**
 	 * Constructor.
@@ -135,14 +132,13 @@ public class EatDrink extends Task {
 		}
 				
 		// Set the container unit of the person
-		containerUnit = person.getContainerUnit();
-		
-		if (containerUnit instanceof ResourceHolder c) {
+		localStores = EquipmentOwner.getAttached(person.getContainerUnit());
+		if (localStores != null) {
 			// Take preserved food from inventory if it is available.
 			if (foodAmount == 0.0)
-				foodAmount = c.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+				foodAmount = localStores.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 			if (waterAmount == 0.0)
-				waterAmount = c.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+				waterAmount = localStores.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		}
 
 		// Check if a cooked meal is available in a kitchen building at the settlement.
@@ -502,9 +498,10 @@ public class EatDrink extends Task {
 				
 		// Check directly from settlement
 		if (person.isInSettlement()) {
+			var rh = person.getSettlement().getEquipmentInventory();
 			
 			// Take preserved food from settlement if it is available.
-			double shortfall = person.getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
+			double shortfall = rh.retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
 			// Retrieve a portion from the settlement and store in the person
 			if (proportion * 0.1 - shortfall > 0) {
 				person.storeAmountResource(ResourceUtil.FOOD_ID, proportion * 0.1 - shortfall);
@@ -520,8 +517,9 @@ public class EatDrink extends Task {
 			if (person.isInVehicle()) {
 		
 				if (person.getVehicle().isInGarage()) {
+					var rh = person.getVehicle().getSettlement().getEquipmentInventory();
 					// Take preserved food from settlement if it is available.
-					double shortfall = person.getVehicle().getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
+					double shortfall = rh.retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
 					// Retrieve a portion from the settlement and store in the person
 					if (proportion * 0.1 - shortfall > 0) {
 						person.storeAmountResource(ResourceUtil.FOOD_ID, proportion * 0.1 - shortfall);
@@ -565,8 +563,9 @@ public class EatDrink extends Task {
 		// Note: only allow this 'luxury' when a person is in a settlement  
 		// If on mission, food is limited and should be 'shared'
 		if (person.isInSettlement()) {	
+			var rh = person.getSettlement().getEquipmentInventory();
 			// Take preserved food from container and store it in a person if it is available 
-			double shortfall = person.getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED);
+			double shortfall = rh.retrieveAmountResource(ResourceUtil.FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED);
 			if (shortfall > 0) {
 				if (shortfall - PACKED_PRESERVED_FOOD_CARRIED < MIN) {
 					logger.info(person, 20_000L, "No preserved food available.");
@@ -576,7 +575,7 @@ public class EatDrink extends Task {
 					double excess = person.storeAmountResource(ResourceUtil.FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED - shortfall);
 					if (excess > 0) {
 						// Transfer any excess that a person cannot carry back to the settlement
-						person.getSettlement().storeAmountResource(ResourceUtil.FOOD_ID, excess);
+						rh.storeAmountResource(ResourceUtil.FOOD_ID, excess);
 					}
 				}
 			}
@@ -594,8 +593,8 @@ public class EatDrink extends Task {
 	private double retrieveFood(double proportion) {
 		// Assume the person carries preserved food 	
 		double shortfall = person.retrieveAmountResource(ResourceUtil.FOOD_ID, proportion);
-		if (shortfall > 0) {
-			shortfall = ((ResourceHolder)containerUnit).retrieveAmountResource(ResourceUtil.FOOD_ID, shortfall);
+		if ((shortfall > 0) && localStores != null) {
+			shortfall = localStores.retrieveAmountResource(ResourceUtil.FOOD_ID, shortfall);
 		}
 		
 		return proportion - shortfall;
@@ -710,8 +709,8 @@ public class EatDrink extends Task {
 
 		double amount = RandomUtil.getRandomDouble(waterEachServing / 2, waterEachServing);
 
-		if (containerUnit instanceof MarsSurface) {
-			// Doing EVA outside. Get water from one's EVA suit
+		if (localStores == null) {
+			// No local stores so get water from one's EVA suit
 			EVASuit suit = person.getSuit();
 
 			double available = suit.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
@@ -727,7 +726,7 @@ public class EatDrink extends Task {
 				consumeWater(suit, amount, waterOnly);
 			}
 		}
-		else if (containerUnit instanceof ResourceHolder foodStore) {
+		else {
 			// Case 2: drink from bottle when being inside the settlement or vehicle			
 			// Case 0: drink from thermal bottle
 			double availableAmount = 0;
@@ -750,7 +749,7 @@ public class EatDrink extends Task {
 				// Case 2: See if the person needs to fill up the empty bottle
 				if (availableAmount == 0.0) {
 					// Retrieve the water from settlement/vehicle
-					double missing = foodStore.retrieveAmountResource(ResourceUtil.WATER_ID, 1);
+					double missing = localStores.retrieveAmountResource(ResourceUtil.WATER_ID, 1);
 					// Fill up the bottle with water
 					if (missing < 1) {
 						amount = 1 - missing;
@@ -774,14 +773,14 @@ public class EatDrink extends Task {
 			}
 
 			// Take water carried by person if available
-			double available = foodStore.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+			double available = localStores.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 			// Test to see if there's enough water
 			if (available >= amount) {
-				consumeWater(foodStore, amount, waterOnly);
+				consumeWater(localStores, amount, waterOnly);
 			}
 			else if (available > 0) {
 				amount = available;
-				consumeWater(foodStore, amount, waterOnly);
+				consumeWater(localStores, amount, waterOnly);
 			}
 			else {
 				// No water left
@@ -789,18 +788,14 @@ public class EatDrink extends Task {
 				endTask();
 			}
 		}
-		else {
-			endTask();
-		}
 	}
 
 	/**
 	 * Consumes the water.
 	 * 
-	 * @param containerUnit
-	 * @param thirst
-	 * @param amount
-	 * @param waterOnly
+	 * @param rh the resource holder containing the water
+	 * @param amount the amount of water to consume
+	 * @param waterOnly whether only water is being consumed
 	 */
 	private void consumeWater(ResourceHolder rh, double amount, boolean waterOnly) {
 		// Reduce thirst
@@ -840,18 +835,5 @@ public class EatDrink extends Task {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Throws away any napkins.
-	 */
-	@Override
-	protected void clearDown() {
-		
-		if (person.getSettlement() != null && person.getSettlement()
-				.retrieveAmountResource(ResourceUtil.NAPKIN_ID, NAPKIN_MASS) > 0) {
-			// Throw away napkin waste if one was used.
-			((ResourceHolder)containerUnit).storeAmountResource(ResourceUtil.SOLID_WASTE_ID, NAPKIN_MASS);
-		}
 	}
 }

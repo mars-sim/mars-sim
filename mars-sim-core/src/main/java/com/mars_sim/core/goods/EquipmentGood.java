@@ -149,7 +149,7 @@ public class EquipmentGood extends Good {
 		double number = 0D;
 
 		// Get number of the equipment in settlement storage.
-		number += settlement.findNumEmptyContainersOfType(equipmentType, false);
+		number += settlement.getEquipmentInventory().findNumEmptyContainersOfType(equipmentType, false);
 
 		// Get number of equipment out on mission vehicles.
 		for (Mission mission : settlement.getMissionControl().getActiveMissions()) {
@@ -233,7 +233,7 @@ public class EquipmentGood extends Good {
 		
 		owner.setProjectedDemandScore(this, projectedCache);
 		
-		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType));
+		double totalSupply = getAverageEquipmentSupply(settlement.getEquipmentInventory().findNumContainersOfType(equipmentType));
 				
 		owner.setSupplyScore(this, totalSupply);
 		
@@ -287,6 +287,7 @@ public class EquipmentGood extends Good {
 	 */
 	private double determineEquipmentDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = 1;
+		var rh = settlement.getEquipmentInventory();
 		
 		double areologistFactor = (1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement)) / 3.0;
 
@@ -305,7 +306,7 @@ public class EquipmentGood extends Good {
 		// Scan resources that can be held in this Container
 		for (AmountResource resource : ResourceUtil.getAmountResources()) {
 			if (ContainerUtil.getEquipmentTypeForContainer(resource.getID()) == equipmentType) {
-				double settlementCapacity = settlement.getSpecificCapacity(resource.getID());
+				double settlementCapacity = rh.getSpecificCapacity(resource.getID());
 
 				double resourceDemand = owner.getDemandScoreWithID(resource.getID());
 
@@ -358,7 +359,7 @@ public class EquipmentGood extends Good {
 	private double computeUsageFactor(Settlement settlement) {
 		int numUsed = 0;
 
-		Collection<Container> equipmentList = settlement.findContainersOfType(equipmentType);
+		Collection<Container> equipmentList = settlement.getEquipmentInventory().findContainersOfType(equipmentType);
 
 		for (Mission mission : settlement.getMissionControl().getActiveMissions()) {
 			if (mission instanceof VehicleMission vehicleMission) {

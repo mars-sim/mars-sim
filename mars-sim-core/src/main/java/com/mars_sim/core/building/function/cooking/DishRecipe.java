@@ -66,8 +66,9 @@ public class DishRecipe implements Serializable {
 	 *
 	 */
 	public boolean isIngredientsAvailable(Settlement settlement) {
+		var rh = settlement.getEquipmentInventory();
 		return ingredientList.stream().filter(i -> i.isMandatory()) 
-				.allMatch(i -> settlement.getSpecificAmountResourceStored(i.getAmountResourceID()) >= i.getDryMass());
+				.allMatch(i -> rh.getSpecificAmountResourceStored(i.getAmountResourceID()) >= i.getDryMass());
 	}
 
 	/***
@@ -99,13 +100,13 @@ public class DishRecipe implements Serializable {
 	 */
     public double retrieveIngredients(Settlement s) {
 		double quality = 0;
-
+		var rh = s.getEquipmentInventory();
 		for (var i : ingredientList) {
 			int ingredientID = i.getAmountResourceID();
 
 			double dryMass = i.getDryMass();
 
-			var shortfall = s.retrieveAmountResource(ingredientID, dryMass);
+			var shortfall = rh.retrieveAmountResource(ingredientID, dryMass);
 
 			// Add the effect of the presence of ingredients on meal quality
 			if (shortfall == 0) {

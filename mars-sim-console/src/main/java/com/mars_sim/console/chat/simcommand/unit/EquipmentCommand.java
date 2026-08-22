@@ -39,25 +39,24 @@ public class EquipmentCommand extends AbstractUnitCommand {
 	 */
 	@Override
 	protected boolean execute(Conversation context, String input, Unit source) {
-		Collection<Equipment> equipment = null;
-		if (source instanceof EquipmentOwner eo) {
-			equipment = eo.getEquipmentSet();
-		}
-		else {
+		var eo = EquipmentOwner.getAttached(source);
+		if (eo == null) {
 			context.println("Sorry this Entity does not hold Equipment");
 			return false;
 		}
+		Collection<Equipment> equipment = eo.getEquipmentSet();
 
-		if (input == null) {
-			showDetails(context, equipment, false);
-		}
-		else if (input.equalsIgnoreCase("all")) {
-			showDetails(context, equipment, true);
-		}
-		else if (input.equalsIgnoreCase("stats")) {
+		if ((input != null) && input.equalsIgnoreCase("stats")) {
 			showStats(context, equipment);
+			return true;
 		}
 		
+		if (input != null) {
+			equipment = equipment.stream()
+					.filter(e -> e.getEquipmentType().getName().equalsIgnoreCase(input))
+					.toList();
+		}
+		showDetails(context, equipment);
 		return true;
 	}
 
@@ -78,7 +77,7 @@ public class EquipmentCommand extends AbstractUnitCommand {
 		
 	}
 
-	private void showDetails(Conversation context, Collection<Equipment> equipment, boolean showAll) {
+	private void showDetails(Conversation context, Collection<Equipment> equipment) {
 		StructuredResponse buffer = new StructuredResponse();
 		SortedMap<String,String> entries = new TreeMap<>();
 		for (Equipment e : equipment) {
@@ -90,25 +89,16 @@ public class EquipmentCommand extends AbstractUnitCommand {
 				if (resourceID >= 0) {
 					stored = formatResource(c, resourceID);
 				}
-				else if (showAll) {
-					stored = "empty";
-				}
 			}
-			else if (e instanceof ResourceHolder suit) {
-				StringBuilder builder = new StringBuilder();
+			else {
+				var suit = ResourceHolder.getAttached(e);
+				if (suit == null) {
+					continue;
+				}
 
-				for(int resourceID: suit.getSpecificResourceStoredIDs()) {
-					if (builder.length() > 0) {
-						builder.append(", ");
-					}
-					builder.append(formatResource(suit, resourceID));
-				}
-				if (builder.length() > 0) {
-					stored = builder.toString();
-				}
-				else if (showAll) {
-					stored = "empty";
-				}
+				stored = suit.getSpecificResourceStoredIDs().stream()
+						.map(r -> formatResource(suit, r))
+						.collect(Collectors.joining(", "));
 			}
 
 			if (stored != null) {

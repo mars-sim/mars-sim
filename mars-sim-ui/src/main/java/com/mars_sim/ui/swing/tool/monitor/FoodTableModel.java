@@ -155,7 +155,7 @@ class FoodTableModel extends CategoryTableModel<Food> {
     	
     	if (ResourceType.getType(id) == ResourceType.AMOUNT_RESOURCE) {
       		// For Amount Resource
-    		return settlement.getSpecificAmountResourceStored(id);
+    		return settlement.getEquipmentInventory().getSpecificAmountResourceStored(id);
     	}
     	
     	return null;

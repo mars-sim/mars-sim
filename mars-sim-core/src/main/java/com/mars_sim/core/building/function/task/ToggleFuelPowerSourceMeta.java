@@ -223,9 +223,10 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
     private static boolean isEmptyInputResource(Settlement settlement,
             FuelPowerSource fuelSource) {
         boolean result = false;
+        var rh = settlement.getEquipmentInventory();
 
         int resource = fuelSource.getFuelResourceID();
-        double stored = settlement.getSpecificAmountResourceStored(resource);
+        double stored = rh.getSpecificAmountResourceStored(resource);
         if (stored == 0D) {
             result = true;
         }

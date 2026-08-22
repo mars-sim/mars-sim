@@ -161,6 +161,7 @@ public final class FoodProductionUtil {
 	public static double getProcessItemValue(ProcessItem item, Settlement settlement,
 			boolean isOutput) {
 		double result;
+		var rh = settlement.getEquipmentInventory();
 
 		GoodsManager manager = settlement.getGoodsManager();
 
@@ -168,7 +169,7 @@ public final class FoodProductionUtil {
 	        int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 			double amount = item.getAmount();
 			if (isOutput) {
-				double remainingCapacity = settlement.getRemainingCombinedCapacity(id);
+				double remainingCapacity = rh.getRemainingCombinedCapacity(id);
 				if (amount > remainingCapacity) {
 					amount = remainingCapacity;
 				}
@@ -235,16 +236,17 @@ public final class FoodProductionUtil {
 	 */
 	private static boolean areProcessInputsAvailable(FoodProductionProcessInfo process, Settlement settlement) {
 		boolean result = true;
+		var rh = settlement.getEquipmentInventory();
 
 		Iterator<ProcessItem> i = process.getInputList().iterator();
 		while (result && i.hasNext()) {
 			ProcessItem item = i.next();
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-				result = (settlement.getSpecificAmountResourceStored(id) >= item.getAmount());
+				result = (rh.getSpecificAmountResourceStored(id) >= item.getAmount());
 			} else if (ItemType.PART == item.getType()) {
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-				result = (settlement.getItemResourceStored(id) >= (int) item.getAmount());
+				result = (rh.getItemResourceStored(id) >= (int) item.getAmount());
 			} else
 				throw new IllegalStateException(
 						"FoodProduction process input: " + item.getType() + " not a valid type.");
@@ -262,19 +264,20 @@ public final class FoodProductionUtil {
      * @throws Exception if error determining storage room for outputs.
      */
 	private static final boolean canProcessOutputsBeStored(FoodProductionProcessInfo process, Settlement settlement) {
+		var rh = settlement.getEquipmentInventory();
 
 		Iterator<ProcessItem> j = process.getOutputList().iterator();
 		while (j.hasNext()) {
 			ProcessItem item = j.next();
 			if (ItemType.AMOUNT_RESOURCE == item.getType()) {
-				double capacity = settlement.getRemainingCombinedCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
+				double capacity = rh.getRemainingCombinedCapacity(ResourceUtil.findIDbyAmountResourceName(item.getName()));
 				if (item.getAmount() > capacity)
 					return false;
 			}
 
 			else if (ItemType.PART == item.getType()) {
 				double mass = item.getAmount() * ((Part) ItemResourceUtil.findItemResource(item.getName())).getMassPerItem();
-				double capacity = settlement.getCargoCapacity();
+				double capacity = rh.getCargoCapacity();
 				if (mass > capacity)
 					return false;
 			}
@@ -282,7 +285,7 @@ public final class FoodProductionUtil {
 			else if (ItemType.EQUIPMENT == item.getType()) {
 				int number = (int) item.getAmount();
 				double mass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName())) * number;
-				double capacity = settlement.getCargoCapacity();
+				double capacity = rh.getCargoCapacity();
 				if (mass > capacity)
 					return false;
 			}
@@ -290,7 +293,7 @@ public final class FoodProductionUtil {
 			else if (ItemType.BIN == item.getType()) {
 				int number = (int) item.getAmount();
 				double mass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName())) * number;
-				double capacity = settlement.getCargoCapacity();
+				double capacity = rh.getCargoCapacity();
 				if (mass > capacity)
 					return false;
 			}

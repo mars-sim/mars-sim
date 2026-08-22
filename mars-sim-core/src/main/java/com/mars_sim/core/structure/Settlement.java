@@ -46,17 +46,9 @@ import com.mars_sim.core.environment.DustStorm;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.TerrainElevation;
-import com.mars_sim.core.equipment.AmountResourceBin;
-import com.mars_sim.core.equipment.Bin;
-import com.mars_sim.core.equipment.BinHolder;
-import com.mars_sim.core.equipment.BinType;
-import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
-import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.equipment.ItemHolder;
-import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
@@ -109,7 +101,7 @@ import com.mars_sim.core.vehicle.VehicleType;
  * contains information related to the state of the settlement.
  */
 public class Settlement extends Unit implements Temporal,
-	LifeSupportInterface, EquipmentOwner, ItemHolder, BinHolder, UnitHolder, Appraiser, SurfacePOI {
+	LifeSupportInterface, UnitHolder, Appraiser, SurfacePOI {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -594,7 +586,7 @@ public class Settlement extends Unit implements Temporal,
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
 
 		// Store limited amount of oxygen in this settlement
-		storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN_AMOUNT);
+		eqmInventory.storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN_AMOUNT);
 
 		SettlementTemplate sTemplate = settlementTemplateConfig.getItem(template);
 		SettlementSupplies supplies = sTemplate.getSupplies();
@@ -833,12 +825,12 @@ public class Settlement extends Unit implements Temporal,
 	public boolean lifeSupportCheck() {
 
 		try {
-			double amount = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			double amount = eqmInventory.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			if (amount <= 0D) {
 				logger.warning(this, "No more oxygen.");
 				return false;
 			}
-			amount = getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+			amount = eqmInventory.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 			if (amount <= 0D) {
 				logger.warning(this, "No more water.");
 				return false;
@@ -900,7 +892,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public double provideWater(double waterTaken) {
-		double lacking = retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
+		double lacking = eqmInventory.retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
 		return waterTaken - lacking;
 	}
 
@@ -1153,7 +1145,7 @@ public class Settlement extends Unit implements Temporal,
 
 		Map<Integer, Map<Integer, Double>> todayMap = null;
 		Map<Integer, Double> msolMap = null;
-		double newAmount = getSpecificAmountResourceStored(resourceType);
+		double newAmount = eqmInventory.getSpecificAmountResourceStored(resourceType);
 
 		int sol = now.getMissionSol();
 		if (resourceStat.containsKey(sol)) {
@@ -1232,14 +1224,14 @@ public class Settlement extends Unit implements Temporal,
 		refreshSleepMap();
 
 		// Check the Grey water situation
-		if (getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+		if (eqmInventory.getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(false);
 			double r = getGreyWaterFilteringRate();
 			logger.log(this, Level.WARNING, 10_000,
 					"Low storage of grey water decreases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 		}
-		else if (getRemainingCombinedCapacity(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+		else if (eqmInventory.getRemainingCombinedCapacity(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(true);
 			double r = getGreyWaterFilteringRate();
@@ -2133,58 +2125,6 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Adds an equipment to be owned by the settlement.
-	 *
-	 * @param e the equipment
-	 * @return true if this settlement can carry it
-	 */
-	@Override
-	public boolean addEquipment(Equipment e) {
-		return eqmInventory.addEquipment(e);
-	}
-
-	/**
-	 * Removes an equipment from being owned by the settlement.
-	 *
-	 * @param e the equipment
-	 */
-	@Override
-	public boolean removeEquipment(Equipment e) {
-		return eqmInventory.removeEquipment(e);
-	}
-
-	/**
-	 * Adds a bin to be owned by the settlement.
-	 *
-	 * @param bin the bin
-	 * @return true if this settlement can carry it
-	 */
-	@Override
-	public boolean addBin(Bin bin) {
-		return eqmInventory.addBin(bin);
-	}
-
-	/**
-	 * Finds all of the containers of a particular type (excluding EVA suit).
-	 *
-	 * @return collection of containers or empty collection if none.
-	 */
-	@Override
-	public Collection<Container> findContainersOfType(EquipmentType type){
-		return eqmInventory.findContainersOfType(type);
-	}
-
-	/**
-	 * Finds all of the bins of a particular type.
-	 *
-	 * @return collection of bins or empty collection if none.
-	 */
-	@Override
-	public Collection<Bin> findBinsOfType(BinType binType){
-		return eqmInventory.findBinsOfType(binType);
-	}
-	
-	/**
 	 * Gets all robots owned by this settlement, even if they are out on
 	 * missions.
 	 *
@@ -3023,44 +2963,6 @@ public class Settlement extends Unit implements Temporal,
 	public boolean isFirstSol() {
         return solCache == 0 || solCache == 1;
     }
-
-	/**
-	 * Gets the stored mass.
-	 */
-	@Override
-	public double getStoredMass() {
-		return eqmInventory.getStoredMass();
-	}
-
-	/**
-	 * Gets the equipment list.
-	 *
-	 * @return the equipment list
-	 */
-	@Override
-	public Set<Equipment> getEquipmentSet() {
-		return eqmInventory.getEquipmentSet();
-	}
-
-	/**
-	 * Gets the container set.
-	 *
-	 * @return
-	 */
-	@Override
-	public Set<Equipment> getContainerSet() {
-		return eqmInventory.getContainerSet();
-	}
-
-	/**
-	 * Gets the EVA suit set.
-	 * 
-	 * @return
-	 */
-	@Override
-	public Set<Equipment> getSuitSet() {
-		return eqmInventory.getSuitSet();
-	}
 	
 	/**
 	 * Gets a set of the container with particular container type.
@@ -3071,376 +2973,6 @@ public class Settlement extends Unit implements Temporal,
 		return eqmInventory.getContainerSet().stream()
 				.filter(e -> e.getEquipmentType() == equipmentType)
 				.collect(Collectors.toSet());
-	}
-
-	/**
-	 * Gets a collection of bins with particular bin type.
-	 *
-	 * @return the bin list
-	 */
-	public Collection<Bin> getBinTypeSet(BinType binType) {
-		for (AmountResourceBin arb: eqmInventory.getAmountResourceBinSet()) {
-			if (binType == arb.getBinType()) {
-				return arb.getBinMap().values();
-			}
-		}
-		
-		return Collections.emptyList();
-	}
-
-	/**
-	 * Gets the number of available EVA suits.
-	 * 
-	 * @return
-	 */
-	public int getNumEVASuit() {
-		return getSuitSet().size();
-	}
-	
-	/**
-	 * Does it possess an equipment of this equipment type ?
-	 *
-	 * @return true if this person possess this equipment type
-	 */
-	@Override
-	public boolean containsEquipment(EquipmentType type) {
-		return eqmInventory.containsEquipment(type);
-	}
-
-	/**
-	 * Stores the item resource.
-	 *
-	 * @param resource the item resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public int storeItemResource(int resource, int quantity) {
-		return eqmInventory.storeItemResource(resource, quantity);
-	}
-
-	/**
-	 * Retrieves the item resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public int retrieveItemResource(int resource, int quantity) {
-		return eqmInventory.retrieveItemResource(resource, quantity);
-	}
-
-	/**
-	 * Gets the item resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public int getItemResourceStored(int resource) {
-		return eqmInventory.getItemResourceStored(resource);
-	}
-
-	/**
-	 * Stores the amount resource.
-	 *
-	 * @param resource the amount resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public double storeAmountResource(int resource, double quantity) {
-		return eqmInventory.storeAmountResource(resource, quantity);
-	}
-
-	/**
-	 * Retrieves the resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return shortfall quantity that cannot be retrieved
-	 */
-	@Override
-	public double retrieveAmountResource(int resource, double quantity) {
-		return eqmInventory.retrieveAmountResource(resource, quantity);
-	}
-
-	/**
-	 * Gets the capacity of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return capacity
-	 */
-	@Override
-	public double getSpecificCapacity(int resource) {
-		return eqmInventory.getSpecificCapacity(resource);
-	}
-
-	/**
-	 * Obtains the combined capacity of remaining storage space for storing an amount resource.
-	 * @apiNote This includes the stock capacity
-	 * 
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingCombinedCapacity(int resource) {
-		return eqmInventory.getRemainingCombinedCapacity(resource);
-	}
-
-	/**
-	 * Obtains the specific capacity of remaining storage space for storing an amount resource.
-     * @apiNote This does NOT include the stock capacity
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingSpecificCapacity(int resource) {
-		return eqmInventory.getRemainingSpecificCapacity(resource);
-	}
-			
-	/**
-	 * Does it have unused space or capacity for a particular resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory.hasAmountResourceRemainingCapacity(resource);
-	}
-	
-	/**
-	 * Obtains the remaining general storage space.
-	 *
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingCargoCapacity() {
-		return eqmInventory.getRemainingCargoCapacity();
-	}
-
-	/**
-     * Gets the total capacity that this inventory can hold.
-     *
-     * @return total capacity (kg).
-     */
-	@Override
-	public double getCargoCapacity() {
-		return eqmInventory.getCargoCapacity();
-	}
-
-	/**
-	 * Gets the specific amount resources stored, NOT including those inside equipment.
-	 *
-	 * @param resource
-	 * @return amount
-	 */
-	@Override
-	public double getSpecificAmountResourceStored(int resource) {
-		return eqmInventory.getSpecificAmountResourceStored(resource);
-	}
-
-	/**
-	 * Gets all the specific amount resources stored, including those inside equipment.
-	 *
-	 * @param resource
-	 * @return amount
-	 */
-	@Override
-	public double getAllSpecificAmountResourceStored(int resource) {
-		return eqmInventory.getAllSpecificAmountResourceStored(resource);
-	}
-	
-	/**
-	 * Gets the quantity of all stock and specific amount resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAllAmountResourceStored(int resource) {
-		return eqmInventory.getAllAmountResourceStored(resource);
-	}
-	
-	/**
-	 * Gets the specific (not stock) amount resource owned by all resource holders 
-	 * (including people and vehicles) in the settlement.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	public double getAllSpecificAmountResourceOwned(int resource) {
-		double sum = 0;
-		for (ResourceHolder rh: citizens) {
-			sum += rh.getSpecificAmountResourceStored(resource);
-		}
-		for (ResourceHolder rh: ownedVehicles) {
-			sum += rh.getSpecificAmountResourceStored(resource);
-		}		
-		return sum + getSpecificAmountResourceStored(resource);
-	}
-	
-	/**
-	 * Gets all stored amount resources.
-	 *
-	 * @return all stored amount resources.
-	 */
-	@Override
-	public Set<Integer> getSpecificResourceStoredIDs() {
-		return eqmInventory.getSpecificResourceStoredIDs();
-	}
-
-	/**
-	 * Gets all stored item resources.
-	 *
-	 * @return all stored item resources.
-	 */
-	@Override
-	public Set<Integer> getItemResourceIDs() {
-		return eqmInventory.getItemResourceIDs();
-	}
-
-	/**
-	 * Gets all stored amount resources in eqmInventory, including inside equipment
-	 *
-	 * @return all stored amount resources.
-	 */
-	@Override
-	public Set<Integer> getAllAmountResourceStoredIDs() {
-		return eqmInventory.getAllAmountResourceStoredIDs();
-	}
-	
-	/**
-	 * Does it have this item resource ?
-	 *
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasItemResource(int resource) {
-		return eqmInventory.hasItemResource(resource);
-	}
-
-	/**
-	 * Gets the remaining quantity of an item resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public int getItemResourceRemainingQuantity(int resource) {
-		return eqmInventory.getItemResourceRemainingQuantity(resource);
-	}
-
-	/**
-	 * Finds the number of empty containers of a class that are contained in storage and have
-	 * an empty inventory.
-	 *
-	 * @param brandNew  does it include brand new bag only
-	 * @return number of empty containers.
-	 */
-	@Override
-	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
-	}
-
-	/**
-	 * Finds the number of empty containers (from a copy set of containers) of a class that are contained in storage and have
-	 * an empty inventory.
-	 * 
-	 * @param containerType
-	 * @param brandNew
-	 * @return
-	 */
-	public int findNumEmptyCopyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		return eqmInventory.findNumEmptyCopyContainersOfType(containerType, brandNew);
-	}
-	
-	
-	/**
-	 * Finds the number of containers of a particular type.
-	 *
-	 * Note: will not count EVA suits.
-	 * 
-	 * @param containerType the equipment type.
-	 * @return number of empty containers.
-	 */
-	@Override
-	public int findNumContainersOfType(EquipmentType containerType) {
-		return eqmInventory.findNumContainersOfType(containerType);
-	}
-	
-	/**
-	 * Finds a container in storage.
-	 *
-	 * Note: will not count EVA suits.
-	 * 
-	 * @param containerType
-	 * @param empty does it need to be empty ?
-	 * @param resource If -1 then resource doesn't matter
-	 * @return instance of container or null if none.
-	 */
-	@Override
-	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
-		return eqmInventory.findContainer(containerType, empty, resource);
-	}
-
-	/**
-	 * Finds the number of bins of a particular type.
-	 *
-	 * @return number of empty bins.
-	 */
-	@Override
-	public int findNumBinsOfType(BinType binType) {
-		return eqmInventory.findNumBinsOfType(binType);
-	}
-	
-	@Override
-	public Set<AmountResourceBin> getAmountResourceBinSet() {
-		return eqmInventory.getAmountResourceBinSet();
-	}
-
-	@Override
-	public double getAmountResourceStored(BinType type, int id, int resource) {
-		return eqmInventory.getAmountResourceStored(type, id, resource);
-	}
-
-	@Override
-	public double storeAmountResource(BinType type, int id, int resource, double quantity) {
-		return eqmInventory.storeAmountResource(type, id, resource, quantity);
-	}
-
-	@Override
-	public double retrieveAmountResource(BinType type, int id, int resource, double quantity) {
-		return eqmInventory.retrieveAmountResource(type, id, resource, quantity);
-	}
-
-	@Override
-	public double getAmountResourceCapacity(BinType type, int id, int resource) {
-		return eqmInventory.getAmountResourceCapacity(type, id, resource);
-	}
-
-	@Override
-	public double getAmountResourceRemainingCapacity(BinType type, int id, int resource) {
-		return eqmInventory.getAmountResourceRemainingCapacity(type, id, resource);
-	}
-
-	@Override
-	public boolean hasAmountResourceRemainingCapacity(BinType type, int id, int resource) {
-		return eqmInventory.hasAmountResourceRemainingCapacity(type, id, resource);
-	}
-
-	@Override
-	public double getCargoCapacity(BinType type, int id) {
-		return eqmInventory. getCargoCapacity(type, id);
-	}
-
-	@Override
-	public int getAmountResource(BinType type, int id) {
-		return eqmInventory.getAmountResource(type, id);
 	}
 
 	/**

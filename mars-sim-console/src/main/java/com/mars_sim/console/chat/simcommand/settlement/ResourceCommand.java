@@ -110,7 +110,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	private void displayCO2(Settlement settlement, StructuredResponse response) {
 		double usage = 0;
 		double totalArea = 0;
-		double reserve = settlement.getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
+		double reserve = settlement.getEquipmentInventory().getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
 
 		response.appendHeading(CO2_FARMING);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
@@ -131,7 +131,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	}
 
 	private void displayWater(Settlement settlement, StructuredResponse response, int id) {
-		double reserve = settlement.getSpecificAmountResourceStored(id);
+		double reserve = settlement.getEquipmentInventory().getSpecificAmountResourceStored(id);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));
 		response.appendBlankLine();
 		// For consumption, use the '+ve' sign	
@@ -141,7 +141,8 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		double sign = -1.0;
 		
 		// Prints greenhouse usage
-		Set<Building> farms = settlement.getBuildingManager().getBuildingSet(FunctionType.FARMING);
+		var bm = settlement.getBuildingManager();
+		Set<Building> farms = bm.getBuildingSet(FunctionType.FARMING);
 		for (Building b : farms) {
 			Farming f = b.getFarming();
 			usage += f.computeAllCropsDailyAverage(id);
@@ -188,7 +189,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 
 		// Prints output from resource processing
 		double output = 0;
-		List<Building> bldgs = settlement.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING);
+		List<Building> bldgs = bm.getBuildings(FunctionType.RESOURCE_PROCESSING);
 		for (Building b : bldgs) {
 			ResourceProcessing rp = b.getResourceProcessing();
 			List<ResourceProcess> processes = rp.getProcesses();
@@ -205,7 +206,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		
 		// Prints output from waste processing
 		double output2 = 0;
-		for (Building b : settlement.getBuildingManager().getBuildings(FunctionType.WASTE_PROCESSING)) {
+		for (Building b : bm.getBuildings(FunctionType.WASTE_PROCESSING)) {
 				output2 += b.getWasteProcessing().getProcesses().stream()
 									.filter(ResourceProcess::isProcessRunning)
 									.mapToDouble(p -> p.getBaseFullOutputRate(id))
@@ -223,7 +224,7 @@ public class ResourceCommand extends AbstractSettlementCommand {
 	private void displayOxygen(Settlement settlement, StructuredResponse response) {
 		double usage = 0;
 		double totalArea = 0;
-		double reserve = settlement.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+		double reserve = settlement.getEquipmentInventory().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		
 		response.appendHeading(O2_FARMING);
 		response.appendLabeledString(CURRENT_RESERVE, String.format(CommandHelper.KG_FORMAT, reserve));

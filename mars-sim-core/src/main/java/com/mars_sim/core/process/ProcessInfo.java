@@ -187,11 +187,12 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 	 * @return
 	 */
 	public boolean isResourcesAvailable(Settlement source) {
+		var eo = source.getEquipmentInventory();
 		for(ProcessItem item : inputList) {
 			if (((ItemType.AMOUNT_RESOURCE == item.getType()) 
-					&& (source.getSpecificAmountResourceStored(item.getId()) < item.getAmount()))
+					&& (eo.getSpecificAmountResourceStored(item.getId()) < item.getAmount()))
 				|| ((ItemType.PART == item.getType())
-					&& (source.getItemResourceStored(item.getId()) < (int) item.getAmount()))) {
+					&& (eo.getItemResourceStored(item.getId()) < (int) item.getAmount()))) {
 				return false;
 			}
 		}
@@ -218,14 +219,15 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 	 * @param settlement
 	 */
 	public void retrieveInputs(Settlement settlement) {
+		var rh = settlement.getEquipmentInventory();
 		// Consume inputs.
 		for (var item : inputList) {
 			switch(item.getType()) {
 				case AMOUNT_RESOURCE:
-					settlement.retrieveAmountResource(item.getId(), item.getAmount());
+					rh.retrieveAmountResource(item.getId(), item.getAmount());
 					break;
 				case PART:
-					settlement.retrieveItemResource(item.getId(), (int) item.getAmount());
+					rh.retrieveItemResource(item.getId(), (int) item.getAmount());
 					break;
 				default:
 					throw new IllegalArgumentException("Process input: " + item.getType() + " not a valid type.");

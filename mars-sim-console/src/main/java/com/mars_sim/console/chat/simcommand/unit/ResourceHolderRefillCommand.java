@@ -63,7 +63,7 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 			if (ir != null) {
 				return adjustPart(source, ir, quantity, context);
 			}
-		} catch (IllegalArgumentException ee) {
+		} catch (IllegalArgumentException _) {
 			// Name is not a amount resource
 		}
 		context.println("Unknown resource '" + name + "'.");
@@ -71,11 +71,11 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 	}
 
 	private boolean adjustPart(Unit source, ItemResource ir, double quantity, Conversation context) {
-		if (!(source instanceof ItemHolder)) {
+		var ih = ItemHolder.getAttached(source);
+		if (ih == null) {
 			context.println("Sorry this Unit does not hold Items");
 			return false;
 		}
-		var ih = (ItemHolder) source;
 
 		int existingAmount = ih.getItemResourceStored(ir.getID());
 		if (quantity > 0) {
@@ -95,11 +95,11 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 	}
 
 	private boolean adjustResource(Unit source, AmountResource resource, double quantity, Conversation context) {
-		if (!(source instanceof ResourceHolder)) {
+		ResourceHolder rh = ResourceHolder.getAttached(source);
+		if (rh == null) {
 			context.println("Sorry this Unit does not hold resources");
 			return false;
 		}
-		ResourceHolder rh = (ResourceHolder) source;
 
 		double existingAmount = rh.getAllAmountResourceStored(resource.getID());
 		if (quantity> 0) {

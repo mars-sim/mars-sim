@@ -38,7 +38,7 @@ public class MissionUtil {
 		if (settlement == null)
 			throw new IllegalArgumentException("Settlement is null");
 
-		int result = settlement.getNumEVASuit();
+		int result = settlement.getEquipmentInventory().getSuitSet().size();
 
 		// Leave one suit for settlement use.
 		if (result > 0) {

@@ -8,6 +8,8 @@ package com.mars_sim.core.equipment;
 
 import java.util.Set;
 
+import com.mars_sim.core.structure.Settlement;
+
 /**
  * Represents an entity that can hold resources.
  *
@@ -101,8 +103,7 @@ public interface ResourceHolder {
 	 * @param resource
 	 * @return
 	 */
-	public boolean hasAmountResourceRemainingCapacity(int resource);
-
+	boolean hasAmountResourceRemainingCapacity(int resource);
 
 	/**
 	 * Gets the quantity of all stock and specific amount resource stored.
@@ -110,5 +111,22 @@ public interface ResourceHolder {
 	 * @param resource
 	 * @return quantity
 	 */
-	public double getAllAmountResourceStored(int resource);
+	double getAllAmountResourceStored(int resource);
+
+	/**
+	 * Resolves an object to the associated ResourceHolder, if any.
+	 * @param obj Supports a wide range of objects.
+	 * @return May be null
+	 */
+	static ResourceHolder getAttached(Object obj) {
+		if (obj instanceof ResourceHolder rh) {
+			return rh;
+		}
+		// Not nice having this in place but it will eventually be replaced with a more generic interface
+		else if (obj instanceof Settlement s) {
+			return s.getEquipmentInventory();
+		}
+
+		return null;
+	}
 }

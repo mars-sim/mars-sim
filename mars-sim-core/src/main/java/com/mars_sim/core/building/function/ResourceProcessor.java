@@ -28,8 +28,6 @@ public abstract class ResourceProcessor extends Function {
 	
 	private static final String LOW_POWER_LEVEL = "low-power-level";
 
-	private static final double PROCESS_MAX_VALUE = 100D;
-
 	private double lowPowerProcessingLevel;
 
 	private List<ResourceProcess> processes;
@@ -65,6 +63,7 @@ public abstract class ResourceProcessor extends Function {
 
 		double demand = 0;
 		double supply = 0;
+		var rh = settlement.getEquipmentInventory();
 		
 		for (ResourceProcessEngine process : processSpecs) {
 			var spec = process.getProcessSpec();
@@ -83,7 +82,7 @@ public abstract class ResourceProcessor extends Function {
 					double baseSupply = settlement.getGoodsManager().getGoodValuePoint(inResource) * fullRate;
 
 					// Check inventory limit.
-					double inputSupply = settlement.getSpecificAmountResourceStored(inResource);
+					double inputSupply = rh.getSpecificAmountResourceStored(inResource);
 					if (inputSupply < fullRate) {
 						double limit = inputSupply / fullRate;
 						if (limit < inputInventoryLimit) {

@@ -341,7 +341,7 @@ public class PartGood extends Good {
 		double number = 0D;
 
 		// Get number of resources in settlement storage.
-		number += settlement.getItemResourceStored(getID());
+		number += settlement.getEquipmentInventory().getItemResourceStored(getID());
 
 		// Get number of resources out on mission vehicles.
         number += getVehiclesOnMissions(settlement)
@@ -388,9 +388,10 @@ public class PartGood extends Good {
 		double previousDemand = owner.getDemandScore(this);
 		
 		Settlement settlement = owner.getSettlement();
+		var eo = settlement.getEquipmentInventory();
 		
 		// Calculate total supply
-		double totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id));
+		double totalSupply = getAverageItemSupply(eo.getItemResourceStored(id));
 		// Save the average supply
 		owner.setSupplyScore(this, totalSupply);
     
@@ -893,7 +894,7 @@ public class PartGood extends Good {
 	public void injectPartDemand(Part part, GoodsManager owner, int needNum) {
 		double previousDemand = owner.getDemandScore(this);
 		
-		int storedNum = owner.getSettlement().getItemResourceStored(part.getID());
+		int storedNum = owner.getSettlement().getEquipmentInventory().getItemResourceStored(part.getID());
 
 		double finalDemand = getMaintenancePartsDemand(storedNum, owner.getSettlement(), part, previousDemand);
 	

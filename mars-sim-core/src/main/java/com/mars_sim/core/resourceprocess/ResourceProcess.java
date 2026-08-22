@@ -9,8 +9,9 @@ package com.mars_sim.core.resourceprocess;
 import java.util.Set;
 
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.equipment.EquipmentInventory;
+import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.ScheduledEventHandler;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
@@ -96,7 +97,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 		if (isRunning) {
 			
-			Settlement host = building.getAssociatedSettlement();
+			var host = building.getAssociatedSettlement().getEquipmentInventory();
 			
 			double newProdLevel = productionLevel;
 			// Set the current production level.
@@ -124,7 +125,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * 
 	 * @param host
 	 */
-	private void processInputResources(Settlement host) {
+	private void processInputResources(ResourceHolder host) {
 		// Input resources from inventory.
 		for (Integer resource : processSpec.getInputResources()) {
 			
@@ -168,7 +169,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * 
 	 * @param host
 	 */
-	private void processOutputResources(Settlement host) {
+	private void processOutputResources(EquipmentInventory host) {
 		// Output resources to inventory.
 		for (Integer resource : processSpec.getOutputResources()) {
 			

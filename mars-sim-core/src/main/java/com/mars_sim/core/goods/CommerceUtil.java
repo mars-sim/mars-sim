@@ -356,15 +356,16 @@ public final class CommerceUtil {
 	 * @throws Exception if error getting number of goods in inventory.
 	 */
 	public static double getNumInInventory(Good good, Settlement settlement) {
+		var rh = settlement.getEquipmentInventory();
 		switch(good.getCategory()) {
 			case AMOUNT_RESOURCE:
-				return settlement.getSpecificAmountResourceStored(good.getID());
+				return rh.getSpecificAmountResourceStored(good.getID());
 			
 			case ITEM_RESOURCE:
-				return settlement.getItemResourceStored(good.getID());
+				return rh.getItemResourceStored(good.getID());
 			
 			case EQUIPMENT, CONTAINER:
-				return settlement.findNumEmptyContainersOfType(((EquipmentGood) good).getEquipmentType(), false);
+				return rh.findNumEmptyContainersOfType(((EquipmentGood) good).getEquipmentType(), false);
 			
 			case VEHICLE:
 				int count = 0;
@@ -397,7 +398,8 @@ public final class CommerceUtil {
 
 		EquipmentType containerType = ContainerUtil.getEquipmentTypeNeeded(resource.getPhase());
 
-		int containersStored = settlement.findNumEmptyCopyContainersOfType(containerType, false);
+		var eo = settlement.getEquipmentInventory();
+		int containersStored = eo.findNumEmptyCopyContainersOfType(containerType, false);
 
 		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		int containersTraded = 0;
@@ -405,7 +407,7 @@ public final class CommerceUtil {
 			containersTraded = tradedGoods.get(containerGood);
 
 		if (containersStored > containersTraded)
-			result = settlement.findContainer(containerType, true, resource.getID());
+			result = eo.findContainer(containerType, true, resource.getID());
 
 		return result;
 	}
