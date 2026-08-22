@@ -131,7 +131,6 @@ class MicroInventoryTest {
 		double cap = inv.getRemainingSpecificCapacity(resource);		
 		assertEquals(CAPACITY_AMOUNT, cap, "Remaining after 2nd retrieve");
 		
-		inv.printStoredMass();
 		mass = inv.getStoredMass();
 		
 		assertEquals(0D, mass, "Total mass after 2nd retrieve");
