@@ -127,16 +127,12 @@ public final class EVASuitUtil {
 		EVASuit previousSuit = null;
 		List<EVASuit> noResourceSuits = new ArrayList<>(0);
 		List<EVASuit> goodSuits = new ArrayList<>(0);
-		List<EVASuit> suits = new ArrayList<>();
 		
 		for (Equipment e : inv.getSuitSet()) {
 			EVASuit suit = (EVASuit)e;
 			boolean lastOwner = p.getIdentifier() == suit.getRegisteredOwnerID();
 			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-			if (!malfunction) {
-				suits.add(suit);
-			}
-			else {
+			if (malfunction) {
 				logger.log(p, Level.WARNING, 50_000,
 					"Spotted malfunction with " + suit.getName() + " when being examined.");
 				continue;
@@ -190,13 +186,11 @@ public final class EVASuitUtil {
 			return previousSuit;
 		}
 		else if (!goodSuits.isEmpty()) {
-			int size = goodSuits.size();
-			return goodSuits.get(RandomUtil.getRandomInt(size - 1));
+			return RandomUtil.getRandomElement(goodSuits);
 		}
 		else if (!noResourceSuits.isEmpty()) {
 			// Picks any one of the no-resource suits
-			int size = noResourceSuits.size();
-			return noResourceSuits.get(RandomUtil.getRandomInt(size - 1));
+			return RandomUtil.getRandomElement(noResourceSuits);
 		}
 		
 		return null;
@@ -326,7 +320,7 @@ public final class EVASuitUtil {
 	 */
 	public static boolean fetchEVASuitFromAny(Person person, Vehicle vehicle, Settlement settlement) {
 		EVASuit suit0 = findEVASuitFromVehicle(person, vehicle);
-		if (suit0 == null && settlement.getNumEVASuit() > 0) {
+		if (suit0 == null && !settlement.getEquipmentInventory().getSuitSet().isEmpty()) {
 			return fetchEVASuitFromSettlement(person, vehicle, settlement);
 		}
 		return false;
@@ -344,7 +338,7 @@ public final class EVASuitUtil {
 			Vehicle v = p.getVehicle();
 
 			// If the person does not have an EVA suit
-			int availableSuitNum = disembarkSettlement.getNumEVASuit();
+			int availableSuitNum = disembarkSettlement.getEquipmentInventory().getSuitSet().size();
 
 			if (availableSuitNum > 1 && !hasBaselineNumEVASuit(v, mission)) {
 		

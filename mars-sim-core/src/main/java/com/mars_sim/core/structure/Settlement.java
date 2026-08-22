@@ -56,7 +56,6 @@ import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.equipment.ItemHolder;
-import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
@@ -587,7 +586,7 @@ public class Settlement extends Unit implements Temporal,
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
 
 		// Store limited amount of oxygen in this settlement
-		storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN_AMOUNT);
+		eqmInventory.storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN_AMOUNT);
 
 		SettlementTemplate sTemplate = settlementTemplateConfig.getItem(template);
 		SettlementSupplies supplies = sTemplate.getSupplies();
@@ -893,7 +892,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	@Override
 	public double provideWater(double waterTaken) {
-		double lacking = retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
+		double lacking = eqmInventory.retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
 		return waterTaken - lacking;
 	}
 
@@ -1144,7 +1143,7 @@ public class Settlement extends Unit implements Temporal,
 
 		Map<Integer, Map<Integer, Double>> todayMap = null;
 		Map<Integer, Double> msolMap = null;
-		double newAmount = getSpecificAmountResourceStored(resourceType);
+		double newAmount = eqmInventory.getSpecificAmountResourceStored(resourceType);
 
 		int sol = now.getMissionSol();
 		if (resourceStat.containsKey(sol)) {
@@ -1223,14 +1222,14 @@ public class Settlement extends Unit implements Temporal,
 		refreshSleepMap();
 
 		// Check the Grey water situation
-		if (getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+		if (eqmInventory.getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(false);
 			double r = getGreyWaterFilteringRate();
 			logger.log(this, Level.WARNING, 10_000,
 					"Low storage of grey water decreases filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 		}
-		else if (getRemainingCombinedCapacity(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
+		else if (eqmInventory.getRemainingCombinedCapacity(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
 			// Adjust the grey water filtering rate
 			changeGreyWaterFilteringRate(true);
 			double r = getGreyWaterFilteringRate();
@@ -3046,15 +3045,6 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Gets the number of available EVA suits.
-	 * 
-	 * @return
-	 */
-	public int getNumEVASuit() {
-		return getSuitSet().size();
-	}
-	
-	/**
 	 * Does it possess an equipment of this equipment type ?
 	 *
 	 * @return true if this person possess this equipment type
@@ -3223,24 +3213,6 @@ public class Settlement extends Unit implements Temporal,
 	}
 	
 	/**
-	 * Gets the specific (not stock) amount resource owned by all resource holders 
-	 * (including people and vehicles) in the settlement.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	public double getAllSpecificAmountResourceOwned(int resource) {
-		double sum = 0;
-		for (ResourceHolder rh: citizens) {
-			sum += rh.getSpecificAmountResourceStored(resource);
-		}
-		for (ResourceHolder rh: ownedVehicles) {
-			sum += rh.getSpecificAmountResourceStored(resource);
-		}		
-		return sum + getSpecificAmountResourceStored(resource);
-	}
-	
-	/**
 	 * Gets all stored amount resources.
 	 *
 	 * @return all stored amount resources.
@@ -3304,19 +3276,6 @@ public class Settlement extends Unit implements Temporal,
 		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
 	}
 
-	/**
-	 * Finds the number of empty containers (from a copy set of containers) of a class that are contained in storage and have
-	 * an empty inventory.
-	 * 
-	 * @param containerType
-	 * @param brandNew
-	 * @return
-	 */
-	public int findNumEmptyCopyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		return eqmInventory.findNumEmptyCopyContainersOfType(containerType, brandNew);
-	}
-	
-	
 	/**
 	 * Finds the number of containers of a particular type.
 	 *

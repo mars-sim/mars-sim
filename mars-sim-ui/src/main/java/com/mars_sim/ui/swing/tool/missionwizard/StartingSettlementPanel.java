@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.ai.mission.CollectIce;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.resource.ItemResourceUtil;
@@ -141,21 +142,22 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 		 */
 		@Override
 		protected Object getItemValue(Settlement settlement, int column) {
+			var eo = settlement.getEquipmentInventory();
 			var spec = getColumnSpec(column);
 			return switch(spec.id()) {
 				case 0 -> settlement.getName();
 				case 1 -> settlement.getIndoorPeopleCount();
 				case 2 -> settlement.findNumParkedRovers();
-				case 3 -> settlement.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
-				case 4 -> settlement.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
-				case 5 -> settlement.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-				case 6 -> settlement.getSpecificAmountResourceStored(ResourceUtil.METHANE_ID);
-				case 7 -> settlement.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID);
-				case 8 -> settlement.getNumEVASuit();
-				case 9 -> settlement.findNumContainersOfType(containerType);
+				case 3 -> eo.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				case 4 -> eo.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+				case 5 -> eo.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+				case 6 -> eo.getSpecificAmountResourceStored(ResourceUtil.METHANE_ID);
+				case 7 -> eo.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID);
+				case 8 -> eo.getSuitSet().size();
+				case 9 -> eo.findNumContainersOfType(containerType);
 				case 10 ->settlement.findNumVehiclesOfType(VehicleType.LUV);
-				case 11 ->settlement.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID);
-				case 12 ->settlement.getItemResourceStored(ItemResourceUtil.BACKHOE_ID);
+				case 11 -> eo.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID);
+				case 12 -> eo.getItemResourceStored(ItemResourceUtil.BACKHOE_ID);
 				case 13 ->settlement.getConstructionManager().getConstructionSites().size();
 				default -> null;
 			};
@@ -166,28 +168,29 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 		 */
 		@Override
 		public String isFailureCell(Settlement settlement, int column) {
+			var eo = settlement.getEquipmentInventory();
 			var spec = getColumnSpec(column);
 			return switch(spec.id()) {
 				case 1 -> settlement.getIndoorPeopleCount() == 0 ? "No indoor people" : null;
 				case 2 -> settlement.findNumParkedRovers() == 0 ? "No parked rovers" : null;
-				case 3 -> checkResources(settlement, ResourceUtil.OXYGEN_ID, 100D);
-				case 4 -> checkResources(settlement, ResourceUtil.WATER_ID, 100D);
-				case 5 -> checkResources(settlement, ResourceUtil.FOOD_ID, 100D);
-				case 6 -> checkResources(settlement, ResourceUtil.METHANE_ID, 100D);
-				case 7 -> checkResources(settlement, ResourceUtil.METHANOL_ID, 100D);
-				case 8 -> settlement.getNumEVASuit() == 0 ? NONE_AVAILABLE: null;
-				case 9 -> settlement.findNumContainersOfType(containerType) < containerMin
+				case 3 -> checkResources(eo, ResourceUtil.OXYGEN_ID, 100D);
+				case 4 -> checkResources(eo, ResourceUtil.WATER_ID, 100D);
+				case 5 -> checkResources(eo, ResourceUtil.FOOD_ID, 100D);
+				case 6 -> checkResources(eo, ResourceUtil.METHANE_ID, 100D);
+				case 7 -> checkResources(eo, ResourceUtil.METHANOL_ID, 100D);
+				case 8 -> eo.getSuitSet().isEmpty() ? NONE_AVAILABLE: null;
+				case 9 -> eo.findNumContainersOfType(containerType) < containerMin
 										? "Insufficient containers : " + containerMin : null;
 				case 10 -> settlement.findNumVehiclesOfType(VehicleType.LUV) == 0 ? NONE_AVAILABLE : null;
-				case 11 -> settlement.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID) == 0 ? NONE_AVAILABLE : null;
-				case 12 -> settlement.getItemResourceStored(ItemResourceUtil.BACKHOE_ID) == 0 ? NONE_AVAILABLE : null;
+				case 11 -> eo.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID) == 0 ? NONE_AVAILABLE : null;
+				case 12 -> eo.getItemResourceStored(ItemResourceUtil.BACKHOE_ID) == 0 ? NONE_AVAILABLE : null;
 				case 13 -> settlement.getConstructionManager().getConstructionSites().isEmpty() ? NONE_AVAILABLE : null;
 				default -> null;
 			};
 		}
 
-		private final static String checkResources(Settlement settlement, int resId, double min) {
-			return settlement.getSpecificAmountResourceStored(resId) < min ? "Less than minimum: " + min : null;
+		private static final String checkResources(ResourceHolder rh, int resId, double min) {
+			return rh.getSpecificAmountResourceStored(resId) < min ? "Less than minimum: " + min : null;
 		}
 	}
 }

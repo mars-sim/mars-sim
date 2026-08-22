@@ -656,7 +656,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		boolean canDepart = false;
 		
 		// See if the there's enough EVA suits
-		int availableSuitNum = settlement.getNumEVASuit();
+		int availableSuitNum = settlement.getEquipmentInventory().getSuitSet().size();
 	
 		if (availableSuitNum > 1 && !EVASuitUtil.hasBaselineNumEVASuit(v, this)) {
 	
