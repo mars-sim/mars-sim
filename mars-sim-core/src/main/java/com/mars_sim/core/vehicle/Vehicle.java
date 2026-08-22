@@ -223,7 +223,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	/**
 	 * Set up the internal flags for the vehicle.
 	 */
-	public static void initializeInstances(SimulationConfig simulationConfig) {
+	public static void initializeInstances() {
 		lifeSupportRangeErrorMargin = simulationConfig.getSettlementConfiguration()
 				.getRoverValues()[0];
 		fuelRangeErrorMargin = simulationConfig.getSettlementConfiguration().getRoverValues()[1];

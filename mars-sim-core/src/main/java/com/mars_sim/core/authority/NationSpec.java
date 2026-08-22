@@ -123,21 +123,29 @@ public class NationSpec implements UserConfigurable {
 			firstList = firstFemale;
 		}
 
-		int attemptCount = 100;
+		String lastStr = "";
+		
+		int attemptCount = 200;
 		// Attempt to find a unique combination
 		while (attemptCount-- > 0) {
 			int rand0 = RandomUtil.getRandomInt(lastNames.size() - 1);
 			int rand1 = RandomUtil.getRandomInt(firstList.size() - 1);
 
 			String firstStr = firstList.get(rand1);
-			String lastStr = lastNames.get(rand0);
+			lastStr = lastNames.get(rand0);
 			
 			if (!firstStr.equalsIgnoreCase(lastStr)) {
 	
 				String fullname = firstStr + " " + lastStr;
 	
 				// Double check if this name has already been in use
-				if (!existingNames.contains(fullname)) {
+				if (!existingNames.contains(fullname)
+					&& (attemptCount > 1 && !existingNames.contains(lastStr))) {
+					
+					// Note: can't use this yet
+					// Remove this last name from the list 
+//					lastNames.remove(lastStr);
+					
 					return fullname;
 				}
 			}

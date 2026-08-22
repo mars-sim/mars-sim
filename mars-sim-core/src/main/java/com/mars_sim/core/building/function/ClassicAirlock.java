@@ -214,7 +214,7 @@ public class ClassicAirlock extends Airlock {
 
 			if (successful) {
 	            // 1.2 Add the person to the building
-	            BuildingManager.setToBuilding(person, building);
+	            BuildingManager.transferToBldg(person, null, building);
 
 	   			logger.log(person, Level.FINER, 0,
 		  				"Stepped inside "

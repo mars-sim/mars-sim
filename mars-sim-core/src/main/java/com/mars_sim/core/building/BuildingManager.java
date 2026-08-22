@@ -54,6 +54,7 @@ import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Converse;
 import com.mars_sim.core.person.ai.task.Sleep;
@@ -1043,38 +1044,57 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds a person to a random habitable building activity spot within a
-	 * settlement. Note: excluding the EVA (and astronomical observation) building
+	 * Adds a person to a habitable building activity spot within a
+	 * settlement based on his job type.
+	 * Note: excluding the EVA building
 	 *
 	 * @param person     the person to add.
 	 * @param settlement the settlement to find a building.
+	 * @return
 	 * @throws BuildingException if person cannot be added to any building.
 	 */
-	public static void addPersonToRandomBuildingSpot(Person person, Settlement settlement) {
-
-		// Go to the default zone 0 only
-		Set<Building> bldgSet = person.getAssociatedSettlement().getBuildingManager()
-				.getBuildingSet(FunctionType.LIFE_SUPPORT).stream().filter(b -> b.getZone() == 0
-						&& b.getCategory() != BuildingCategory.EVA && !b.getMalfunctionManager().hasMalfunction())
-				.collect(Collectors.toSet());
-
-		if (bldgSet.isEmpty()) {
-			return;
-		}
+	public static boolean addPersonToBuildingSpotByJobType(Person person, Settlement settlement) {
 
 		boolean found = false;
 
-		for (Building building : bldgSet) {
-			if (!found && building != null && building.getCategory() != BuildingCategory.CONNECTION
-					&& building.getCategory() != BuildingCategory.EVA) {
+		FunctionType functionType = FunctionType.getDefaultFunction(person.getMind().getJobType());
+		
+		// Go to the default zone 0 only
+		Set<Building> bldgSet = person.getAssociatedSettlement().getBuildingManager()
+				.getBuildingSet(functionType).stream().filter(b -> b.getZone() == 0
+						&& b.getCategory() != BuildingCategory.CONNECTION
+						&& b.getCategory() != BuildingCategory.EVA && !b.getMalfunctionManager().hasMalfunction())
+				.collect(Collectors.toSet());
+
+		if (!bldgSet.isEmpty()) {
+			for (Building building : bldgSet) {
 				// Add the person to a building activity spot
+				found = addToActivitySpot(person, building, functionType);
+				if (found)
+					return true;
+			}
+		}
+
+		List<Building > bldglist = person.getAssociatedSettlement().getBuildingManager()
+				.getBuildings(FunctionType.LIFE_SUPPORT).stream().filter(b -> b.getZone() == 0
+						&& b.getCategory() != BuildingCategory.EVA && !b.getMalfunctionManager().hasMalfunction())
+				.collect(Collectors.toList());
+		
+		if (!bldglist.isEmpty()) {
+			for (Building building : bldglist) {
+				// Add the person to an empty building activity spot
+				// Therefore, set FuntionType to null
 				found = addToActivitySpot(person, building, null);
+				if (found)
+					return true;
 			}
 		}
 
 		if (!found) {
 			logger.warning(person, "No habitable buildings with empty activity spot available in zone 0.");
 		}
+		
+		return found;
 	}
 
 	/**
@@ -1540,47 +1560,16 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Sets the building of a worker and add to life support or robotic station.
-	 *
-	 * @param worker   the worker to add.
-	 * @param building the building to add.
-	 */
-	public static void setToBuilding(Worker worker, Building building) {
-
-		if (building != null) {
-			if (worker instanceof Person person) {
-
-				if (building.getLifeSupport() != null) {
-					building.getLifeSupport().addPerson(person);
-
-					person.setCurrentBuilding(building);
-				}
-			}
-
-			else {
-				Robot robot = (Robot) worker;
-
-				if (building.getRoboticStation() != null) {
-					building.getRoboticStation().addRobot(robot);
-
-					robot.setCurrentBuilding(building);
-				}
-			}
-		}
-
-		else
-			logger.severe(worker, 2000, "The building is null.");
-	}
-
-	/**
 	 * Transfers the worker from one building to another Note: Will add to or remove
 	 * from life support/robotic station.
+	 * 
+	 * Note: origin building can be null
 	 *
 	 * @param worker      the worker to add.
 	 * @param origin      the building to leave behind.
 	 * @param destination the building to go
 	 */
-	public static void transferFromBuildingToBuilding(Worker worker, Building origin, Building destination) {
+	public static void transferToBldg(Worker worker, Building origin, Building destination) {
 
 		if (destination != null) {
 			if (worker instanceof Person person) {
@@ -1645,37 +1634,33 @@ public class BuildingManager implements Serializable {
 			// worker has
 			// just been added to the settlement or just returned to the settlement from
 			// outside
-			setToBuilding(worker, building);
+			transferToBldg(worker, null, building);
 		}
 
 		FunctionType functionType = type;
 
-		if (functionType == null) {
-			// Look for a function with empty activity spot
-			Function f = building.getEmptyActivitySpotFunction();
-			if (f != null) {
-				functionType = f.getFunctionType();
-			}
-
-			if (functionType != null) {
-				// Try claiming a spot
-				result = claimActivitySpot(worker, building, functionType);
-			}
-
-			else {
-				// Note: this happens frequently at the start of a sim
-
-				// if type is not null and yet there's no empty activity spot
-				logger.info(worker, 20_000L,
-						"No available functions with an activty spot in " + building.getName() + ".");
-
-				return false;
-			}
-		}
-
-		else {
+		if (functionType != null) {
 			// Try claiming a spot
 			result = claimActivitySpot(worker, building, functionType);
+		}
+		
+		if (!result) {
+		
+			for (Function f: building.getFunctions()) {
+					
+				if (f.hasEmptyActivitySpot()) {
+					functionType = f.getFunctionType();
+					
+					if (functionType != null) {
+						// Try claiming a spot
+						result = claimActivitySpot(worker, building, functionType);
+						
+						if (result) {
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		if (result) {
@@ -1684,18 +1669,16 @@ public class BuildingManager implements Serializable {
 			// Set robot's location
 			worker.setPosition(as.getAllocated().getPos());
 
-			if (originBuilding != null && !originBuilding.equals(building)) {
+//			if (originBuilding != null && !originBuilding.equals(building)) {
 				// Instantly transfer the worker to the new building
-				transferFromBuildingToBuilding(worker, originBuilding, building);
-			}
+				transferToBldg(worker, originBuilding, building);
+//			}
 		}
 
 		else if (functionType != null) {
 
-			logger.info(worker, 20_000L,
+			logger.info(worker, 10_000L,
 					"Unable to claim a spot at " + functionType.getName() + " in " + building.getName() + ".");
-
-			return false;
 		}
 
 		return result;

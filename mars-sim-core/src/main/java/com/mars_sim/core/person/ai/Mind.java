@@ -167,6 +167,7 @@ public class Mind implements Serializable, Temporal {
 	public void getAJob(boolean bypassingJobLock, String assignedBy) {
 		// Note: getNewJob() also checks if existing job is "good enough"/ or has good prospect
 		JobType newJob = JobUtil.getNewJob(person);
+		System.out.println("newJob: " + newJob + " for " + person);
 		if (newJob != null)
 			assignJob(newJob, bypassingJobLock, assignedBy, AssignmentType.APPROVED, assignedBy);
 	}

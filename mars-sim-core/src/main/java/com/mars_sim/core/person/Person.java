@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LifeSupportInterface;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.activities.GroupActivity;
@@ -226,14 +225,13 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		mind = new Mind(this);
 		// Set the person's status of death
 		isBuried = false;
-		// Add this person as a citizen
-		settlement.addACitizen(this);
+
 		// Calculate next birthday and scheduled a party in terms of future Mars sols
 		var currentEarthTime = masterClock.getEarthTime();
 		// Set up birth date
 		calculateBirthDate(currentEarthTime, age);
 		// Create favorites
-		favorite = new Favorite(SimulationConfig.instance().getMealConfiguration());
+		favorite = new Favorite(simulationConfig.getMealConfiguration());
 		// Create preferences
 		preference = new Preference(this);
 		// Set up genetic make-up. Notes it requires attributes.
@@ -246,16 +244,19 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		condition.initialize();
 		// Initialize field data in circadian clock
 		circadian.initialize();
+		
 		// Create job history
 		jobHistory = new AssignmentHistory();
+
 		// Create the role
 		role = new Role(this);
+//		// Assign a new job but do not bypass jobLock
+//		mind.getAJob(false, JobUtil.SETTLEMENT);
 		
-		// Note: at this point, role is not null but role type is still null,
-		//       and job type is still null 
-	
-		// Create shift schedule
-		shiftSlot = settlement.getShiftManager().allocationShift(this);	
+		
+//		// Add this person as a citizen
+//		settlement.addACitizen(this);
+		
 		// Set up life support type
 		support = getLifeSupportType();
 		// Create the mission experiences map
@@ -268,8 +269,25 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		eqmInventory.setSpecificResourceCapacity(ResourceUtil.FOOD_ID, CARRYING_CAPACITY_FOOD);
 		// Construct the ResearchStudy instance
 		research = new ResearchStudy();
+		
+//		// Assign a new job but do not bypass jobLock
+//		mind.getAJob(false, JobUtil.SETTLEMENT);
 	}
 
+	/**
+	 * Initializes the person.
+	 */
+	public void init() {
+		// Add this person as a citizen
+//		settlement.addACitizen(this);
+		// Note: at this point, role is not null but role type is still null,
+		//       and job type is still null 
+		// Create shift schedule
+		shiftSlot = getSettlement().getShiftManager().allocationShift(this);
+		// Set up preference
+		getPreference().initializePreference();
+	}
+	
 	/**
 	 * Constructor 2 for maven testing. 
 	 *
@@ -304,7 +322,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		settlement.insertCitizen(this);
 		
 		// Create favorites
-		favorite = new Favorite(SimulationConfig.instance().getMealConfiguration());
+		favorite = new Favorite(simulationConfig.getMealConfiguration());
 		// Create preferences
 		preference = new Preference(this);
 				
@@ -354,7 +372,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @param nationPeople The population characteristics.
 	 */
 	private void setupChromosomeMap(PopulationCharacteristics nationPeople) {
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+		PersonConfig personConfig = simulationConfig.getPersonConfig();
 
 		// Set up physical details based on Nation
 		if (nationPeople == null) {
@@ -1891,7 +1909,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 				transferred = b.getSettlement().addToIndoor(this);
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
-				BuildingManager.setToBuilding(this, b);
+				BuildingManager.transferToBldg(this, null, b);
 				// Switch the destination from building to settlement
 				destination = b.getSettlement();
 			}

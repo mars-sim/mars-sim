@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.activities.GroupActivity;
@@ -352,7 +351,6 @@ public class Settlement extends Unit implements Temporal,
 	private History<CompletedProcess> processHistory = new History<>(80);
 	private MissionControl missionControl;
 	
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 	private static SettlementTemplateConfig settlementTemplateConfig = simulationConfig.getSettlementTemplateConfiguration();
 	private static SurfaceFeatures surfaceFeatures;
@@ -1884,7 +1882,9 @@ public class Settlement extends Unit implements Temporal,
 			// Set x and y coordinates first prior to adding the person 
 			p.setCoordinates(getCoordinates());							
 			// Add to a random building
-			BuildingManager.addPersonToRandomBuildingSpot(p, getAssociatedSettlement());			
+			if (!BuildingManager.addPersonToBuildingSpotByJobType(p, this)) {
+				logger.warning(this, "Not successful in finding an activity spot for " + p + ".");
+			}
 			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
 			// Update the population factor
@@ -1893,11 +1893,10 @@ public class Settlement extends Unit implements Temporal,
 			popFactor = Math.max(1, Math.log(popFactor0));
 
 			missionControl.populationChanged();
-
 			// EVA capacity
 			int evaCapacity = (int)Math.ceil(numCitizens * EVA_PERCENTAGE);
+			
 			preferences.putValue(SettlementParameters.MAX_EVA, evaCapacity);
-
 			// Fire unit update
 			fireUnitUpdate(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
 			

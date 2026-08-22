@@ -361,8 +361,9 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Initialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(unitManager);
 
+		Unit.initializeInstances(masterClock, unitManager, weather, simulationConfig);
+		
 		Rover.initializeInstances(simulationConfig);
-		Unit.initializeInstances(masterClock, unitManager, weather);
 		
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
 
@@ -459,9 +460,10 @@ public class Simulation implements ClockPulseListener, Serializable {
 		marketManager = new MarketManager(this);
 
 		// Initialize Unit
+		Unit.initializeInstances(masterClock, unitManager, weather, simulationConfig);
+		
 		Rover.initializeInstances(simulationConfig);
-		Unit.initializeInstances(masterClock, unitManager, weather);
-	
+		
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 										simulationConfig.getPersonConfig(), eventManager);
 
@@ -581,9 +583,10 @@ public class Simulation implements ClockPulseListener, Serializable {
 		
 		
 		// Re-initialize units prior to starting the unit manager
+		Unit.initializeInstances(masterClock, unitManager, weather, simulationConfig);
+		
 		Rover.initializeInstances(simulationConfig);
-		Unit.initializeInstances(masterClock, unitManager, weather);
-
+		
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 								simulationConfig.getPersonConfig(), eventManager);
 		

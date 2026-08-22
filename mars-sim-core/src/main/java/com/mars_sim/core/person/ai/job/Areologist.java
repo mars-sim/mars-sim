@@ -45,7 +45,7 @@ public class Areologist extends JobSpec {
 		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
 		result += result * ((averageAptitude - 100D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
+		if (person.getPhysicalCondition() != null && person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
 
 		return result;

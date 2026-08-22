@@ -332,7 +332,7 @@ public class WalkSettlementInterior extends Task {
 			// If hatch leads to new building, place worker in the new building.
 			Building currentBuilding = BuildingManager.getBuilding(worker);
 			if (!hatch.getBuilding().equals(currentBuilding)) {
-				BuildingManager.transferFromBuildingToBuilding(worker, currentBuilding, hatch.getBuilding());
+				BuildingManager.transferToBldg(worker, currentBuilding, hatch.getBuilding());
 			}
 		} else if (location instanceof BuildingConnector connector) {
 			// If non-split building connector, place worker in the new building.
@@ -355,7 +355,7 @@ public class WalkSettlementInterior extends Task {
 				}
 
 				if (newBuilding != null) {
-					BuildingManager.transferFromBuildingToBuilding(worker, currentBuilding, newBuilding);
+					BuildingManager.transferToBldg(worker, currentBuilding, newBuilding);
 				}
 			}
 		}

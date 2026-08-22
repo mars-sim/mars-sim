@@ -420,7 +420,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			return canDepart;
 		}
 
-		
 		Set<Person> crew = new UnitSet<>();
 		crew.addAll(r.getCrew());
 		
@@ -437,9 +436,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				// Have the person leave the vehicle
 				boolean canRemove = r.removePerson(p);
 				
-				if (canDepart)
-					BuildingManager.addPersonToRandomBuildingSpot(p, getAssociatedSettlement());
-								
+				if (canDepart) {
+					if (!BuildingManager.addPersonToBuildingSpotByJobType(p, getAssociatedSettlement())) {
+						logger.warning(this, "Not successful in finding an activity spot for " + p + ".");
+					}
+				}
+				
 				canDepart = canDepart && canRemove;
 			}
 		}
@@ -979,7 +981,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			rover.removePerson(p);
 			
 			// Add this person to the building
-			BuildingManager.setToBuilding(p, rover.getGarage());
+			BuildingManager.transferToBldg(p, null, rover.getGarage());
 			
 			String roverName = rover.getName();
 			

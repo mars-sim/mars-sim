@@ -19,7 +19,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
@@ -212,7 +211,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		BuildingManager.addRobotToRandomBuilding(this, s);
 		
 		// Add TYPE to the part scope
-		SimulationConfig.instance().getPartConfiguration().addScopes(TYPE);
+		simulationConfig.getPartConfiguration().addScopes(TYPE);
 
 		// Set up the time stamp for the robot
 		createBirthDate();
@@ -1269,7 +1268,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			}
 			else if (destination instanceof Building b) {
 				
-				BuildingManager.setToBuilding(this, b);
+				BuildingManager.transferToBldg(this, null, b);
 				
 				transferred = b.getSettlement().addRobotsWithin(this);
 				// Turn a building destination to a settlement to avoid 

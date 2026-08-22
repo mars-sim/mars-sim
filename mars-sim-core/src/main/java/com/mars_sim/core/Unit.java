@@ -64,6 +64,8 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 
 	// File for diagnostics output
 	private static PrintWriter diagnosticFile = null;
+	
+	protected static SimulationConfig simulationConfig;
 
 	/**
 	 * Enable the detailed diagnostics
@@ -347,11 +349,16 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 
 	/**
 	 * Loads instances.
-	 *
+	 * 
+	 * @param c0
+	 * @param um
+	 * @param w
+	 * @param sc
 	 */
 	public static void initializeInstances(MasterClock c0, UnitManager um,
-			Weather w) {
+			Weather w, SimulationConfig sc) {
 		masterClock = c0;
+		simulationConfig = sc;
 		weather = w;
 		unitManager = um;
 	}

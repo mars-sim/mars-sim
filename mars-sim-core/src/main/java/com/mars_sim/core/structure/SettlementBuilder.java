@@ -441,16 +441,11 @@ public final class SettlementBuilder {
 					.setCountry(spec)
 					.build();
 
-	        // Call addACitizen prior to addUnit
-			settlement.addACitizen(person);
-
 			unitManager.addUnit(person);
-			
+		
 			// Set up preference
 			person.getPreference().initializePreference();
-			// Assign a job
-			person.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
-		
+
 			JobType jobType = person.getMind().getJobType();
 			
 			if (jobType == JobType.TOURIST) {
@@ -550,10 +545,7 @@ public final class SettlementBuilder {
 						.setSkill(skillMap)
 						.setPersonality(bigFiveMap, mbti)
 						.build();
-
-		        // Call addACitizen prior to addUnit
-				settlement.addACitizen(person);
-
+				
 				unitManager.addUnit(person);
 
 				// Set the person as a preconfigured crew member
@@ -562,7 +554,7 @@ public final class SettlementBuilder {
 					addedCrew.put(person, relMap);
 				}
 
-				// Set person's job (if any).
+				// Set person's specific job (if any) defined by xml 
 				String jobName = m.getJob();
 				if (jobName != null) {
 					JobType job = JobType.getJobTypeByName(jobName);
@@ -573,7 +565,7 @@ public final class SettlementBuilder {
 					}
 				}
 
-				// Set Favourites
+				// Set specific Favourites
 				setFavorites(person, m);
 								
 				// Initialize Preference

@@ -130,14 +130,15 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param simulationConfig
 	 */
 	public static void initializeInstances(SimulationConfig simulationConfig) {
-		double o2Consumed = simulationConfig.getPersonConfig().getHighO2ConsumptionRate();
-		double cO2Expelled = simulationConfig.getPersonConfig().getCO2ExpelledRate();
+		PersonConfig personConfig = simulationConfig.getPersonConfig();
+		double o2Consumed = personConfig.getHighO2ConsumptionRate();
+		double cO2Expelled = personConfig.getCO2ExpelledRate();
 		gasRatio = cO2Expelled/o2Consumed;
 		
-		minO2Pressure = simulationConfig.getPersonConfig().getMinSuitO2Pressure();
+		minO2Pressure = personConfig.getMinSuitO2Pressure();
 		tempRange = simulationConfig.getSettlementConfiguration().getLifeSupportRequirements(SettlementConfig.TEMPERATURE);
 	
-		Vehicle.initializeInstances(simulationConfig);
+		Vehicle.initializeInstances();
 	}
 	
 	/**

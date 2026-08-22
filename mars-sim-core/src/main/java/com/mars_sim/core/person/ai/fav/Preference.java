@@ -134,7 +134,7 @@ public class Preference implements Serializable {
 			}
 			
 			// PART 2 : influenced by natural attribute
-			for(TaskTrait trait : metaTask.getTraits()) {
+			for (TaskTrait trait : metaTask.getTraits()) {
 				switch (trait) {
 				case ACADEMIC:
 					rand += aa + .5;

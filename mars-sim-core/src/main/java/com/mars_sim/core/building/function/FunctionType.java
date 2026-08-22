@@ -9,8 +9,10 @@ package com.mars_sim.core.building.function;
 import com.mars_sim.core.Named;
 
 import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 public enum FunctionType implements Named {
 
@@ -100,6 +102,75 @@ public enum FunctionType implements Named {
 			
 		default:
 			return FunctionType.ROBOTIC_STATION;
+		}
+	}
+	
+	/**
+	 * Gets the default Function for a Job Type.
+	 * 
+	 * @return FunctionType
+	 */
+	public static FunctionType getDefaultFunction(JobType type) {
+		switch (type) {
+		
+		case ARCHITECT, AREOLOGIST :
+			return FunctionType.MANUFACTURE;
+		
+		case ASTRONOMER:
+			return FunctionType.ASTRONOMICAL_OBSERVATION;
+			
+		case ASTROBIOLOGIST:
+			return FunctionType.FISHERY;
+			
+		case BOTANIST:
+			return FunctionType.FARMING;
+			
+		case CHEF:
+			return FunctionType.COOKING;
+			
+		case CHEMIST:
+			return FunctionType.ALGAE_FARMING;
+			
+		case COMPUTER_SCIENTIST:
+			return FunctionType.COMPUTATION;
+
+		case DOCTOR, PSYCHOLOGIST:
+			return FunctionType.MEDICAL_CARE;
+			
+		case ENGINEER:
+			return FunctionType.COMMUNICATION;
+			
+		case MATHEMATICIAN, PHYSICIST:
+			return FunctionType.RESEARCH;
+			
+		case METEOROLOGIST, TOURIST:
+			return FunctionType.FIELD_STUDY;
+			
+		case PILOT, TRADER:
+			return FunctionType.VEHICLE_MAINTENANCE;
+			
+		case POLITICIAN, REPORTER:
+			return FunctionType.ADMINISTRATION;
+			
+		case SOCIOLOGIST:
+			return FunctionType.RESEARCH;
+			
+		case TECHNICIAN:
+			return FunctionType.RESOURCE_PROCESSING;
+			
+		default:
+			int rand = RandomUtil.getRandomInt(4);
+			if (rand == 0)		
+				return FunctionType.LIVING_ACCOMMODATION;
+			else if (rand == 1)
+				return FunctionType.DINING;
+			else if (rand == 2)
+				return FunctionType.LIFE_SUPPORT;
+			else if (rand == 3)
+				return FunctionType.EXERCISE;
+			else 
+				return FunctionType.RECREATION;
+			
 		}
 	}
 }
