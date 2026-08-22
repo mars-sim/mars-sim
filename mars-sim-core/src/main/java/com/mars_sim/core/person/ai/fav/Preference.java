@@ -101,6 +101,9 @@ public class Preference implements Serializable {
 		// TODO: how to incorporate EXPERIENCE_APTITUDE ?
 		int result = 0;
 		FavoriteType hobby = person.getFavorite().getFavoriteActivity();
+		
+		MetaTaskUtil.initializeMetaTasks();
+		
 		for (MetaTask metaTask : MetaTaskUtil.getPersonMetaTasks()) {
 			// Set them up in random
 			double rand = RandomUtil.getRandomDouble(-5, 5);
