@@ -104,16 +104,7 @@ public class EquipmentInventory
 		}
 		return result + microInventory.getStoredMass();
 	}
-	
-	/**
-	 * Prints the micro inventory stored mass.
-	 *
-	 * @return mass [kg]
-	 */
-	public void printMicroInventoryStoredMass() {
-		microInventory.printStoredMass();
-	}
-	
+
 	/**
 	 * Gets the modified mass for a container. Useful when accounting for pushing a wheelbarrow, 
 	 * instead of carrying a wheelbarrow.
@@ -695,15 +686,6 @@ public class EquipmentInventory
 
 	/**
 	 * Sets the resource capacities.
-	 *
-	 * @param capacities
-	 */
-	public void setResourceCapacityMap(Map<Integer, Double> capacities) {
-		setResourceCapacityMap(capacities, false);
-	}
-
-	/**
-	 * Sets the resource capacities.
 	 * 
 	 * @param capacities
 	 * @param add True if it should these be "added" on top of its existing capacity. False if it should be 'set' to a new capacity
@@ -740,18 +722,6 @@ public class EquipmentInventory
  		microInventory.addStockCapacity(cargoCapacity);
 	}
 	
-	
-	
-	/**
-	 * Adds the specific capacity of a particular resource.
-	 *
-	 * @param resource
-	 * @param capacity
-	 */
-	public void addSpecificCapacity(int resource, double capacity) {
-		microInventory.addSpecificCapacity(resource, capacity);
-	}
-
 	/**
 	 * Removes the specific capacity of a particular resource.
 	 *

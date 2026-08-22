@@ -19,7 +19,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 
 class UnloadHelperTest extends MarsSimUnitTest{
     @Test
-    public void testReleaseTowedVehicle() {
+    void testReleaseTowedVehicle() {
         var s = buildSettlement("towing");
 
         var towing = buildRover(s, "towing", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
@@ -33,7 +33,7 @@ class UnloadHelperTest extends MarsSimUnitTest{
     }
 
     @Test
-    public void testUnloadDeceased() {
+    void testUnloadDeceased() {
         var s = buildSettlement("towing");
 
         var v = buildRover(s, "towing", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
@@ -50,7 +50,7 @@ class UnloadHelperTest extends MarsSimUnitTest{
     }
 
     @Test
-    public void testUnloadEVASuits() {
+    void testUnloadEVASuits() {
         var s = buildSettlement("towing");
 
         var v = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
@@ -72,7 +72,7 @@ class UnloadHelperTest extends MarsSimUnitTest{
     }
 
     @Test
-    public void testUnloadInventory() {
+    void testUnloadInventory() {
         var s = buildSettlement("towing");
         var v = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         s.getEquipmentInventory().setCargoCapacity(50);
@@ -94,7 +94,6 @@ class UnloadHelperTest extends MarsSimUnitTest{
         assertEquals(0D, amountNotUsed, "All efforts being used up");
         
         mass = v.getStoredMass();
-        v.getEquipmentInventory().printMicroInventoryStoredMass();
         
         assertEquals(0D, mass, "Final stored mass");
         

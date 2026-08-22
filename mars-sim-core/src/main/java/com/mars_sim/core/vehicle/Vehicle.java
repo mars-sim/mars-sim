@@ -261,7 +261,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		// Set the capacities for each supported resource
 		Map<Integer, Double> capacities = spec.getCargoCapacityMap();
 		if (capacities != null) {
-			eqmInventory.setResourceCapacityMap(capacities);
+			eqmInventory.setResourceCapacityMap(capacities, false);
 		}
 
 		// Set total distance traveled by vehicle (km)

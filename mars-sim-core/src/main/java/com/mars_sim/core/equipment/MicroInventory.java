@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEventType;
@@ -25,7 +24,7 @@ import com.mars_sim.core.resource.ResourceUtil;
  */
 public class MicroInventory implements Serializable {
 
-	static final class AmountStored implements Serializable {
+	private static final class AmountStored implements Serializable {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -104,64 +103,6 @@ public class MicroInventory implements Serializable {
 		this.stockCapacity = stockCapacity;
 	}
 
-	
-	/** 
-	 * Gets a map of stock amount resources.
-	 * 
-	 * @return
-	 */
-	public Map<Integer, Double> getStockAmountStorage() {
-		return stockAmountStorage;
-	}
-	
-	/** 
-	 * Gets a map of specific amount resources. 
-	 * 
-	 * @return
-	 */
-	public Map<Integer, Double> getSpecificAmountStorage() {
-		Map<Integer, Double> map = new HashMap<>();
-		for (Map.Entry<Integer, AmountStored> entry : specificAmountStorage.entrySet()) {
-			int k = entry.getKey();
-			AmountStored s = entry.getValue();
-			double amount = s.storedAmount;
-			map.put(k, amount);
-        }
-		return map;
-	}
-	
-	/** 
-	 * Gets a map of item resources. 
-	 * 
-	 * @return
-	 */
-	public Map<Integer, Double> getItemStorage() {
-		Map<Integer, Double> map = new HashMap<>();
-		for (Map.Entry<Integer, ItemStored> entry : itemStorage.entrySet()) {
-			int k = entry.getKey();
-			ItemStored s = entry.getValue();
-			double q = s.quantity;
-			map.put(k, q);
-        }
-		return map;
-	}
-	
-	/** 
-	 * Gets a map of all stock and specific amount resources. 
-	 * 
-	 * @return
-	 */
-	public Map<Integer, Double> getAllAmountResourceMap() {
-		return Stream.concat(getStockAmountStorage().entrySet().stream(), 
-				getSpecificAmountStorage().entrySet().stream())
-				.collect(Collectors.toMap(
-                Map.Entry::getKey,
-                Map.Entry::getValue,
-                // Handling duplicate keys by adding their values together
-                (v1, v2) -> v1 + v2  
-        ));
-	}
-	
 	/**
 	 * Gets the stock capacity.
 	 *
@@ -266,19 +207,6 @@ public class MicroInventory implements Serializable {
 	}
 
 	/**
-	 * Prints the stored mass.
-	 *
-	 * @return mass [kg]
-	 */
-	public void printStoredMass() {
-		String s = "stockAmountTotalMass: " + stockAmountTotalMass 
-				+ " specificAmountTotalMass: " + specificAmountTotalMass 
-				+ " itemTotalMass: " + itemTotalMass;
-		System.out.println(s);
-	}
-
-	
-	/**
 	 * Is this inventory empty ?
 	 *
 	 * @return
@@ -322,15 +250,13 @@ public class MicroInventory implements Serializable {
 			// Update the quantity
 			quantity = remaining;
 			
-			String name = ResourceUtil.findAmountResourceName(resource);
-			for (int i: ResourceUtil.getEssentialResources()) {
-				if (i == resource)
-					logger.warning(owner, 60_000L, "Specific Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
+			if (ResourceUtil.getEssentialResources().contains(resource)) {
+				String name = ResourceUtil.findAmountResourceName(resource);
+				logger.warning(owner, 60_000L, "Specific Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
 			}
 			
 			// Store excess as stock amount resource
 			excess = storeStockAmountResource(resource, excess);
-
 		}
 
 		s.storedAmount += quantity;
@@ -339,7 +265,7 @@ public class MicroInventory implements Serializable {
 		specificAmountTotalMass += quantity;
 		
 		// Fire the unit event type
-		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
+		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
 		return excess;
 	}
 
@@ -350,7 +276,7 @@ public class MicroInventory implements Serializable {
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
 	 */
-	public double storeStockAmountResource(int resource, double quantity) {
+	private double storeStockAmountResource(int resource, double quantity) {
 		double stockAmount = 0;
 		
 		if (stockAmountStorage.containsKey(resource)) {
@@ -548,7 +474,7 @@ public class MicroInventory implements Serializable {
 	 * @param quantity
 	 * @return shortfall quantity that cannot be retrieved
 	 */
-	public double retrieveStockAmountResource(int resource, double quantity) {
+	private double retrieveStockAmountResource(int resource, double quantity) {
 		double stockAmount = 0;
 		
 		if (stockAmountStorage.containsKey(resource)) {
@@ -760,7 +686,7 @@ public class MicroInventory implements Serializable {
 	 * @param resource
 	 * @return quantity
 	 */
-	public double getStockAmountResourceStored(int resource) {
+	private double getStockAmountResourceStored(int resource) {
 		return stockAmountStorage.getOrDefault(resource, 0.0);
 	}
 	
@@ -772,30 +698,6 @@ public class MicroInventory implements Serializable {
 	 */
 	public double getAllAmountResourceStored(int resource) {
 		return getStockAmountResourceStored(resource) + getSpecificAmountResourceStored(resource);
-	}
-	
-	/**
-	 * Gets the total amount of specific amount resource stored.
-	 *
-	 * @return total amount
-	 */
-	public double getTotalSpecificAmountResourceStored() {
-		double total = 0;
-		for (Map.Entry<Integer, AmountStored> entry : specificAmountStorage.entrySet()) {
-			AmountStored s = entry.getValue();
-			total += s.storedAmount;
-        }
-		return total;
-	}
-	
-	/**
-	 * Gets the total amount of stock amount resource stored.
-	 *
-	 * @return total amount
-	 */
-	public double getTotalStockAmountResourceStored() {
-		updateStockAmountResourceTotalMass();
-		return this.stockAmountTotalMass;
 	}
 
 	/**
@@ -820,14 +722,5 @@ public class MicroInventory implements Serializable {
 	 */
 	public boolean isResourceSupported(int resource) {
 		return specificAmountStorage.containsKey(resource);
-	}
-
-
-	/**
-	 * Cleans this container for future use.
-	 */
-	public void clean() {
-		specificAmountStorage.clear();
-		itemStorage.clear();
 	}
 }
