@@ -2103,7 +2103,10 @@ public class Settlement extends Unit implements Temporal,
 	public boolean removeOwnedVehicle(Vehicle vehicle) {
 		if (!ownedVehicles.contains(vehicle))
 			return true;
+		
 		if (ownedVehicles.remove(vehicle)) {
+			removeParkedNGaragedVehicle(vehicle);
+
 			numOwnedVehicles = ownedVehicles.size();
 			return true;
 		}

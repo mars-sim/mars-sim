@@ -210,34 +210,6 @@ public class CollectionUtils {
 	}
 	
 	/**
-	 * Gets a list of vehicles (regardless their association) of a settlement in its vicinity.
-	 * Note: a vehicle can be either inside the settlement or within its vicinity
-	 *
-	 * @param settlement the settlement
-	 * @return list of vehicles to display.
-	 */
-	public static List<Vehicle> getVehiclesInSettlementVicinity(Settlement settlement) {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
-		
-		List<Vehicle> result = new ArrayList<>();
-
-		if (settlement != null) {
-			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
-			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
-				Settlement settlementLoc = vehicle.getSettlement();
-				// Select a vehicle at the settlement coordinate.
-				if (settlementLoc != null && settlementLoc.equals(settlement)) {
-					result.add(vehicle);
-				}
-			}
-		}
-
-		return result;
-	}
-	
-	/**
 	 * Gets a list of robots associated people of a settlement in its vicinity.
  	 * Note: a robot can be either inside the settlement or within its vicinity
 	 * 
