@@ -9,6 +9,7 @@ package com.mars_sim.core.building.construction.task;
 import java.util.Iterator;
 import java.util.List;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
@@ -204,8 +205,13 @@ public class ConstructBuilding extends EVAOperation {
 
 		// Work on construction.
 		stage.addWorkTime(workTime);
-		
-		logger.info(person, "At " + site.getName() + ", work time: " + Math.round(workTime * 1000.0)/1000.0);	
+	
+		// Record the work time
+		((ConstructionMission)site.getWorkOnSite()).getObjective().recordWorkTime(person.getIdentifier(), workTime);
+			
+    	person.fireUnitUpdate(EntityEventType.WORK_TIME_EVENT);
+    	
+//		logger.info(person, "At " + site.getName() + ", work time: " + Math.round(workTime * 1000.0)/1000.0);	
 		// Keep track of cumulative work time
 		cumulativeWorkTime += workTime;
 		

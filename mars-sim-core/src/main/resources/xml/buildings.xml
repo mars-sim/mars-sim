@@ -2905,11 +2905,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="12" />
-			<medical-care tech-level="5" bed="8">
+			<medical-care tech-level="4" bed="8">
 				<activity>
 					<!-- inner bed :  activity-spot xloc="1.8" yloc="2.4" /-->
-					<activity-spot xloc="-0.98" yloc="3.14" name="Physician 1" />
-					<activity-spot xloc="-1.72" yloc="3.14" name="Physician 2" />	
+					<activity-spot xloc="0.0" yloc="0.8" name="Physician 1" />
+					<activity-spot xloc="0.0" yloc="-1.6" name="Physician 2" />	
 					
 					<activity-spot xloc="-2.09" yloc="2.58" name="Physician 3" />
 					<activity-spot xloc="1.79" yloc="1.45" name="Physician 4" />
@@ -2949,7 +2949,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<robotic-station capacity="1">
 				<activity>
-					<activity-spot xloc="0.5" yloc="-0.5" />
+					<activity-spot xloc="-1.33" yloc="2.5" />
 				</activity>
 			</robotic-station>
 			<thermal-generation>

@@ -69,8 +69,8 @@ public class ConstructBuildingMeta extends MetaTask implements SettlementMetaTas
     private static final double MAX_SHIFT_FRACTION = 0.66D;
  
 	private static final double PHASE_WEIGHT = 0.5D;
-    private static final int SITE_BASE_SCORE = 300;
-    private static final int MISSION_WEIGHT = 10;
+    private static final int SITE_BASE_SCORE = 500;
+    private static final int MISSION_WEIGHT = 30;
 
     public ConstructBuildingMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -151,7 +151,7 @@ public class ConstructBuildingMeta extends MetaTask implements SettlementMetaTas
         var result = new RatingScore(t.getScore());
     
         // Add a negative base to model Person fitness
-        result.addBase("fitness", -(stress * 2 + fatigue + hunger + thirst + exerciseMillisols));
+        result.addBase("fitness", -(stress * 2 + fatigue + hunger + thirst + exerciseMillisols) / 5);
 
         Mission currentMission = p.getMission();
         

@@ -181,11 +181,11 @@ public class MonitorWindow extends ContentPanel
 		List<MonitorTab> newTabs = new ArrayList<>();
 
 		// Add tabs into the table	
-		newTabs.add(new TableTab(this, new SettlementTableModel(), true, true, COLONY_ICON));
-		newTabs.add(new TableTab(this, new PersonTableModel(), true, true, PEOPLE_ICON));
-		newTabs.add(new TableTab(this, new RobotTableModel(), true, true, BOT_ICON));
-		newTabs.add(new TableTab(this, new BuildingTableModel(), true, true, BUILDING_ICON));
-		newTabs.add(new TableTab(this, new CropTableModel(context.getSimulation().getConfig()), true, true, CROP_ICON));
+		newTabs.add(new TableTab(this, new SettlementTableModel(), true, false, COLONY_ICON));
+		newTabs.add(new TableTab(this, new PersonTableModel(), true, false, PEOPLE_ICON));
+		newTabs.add(new TableTab(this, new RobotTableModel(), true, false, BOT_ICON));
+		newTabs.add(new TableTab(this, new BuildingTableModel(), true, false, BUILDING_ICON));
+		newTabs.add(new TableTab(this, new CropTableModel(context.getSimulation().getConfig()), true, false, CROP_ICON));
 		
 		newTabs.add(new TableTab(this, new FoodTableModel(), true, false, FOOD_ICON));
 
@@ -193,10 +193,10 @@ public class MonitorWindow extends ContentPanel
 		
 		newTabs.add(new TableTab(this, new TradeTableModel(), true, false, TRADE_ICON));
 
-		newTabs.add(new TableTab(this, new ScienceStudyTableModel(context.getSimulation().getScientificStudyManager()), true, true, SCIENCE_ICON));
+		newTabs.add(new TableTab(this, new ScienceStudyTableModel(context.getSimulation().getScientificStudyManager()), true, false, SCIENCE_ICON));
 
-		newTabs.add(new TableTab(this, new MissionTableModel(), true, true, "mission"));
-		newTabs.add(new TableTab(this, new VehicleTableModel(), true, true, VEHICLE_ICON));
+		newTabs.add(new TableTab(this, new MissionTableModel(), true, false, "mission"));
+		newTabs.add(new TableTab(this, new VehicleTableModel(), true, false, VEHICLE_ICON));
 
 		for (MonitorTab m : newTabs) {
 			addTab(m);

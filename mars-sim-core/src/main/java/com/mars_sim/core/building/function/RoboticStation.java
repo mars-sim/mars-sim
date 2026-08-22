@@ -80,7 +80,7 @@ public class RoboticStation extends Function {
 			} else {
 				RoboticStation station = building.getRoboticStation();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += station.getOccupantCapacity() * wearModifier;
+				supply += station.getOccupantCapacity() * building.getLength() * wearModifier;
 			}
 		}
 
@@ -102,7 +102,7 @@ public class RoboticStation extends Function {
         double demand = getSettlement().getNumBots() * 1D;
 
         double wearModifier = ((getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
-        double supply = getOccupantCapacity() * wearModifier;
+        double supply = getOccupantCapacity() * building.getLength() * wearModifier;
 
         return demand / (supply + 1D);
     }

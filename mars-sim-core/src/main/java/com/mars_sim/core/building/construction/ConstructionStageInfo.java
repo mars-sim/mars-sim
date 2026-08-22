@@ -19,7 +19,25 @@ import java.util.Map;
 public class ConstructionStageInfo implements Serializable {
 
     // Stage This MUST be in the order of construction
-    public enum Stage {FOUNDATION, FRAME, BUILDING}
+    public enum Stage {
+    	FOUNDATION ("Foundation"), 
+    	FRAME ("Frame"), 
+    	BUILDING ("Building");
+    	
+    	private String name;
+    	
+    	Stage(String name) {
+            this.name = name;
+        }
+        /**
+         * Gets the name.
+         * 
+         * @return the name
+         */
+        public String getName() {
+            return name;
+        }
+    }
 
     // Data members
     private boolean unsetDimensions;

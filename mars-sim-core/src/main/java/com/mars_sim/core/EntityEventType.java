@@ -29,6 +29,9 @@ public class EntityEventType {
 		
 	public static final String EMOTION_EVENT = "emotion event";
 	
+	public static final String WORK_TIME_EVENT = "work time event";
+	
+	
 	// Others
 	public static final String DEATH_EVENT = "death event";
 	public static final String BURIAL_EVENT = "burial event";

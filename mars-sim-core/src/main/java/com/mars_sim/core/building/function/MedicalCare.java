@@ -110,11 +110,11 @@ public class MedicalCare extends Function implements MedicalAid {
 				double tech = medFunction.getTechLevel();
 //				double beds = medFunction.getSickBedNum();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += tech * wearModifier;
+				supply += tech * building.getMedical().getBedCapacity() * building.getMedical().getPhysicianNum() * wearModifier;
 			}
 		}
 
-		return demand / (supply + 1D) / 10D;
+		return demand / (supply + 1D);
 	}
 
 	/**
@@ -133,9 +133,9 @@ public class MedicalCare extends Function implements MedicalAid {
 		
 		double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 		
-		supply += techLevel * building.getMedical().getOpenBedNum() * wearModifier;
+		supply += techLevel * getBedCapacity() * getPhysicianNum() * wearModifier;
 
-		return demand / (supply + 1D) / 10D;
+		return demand / (supply + 1D);
 	}
     
     /**

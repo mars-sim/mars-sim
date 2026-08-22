@@ -47,7 +47,8 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     private Map<String, List<Integer>> monitoredEvents = new HashMap<>();
 
     /**
-     * Create a generic entity model with the specified columns.
+     * Creates a generic entity model with the specified columns.
+     * 
      * @param columns Columns to render
      */
     protected AbstractEntityModel(EntityColumnSpec[] columns) {
@@ -55,11 +56,12 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     }
 
     /**
-     * Add columns to the model. The column spec and associated event types are provided in the EntityColumnSpec array.
+     * Adds columns to the model. The column spec and associated event types are provided in the EntityColumnSpec array.
+     * 
      * @param newColumns Array of new columns to add.
      */
     protected void addColumns(EntityColumnSpec[] newColumns) {
-        // Load exisitng value ids
+        // Load existing value ids
         var existingIds = columns.stream().map(ColumnSpec::id).collect(Collectors.toSet());
         Set<Integer> valIds = new HashSet<>(existingIds);
 
@@ -84,6 +86,7 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     /**
      * Updates the entities to be shown.
      * The model will automatically monitor the new entities for changes and update the table as needed.
+     * 
      * @param newEntities New entities to display.
      * @return true if the entities were updated, false if the new entities are the same as the current entities.
      */
@@ -106,7 +109,8 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     }
 
     /**
-     * Add an entity to the model. This check the entity is not already present.
+     * Adds an entity to the model. This check the entity is not already present.
+     * 
      * @param entity Entity to add.
      */
     public void addEntity(T entity) {
@@ -153,8 +157,9 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     }
 
     /**
-     * Enable or disable the entity listeners for the model.
+     * Enables or disables the entity listeners for the model.
      * The default just handles the entities in the model, but subclasses may have additional entities to monitor.
+     * 
      * @param activate Activate the listeners if true, disable if false.
      */
     public void enableListeners(boolean activate) {
@@ -162,10 +167,11 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     }
 
     /**
-     * Enable the listeners required for the entity. The default implementation adds a EntityListener to the entity.
+     * Enables the listeners required for the entity. The default implementation adds a EntityListener to the entity.
      * Subclasses may override to add additional listeners.
+     * 
      * @param entity Source of events
-     * @param activate Activiate listeners
+     * @param activate Activating listeners
      */
     protected void enableListener(T entity, boolean activate) {
         if (activate) {
@@ -209,6 +215,7 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     /**
      * A tooltip is needed for a specific cell in the model. The implementation resolves the relevant column spec and entity
      * and delegates to getEntityDescription to get the tooltip text.
+     * 
      * @param rowIndex Row index of the cell.
      * @param columnIndex Column index of the cell.
      * @return Tooltip text for the cell, or null if no tooltip is provided.
@@ -224,9 +231,10 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     }
     
     /**
-     * Get a cell description for the associated Entity. The description is a longer version of the value commonly used for tooltip.
+     * Gets a cell description for the associated Entity. The description is a longer version of the value commonly used for tooltip.
      * Column index maps to the associated ColumnSpec where the id is used to determine the value to return.
-     * Default implementatino return null, override to provide descriptions.
+     * Default implementation return null, override to provide descriptions.
+     * 
      * @param entity Source of value.
      * @param valueIndex Index of the value.
      * @return String description
@@ -236,8 +244,9 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     }
 
     /**
-     * Get a cell value for the associated Entity. Column index maps to the associated ColumnSpec where the id
+     * Gets a cell value for the associated Entity. Column index maps to the associated ColumnSpec where the id
      * is used to determine the value to return.
+     * 
      * @param entity Source of value.
      * @param valueIndex Index of the value.
      * @return Object to render
@@ -245,8 +254,9 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     protected abstract Object getEntityValue(T entity, int valueIndex);
     
     /**
-     * Get a cell value for the associated Entity. Column index maps to the associated ColumnSpec where the id
+     * Gets a cell value for the associated Entity. Column index maps to the associated ColumnSpec where the id
      * is used to determine the value to return.
+     * 
      * @param rowIndex Row index
      * @param columnIndex Column index. 
      * @return Associated value.
@@ -269,7 +279,8 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     }
 
     /**
-     * Handle entity updates. If there is a column impacted by this event type, the relevant cell will be updated.
+     * Handles entity updates. If there is a column impacted by this event type, the relevant cell will be updated.
+     * 
      * @param event The entity event.
      */
     @Override

@@ -181,6 +181,7 @@ class AmountResourceGood extends Good {
 	// Chemicals
 	private static final int CLEANING_AGENT_MODIFIER = 1;
 	private static final int ETHYLENE_MODIFIER = 10;
+	private static final int POLYETHYLENE_MODIFIER = 3;
 	private static final int STYRENE_MODIFIER = 7;
 	private static final int PROPYLENE_MODIFIER = 3;
 	private static final int ETHANE_MODIFIER = 2;
@@ -1346,7 +1347,7 @@ class AmountResourceGood extends Good {
 			case ResourceUtil.POLYESTER_RESIN_ID:
 				return base * RESIN_MODIFIER;
 			case ResourceUtil.POLYETHYLENE_ID:
-				return base * ETHYLENE_MODIFIER;
+				return base * POLYETHYLENE_MODIFIER;
 			case ResourceUtil.POLYPROPYLENE_ID:
 				return base * PROPYLENE_MODIFIER;
 			case ResourceUtil.POLYSTYRENE_ID:

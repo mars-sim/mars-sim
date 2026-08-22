@@ -228,6 +228,9 @@ public class PrescribeMedication extends Task {
                 logger.log(worker, Level.INFO, 5000, phrase.toString());
                 
                 produceMedicalWaste();
+                
+                MedicalCare care = patient.getBuildingLocation().getMedical();
+                care.removeFromBed();
             }
             else 
             	logger.info(patient, "Not in a proper place to receive medication.");

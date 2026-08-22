@@ -39,8 +39,7 @@ public class LifeSupport extends Function {
 	private int occupantCapacity;
 
 	private double lifeSupportPower;
-	private double length;
-	private double width;
+
 	protected double floorArea;
 
 	private Collection<Person> occupants;
@@ -56,11 +55,8 @@ public class LifeSupport extends Function {
 	public LifeSupport(Building building, FunctionSpec spec) {
 		super(FunctionType.LIFE_SUPPORT, spec, building);
 
-
 		this.lifeSupportPower = occupantCapacity * POWER_PER_OCCUPANT;
 
-		length = building.getLength();
-		width = building.getWidth();
 		floorArea = building.getFloorArea();
 
 		occupants = new UnitSet<>();
@@ -102,7 +98,7 @@ public class LifeSupport extends Function {
 				removedBuilding = true;
 			} else {
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += building.getLifeSupport().occupantCapacity * wearModifier;
+				supply += building.getLifeSupport().getOccupantCapacity() / building.getFloorArea() * wearModifier;
 			}
 		}
 
@@ -111,7 +107,6 @@ public class LifeSupport extends Function {
 
 	/**
 	 * Gets the value of this function.
-	 * 
 	 */
 	public double getFunctionValue() {
 		
@@ -121,7 +116,7 @@ public class LifeSupport extends Function {
 		double supply = 0D;
 	
 		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-		supply += occupantCapacity * wearModifier;
+		supply = occupantCapacity / floorArea * wearModifier;
 
 		return demand / (supply + 1D);
 	}

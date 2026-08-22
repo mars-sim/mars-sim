@@ -41,6 +41,7 @@ public class ConstructionSiteWindow extends EntityContentPanel<ConstructionSite>
         // Add tab panels
         addDefaultTabPanel(new TabPanelSiteGeneral(constructionSite, context));
         addTabPanel(new LocationTabPanel(constructionSite, context));
+        addTabPanel(new TabPanelMember(constructionSite.getWorkOnSite() , context));
 
         applyProps(props);
         activateListener();

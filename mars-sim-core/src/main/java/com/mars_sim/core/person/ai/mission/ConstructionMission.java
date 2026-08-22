@@ -516,6 +516,15 @@ public class ConstructionMission extends AbstractMission {
 	}
 
 	/**
+	 * Gets the construction objective.
+	 * 
+	 * @return
+	 */
+	public ConstructionObjective getObjective() {
+		return objective;
+	}
+	
+	/**
 	 * Gets the mission's construction stage.
 	 *
 	 * @return construction stage.

@@ -92,8 +92,12 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 
 		missionLabel = new EntityLabel(constructionSite.getWorkOnSite(), getContext());
 		infoPanel.addLabelledItem("Work Mission", missionLabel);
+		
+		int timeReq = (int)getEntity().getCurrentConstructionStage().getRequiredWorkTime();
+		infoPanel.addTextField("Work Time Required", StyleManager.DECIMAL_MSOL.format(timeReq), null);
+		
         workLeft = new JDoubleLabel(StyleManager.DECIMAL1_MSOL);
-		infoPanel.addLabelledItem("Stage Work", workLeft);
+		infoPanel.addLabelledItem("Time Left", workLeft);
 
 		phaseModel = new PhaseTableModel();
 		var phaseTable = new JTable(phaseModel) {
@@ -139,7 +143,7 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 
 			var info = currentStage.getInfo();
 			stageName.setText(info.getName());
-			stageType.setText(info.getType().name().toLowerCase());
+			stageType.setText(info.getType().getName());
 			workType.setText(constructionSite.isConstruction() ? "Construct" : "Demolish");
 		}
 	}
@@ -172,10 +176,10 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 		@Override
 		public String getColumnName(int column) {	
 			return switch (column) {
-				case 0 -> "Stage";
+				case 0 -> "Stage Name";
 				case 1 -> "Type";
 				case 2 -> "Work";
-				case 3 -> "Work Time";
+				case 3 -> "msol Req";
 				default -> null;
 			};
 		}
@@ -185,7 +189,7 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 			var p = phases.get(rowIndex);
 			return switch (columnIndex) {
 				case 0 -> p.stageInfo().getName();
-				case 1 -> p.stageInfo().getType().name().toLowerCase();
+				case 1 -> p.stageInfo().getType().getName();
 				case 2 -> p.construct() ? "Construct" : "Demolish";
 				case 3 -> p.stageInfo().getWorkTime();
 				default -> null;

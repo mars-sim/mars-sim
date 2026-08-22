@@ -601,8 +601,8 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 5 5kg steel ingots. -->
-	<process name="Do steel ingot alloying" tech="1" skill="1" work-time="10" process-time="20" tooling="furnace"
-			power-required=".1">
+	<process name="Do steel ingot alloying" tech="1" skill="1" work-time="10" process-time="30" tooling="furnace"
+			power-required="2.0">
 		<inputs>
 			<resource name="iron powder" amount="25.0" />
 			<resource name="Carbon" amount=".5" />
@@ -612,6 +612,29 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<!-- Produces 5 5kg steel ingots. -->
+	<process name="Make steel ingot from iron oxide" tech="1" skill="1" work-time="10" process-time="50" tooling="furnace"
+			power-required="5.0">
+		<description>
+		1. Reduction to Pig Iron: Iron oxide (ore) is mixed with coke (carbon) and 
+		   limestone in a blast furnace heated to approximately 2,000°C. The carbon monoxide generated from 
+		   the coke strips oxygen from the iron oxide, reducing it to molten pig iron (containing 3–4% carbon) 
+		   and slag, which is tapped off. 
+		2. Refining to Steel: The molten pig iron is transferred to a Basic Oxygen Furnace (BOF) 
+		   or an Electric Arc Furnace (EAF). In the BOF, pure oxygen is blown into the melt to oxidize 
+		   and remove excess carbon (lowering it to 0.1–2%) and impurities like silicon and phosphorus. 
+		   The resulting molten steel is then cast into molds or continuous strands to form steel ingots.	   	   
+		</description>
+		<inputs>
+			<resource name="Iron oxide" amount="25.0" />
+			<resource name="Carbon Monoxide" amount="5" />
+			<resource name="Oxygen" amount="5" />
+		</inputs>
+		<outputs>
+			<part name="steel ingot" number="5" />
+		</outputs>
+	</process>
+	
 	<!-- Produces 1m x `m x 1mm (7.8kg) sheet of steel. -->
 	<process name="Make steel sheet" tech="0" skill="0" work-time="50" process-time="10" tooling="metalwork"
 			power-required=".3">
