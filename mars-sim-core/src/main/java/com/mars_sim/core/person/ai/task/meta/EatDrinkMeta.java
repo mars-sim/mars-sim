@@ -13,7 +13,7 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.task.CookMeal;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.equipment.ResourceHolder;
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.person.CircadianClock;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -62,12 +62,12 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		double foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 		double waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		
-		var container = person.getContainerUnit();
-		if (container instanceof ResourceHolder rh) {
+		var localrh = EquipmentOwner.getAttached(person.getContainerUnit());
+		if (localrh != null) {
 			if (foodAmount < EatDrink.MIN)
-				foodAmount = rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+				foodAmount = localrh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 			if (waterAmount < EatDrink.MIN)
-				waterAmount = rh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+				waterAmount = localrh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		}
 
 		boolean needFood = false;

@@ -8,6 +8,8 @@ package com.mars_sim.core.equipment;
 
 import java.util.Set;
 
+import com.mars_sim.core.structure.Settlement;
+
 /**
  * Represents an entity that can hold item resources.
  *
@@ -61,4 +63,22 @@ public interface ItemHolder {
 	 * @return quantity that cannot be retrieved
 	 */
 	int retrieveItemResource(int resource, int quantity);
+
+	/**
+	 * Gets the ItemHolder associated to a source object.
+	 * 
+	 * @param source This could come from many source type classes
+	 * @return ItemHolder or null if not found.
+	 */
+    static ItemHolder getAttached(Object source) {
+		if (source instanceof ItemHolder ih) {
+			return ih;
+		}
+
+		// Not nice having this in place but it will eventually be replaced with a more generic interface
+		else if (source instanceof Settlement s) {
+			return s.getEquipmentInventory();
+		}
+		return null;
+    }
 }

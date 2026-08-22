@@ -107,11 +107,13 @@ public final class EVASuitUtil {
 			return suit;
 		
 		var cu = p.getContainerUnit();
-		if (cu instanceof EquipmentOwner eo) {
-			return findEVASuitWithResources(eo, p);
+		var eo = EquipmentOwner.getAttached(cu);
+		if (eo == null) {
+			logger.warning(p, "Can't find any EVA Suit from " + cu.getName() + ".");
+			return null;
 		}
-		logger.warning(p, "Can't find any EVA Suit from " + cu.getName() + ".");
-		return null;
+		
+		return findEVASuitWithResources(eo, p);
 	}
 
 	/**

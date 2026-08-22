@@ -9,6 +9,8 @@ package com.mars_sim.core.equipment;
 import java.util.Collection;
 import java.util.Set;
 
+import com.mars_sim.core.structure.Settlement;
+
 public interface EquipmentOwner extends ResourceHolder {
 	  
 	/**
@@ -16,14 +18,14 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * 
 	 * @return
 	 */
-	public double getStoredMass();
+	double getStoredMass();
 
 	/**
 	 * Finds all of the containers of a particular type (excluding EVA suit).
 	 * 
 	 * @return collection of containers or empty collection if none.
 	 */
-	public Collection<Container> findContainersOfType(EquipmentType type);
+	Collection<Container> findContainersOfType(EquipmentType type);
 	
 	/**
 	 * Gets the equipment set.
@@ -47,27 +49,27 @@ public interface EquipmentOwner extends ResourceHolder {
 	Set<Equipment> getSuitSet();
 	
 	/**
-	 * Does this person possess an equipment of this type ?
+	 * Does this inventory possess an equipment of this type ?
 	 * 
 	 * @param typeID
 	 * @return
 	 */
-	public boolean containsEquipment(EquipmentType type);
+	boolean containsEquipment(EquipmentType type);
 	
 	/**
-	 * Adds an equipment to this person.
+	 * Adds an equipment to this inventory.
 	 * 
 	 * @param equipment
-	 * @return true if this person can carry it
+	 * @return true if this inventory can carry it
 	 */
-	public boolean addEquipment(Equipment equipment);
+	boolean addEquipment(Equipment equipment);
 	
 	/**
 	 * Removes an equipment.
 	 * 
 	 * @param equipment
 	 */
-	public boolean removeEquipment(Equipment equipment);
+	boolean removeEquipment(Equipment equipment);
 	
 	/**
 	 * Stores the item resource.
@@ -76,7 +78,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
 	 */
-	public int storeItemResource(int resource, int quantity);
+	int storeItemResource(int resource, int quantity);
 	
 	/**
 	 * Retrieves the item resource.
@@ -85,7 +87,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
 	 */
-	public int retrieveItemResource(int resource, int quantity);
+	int retrieveItemResource(int resource, int quantity);
 	
 	/**
 	 * Gets the item resource stored.
@@ -93,7 +95,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param resource
 	 * @return quantity
 	 */
-	public int getItemResourceStored(int resource);
+	int getItemResourceStored(int resource);
 	
 	/**
 	 * Gets all stored item resources.
@@ -110,7 +112,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param brandNew  does it include brand new bag only
 	 * @return number of empty containers.
 	 */
-	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew);
+	int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew);
 	
 	/**
 	 * Finds the number of containers of a particular type.
@@ -118,7 +120,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param containerType the equipment type.
 	 * @return number of empty containers.
 	 */
-	public int findNumContainersOfType(EquipmentType containerType);
+	int findNumContainersOfType(EquipmentType containerType);
 	
 	/**
 	 * Finds a container in storage.
@@ -128,14 +130,14 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param resource 
 	 * @return instance of container or null if none.
 	 */
-	public Container findContainer(EquipmentType containerType, boolean empty, int resource);
+	Container findContainer(EquipmentType containerType, boolean empty, int resource);
 	
 	/**
 	 * Obtains the remaining general storage space.
 	 * 
 	 * @return quantity
 	 */
-	public double getRemainingCargoCapacity();
+	double getRemainingCargoCapacity();
 	
 	/**
 	 * Does it have this item resource ?
@@ -143,7 +145,7 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param resource
 	 * @return
 	 */
-	public boolean hasItemResource(int resource);
+	boolean hasItemResource(int resource);
 	
 	/**
 	 * Does it have unused space or capacity for a particular resource ?
@@ -151,5 +153,23 @@ public interface EquipmentOwner extends ResourceHolder {
 	 * @param resource
 	 * @return
 	 */
-	public boolean hasAmountResourceRemainingCapacity(int resource);
+	boolean hasAmountResourceRemainingCapacity(int resource);
+
+	/**
+	 * Gets the equipment owner from the source object.
+	 * 
+	 * @param source This could come from many source type classes
+	 * @return EquipmentOwner or null if not found.
+	 */
+	static EquipmentOwner getAttached(Object source) {
+		if (source instanceof EquipmentOwner eo) {
+			return eo;
+		}
+
+		// Not nice having this in place but it will eventually be replaced with a more generic interface
+		else if (source instanceof Settlement s) {
+			return s.getEquipmentInventory();
+		}
+		return null;
+	}
 }

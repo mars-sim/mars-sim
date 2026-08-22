@@ -240,7 +240,8 @@ public final class UnloadHelper {
 		// Take own copy as the equipment list changes as we remove items. ??
 		List<Equipment> held = new ArrayList<>(source.getEquipmentSet());
 		for(Equipment equipment : held) {
-			if (equipment instanceof ResourceHolder rh) {
+			var rh = ResourceHolder.getAttached(equipment);
+			if (rh != null) {
 				// Unload inventories of equipment (if possible)
 				unloadResourcesHolder(rh, dest);
 			}

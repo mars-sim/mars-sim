@@ -43,35 +43,30 @@ public class InventoryCommand extends AbstractUnitCommand {
 	@Override
 	protected boolean execute(Conversation context, String input, Unit source) {
 
-		if (!(source instanceof EquipmentOwner)) {
+		var eqmOwner = EquipmentOwner.getAttached(source);
+		if (eqmOwner == null) {
 			context.println("Sorry this Unit does not have an inventory");
 			return false;
 		}
-		EquipmentOwner eqmOwner = (EquipmentOwner)source;
 		
 		StructuredResponse buffer = new StructuredResponse();
-		String capacity = "Limitless";
-		String available = "All";
 
 		double eqmCapacity = eqmOwner.getCargoCapacity();
-		capacity = String.format(CommandHelper.KG_FORMAT, eqmCapacity);
-		available = String.format(CommandHelper.KG_FORMAT, (eqmCapacity - eqmOwner.getStoredMass()));
+		String capacity = String.format(CommandHelper.KG_FORMAT, eqmCapacity);
+		String available = String.format(CommandHelper.KG_FORMAT, (eqmCapacity - eqmOwner.getStoredMass()));
 
 		buffer.appendLabeledString("Capacity", capacity);
 		buffer.appendLabeledString("Available", available);
 	
 		// Find attached Equipment
 		Map<String,String> entries = new TreeMap<>();
-		Collection<Equipment> equipment = null;
-		if (eqmOwner != null) {
-			equipment = eqmOwner.getEquipmentSet();
-		}
+		Collection<Equipment> equipment = eqmOwner.getEquipmentSet();
 
 		if (input != null) {
 			// Filter according to input
 			equipment = equipment.stream()
 								 .filter(i -> i.getEquipmentType().getName().toLowerCase().contains(input))
-								 .collect(Collectors.toList());
+								 .toList();
 		}
 		
 		// Counts Equipment type

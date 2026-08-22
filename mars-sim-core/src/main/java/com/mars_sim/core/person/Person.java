@@ -1967,7 +1967,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 		if (!hasThermalBottle() && isInside()) {
 			Equipment aBottle = null;
-			for (Equipment e : ((EquipmentOwner)getContainerUnit()).getContainerSet()) {
+			for (Equipment e : EquipmentOwner.getAttached(getContainerUnit()).getContainerSet()) {
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
 					Person originalOwner = e.getRegisteredOwner();
 					if (originalOwner != null && originalOwner.equals(this)) {
