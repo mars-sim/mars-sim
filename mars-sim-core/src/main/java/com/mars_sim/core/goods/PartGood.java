@@ -598,22 +598,86 @@ public class PartGood extends Good {
 	private double getPartConstructionSiteDemand(GoodsManager owner, Settlement settlement) {
 		double base = 0D;
 
-		for(var s : settlement.getConstructionManager().getConstructionSites()) {
+		for (var s : settlement.getConstructionManager().getConstructionSites()) {
 			if (s.isConstruction()) {
 				var stage = s.getCurrentConstructionStage();
-				double need = stage.getResourceNeeded(getID());
-				
-				// Inject demand need immediately here
-				injectPartDemand(ItemResourceUtil.findItemResource(getID()), 
-						owner, (int)Math.ceil(need));
-				
-				base += need * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
+				double needed = stage.getResourceNeeded(getID());
+				int missing = (int)needed;
+				if (missing != 0) {
+					Part part = getPart();
+					if (part != null) {
+						// Inject demand need immediately here
+						injectPartDemand(part, owner, missing);
+						
+						base += missing * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
+					}
+				}
 			}
 		}
 
 		return Math.min(GoodsManager.MAX_DEMAND, base);
 	}
 
+	
+	/**
+	 * Injects an individual part demand immediately without waiting for goods manager to update it.
+	 * 
+	 * @param part
+	 * @param owner
+	 * @param missing
+	 */
+	public void injectPartDemand(Part part, GoodsManager owner, int missing) {
+		double previousDemand = owner.getDemandScore(this);
+		
+		int storedNum = owner.getSettlement().getEquipmentInventory().getItemResourceStored(getID());
+
+		double constructionDemand = computeNewDemand(storedNum, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 10, previousDemand);
+		
+		double maintDemand = getMaintenancePartsDemand(storedNum, owner.getSettlement(), part, previousDemand);
+	
+		owner.setDemandScore(this, maintDemand + constructionDemand);
+		
+		// Output a detailed message	
+		logger.info(owner.getSettlement(), 1_000L,
+				"Injecting Part Demand for "
+				+ part.getName() + ": "
+				+ Math.round(previousDemand * 1000.0)/1000.0 
+				+ " -> " 
+				+ Math.round(constructionDemand * 1000.0)/1000.0 
+				+ " + " + Math.round(maintDemand * 1000.0)/1000.0 
+				+ "  Quantity: " + missing
+				+ "/" + storedNum + " (missing/stored).");	
+	}
+	
+	
+	/**
+	 * Gets the new demand from maintenance parts from a particular settlement.
+	 * 
+	 * @param previousNum
+	 * @param settlement
+	 * @param part
+	 * @param previousDemand
+	 * @return new demand
+	 */
+	double getMaintenancePartsDemand(int previousNum, Settlement settlement, Part part, double previousDemand) {
+		int numMaintRequest = settlement.getBuildingManager().getMaintenanceDemand(part);
+		
+		return computeNewDemand(previousNum, numMaintRequest, PARTS_MAINTENANCE_VALUE, previousDemand);
+	}
+	
+	/**
+	 * Computes the new demand.
+	 * 
+	 * @param previousNum
+	 * @param request
+	 * @param value
+	 * @param previousDemand
+	 * @return
+	 */
+	double computeNewDemand(int previousNum, int request, double value, double previousDemand) {
+		return previousDemand * (1 + (request + 1) * value / Math.sqrt(1.0 + previousNum)) / 2;
+	}
+	
     /**
 	 * Gets the manufacturing demand for a part.
 	 *
@@ -865,48 +929,5 @@ public class PartGood extends Good {
 		}
 
 		return demand;
-	}
-
-	
-	/**
-	 * Gets the new demand from maintenance parts from a particular settlement.
-	 * 
-	 * @param previousNum
-	 * @param settlement
-	 * @param part
-	 * @param previousDemand
-	 * @return new demand
-	 */
-	double getMaintenancePartsDemand(int previousNum, Settlement settlement, Part part, double previousDemand) {
-		int numRequest = settlement.getBuildingManager().getMaintenanceDemand(part);
-		
-		// Q: how to avoid calling this repetitively. the new demand would easily go to 10000 and max out.
-		return previousDemand * (1 + (numRequest + 1) * PARTS_MAINTENANCE_VALUE / Math.sqrt(1.0 + previousNum)) / 2;
-	}
-	
-	/**
-	 * Injects an individual part demand immediately without waiting for goods manager to update it.
-	 * 
-	 * @param part
-	 * @param good
-	 * @param owner
-	 */
-	public void injectPartDemand(Part part, GoodsManager owner, int needNum) {
-		double previousDemand = owner.getDemandScore(this);
-		
-		int storedNum = owner.getSettlement().getEquipmentInventory().getItemResourceStored(part.getID());
-
-		double finalDemand = getMaintenancePartsDemand(storedNum, owner.getSettlement(), part, previousDemand);
-	
-		owner.setDemandScore(this, finalDemand);
-		
-		// Output a detailed message	
-		logger.info(owner.getSettlement(), 1_000L,
-				"Injecting Part Demand for "
-				+ part.getName() + ": "
-				+ Math.round(previousDemand * 1000.0)/1000.0 
-				+ " -> " + Math.round(finalDemand * 1000.0)/1000.0 
-				+ "  Quantity: " + needNum
-				+ "/" + storedNum + " (needed/stored).");	
 	}
 }

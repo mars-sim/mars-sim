@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.entitywindow.construction;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -16,10 +17,12 @@ import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -30,6 +33,12 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 
     private MemberTableModel memberTableModel;
 
+    private LightUtilityVehicle luv = null;
+    
+    private JLabel vehicleStatusLabel;
+    private JLabel vehicleOperatorLabel;
+    
+    
     public TabPanelMember(Mission entity, UIContext context) {
 		super(
 			"Member", 
@@ -38,6 +47,10 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 		);
 		
         setTableTitle(Msg.getString("mission.members"));
+        
+		if (entity instanceof ConstructionMission cm) {
+			luv = cm.getConstructionVehicles().stream().findFirst().orElse(null);
+		}
     }
 
     /**
@@ -51,10 +64,29 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 		// Prepare attribute panel.
 		AttributePanel attributePanel = new AttributePanel();
         attributePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("vehicle.singular")));
+        
+        attributePanel.addLabelledItem(Msg.getString("entity.name"), new EntityLabel(luv, getContext()));
+		vehicleStatusLabel = attributePanel.addTextField(Msg.getString("vehicle.status"), "", null);
+		vehicleOperatorLabel = attributePanel.addTextField(Msg.getString("vehicle.operator"), "", null);
 
+        luv.addEntityListener(this);
+		updateVehicleInfo();
+		
         return attributePanel;
 	}
 
+	/**
+	 * Updates the vehicle info.
+	 */
+	private void updateVehicleInfo() {
+		vehicleStatusLabel.setText(luv.printStatusTypes());
+		var op = luv.getOperator();
+		String name = "";
+		if (op != null);
+			name = op.getName();
+		vehicleOperatorLabel.setText(name);
+	}
+	
     /**
      * Creates the table model for the assigned members.
      */
@@ -86,12 +118,13 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 			case Mission.ADD_MEMBER_EVENT, Mission.REMOVE_MEMBER_EVENT,
 					Mission.MIN_MEMBERS_EVENT, Mission.CAPACITY_EVENT -> {
 					memberTableModel.updateOccupantList();
+					updateVehicleInfo();
 			}
 
 			case EntityEventType.WORK_TIME_EVENT -> {
 				Mission context = (Mission)getContext();
 				if (context instanceof ConstructionMission cm) {
-					//cm.getObjective().getWorkTime(0);
+					updateVehicleInfo();
 				}
 			}
 			
@@ -99,5 +132,16 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 				// Do nothing
 			}
 		}
+    }
+    
+	/**
+	 * Remove the entity listeners
+	 */
+    @Override
+    public void destroy() {
+		if (luv != null) {
+			luv.removeEntityListener(this);
+		}
+        super.destroy();
     }
 }

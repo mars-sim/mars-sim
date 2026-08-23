@@ -37,7 +37,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
     // A data record to represent a structure key.
     private record StructureKey(GraphicsNode svg, double width, double length) {}
 
-	private static final float[] DASHES = {50.0f, 20.0f, 10.0f, 20.0f};
+	private float[] DASHES = {50.0f, 20.0f, 10.0f, 20.0f};
     
 //	private static final String H = "H ";
 //	private static final String T = "T ";
@@ -50,9 +50,9 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 //	private static final String C3 = "C3. ";
 	
     // See https://docstore.mik.ua/orelly/java-ent/jfc/ch04_05.htm for instructions on BasicStroke
-    private static final BasicStroke THIN_DASH = new BasicStroke(2.0f,
+    private BasicStroke THIN_DASH = new BasicStroke(2.0f,
     	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, DASHES, 0.0f);
-	private static final BasicStroke THICK_DASH = new BasicStroke(10.0f,
+	private BasicStroke THICK_DASH = new BasicStroke(10.0f,
 			  BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 50.0f, DASHES, 0.0f);
 
     private Map<String, BufferedImage> labelImageCache = new HashMap<>();

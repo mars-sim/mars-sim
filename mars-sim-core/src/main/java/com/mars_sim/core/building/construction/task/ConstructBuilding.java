@@ -11,7 +11,6 @@ import java.util.List;
 
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.logging.SimLogger;
@@ -84,6 +83,11 @@ public class ConstructBuilding extends EVAOperation {
 			this.stage = site.getCurrentConstructionStage();
 			this.vehicles = ((ConstructionMission)site.getWorkOnSite()).getConstructionVehicles();
 
+			// Operate light utility vehicle if no one else is operating it.
+			if (!operatingLUV) {
+				obtainVehicle();
+			}
+			
 			// Determine location for construction site.
 			LocalPosition constructionSiteLoc = determineConstructionLocation();
 			setOutsideSiteLocation(constructionSiteLoc);
@@ -118,6 +122,11 @@ public class ConstructBuilding extends EVAOperation {
         	return;
 		}
 
+		// Operate light utility vehicle if no one else is operating it.
+		if (!operatingLUV) {
+			obtainVehicle();
+		}
+		
 		// Determine location for construction site.
 		LocalPosition constructionSiteLoc = determineConstructionLocation();
 		setOutsideSiteLocation(constructionSiteLoc);
@@ -187,11 +196,6 @@ public class ConstructBuilding extends EVAOperation {
 			endEVA("Failing readiness.");
 			return time;
 		}
-		
-		// Operate light utility vehicle if no one else is operating it.
-		if (!operatingLUV) {
-			obtainVehicle();
-		}
 
 		// Determine effective work time based on "Construction" and "EVA Operations"
 		// skills.
@@ -247,8 +251,9 @@ public class ConstructBuilding extends EVAOperation {
 		Iterator<LightUtilityVehicle> i = vehicles.iterator();
 		while (i.hasNext() && (luv == null)) {
 			LightUtilityVehicle v = i.next();
+			v.relocateVehicle();
 			if (!v.getMalfunctionManager().hasMalfunction()
-				&& !v.isFull() && v.getOperator() == null) {
+				&& !v.isFull() && v.getOperator() == null && !v.isInGarage()) {
 
 				// Warning: do not call addOccupant directly
 				boolean canTransfer = person.transfer(v);	
@@ -279,23 +284,35 @@ public class ConstructBuilding extends EVAOperation {
 	 * @throws Exception if error returning construction vehicle.
 	 */
 	private void resetLUV() {
-		if (luv != null) {
+		if (luv != null && person.getVehicle().equals(luv)) {
 			
 			Settlement s = luv.getSettlement();
-			Building garage = s.getBuildingManager().addToGarageBuilding(luv);
 			
-			if (garage != null) {
-				boolean canTransfer = person.transfer(luv.getGarage());	
-				if (canTransfer) {
-					logger.info(luv, "Done transferring to " + s.getName() + " in " + garage + ".");
-				}
-				else {
-					logger.info(luv, "Unable to transfer to " + s.getName() + " in " + garage + ".");
-				}
+			boolean canTransfer = person.transfer(unitManager.getMarsSurface());	
+			if (canTransfer) {
+				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
+				luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+				logger.info(luv, "Left " + luv + " at " + s.getName() + ".");
 			}
-			else {
-				logger.info(luv, "Unable to find a garage with parking in " + s.getName() + ".");
-			}
+
+			
+//			Building garage = s.getBuildingManager().addToGarageBuilding(luv);
+//			
+//			if (garage != null) {
+//				boolean canTransfer = person.transfer(luv.getGarage());	
+//				if (canTransfer) {
+//					logger.info(luv, "Done transferring to " + s.getName() + " in " + garage + ".");
+//				}
+//				else {
+//					logger.info(luv, "Unable to transfer to " + s.getName() + " in " + garage + ".");
+//				}
+//			}
+//			else {
+//				// Place light utility vehicles at random location in construction site.
+//				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
+//				luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+//				logger.info(luv, "Unable to find a garage with parking in " + s.getName() + ".");
+//			}
 			// if not, calling endEVA() should take care of walking back inside automatically
 
 			operatingLUV = false;

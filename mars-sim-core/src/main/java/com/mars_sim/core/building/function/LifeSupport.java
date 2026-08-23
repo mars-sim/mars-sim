@@ -98,7 +98,7 @@ public class LifeSupport extends Function {
 				removedBuilding = true;
 			} else {
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += building.getLifeSupport().getOccupantCapacity() / building.getFloorArea() * wearModifier;
+				supply += building.getLifeSupport().getOccupantCapacity() * building.getFloorArea() * wearModifier;
 			}
 		}
 
@@ -116,7 +116,7 @@ public class LifeSupport extends Function {
 		double supply = 0D;
 	
 		double wearModifier = (getBuilding().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-		supply = occupantCapacity / floorArea * wearModifier;
+		supply = occupantCapacity * floorArea * wearModifier;
 
 		return demand / (supply + 1D);
 	}

@@ -37,6 +37,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
 
 	private static final String HATCH = "hatch";
 	private static final String BRICK_HATCH = "brick_hatch";
+	private static final String ONE_WHITESPACE = " ";
 	
     // Static members
     private static final Font SPOT_FONT = new Font(Font.SERIF, Font.ITALIC, 3); 
@@ -146,7 +147,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
         }
 
         if (showLabel) {
-            String[] words = building.getName().split(" ");
+            String[] words = building.getName().split(ONE_WHITESPACE);
     
             ColorChoice frontColor = BUILDING_COLORS.getOrDefault(building.getCategory(), BUILDING_COLOR);
 
@@ -291,7 +292,9 @@ public class BuildingMapLayer extends AbstractMapLayer {
 
 	@Override
 	public void destroy() {
-		super.destroy();
+		hatchSVG = null;
+	    brickHatchSVG = null; 
 		mapPanel = null;
+		super.destroy();
 	}
 }

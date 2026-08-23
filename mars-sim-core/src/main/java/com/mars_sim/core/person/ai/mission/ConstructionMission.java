@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -174,18 +173,19 @@ public class ConstructionMission extends AbstractMission {
 	private List<LightUtilityVehicle> reserveConstructionVehicles(Settlement settlement, ConstructionStage stage) {
 		// Construct a new list of construction vehicles
 		List<LightUtilityVehicle> constructionVehicles = new ArrayList<>();
-		for(ConstructionVehicleType vehicleType : stage.getInfo().getVehicles()) {
+		for (ConstructionVehicleType vehicleType : stage.getInfo().getVehicles()) {
 			// Only handle light utility vehicles for now.
 			if (vehicleType.getVehicleType() == VehicleType.LUV) {
 				LightUtilityVehicle luv = reserveLightUtilityVehicle(settlement);
 				if (luv != null) {
 					constructionVehicles.add(luv);
 					claimVehicle(luv);
-				} else {
-					logger.warning(settlement, "BuildingConstructionMission : LUV not available");
-					endMission(LUV_NOT_AVAILABLE);
-					return Collections.emptyList();
-				}
+				} 
+//				else {
+//					logger.warning(settlement, "BuildingConstructionMission : LUV not available");
+//					endMission(LUV_NOT_AVAILABLE);
+//					return Collections.emptyList();
+//				}
 			}
 		}
 

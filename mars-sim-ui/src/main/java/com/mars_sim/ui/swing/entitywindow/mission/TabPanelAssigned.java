@@ -116,17 +116,6 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 		columnModel.getColumn(4).setPreferredWidth(15);
 	}
 
-	/**
-	 * Remove the entity listeners
-	 */
-    @Override
-    public void destroy() {
-		if (v != null) {
-			v.removeEntityListener(this);
-		}
-        super.destroy();
-    }
-
 	private void updateVehicleInfo() {
 		vehicleStatusLabel.setText(v.printStatusTypes());
 		speedLabel.setValue(v.getSpeed());
@@ -152,5 +141,16 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 				// Do nothing
 			}
 		}
+    }
+    
+	/**
+	 * Remove the entity listeners
+	 */
+    @Override
+    public void destroy() {
+		if (v != null) {
+			v.removeEntityListener(this);
+		}
+        super.destroy();
     }
 }

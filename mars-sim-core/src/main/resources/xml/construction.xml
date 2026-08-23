@@ -158,7 +158,7 @@
 			</vehicle>
 		</foundation>
 
-		<!-- surface foundation 6m_x_6m is setting for a modular frame. work-time = 3.0 -->
+		<!-- surface foundation 6m_x_6m is setting for a modular frame. -->
 		<foundation name="Surface Foundation 6x6" width="6.0" length="6.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="1.0" skill-required="1" >
@@ -169,8 +169,8 @@
 			</vehicle>
 		</foundation>
 		
-		<!-- surface foundation 6m_x_9m is setting for a Modular B Frame. work-time = 3.0 -->
-		<foundation name="Surface Foundation 6x9" width="9.0" length="7.0"
+		<!-- surface foundation 6m_x_9m is setting for a Modular B Frame. -->
+		<foundation name="Surface Foundation 6x9" width="9.0" length="6.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="1.25" skill-required="1" >
 			<resource type="concrete" amount="54.0" />
@@ -180,8 +180,8 @@
 			</vehicle>
 		</foundation>
 				
-		<!-- surface foundation 7m_x_9m is setting for Modular A Frame. work-time = 3.0 -->
-		<foundation name="Surface Foundation 7x9" width="9.0" length="6.0"
+		<!-- surface foundation 7m_x_9m is setting for Modular A Frame. -->
+		<foundation name="Surface Foundation 7x9" width="9.0" length="7.0"
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="1.3" skill-required="1" >
 			<resource type="concrete" amount="63.0" />

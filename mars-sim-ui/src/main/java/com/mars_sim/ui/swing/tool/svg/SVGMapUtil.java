@@ -29,7 +29,11 @@ public final class SVGMapUtil {
     // Static members.
 	private static final String fileName = SVGLoader.SVG_DIR + "svg_image_mapping.properties";
 	private static final Logger logger = Logger.getLogger(SVGMapUtil.class.getName());
-    
+	
+	private static final String ONE_WHITESPACE = " ";
+	private static final String ONE_DOT = ".";
+	private static final String ONE_UNDERSCORE = "_";
+	
 	private static Properties svgMapProperties;
 
     /**
@@ -73,12 +77,12 @@ public final class SVGMapUtil {
         StringBuffer propertyNameBuff = new StringBuffer("");
         if (prefix != null) {
             propertyNameBuff.append(prefix);
-            propertyNameBuff.append(".");
+            propertyNameBuff.append(ONE_DOT);
         }
 
         // Append name.
         if (name != null) {
-            String prepName = name.trim().toLowerCase().replace(" ", "_");
+            String prepName = name.trim().toLowerCase().replace(ONE_WHITESPACE, ONE_UNDERSCORE);
             propertyNameBuff.append(prepName);
         }
 
