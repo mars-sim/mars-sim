@@ -399,7 +399,7 @@ public final class CommerceUtil {
 		EquipmentType containerType = ContainerUtil.getEquipmentTypeNeeded(resource.getPhase());
 
 		var eo = settlement.getEquipmentInventory();
-		int containersStored = eo.findNumEmptyCopyContainersOfType(containerType, false);
+		int containersStored = eo.findNumEmptyContainersOfType(containerType, false);
 
 		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		int containersTraded = 0;

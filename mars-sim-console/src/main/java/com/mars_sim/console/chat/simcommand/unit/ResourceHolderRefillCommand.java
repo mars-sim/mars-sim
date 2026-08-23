@@ -54,8 +54,8 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 			if (ar != null)  {
 				return adjustResource(source, ar, quantity, context);
 			}
-		} catch (IllegalArgumentException e) {
-			// Name is not a amount resource
+		} catch (IllegalArgumentException _) {
+			// Name is not a amount resource sp try Item
 		}
 
 		try {
@@ -101,7 +101,7 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 			return false;
 		}
 
-		double existingAmount = rh.getAllAmountResourceStored(resource.getID());
+		double existingAmount = rh.getSpecificAmountResourceStored(resource.getID());
 		if (quantity> 0) {
 			rh.storeAmountResource(resource.getID(), quantity);
 		}
@@ -109,7 +109,7 @@ public class ResourceHolderRefillCommand extends AbstractUnitCommand {
 			rh.retrieveAmountResource(resource.getID(), -quantity);
 		}
 		
-		double newAmount = rh.getAllSpecificAmountResourceStored(resource.getID());
+		double newAmount = rh.getSpecificAmountResourceStored(resource.getID());
 		
 		context.println(Math.round(quantity * 1000.0)/1000.0 + " kg " + resource.getName() + " added.");
 		

@@ -164,17 +164,6 @@ class GenericContainer extends Equipment implements Container {
 	}
 
 	/**
-	 * Gets all the amount resource resource stored, including inside equipment.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAllSpecificAmountResourceStored(int resource) {
-		return getSpecificAmountResourceStored(resource);
-	}
-	
-	/**
 	 * Gets the quantity of all stock and specific amount resource stored.
 	 *
 	 * @param resource

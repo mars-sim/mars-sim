@@ -23,15 +23,6 @@ public interface ResourceHolder {
 	 * @return amount
 	 */
 	double getSpecificAmountResourceStored(int resource);
-
-	
-	/**
-	 * Gets all the specific amount resources stored, including inside equipment
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	double getAllSpecificAmountResourceStored(int resource);
 	
 	/**
 	 * Stores the amount resource

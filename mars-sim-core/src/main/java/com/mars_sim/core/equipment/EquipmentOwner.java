@@ -11,7 +11,7 @@ import java.util.Set;
 
 import com.mars_sim.core.structure.Settlement;
 
-public interface EquipmentOwner extends ResourceHolder {
+public interface EquipmentOwner extends ItemHolder, ResourceHolder {
 	  
 	/**
 	 * Gets the total mass held in this entity.
