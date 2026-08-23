@@ -95,7 +95,7 @@ public class MetaTaskUtil {
 
 	private static List<FactoryMetaTask> robotMetaTasks = null;
 
-	private static Map<String, MetaTask> simpleNameToMetaTask;
+	private static Map<String, MetaTask> nameToMetaTask;
 	private static List<SettlementMetaTask> settlementTasks;
 	private static List<MetaTask> personMetaTasks = null;
 	private static List<TaskFactory> personTaskFactories;
@@ -119,7 +119,7 @@ public class MetaTaskUtil {
 	 */
 	public static synchronized void initializeMetaTasks() {
 
-		if (idToNameMap != null) {
+		if (nameToMetaTask != null) {
 			// Created by another thread during the wait
 			return;
 		}
@@ -213,8 +213,18 @@ public class MetaTaskUtil {
 	
 		allMetaTasks.add(new WriteReportMeta());
 		allMetaTasks.add(new YogaMeta());
-		
+				
 		TaskParameters.INSTANCE.registerMetaTasks(allMetaTasks);
+		
+		initializeMapsLists(allMetaTasks);	
+	}
+	
+	/**
+	 * Initializes all maps and lists.
+	 * 
+	 * @param allMetaTasks
+	 */
+	private static void initializeMapsLists(List<MetaTask> allMetaTasks) {
 		
 		nameToIDMap = allMetaTasks.stream()
 				.collect(Collectors.toMap(MetaTask::getProperName, MetaTask::getIdentifier));
@@ -223,8 +233,8 @@ public class MetaTaskUtil {
 				.collect(Collectors.toMap(MetaTask::getIdentifier, MetaTask::getProperName));
 		
 		// Build the name lookup for later
-		simpleNameToMetaTask = allMetaTasks.stream()
-				.collect(Collectors.toMap(MetaTask::getSimpleName, Function.identity()));
+		nameToMetaTask = allMetaTasks.stream()
+				.collect(Collectors.toMap(MetaTask::getCapitalizedName, Function.identity()));
 
 		// Pick out settlement tasks
 		settlementTasks = allMetaTasks.stream()
@@ -280,7 +290,7 @@ public class MetaTaskUtil {
 	 * @return 
 	 */
 	public static Collection<MetaTask> getAllMetaTasks() {
-		return simpleNameToMetaTask.values(); 
+		return nameToMetaTask.values(); 
 	}
 
 	/**
@@ -354,7 +364,7 @@ public class MetaTaskUtil {
 	 * @return meta tasks.
 	 */
 	public static MetaTask getMetaTask(String name) {
-		return simpleNameToMetaTask.get(name.toUpperCase());
+		return nameToMetaTask.get(name.toUpperCase());
 	}
 
 	/**

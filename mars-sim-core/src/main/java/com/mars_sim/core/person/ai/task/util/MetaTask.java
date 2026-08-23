@@ -95,8 +95,8 @@ public abstract class MetaTask {
 	private int identifier;
 	/* The given name for this meta task. */	
 	private String name;
-	/* The simple name for this task (Note: it's not the same as its task name found in Msg). */
-	private String simpleName;
+	/* The capitalized name for this task (Note: it's not the same as its task name found in Msg). */
+	private String CapitalizedName;
 	/* The proper name for this meta task. */	
 	private String properName;
 	
@@ -124,7 +124,7 @@ public abstract class MetaTask {
 		this.name = name;
 		this.workerType = workerType;
 		this.scope = scope;
-		this.simpleName = this.getClass().getSimpleName().replace(META, "").toUpperCase();
+		this.CapitalizedName = this.getClass().getSimpleName().replace(META, "").toUpperCase();
 		this.properName = createProperName();
 		
 		identifier = currentIdentifier;
@@ -291,12 +291,12 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Gets the simple name for this task.
+	 * Gets the capitalized name for this task.
 	 * 
 	 * @return the MetaTask class name with "meta" removed
 	 */
-	public String getSimpleName() {
-		return simpleName;
+	public String getCapitalizedName() {
+		return CapitalizedName;
 	}
 
 	/**
@@ -457,7 +457,7 @@ public abstract class MetaTask {
 
 		// Apply the home base modifier
 		score.addModifier("settlement", person.getAssociatedSettlement().getPreferences()
-							.getDoubleValue(TaskParameters.INSTANCE.getKey(getSimpleName()), 1D));
+							.getDoubleValue(TaskParameters.INSTANCE.getKey(getCapitalizedName()), 1D));
 		
 		return score;
 	}
@@ -486,7 +486,7 @@ public abstract class MetaTask {
 
 		// Apply the home base modifier
 		score.addModifier("settlement", robot.getAssociatedSettlement().getPreferences()
-							.getDoubleValue(TaskParameters.INSTANCE.getKey(getSimpleName()), 1D));
+							.getDoubleValue(TaskParameters.INSTANCE.getKey(getCapitalizedName()), 1D));
 		
 		return score;
 	}
