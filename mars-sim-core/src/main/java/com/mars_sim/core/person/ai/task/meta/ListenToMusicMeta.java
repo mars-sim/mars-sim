@@ -53,7 +53,7 @@ public class ListenToMusicMeta extends FactoryMetaTask {
 			return EMPTY_TASKLIST;
 		}
 
-		double pref = person.getPreference().getPreferenceScore(this);
+		double pref = person.getPreference().getPreferenceScore(getIdentifier());
 
 		var result = new RatingScore((RandomUtil.getRandomDouble(10) + pref) * .25);
 

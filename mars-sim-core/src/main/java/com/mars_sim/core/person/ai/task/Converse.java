@@ -133,7 +133,7 @@ public class Converse extends Task {
         		 1 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager()
         				 .getAttribute(NaturalAttributeType.CONVERSATION))/20
         		 + RandomUtil.getRandomDouble(person.getPreference()
-        				 .getPreferenceScore(MetaTaskUtil.getConverseMeta())/3.0))
+        				 .getPreferenceScore(MetaTaskUtil.getConverseMetaID())/3.0))
         		);
     	
     	findInvitee();

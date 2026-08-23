@@ -73,7 +73,7 @@ public class ReadMeta extends FactoryMetaTask {
         }
           
         // If Read is liked; then helps with stress
-        double pref = person.getPreference().getPreferenceScore(this);
+        double pref = person.getPreference().getPreferenceScore(getIdentifier());
         if (pref > 0) {
             double stressModifer = 0D;
             if (stress > 25D)

@@ -291,7 +291,7 @@ public class EatDrink extends Task {
 
 		boolean want2Chat = true;
 		// See if a person wants to chat while eating
-		int score = person.getPreference().getPreferenceScore(MetaTaskUtil.getConverseMeta());
+		int score = person.getPreference().getPreferenceScore(MetaTaskUtil.getEatDrinkMetaID());
 		if (score > 0)
 			want2Chat = true;
 		else if (score < 0)

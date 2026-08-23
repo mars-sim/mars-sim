@@ -65,7 +65,7 @@ public class MeetTogetherMeta extends FactoryMetaTask {
 	        	result = result * 10;
 	        
 	        if (result > 0)
-	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	        	result = result + result * person.getPreference().getPreferenceScore(getIdentifier())/5D;
 	
 	        // Probability affected by the person's stress and fatigue.
 	        double fatigue = person.getPhysicalCondition().getFatigue();

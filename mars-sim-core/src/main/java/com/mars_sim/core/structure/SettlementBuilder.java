@@ -565,8 +565,8 @@ public final class SettlementBuilder {
 					}
 				}
 
-				// Set specific Favourites
-				setFavorites(person, m);
+				// Set specific favorites
+				setPreconfiguredFavorites(person, m);
 								
 				// Initialize Preference
 				person.getPreference().initializePreference();
@@ -577,7 +577,13 @@ public final class SettlementBuilder {
 	}
 
 
-	private void setFavorites(Person person, Member m) {
+	/**
+	 * Sets the predefined favorites based on xmls.
+	 * 
+	 * @param person
+	 * @param m
+	 */
+	private void setPreconfiguredFavorites(Person person, Member m) {
 		
 		// Add Favorite class
 		String mainDish = m.getMainDish();

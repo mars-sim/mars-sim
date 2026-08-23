@@ -66,7 +66,7 @@ public class ConverseMeta extends FactoryMetaTask {
             result = result / 2D;
         }
 
-        double pref = person.getPreference().getPreferenceScore(this);
+        double pref = person.getPreference().getPreferenceScore(getIdentifier());
         result = result + result * pref / 10D;
 
         if (pref > 0) {

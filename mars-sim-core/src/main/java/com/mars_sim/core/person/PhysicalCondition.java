@@ -30,6 +30,7 @@ import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
+import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.DeathInfo;
@@ -390,7 +391,7 @@ public class PhysicalCondition implements Serializable {
 		
 		double mod = (GhrelinLevel - leptinLevel * CircadianClock.LEPTIN_STEP)/250.0;
 		// Get eating pref 
-		double eatingPref = person.getPreference().getPreferenceScore(eatMealMeta)/10.0;
+		double eatingPref = person.getPreference().getPreferenceScore(MetaTaskUtil.getEatDrinkMetaID())/10.0;
 		// Derive the appetite
 		appetite = ageFactor/70.0 + massFactor + eatingPref + mod;
 		// Limit to between 0 and 1

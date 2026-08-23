@@ -63,7 +63,7 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.social.Appraiser;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.meta.WorkoutMeta;
+import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.training.TrainingType;
@@ -399,7 +399,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		int endurance = attributes.getAttribute(NaturalAttributeType.ENDURANCE);
-		double gym = 2D * getPreference().getPreferenceScore(new WorkoutMeta());
+		double gym = 2D * getPreference().getPreferenceScore(MetaTaskUtil.getWorkoutMetaID()); 
 		if (getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
 			gym += RandomUtil.getRandomRegressionInteger(20);
 		else if (getFavorite().getFavoriteActivity() == FavoriteType.SPORT)

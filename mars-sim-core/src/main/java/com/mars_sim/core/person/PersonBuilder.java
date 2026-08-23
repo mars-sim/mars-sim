@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
- * PersonBuilderImpl.java
- * @date 2024-08-10
+ * PersonBuilder.java
+ * @date 2026-08-23
  * @author Manny Kung
  */
 
@@ -35,6 +35,13 @@ public class PersonBuilder {
 	private Map<NaturalAttributeType, Integer> attributeMap;
 	private Map<SkillType, Integer> skillMap;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 * @param settlement
+	 * @param gender
+	 */
 	public PersonBuilder(String name, Settlement settlement, GenderType gender) {
 		this.name = name;
 		this.settlement = settlement;
@@ -83,6 +90,8 @@ public class PersonBuilder {
 		
 	/**
 	 * Sets some random skills for a person.
+	 * 
+	 * @param person
 	 */
 	private void buildDefaultSkills(Person person) {
 		int ageFactor = person.getAge();
@@ -167,6 +176,11 @@ public class PersonBuilder {
 		return this;
 	}
 
+	/**
+	 * Generates a personality profile for a person.
+	 * 
+	 * @param person
+	 */
 	private void applyPersonality(Person person) {
 		int scoreFromMBTI = 0;
 		int scoreFromBigFive = 0;
@@ -282,6 +296,11 @@ public class PersonBuilder {
 	}
 
 
+	/**
+	 * Builds and return a test person.
+	 * 
+	 * @return
+	 */
 	public Person testBuild() {
 
 		// Predefined age overrides any calculation
@@ -301,6 +320,11 @@ public class PersonBuilder {
 		return p;
 	}
 	
+	/**
+	 * Builds and returns a person.
+	 * 
+	 * @return
+	 */
 	public Person build() {
 		
 		PopulationCharacteristics ethnicity = null;

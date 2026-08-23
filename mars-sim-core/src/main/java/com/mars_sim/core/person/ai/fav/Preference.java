@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Preference.java
- * @date 2022-07-13
+ * @date 2026-08-23
  * @author Manny Kung
  */
 
@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.fav;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import com.mars_sim.core.person.Connection;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.person.ai.task.meta.ConnectOnlineMeta;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -30,19 +32,18 @@ public class Preference implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final String CONNECT_ONLINE = "Connect Online";
-	
 	private final int WEIGHT = 2;
 	
 	/** A map of MetaTasks that can only be done once a day. */
 	private Map<MetaTask, Boolean> onceADayMap;
 	/** A map of MetaTasks that has been accomplished once a day. */
 	private Map<MetaTask, Boolean> taskAccomplishedMap;
-	/**  A string map of tasks and preference scores. */
-	private Map<String, Integer> scoreStringMap;
+	/**  A map of meta task identifier and preference scores. */
+	private Map<Integer, Integer> scoreMap;
 	/**  A connection preference map. */
 	private Map<Connection, Integer> connectionMap;
 
+	
 	/** The Person instance. */
 	private Person person;
 	
@@ -58,7 +59,7 @@ public class Preference implements Serializable {
 
 		// These lookups are all static in terms of the Person so they do not
 		// need to use the concurrent list/maps
-		scoreStringMap = new HashMap<>();
+		scoreMap = new HashMap<>();
 		taskAccomplishedMap = new HashMap<>();
 		onceADayMap = new HashMap<>();
 		connectionMap = new HashMap<>();
@@ -66,9 +67,8 @@ public class Preference implements Serializable {
 
 	/*
 	 * Initializes the preference score on each particular task. 
-	 * TODO Ideally would be good to move this into the Person.initialise method
-	 * but the Favorite.activity has to be defined. Maybe loading of the Favorite
-	 * could be move to Person.initialise.
+	 * 
+	 * Note: the favorite activity must be pre-defined.
 	 */
 	public void initializePreference() {
 
@@ -98,13 +98,22 @@ public class Preference implements Serializable {
 
 		double cou = naturalAttributeManager.getAttribute(NaturalAttributeType.COURAGE) / 50D * 1.5;
 
-		// TODO: how to incorporate EXPERIENCE_APTITUDE ?
+		// Note: how to incorporate EXPERIENCE_APTITUDE ?
+		
 		int result = 0;
 		FavoriteType hobby = person.getFavorite().getFavoriteActivity();
 		
-		MetaTaskUtil.initializeMetaTasks();
+		List<MetaTask> metatasks = MetaTaskUtil.getPersonMetaTasks();
+
+		int connectOnlineMetaID = -1;
 		
-		for (MetaTask metaTask : MetaTaskUtil.getPersonMetaTasks()) {
+		for (MetaTask metaTask : metatasks) {
+			
+			if (metaTask instanceof ConnectOnlineMeta m) {
+				connectOnlineMetaID = m.getIdentifier();
+			}
+			
+			
 			// Set them up in random
 			double rand = RandomUtil.getRandomDouble(-5, 5);
 			
@@ -192,29 +201,30 @@ public class Preference implements Serializable {
 				result = 8;
 			else if (result < -8)
 				result = -8;
-
-			String s = getStringName(metaTask);
-			if (!scoreStringMap.containsKey(s)) {
-				scoreStringMap.put(s, result);
+		
+			int id = metaTask.getIdentifier();
+			
+			if (!scoreMap.containsKey(id)) {
+				scoreMap.put(id, result);
 			}
 		}
 		
-		int connectionScore = scoreStringMap.get(CONNECT_ONLINE);
+		int connectionScore = scoreMap.get(connectOnlineMetaID);
 		initializeConnections(connectionScore);
 	}
 
 	/**
 	 * Initializes probability for each connection.
 	 * 
-	 * @param scoreStringMap
+	 * @param scoreMap
 	 */
-	private void initializeConnections(int scoreStringMap) {
+	private void initializeConnections(int scoreMap) {
 		
 		Connection[] connections = Connection.values();
 		int size = connections.length;
 		
 		for (int i = 0; i < size; i++) {
-			int p = RandomUtil.getRandomInt(0, 100) + scoreStringMap * WEIGHT;
+			int p = RandomUtil.getRandomInt(0, 100) + scoreMap * WEIGHT;
 			if (p < 5)
 				p = 5;
 			if (p > 100)
@@ -229,34 +239,24 @@ public class Preference implements Serializable {
 	 * @param metaTask
 	 * @return the score
 	 */
-	public int getPreferenceScore(MetaTask metaTask) {
+	public int getPreferenceScore(int id) {
 		int result = 0;
 
 		// DO NOT use MetaTask instance as the key because they are not serialized and
 		// hence on a reload will not find a match since the instance will be different.
-		String s = getStringName(metaTask);
-		if (scoreStringMap.containsKey(s)) {
-			result = scoreStringMap.get(s);
+//		String s = getStringName(metaTask);
+
+//		int id = metaTask.getIdentifier();
+		
+//		System.out.println("MetaTask id " + id+ ". " + metaTask.getName() + ". " + metaTask.getSimpleName() + ". " + s);
+		
+		if (scoreMap.containsKey(id)) {
+			result = scoreMap.get(id);
 		}
 
 		return result;
 	}
 
-	/**
-	 * Obtains the proper string name of a meta task.
-	 * 
-	 * @param metaTask {@link MetaTask}
-	 * @return string name of a meta task
-	 */
-	private static String getStringName(MetaTask metaTask) {
-		String s = metaTask.getClass().getSimpleName();
-		String ss = s.replaceAll("(?!^)([A-Z])", " $1")
-				.replace("Meta", "")
-				.replace("E V A ", "EVA ")
-				.replace("With ", "with ")
-				.replace("To ", "to ");
-		return ss.trim();
-	}
 
 	/**
 	 * Checks if this task is due.
@@ -295,8 +295,8 @@ public class Preference implements Serializable {
 
 	}
 
-	public Map<String, Integer> getScoreStringMap() {
-		return scoreStringMap;
+	public Map<Integer, Integer> getScoreStringMap() {
+		return scoreMap;
 	}
 
 	public Connection getRandomConnection() {
@@ -312,8 +312,11 @@ public class Preference implements Serializable {
 	 */
 	public void destroy() {
 		person = null;
+		onceADayMap.clear();
 		onceADayMap = null;
+		taskAccomplishedMap.clear();
 		taskAccomplishedMap = null;
-		scoreStringMap = null;
+		scoreMap.clear();
+		scoreMap = null;
 	}
 }

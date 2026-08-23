@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +19,7 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.Favorite;
+import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
@@ -83,19 +83,22 @@ class TabPanelFavorite extends EntityTableTabPanel<Person> {
 	 */
 	private static class PreferenceTableModel extends AbstractTableModel {
 
-		private List<String> scoreStringList;
-		private Map<String, Integer> scoreStringMap;
+		private int size;
+		private List<String> nameList;
+		private Map<Integer, Integer> scoreMap;
 
 		private PreferenceTableModel(Person person) {
 
-	        scoreStringMap = person.getPreference().getScoreStringMap();
-			scoreStringList = new ArrayList<>(scoreStringMap.keySet());
-			Collections.sort(scoreStringList);
+	        scoreMap = person.getPreference().getScoreStringMap();
+	        size = scoreMap.size();
+	        
+	        nameList = MetaTaskUtil.getProperNameList();
+			Collections.sort(nameList);
 		}
 
 		@Override
 		public int getRowCount() {
-			return scoreStringMap.size();
+			return size;
 		}
 
 		@Override
@@ -123,10 +126,10 @@ class TabPanelFavorite extends EntityTableTabPanel<Person> {
 
 		@Override
 		public Object getValueAt(int row, int column) {
-			String name = scoreStringList.get(row);
+			String name = nameList.get(row);
 			return switch (column) {
 				case 0 -> name;
-				case 1 -> scoreStringMap.get(name);
+				case 1 -> scoreMap.get(MetaTaskUtil.getID(name));
 				default -> null;
 			};
 		}

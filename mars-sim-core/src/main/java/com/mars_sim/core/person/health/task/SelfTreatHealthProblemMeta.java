@@ -64,7 +64,7 @@ public class SelfTreatHealthProblemMeta extends FactoryMetaTask {
 	            result = VALUE * problems.size();
 	        }
 
-	        double pref = person.getPreference().getPreferenceScore(this);
+	        double pref = person.getPreference().getPreferenceScore(getIdentifier());
 
 	        if (pref > 0)
 	        	result = result * 3D;

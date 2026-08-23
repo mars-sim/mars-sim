@@ -84,15 +84,21 @@ public abstract class MetaTask {
 
 	private static final String META = "Meta";
 	
+	private static int currentIdentifier;
+	
 	protected static SurfaceFeatures surfaceFeatures;
 	private static MasterClock masterClock;
 	/* Does this task primarily require physical effort ? */	
 	private boolean effortDriven = true;
 	
-	/* The string name for this meta task. */	
+	// Unique identifier
+	private int identifier;
+	/* The given name for this meta task. */	
 	private String name;
 	/* The simple name for this task (Note: it's not the same as its task name found in Msg). */
-	private String id;
+	private String simpleName;
+	/* The proper name for this meta task. */	
+	private String properName;
 	
 	private WorkerType workerType;
 	private TaskScope scope;
@@ -118,9 +124,47 @@ public abstract class MetaTask {
 		this.name = name;
 		this.workerType = workerType;
 		this.scope = scope;
-		this.id = this.getClass().getSimpleName().replace(META, "").toUpperCase();
+		this.simpleName = this.getClass().getSimpleName().replace(META, "").toUpperCase();
+		this.properName = createProperName();
+		
+		identifier = currentIdentifier;
+		currentIdentifier++;
 	}
 
+
+	/**
+	 * Obtains the proper string name of a meta task.
+	 * 
+	 * @param metaTask {@link MetaTask}
+	 * @return string name of a meta task
+	 */
+	private String createProperName() {
+		String ss = simpleName.replaceAll("(?!^)([A-Z])", " $1")
+				.replace("Meta", "");
+//				.replace("E V A ", "EVA ")
+//				.replace("With ", "with ")
+//				.replace("To ", "to ");
+		return ss.trim();
+	}
+	
+	/**
+	 * Returns the proper name for a meta task.
+	 * 
+	 * @return
+	 */
+	public String getProperName() {
+		return properName;
+	}
+	
+	/**
+	 * Gets the identifier for this metatask.
+	 * 
+	 * @return
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
 	/**
 	 * Defines the Person favourites for this Task. This will overwrite any
 	 * previous favourites.
@@ -237,7 +281,6 @@ public abstract class MetaTask {
 	}
     
    
-    
 	/**
 	 * Gets the associated task name.
 	 * 
@@ -248,13 +291,12 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Gets a unique non-internalised key for this task.
-	 * @Note getName is an internationalised value.
+	 * Gets the simple name for this task.
 	 * 
 	 * @return the MetaTask class name with "meta" removed
 	 */
-	public String getID() {
-		return id;
+	public String getSimpleName() {
+		return simpleName;
 	}
 
 	/**
@@ -411,11 +453,11 @@ public abstract class MetaTask {
 			score.addModifier(ROLE_MODIFIER, preferredRoles.getOrDefault(role.getType(), NON_ROLE_PENALTY));
         }
 
-        score.addModifier(FAV_MODIFIER, (1 + (person.getPreference().getPreferenceScore(this)/5D)));
+        score.addModifier(FAV_MODIFIER, (1 + (person.getPreference().getPreferenceScore(getIdentifier())/5D)));
 
 		// Apply the home base modifier
 		score.addModifier("settlement", person.getAssociatedSettlement().getPreferences()
-							.getDoubleValue(TaskParameters.INSTANCE.getKey(getID()), 1D));
+							.getDoubleValue(TaskParameters.INSTANCE.getKey(getSimpleName()), 1D));
 		
 		return score;
 	}
@@ -444,7 +486,7 @@ public abstract class MetaTask {
 
 		// Apply the home base modifier
 		score.addModifier("settlement", robot.getAssociatedSettlement().getPreferences()
-							.getDoubleValue(TaskParameters.INSTANCE.getKey(getID()), 1D));
+							.getDoubleValue(TaskParameters.INSTANCE.getKey(getSimpleName()), 1D));
 		
 		return score;
 	}

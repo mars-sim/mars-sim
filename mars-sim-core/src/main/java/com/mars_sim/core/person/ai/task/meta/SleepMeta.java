@@ -106,7 +106,7 @@ public class SleepMeta extends FactoryMetaTask {
     	    	return 0;
     	    }
     	    
-            double pref = person.getPreference().getPreferenceScore(this);
+            double pref = person.getPreference().getPreferenceScore(getIdentifier());
             
          	result += result * pref/12D;                            	
 	    	
