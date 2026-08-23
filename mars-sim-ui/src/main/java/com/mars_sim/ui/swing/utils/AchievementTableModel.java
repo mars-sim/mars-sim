@@ -8,17 +8,15 @@ package com.mars_sim.ui.swing.utils;
 
 import java.util.function.Function;
 
-import javax.swing.table.AbstractTableModel;
-
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.components.AbstractEnhancedTableModel;
 import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.components.EnhancedTableModel;
 
 /**
  * Table model for Science achievement table.
  */
-public class AchievementTableModel extends AbstractTableModel implements EnhancedTableModel {
+public class AchievementTableModel extends AbstractEnhancedTableModel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -30,32 +28,9 @@ public class AchievementTableModel extends AbstractTableModel implements Enhance
 
 	/** hidden constructor. */
 	public AchievementTableModel(Function<ScienceType, Double> resolver) {
+		super(SCIENCE, ACHIEVEMENT_CREDIT);
         this.resolver = resolver;
 		sciences = ScienceType.values();
-	}
-
-	/**
-	 * Returns the number of columns in the model.
-	 * @return the number of columns in the model.
-	 */
-	@Override
-	public int getColumnCount() {
-		return 2;
-	}
-
-	@Override
-	public String getColumnName(int columnIndex) {
-		return getColumnSpec(columnIndex).name();
-	}
-
-	/**
-	 * Returns the most specific superclass for all the cell values in the column.
-	 * @param columnIndex the index of the column.
-	 * @return the common ancestor class of the object values in the model.
-	 */
-	@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		return getColumnSpec(columnIndex).type();
 	}
 
 	/**
@@ -94,18 +69,4 @@ public class AchievementTableModel extends AbstractTableModel implements Enhance
             fireTableCellUpdated(i, 1);
         }
 	}
-
-    @Override
-    public String getToolTipAt(int row, int col) {
-        return null;
-    }
-
-    @Override
-    public ColumnSpec getColumnSpec(int modelIndex) {
-        return switch (modelIndex) {
-            case 0 -> SCIENCE;
-            case 1 -> ACHIEVEMENT_CREDIT;
-            default -> null;
-        };
-    }
 }
