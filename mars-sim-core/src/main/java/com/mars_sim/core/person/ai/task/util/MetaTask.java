@@ -139,7 +139,7 @@ public abstract class MetaTask {
 	 * @return string name of a meta task
 	 */
 	private String createProperName() {
-		String ss = simpleName.replaceAll("(?!^)([A-Z])", " $1")
+		String ss = getClass().getSimpleName().replaceAll("(?!^)([A-Z])", " $1")
 				.replace("Meta", "");
 //				.replace("E V A ", "EVA ")
 //				.replace("With ", "with ")
