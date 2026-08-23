@@ -40,19 +40,23 @@ class GoodsManagerTest extends MarsSimUnitTest {
         Part sheet = (Part) ItemResourceUtil.findItemResource("Steel sheet");
 
         int previousNum = 1;
+       
+        int needNum = 2;
         
         s.getEquipmentInventory().storeItemResource(sheet.getID(), previousNum);
         
         PartGood pg = new PartGood(sheet);
         
         double previousDemand = 10;
-        
-        double newDemand = pg.getMaintenancePartsDemand(previousNum, s, sheet, previousDemand); // newDemand is 1xxx
 
+        double constructionDemand = pg.computeNewDemand(previousNum, needNum, 5, previousDemand);
+		
+		double maintDemand = pg.getMaintenancePartsDemand(previousNum, s, sheet, previousDemand); // newDemand is 1xxx
+
+		double newDemand = maintDemand + constructionDemand;
+		 
         assertTrue(newDemand > previousDemand); // Demand has increased;
-        
-        int needNum = 2;
-        
+
         pg.injectPartDemand(sheet, gm, needNum); 
         
         int storedNum = s.getEquipmentInventory().getItemResourceStored(sheet.getID());
