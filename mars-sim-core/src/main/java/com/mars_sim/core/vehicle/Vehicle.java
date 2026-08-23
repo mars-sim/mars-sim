@@ -240,8 +240,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	Vehicle(String name, VehicleSpec spec, Settlement settlement, double maintenanceWorkTime) {
 		// Use Unit constructor
 		super(name, settlement);
-		// Call Person's setContainerUnit to set up coordinates and related states
-//		setContainerUnit(getContainerUnit());
 		
 		this.spec = spec;
 		this.specName = spec.getName();
@@ -2246,17 +2244,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public double getSpecificAmountResourceStored(int resource) {
 		return eqmInventory.getSpecificAmountResourceStored(resource);
 	}
-	
-	/**
-	 * Gets all the specific amount resources stored, including those inside equipment.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAllSpecificAmountResourceStored(int resource) {
-		return eqmInventory.getAllSpecificAmountResourceStored(resource);
-	}
 
 	/**
 	 * Gets the quantity of all stock and specific amount resource stored.
@@ -2432,25 +2419,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 			else {
 				// Set the container unit for this vehicle
 				setContainerUnit(destination);
-				
-//				// Transfer each occupant 
-//				if (this instanceof Crewable crewable) {
-//		            for (Person crewmember : crewable.getCrew()) {
-//		                crewmember.transfer(this);
-//		            }
-//				}
-//				else if (this instanceof LightUtilityVehicle luv 
-//						&& !luv.hasNoCrew()) {
-//					Worker occupant = luv.getOccupant();
-//					if (occupant != null && luv.getOperator().equals(occupant)) {
-//						occupant.transfer(this);
-//					}
-//				}
-//				
-//				// Transfer each piece of equipment 
-//				for (Equipment equipment : getEquipmentSet()) {
-//					equipment.transfer(this);
-//	            }	
 			}
 		}
 		return canTransferOut;

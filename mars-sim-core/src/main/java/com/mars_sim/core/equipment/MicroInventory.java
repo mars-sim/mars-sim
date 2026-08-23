@@ -22,7 +22,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 /**
  * The MicroInventory class represents a simple resource storage solution.
  */
-public class MicroInventory implements Serializable {
+public class MicroInventory implements ItemHolder, ResourceHolder, Serializable {
 
 	private static final class AmountStored implements Serializable {
 
@@ -47,7 +47,7 @@ public class MicroInventory implements Serializable {
 		}
 	}
 
-	static final class ItemStored implements Serializable {
+	private static final class ItemStored implements Serializable {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -101,6 +101,11 @@ public class MicroInventory implements Serializable {
 	public MicroInventory(Unit owner, double stockCapacity) {
 		this.owner = owner;
 		this.stockCapacity = stockCapacity;
+	}
+
+	@Override
+	public double getCargoCapacity() {
+		return stockCapacity;
 	}
 
 	/**
@@ -560,7 +565,8 @@ public class MicroInventory implements Serializable {
 	 *
 	 * @return
 	 */
-	public Set<Integer> getAllSpecificResourceStoredIDs() {
+	@Override
+	public Set<Integer> getAllAmountResourceStoredIDs() {
 		Set<Integer> set = specificAmountStorage.keySet()
 				.stream()
 				.filter(i -> (specificAmountStorage.get(i).storedAmount > 0))
@@ -590,7 +596,7 @@ public class MicroInventory implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Set<Integer> getItemStoredIDs() {
+	public Set<Integer> getItemResourceIDs() {
 		return itemStorage.keySet()
 				.stream()
 				.filter(i -> (itemStorage.get(i).quantity > 0))

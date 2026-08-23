@@ -652,7 +652,7 @@ public class EVASuit extends Equipment
 	 */
 	@Override
 	public Set<Integer> getItemResourceIDs() {
-		return microInventory.getItemStoredIDs();
+		return microInventory.getItemResourceIDs();
 	}
 
 	@Override
@@ -660,17 +660,6 @@ public class EVASuit extends Equipment
 		return microInventory.getSpecificAmountResourceStored(resource);
 	}
 
-	/**
-	 * Gets all the amount resource resource stored, including inside equipment.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAllSpecificAmountResourceStored(int resource) {
-		return microInventory.getSpecificAmountResourceStored(resource);
-	}
-	
 	/**
 	 * Retrieves the resource.
 	 *

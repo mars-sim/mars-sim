@@ -377,14 +377,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
     }
 
 	/**
-	 * Sets the robot to be salvaged.
-	 */
-	private void toBeSalvaged() {
-		((Settlement)getContainerUnit()).removeOwnedRobot(this);
-		isInoperable = true;
-	}
-
-	/**
 	 * Is the robot operable ?
 	 * 
 	 * @return
@@ -792,6 +784,11 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		return eqmInventory.getItemResourceStored(resource);
 	}
 
+	@Override
+	public int getItemResourceRemainingQuantity(int resource) {
+		return eqmInventory.getItemResourceRemainingQuantity(resource);
+	}
+
 	/**
 	 * Stores the amount resource
 	 *
@@ -881,17 +878,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		return eqmInventory.getSpecificAmountResourceStored(resource);
 	}
 
-	/**
-	 * Gets all the amount resource resource stored, including inside equipment.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAllSpecificAmountResourceStored(int resource) {
-		return eqmInventory.getAllSpecificAmountResourceStored(resource);
-	}
-	
 	/**
 	 * Gets the quantity of all stock and specific amount resource stored.
 	 *

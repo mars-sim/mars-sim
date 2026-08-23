@@ -1455,17 +1455,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getSpecificAmountResourceStored(int resource) {
 		return getAssociatedSettlement().getEquipmentInventory().getSpecificAmountResourceStored(resource);
 	}
-
-	/**
-	 * Gets all the specific amount resources stored, including those inside equipment.
-	 *
-	 * @param resource
-	 * @return amount
-	 */
-	@Override
-	public double getAllSpecificAmountResourceStored(int resource) {
-		return getAssociatedSettlement().getEquipmentInventory().getAllSpecificAmountResourceStored(resource);
-	}
 	
 	/**
 	 * Gets the quantity of all stock and specific amount resource stored.

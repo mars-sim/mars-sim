@@ -70,7 +70,7 @@ class BuildingPanelStorage extends EntityTableTabPanel<Building> implements Temp
 				
 				buildingStorage.put(name, resource.getValue());
 
-				available.put(name, holder.getAllSpecificAmountResourceStored(id));
+				available.put(name, holder.getSpecificAmountResourceStored(id));
 				
 				settlementStorage.put(name, holder.getSpecificCapacity(id));
 			}

@@ -27,7 +27,7 @@ import com.mars_sim.core.resource.ResourceUtil;
  * basic capacity management.
  */
 public class EquipmentInventory
-		implements EquipmentOwner, ItemHolder, BinHolder, Serializable {
+		implements EquipmentOwner, BinHolder, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -187,67 +187,6 @@ public class EquipmentInventory
 
 		return containerSet.add(equipment); 
 	}
-	
-//	/**
-//	 * Adds the equipment (suit or container) to a particular equipment set.
-//	 * 
-//	 * @param set
-//	 * @param equipment
-//	 * @return true if this unit can carry it
-//	 */
-//	private boolean addToSet(Set<Equipment> set, Equipment equipment) {
-//		boolean contained = set.contains(equipment);
-//		
-//		if (contained) {
-//			return false;
-//		}
-//		
-//		if (!contained) {
-//			double suitMass = 0;
-//			for (Equipment e: suitSet) {
-//				suitMass += e.getMass();
-//			}
-//			
-//			double containerMass = 0;
-//			String containerName = "";
-//			
-//			for (Equipment e: containerSet) {
-//				Container c = (Container)e;
-//				Set<Integer> ids = c.getSpecificResourceStoredIDs();
-//				String arNames = "";
-//				for (int i: ids) {
-//					arNames += ResourceUtil.findAmountResourceName(i) 
-//							+ " (" + Math.round(c.getSpecificAmountResourceStored(i) * 100.0)/100.0 + ")";
-//				}
-//				containerName += e.getName() + " [" + arNames + "]";
-//				containerMass += e.getMass();
-//			}
-//
-//			double microInvMass = microInventory.getStoredMass();
-//			
-//			double totalStored = suitMass + containerMass + microInvMass;
-//			
-//			double newCapacity = cargoCapacity - totalStored - equipment.getMass();
-//			if (newCapacity >= 0D) {
-//				owner.fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, equipment);
-//				return set.add(equipment);
-//			}
-//			else {
-//				logger.warning(owner, 60_000L, "No capacity to hold " + equipment.getName()
-//								+ " - cargoCapacity: " + cargoCapacity 
-//								+ ", container name: " + containerName
-//								+ ", totalStored: " + totalStored 
-//								+ ", microInvMass: " + microInvMass
-//								+ ", containerMass: " + containerMass 
-//								+ ", suitMass: " + suitMass
-//								+ ", equipmentMass: " + equipment.getMass() 
-//								+ ".");
-//				return false;
-//			}
-//		}
-//		
-//		return !contained;
-//	}
 
 	/**
 	 * Removes an equipment.
@@ -393,6 +332,7 @@ public class EquipmentInventory
 	 * @param resource
 	 * @return
 	 */
+	@Override
 	public boolean hasAmountResourceRemainingCapacity(int resource) {
 		
 		double cap = microInventory.getSpecificCapacity(resource);
@@ -409,7 +349,7 @@ public class EquipmentInventory
 	 *
 	 * @return
 	 */
-	public double getStockCapacity() {
+	double getStockCapacity() {
 		return microInventory.getStockCapacity();
 	}
 	
@@ -420,7 +360,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public double getRemainingCargoCapacity() {
-		return cargoCapacity - getStoredMass();
+		return getCargoCapacity() - getStoredMass();
 	}
 
 	/**
@@ -430,9 +370,7 @@ public class EquipmentInventory
      */
 	@Override
 	public double getCargoCapacity() {
-		// Question: Should the total capacity varies ?
-		// based on one's instant carrying capacity ?
-		return cargoCapacity;
+		return microInventory.getCargoCapacity();
 	}
 
 	/**
@@ -447,31 +385,12 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets all the specific amount resources stored, including those inside equipment.
-	 *
-	 * @param resource
-	 * @return amount
-	 */
-	@Override
-	public double getAllSpecificAmountResourceStored(int resource) {
-		double result = 0;
-		// Do not consume resources from container Equipment. THis is an expensive
-		// and can generate concurrency issues
-		for (Equipment e: suitSet) {
-		 	result += e.getSpecificAmountResourceStored(resource);
-		 }
-		for (Equipment e: containerSet) {
-		 	result += e.getSpecificAmountResourceStored(resource);
-		 }
-		return result + getSpecificAmountResourceStored(resource);
-	}
-
-	/**
 	 * Gets the quantity of all stock and specific amount resource stored.
 	 *
 	 * @param resource
 	 * @return quantity
 	 */
+	@Override
 	public double getAllAmountResourceStored(int resource) {
 		return microInventory.getAllAmountResourceStored(resource);
 	}
@@ -487,19 +406,6 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		return (int) containerSet.stream()
-					.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
-					.count();
-	}
-
-	/**
-	 * Finds the number of empty containers of a particular equipment type.
-	 * 
-	 * @param containerType
-	 * @param brandNew
-	 * @return
-	 */
-	public int findNumEmptyCopyContainersOfType(EquipmentType containerType, boolean brandNew) {
 		return (int) containerSet.stream()
 					.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
 					.count();
@@ -524,6 +430,7 @@ public class EquipmentInventory
 	 *
 	 * @return collection of containers or empty collection if none.
 	 */
+	@Override
 	public Collection<Container> findContainersOfType(EquipmentType type) {
 		Collection<Container> result = new HashSet<>();
 		for (Equipment e : containerSet) {
@@ -624,7 +531,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Integer> getItemResourceIDs() {
-		return microInventory.getItemStoredIDs();
+		return microInventory.getItemResourceIDs();
 	}
 
 	/**
@@ -644,8 +551,9 @@ public class EquipmentInventory
 	 * 
 	 * @return all stored amount resources.
 	 */
+	@Override
 	public Set<Integer> getAllAmountResourceStoredIDs() {
-		Set<Integer> set = new HashSet<>(getSpecificResourceStoredIDs());
+		Set<Integer> set = new HashSet<>(microInventory.getAllAmountResourceStoredIDs());
 		for (Equipment e: containerSet) {
 			if (e instanceof ResourceHolder rh) {
 				set.addAll(rh.getSpecificResourceStoredIDs());
