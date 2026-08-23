@@ -11,10 +11,10 @@ import java.awt.Font;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
@@ -59,8 +59,11 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		AffineTransform saveTransform = viewpoint.prepareGraphics();
 		boolean drawLabel = mapPanel.isOptionDisplayed(DisplayOption.VEHICLE_LABELS);
 
+		// Vehicles parked take a copy to avoid changes during iteration.
+		var vehicles = new ArrayList<>(settlement.getParkedNGaragedVehicles());
+
 		// Draw all parked vehicles at this settlement location
-		for (Vehicle v : CollectionUtils.getVehiclesInSettlementVicinity(settlement)) {
+		for (Vehicle v : vehicles) {
 			if (v.isReady())
 				drawVehicle(v, drawLabel, viewpoint);
 		}
