@@ -94,7 +94,7 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 		infoPanel.addLabelledItem("Work Mission", missionLabel);
 		
 		int timeReq = (int)getEntity().getCurrentConstructionStage().getRequiredWorkTime();
-		infoPanel.addTextField("Work Time Required", StyleManager.DECIMAL_MSOL.format(timeReq), null);
+		infoPanel.addTextField("Work Time Required", StyleManager.DECIMAL1_MSOL.format(timeReq), null);
 		
         workLeft = new JDoubleLabel(StyleManager.DECIMAL1_MSOL);
 		infoPanel.addLabelledItem("Time Left", workLeft);

@@ -54,7 +54,6 @@ import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Converse;
 import com.mars_sim.core.person.ai.task.Sleep;

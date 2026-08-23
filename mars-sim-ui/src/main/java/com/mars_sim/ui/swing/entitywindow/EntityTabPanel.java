@@ -128,7 +128,8 @@ public abstract class EntityTabPanel<T extends Entity>  {
 	}
 	
 	/**
-     * Get the UI context.
+     * Gets the UI context.
+     * 
      * @return
      */
     protected UIContext getContext() {

@@ -9,14 +9,11 @@ package com.mars_sim.ui.swing.entitywindow.construction;
 import java.util.Set;
 
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.MobileUnit;
-import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.model.BaseWorkerModel;
@@ -37,12 +34,12 @@ public class MemberTableModel extends BaseWorkerModel {
             												Mission.END_MISSION_EVENT));	
 	protected static final EntityColumnSpec BOARDED = new EntityColumnSpec(new ColumnSpec(BOARDED_VAL, Msg.getString("MainDetailPanel.column.boarded"),
                                                     Boolean.class), Set.of(MobileUnit.CONTAINER_EVENT));	
-	protected static final EntityColumnSpec WORK_TIME = new EntityColumnSpec(new ColumnSpec(WORK_TIME_VAL, Msg.getString("MainDetailPanel.column.airlock"),
-													Boolean.class), Set.of(EntityEventType.WORK_TIME_EVENT));											
+	protected static final EntityColumnSpec WORK_TIME = new EntityColumnSpec(new ColumnSpec(WORK_TIME_VAL, Msg.getString("MainDetailPanel.column.workTime"),
+													Double.class), Set.of(EntityEventType.WORK_TIME_EVENT));											
 	
 	// Private members.
 	private Mission mission = null;
-	private Crewable v = null;
+	private LightUtilityVehicle luv = null;
 	
 	/**
 	 * Constructor.
@@ -54,9 +51,9 @@ public class MemberTableModel extends BaseWorkerModel {
 		updateOccupantList();
 	}
 
-    public MemberTableModel(Crewable crewable) {
+    public MemberTableModel(LightUtilityVehicle luv) {
         super(NAME, TASK, MISSION_MEMBER, BOARDED, WORK_TIME);
-        this.v = crewable;
+        this.luv = luv;
 
         updateOccupantList();
     }
@@ -78,16 +75,8 @@ public class MemberTableModel extends BaseWorkerModel {
 	 * @return Is the worker boarded ?
 	 */
 	private boolean isBoarded(Worker member) {
-		if (v != null) {
-			if (v instanceof Crewable c) {
-				if (member instanceof Person p)
-					return c.isCrewmember(p);
-				else if (member instanceof Robot r)
-					return c.isRobotCrewmember(r);
-			}
-			else if (v instanceof LightUtilityVehicle luv) {
-				return luv.isCrewmember(member);
-			}
+		if (luv != null) {
+			return luv.isCrewmember(member);
 		}
 		return false;
 	}
@@ -142,8 +131,6 @@ public class MemberTableModel extends BaseWorkerModel {
 	public void updateOccupantList() {
         if (mission != null) {
             setEntities(mission.getMembers());
-        } else if (v != null) {
-            setEntities(v.getCrew());
         }
         else {
             setEntities(Set.of());

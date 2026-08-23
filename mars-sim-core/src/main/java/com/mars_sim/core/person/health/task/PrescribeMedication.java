@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
 
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
@@ -29,9 +28,6 @@ import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.SickBay;
-import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * A task in which a doctor prescribes (and provides) a medication to a patient.
@@ -221,16 +217,26 @@ public class PrescribeMedication extends Task {
                         .append(" to ").append(patient.getName()).append(" in ")
                         .append(patientLocn.getName())
                         .append("."); 
+
                 }
                 else {
                     phrase = phrase.append("Self-prescribing ").append(medication.getName()); 
+                    
+                    
+                    MedicalCare care = null;
+                    
+                    if (patient.getBuildingLocation() != null) {
+                    	care = patient.getBuildingLocation().getMedical();
+                    	if (care != null)
+                    		care.removeFromBed();
+                    }
+
                 }
+                
                 logger.log(worker, Level.INFO, 5000, phrase.toString());
                 
                 produceMedicalWaste();
-                
-                MedicalCare care = patient.getBuildingLocation().getMedical();
-                care.removeFromBed();
+
             }
             else 
             	logger.info(patient, "Not in a proper place to receive medication.");

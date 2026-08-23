@@ -13,13 +13,13 @@ import javax.swing.table.TableModel;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.entitywindow.mission.MemberTableModel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -79,14 +79,6 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 		columnModel.getColumn(4).setPreferredWidth(15);
 	}
 
-	/**
-	 * Remove the entity listeners
-	 */
-    @Override
-    public void destroy() {
-        super.destroy();
-    }
-
 
     @Override
     public void entityUpdate(EntityEvent event) {
@@ -97,7 +89,10 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 			}
 
 			case EntityEventType.WORK_TIME_EVENT -> {
-				//;
+				Mission context = (Mission)getContext();
+				if (context instanceof ConstructionMission cm) {
+					//cm.getObjective().getWorkTime(0);
+				}
 			}
 			
 			default -> {

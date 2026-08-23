@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.Named;
+
 /**
  * Information about a construction stage.
  */
@@ -19,7 +21,7 @@ import java.util.Map;
 public class ConstructionStageInfo implements Serializable {
 
     // Stage This MUST be in the order of construction
-    public enum Stage {
+    public enum Stage implements Named {
     	FOUNDATION ("Foundation"), 
     	FRAME ("Frame"), 
     	BUILDING ("Building");

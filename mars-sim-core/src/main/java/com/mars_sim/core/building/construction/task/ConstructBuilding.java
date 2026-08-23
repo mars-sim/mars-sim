@@ -207,7 +207,8 @@ public class ConstructBuilding extends EVAOperation {
 		stage.addWorkTime(workTime);
 	
 		// Record the work time
-		((ConstructionMission)site.getWorkOnSite()).getObjective().recordWorkTime(person.getIdentifier(), workTime);
+		if (site.getWorkOnSite() != null)
+			((ConstructionMission)site.getWorkOnSite()).getObjective().recordWorkTime(person.getIdentifier(), workTime);
 			
     	person.fireUnitUpdate(EntityEventType.WORK_TIME_EVENT);
     	
