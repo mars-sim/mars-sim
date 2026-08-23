@@ -248,7 +248,7 @@ public class PrescribeMedication extends Task {
 
 	private void produceMedicalWaste() {
 		if (!worker.isOutside()) {
-            worker.storeAmountResource(ResourceUtil.TOXIC_WASTE_ID, AVERAGE_MEDICAL_WASTE);
+            worker.getEquipmentInventory().storeAmountResource(ResourceUtil.TOXIC_WASTE_ID, AVERAGE_MEDICAL_WASTE);
         }
 	}
 

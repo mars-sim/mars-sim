@@ -174,7 +174,8 @@ public class CollectMinedMinerals extends EVAOperation {
 
 		double remainingPersonCapacity = 0;
 			
-		remainingPersonCapacity = worker.getRemainingCargoCapacity();
+		var inv = worker.getEquipmentInventory();
+		remainingPersonCapacity = inv.getRemainingCargoCapacity();
 
 		// Modify collection rate by skill.
 		double mineralsCollected = time * COLLECTION_RATE;
@@ -194,7 +195,7 @@ public class CollectMinedMinerals extends EVAOperation {
 			addExperience(time);
 	
 			// Collect minerals.
-			worker.storeAmountResource(mineralType, mineralsCollected);
+			inv.storeAmountResource(mineralType, mineralsCollected);
 			
 			if ((maxAmount <= 0D) || (mineralsCollected >= remainingPersonCapacity)) {
 				endEVA("Excavated minerals collected exceeded capacity.");

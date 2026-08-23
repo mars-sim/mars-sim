@@ -1421,7 +1421,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		return eqmInventory.getSuitSet();
 	}
 	
-	public EquipmentInventory getEquipmentInventory() {
+	public EquipmentOwner getEquipmentInventory() {
 		return eqmInventory;
 	}
 

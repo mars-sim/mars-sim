@@ -363,7 +363,7 @@ public class CollectResources extends EVAOperation {
 				return false;
 			
 			// Checks if the person has an available container with remaining capacity for resource.
-			Container container = ContainerUtil.findLeastFullContainer(person, containerType, resourceType);
+			Container container = ContainerUtil.findLeastFullContainer(person.getEquipmentInventory(), containerType, resourceType);
 			if (container == null) {
 				// Checks if the rover has an available container with remaining capacity for resource.
 				container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);

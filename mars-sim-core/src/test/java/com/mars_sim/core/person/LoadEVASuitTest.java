@@ -33,7 +33,7 @@ class LoadEVASuitTest extends MarsSimUnitTest {
 	 * Test if a person don an EVA suit and load it with resources.
 	 */
 	@Test
-	public void testLoadingEVA() {
+	void testLoadingEVA() {
 		Settlement settlement = buildSettlement("mock");
 		Person person = buildPerson("Loader", settlement);
 
@@ -54,7 +54,7 @@ class LoadEVASuitTest extends MarsSimUnitTest {
 		
 		var rh = settlement.getEquipmentInventory();
 		
-		EquipmentOwner personOwner = (EquipmentOwner)person;
+		EquipmentOwner personOwner = person.getEquipmentInventory();
 		
 		EVASuit suitPerson = EVASuitUtil.findEVASuitWithResources(rh, person);
 		

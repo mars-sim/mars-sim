@@ -26,68 +26,68 @@ public interface Worker extends UnitIdentifer, MonitorableEntity, EquipmentOwner
 	 *
 	 * @return the person's natural attribute manager
 	 */
-	public NaturalAttributeManager getNaturalAttributeManager();
+	NaturalAttributeManager getNaturalAttributeManager();
 
 	/**
 	 * Gets the workers name.
 	 * 
 	 * @return
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * What the Worker is doing.
 	 * 
 	 * @return
 	 */
-	public String getTaskDescription();
+	String getTaskDescription();
 
 	/**
 	 * Is the worker inside a vehicle in a garage ?
 	 * 
 	 * @return
 	 */
-	public boolean isInVehicleInGarage();
+	boolean isInVehicleInGarage();
 
 	/**
 	 * Is the worker outside of a settlement but within its vicinity ?
 	 *
 	 * @return true if the person is just right outside of a settlement
 	 */
-	public boolean isRightOutsideSettlement();
+	boolean isRightOutsideSettlement();
 
 	/**
 	 * Gets the associated settlement.
 	 *  
 	 * @return the worker's associated settlement
 	 */
-	public Settlement getAssociatedSettlement();
+	Settlement getAssociatedSettlement();
 
 	/**
 	 * What is the Mission this Worker is performing.
 	 * 
 	 * @return
 	 */
-	public Mission getMission();
+	Mission getMission();
 
 	/**
 	 * Sets the person's current mission.
 	 *
 	 * @param newMission the new mission
 	 */
-	public void setMission(Mission newMission);
+	void setMission(Mission newMission);
 
 	/**
 	 * Gets the manager of the Worker's Tasks.
 	 */
-	public TaskManager getTaskManager();
+	TaskManager getTaskManager();
 
 	/**
 	 * Gets the unit type.
 	 *
 	 * @return
 	 */
-	public UnitType getUnitType();
+	UnitType getUnitType();
 
 
 	/**
@@ -95,7 +95,7 @@ public interface Worker extends UnitIdentifer, MonitorableEntity, EquipmentOwner
 	 *
 	 * @return
 	 */
-	public String getStringType();
+	String getStringType();
 	
 	/**
 	 * Assigns an activity spot to a Worker.
@@ -105,13 +105,13 @@ public interface Worker extends UnitIdentifer, MonitorableEntity, EquipmentOwner
 	 * @see ActivitySpot#claim(Worker)
 	 * @see ActivitySpot#release(Worker)
 	 */
-    public void setActivitySpot(AllocatedSpot spot);
+	void setActivitySpot(AllocatedSpot spot);
 
 	/**
 	 * Get the activity spot allocated to a Worker
 	 * @return
 	 */
-	public AllocatedSpot getActivitySpot();
+	AllocatedSpot getActivitySpot();
 	
 	/**
 	 * Leaves an activity spot.
@@ -122,7 +122,7 @@ public interface Worker extends UnitIdentifer, MonitorableEntity, EquipmentOwner
 	 * 
 	 * @param release
 	 */
-	public void leaveActivitySpot(boolean release);
+	void leaveActivitySpot(boolean release);
 	
 	/**
 	 * Fires a unit update event.
@@ -130,5 +130,12 @@ public interface Worker extends UnitIdentifer, MonitorableEntity, EquipmentOwner
 	 * @param updateType the update type.
 	 * @param target     the event target object or null if none.
 	 */
-	public void fireUnitUpdate(String updateType, Object target);
+	void fireUnitUpdate(String updateType, Object target);
+
+	/**
+	 * Gets the equipment inventory for this Worker.
+	 * 
+	 * @return the equipment inventory
+	 */
+	EquipmentOwner getEquipmentInventory();
 }
