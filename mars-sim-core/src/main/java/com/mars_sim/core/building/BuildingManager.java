@@ -2371,7 +2371,7 @@ public class BuildingManager implements Serializable {
 			int num = parts.get(ms);
 			// Inject the demand onto this part
 			if (num > 0)
-				injectPartDemand(part, settlement, num);
+				injectPartDemand(part, settlement, num, MalfunctionManager.MAINTENANCE_REQUIRED_PART_FACTOR);
 		}
 	}
 
@@ -2382,9 +2382,9 @@ public class BuildingManager implements Serializable {
 	 * @param settlement
 	 * @param num
 	 */
-	public static void injectPartDemand(Part part, Settlement settlement, int num) {
+	public static void injectPartDemand(Part part, Settlement settlement, int num, double factor) {
 		Good good = GoodsUtil.getGood(part.getID());
-		((PartGood) good).injectPartDemand(part, settlement.getGoodsManager(), num);
+		((PartGood) good).injectPartDemand(part, settlement.getGoodsManager(), num, factor);
 	}
 
 	/**

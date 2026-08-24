@@ -192,7 +192,17 @@ public class ConstructionStageInfo implements Serializable {
     public Map<Integer, Integer> getParts() {
         return parts;
     }
-
+    /**
+     * Gets how many of a part is still required.
+     * 
+     * @param id
+     * @return
+     */
+    public int getPartRequired(int id) {
+        var m = parts.get(id);
+        return (m == null ? 0 : m);
+    }
+    
     /**
      * Gets the prerequisite stage name.
      * 

@@ -178,6 +178,17 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
+     * Gets how many of a part is still needed.
+     * 
+     * @param id
+     * @return
+     */
+    public double getPartNeeded(int id) {
+        var m = parts.get(id);
+        return (m == null ? 0D : m.getMissing());
+    }
+    
+    /**
      * Gets the resources needed for construction.
      * 
      * @return map of resources and their amounts (kg).

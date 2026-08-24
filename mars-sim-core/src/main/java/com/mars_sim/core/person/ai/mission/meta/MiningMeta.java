@@ -43,6 +43,8 @@ public class MiningMeta extends AbstractMetaMission {
 
 	/** Starting sol for this mission to commence. */
 	private static final int MIN_STARTING_SOL = 4;
+	public static final int MINING_REQUIRED_PART_FACTOR = 5;
+	
 	/** The multiplier factor. */
 	private static final double FACTOR = 5.0;
 	
@@ -115,11 +117,11 @@ public class MiningMeta extends AbstractMetaMission {
 			if (!Mining.areAvailableAttachmentParts(settlement)) {
 				if (!eo.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
 					BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID),
-							settlement, 1);
+							settlement, 1, MINING_REQUIRED_PART_FACTOR);
 				}
 				if (!eo.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
 					BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.BACKHOE_ID),
-							settlement, 1);
+							settlement, 1, MINING_REQUIRED_PART_FACTOR);
 				}
 	
 				return RatingScore.ZERO_RATING;

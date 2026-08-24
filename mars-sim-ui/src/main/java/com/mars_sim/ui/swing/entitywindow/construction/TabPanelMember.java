@@ -77,15 +77,16 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 	private void updateVehicleInfo() {
 		if (getEntity() instanceof ConstructionMission cm) {
 			luv = cm.getConstructionVehicles().stream().findFirst().orElse(null);
-			
-	        luv.addEntityListener(this);
-	        
-			vehicleStatusLabel.setText(luv.printStatusTypes());
-			var op = luv.getOperator();
-			String name = "";
-			if (op != null);
-				name = op.getName();
-			vehicleOperatorLabel.setText(name);
+			if (luv != null) {
+		        luv.addEntityListener(this);
+		        
+				vehicleStatusLabel.setText(luv.printStatusTypes());
+				var op = luv.getOperator();
+				String name = "";
+				if (op != null);
+					name = op.getName();
+				vehicleOperatorLabel.setText(name);
+			}
 		}
 	}
 	

@@ -57,7 +57,7 @@ class GoodsManagerTest extends MarsSimUnitTest {
 		 
         assertTrue(newDemand > previousDemand); // Demand has increased;
 
-        pg.injectPartDemand(sheet, gm, needNum); 
+        double tempDemand = pg.injectPartDemand(sheet, gm, needNum, 5); 
         
         int storedNum = s.getEquipmentInventory().getItemResourceStored(sheet.getID());
         

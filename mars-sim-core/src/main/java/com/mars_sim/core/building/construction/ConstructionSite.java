@@ -358,23 +358,34 @@ public class ConstructionSite extends FixedUnit {
 	}
 
     /**
-     * Get a status description of the site.
+     * Gets a status description of the site.
+     * 
      * @return
      */
     public String getStatusDescription() {
-        String result = currentStage.getInfo().getName();
+        return currentStage.getInfo().getName() + " - " + getStatus();
+    }
+    
+    /**
+     * Gets a status description of the site.
+     * 
+     * @return
+     */
+    public String getStatus() {
+        String result = null;
         if (activeWork != null) {
             if (isConstruction) {
-                result += " - Active Construction";
+                result = "Active Construction";
             } else  {
-                result += " - Active Salvage";
+                result = "Active Salvage";
             }
         } else if (hasUnfinishedStage()) {
             if (isConstruction)
-                result += " - Construction Unfinished";
+                result = "Construction Unfinished";
             else
-                result += " - Salvage Unfinished";
+                result = "Salvage Unfinished";
         }
         return result;
     }
+    
 }

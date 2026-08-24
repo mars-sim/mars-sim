@@ -91,6 +91,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final int FREQUENCY = 7;
 	private static final int SCORE_DEFAULT = 50;
 	private static final int MAX_DELAY = 100;
+	public static final int MAINTENANCE_REQUIRED_PART_FACTOR = 5;
 	
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 5;
@@ -1516,7 +1517,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 					// Inject the demand onto this part
 	                if (entity.getAssociatedSettlement().getGoodsManager() != null)	 {
 	                	// Note: in MaintainGarageVehicleTest, good manager is null 
-	                	((PartGood)good).injectPartDemand(part, entity.getAssociatedSettlement().getGoodsManager(), number);
+	                	((PartGood)good).injectPartDemand(part, entity.getAssociatedSettlement().getGoodsManager(), number, MAINTENANCE_REQUIRED_PART_FACTOR);
 	                }
 	                return false;
 				}
