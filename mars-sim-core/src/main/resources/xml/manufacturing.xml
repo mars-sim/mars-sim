@@ -546,7 +546,7 @@ Note: 1 kg of H2 is 14.13 liter
 			tech="1" skill="1"
 			work-time="50"
 			process-time="50" tooling="furnace"
-			power-required=".2">
+			power-required="1.5">
 		<description>
 		Electrolysis of Aluminum Oxide (Extraction) :
 		
@@ -568,8 +568,8 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (5kg) sheet of aluminum. -->
-	<process name="Make aluminum sheet" tech="1" skill="1" work-time="50" process-time="20" tooling="metalwork"
-			power-required=".7">
+	<process name="Make aluminum sheet" tech="1" skill="1" work-time="50" process-time="20" tooling="furnace"
+			power-required="1.5">
 		<description>
 		2 * Al2O3 -> 4 Al + 3 O2
 		2 * 101.96g  4 * 26.98 + 3 * 32 
