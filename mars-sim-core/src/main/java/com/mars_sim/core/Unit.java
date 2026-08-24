@@ -265,7 +265,9 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 		if (listeners == null)
 			listeners = new EntityListenerManager();
 
-		listeners.addEntityListener(newListener);
+		if (!hasEntityListener(newListener)) {
+			listeners.addEntityListener(newListener);
+		}
 	}
 
 	/**

@@ -21,7 +21,11 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.ExitAirlock;
+import com.mars_sim.core.person.ai.task.Walk;
+import com.mars_sim.core.person.ai.task.WalkingSteps;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -69,7 +73,7 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	public ConstructBuilding(Person person, ConstructionSite site) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, RandomUtil.getRandomDouble(10) + 150D, CONSTRUCTION);
+		super(NAME, person, RandomUtil.getRandomInt(-10 + 10) + 200D, CONSTRUCTION);
 
 		if (person.isEVAUnFit()) {
 			endEVA("Not EVA fit.");
@@ -110,7 +114,7 @@ public class ConstructBuilding extends EVAOperation {
 	public ConstructBuilding(Person person, ConstructionStage stage, ConstructionSite site,
 			List<LightUtilityVehicle> vehicles) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, RandomUtil.getRandomDouble(5D) + 100D, CONSTRUCTION);
+		super(NAME, person, RandomUtil.getRandomInt(-20 + 20) + 200D, CONSTRUCTION);
 
 		// Initialize data members.
 		this.stage = stage;
@@ -251,18 +255,33 @@ public class ConstructBuilding extends EVAOperation {
 		Iterator<LightUtilityVehicle> i = vehicles.iterator();
 		while (i.hasNext() && (luv == null)) {
 			LightUtilityVehicle v = i.next();
-			v.relocateVehicle();
+
 			if (!v.getMalfunctionManager().hasMalfunction()
 				&& !v.isFull() && v.getOperator() == null && !v.isInGarage()) {
 
+				v.findNewParkingLoc();
 				// Warning: do not call addOccupant directly
-				boolean canTransfer = person.transfer(v);	
-				if (canTransfer) {
-					luv = v;
-					operatingLUV = true;
-					// Place light utility vehicles at random location in construction site.
-					LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
-					luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+				
+				// Note: should walk to the location of luv and board it
+		
+				WalkingSteps walkingSteps = new WalkingSteps(worker, v.getPosition(), v);
+				boolean canWalk = Walk.canWalkAllSteps(worker, walkingSteps);
+				
+				if (canWalk) {
+					canWalk = assignTask(worker, new Walk(worker, walkingSteps), false);
+					if (!canWalk) {
+						logger.warning(worker, 20_000, "Unable to walk to " + v + ".");
+					}
+					else {
+						boolean canTransfer = person.transfer(v);	
+						if (canTransfer) {
+							luv = v;
+							operatingLUV = true;
+							// Place light utility vehicles at random location in construction site.
+							LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
+							luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+						}
+					}
 				}
 
 				break;
@@ -271,11 +290,23 @@ public class ConstructBuilding extends EVAOperation {
 	}
 
 	/**
+	 * Checks if a worker has any issues in starting a new task.
+	 *
+	 * @param worker the worker to assign to the task
+	 * @param newTask   the new task to be assigned
+	 * @param allowSameTask is it allowed to execute the same task as previous
+	 * @return true if task can be performed.
+	 */
+	public boolean assignTask(Worker worker, Task newTask, boolean allowSameTask) {
+		return worker.getTaskManager().directlyAssignTask(newTask, allowSameTask);
+	}
+	
+	/**
 	 * Ends the task.
 	 */
-	public void endTask() {
+	public void endEVA(String reason) {
 		resetLUV();
-		super.endTask();
+		super.endEVA(reason);
 	}
 	
 	/**
@@ -292,7 +323,7 @@ public class ConstructBuilding extends EVAOperation {
 			if (canTransfer) {
 				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
 				luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
-				logger.info(luv, "Left " + luv + " at " + s.getName() + ".");
+				logger.info(person, "Left " + luv + " at " + s.getName() + ".");
 			}
 
 			

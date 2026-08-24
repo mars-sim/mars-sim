@@ -395,7 +395,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 	 */
 	private void initializeIntransientData(int timeRatio, String timestamp) {
 
-
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
