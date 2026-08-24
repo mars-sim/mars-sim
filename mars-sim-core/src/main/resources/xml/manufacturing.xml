@@ -547,44 +547,44 @@ Note: 1 kg of H2 is 14.13 liter
 			work-time="50"
 			process-time="50" tooling="furnace"
 			power-required=".2">
-		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO; 
-		1 mole - Al2CO3: 101.96g; 3C: 36g; 2Al: 54g; 3CO: 64g</description>
+		<description>
+		Electrolysis of Aluminum Oxide (Extraction) :
+		
+		2 * Al2O3 -> 4 Al + 3 O2
+		2 * 101.96g  4 * 26.98 + 3 * 32 
+		203.92       ->  107.92 + 96 
+		 
+		Each aluminum ingot is 5 kg.
+		
+		</description>
 		<inputs>
-			<resource name="aluminum oxide" amount="9.44" />
-			<resource name="Carbon" amount="3.33" />
+			<resource name="aluminum oxide" amount="20.392" />
 		</inputs>
 		<outputs>
-			<resource name="carbon monoxide" amount="7.78" />
-			<part name="aluminum ingot" number="1" />
-		</outputs>
-	</process>
-
-	<!-- Produces 50x 1kg aluminum ingots. -->
-	<process name="Cast aluminum ingot (large batch)" tech="1" skill="1" work-time="250" process-time="250"
-			tooling="furnace"
-			power-required="1">
-		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
-		<inputs>
-			<resource name="aluminum oxide" amount="94.4" />
-			<resource name="Carbon" amount="33.3" />
-		</inputs>
-		<outputs>
-			<resource name="carbon monoxide" amount="77.8" />
-			<part name="aluminum ingot" number="10" />
+			<resource name="oxygen" amount="9.6" />
+			<resource name="aluminum" amount="0.792" />
+			<part name="aluminum ingot" number="2" />
 		</outputs>
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (5kg) sheet of aluminum. -->
 	<process name="Make aluminum sheet" tech="1" skill="1" work-time="50" process-time="20" tooling="metalwork"
 			power-required=".7">
-		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
+		<description>
+		2 * Al2O3 -> 4 Al + 3 O2
+		2 * 101.96g  4 * 26.98 + 3 * 32 
+		203.92       ->  107.92 + 96 
+		
+		Each aluminum sheet is 2.72 kg. 4 sheets -> 10.88 kg
+
+		</description>
 		<inputs>
-			<resource name="aluminum oxide" amount="9.5" />
-			<resource name="Carbon" amount="3.0" />
+			<resource name="aluminum oxide" amount="20.392" />
+			<resource name="aluminum" amount="0.088" />
 		</inputs>
 		<outputs>
-			<resource name="carbon monoxide" amount="7.5" />
-			<part name="aluminum sheet" number="1" />
+			<resource name="oxygen" amount="9.6" />
+			<part name="aluminum sheet" number="4" />
 		</outputs>
 	</process>
 
@@ -592,11 +592,11 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Roll aluminum sheet" tech="1" skill="1" work-time="50" process-time="20" tooling="metalwork"
 			power-required=".4">
 		<inputs>
+			<resource name="aluminum" amount="0.88" />
 			<part name="aluminum ingot" number="2" />
 		</inputs>
 		<outputs>
-			<resource name="aluminum oxide" amount="1.84" />
-			<part name="aluminum sheet" number="3" />
+			<part name="aluminum sheet" number="4" />
 		</outputs>
 	</process>
 
@@ -3275,18 +3275,19 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make flood light" tech="3" skill="2" work-time="90" process-time="20"
+	<process name="Make floodlight" tech="3" skill="2" work-time="90" process-time="20"
 			tooling="Soldering" power-required="0.2">
 		<inputs>
-			<resource name="styrene" amount=".5" />		
-			<part name="aluminum sheet" number="1" />
+			<resource name="Polypropylene" amount=".6" />		
+			<resource name="Polycarbonate resin" amount=".6" />
+			<part name="Steel ingot" number="2" />	
 			<part name="copper wire" number="3" />		
 			<part name="power cable" number="1" />				
-			<part name="wire connector" number="9" />
-			<part name="light emitting diode kit" number="9" />
+			<part name="wire connector" number="3" />
+			<part name="light emitting diode kit" number="6" />
 		</inputs>
 		<outputs>
-			<part name="flood light" number="3" />
+			<part name="floodlight" number="3" />
 		</outputs>
 	</process>
 	

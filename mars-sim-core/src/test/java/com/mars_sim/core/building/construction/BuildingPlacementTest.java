@@ -11,7 +11,7 @@ public class BuildingPlacementTest extends MarsSimUnitTest {
 
     @Test
     public void testPositionSite() {
-        // Build one other building to force a placement activitiy
+        // Build one other building to force a placement activity
         var s = buildSettlement("position", true);
         buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 

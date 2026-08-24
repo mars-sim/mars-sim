@@ -303,7 +303,8 @@ public class ConstructionSite extends FixedUnit {
     }
 
     /**
-     * Is the site at a proposal stage with no work completed
+     * Is the site at a proposal stage with no work completed ?
+     * 
      * @return
      */
     public boolean isProposed() {

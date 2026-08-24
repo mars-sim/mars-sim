@@ -329,7 +329,7 @@ class VehicleGood extends Good {
 		    case DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE -> DRONE_FACTOR;
 		    case LUV -> LUV_FACTOR;
         };
-		return demand * (.5 + owner.getCommerceFactor(CommerceType.TRADE)) * typeModifier;
+		return demand * (1.5 + owner.getCommerceFactor(CommerceType.TRADE)) * typeModifier;
 	}
 
 	/**

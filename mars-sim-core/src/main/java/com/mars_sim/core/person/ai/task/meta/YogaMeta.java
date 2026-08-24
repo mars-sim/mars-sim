@@ -49,7 +49,7 @@ public class YogaMeta extends FactoryMetaTask {
     public List<TaskJob> getTaskJobs(Person person) {
 
         if (person.isInVehicle()
-            || !person.getPreference().isTaskDue(this)
+            || !person.getPreference().isTaskDue(getIdentifier())
             || !person.isInSettlement()) {
             return EMPTY_TASKLIST;
         }

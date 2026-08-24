@@ -35,9 +35,9 @@ public class Preference implements Serializable {
 	private final int WEIGHT = 2;
 	
 	/** A map of MetaTasks that can only be done once a day. */
-	private Map<MetaTask, Boolean> onceADayMap;
+	private Map<Integer, Boolean> onceADayMap;
 	/** A map of MetaTasks that has been accomplished once a day. */
-	private Map<MetaTask, Boolean> taskAccomplishedMap;
+	private Map<Integer, Boolean> taskAccomplishedMap;
 	/**  A map of meta task identifier and preference scores. */
 	private Map<Integer, Integer> scoreMap;
 	/**  A connection preference map. */
@@ -261,19 +261,19 @@ public class Preference implements Serializable {
 	/**
 	 * Checks if this task is due.
 	 * 
-	 * @param MetaTask
+	 * @param id
 	 * @return true if it does
 	 */
-	public boolean isTaskDue(MetaTask mt) {
+	public boolean isTaskDue(int id) {
 		if (taskAccomplishedMap.isEmpty()) {
 			// if it does not exist (either it is not scheduled or it have been
 			// accomplished),
 			// the status is true
 			return true;
-		} else if (taskAccomplishedMap.get(mt) == null)
+		} else if (taskAccomplishedMap.get(id) == null)
 			return true;
 		else
-			return taskAccomplishedMap.get(mt);
+			return taskAccomplishedMap.get(id);
 	}
 
 	/**
@@ -284,14 +284,15 @@ public class Preference implements Serializable {
 	 */
 	public void setTaskDue(Task task, boolean value) {
 		MetaTask mt = MetaTaskUtil.getMetaTypeFromTask(task);
-
+		int id = mt.getIdentifier();
+		
 		// if this accomplished meta task is once-a-day task, remove it.
-		if (value && onceADayMap.get(mt) != null && !onceADayMap.isEmpty())
-			if (onceADayMap.get(mt) != null && onceADayMap.get(mt)) {
-				onceADayMap.remove(mt);
-				taskAccomplishedMap.remove(mt);
+		if (value && onceADayMap.get(id) != null && !onceADayMap.isEmpty())
+			if (onceADayMap.get(id) != null && onceADayMap.get(id)) {
+				onceADayMap.remove(id);
+				taskAccomplishedMap.remove(id);
 			} else
-				taskAccomplishedMap.put(mt, value);
+				taskAccomplishedMap.put(id, value);
 
 	}
 

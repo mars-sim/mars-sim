@@ -91,12 +91,12 @@ public class PartGood extends Good {
 	private static final int EVA_PART_DEMAND = 1;
     private static final int KITCHEN_DEMAND = 1;
 	private static final double SCRAP_METAL_DEMAND = 1;
-	private static final double STEEL_INGOT_DEMAND = 1.1;
-	private static final double IRON_INGOT_DEMAND = 0.65;
+	private static final double STEEL_INGOT_DEMAND = 1.5;
+	private static final double IRON_INGOT_DEMAND = 1.5;
 	private static final double INGOT_METAL_DEMAND = 1;
 	private static final double SHEET_METAL_DEMAND = .75;
-	private static final double TRUSS_DEMAND = .5;
-	private static final double STEEL_DEMAND = .5;
+	private static final double TRUSS_DEMAND = 1.25;
+	private static final double STEEL_DEMAND = 1.25;
 	private static final double BRICK_DEMAND = 1.0;
 	private static final double ELECTRICAL_DEMAND = 1.25;
 	private static final double INSTRUMENT_DEMAND = 1.2;
@@ -107,8 +107,8 @@ public class PartGood extends Good {
 	private static final double GLASS_SHEET_DEMAND = 0.025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	private static final double LOGIC_BOARD_DEMAND = 0.5;
-	private static final double ELECTRICAL_WIRE_DEMAND = .25;
-	private static final double WIRE_DEMAND = 0.2;
+	private static final double ELECTRICAL_WIRE_DEMAND = .5;
+	private static final double WIRE_DEMAND = 1.05;
 	
 	private static final double ATTACHMENT_PARTS_DEMAND = 1.5;
 	private static final double AEROGEL_TILE_DEMAND = 0.8;
