@@ -92,7 +92,7 @@ public class ConstructBuilding extends EVAOperation {
 				obtainVehicle();
 			}
 			
-			// Determine location for construction site.
+			// DeterDigLocalTestmine location for construction site.
 			LocalPosition constructionSiteLoc = determineConstructionLocation();
 			setOutsideSiteLocation(constructionSiteLoc);
 		}
