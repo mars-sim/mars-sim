@@ -9,7 +9,6 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
