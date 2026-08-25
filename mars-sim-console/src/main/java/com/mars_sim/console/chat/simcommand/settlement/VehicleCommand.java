@@ -105,7 +105,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 	 */
 	private void printVehicleList(Settlement settlement, List<Vehicle> list, StructuredResponse response) {
 		response.appendTableHeading("Name", 16, "Type", 21, "Home", "Reserved", "Salvage",
-				"Pri Stat", 8, "Maint Due", "Other Stats", 17, 
+				"Pri Stat", 8, "Maint Due", "Other Stats", 18, 
 				 "Mission", 10);
 
 		for (Vehicle v : list) {
@@ -121,7 +121,7 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		MalfunctionManager mm = v.getMalfunctionManager();
 		boolean needMaintenance = mm.getEffectiveTimeSinceLastMaintenance() > mm.getStandardInspectionWindow();
 		
-		boolean isReserved = v.isReserved();
+		boolean isReserved = v.isReservedForMission();
 		
 		boolean isSalvage = v.isSalvaged();
 		
