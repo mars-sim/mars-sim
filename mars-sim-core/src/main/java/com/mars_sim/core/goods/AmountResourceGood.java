@@ -116,7 +116,7 @@ class AmountResourceGood extends Good {
 	
 	// Chemicals
 	private static final double ETHYLENE_FLATTENING_FACTOR = 0.75;
-	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
+	private static final double ACETYLENE_FLATTENING_FACTOR = 0.5;
 	private static final double POLYESTER_FIBER_FLATTENING_FACTOR = 2.0;
 	private static final int POLYURETHANE_FLATTENING_FACTOR = 3;
 	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
@@ -181,12 +181,14 @@ class AmountResourceGood extends Good {
 	// Chemicals
 	private static final int CLEANING_AGENT_MODIFIER = 1;
 	private static final int ETHYLENE_MODIFIER = 10;
-	private static final int POLYETHYLENE_MODIFIER = 3;
+	private static final int POLYETHYLENE_MODIFIER = 1;
 	private static final int STYRENE_MODIFIER = 7;
 	private static final int PROPYLENE_MODIFIER = 3;
 	private static final int ETHANE_MODIFIER = 2;
 	private static final int H2O2_MODIFIER = 4;
-	private static final int RESIN_MODIFIER = 10;
+	private static final int EPOXY_RESIN_MODIFIER = 10;
+	private static final int POLYCARBONATE_RESIN_MODIFIER = 10;
+	private static final int POLYESTER_RESIN_MODIFIER = 3;
 	private static final int ACETYLENE_MODIFIER = 3;
 	private static final int FIBER_MODIFIER = 2;
 	private static final int LIME_MODIFIER = 6;
@@ -1340,15 +1342,15 @@ class AmountResourceGood extends Good {
 			case ResourceUtil.ETHYLENE_ID:
 				return base * ETHYLENE_MODIFIER;
 			case ResourceUtil.EPOXY_RESIN_ID:
-				return base * RESIN_MODIFIER;
+				return base * EPOXY_RESIN_MODIFIER;
 			case ResourceUtil.H2O2_ID:
 				return base * H2O2_MODIFIER;
 			case ResourceUtil.POLYCARBONATE_RESIN_ID:
-				return base * RESIN_MODIFIER;
+				return base * POLYCARBONATE_RESIN_MODIFIER;
 			case ResourceUtil.POLYESTER_FIBER_ID:
 				return base * FIBER_MODIFIER;
 			case ResourceUtil.POLYESTER_RESIN_ID:
-				return base * RESIN_MODIFIER;
+				return base * POLYESTER_RESIN_MODIFIER;
 			case ResourceUtil.POLYETHYLENE_ID:
 				return base * POLYETHYLENE_MODIFIER;
 			case ResourceUtil.POLYPROPYLENE_ID:

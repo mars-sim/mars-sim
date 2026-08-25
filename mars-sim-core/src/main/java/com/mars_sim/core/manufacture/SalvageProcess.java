@@ -65,7 +65,8 @@ public class SalvageProcess extends WorkshopProcess {
     }
 
 	/**
-	 * Start the process by adding to the Workshop active list and claim input resources
+	 * Starts the process by adding to the Workshop active list and claim input resources.
+	 * 
 	 * @return Was the process started
 	 */
 	@Override
@@ -83,9 +84,9 @@ public class SalvageProcess extends WorkshopProcess {
 			case Robot r: {
 				settlement.removeOwnedRobot(r);
 			} break;
-			case Vehicle v: {
-				settlement.removeOwnedVehicle(v);
-			} break;
+//			case Vehicle v: {
+//				settlement.removeOwnedVehicle(v);
+//			} break;
 			default: throw new IllegalStateException("Salvage process can not remote target");
 		}
 
