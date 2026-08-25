@@ -63,8 +63,7 @@ public abstract class MarsSimUnitTest {
     	
         // Initialize the MarsSimContextImpl for each test
         context = new MarsSimContextImpl();
-        
-        MetaTaskUtil.initializeMetaTasks();
+
     }
 
     public SimulationConfig getConfig() {

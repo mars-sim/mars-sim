@@ -319,6 +319,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
+
 		
 		unitManager = new UnitManager();
 		EquipmentFactory.initialise(unitManager);
@@ -341,10 +342,12 @@ public class Simulation implements ClockPulseListener, Serializable {
 		marketManager = new MarketManager(this);
 		
 		transportManager = new TransportManager(this);
-		
+	
         // Initialize RoleUtil
         RoleUtil.initialize();
-     
+		
+		MetaTaskUtil.initializeMetaTasks();
+		
 		GoodsManager.initializeInstances(masterClock, simulationConfig, unitManager, marketManager);
 					
 		medicalManager = new MedicalManager();
