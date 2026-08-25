@@ -412,7 +412,7 @@ public class Converse extends Task {
         	inviteeLocation = Location.SAME_VEHICLE;
         }
         else {
-            Set<Vehicle> vv = person.getAssociatedSettlement().getAllAssociatedVehicles();
+            Set<Vehicle> vv = new HashSet<>(person.getAssociatedSettlement().getAllAssociatedVehicles());
             if (person.getContainerUnit() instanceof Vehicle v) {
             	vv.remove(v);
             }

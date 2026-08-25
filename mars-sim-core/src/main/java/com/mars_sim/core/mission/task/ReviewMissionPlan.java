@@ -311,7 +311,7 @@ public class ReviewMissionPlan extends Task {
 		double relationshipWithReviewer = RelationshipUtil.getOpinionOfPerson(person, leader);
 			
 		double relationshipWithOthers = 0;
-		int num = reviewerSettlement.getAllAssociatedPeople().size();
+		int num = reviewerSettlement.getNumCitizens();
 		for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
 			relationshipWithOthers += RelationshipUtil.getOpinionOfPerson(person, pp);
 		}

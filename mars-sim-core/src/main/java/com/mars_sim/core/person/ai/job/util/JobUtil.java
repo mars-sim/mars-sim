@@ -257,7 +257,7 @@ public final class JobUtil {
 		Person person = null;
 		double bestScore = 0;
 		JobSpec jobSpec = getJobSpec(job);
-		List<Person> ppl = new ArrayList<>(settlement.getAllAssociatedPeople());
+		Collection<Person> ppl = settlement.getAllAssociatedPeople();
 		for (Person p : ppl) {
 			double score = Math.round(jobSpec.getCapability(p) * 100.0)/100.0;
 			if (score > bestScore) {
