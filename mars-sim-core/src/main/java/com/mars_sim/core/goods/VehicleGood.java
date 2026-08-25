@@ -209,7 +209,9 @@ class VehicleGood extends Good {
 	
 		double average = computeVehiclePartsCost(owner);
 		
-		double tradeDemand = determineTradeVehicleValue(owner, settlement);
+		double tradeDemand = determineTradeVehicleValue(owner, settlement) / 10;
+		
+		owner.setTradeDemandScore(this, tradeDemand);
 		
 		// Gets the repair demand
 		// Note: need to look into parts and vehicle reliability in MalfunctionManager 

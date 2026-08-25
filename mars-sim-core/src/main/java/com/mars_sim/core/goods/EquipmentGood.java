@@ -238,7 +238,9 @@ public class EquipmentGood extends Good {
 		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
-		double tradeDemand = owner.determineTradeDemand(this);
+		double tradeDemand = owner.determineTradeDemand(this) / 10;
+
+		owner.setTradeDemandScore(this, tradeDemand);
 		
 		// Gets the repair demand
 		// Note: need to look into parts and equipment reliability in MalfunctionManager 

@@ -675,8 +675,10 @@ class AmountResourceGood extends Good {
 		owner.setProjectedDemandScore(this, projectedCache);
 				
 		// Add trade value. Cache is always false if this method is called
-		double tradeDemand = owner.determineTradeDemand(this);
+		double tradeDemand = owner.determineTradeDemand(this) / 20;
 
+		owner.setTradeDemandScore(this, tradeDemand);
+		
 		double totalDemand = previousDemand;
 		// Note: the ceiling uses projected, not projectedCache
 		double ceiling = projected + tradeDemand;
