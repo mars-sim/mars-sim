@@ -79,7 +79,7 @@ class ChainOfCommandTest extends MarsSimUnitTest {
                            
         assertFalse(coc.isRoleAvailable(RoleType.COMMANDER), "Is Commander role is available ?");
         
-        commander.setDeclaredDead(true);
+        commander.setTestDeclaredDead(true);
       
         Person dead = personList.stream()
         		.filter(Person::isDeclaredDead)

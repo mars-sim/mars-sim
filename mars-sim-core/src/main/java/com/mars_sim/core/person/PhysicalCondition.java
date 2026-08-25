@@ -1589,7 +1589,7 @@ public class PhysicalCondition implements Serializable {
 		BuildingManager.addPatientToMedicalBed(person, person.getAssociatedSettlement());
 
 		// Let the person go to sleep
-		person.getTaskManager().replaceTask(new Sleep(person, 500));
+		person.getTaskManager().checkReplaceTask(new Sleep(person, 500));
 	}
 
 	
@@ -1614,7 +1614,8 @@ public class PhysicalCondition implements Serializable {
 		this.mostSeriousProblem = problem;
 
 		// Create the death details
-		deathDetails = new DeathInfo(person, problem, reason, lastWord, master.getMarsTime());
+		deathDetails = new DeathInfo(person, 
+				problem, reason, lastWord, person.getContainerUnit().getName(), master.getMarsTime());
 
 		// Backup the role type
 		deathDetails.setRoleType(person.getRole().getType());

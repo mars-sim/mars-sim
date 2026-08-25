@@ -162,6 +162,7 @@ public class ShiftManager implements Serializable {
         // and not onCall
         List<Person> potentials = settlement.getAllAssociatedPeople().stream()
                     .filter(p -> !p.isDeclaredDead())
+                    .filter(p -> !p.isBuried())
                     .filter(o -> (o.getShiftSlot().getStatus() != WorkStatus.ON_LEAVE))
                     .filter(o -> (o.getShiftSlot().getStatus() != WorkStatus.ON_CALL))
                     .collect(Collectors.toList());

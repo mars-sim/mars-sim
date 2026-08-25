@@ -354,27 +354,6 @@ public class ConstructionMission extends AbstractMission {
 			setPhaseEnded(true);
 		}
 
-//		boolean canAssign = false;
-//		if (!getPhaseEnded()) {
-//			// Assign construction task to member.
-//			Person p = (Person) worker;
-//
-//			if (p.isInSettlement() && RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
-//				// Check if the person is EVA fit. 
-//				// Note: this would allow a person fully recover in the settlement 
-//				// before attempting to go out and construct building
-//				&& !p.isEVAUnFit()
-//				&& ConstructBuilding.canConstruct(p, site)) {
-//				canAssign = assignTask(p, new ConstructBuilding(p, stage, site, objective.getConstructionVehicles()));
-//			}
-//			if (canAssign) {
-//				logger.info(worker, 1_000L, "Assigned to construct " + site.getName() + ".");
-//			}
-////			else {
-////				logger.info(member, 20_000L, "Unable to assign to construct " + site.getName() + ".");
-////			}
-//		}
-
 		// Display the LUV(s)
 		if (worker.isInVehicle())
 			showLightUtilityVehicle(worker);

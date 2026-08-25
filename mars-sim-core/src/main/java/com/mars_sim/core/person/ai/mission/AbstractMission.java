@@ -755,6 +755,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @return true if task can be performed.
 	 */
 	public boolean assignTask(Worker worker, Task newTask, boolean allowSameTask) {
+		
+		if (worker instanceof Person p && p.getSuit() != null) {
+			logger.info(p, "Inside EVA Suit. Unable to perform " + newTask.getName() + " as told.");
+		}
+		
 		return worker.getTaskManager().directlyAssignTask(newTask, allowSameTask);
 	}
 	

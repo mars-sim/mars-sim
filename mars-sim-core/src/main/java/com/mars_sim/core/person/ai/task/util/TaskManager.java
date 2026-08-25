@@ -440,9 +440,13 @@ public abstract class TaskManager implements Serializable {
 			else if ((currentTask == null) || !hasSameTask(newTask.getName())) {		
 				// Note: this is the only eligible condition for replacing the
 				// current task with the new task
-				replaceTask(newTask);
-				currentScore = null; // Clear score to show it was directly assigned
-				return true;
+				boolean canReplace = replaceTask(newTask);
+				if (canReplace) {
+					currentScore = null; // Clear score to show it was directly assigned
+					return true;
+				}
+				else
+					return false;
 			}
 		}
 		return false;
@@ -532,14 +536,14 @@ public abstract class TaskManager implements Serializable {
 	}
 	
 	/**
-	 * Checks to see if it's okay to replace a task.
+	 * Checks to see if the old task is the same as the new task.
 	 * 
 	 * @param newTask the task to be executed
 	 * @param allowSameTask is it allowed to execute the same task as previous
 	 */
 	public boolean checkReplaceTask(Task newTask, boolean allowSameTask) {
 		
-		if (newTask == null) {
+		if ((newTask == null) || newTask.equals(currentTask)) {
 			return false;
 		}
 		
@@ -562,9 +566,7 @@ public abstract class TaskManager implements Serializable {
 		}
 		
 		// Records current task as last task and replaces it with a new task.
-		replaceTask(newTask);
-		
-		return true;
+		return replaceTask(newTask);
 	}
 	
 	/**
@@ -572,10 +574,7 @@ public abstract class TaskManager implements Serializable {
 	 * 
 	 * @param newTask
 	 */
-	public void replaceTask(Task newTask) {
-		if ((newTask == null) || newTask.equals(currentTask)) {
-			return;
-		}
+	private boolean replaceTask(Task newTask) {
 			
 		// Backup the current task as last task
 		if (currentTask != null)
@@ -587,16 +586,20 @@ public abstract class TaskManager implements Serializable {
 			
 			currentTask.endTask();
 			
-			logger.info(worker, 5_000, "Quit '" + des + "' and replace with the new task of '"
-						+ newTask.getName() + "'.");
+			logger.info(worker, 5_000, "Quit old task: " + des + ". Replace with new task: "
+						+ newTask.getDescription() + ".");
 		}
 		
 		// Make the new task as the current task
 		currentTask = newTask;
+		
+		// Reset the task score
 		currentScore = null;
 		
 		// Send out the task event
 		worker.fireUnitUpdate(TASK_EVENT, newTask);
+		
+		return true;
 	}
 	
 	/**

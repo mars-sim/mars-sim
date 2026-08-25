@@ -11,6 +11,8 @@ import java.util.List;
 
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.logging.SimLogger;
@@ -42,20 +44,20 @@ public class ConstructBuilding extends EVAOperation {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ConstructBuilding.class.getName());
-   
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.constructBuilding"); //$NON-NLS-1$
 
 	/** Task phases. */
 	private static final TaskPhase CONSTRUCTION = new TaskPhase(Msg.getString("Task.phase.construction"),
-							createPhaseImpact(SkillType.CONSTRUCTION));
+			createPhaseImpact(SkillType.CONSTRUCTION));
 
 	// The base chance of an accident while operating LUV per millisol.
 	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
 
 	// Data members.
 	private boolean operatingLUV;
-	
+
 	private double cumulativeWorkTime;
 
 	private ConstructionStage stage;
@@ -69,7 +71,7 @@ public class ConstructBuilding extends EVAOperation {
 	 * Constructor 1.
 	 *
 	 * @param person the person performing the task.
-	 * @param site the construction site.
+	 * @param site   the construction site.
 	 */
 	public ConstructBuilding(Person person, ConstructionSite site) {
 		// Use EVAOperation parent constructor.
@@ -77,34 +79,39 @@ public class ConstructBuilding extends EVAOperation {
 
 		if (person.isEVAUnFit()) {
 			endEVA("Not EVA fit.");
-        	return;
+			return;
 		}
+
 		
+//      // To construct building, a person must start at a Settlement
+//		if (!person.isInSettlement()) {
+//			endEVA("Not in settlement at the start.");
+//			return;
+//		}
+		
+
 		this.site = site;
+		
 		if (canConstruct(person, site)) {
 
 			// Initialize data members.
 			this.stage = site.getCurrentConstructionStage();
-			this.vehicles = ((ConstructionMission)site.getWorkOnSite()).getConstructionVehicles();
+			this.vehicles = ((ConstructionMission) site.getWorkOnSite()).getConstructionVehicles();
 
-			// Operate light utility vehicle if no one else is operating it.
-			if (!operatingLUV) {
-				obtainVehicle();
-			}
-			
 			// DeterDigLocalTestmine location for construction site.
 			LocalPosition constructionSiteLoc = determineConstructionLocation();
 			setOutsideSiteLocation(constructionSiteLoc);
 		}
-
 		else {
 			endEVA("Unable to construct.");
+			return;
 		}
+		
+		setPhase(WALK_TO_OUTSIDE_SITE);
 	}
 
 	/**
 	 * Constructor 2. Called by ConstructionMission
-	 * Q: is it necessary ?
 	 *
 	 * @param person   the person performing the task.
 	 * @param stage    the construction site stage.
@@ -123,17 +130,27 @@ public class ConstructBuilding extends EVAOperation {
 
 		if (person.isEVAUnFit()) {
 			endEVA("Not EVA fit.");
-        	return;
+			return;
 		}
 
-		// Operate light utility vehicle if no one else is operating it.
-		if (!operatingLUV) {
-			obtainVehicle();
+//        // To construct building, a person must start at a Settlement
+//		if (!person.isInSettlement()) {
+//			endEVA("Not in settlement at the start.");
+//			return;
+//		}
+
+		if (canConstruct(person, site)) {
+
+			// DeterDigLocalTestmine location for construction site.
+			LocalPosition constructionSiteLoc = determineConstructionLocation();
+			setOutsideSiteLocation(constructionSiteLoc);
+		}
+		else {
+			endEVA("Unable to construct.");
+			return;
 		}
 		
-		// Determine location for construction site.
-		LocalPosition constructionSiteLoc = determineConstructionLocation();
-		setOutsideSiteLocation(constructionSiteLoc);
+		setPhase(WALK_TO_OUTSIDE_SITE);
 	}
 
 	/**
@@ -152,7 +169,7 @@ public class ConstructBuilding extends EVAOperation {
 		// Check if person's medical condition will not allow task.
 		if (person.getPerformanceRating() < .3D)
 			return false;
-		
+
 		// Check if there is work that can be done on the construction stage.
 		ConstructionStage stage = site.getCurrentConstructionStage();
 
@@ -178,9 +195,10 @@ public class ConstructBuilding extends EVAOperation {
 
 		time = super.performMappedPhase(time);
 		if (!isDone()) {
-			if (getPhase() == null) {
-				throw new IllegalArgumentException("Task phase is null");
-			} else if (CONSTRUCTION.equals(getPhase())) {
+	        if (getPhase() == null) {
+				logger.severe(worker, "Task phase is null.");
+			} 
+	        else if (CONSTRUCTION.equals(getPhase())) {
 				time = constructionPhase(time);
 			}
 		}
@@ -201,6 +219,11 @@ public class ConstructBuilding extends EVAOperation {
 			return time;
 		}
 
+		// Board a light utility vehicle if not yet.
+		if (!operatingLUV) {
+			obtainVehicle();
+		}
+		
 		// Determine effective work time based on "Construction" and "EVA Operations"
 		// skills.
 		double workTime = time;
@@ -213,39 +236,40 @@ public class ConstructBuilding extends EVAOperation {
 
 		// Work on construction.
 		stage.addWorkTime(workTime);
-	
+
 		// Record the work time
 		if (site.getWorkOnSite() != null)
-			((ConstructionMission)site.getWorkOnSite()).getObjective().recordWorkTime(person.getIdentifier(), workTime);
-			
-    	person.fireUnitUpdate(EntityEventType.WORK_TIME_EVENT);
-    	
+			((ConstructionMission) site.getWorkOnSite()).getObjective().recordWorkTime(person.getIdentifier(),
+					workTime);
+
+		person.fireUnitUpdate(EntityEventType.WORK_TIME_EVENT);
+
 //		logger.info(person, "At " + site.getName() + ", work time: " + Math.round(workTime * 1000.0)/1000.0);	
 		// Keep track of cumulative work time
 		cumulativeWorkTime += workTime;
-		
+
 		// Add experience points
 		addExperience(workTime);
 
 		// Check if an accident happens during construction.
 		checkForAccident(workTime);
-		
+
 		boolean availableWork = stage.getRequiredWorkTime() >= stage.getCompletedWorkTime();
 
 		// Check if site duration has ended or there is reason to cut the construction
 		// phase short and return to the rover.
-		if (person != null
-			&& (stage.isComplete() || !availableWork)) {
+		if (person != null && (stage.isComplete() || !availableWork)) {
 
-			logger.info(person, site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 100.0)/100.0);		
+			logger.info(person,
+					site.getName() + " cumulativeWorkTime: " + Math.round(cumulativeWorkTime * 100.0) / 100.0);
 			// End operating light utility vehicle.
 			endEVA("Stage completed.");
 			return workTime;
 		}
-		
+
 		return 0;
 	}
-	
+
 	/**
 	 * Obtains a construction vehicle from the settlement if possible.
 	 *
@@ -256,30 +280,30 @@ public class ConstructBuilding extends EVAOperation {
 		while (i.hasNext() && (luv == null)) {
 			LightUtilityVehicle v = i.next();
 
-			if (!v.getMalfunctionManager().hasMalfunction()
-				&& !v.isFull() && v.getOperator() == null && !v.isInGarage()) {
-
-				v.findNewParkingLoc();
-				// Warning: do not call addOccupant directly
+			if (!v.getMalfunctionManager().hasMalfunction() && !v.isFull() && v.getOperator() == null) {
+					
+				// if the luv is inside a garage, come out of it
+				BuildingManager.removeFromGarage(v);
+					
+				// Place light utility vehicles at a random location in the construction site.
+				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
+				v.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 				
-				// Note: should walk to the location of luv and board it
-		
+				// Warning: do not call addOccupant directly
+
+				// Should walk to the location of luv and board it
 				WalkingSteps walkingSteps = new WalkingSteps(worker, v.getPosition(), v);
 				boolean canWalk = Walk.canWalkAllSteps(worker, walkingSteps);
-				
+
 				if (canWalk) {
 					canWalk = assignTask(worker, new Walk(worker, walkingSteps), false);
 					if (!canWalk) {
 						logger.warning(worker, 20_000, "Unable to walk to " + v + ".");
-					}
-					else {
-						boolean canTransfer = person.transfer(v);	
+					} else {
+						boolean canTransfer = person.transfer(v);
 						if (canTransfer) {
 							luv = v;
 							operatingLUV = true;
-							// Place light utility vehicles at random location in construction site.
-							LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
-							luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 						}
 					}
 				}
@@ -292,63 +316,66 @@ public class ConstructBuilding extends EVAOperation {
 	/**
 	 * Checks if a worker has any issues in starting a new task.
 	 *
-	 * @param worker the worker to assign to the task
-	 * @param newTask   the new task to be assigned
+	 * @param worker        the worker to assign to the task
+	 * @param newTask       the new task to be assigned
 	 * @param allowSameTask is it allowed to execute the same task as previous
 	 * @return true if task can be performed.
 	 */
 	public boolean assignTask(Worker worker, Task newTask, boolean allowSameTask) {
 		return worker.getTaskManager().directlyAssignTask(newTask, allowSameTask);
 	}
-	
+
 	/**
-	 * Ends the task.
+	 * Ends the EVA task
 	 */
 	public void endEVA(String reason) {
-		resetLUV();
-		super.endEVA(reason);
-	}
-	
-	/**
-	 * Reset the LUV.
-	 *
-	 * @throws Exception if error returning construction vehicle.
-	 */
-	private void resetLUV() {
-		if (luv != null && person.getVehicle().equals(luv)) {
-			
-			Settlement s = luv.getSettlement();
-			
-			boolean canTransfer = person.transfer(unitManager.getMarsSurface());	
-			if (canTransfer) {
-				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
-				luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
-				logger.info(person, "Left " + luv + " at " + s.getName() + ".");
-			}
+		Settlement s = person.getAssociatedSettlement();
 
-			
-//			Building garage = s.getBuildingManager().addToGarageBuilding(luv);
-//			
-//			if (garage != null) {
-//				boolean canTransfer = person.transfer(luv.getGarage());	
-//				if (canTransfer) {
-//					logger.info(luv, "Done transferring to " + s.getName() + " in " + garage + ".");
-//				}
-//				else {
-//					logger.info(luv, "Unable to transfer to " + s.getName() + " in " + garage + ".");
-//				}
-//			}
-//			else {
-//				// Place light utility vehicles at random location in construction site.
+		if (person.isInSettlement()) {
+			operatingLUV = false;
+			logger.info(person, "Already inside settlement. Releasing " + luv.getName() + ".");
+		}
+
+		else if (person.isInVehicle()) {
+			if (luv != null && person.getVehicle().equals(luv)) {
+				Building garage = luv.getGarage();
+				if (garage != null) {
+					boolean canTransfer = person.transfer(garage);
+					if (canTransfer) {
+						operatingLUV = false;
+						logger.info(person, "Left " + luv + " and entered " + garage + ".");
+					} else {
+						logger.info(person, "Unable to leave " + luv + " to enter " + garage + ".");
+					}
+				} else {
+					// Q: when would be the best time to add/move the luv into the garage ?
+
+					boolean canTransfer = person.transfer(unitManager.getMarsSurface());
+					if (canTransfer) {
+						operatingLUV = false;
+						LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
+						luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+						logger.info(person, "Left " + luv + " at the vicinity of " + s.getName() + ".");
+					} else {
+						logger.info(person,
+								"Unable to leave " + luv + " to enter the vicinity of " + s.getName() + ".");
+					}
+				}
+			}
+		}
+//		else {
+//			boolean canTransfer = person.transfer(unitManager.getMarsSurface());	
+//			if (canTransfer) {
 //				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
 //				luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
-//				logger.info(luv, "Unable to find a garage with parking in " + s.getName() + ".");
+//				logger.info(person, "Outside. Left " + luv + " at the vicinity of " + s.getName() + ".");
 //			}
-			// if not, calling endEVA() should take care of walking back inside automatically
+//			else {
+//				logger.info(person, "Unable to leave " + luv + " to enter the vicinity of " + s.getName() + ".");
+//			}
+//		}
 
-			operatingLUV = false;
-			logger.info(person, "Releasing " + luv.getName() + ".");
-		}
+		super.endEVA(reason);
 	}
 
 	@Override
@@ -360,7 +387,8 @@ public class ConstructBuilding extends EVAOperation {
 		// 1 base experience point per 10 millisols of mining time spent.
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		if ((CONSTRUCTION.equals(getPhase())) && operatingLUV) {
-			int experienceAptitude = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+			int experienceAptitude = worker.getNaturalAttributeManager()
+					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 
 			double experienceAptitudeModifier = (experienceAptitude - 50D) / 100D;
 			double drivingExperience = time / 10D;

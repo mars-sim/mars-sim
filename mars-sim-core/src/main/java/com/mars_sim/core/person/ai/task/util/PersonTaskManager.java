@@ -240,9 +240,7 @@ public class PersonTaskManager extends TaskManager {
 
 			if (currentTaskName.equals(Sleep.NAME)) {
 	      		logger.info(person, 20_000, "Currently asleep. Not available to be assigned with other tasks.");
-				// If the person is asleep, 
-				// do not assign this task.
-	      		
+				// If the person is asleep, do not assign this task.
 	      		// Note: what if it's an emergency that one must wake up and respond ?
 				return false;
 			}
@@ -250,14 +248,12 @@ public class PersonTaskManager extends TaskManager {
 			Vehicle v = person.getVehicle();
 			if (v != null && v instanceof Rover r && r.isInAirlock(person)) {	
 	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
-		
 	      		// Note: need to wait until the person has exited the vehicular airlock
 				return false;
 			}
 			Settlement settlement = person.getSettlement();
 			if (settlement != null && settlement.isInAirlock(person)) {	
 	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
-		
 	      		// Note: need to wait until the person has exited the vehicular airlock
 				return false;
 			}
@@ -270,7 +266,9 @@ public class PersonTaskManager extends TaskManager {
 		
 		// If Task is easy or person is fit enough, then assign the task.
 		if ((!newTask.isEffortDriven() || person.getPerformanceRating() > 0D)
+				// Call to replace the old task with this new task
 				 && checkReplaceTask(newTask, allowSameTask)) {
+			
 			return true;
 		}
 

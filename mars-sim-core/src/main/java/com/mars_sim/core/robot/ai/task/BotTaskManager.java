@@ -242,7 +242,7 @@ public class BotTaskManager extends TaskManager {
 			}
 		}
 
-		// Attempt to assign
+		// Call to replace the old task with this new task
 		if (!checkReplaceTask(newTask, allowSameTask)) {
 			logger.info(robot, 20_000, "Unable to directly assign '" + newTaskName + "'.");
 			return false;

@@ -18,6 +18,7 @@ import com.google.common.math.DoubleMath;
  * The label updates its text only when the value changes, to minimize unnecessary updates.
  * There is a tolerance field to define the precision for value comparison.
  */
+@SuppressWarnings("serial")
 public class JDoubleLabel extends JLabel {
 
     private double tolerance = 0.001D;

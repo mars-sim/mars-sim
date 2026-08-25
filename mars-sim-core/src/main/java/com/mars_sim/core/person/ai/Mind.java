@@ -446,7 +446,7 @@ public class Mind implements Serializable, Temporal {
 	public Mission startNewMission() {
 		boolean isPersonToWeak = person.getPerformanceRating() < MINIMUM_MISSION_PERFORMANCE;
 
-		if (!isPersonToWeak) {
+		if (!isPersonToWeak && !person.isDeclaredDead()) {
 			Mission newMission = person.getAssociatedSettlement().getMissionControl().getNewMission(person);
 			if (newMission != null) {
 				setMission(newMission);

@@ -79,14 +79,14 @@ class CookMealMetaTest extends MarsSimUnitTest {
         assertEquals(k.getCookCapacity(), task.getDemand(), "Meal task demand");
 
         var p1 = buildPerson("Chef", s, JobType.CHEF, b, FunctionType.COOKING);
-        p1.getTaskManager().replaceTask(new CookMeal(p1, k));
+        p1.getTaskManager().checkReplaceTask(new CookMeal(p1, k));
         results = mt.getSettlementTasks(s);
         task = results.get(0);
 
         assertEquals(k.getCookCapacity() - 1, task.getDemand(), "Meal task demand after 1 chef");
 
         var p2 = buildPerson("Chef", s, JobType.CHEF, b, FunctionType.COOKING);
-        p2.getTaskManager().replaceTask(new CookMeal(p2, k));
+        p2.getTaskManager().checkReplaceTask(new CookMeal(p2, k));
         results = mt.getSettlementTasks(s);
         assertTrue(results.isEmpty(), "No meals no space");
     }

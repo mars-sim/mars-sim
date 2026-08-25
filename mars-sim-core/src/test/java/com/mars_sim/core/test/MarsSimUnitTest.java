@@ -305,7 +305,7 @@ public abstract class MarsSimUnitTest {
 	 */
 	protected int executeTask(Person person, Task task, int maxCalls) {
 		PersonTaskManager tm = person.getMind().getTaskManager();
-		tm.replaceTask(task);
+		tm.checkReplaceTask(task);
 		
 		int callsLeft = maxCalls;
 		while ((callsLeft > 0) && !task.isDone()) {
@@ -327,7 +327,7 @@ public abstract class MarsSimUnitTest {
 	 */
 	protected int executeTaskUntilPhase(Person person, Task task, int maxCalls) {
 		PersonTaskManager tm = person.getMind().getTaskManager();
-		tm.replaceTask(task);
+		tm.checkReplaceTask(task);
 		
 		var phase = task.getPhase();
 		int callsLeft = maxCalls;
@@ -349,7 +349,7 @@ public abstract class MarsSimUnitTest {
 	 */
 	protected int executeTaskUntilSubTask(Person person, Task task, int maxCalls) {
 		PersonTaskManager tm = person.getMind().getTaskManager();
-		tm.replaceTask(task);
+		tm.checkReplaceTask(task);
 		
 		int callsLeft = maxCalls;
 		while ((callsLeft > 0) && !task.isDone() && (task.getSubTask() != null) && !task.getSubTask().isDone()) {

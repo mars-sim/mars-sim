@@ -16,6 +16,7 @@ import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -66,7 +67,12 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 		vehicleStatusLabel = attributePanel.addTextField(Msg.getString("vehicle.status"), "", null);
 		vehicleOperatorLabel = attributePanel.addTextField(Msg.getString("vehicle.operator"), "", null);
 		
-		updateVehicleInfo();
+		if (getEntity() instanceof ConstructionMission cm) {
+			luv = cm.getConstructionVehicles().stream().findFirst().orElse(null);
+			if (luv != null) {
+		        luv.addEntityListener(this);
+			}
+		}
 		
         return attributePanel;
 	}
@@ -75,13 +81,13 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 	 * Updates the vehicle info.
 	 */
 	private void updateVehicleInfo() {
-		if (getEntity() instanceof ConstructionMission cm) {
+		if (luv == null && getEntity() instanceof ConstructionMission cm) {
 			luv = cm.getConstructionVehicles().stream().findFirst().orElse(null);
 			if (luv != null) {
 		        luv.addEntityListener(this);
 		        
 				vehicleStatusLabel.setText(luv.printStatusTypes());
-				var op = luv.getOperator();
+				Worker op = luv.getOperator();
 				String name = "";
 				if (op != null);
 					name = op.getName();
@@ -127,6 +133,7 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 			case EntityEventType.WORK_TIME_EVENT -> {
 				Mission context = (Mission)getContext();
 				if (context instanceof ConstructionMission cm) {
+					memberTableModel.updateOccupantList();
 					updateVehicleInfo();
 				}
 			}

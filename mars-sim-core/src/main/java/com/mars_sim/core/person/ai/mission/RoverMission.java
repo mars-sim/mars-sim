@@ -1155,15 +1155,25 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * @param s
 	 */
 	private void exitRover(Person person, Rover rover, Settlement s) {
-		if (rover.isInGarage() && 
-				((Rover)person.getVehicle()).equals(rover)) {
-			// Force the person to get off the vehicle and back to the garage
-			// Note: may need to evaluate a better way of handling this
-			boolean canTransfer = person.transfer(rover.getGarage());
-			if (!canTransfer) {
-				assignTask(person, new Relax(person));				
+		if (person.isInSettlement()) {
+			// Q: should we wait for this person to automatically do things at this point ?
+		}
+		else if (person.isInVehicle()) {
+			if (person.getVehicle() instanceof Rover r && r.equals(rover)) {
+				if (rover.isInGarage()) {
+					// Force the person to get off the vehicle and back to the garage
+					// Note: may need to evaluate a better way of handling this
+					boolean canTransfer = person.transfer(rover.getGarage());
+					if (!canTransfer) {
+						assignTask(person, new Relax(person));				
+					}
+				}
+				else {
+					// Q: should we wait for this person to automatically do things at this point ?
+				}
 			}
 		}
+		
 		else {
 			// Let the person automatically leave the vehicle via walking toward a settlement airlock
 			walkToAirlock(rover, person, s);

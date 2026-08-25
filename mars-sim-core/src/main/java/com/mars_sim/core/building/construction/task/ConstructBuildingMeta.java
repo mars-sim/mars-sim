@@ -156,6 +156,7 @@ public class ConstructBuildingMeta extends MetaTask implements SettlementMetaTas
         Mission currentMission = p.getMission();
         
         if (currentMission != null && currentMission instanceof ConstructionMission cm) {
+        	
 			var activeSites = p.getAssociatedSettlement()
 					.getConstructionManager().getConstructionSites()
 	                .stream()
