@@ -2151,8 +2151,9 @@ public class Settlement extends Unit implements Temporal,
 	 *
 	 * @return collection of associated vehicles.
 	 */
-	public Collection<Vehicle> getAllAssociatedVehicles() {
-		return ownedVehicles;
+	public Set<Vehicle> getAllAssociatedVehicles() {
+		return ownedVehicles.stream()
+				.collect(Collectors.toSet());
 	}
 
 	/**

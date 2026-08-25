@@ -69,24 +69,16 @@ public class VehicleCommand extends AbstractSettlementCommand {
 		printVehicleList(settlement, vicinityList, response);
 		
 		response.appendDoubleBlankLine();
-		
-//		for (int i=0; i<vicinityListSize; i++) {
-//			Vehicle vv = vicinityList.get(i);
-//			response.append(vv.getName());
-//			if (i < vicinityListSize - 1) {
-//				response.append(", ");
-//			}
-//		}
 
-		boolean containsAll = vlist.stream()
-			    .allMatch(vicinityList::contains);
+		boolean containsAll = vicinityList.stream()
+			    .allMatch(vlist::contains);
 		
 		if (containsAll) {
-			response.appendText("Summary: The associated list of vehicles (" + vlistSize 
-					+ ") contains all the vehicles in vicinity list (" + vicinityListSize + ").");
+			response.appendText("In summary, the associated list of owned vehicles (" + vlistSize 
+					+ ") contains all the vehicles in the vicinity list (" + vicinityListSize + ").");
 		}
 		else {
-			response.appendText("Summary: The associated list of vehicles (" + vlistSize 
+			response.appendText("In summary, the associated list of owned vehicles (" + vlistSize 
 					+ ") does not contain all the vehicles in the vicinity list (" + vicinityListSize + ") !");
 		}
 

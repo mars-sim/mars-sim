@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -411,7 +412,7 @@ public class Converse extends Task {
         	inviteeLocation = Location.SAME_VEHICLE;
         }
         else {
-            Collection<Vehicle> vv = person.getAssociatedSettlement().getAllAssociatedVehicles();
+            Set<Vehicle> vv = person.getAssociatedSettlement().getAllAssociatedVehicles();
             if (person.getContainerUnit() instanceof Vehicle v) {
             	vv.remove(v);
             }
