@@ -84,9 +84,9 @@ public class SalvageProcess extends WorkshopProcess {
 			case Robot r: {
 				settlement.removeOwnedRobot(r);
 			} break;
-//			case Vehicle v: {
-//				settlement.removeOwnedVehicle(v);
-//			} break;
+			case Vehicle v: {
+				settlement.removeOwnedVehicle(v);
+			} break;
 			default: throw new IllegalStateException("Salvage process can not remote target");
 		}
 

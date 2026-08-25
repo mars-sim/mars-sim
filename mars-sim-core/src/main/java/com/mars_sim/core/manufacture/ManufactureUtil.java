@@ -243,18 +243,18 @@ public final class ManufactureUtil {
 		Salvagable result = null;
 		List<Salvagable> salvagableUnits = Collections.emptyList();
 
-//		if (info.getType() == ItemType.VEHICLE) {
-//			VehicleType type = VehicleType.convertNameToVehicleType(info.getItemName());
-//
-//			// Take any non-empty and unreserved vehicles
-//			salvagableUnits = settlement.getVehicleTypeUnit(type).stream()
-//								.filter(v -> (v.isEmpty() && !v.isReserved()))
-//								.filter(v2 -> (v2.getContainerUnit().equals(settlement)))
-//								.map(Salvagable.class::cast)
-//								.toList();
-//		} 
+		if (info.getType() == ItemType.VEHICLE) {
+			VehicleType type = VehicleType.convertNameToVehicleType(info.getItemName());
+
+			// Take any non-empty and unreserved vehicles
+			salvagableUnits = settlement.getVehicleTypeUnit(type).stream()
+								.filter(v -> (v.isEmpty() && !v.isReserved()))
+								.filter(v2 -> (v2.getContainerUnit().equals(settlement)))
+								.map(Salvagable.class::cast)
+								.toList();
+		} 
 		
-		if (info.getType() == ItemType.EQUIPMENT) {
+		else if (info.getType() == ItemType.EQUIPMENT) {
 			EquipmentType eType = EquipmentType.convertName2Enum(info.getItemName());
 			salvagableUnits = settlement.getContainerSet(eType).stream()
 								.filter(v2 -> (v2.getContainerUnit().equals(settlement)))
