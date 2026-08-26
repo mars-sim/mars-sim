@@ -514,7 +514,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			computeTotalDistanceRemaining();
 			computeTotalDistanceTravelled();
 			
-			endMission(AbstractMission.MISSION_ACCOMPLISHED);
+//			endMission(AbstractMission.MISSION_ACCOMPLISHED);
 		}
 		else {
 			handled = false;

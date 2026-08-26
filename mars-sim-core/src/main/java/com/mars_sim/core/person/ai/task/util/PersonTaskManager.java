@@ -251,15 +251,21 @@ public class PersonTaskManager extends TaskManager {
 	      		// Note: need to wait until the person has exited the vehicular airlock
 				return false;
 			}
+			
 			Settlement settlement = person.getSettlement();
 			if (settlement != null && settlement.isInAirlock(person)) {	
-	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
+	      		logger.info(person, 20_000, "Currently inside a settlement airlock. Not available to be assigned with other tasks.");
 	      		// Note: need to wait until the person has exited the vehicular airlock
 				return false;
 			}
 		}
 		
-		if (!newTaskName.equals(Sleep.NAME) && person.isSuperUnfit()) {
+		if (!(newTaskName.equals(Sleep.NAME) || newTaskName.equals(EatDrink.NAME)) && person.isSuperUnfit()) {
+			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + ".");
+			return false;
+		}
+
+		if (newTaskName.equals(Walk.NAME) && person.isSuperUnfit()) {
 			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + ".");
 			return false;
 		}

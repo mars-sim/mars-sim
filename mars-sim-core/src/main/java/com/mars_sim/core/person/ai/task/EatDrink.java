@@ -47,7 +47,7 @@ public class EatDrink extends Task {
 	private static final String EATING_PRESERVED = Msg.getString("Task.description.eatDrink.preserved"); //$NON-NLS-1$
 	private static final String DRINKING = Msg.getString("Task.description.eatDrink.drinking"); //$NON-NLS-1$
 	private static final String EATING = Msg.getString("Task.description.eatDrink.eating"); //$NON-NLS-1$
-	private static final String NAME = EATING;
+	public static final String NAME = EATING;
 
 	/** Task phases. */
 	private static final TaskPhase LOOK_FOR_FOOD = new TaskPhase(Msg.getString("Task.phase.lookingforFood")); //$NON-NLS-1$

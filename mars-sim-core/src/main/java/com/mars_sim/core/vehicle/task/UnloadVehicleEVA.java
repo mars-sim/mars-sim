@@ -75,7 +75,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		this.vehicle = vehicle;
 		
 		if (!vehicle.haveStatusType(StatusType.UNLOADING)) {
-			endEVA("Vehicle is not ready for ynloading.");
+			endEVA("Vehicle is not ready for unloading.");
         	return;
 		}
 

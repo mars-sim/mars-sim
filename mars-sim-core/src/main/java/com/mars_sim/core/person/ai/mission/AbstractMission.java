@@ -669,6 +669,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 		endMission(status);
 	}
 	
+	/** 
+	 * Is the mission aborted ?
+	 * 
+	 */
+	protected boolean isAborted() {
+		return aborted;
+	}
+	
 	/**
 	 * Finalizes the mission. Reason for ending mission. Mission can
 	 * override this to perform necessary finalizing operations.
@@ -764,9 +772,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @return true if task can be performed.
 	 */
 	public boolean assignTask(Worker worker, Task newTask, boolean allowSameTask) {
-		
 		if (worker instanceof Person p && p.getSuit() != null) {
-			logger.info(p, "Inside EVA Suit. Unable to perform " + newTask.getName() + " as told.");
+			logger.info(p, "Already donned an EVA Suit. Unable to perform '" + newTask.getName() + "' as assigned.");
+			return false;
 		}
 		
 		return worker.getTaskManager().directlyAssignTask(newTask, allowSameTask);
