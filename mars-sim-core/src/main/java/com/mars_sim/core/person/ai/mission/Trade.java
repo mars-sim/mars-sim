@@ -560,7 +560,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	}
 
 	@Override
-	public Set<ObjectiveType> getObjectiveSatisified() {
+	public Set<ObjectiveType> getObjectiveSatisfied() {
 		return OBJECTIVES;
 	}
 }

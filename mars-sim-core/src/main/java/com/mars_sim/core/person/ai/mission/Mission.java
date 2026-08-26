@@ -101,7 +101,7 @@ public interface Mission extends MonitorableEntity {
 	 * 
 	 * @return May be an empty set
 	 */
-	Set<ObjectiveType> getObjectiveSatisified();
+	Set<ObjectiveType> getObjectiveSatisfied();
 
 	/**
 	 * Gets the stage of the Mission.

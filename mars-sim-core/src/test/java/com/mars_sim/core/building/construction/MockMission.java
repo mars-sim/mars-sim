@@ -91,7 +91,7 @@ public class MockMission implements Mission {
     }
 
     @Override
-    public Set<ObjectiveType> getObjectiveSatisified() {
+    public Set<ObjectiveType> getObjectiveSatisfied() {
         throw new UnsupportedOperationException("Unimplemented method 'getObjectiveSatisified'");
     }
 

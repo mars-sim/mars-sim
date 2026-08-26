@@ -203,6 +203,12 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 	}
 
+	/**
+	 * Sets the objectives.
+	 * 
+	 * @param containerNum
+	 * @param numberSites
+	 */
 	private void setObjectives(int containerNum, double numberSites) {
 		int numMembers = getMembers().size();
 		int buffer = (int)(numMembers * 1.5);
@@ -211,7 +217,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		setEVAEquipment(containerID, newContainerNum);
 
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
-		var siteResourceGoal = NUM_EVA_PER_SITE * containerCap * containerNum / numberSites;
+		var siteResourceGoal = numMembers * NUM_EVA_PER_SITE * containerCap * containerNum / numberSites;
 
 		objective = new CollectResourceObjective(siteResourceGoal);
 		addObjective(objective);

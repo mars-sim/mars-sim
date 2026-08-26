@@ -216,8 +216,9 @@ public class CollectionUtils {
 	 * @param settlement the settlement
 	 * @return list of robots to display.
 	 */
-	public static List<Robot> getAssociatedRobotsInSettlementVicinity(Settlement settlement) {
-		return new ArrayList<>(settlement.getAllAssociatedRobots());
+	public static Collection<Robot> getAssociatedRobotsInSettlementVicinity(Settlement settlement) {
+		// In near future, track robots in vicinity and indoor.
+		return settlement.getAllAssociatedRobots();
 	}
 	
 	/**

@@ -152,7 +152,7 @@ public class MissionDisembarkStep extends MissionStep {
 			// Note 1: Help this person put on an EVA suit
 			// Note 2: consider inflatable medical tent for emergency transport of incapacitated personnel
 			logger.info(person, 10_000, 
-					 Msg.getString("RoverMission.log.emergencyEnterSettlement", person.getName(),
+					 Msg.getString("mission.status.emergencyEnterSettlement", person.getName(),
 							disembarkSettlement.getName())); //$NON-NLS-1$
 
 			logger.info(person, 10_000, ""

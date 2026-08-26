@@ -333,7 +333,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 				setPhaseEnded(true);
 			}
 			else {
-				endMissionProblem(v, "Could not transfer to Surface");
+				endMissionProblem(v, "Could not transfer to Mars Surface");
 			}
 		}
 	}
@@ -395,7 +395,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	}
 
 	@Override
-	public Set<ObjectiveType> getObjectiveSatisified() {
+	public Set<ObjectiveType> getObjectiveSatisfied() {
 		return OBJECTIVES;
 	}
 }

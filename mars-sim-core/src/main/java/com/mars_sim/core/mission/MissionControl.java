@@ -47,7 +47,7 @@ public class MissionControl implements ScheduledEventHandler {
 	private static final double MAX_MISSION_SCORE = 1000D;
 
     // Status for a mission plan that is not approved
-	private static final MissionStatus MISSION_PLAN_NOT_APPROVED = MissionStatus.createResourceStatus("Mission.status.notApproved");
+	private static final MissionStatus MISSION_PLAN_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 
     private static final SimLogger logger = SimLogger.getLogger(MissionControl.class.getName());
 

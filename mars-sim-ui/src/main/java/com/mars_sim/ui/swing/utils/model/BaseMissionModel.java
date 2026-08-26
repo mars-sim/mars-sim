@@ -34,7 +34,7 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
     private static final int PHASE_VAL = 1;
     private static final int FILED_VAL = 2;
     private static final int EMBARKED_VAL = 3;
-    private static final int COMPLETED_VAL = 4;
+    private static final int ENDED_VAL = 4;
     private static final int SETTLEMENT_VAL = 5;
     private static final int LEADER_VAL = 6;
     private static final int DESIGNATION_VAL = 7;
@@ -54,7 +54,7 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
                                                             Set.of(Mission.PHASE_EVENT));
     protected static final EntityColumnSpec DATE_EMBARKED = new EntityColumnSpec(new ColumnSpec(EMBARKED_VAL, Msg.getString("mission.embarked"), MarsTime.class),
                                                             Set.of(Mission.PHASE_EVENT));
-    protected static final EntityColumnSpec DATE_COMPLETED = new EntityColumnSpec(new ColumnSpec(COMPLETED_VAL, Msg.getString("mission.completed"), MarsTime.class),
+    protected static final EntityColumnSpec DATE_ENDED = new EntityColumnSpec(new ColumnSpec(ENDED_VAL, Msg.getString("mission.ended"), MarsTime.class),
                                                             Set.of(Mission.PHASE_EVENT));
     protected static final EntityColumnSpec SETTLEMENT = new EntityColumnSpec(new ColumnSpec(SETTLEMENT_VAL, Msg.getString("settlement.singular"), String.class),
                                                             null);
@@ -193,7 +193,7 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
             }
             case FILED_VAL -> entity.getLog().getTimestampFiled();
             case EMBARKED_VAL -> entity.getLog().getTimestampEmbarked();
-            case COMPLETED_VAL -> entity.getLog().getTimestampCompleted();
+            case ENDED_VAL -> entity.getLog().getTimestampEnded();
             case SETTLEMENT_VAL -> entity.getAssociatedSettlement().getName();
             case LEADER_VAL -> entity.getStartingPerson().getName();
             case DESIGNATION_VAL -> entity.getFullMissionDesignation();

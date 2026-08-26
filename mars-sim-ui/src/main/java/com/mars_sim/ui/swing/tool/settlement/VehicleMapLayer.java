@@ -11,7 +11,7 @@ import java.awt.Font;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.batik.gvt.GraphicsNode;
 
@@ -60,7 +60,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		boolean drawLabel = mapPanel.isOptionDisplayed(DisplayOption.VEHICLE_LABELS);
 
 		// Vehicles parked take a copy to avoid changes during iteration.
-		var vehicles = new ArrayList<>(settlement.getParkedNGaragedVehicles());
+		Collection<Vehicle> vehicles = settlement.getParkedNGaragedVehicles();
 
 		// Draw all parked vehicles at this settlement location
 		for (Vehicle v : vehicles) {

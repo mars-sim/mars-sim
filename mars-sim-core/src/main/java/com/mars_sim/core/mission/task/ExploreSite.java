@@ -61,7 +61,7 @@ public class ExploreSite extends EVAOperation {
 	public double averageRockMass;
 	private double estImprovementFactor;
 	
-	private double rocksToBeCollected = averageRockCollected / averageRockMass;
+	private double rocksToBeCollected;// = averageRockCollected / averageRockMass;
 	
 	private Exploration mission;
 	private MineralSite site;
@@ -110,8 +110,8 @@ public class ExploreSite extends EVAOperation {
 			}
 			else {
 				// Compute the data members
-				averageRockCollected = 100 + RandomUtil.getRandomDouble(-20, 20);
-				averageRockMass = 3 + RandomUtil.getRandomDouble(-2, 2);
+				averageRockCollected = 400 + RandomUtil.getRandomDouble(-50, 50);
+				averageRockMass = 4 + RandomUtil.getRandomDouble(-2, 2);
 				estImprovementFactor = 5 + RandomUtil.getRandomDouble(5);
 				rocksToBeCollected = averageRockCollected / averageRockMass;
 				double maxCap = ContainerUtil.getContainerCapacity(EquipmentType.SPECIMEN_BOX);

@@ -264,7 +264,7 @@ public class Exploration extends EVAMission
 	}
 
 	@Override
-	public Set<ObjectiveType> getObjectiveSatisified() {
+	public Set<ObjectiveType> getObjectiveSatisfied() {
 		return OBJECTIVES;
 	}
 	

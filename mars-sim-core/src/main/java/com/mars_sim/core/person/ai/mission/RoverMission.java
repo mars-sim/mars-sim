@@ -1,12 +1,13 @@
 /*
  * Mars Simulation Project
  * RoverMission.java
- * @date 2025-10-07
+ * @date 2026-08-25
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +46,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -80,14 +82,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	
 	private static final String STATUS_REPORT = "[Status Report] Left ";
 	
-	private static final MissionStatus STATUS_VEHICLE_NOT_AT_SETTLEMENT = MissionStatus.createResourceStatus("RoverMission.log.notAtSettlement");
-	
-	private static final String VEHICLE_NOT_AT_SETTLEMENT = STATUS_VEHICLE_NOT_AT_SETTLEMENT.getName();
+	private static final String TIMEOUT = "Timeout for departure";
 	
 	// Static members
 	public static final int MIN_GOING_MEMBERS = 2;
 	/* How long do Worker have to complete departure */
-	private static final int DEPARTURE_DURATION = 250;
+	private static final int DEPARTURE_DURATION = 330;
 	
 	private static final int DEPARTURE_FINAL_PREPARATION = DEPARTURE_DURATION / 10;
 	
@@ -358,9 +358,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		
 		else if (ejectedList.contains(lead)) {
-		
-			// Note: Must remove the mission lead first or having ConcurrentModificationException (CME)
-			getMembers().remove(lead);
+
 			
 			outProcessMember(lead, r, MISSION_CANCELLED);		
 			
@@ -368,33 +366,32 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			
 			outProcessMember((Person)member, r, MISSION_CANCELLED);
 
-			Set<Worker> outProcessingMembers = getMembers();
-
-			// Note: even after the mission lead have been removed, outProcessingMembers still causes CME
-			for (Worker w : outProcessingMembers) {
-				// Remove all other members
-				outProcessMember((Person)w, r, MISSION_CANCELLED);
-
-				logger.info(w, 10_000L, getName() + " was cancelled since the mission lead got ejected.");
-			}
+//			Set<Worker> outProcessingMembers = getMembers();
+//
+//			// Note: even after the mission lead have been removed, outProcessingMembers still causes CME
+//			for (Worker w : outProcessingMembers) {
+//				// Remove all other members
+//				outProcessMember((Person)w, r, MISSION_CANCELLED);
+//
+//				logger.info(w, 10_000L, getName() + " was cancelled since the mission lead got ejected.");
+//			}
 
 			// If the leader is ejected, then the mission must be cancelled
 			logger.info(lead, 10_000L, "The mission Lead " + getStartingPerson().getName() 
 					+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
 					+ ") got ejected from " + getName() + " and mission was cancelled.");
-		
-			Set<Person> outCrew = r.getCrew();
 			
-			outCrew.remove(lead);
+			exitRover(lead, r, r.getSettlement());
 			
+			Set<Person> outCrew = Collections.unmodifiableSet(r.getCrew());
+
 			// Just in case anyone still inside the vehicle
 			for (Person p : outCrew) {
 				
 				exitRover(p, r, r.getSettlement());
 			}
 			
-			MissionStatus status = MissionStatus.createResourceStatus(MISSION_LEAD_NO_SHOW.getName());
-			abortMission(status, HistoricalEventType.MISSION_LEAD_NO_SHOW);
+			abortMission(MISSION_LEAD_NO_SHOW, HistoricalEventType.MISSION_LEAD_NO_SHOW);
 		
 			return canDepart;
 		}
@@ -414,8 +411,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				exitRover(p, r, r.getSettlement());
 			}
 			
-			MissionStatus status = MissionStatus.createResourceStatus(ONLY_ONE_MEMBER.getName());
-			abortMission(status, HistoricalEventType.MISSION_ONLY_ONE_MEMBER);
+			abortMission(ONLY_ONE_MEMBER, HistoricalEventType.MISSION_ONLY_ONE_MEMBER);
 
 			return canDepart;
 		}
@@ -476,20 +472,23 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		
 		if (v == null) {
+			addMissionLog(NO_AVAILABLE_VEHICLE.getName(), member.getName());
 			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
-			logger.warning(member, VEHICLE_NOT_AT_SETTLEMENT + " at " + getPhase().getName());
-			endMission(STATUS_VEHICLE_NOT_AT_SETTLEMENT);
+			logger.warning(member, AbstractVehicleMission.VEHICLE_NOT_IN_SETTLEMENT.getName() + " at " + getPhase().getName());
+			addMissionLog(VEHICLE_NOT_IN_SETTLEMENT.getName(), member.getName());
+			endMission(VEHICLE_NOT_IN_SETTLEMENT);
 			return;
 		}
 
 		// While still in the vicinity of the settlement, check if the beacon is turned on. 
 		// If true, call endMission
 		else if (v.isBeaconOn()) {
+			addMissionLog(PHASE_1_ALL_BOARDED, member.getName());
 			endMission(VEHICLE_BEACON_ACTIVE);
 			return;
 		}
@@ -580,14 +579,17 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 		if (timeLeft < -100) {
 			
+			addMissionLog(TIMEOUT, member.getName());
+			
 			logger.info(v, 10_000L, getName() + " Timeout. Time left: " + Math.round(timeLeft * 10.0) / 10.0);
 
 			logger.info(member, 10_000, getName() + " on " + v + ". Cancelling departing " 
 					+ settlement.getName() + " in " + Math.round(getPhaseTimeElapsed() * 10.0)/10.0 + ".");
-				
-			endMissionProblem(v, "Timeout for departure.");
+			
+			endMissionProblem(v, TIMEOUT);
 		}
 	}
+
 	
 	/**
 	 * Walks toward the vehicle and boards it. 
@@ -692,7 +694,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			setPhaseEnded(true);
 		}
 		else {
-			endMissionProblem(v, "Could not exit settlement.");
+			endMissionProblem(v, "Could not exit settlement");
 		}
 
 		// Record and mark everyone departing
@@ -1011,6 +1013,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		logger.info(v, 10_000, "Disembarked at " + disembarkSettlement.getName()
 					+ " triggered by " + worker.getName() +  ".");
 		
+		if (v instanceof LightUtilityVehicle) {
+			return;
+		}
+		
 		Rover rover = (Rover) v;
 		Set<Person> crew = rover.getCrew();
 		
@@ -1142,8 +1148,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Complete disembarking once everyone is out of the Vehicle
 			// Leave the vehicle.
 			releaseVehicle(rover);
-			// End the phase.
-			setPhaseEnded(true);
+			
+			addMissionLog(MISSION_ACCOMPLISHED.getName(), worker.getName());
+			endMission(AbstractMission.MISSION_ACCOMPLISHED);
 		}
 	}
 

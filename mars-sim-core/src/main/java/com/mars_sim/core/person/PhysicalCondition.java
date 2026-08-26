@@ -26,20 +26,19 @@ import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Sleep;
-import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
-import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
+import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.person.health.Medication;
-import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.time.ClockPulse;
@@ -231,10 +230,7 @@ public class PhysicalCondition implements Serializable {
 	public static final String PERFORMANCE_EVENT = "physical perf";
 
 	private static MasterClock master;
-
-	private static EatDrinkMeta eatMealMeta = new EatDrinkMeta();
 	private static MedicalManager medicalManager;
-
 	private static PersonConfig personConfig;
 
 	/**
@@ -295,10 +291,10 @@ public class PhysicalCondition implements Serializable {
 
 		double sTime = personConfig.getStarvationStartTime();
 		starvationTrigger = (int)(1000 * RandomUtil.getGaussianPositive((1 + endurance / 500) * sTime * bodyMassDeviation, bodyMassDeviation / 15));
-		maxHunger = starvationTrigger * 6;
+		maxHunger = starvationTrigger * 8;
 		
 		double dTime = personConfig.getDehydrationStartTime();
-		dehydrationTrigger = (int)(1000 * RandomUtil.getGaussianPositive(dTime / bodyMassDeviation, bodyMassDeviation / 15));
+		dehydrationTrigger = (int)(1000 * RandomUtil.getGaussianPositive(dTime / bodyMassDeviation * 1.2, bodyMassDeviation / 15));
 		maxThirst = dehydrationTrigger * 4;
 		
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup

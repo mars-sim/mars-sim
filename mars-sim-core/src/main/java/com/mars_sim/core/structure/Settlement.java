@@ -1713,7 +1713,8 @@ public class Settlement extends Unit implements Temporal,
 	 * @return collection of associated people.
 	 */
 	public Collection<Person> getAllAssociatedPeople() {
-		return citizens.stream().collect(Collectors.toUnmodifiableSet());
+//		return citizens.stream().collect(Collectors.toUnmodifiableSet());
+		return Collections.unmodifiableSet(citizens);
 	}
 
 	/**
@@ -1722,7 +1723,8 @@ public class Settlement extends Unit implements Temporal,
 	 * @return collection of dead people.
 	 */
 	public Collection<Person> getDeathRegistry() {
-		return deathRegistry.stream().collect(Collectors.toUnmodifiableSet());
+//		return deathRegistry.stream().collect(Collectors.toUnmodifiableSet());
+		return Collections.unmodifiableSet(deathRegistry);
 	}
 	
 	
@@ -1811,7 +1813,8 @@ public class Settlement extends Unit implements Temporal,
 	 * @return list of tourists within
 	 */
 	public Collection<Person> getTouristList() {
-		return touristPool.stream().collect(Collectors.toUnmodifiableSet()); 
+//		return touristPool.stream().collect(Collectors.toUnmodifiableSet());
+		return Collections.unmodifiableSet(touristPool);
 	}
 
 	/**
@@ -1838,7 +1841,8 @@ public class Settlement extends Unit implements Temporal,
 	 * @return Collection of people within
 	 */
 	public Collection<Person> getIndoorPeople() {
-		return indoorPeople.stream().collect(Collectors.toUnmodifiableSet());
+//		return indoorPeople.stream().collect(Collectors.toUnmodifiableSet());
+		return Collections.unmodifiableSet(indoorPeople);
 	}
 
 	/**
@@ -1932,7 +1936,8 @@ public class Settlement extends Unit implements Temporal,
 	 *  Gets the citizen.
 	 */
 	public Collection<Person> getCitizens() {
-		return citizens.stream().collect(Collectors.toUnmodifiableSet());
+//		return citizens.stream().collect(Collectors.toUnmodifiableSet());
+		return Collections.unmodifiableSet(citizens);
 	}
 	
 	/**
@@ -2133,8 +2138,8 @@ public class Settlement extends Unit implements Temporal,
 	 * @return collection of owned robots.
 	 */
 	public Collection<Robot> getAllAssociatedRobots() {
-		return ownedRobots.stream()
-				.collect(Collectors.toUnmodifiableSet());
+//		return ownedRobots.stream().collect(Collectors.toUnmodifiableSet());
+		return Collections.unmodifiableSet(ownedRobots);
 	}
 
 	/**
@@ -2153,8 +2158,8 @@ public class Settlement extends Unit implements Temporal,
 	 * @return collection of associated vehicles.
 	 */
 	public Collection<Vehicle> getAllAssociatedVehicles() {
-		return ownedVehicles.stream()
-				.collect(Collectors.toUnmodifiableSet());
+//		return ownedVehicles.stream().collect(Collectors.toUnmodifiableSet());
+		return Collections.unmodifiableSet(ownedVehicles);
 	}
 
 	/**
@@ -2260,8 +2265,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return Collection of parked or garaged vehicles
 	 */
 	public Collection<Vehicle> getParkedNGaragedVehicles() {
-		return parkedNGaragedVehicles.stream()
-				.collect(Collectors.toUnmodifiableSet());
+		return Collections.unmodifiableSet(parkedNGaragedVehicles);
 	}
 
 	/**

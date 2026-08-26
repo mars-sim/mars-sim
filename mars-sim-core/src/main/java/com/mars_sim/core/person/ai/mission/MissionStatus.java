@@ -31,7 +31,7 @@ public class MissionStatus implements Serializable {
 	 * Factory helper method to create a status.
 	 */
 	public static MissionStatus createResourceStatus(String reason) {
-		return new MissionStatus(reason);
+		return new MissionStatus(reason, false);
 	}
 	
 	private String name;
@@ -44,6 +44,15 @@ public class MissionStatus implements Serializable {
 		this.name  = Msg.getString(correctKey(key), argument);
 	}
 
+	public MissionStatus(String key, boolean useMsg) {
+		if (!useMsg) {
+			this.name  = key;
+		}
+		else {
+			this.name = Msg.getString(correctKey(key));
+		}
+	}
+	
 	/**
 	 * Corrects the message key to handle old prefixes.
 	 * @param key Requested key
@@ -53,7 +62,14 @@ public class MissionStatus implements Serializable {
 		// Hack for the transition phase
 		if (key.startsWith(MSG_KEY_OLDPREFIX)) {
 			key = MSG_KEY_PREFIX + key.substring(MSG_KEY_OLDPREFIX.length());
+		} 
+		else if (key.startsWith(MSG_KEY_PREFIX)) {
+			// do nothing
+		} 
+		else {
+			key = MSG_KEY_PREFIX + key;
 		}
+		
 		return key;
 	}
 

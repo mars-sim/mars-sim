@@ -143,7 +143,7 @@ class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener 
 		planStatus = planDetails.addTextField("Status", null, null); 
 		planPerc = new JProgressBar(0, 100);
 		planPerc.setStringPainted(true);
-		planDetails.addLabelledItem("%age Complete", planPerc);
+		planDetails.addLabelledItem("Percent Complete", planPerc);
 		planReviewer = new EntityLabel(getContext());
 		planDetails.addLabelledItem("Reviewer", planReviewer);
 		planScore = new JDoubleLabel(StyleManager.DECIMAL_PLACES1);

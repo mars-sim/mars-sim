@@ -92,7 +92,7 @@ public class CollectIce extends CollectResourcesMission {
 	}
 	
 	@Override
-	public Set<ObjectiveType> getObjectiveSatisified() {
+	public Set<ObjectiveType> getObjectiveSatisfied() {
 		return OBJECTIVES;
 	}
 }

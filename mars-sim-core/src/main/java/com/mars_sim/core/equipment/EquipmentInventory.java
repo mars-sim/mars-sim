@@ -14,11 +14,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.UnitSet;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 
@@ -31,7 +32,7 @@ public class EquipmentInventory
 
 	private static final long serialVersionUID = 1L;
 
-	private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName());
+	// May reuse: private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName())
 
 	/** The general cargo capacity. */
 	private double cargoCapacity;
@@ -85,7 +86,7 @@ public class EquipmentInventory
 	 * @return
 	 */
 	public Set<AmountResourceBin> getAmountResourceBinSet() {
-		return amountResourceBinSet;
+		return Collections.unmodifiableSet(amountResourceBinSet);
 	}
 	
 	/**
@@ -132,9 +133,8 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
-		Set<Equipment> result = new HashSet<>(containerSet);
-		result.addAll(suitSet);
-		return Collections.unmodifiableSet(result);
+		return Stream.concat(containerSet.stream(), suitSet.stream())
+				.collect(Collectors.toUnmodifiableSet());
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Equipment> getSuitSet() {
-		return suitSet;
+		return Collections.unmodifiableSet(suitSet);
 	}
 
 	/**

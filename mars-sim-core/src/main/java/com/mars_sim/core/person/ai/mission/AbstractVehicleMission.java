@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractVehicleMission.java
- * @date 2024-07-15
+  * @date 2026-08-25
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -98,14 +98,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
 	
 	// Mission Status
-	protected static final MissionStatus NO_AVAILABLE_VEHICLE = new MissionStatus("Mission.status.noVehicle");
-	protected static final MissionStatus NO_VEHICLE_WITHIN_RANGE = new MissionStatus("Mission.status.noVehicleWithinRange");
-	protected static final MissionStatus VEHICLE_BEACON_ACTIVE = new MissionStatus("Mission.status.vehicleBeacon");
-	private static final MissionStatus VEHICLE_UNDER_MAINTENANCE = new MissionStatus("Mission.status.vehicleMaintenance");
-	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
-	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
-	protected static final MissionStatus MISSION_LEAD_NO_SHOW = new MissionStatus("Mission.status.leaderNoShow");
-	protected static final MissionStatus ONLY_ONE_MEMBER = new MissionStatus("Mission.status.onlyOneMember");
+	protected static final MissionStatus NO_AVAILABLE_VEHICLE = new MissionStatus("noVehicle");
+	protected static final MissionStatus NO_VEHICLE_WITHIN_RANGE = new MissionStatus("noVehicleWithinRange");
+	protected static final MissionStatus VEHICLE_BEACON_ACTIVE = new MissionStatus("vehicleBeacon");
+	private static final MissionStatus VEHICLE_UNDER_MAINTENANCE = new MissionStatus("vehicleMaintenance");
+	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("loadResources");
+	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("unrepairable");
+	protected static final MissionStatus MISSION_LEAD_NO_SHOW = new MissionStatus("leaderNoShow");
+	protected static final MissionStatus ONLY_ONE_MEMBER = new MissionStatus("onlyOneMember");
+	protected static final MissionStatus VEHICLE_NOT_IN_SETTLEMENT = new MissionStatus("vehicleNotInSettlement");
+	protected static final MissionStatus TRAVEL_BACK_TO_SETTLEMENT = new MissionStatus("travelBackToSettlement");
 	
 	// Static members
 	private static final Set<Integer> UNNEEDED_PARTS = Set.of(ItemResourceUtil.FIBERGLASS_ID);
@@ -346,7 +348,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 			else {
 				// for ALL OTHER REASONS
-				setPhaseEnded(true);
+				super.endMission(endStatus);
 			}
 		}
 
@@ -512,7 +514,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			computeTotalDistanceRemaining();
 			computeTotalDistanceTravelled();
 			
-			endMission(null);
+			endMission(AbstractMission.MISSION_ACCOMPLISHED);
 		}
 		else {
 			handled = false;
@@ -564,6 +566,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		Vehicle v = getVehicle();
 
 		if (v == null) {
+			addMissionLog(NO_AVAILABLE_VEHICLE.getName(), member.getName());
 			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
@@ -572,17 +575,20 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (settlement == null) {
 			logger.warning(member,
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			endMission(NO_AVAILABLE_VEHICLE);
+			addMissionLog(VEHICLE_NOT_IN_SETTLEMENT.getName(), member.getName());
+			endMission(VEHICLE_NOT_IN_SETTLEMENT);
 			return;
 		}
 
 		// While still in the settlement, check if the beacon is turned on and and endMission()
 		else if (v.isBeaconOn()) {
+			addMissionLog(VEHICLE_BEACON_ACTIVE.getName(), member.getName());
 			endMission(VEHICLE_BEACON_ACTIVE);
 			return;
 		}
 
 		if (loadCargo(member)) {
+			addMissionLog("Cargoes fully loaded", member.getName());
 			setPhaseEnded(true);
 		}
 	}
@@ -1638,9 +1644,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			// If mission is still at home then leave the vehicle
 			if (getStage() != Stage.PREPARATION) {
-				addMissionStatus(status);
-
-				// What to do with status ?
+				
+				addMissionStatus(TRAVEL_BACK_TO_SETTLEMENT);
 				travelDirectToSettlement(startingSettlement);
 			}
 			else {

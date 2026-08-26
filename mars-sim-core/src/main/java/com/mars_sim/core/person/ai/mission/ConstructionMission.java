@@ -235,7 +235,7 @@ public class ConstructionMission extends AbstractMission {
 					luvAttachmentParts.add(part);
 				} catch (Exception _) {
 					Part p = ItemResourceUtil.findItemResource(part);
-					endMissionProblem(settlement, "Cannot retrieve part " + p.getName());
+					endMissionProblem(settlement, "Cannot retrieve " + p.getName());
 				}
 			}
 			vehicleIndex++;
