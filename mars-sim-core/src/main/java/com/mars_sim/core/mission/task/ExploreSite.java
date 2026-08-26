@@ -136,8 +136,9 @@ public class ExploreSite extends EVAOperation {
 		// Note: hasEVASuitProblem requires a person to have donned the suit already
 		// and thus is not suitable for calling (EVAOperation.hasEVASuitProblem()) here
 		
-		if (member instanceof Person person && person.isEVAUnFit()) {
-			logger.info(person, 20_000, "Not EVA fit to explore the site.");
+		// This person is already outside. Okay to check if he's super unfit
+		if (member instanceof Person person && person.isSuperUnfit()) {
+			logger.info(person, 10_000, "Super unfit to explore the site.");
 			return false;
 		}
 
@@ -382,5 +383,19 @@ public class ExploreSite extends EVAOperation {
 		person.assignThermalBottle();
 				
 		super.clearDown();
+	}
+	
+	/**
+	 * This is a safe check method; it intercepts end task calls when the Worker is still outside.
+	 * In this case the endEVA method is called.
+	 */
+	@Override
+	public void endTask() {		
+		if (person.isOutside()) {
+			logger.warning(worker, 1_000L, "Walking back inside.");
+            setPhase(WALK_BACK_INSIDE);
+		}
+    	else
+        	super.endTask();
 	}
 }

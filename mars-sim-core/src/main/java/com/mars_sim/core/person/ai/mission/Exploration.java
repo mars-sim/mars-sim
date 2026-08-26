@@ -151,22 +151,25 @@ public class Exploration extends EVAMission
 			
 			if (canAssign) {
 				logger.info(person, 20_000, "Ready to explore site and collect rocks.");
+				
+				// Update exploration site completion.
+				double timePassed = getPhaseTimeElapsed();
+				double completion = timePassed / STANDARD_TIME_PER_SITE;
+				if (completion > 1D) {
+					completion = 1D;
+				}
+				else if (completion < 0D) {
+					completion = 0D;
+				}		
+				
+				fireMissionUpdate(SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
+
+				objective.updateSiteCompletion(getCurrentNavpointDescription(), completion);
 			}
 		}
-		
-		// Update exploration site completion.
-		double timePassed = getPhaseTimeElapsed();
-		double completion = timePassed / STANDARD_TIME_PER_SITE;
-		if (completion > 1D) {
-			completion = 1D;
+		else {
+			endEVATasks();
 		}
-		else if (completion < 0D) {
-			completion = 0D;
-		}		
-		
-		fireMissionUpdate(SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
-
-		objective.updateSiteCompletion(getCurrentNavpointDescription(), completion);
 
 		return true;
 	}

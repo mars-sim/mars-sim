@@ -469,6 +469,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	
 				addMissionLog("Medical", person.getName());
 			}
+			else if (person.isSuperUnfit()) {
+				// Remove the mission member
+				removeMember(person);
+	
+				addMissionLog("Super Unfit", person.getName());
+			}
 		}
 		
 		if (v == null) {
@@ -562,6 +568,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			logger.info(v, 10_000L, getName() + " Phase 3. Time left: " + Math.round(timeLeft * 10.0) / 10.0);
 				
 			canDepart = isEveryoneInRover(member);
+			
+			if (!canDepart) {
+				canDepart = prepareForBoarding(member, v, adjustedLoc);
+			}
 			
 			if (canDepart) {
 				canDepart = evaluateDepartureCriteria(member, v, settlement);
@@ -731,10 +741,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				// If not aboard the rover, board the rover and be ready to depart.
 				&& !getRover().isCrewmember(person)) {
 
-			if (person.isNominallyFit()) {
-		
+			if (person.isNominallyFit()) {	
 				return walkToBoardVehicle(person, v, adjustedLoc);
-
 			}
 			else if (person.isInside()) {
 				if (person.getPhysicalCondition().isDoubleHungry()) {
@@ -1017,6 +1025,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			return;
 		}
 		
+		if (worker.getBuildingLocation() != null) {
+			return;
+		}
+		
 		Rover rover = (Rover) v;
 		Set<Person> crew = rover.getCrew();
 		
@@ -1076,6 +1088,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 						if (rover.isInGarage()) {						
 							// Force the person to get off the vehicle and back to the garage
 							// Note: may need to evaluate a better way of handling this
+							
 							boolean success = p.transfer(rover.getGarage());
 							
 							if (success) {
@@ -1104,18 +1117,22 @@ public abstract class RoverMission extends AbstractVehicleMission {
 //									assignTask(p, new Relax(p));
 							}
 						}
-						else 
+						else if (!p.isInSettlement())
 							walkToAirlock(rover, p, disembarkSettlement);
 					}
 				}
 			}
-			else {
+			else if (!worker.isInSettlement()) {
 				walkToAirlock(rover, worker, disembarkSettlement);
 			}
 		}
 
 		// Note: sometimes a non-member happens to be in this vehicle
 		if (!crew.isEmpty()) {
+			
+			// Note: it should set a timer to let go of a person 
+			// even if not everything is being unloaded from the vehicle
+			
 			List<Person> occupants = new ArrayList<>(crew);
 			
 			for (Person p : occupants) {
@@ -1149,6 +1166,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Leave the vehicle.
 			releaseVehicle(rover);
 			
+			setPhaseEnded(true);
+			
 			addMissionLog(MISSION_ACCOMPLISHED.getName(), worker.getName());
 			endMission(AbstractMission.MISSION_ACCOMPLISHED);
 		}
@@ -1164,6 +1183,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private void exitRover(Person person, Rover rover, Settlement s) {
 		if (person.isInSettlement()) {
 			// Q: should we wait for this person to automatically do things at this point ?
+			if (person.getBuildingLocation() != null) {
+				return;
+			}
 		}
 		else if (person.isInVehicle()) {
 			if (person.getVehicle() instanceof Rover r && r.equals(rover)) {
@@ -1172,7 +1194,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					// Note: may need to evaluate a better way of handling this
 					boolean canTransfer = person.transfer(rover.getGarage());
 					if (!canTransfer) {
-						assignTask(person, new Relax(person));				
+						// What to do ?
+//						assignTask(person, new Relax(person));
 					}
 				}
 				else {
@@ -1181,7 +1204,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 		}
 		
-		else {
+		
+		if (!person.isInSettlement()) {
 			// Let the person automatically leave the vehicle via walking toward a settlement airlock
 			walkToAirlock(rover, person, s);
 		}
@@ -1219,6 +1243,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 	/**
 	 * Checks on a person's status to see if he can walk toward the airlock or else be rescued.
+	 * Note: assume the worker is outside and need to go through the airlock to come in.
 	 *
 	 * @param rover
 	 * @param person
@@ -1282,10 +1307,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (canWalk) {
 					canDo = assignTask(worker, new Walk(worker, walkingSteps));
 					if (!canDo) {
-						logger.warning(worker, 20_000, "Unable to walk back to " + disembarkSettlement + " via " + destinationBuilding + ".");
+						logger.warning(worker, 10_000, "Unable to walk back to " + disembarkSettlement + " via " + destinationBuilding + ".");
 					}
-					else
+					else {
+						logger.info(worker, 10_000, "Able to walk back to " + disembarkSettlement + " via " + destinationBuilding + ".");
 						return true;
+					}
 				}
 			}
 		}

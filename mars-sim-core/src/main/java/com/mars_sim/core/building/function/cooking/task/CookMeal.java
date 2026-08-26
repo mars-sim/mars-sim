@@ -45,7 +45,7 @@ public class CookMeal extends Task {
 	/** The meal preparation time. */
 	public static final int PREP_TIME = 15;
 	
-	private static final String NO_INGREDIENT = "Cannot cook any meals. None of the ingredients are available.";
+	private static final String NO_INGREDIENT = "Ingredients for meals unavailable.";
 
 	// Data members
 	/** The kitchen the person is cooking at. */
@@ -74,14 +74,14 @@ public class CookMeal extends Task {
 
 		// Walk to kitchen building.
 		if (!walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, FunctionType.COOKING, false)) {
-			logger.log(person, Level.WARNING, 10_000, "No kitchen spots available.");
+			logger.log(person, Level.WARNING, 5_000, "No kitchen spots available.");
 
 			endTask();
 			return;
 		}
 
 		if (!Cooking.hasMealIngredients(kitchenBuilding.getSettlement())) {
-			logger.log(person, Level.WARNING, 10_000, NO_INGREDIENT);
+			logger.log(person, Level.WARNING, 5_000, NO_INGREDIENT);
 
 			endTask();
 			return;
@@ -120,6 +120,13 @@ public class CookMeal extends Task {
 			return time;
 		}
 
+		if (!Cooking.hasMealIngredients(kitchenBuilding.getSettlement())) {
+			logger.log(person, Level.WARNING, 5_000, NO_INGREDIENT);
+
+			endTask();
+			return time * .8;
+		}
+		
 		double workTime = time;
 
 		// If enough meals have been cooked for this meal, end task.
