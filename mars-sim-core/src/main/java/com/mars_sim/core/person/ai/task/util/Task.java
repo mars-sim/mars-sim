@@ -426,11 +426,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			description = des;
 			eventTarget.fireUnitUpdate(EntityEventType.TASK_DESCRIPTION_EVENT, des);
 			
-			if (!des.equals("") && worker.getTaskManager().getTask() != null
-				// Record the activity
-				&& recordTask && canRecord()) {
+			// Record the activity
+			if (canRecord() 
+				&& !des.equals("") && worker.getTaskManager().getTask() != null
+				&& recordTask) {
 					Mission ms = worker.getMission();
-					worker.getTaskManager().recordTask(this, ms);
+					String buildingName = worker.getBuildingLocation() != null ? worker.getBuildingLocation().getName() : null;
+					worker.getTaskManager().recordTask(this, ms, buildingName);
 			}
 		}
 	}
@@ -446,7 +448,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	/**
 	 * This is a helper method to produce a String for the state of this Task.
-	 * Note the stroing may be long as it is the task name followed by the phase.
+	 * 
+	 * Note the string may be long as it is the task name followed by the phase.
 	 * @return
 	 */
 	public String getStatus() {
@@ -486,7 +489,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Record the activity
 		if (canRecord()) {
 			Mission ms = worker.getMission();
-			worker.getTaskManager().recordTask(this, ms);
+			String buildingName = worker.getBuildingLocation() != null ? worker.getBuildingLocation().getName() : null;
+			worker.getTaskManager().recordTask(this, ms, buildingName);
 		}
 	}
 

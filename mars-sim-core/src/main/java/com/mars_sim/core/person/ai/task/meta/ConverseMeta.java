@@ -29,8 +29,8 @@ public class ConverseMeta extends FactoryMetaTask {
     private static final String NAME =
             Msg.getString("Task.description.converse"); //$NON-NLS-1$
 
-    private static final double VALUE = 1.2;
-    private static final int CAP = 10;
+    private static final double VALUE = 0.8;
+    private static final int CAP = 5;
 
     public ConverseMeta() {
         // Use inherited protected enums without importing them.
@@ -59,7 +59,7 @@ public class ConverseMeta extends FactoryMetaTask {
         // Compute Converse-specific probability.
         double result = RandomUtil.getRandomDouble(
                 person.getNaturalAttributeManager()
-                      .getAttribute(NaturalAttributeType.CONVERSATION)) / 20D;
+                      .getAttribute(NaturalAttributeType.CONVERSATION)) / 50D;
 
         boolean isOnShiftNow = person.isOnDuty();
         if (!isOnShiftNow) {

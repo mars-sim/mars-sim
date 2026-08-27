@@ -304,22 +304,23 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * A Member leaves the Mission and adjust his work shift.
 	 * Note: should use removeMember() to call memberLeave().
 	 */
-	private final void memberLeave(Worker member) {
+	private final void memberLeave(Worker worker) {
 		// Added codes in reassigning a work shift
-		if (member instanceof Person person) {
+		if (worker instanceof Person person) {
 			
-			logger.info(person, "Removed from " + member.getMission() + ".");
+			logger.info(person, "Removed from " + worker.getMission() + ".");
 			
-			member.setMission(null);
+			String buildingName = worker.getBuildingLocation() != null ? worker.getBuildingLocation().getName() : null;
+			worker.getTaskManager().recordActivity(getName(), getPhaseDescription(), "Leaving mission", getName(), buildingName);
 			
-			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
-		
+			worker.setMission(null);
+			
 	      	if (RoleType.GUEST != person.getRole().getType() && person.getShiftSlot() != null) {      
 	      		person.getShiftSlot().setOnCall(false);
 	      	}	
 
 			registerHistoricalEvent(person, HistoricalEventType.MISSION_FINISH, "Removing a member");
-			fireMissionUpdate(REMOVE_MEMBER_EVENT, member);
+			fireMissionUpdate(REMOVE_MEMBER_EVENT, worker);
 		}
 	}
 	
@@ -772,9 +773,15 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @return true if task can be performed.
 	 */
 	public boolean assignTask(Worker worker, Task newTask, boolean allowSameTask) {
-		if (worker instanceof Person p && p.getSuit() != null) {
-			logger.info(p, "Already donned an EVA Suit. Unable to perform '" + newTask.getName() + "' as assigned.");
-			return false;
+		if (worker instanceof Person p) {
+			if (p.getSuit() != null) {
+				logger.info(p, 20_000L, "Already donned an EVA Suit. Unable to perform '" + newTask.getName() + "' as assigned.");
+				return false;
+			}
+//			else if (p.getPhysicalCondition().computeHealthScore() <= 2 && !newTask.getName().equals(Sleep.NAME)) {
+//				logger.info(p, 20_000L, "Low health score. Unable to perform '" + newTask.getName() + "' as assigned.");
+//				return false;
+//			}
 		}
 		
 		return worker.getTaskManager().directlyAssignTask(newTask, allowSameTask);

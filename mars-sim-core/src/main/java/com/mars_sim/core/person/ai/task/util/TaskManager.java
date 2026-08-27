@@ -52,14 +52,14 @@ public abstract class TaskManager implements Serializable {
 	private Task lastTask;
 
 	private transient CacheCreator<TaskJob> taskProbCache = null;
-
-
+	  // For TaskManager
+    public static final String TASK_EVENT = "task";
+    public static final int EVENTS = 500; // 50 is equivalent of ~1 days
 	/** The history of tasks. */
 	private History<OneActivity> allActivities;
 	/** The list of pending of tasks. */
 	private List<PendingTask> pendingTasks;
-    // For TaskManager
-    public static final String TASK_EVENT = "task";
+  
 	
 	/**
 	 * Constructor.
@@ -68,10 +68,28 @@ public abstract class TaskManager implements Serializable {
 	 */
 	protected TaskManager(Worker worker) {
 		this.worker = worker;
-		allActivities = new History<>(350);   // 150 equivalent of 3 days
+		allActivities = new History<>(EVENTS);
 		pendingTasks = new CopyOnWriteArrayList<>();
 	}
 
+    /**
+     * Sets the max entries.
+     * 
+     * @param max
+     */
+    public void setEntries(int max) {
+    	allActivities.setEntries(max);
+    }
+	
+    /**
+     * Gets the max entries.
+     * 
+     * @param max
+     */
+    public int getEntries() {
+    	return allActivities.getEntries();
+    }
+    
 	/**
 	 * Returns true if person has a task (may be inactive).
 	 * 
@@ -317,8 +335,9 @@ public abstract class TaskManager implements Serializable {
 	 * 
 	 * @param changed The active task.
 	 * @param mission Associated mission.
+	 * @param buildingName
 	 */
-	void recordTask(Task changed, Mission mission) {
+	void recordTask(Task changed, Mission mission, String buildingName) {
 		String newDescription = changed.getDescription();
 		String newPhase = "";
 		if (changed.getPhase() != null)
@@ -327,34 +346,42 @@ public abstract class TaskManager implements Serializable {
 		// If there is no details; then skip it
 		if (!newDescription.equals("") && !newPhase.equals("")) {
 			String newTask = changed.getName(false);
-
-			recordActivity(newTask, newPhase, newDescription, mission);
+			String missionName = (mission != null ? mission.getName() : null);
+			
+			recordActivity(newTask, newPhase, newDescription, missionName, buildingName);
 		}
 	}
 
 	/**
-	 * Record an activity on the Task Activity log.
+	 * Records an activity on the Task Activity log.
+	 * 
+	 * @param newTask
+	 * @param newPhase
+	 * @param newDescription
+	 * @param missionName
+	 * @param buildingName
 	 */
-	public void recordActivity(String newTask, String newPhase, String newDescription, Mission mission) {
-		String missionName = (mission != null ? mission.getName() : null);
-		
+	public void recordActivity(String newTask, String newPhase, String newDescription, String missionName, String buildingName) {
+
 		// This is temp.
-		String location = " in";
-		if (worker.isInVehicle()) {
-			location += " V";
-		}
-		if (worker.isInSettlement()) {
-			location += " S";
-		}
-		if (worker.isOutside()) {
-			location += " O";
-		}
+//		String location = " in";
+//		
+//		if (worker.isInVehicle()) {
+//			location += " V";
+//		}
+//		if (worker.isInSettlement()) {
+//			location += " S";
+//		}
+//		if (worker.isOutside()) {
+//			location += " O";
+//		}
 
 		OneActivity newActivity = new OneActivity(
-											newTask + location,
+											newTask,
 											newDescription,
 											newPhase, 
-											missionName);
+											missionName,
+											buildingName);
 
 		allActivities.add(newActivity);
 	}

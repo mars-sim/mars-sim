@@ -94,6 +94,7 @@ public class PersonTaskManager extends TaskManager {
 		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
 		WorkStatus workStatus = person.getShiftSlot().getStatus();
+		
         shiftDesc = switch (workStatus) {
             case OFF_DUTY, ON_LEAVE -> {
                 mtList = MetaTaskUtil.getNonDutyHourTasks();
@@ -151,12 +152,14 @@ public class PersonTaskManager extends TaskManager {
 			
 			// Create a fallback Task job that can always be done
 			RatingScore base = new RatingScore(1D);
+			
 			TaskJob sleepJob = new AbstractTaskJob(SLEEP, base) {
 				
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Task createTask(Person person) {
+					logger.info(person, 10_000L, "Sleeping by default.");
 					return new Sleep(person);
 				}	
 			};
@@ -168,6 +171,7 @@ public class PersonTaskManager extends TaskManager {
 
 				@Override
 				public Task createTask(Person person) {
+					logger.info(person, 10_000L, "Eating and drinking by default.");
 					return new EatDrink(person);
 				}	
 			};
@@ -190,7 +194,7 @@ public class PersonTaskManager extends TaskManager {
 
 				@Override
 				public Task createTask(Person person) {
-					logger.info(person, 10_000L, "Returning inside to find work.");
+					logger.info(person, 10_000L, "Walking to return home by default.");
 					return new Walk(person);
 				}	
 			};
@@ -204,7 +208,7 @@ public class PersonTaskManager extends TaskManager {
 	 * @return Whether person is inside
 	 */
 	protected boolean isPendingPossible() {
-		return (!person.isOutside() || (person.getMission() == null));
+		return (!person.isOutside()); // || (person.getMission() == null));
 	}
 
 	@Override

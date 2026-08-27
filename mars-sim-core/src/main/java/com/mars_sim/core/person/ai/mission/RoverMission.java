@@ -681,8 +681,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 
 		// Record and mark everyone departing
-		for (Worker m : getMembers()) {
-			((Person) m).getTaskManager().recordActivity(getName(), "Departed", getName(), this);
+		for (Worker worker : getMembers()) {
+			String buildingName = worker.getBuildingLocation() != null ? worker.getBuildingLocation().getName() : null;
+			worker.getTaskManager().recordActivity(getName(), getPhaseDescription(), "Departing", getName(), buildingName);
 		}
 	}
 	
@@ -844,8 +845,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 			
 			// Record and mark everyone arriving
-			for (Worker m : getMembers()) {
-				((Person) m).getTaskManager().recordActivity(getName(), "Arrived", getName(), this);
+			for (Worker worker : getMembers()) {
+				String buildingName = worker.getBuildingLocation() != null ? worker.getBuildingLocation().getName() : null;
+				worker.getTaskManager().recordActivity(getName(), getPhaseDescription(), "Disembarking", getName(), buildingName);
 			}
 		}
 

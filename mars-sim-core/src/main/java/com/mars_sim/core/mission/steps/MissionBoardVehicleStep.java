@@ -106,8 +106,9 @@ public class MissionBoardVehicleStep extends MissionStep {
 		}
 
         // Marks everyone departed
-        for (Worker w : m.getMembers()) {
-            w.getTaskManager().recordActivity(m.getName(), "Departed", m.getName(), m);
+        for (Worker worker : m.getMembers()) {
+        	String buildingName = worker.getBuildingLocation() != null ? worker.getBuildingLocation().getName() : null;
+        	worker.getTaskManager().recordActivity(m.getName(), m.getPhaseDescription(), "Departing", m.getName(), buildingName);
         }
     }
 
