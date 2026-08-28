@@ -392,7 +392,7 @@ public class ExploreSite extends EVAOperation {
 	@Override
 	public void endTask() {		
 		if (person.isOutside()) {
-			logger.warning(worker, 1_000L, "Walking back inside.");
+			logger.warning(worker, 4_000L, "Ended exploring site. Walking back inside.");
             setPhase(WALK_BACK_INSIDE);
 		}
     	else

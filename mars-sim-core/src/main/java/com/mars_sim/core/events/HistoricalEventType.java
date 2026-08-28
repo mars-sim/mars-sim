@@ -40,7 +40,8 @@ public enum HistoricalEventType implements Named {
 	MISSION_RESCUE_PERSON			(HistoricalEventCategory.MISSION),
 	MISSION_ONLY_ONE_MEMBER			(HistoricalEventCategory.MISSION),
 	MISSION_LEAD_NO_SHOW			(HistoricalEventCategory.MISSION),
-
+	MISSION_TIMEOUT					(HistoricalEventCategory.MISSION),
+	
 	STUDY_START_PHASE				(HistoricalEventCategory.SCIENCE_STUDY),
 	STUDY_FINISH					(HistoricalEventCategory.SCIENCE_STUDY),
 

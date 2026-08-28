@@ -26,12 +26,9 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.FatigueLevel;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.EatDrink;
-import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.WalkingSteps;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -68,11 +65,11 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	
 	private static final String MEMBERSHIP_CHECKED = "Membership Checked";
 	
-	private static final String MISSION_CANCELLED = "Mission Cancelled";
+//	private static final String MISSION_CANCELLED = "Mission Cancelled";
 	
-	private static final String PHASE_1_ALL_BOARDED = "Phase 1: All Boarded";
+	private static final String PHASE_1_CARGO_READY = "Phase 1: Cargoes/Equipment Ready";
 	
-	private static final String PHASE_2_CARGO_READY = "Phase 2: Cargo Ready";
+	private static final String PHASE_2_ALL_BOARD = "Phase 2: All Boarded";
 	
 	private static final String PHASE_3_ALL_CHECKED = "Phase 3: All Passed";
 	
@@ -80,12 +77,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	
 	private static final String STATUS_REPORT = "[Status Report] Left ";
 	
-	private static final String TIMEOUT = "Timeout for departure";
-	
 	// Static members
 	public static final int MIN_GOING_MEMBERS = 2;
 	/* How long do Worker have to complete departure */
-	private static final int DEPARTURE_DURATION = 330;
+	private static final int DEPARTURE_DURATION = 500;
 	
 	private static final int DEPARTURE_FINAL_PREPARATION = DEPARTURE_DURATION / 10;
 	
@@ -145,27 +140,22 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		Set<Person> crew = new UnitSet<>();
 		crew.addAll(r.getCrew());
 		
-		for (Person p : crew) {
-			if (!getMembers().contains(p)) {
-				logger.warning(p, 20_000L, "Case 0: " + p.getTaskDescription()
-						+ ". Inside " + r.getName() + " but not a mission member of " + getName() + ".");
-				addMissionLog("Not a member - " + p.getName(), ((Person)member).getName());
-				result = false;
-				
-				// Question: how to check if this person is loading resources and 
-				// add a delay for him to finish what he has started ?
-				
-				// Have the person leave the vehicle
-//				r.removePerson(p);
-//				BuildingManager.addPersonToRandomBuildingSpot(p, getAssociatedSettlement());
-			}
-		}
+		// Question: how to check if this person is loading resources and 
+		// add a delay for him to finish what he has started ?
 		
 		for (Worker m : getMembers()) {
 			
 			if (m instanceof Person p) {
 
-				if (r.isInGarage()) {
+				if (!crew.contains(p)) {
+//					logger.warning(p, 20_000L, "Case 0: " + p.getTaskDescription()
+//						+ ". Not boarded inside " + r.getName() + ".");
+					
+//					addMissionLog("Member not inside: " + p.getName(), ((Person)member).getName());
+					result = false;
+				}
+				
+				else if (r.isInGarage()) {
 					// rover is in the garage. Members are expected to be boarded
 					if (p.isInVehicle()) {
 						// Best case
@@ -287,7 +277,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 			
 			else if (!rover.isCrewmember(p)) {
-				ejectedMembers.put(p, "Not a crewmember");
+				ejectedMembers.put(p, "Not boarded as crewmember");
 			}
 		}
 		
@@ -334,62 +324,72 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		// Find who has not boarded after the duration is over
 		Map<Person, String> rejectedMap = new HashMap<>();
 		
+		Person lead = (Person)getStartingPerson();	
 		// Create a rejected map of people
 		createRejectedMap(rejectedMap, r);
 
 		for (Person p : rejectedMap.keySet()) {
 			
-			outProcessMember(p, r, rejectedMap.get(p));
+			if (p.equals(lead)) {
+
+				outProcessMember(lead, r, rejectedMap.get(p));		
+				
+				// If the leader is ejected, then the mission must be cancelled
+				logger.info(lead, 10_000L, "The mission Lead " + getStartingPerson().getName() 
+						+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
+						+ ") got ejected from " + getName() + " and mission was cancelled.");
+
+				addMissionLog(LEADER_NO_SHOW.getName() + ": " + lead.getName(), ((Person)member).getName());
+				addMissionLog("Will elect new mission lead", ((Person)member).getName());
+			}
+			else {
 			
-			logger.warning(p, 10_000L, p.getTaskDescription() + " in " + p.getLocationTag().getExtendedLocation() 
-					+ ". Got ejected from " + r.getName() + " as " + getName() + " was due for departure.");
+				outProcessMember(p, r, rejectedMap.get(p));
+				
+				addMissionLog("Removing " + p.getName(), ((Person)member).getName());
+				
+				logger.warning(p, 10_000L, p.getTaskDescription() + " in " + p.getLocationTag().getExtendedLocation() 
+					+ ". Got Rejected from " + r.getName() + " as " + getName() + " was due for departure.");
+			}
 		}
-		
-		// Eject the late arrival if enough members
-		if (getMembers().size() >= MIN_GOING_MEMBERS) { 
-			// Still good
-		}
-		else {
-			// Not enough members
-		}
-		
-		// Future: if the leader is not ejected, then the mission can still be proceeded
 
-		Person lead = (Person)getStartingPerson();
-		
-		if (lead == null) {
-			outProcessMember((Person)member, r, MISSION_CANCELLED);
-			
-			canDepart = false;
-		}
-		
-		else if (rejectedMap.keySet().contains(lead)) {
-
-			outProcessMember(lead, r, MISSION_LEAD_NO_SHOW.getName());		
-			
-			// In future, elect another leader instead.
-			outProcessMember((Person)member, r, MISSION_LEAD_NO_SHOW.getName());
-
-			// If the leader is ejected, then the mission must be cancelled
-			logger.info(lead, 10_000L, "The mission Lead " + getStartingPerson().getName() 
-					+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
-					+ ") got ejected from " + getName() + " and mission was cancelled.");
-
-			abortMission(MISSION_LEAD_NO_SHOW, HistoricalEventType.MISSION_LEAD_NO_SHOW);
-		
-			canDepart = false;
-		}
-		
-		else if (getMembers().size() == 1) {
+		if (getMembers().size() == 1) {
 			logger.info(r, 10_000L, "Only one person left in the mission. Cancelling " + getName() + ".");
 
 			outProcessMember((Person)member, r, ONLY_ONE_MEMBER.getName());
 
-			abortMission(ONLY_ONE_MEMBER, HistoricalEventType.MISSION_ONLY_ONE_MEMBER);
+			if (this instanceof AbstractVehicleMission avm) {
+				avm.abortMission(ONLY_ONE_MEMBER, HistoricalEventType.MISSION_ONLY_ONE_MEMBER, (Person)member);
+			}
+			else {
+				abortMission(ONLY_ONE_MEMBER, HistoricalEventType.MISSION_ONLY_ONE_MEMBER, (Person)member);
+			}
 
 			canDepart = false;
 		}
 
+		else if (getMembers().size() >= MIN_GOING_MEMBERS) { 
+			
+			if (!getMembers().contains(lead)) {
+				// Future: if the leader is not ejected, then the mission can still be proceeded
+				// Set this member as the starting member
+				setStartingMember(member);
+				
+				addMissionLog("Elect new mission lead: " + member.getName(), ((Person)member).getName());	
+			}
+		}
+		
+		if (getMembers().isEmpty()) {
+			
+			addMissionLog("No members", ((Person)member).getName());	
+			
+			canDepart = false;
+			
+			return canDepart;
+		}
+			
+		
+		// Check if those inside a rover are members or not
 		Set<Person> crew = new UnitSet<>();
 		crew.addAll(r.getCrew());
 		
@@ -467,7 +467,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		// While still in the vicinity of the settlement, check if the beacon is turned on. 
 		// If true, call endMission
 		else if (v.isBeaconOn()) {
-			addMissionLog(PHASE_1_ALL_BOARDED, member.getName());
+			addMissionLog(VEHICLE_BEACON_ACTIVE.getName(), member.getName());
 			endMission(VEHICLE_BEACON_ACTIVE);
 			return;
 		}
@@ -484,82 +484,96 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		
 		if (timeLeft < -100) {
-			
-			addMissionLog(TIMEOUT, member.getName());
-			
+
 			logger.info(v, 10_000L, getName() + " Timeout. Time left: " + Math.round(timeLeft * 10.0) / 10.0);
 
 			logger.info(member, 10_000, getName() + " on " + v + ". Cancelling departing " 
 					+ settlement.getName() + " in " + Math.round(getPhaseTimeElapsed() * 10.0)/10.0 + ".");
 			
-			endMissionProblem(v, TIMEOUT);
+			if (this instanceof AbstractVehicleMission avm) {
+				avm.abortMission(TIMEOUT, HistoricalEventType.MISSION_TIMEOUT, (Person)member);
+			}
+			else {
+				abortMission(TIMEOUT, HistoricalEventType.MISSION_TIMEOUT, (Person)member);
+			}
+			
+			return;
 		}
-		
-		// Q: When to check the whereabout of getStartingPerson() ?
-		
-		boolean canDepart = isEveryoneInRover(member);
 		
 		// Gets a random location within rover.
 		LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
 		
+		boolean canDepart = prepareForBoarding(member, v, adjustedLoc);
+		// Q: When to check the whereabout of getStartingPerson() ?
+		if (canDepart) {
+			canDepart = isEveryoneInRover(member);
+		}
+
+		boolean passPhaseOne = false;
+		
 		// When the time elapsed is 30% of the departure duration
-		if (timeLeft > DEPARTURE_FINAL_PREPARATION * 5 && timeLeft < DEPARTURE_FINAL_PREPARATION * 8) {
+		if (canDepart || (timeLeft > DEPARTURE_FINAL_PREPARATION * 7 && timeLeft <= DEPARTURE_FINAL_PREPARATION * 10)) {
 			
 			logger.info(v, 10_000L, getName() + ". Phase 1. Time left: " + Math.round(timeLeft * 10.0) / 10.0);
-		
-			// Check if the person is EVA fit prior to boarding.
-			// If unfit, he may not be able to come out of the airlock
-			canDepart = prepareForBoarding(member, v, adjustedLoc);
-		
-			// Note: this is calling isEveryoneInRover the 1st time to ascertain 
-			// if members are on the vehicle
-			if (!canDepart) {
-				canDepart = isEveryoneInRover(member);
-			}
-			
-			if (canDepart) {
-				addMissionLog(PHASE_1_ALL_BOARDED, member.getName());
-				logger.info(v, 10_000, getName() + ". Cleared phase 1 for departing " + settlement.getName() + ".");
-			}
-		}
-		
-		if (canDepart || (timeLeft > DEPARTURE_FINAL_PREPARATION && timeLeft < DEPARTURE_FINAL_PREPARATION * 5)) {
-			
-			logger.info(v, 10_000L, getName() + ". Phase 2. Time left: " + Math.round(timeLeft * 10.0) / 10.0);
-			
-			canDepart = isEveryoneInRover(member);
-			
-			if (!canDepart) {
-				canDepart = prepareForBoarding(member, v, adjustedLoc);
-			}
 		
 			// Note: should double check in loading up consumable resources again here prior to departure
 			if (canDepart) {
 				canDepart = loadCargo(member);
+			}	
+			// If the rover is in a garage
+			if (canDepart) {// && v.isInGarage()) {			
+				// Check to ensure it meets the baseline # of EVA suits
+				canDepart = meetBaselineNumEVASuits(settlement, v);
+				
+				if (canDepart) {
+					logger.info(v, 10_000, BASELINE_EVA_SUIT_MET + ".");
+					addMissionLog(BASELINE_EVA_SUIT_MET, member.getName());
+				}
 			}
 			
 			if (canDepart) {
-				logger.info(v, 10_000, getName() + ". Resources/Cargoes ready.");
+				logger.info(v, 10_000, getName() + ". Resources/Cargoes/Suits ready.");
 			}
 			
 			if (canDepart) {
-				addMissionLog(PHASE_2_CARGO_READY, member.getName());
-				logger.info(v, 10_000, getName() + ". Cleared phase 2 for departing " + settlement.getName() + ".");
+				addMissionLog(PHASE_1_CARGO_READY, member.getName());
+				logger.info(v, 10_000, getName() + ". Cleared phase 1 for departing " + settlement.getName() + ".");
+				passPhaseOne = true;
 			}
 		}
 		
-		if (canDepart || timeLeft < DEPARTURE_FINAL_PREPARATION && timeLeft >= 0) {
+		boolean passPhaseTwo = false;
+		
+		if (passPhaseOne && (canDepart || (timeLeft > DEPARTURE_FINAL_PREPARATION * 3 && timeLeft <= DEPARTURE_FINAL_PREPARATION * 7))) {
 			
-			logger.info(v, 10_000L, getName() + " Phase 3. Time left: " + Math.round(timeLeft * 10.0) / 10.0);
-				
-			canDepart = isEveryoneInRover(member);
+			logger.info(v, 10_000L, getName() + ". Phase 2. Time left: " + Math.round(timeLeft * 10.0) / 10.0);
 			
-			if (!canDepart) {
+			int i = 0;
+			while (i < 2 && !canDepart) {
+				i++;
 				canDepart = prepareForBoarding(member, v, adjustedLoc);
 			}
 			
 			if (canDepart) {
-				canDepart = evaluateDepartureCriteria(member, v, settlement);
+				addMissionLog(PHASE_2_ALL_BOARD, member.getName());
+				logger.info(v, 10_000, getName() + ". Cleared phase 2 for departing " + settlement.getName() + ".");
+				passPhaseTwo = true;
+			}
+		}
+		
+		if (passPhaseTwo && (canDepart || (timeLeft > 0 && timeLeft <= DEPARTURE_FINAL_PREPARATION * 3)))  {
+			
+			logger.info(v, 10_000L, getName() + " Phase 3. Time left: " + Math.round(timeLeft * 10.0) / 10.0);
+			
+			int i = 0;
+			while (i < 3 && !canDepart) {
+				if (canDepart) {
+					i++;
+					canDepart = evaluateDepartureCriteria(member, v, settlement);
+				}
+				else {
+					canDepart = prepareForBoarding(member, v, adjustedLoc);
+				}
 			}
 			
 			if (canDepart) {	
@@ -623,23 +637,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			if (canDepart) {
 				logger.info(v, 10_000, MEMBERSHIP_CHECKED + ".");
 				addMissionLog(MEMBERSHIP_CHECKED, member.getName());
-			}
-		}
-
-		if (canDepart) {
-			// Note: this is calling isEveryoneInRover the 2nd time to ascertain 
-			// if members are on the vehicle
-			canDepart = isEveryoneInRover(member);
-		}
-
-		// If the rover is in a garage
-		if (canDepart && v.isInGarage()) {			
-			// Check to ensure it meets the baseline # of EVA suits
-			canDepart = meetBaselineNumEVASuits(settlement, v);
-			
-			if (canDepart) {
-				logger.info(v, 10_000, BASELINE_EVA_SUIT_MET + ".");
-				addMissionLog(BASELINE_EVA_SUIT_MET, member.getName());
 			}
 		}
 
@@ -719,25 +716,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				
 				return walkToBoardVehicle(person, v, adjustedLoc);
 			}
-			else if (person.isInside()) {
-				if (person.getPhysicalCondition().isDoubleHungry()) {
-					boolean canDo = assignTask(person, new EatDrink(person));
-					if (!canDo) {
-						logger.warning(person, 10_000, "Unable to eat and drink as assigned.");
-					}
-					else {
-						logger.warning(person, 10_000, "Assigned to eat and drink.");
-					}
-				}
-				else if (person.getPhysicalCondition().getFatigueLevel().getMaxValue() >= FatigueLevel.RESTED.getMaxValue()) {
-					boolean canDo = assignTask(person, new Sleep(person));
-					if (!canDo) {
-						logger.warning(person, 10_000, "Unable to sleep as assigned.");
-					}
-					else {
-						logger.warning(person, 10_000, "Assigned to sleep.");
-					}
-				}
+			else {
+	        	return !checkNeeds(person);
+	        	// Question: should it return true or false and would it help ?
 			}
 		}
 		
@@ -773,25 +754,31 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * @return
 	 */
 	public boolean meetBaselineNumEVASuits(Settlement settlement, Vehicle v) {
-		boolean canDepart = false;
-		
+	
 		// See if the there's enough EVA suits
 		int availableSuitNum = settlement.getEquipmentInventory().getSuitSet().size();
 	
-		if (availableSuitNum > 1 && !EVASuitUtil.hasBaselineNumEVASuit(v, this)) {
+		boolean hasBaseline = EVASuitUtil.hasBaselineNumEVASuit(v, this);
 	
+		// If not enough suits in the vehicle or on a person yet
+		if (availableSuitNum > 0 && !hasBaseline) {
 			for (Worker w: getMembers()) {
 				// Check to see if there's enough EVA suits
-				if (w instanceof Person person
-					// Check if an EVA suit is available
-					&& (availableSuitNum > 0
-						|| !EVASuitUtil.hasBaselineNumEVASuit(v, this))) {
+				if (availableSuitNum > 0 && w instanceof Person person && !hasBaseline) {
 					// Obtain a suit from the settlement and transfer it to vehicle
-					canDepart = EVASuitUtil.fetchEVASuitFromSettlement(person, v, settlement);
+					boolean success = EVASuitUtil.fetchEVASuitFromSettlement(person, v, settlement);
+					if (success) {
+						hasBaseline = EVASuitUtil.hasBaselineNumEVASuit(v, this);
+						if (hasBaseline)
+							return true;
+						else {
+							availableSuitNum = settlement.getEquipmentInventory().getSuitSet().size();
+						}
+					}
 				}
 			}
 		}
-		return canDepart;
+		return hasBaseline;
 	}
 	
 	/**
@@ -1374,39 +1361,15 @@ public abstract class RoverMission extends AbstractVehicleMission {
 						+ person + " decided to step up to be the pilot.");
 					
 				} else {
+		        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
 					
 			       	// For humans
 		        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
-		        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
 		        	
-					// Note: if a person is not in fatigue but is hungry or thirsty, don't need to sleep
-					double fatigue = person.getPhysicalCondition().getFatigue();
-					if (fatigue > 900) {				
-						boolean canSleep = assignTask(person, new Sleep(person));
-			        	if (canSleep) {
-			        		logger.log(person, Level.INFO, 4_000,
-			            			"Instructed to sleep before piloting " + getVehicle() + ". Fatigue: " + Math.round(fatigue) + ".");
-			        		
-			        		return null;
-			        	}
+		        	if (checkNeeds(person)) {
+		        		// Unable to operate the vehicle
+		        		return result;
 		        	}
-					
-					double hunger = person.getPhysicalCondition().getHunger();
-					double thirst = person.getPhysicalCondition().getThirst();
-					if (hunger > 900 || thirst > 650) {				
-						boolean canEatDrink = assignTask(person, new EatDrink(person));
-			        	if (canEatDrink) {
-			        		logger.log(person, Level.INFO, 4_000,
-			            			"Instructed to eat/drink before piloting " + getVehicle() 
-			            			+ ".  Hunger: " + Math.round(fatigue)
-			            			+ ".  Thirst: " + Math.round(thirst) + ".");
-			        		
-			        		return null;
-			        	}
-		        	}	
-	
-					logger.warning(person, 10_000L, "Super unfit to operate " + getRover() + ".");
-					return null;
 				}
 			}
 			

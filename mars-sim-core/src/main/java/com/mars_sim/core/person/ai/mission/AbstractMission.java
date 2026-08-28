@@ -616,18 +616,30 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Aborts the mission by the user. Will stop current phase.
+	 * Aborts the mission. Will stop current phase.
 	 * 
 	 * @param endStatus Cause for abort
 	 */
 	@Override
 	public final void abortMission(MissionStatus endStatus) {
 		aborted = true;
+		
 		if (endStatus == null) {
-			endMission(MISSION_ABORTED_BY_PLAYER);
+			
+//			if (this instanceof AbstractVehicleMission avm) {
+//				avm.endMission(MISSION_ABORTED_BY_PLAYER);
+//			}
+//			else {
+				endMission(MISSION_ABORTED_BY_PLAYER);
+//			}
 		}
 		else {
-			endMission(endStatus);
+//			if (this instanceof AbstractVehicleMission avm) {
+//				avm.endMission(endStatus);
+//			}
+//			else {
+				endMission(endStatus);
+//			}
 		}
 	}
 
@@ -667,7 +679,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected void endMissionProblem(Entity source, String reason) {
 		MissionStatus status = MissionStatus.createResourceStatus(reason);
 		logger.severe(this, "Ended with " + status.getName() + "; source was " + source.getName());
-		endMission(status);
+		
+		if (this instanceof AbstractVehicleMission avm) {
+			avm.endMission(status);
+		}
+		else {
+			endMission(status);
+		}
 	}
 	
 	/** 
@@ -686,7 +704,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected void endMission(MissionStatus endStatus) {
 		if (done) {
-			logger.warning(startingMember, "Mission " + getName() + " is already ended.");
+			logger.warning(startingMember, getName() + " already ended.");
 			return;
 		}
 
@@ -698,17 +716,16 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// If no mission flags have been added then it was accomplished
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
 		MissionPhase finalPhase = ABORTED_PHASE;
-		
-		if (endStatus == MISSION_ACCOMPLISHED) {
-			addMissionScore();
-			finalPhase = COMPLETED_PHASE;
-		}
-		
-		else if (aborted) {
+
+		 if (aborted) {
 			finalPhase = ABORTED_PHASE;
 		}
 		else if (endStatus == MISSION_ABORTED_BY_PLAYER) {
 			finalPhase = ABORTED_PHASE;
+		}
+		else if (endStatus == MISSION_ACCOMPLISHED) {
+			addMissionScore();
+			finalPhase = COMPLETED_PHASE;
 		}
 		else {
 			finalPhase = INCOMPLETE_PHASE;
@@ -741,17 +758,26 @@ public abstract class AbstractMission implements Mission, Temporal {
 			String listOfMembers = members.stream().map(Worker::getName).collect(Collectors.joining(", "));
 			logger.info(startingMember, DISBANDING + getFullMissionDesignation() + MEMBERS + listOfMembers);
 			
-			// Take a copy as Worker will deregister themselves
-			List<Worker> oldMembers = new ArrayList<>(members);
-			for(Worker member : oldMembers) {
-				removeMember(member);
-			}	
-			members.clear();
+			removeAllMembers();
 		}
 
 		fireMissionUpdate(END_MISSION_EVENT);
 	}
 
+	/**
+	 * Removes all members.
+	 */
+	protected void removeAllMembers() {
+		// Take a copy as Worker will deregister themselves
+		List<Worker> oldMembers = new ArrayList<>(members);
+		for(Worker member : oldMembers) {
+			removeMember(member);
+		}	
+		members.clear();		
+	}
+	
+	
+	
 	/**
 	 * Checks if a worker has any issues in starting a new task.
 	 *
@@ -1041,13 +1067,23 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param status
 	 */
 	protected boolean addMissionStatus(MissionStatus status) {
+		return addMissionStatus(status, getStartingPerson());
+	}
+
+
+	/**
+	 * Adds a new mission status.
+	 *
+	 * @param status
+	 */
+	protected boolean addMissionStatus(MissionStatus status, Person person) {
 		boolean newStatus = missionStatus.add(status);
 		if (newStatus) {
-			addMissionLog(status.getName(), getStartingPerson().getName());
+			addMissionLog(status.getName(), person.getName());
 		}
 		return newStatus;
 	}
-
+	
 	@Override
 	public int getPriority() {
 		return priority;

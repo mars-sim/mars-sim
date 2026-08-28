@@ -14,6 +14,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
@@ -263,16 +264,16 @@ public final class EVASuitUtil {
 
 		int numV = vehicle.findNumEVASuits();
 
-		int baseline = (int)(mission.getMembers().size() * 1.25);
+		int baseline = mission.getMembers().size();
 
 		int numP = 0;
 
-		for (Person p: ((Crewable)vehicle).getCrew()) {
-			if (p.getSuit() != null)
+		for (Worker w: mission.getMembers()) { //((Crewable)vehicle).getCrew()) {
+			if (w instanceof Person p && p.getSuit() != null)
 				numP++;
 		}
 
-		if (numV + numP > baseline)
+		if (numV + numP >= baseline)
 			return true;
 
 		return result;
@@ -288,6 +289,7 @@ public final class EVASuitUtil {
 	 */
 	public static boolean fetchEVASuitFromSettlement(Person person, Vehicle vehicle, Settlement settlement) {
 		EVASuit suit1 = EVASuitUtil.findEVASuitWithResources(settlement.getEquipmentInventory(), person);
+
 		// Note: In future, will need to handle this officially by coming up 
 		// with a list of parts that are missing and have a person carries them to the vehicle
 		// instead of cheating this way

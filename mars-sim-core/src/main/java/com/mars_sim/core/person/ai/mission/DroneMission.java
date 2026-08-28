@@ -11,8 +11,6 @@ import java.util.logging.Level;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.EatDrink;
-import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
@@ -69,45 +67,27 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
 		
-		boolean areAllOthersUnfit = areAllOthersUnfit(member);	
 
 		if (member instanceof Person person
 			&& person.isSuperUnfit()) {
 	
         	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
         	
+    		boolean areAllOthersUnfit = areAllOthersUnfit(member);	
+
         	if (areAllOthersUnfit) {
 				logger.warning(person, 10_000L, "As everyone is unfit to operate " + getDrone() + ", " 
-					+ person + " decided to step up to be the pilot.");	
+					+ person + " decided to continue/step up to be the pilot.");	
 			} 
         	
         	else {
 	        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
+        		
+	        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
 	        	
-				// Note: if a person is not in fatigue but is hungry or thirsty, don't need to sleep
-				double fatigue = person.getPhysicalCondition().getFatigue();
-				if (fatigue > 900) {				
-					boolean canSleep = assignTask(person, new Sleep(person));
-		        	if (canSleep) {
-		        		logger.log(person, Level.INFO, 4_000,
-		            			"Instructed to sleep before piloting " + getVehicle() + ".  Fatigue: " + Math.round(fatigue) + ".");
-		        		
-		        		return null;
-		        	}
-	        	}
-				
-				double hunger = person.getPhysicalCondition().getHunger();
-				double thirst = person.getPhysicalCondition().getThirst();
-				if (hunger > 900 || thirst > 650) {				
-					boolean canEatDrink = assignTask(person, new EatDrink(person));
-		        	if (canEatDrink) {
-		        		logger.log(person, Level.INFO, 4_000,
-		            			"Instructed to eat/drink before piloting " + getVehicle() 
-		            			+ ".  Hunger: " + Math.round(fatigue) 
-		            			+ ".  Thirst: " + Math.round(thirst) + ".");
-		        		
-		        		return null;
-		        	}
+	        	if (checkNeeds(person)) {
+	        		// Unable to operate the vehicle
+	        		return result;
 	        	}
 			}
 		}

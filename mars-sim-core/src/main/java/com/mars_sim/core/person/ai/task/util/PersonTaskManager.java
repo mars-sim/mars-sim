@@ -160,7 +160,7 @@ public class PersonTaskManager extends TaskManager {
 				@Override
 				public Task createTask(Person person) {
 					logger.info(person, 10_000L, "Sleeping by default.");
-					return new Sleep(person);
+					return new Sleep(person, 100);
 				}	
 			};
 			defaultInsideTasks.put(sleepJob);
@@ -188,7 +188,7 @@ public class PersonTaskManager extends TaskManager {
 			defaultOutsideTasks = new CacheCreator<>("Default Outside", null);
 
 			// Create a MetaTask to return inside
-			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(1D)) {
+			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(3D)) {
 				
 				private static final long serialVersionUID = 1L;
 

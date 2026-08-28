@@ -172,7 +172,7 @@ public class OptimizeSystem extends Task {
 	 */
 	@Override
 	protected void clearDown() {
-		logger.info(person, 0, "Reduced a total of " 
-			+ Math.round(totalEntropyReduce * 100.0)/100.0 + " entropy.");
+		logger.fine(person, 5_000L, "Reduced a total of " 
+			+ Math.round(totalEntropyReduce * 1000.0)/1000.0 + " entropy.");
 	}
 }

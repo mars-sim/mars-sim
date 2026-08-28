@@ -70,6 +70,8 @@ public class PhysicalCondition implements Serializable {
 	/** The thirst ceiling immediately upon drinking water [millisols]. */
 	public static final int THIRST_CEILING_UPON_DRINKING = 500;
 	/** The amount of thirst threshold [millisols]. */
+	public static final int THIRST_THRESHOLD = 250;
+	/** The amount of hunger threshold [millisols]. */
 	public static final int HUNGER_THRESHOLD = 250;
 	/** The amount of thirst threshold [millisols]. */
 	public static final int ENERGY_THRESHOLD = 2525;
@@ -1996,6 +1998,16 @@ public class PhysicalCondition implements Serializable {
 	public boolean isDoubleHungry() {
 		return hunger > HUNGER_THRESHOLD * 2 || kJoules < ENERGY_THRESHOLD * 2;
 	}
+	
+	/**
+	 * Checks if it passes the thirsty x2 threshold
+	 *
+	 * @return
+	 */
+	public boolean isDoubleThirsty() {
+		return hunger > THIRST_THRESHOLD * 2;
+	}
+	
 	
 	/**
 	 * Checks if it passes the hunger threshold
