@@ -21,7 +21,7 @@ import com.mars_sim.core.unit.MobileUnit;
 /**
  * Represents a Worker that can execute Tasks & Missions.
  */
-public interface Worker extends UnitIdentifer, MonitorableEntity, EquipmentOwner, SkillOwner, MobileUnit {
+public interface Worker extends UnitIdentifer, MonitorableEntity, SkillOwner, MobileUnit {
 
 	/**
 	 * Returns a reference to the Worker natural attribute manager
