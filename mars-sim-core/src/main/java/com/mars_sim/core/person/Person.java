@@ -1399,6 +1399,22 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		return eqmInventory.getSuitSet();
 	}
 	
+	
+	/**
+	 * Gets the data recorder set.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Set<Equipment> getRecorderSet() {
+		return eqmInventory.getRecorderSet();
+	}
+	
+	/**
+	 * Gets the equipment inventory.
+	 * 
+	 * @return
+	 */
 	public EquipmentInventory getEquipmentInventory() {
 		return eqmInventory;
 	}
@@ -2001,6 +2017,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			bottles.forEach(e -> e.transfer(getContainerUnit()));
 		}
 	}
+	
 	
 	/**
 	 * Puts on a garment.

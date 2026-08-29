@@ -772,6 +772,17 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		return eqmInventory.getSuitSet();
 	}
 	
+	
+	/**
+	 * Gets the data recorder set.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Set<Equipment> getRecorderSet() {
+		return eqmInventory.getRecorderSet();
+	}
+	
 	/**
 	 * Gets the item resource stored
 	 *

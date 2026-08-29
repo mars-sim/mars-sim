@@ -1039,8 +1039,10 @@
 	</part>
 
 	<part name="Gas chromatograph" type="instrument" mass="15.0">
-		<description>This portable lab instrument separates the constituents of a volatile substance
-		and is used to gas content analysis. </description>
+		<description>This portable analytical instrument separates , identify, and quantify individual 
+		chemical components in complex mixtures that can be vaporized without decomposition.  
+		It operates by passing a sample through a column using an inert carrier gas (mobile phase), 
+		where components separate based on their interactions with a stationary phase.  </description>
 	</part>
 
 	<part name="Mass spectrometer" type="instrument" mass="10.0">

@@ -47,6 +47,13 @@ public interface EquipmentOwner extends ItemHolder, ResourceHolder {
 	 * @return
 	 */
 	Set<Equipment> getSuitSet();
+
+	/**
+	 * Gets the recorder set.
+	 * 
+	 * @return
+	 */
+	Set<Equipment> getRecorderSet();
 	
 	/**
 	 * Does this inventory possess an equipment of this type ?
@@ -172,4 +179,5 @@ public interface EquipmentOwner extends ItemHolder, ResourceHolder {
 		}
 		return null;
 	}
+
 }

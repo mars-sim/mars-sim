@@ -274,6 +274,8 @@ class TradeTableModel extends CategoryTableModel<Good> {
 
 				if (type == EquipmentType.EVA_SUIT)
 					return eo.getSuitSet().size() * EquipmentFactory.getEquipmentMass(type);
+				else if (type == EquipmentType.DATA_RECORDER)
+					return eo.getSuitSet().size() * EquipmentFactory.getEquipmentMass(type);
 				
 				return eo.findNumContainersOfType(type) * EquipmentFactory.getEquipmentMass(type);		
 			}

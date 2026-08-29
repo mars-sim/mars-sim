@@ -67,7 +67,7 @@ public class ExitAirlock extends Task {
 	private static final String NOT_EVA_FIT = "Not EVA fit";
 	private static final String INNER_DOOR_LOCKED = "Inner door was locked.";
 	private static final String ALL_CHAMBERS_OCCUPIED = "All chambers occupied.";
-	private static final String COULDNT_WALK_TO = "Couldn't walk. ";
+//	private static final String COULDNT_WALK_TO = "Couldn't walk. ";
 	private static final String COULDNT_ENTER = "Couldn't enter ";
 	
     /** The minimum performance needed. */
@@ -915,9 +915,10 @@ public class ExitAirlock extends Task {
 	
 			// 0. Drop off the thermal bottle 
 			person.dropOffThermalBottle();
+			
 			// 1. Get a good EVA suit's instance from entity inventory
 			suit = EVASuitUtil.findEVASuitWithResources(housing, person);
-	
+			
 			if (suit == null) {
 				logger.warning(person, 4_000,
 						"Could not find a working EVA suit during " + DON_EVA_SUIT + " in "
@@ -938,7 +939,7 @@ public class ExitAirlock extends Task {
 				person.wearPressureSuit(housing);
 			}
 			
-			// 2. Transfer the EVA suit from entity to person
+			// 2. Transfer the EVA suit from entity to person	
 			boolean success = suit.transfer(person);
 			
 			if (success) {
@@ -960,10 +961,22 @@ public class ExitAirlock extends Task {
 				
 				return 0;
 			}
-
 		}
 
-		else { // the person already have the suit in his inventory
+		else { 
+			// the person already have the suit in his inventory
+			
+			EquipmentOwner housing = null;
+			
+			if (inSettlement)
+				housing = ((Building)airlock.getEntity()).getSettlement().getEquipmentInventory();
+			else
+				housing = (Vehicle)airlock.getEntity();
+			
+			// 5. Loads the resources into the EVA suit
+			if (suit.loadResources(housing) < 0.9D) {
+				logger.warning(suit, "Not fully loaded.");
+			}
 			
 			remainingDonningTime -= time;
 
@@ -973,7 +986,6 @@ public class ExitAirlock extends Task {
 		}
 
 		if (canProceed) {
-
 			// Add experience
 			addExperience(time);
 

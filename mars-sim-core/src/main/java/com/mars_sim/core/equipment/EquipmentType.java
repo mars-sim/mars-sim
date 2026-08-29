@@ -17,6 +17,8 @@ import com.mars_sim.core.tool.Msg;
  */
 public enum EquipmentType implements Named {
 	
+	DATA_RECORDER,
+	
 	// non-container
 	EVA_SUIT, 
 
@@ -37,7 +39,7 @@ public enum EquipmentType implements Named {
 	}
 
 	/**
-	 * Get the unique resource id for this EquipmentType.
+	 * Gets the unique resource id for this EquipmentType.
 	 * The resource id is used to reference the EquipmentType in the Inventory.
 	 */
 	public int getResourceID() {

@@ -106,6 +106,11 @@ public class SettlementConfig {
 		loadGroupActivity(root.getChild(GROUP_ACTIVITIES));
 	}
 
+	/**
+	 * Loads the group activities defined in settlements.xml.
+	 * 
+	 * @param groupActivities
+	 */
 	private void loadGroupActivity(Element groupActivities) {
 		Map<String,GroupActivityInfo> activityPool = loadActivityPool(groupActivities.getChild(ACTIVITIES));
 		
@@ -144,6 +149,12 @@ public class SettlementConfig {
 		rulesets.sort(Comparator.comparingInt(GroupActivitySchedule::minPop).reversed());
 	}
 
+	/**
+	 * Loads an activity.
+	 * 
+	 * @param activityPool
+	 * @return
+	 */
 	private Map<String, GroupActivityInfo> loadActivityPool(Element activityPool) {
 		Map<String, GroupActivityInfo> pool = new HashMap<>();
 
@@ -217,6 +228,11 @@ public class SettlementConfig {
 		return null;
 	}
 
+	/**
+	 * Loads the resource limits.
+	 * 
+	 * @param limits
+	 */
 	private void loadResourceLimits(Element limits) {
 
 		List<Element> resources = limits.getChildren(RESOURCE);

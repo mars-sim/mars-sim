@@ -265,12 +265,13 @@ public class SimulationBuilder {
 		if (simFile != null) {
 			loaded = loadSimulation();
 		}
-		
+
 		InitialSettlement spec = null;
 		if (template != null) {
 			spec = loadSettlementTemplate(simConfig);
 		}
 		
+		// If unable to load, create a new simulation
 		if (!loaded) {
 			// Create a new simulation
 			sim.createNewSimulation(userTimeRatio, timestamp); 
@@ -299,9 +300,7 @@ public class SimulationBuilder {
 																simConfig.getSettlementTemplateConfiguration(),
 																simConfig.getReportingAuthorityFactory());
 			}
-		}
 
-		if (!loaded) {
 			// initialize getTransportManager	
 			sim.getTransportManager().init(sim);
 		}
@@ -342,7 +341,7 @@ public class SimulationBuilder {
 			// Note: if skipping createNewSimulation(), it would not be deserialized correctly
 			sim.loadSimulation(simFile);		
 			
-			result  = true;			
+			result = true;			
 
 		}
 		else if (!newAllowed) {

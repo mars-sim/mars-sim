@@ -227,6 +227,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 		lifeSupportRangeErrorMargin = simulationConfig.getSettlementConfiguration()
 				.getRoverValues()[0];
 		fuelRangeErrorMargin = simulationConfig.getSettlementConfiguration().getRoverValues()[1];
+		
+		Rover.initializeInstances();
 	}
 
 	/**
@@ -2077,6 +2079,16 @@ public abstract class Vehicle extends AbstractMobileUnit
 	@Override
 	public Set<Equipment> getSuitSet() {
 		return eqmInventory.getSuitSet();
+	}
+	
+	/**
+	 * Gets the data recorder set.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Set<Equipment> getRecorderSet() {
+		return eqmInventory.getRecorderSet();
 	}
 	
 	/**

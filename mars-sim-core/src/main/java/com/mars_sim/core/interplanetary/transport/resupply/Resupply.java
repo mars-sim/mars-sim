@@ -179,7 +179,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		// If there are new immigrients then have a welcome meeting
 		if (newImmigrantNum > 0) {
 			GroupActivity.createPersonActivity("Welcome new arrivals of " + getName(),
-									GroupActivityType.ANNOUNCEMENT, settlement, null, 1, 
+									GroupActivityType.WELCOME, settlement, null, 1, 
 									sim.getMasterClock().getMarsTime());
 		}
 

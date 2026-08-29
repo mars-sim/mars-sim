@@ -31,7 +31,7 @@ public class BasicTaskJob extends AbstractTaskJob {
     public BasicTaskJob(TaskFactory factory, RatingScore score) {
         super(factory.getName(), score);
         
-        this.mtID = factory.getCapitalizedName();
+        this.mtID = factory.getUpperCaseName();
         this.mt = factory;
     }
 

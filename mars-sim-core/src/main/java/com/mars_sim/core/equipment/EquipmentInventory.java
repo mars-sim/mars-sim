@@ -37,6 +37,9 @@ public class EquipmentInventory
 	/** The general cargo capacity. */
 	private double cargoCapacity;
 
+	/** Locally held data recorder set. */
+	private Set<Equipment> recorderSet;
+	
 	/** Locally held EVA suit set. */
 	private Set<Equipment> suitSet;
 	
@@ -64,6 +67,7 @@ public class EquipmentInventory
 		this.cargoCapacity = cargoCapacity;
 	
 		// Create equipment set
+		recorderSet = new UnitSet<>();
 		suitSet = new UnitSet<>();
 		containerSet = new UnitSet<>();
 		
@@ -103,6 +107,10 @@ public class EquipmentInventory
 		for (Equipment e: containerSet) {
 			result += e.getMass();
 		}
+		for (Equipment e: recorderSet) {
+			result += e.getMass();
+		}
+		
 		return result + microInventory.getStoredMass();
 	}
 
@@ -133,8 +141,9 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
-		return Stream.concat(containerSet.stream(), suitSet.stream())
-				.collect(Collectors.toUnmodifiableSet());
+		return Stream.of(containerSet, suitSet, recorderSet)
+			    .flatMap(Set::stream)
+			    .collect(Collectors.toUnmodifiableSet());
 	}
 
 	/**
@@ -156,6 +165,16 @@ public class EquipmentInventory
 	public Set<Equipment> getSuitSet() {
 		return Collections.unmodifiableSet(suitSet);
 	}
+	
+	/**
+	 * Gets the recorder set.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Set<Equipment> getRecorderSet() {
+		return Collections.unmodifiableSet(recorderSet);
+	}
 
 	/**
 	 * Does this unit possess an equipment of this equipment type ?
@@ -166,7 +185,9 @@ public class EquipmentInventory
 	@Override
 	public boolean containsEquipment(EquipmentType type) {
 		if (type == EquipmentType.EVA_SUIT && suitSet.isEmpty())
-				return false;
+			return false;
+		else if (type == EquipmentType.DATA_RECORDER && recorderSet.isEmpty())
+			return false;
 		
 		return containerSet.stream().anyMatch(e -> e.getEquipmentType() == type);
 	}
@@ -184,6 +205,9 @@ public class EquipmentInventory
 		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
 			return suitSet.add(equipment);
 		}
+		else if (equipment.getEquipmentType() == EquipmentType.DATA_RECORDER) {
+			return recorderSet.add(equipment);
+		}
 
 		return containerSet.add(equipment); 
 	}
@@ -199,6 +223,9 @@ public class EquipmentInventory
 		
 		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
 			return suitSet.remove(equipment);
+		}
+		else if (equipment.getEquipmentType() == EquipmentType.DATA_RECORDER) {
+			return recorderSet.remove(equipment);
 		}
 		
 		return containerSet.remove(equipment);
@@ -564,6 +591,12 @@ public class EquipmentInventory
 				set.addAll(rh.getSpecificResourceStoredIDs());
 			}
 		}
+		for (Equipment e: recorderSet) {
+			if (e instanceof ResourceHolder rh) {
+				set.addAll(rh.getSpecificResourceStoredIDs());
+			}
+		}
+		
 		return set;
 	}
 
@@ -820,6 +853,8 @@ public class EquipmentInventory
 		containerSet = null;
 		suitSet.clear();
 		suitSet = null;
+		recorderSet.clear();
+		recorderSet = null;
 		microInventory = null;
 	}
 }

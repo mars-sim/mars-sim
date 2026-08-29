@@ -29,7 +29,7 @@ public class TaskParameters extends ParameterCategory {
 
     public void registerMetaTasks(List<MetaTask> metaTasks) {
         metaTasks.forEach(
-            mt -> addParameter(mt.getCapitalizedName(), mt.getName(), ParameterValueType.DOUBLE)
+            mt -> addParameter(mt.getUpperCaseName(), mt.getName(), ParameterValueType.DOUBLE)
         );
     }
 

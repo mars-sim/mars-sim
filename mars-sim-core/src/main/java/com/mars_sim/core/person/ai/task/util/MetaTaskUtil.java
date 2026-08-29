@@ -234,7 +234,7 @@ public class MetaTaskUtil {
 		
 		// Build the name lookup for later
 		nameToMetaTask = allMetaTasks.stream()
-				.collect(Collectors.toMap(MetaTask::getCapitalizedName, Function.identity()));
+				.collect(Collectors.toMap(MetaTask::getUpperCaseName, Function.identity()));
 
 		// Pick out settlement tasks
 		settlementTasks = allMetaTasks.stream()

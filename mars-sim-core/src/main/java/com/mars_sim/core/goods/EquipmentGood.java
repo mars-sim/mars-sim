@@ -54,6 +54,7 @@ public class EquipmentGood extends Good {
 	private static final double INITIAL_EQUIPMENT_DEMAND = 30;
 	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
 	private static final double EVA_SUIT_VALUE = 0.5;
+	private static final double DATA_RECORDER_VALUE = 1.5;
 	private static final double CONTAINER_VALUE = 0.1;
 
 	private static final double EVA_SUIT_FLATTENING_FACTOR = 0.5;
@@ -293,7 +294,7 @@ public class EquipmentGood extends Good {
 		
 		double areologistFactor = (1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement)) / 3.0;
 
-		// Determine number of EVA suits that are needed
+		// Determine the EVA suits demand
 		if (equipmentType == EquipmentType.EVA_SUIT) {
 			// Add the whole EVA Suit demand.
 			baseDemand += getWholeEVASuitDemand(owner);
@@ -301,6 +302,14 @@ public class EquipmentGood extends Good {
 			return baseDemand * owner.getEVASuitMod() * EVA_SUIT_VALUE;
 		}
 
+		// Determine the data recorder demand
+		if (equipmentType == EquipmentType.DATA_RECORDER) {
+			// Add the  demand.
+			baseDemand += getDataRecorderPartDemand(owner);
+
+			return baseDemand * DATA_RECORDER_VALUE;
+		}
+				
 		// Determine the number of containers that are needed.
 		double containerCapacity = ContainerUtil.getContainerCapacity(equipmentType);
 		double totalPhaseOverfill = 0D;
@@ -400,6 +409,24 @@ public class EquipmentGood extends Good {
 		return demand / num;
 	}
 	
+	/**
+	 * Gets the data recorder demand from its part.
+	 *
+	 * @param owner Owner of Goods
+	 * @return demand
+	 */
+	private static double getDataRecorderPartDemand(GoodsManager owner) {
+		double demand = 2;
+	
+		double num = 2; //ItemResourceUtil.evaSuitPartIDs.size();
+		
+//		if (ItemResourceUtil.evaSuitPartIDs != null && !ItemResourceUtil.evaSuitPartIDs.isEmpty()) {
+//			for (int id : ItemResourceUtil.evaSuitPartIDs) {
+//				demand += owner.getDemandScoreWithID(id);
+//			}
+//		}
+		return demand / num;
+	}
 	/**
 	 * Gets the total supply for the equipment.
 	 *
