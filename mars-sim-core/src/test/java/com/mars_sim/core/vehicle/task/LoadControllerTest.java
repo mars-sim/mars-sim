@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -315,20 +314,6 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	}
 
 	/**
-	 * Load some Equipment into a Settlement
-	 * @param settlement
-	 * @param manifest
-	 */
-	private static void loadSettlementEquipment(Settlement settlement, Map<Integer, Integer> manifest) {
-		for(Entry<Integer, Integer> item : manifest.entrySet()) {
-			EquipmentType type = EquipmentType.convertID2Type(item.getKey());
-			for(int i = 0; i < item.getValue(); i++) {
-				EquipmentFactory.createEquipment(type, settlement);
-			}
-		}
-	}
-
-	/**
 	 * Test loading optional resources where one is missiing
 	 * @param maxCycles
 	 * @param manifest
@@ -471,19 +456,5 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		for (Entry<Integer, Double> v : requiredResourcesMap.entrySet()) {
 			inv.setSpecificResourceCapacity(v.getKey(), v.getValue().doubleValue() * 1.01D);
 		}
-	}
-
-	/**
-	 * Load up a Settlements Amount Resources from a manifest
-	 * @param target
-	 * @param requiredResourcesMap
-	 */
-	public static void loadSettlement(Settlement target, SuppliesManifest requiredResourcesMap) {
-		loadSettlementAmounts(target, requiredResourcesMap.getAmounts(true));
-		loadSettlementAmounts(target, requiredResourcesMap.getAmounts(false));
-		loadSettlementEquipment(target, requiredResourcesMap.getEquipment(true));
-		loadSettlementEquipment(target, requiredResourcesMap.getEquipment(false));
-		loadSettlementItems(target, requiredResourcesMap.getItems(true));
-		loadSettlementItems(target, requiredResourcesMap.getItems(false));
 	}
 }

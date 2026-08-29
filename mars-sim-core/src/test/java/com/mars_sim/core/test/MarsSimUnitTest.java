@@ -16,6 +16,9 @@ import com.mars_sim.core.building.MockBuilding;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.environment.MarsSurface;
+import com.mars_sim.core.equipment.EquipmentFactory;
+import com.mars_sim.core.equipment.EquipmentOwner;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.GenderType;
@@ -25,6 +28,8 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.MockSettlement;
@@ -32,6 +37,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 
@@ -263,8 +269,51 @@ public abstract class MarsSimUnitTest {
 		return settlement;
 	}
 
-	public static void loadSettlementAmounts(Settlement source, Map<Integer, Double> resourcesMap) {
-		var target = source.getEquipmentInventory();
+	/**
+	 * Load up a Settlement with the resources and equipment in a manifest.
+	 * @param s Settlment to load
+	 * @param requiredResourcesMap Manifest of resources to load
+	 */
+	public static void loadSettlement(Settlement s, SuppliesManifest requiredResourcesMap) {
+		loadInventory(s, s, requiredResourcesMap);
+	}
+
+	/**
+	 * Load up an inventory from a manifest into a UnitHolder.
+	 * @param s Settlement to create any new resources
+	 * @param holder UnitHolder to load into
+	 * @param requiredResourcesMap Manifest of resources to load
+	 * 
+	 */
+	public static void loadInventory(Settlement s, UnitHolder holder, SuppliesManifest requiredResourcesMap) {
+		var target = EquipmentOwner.getAttached(holder);
+
+		loadAmountResources(target, requiredResourcesMap.getAmounts(true));
+		loadAmountResources(target, requiredResourcesMap.getAmounts(false));
+		loadSettlementEquipment(s, holder, requiredResourcesMap.getEquipment(true));
+		loadSettlementEquipment(s, holder, requiredResourcesMap.getEquipment(false));
+		loadItemResources(target, requiredResourcesMap.getItems(true));
+		loadItemResources(target, requiredResourcesMap.getItems(false));
+	}
+
+	
+	/**
+	 * Load some Equipment into a Settlement
+	 */
+	private static void loadSettlementEquipment(Settlement settlement, UnitHolder holder, Map<Integer, Integer> manifest) {
+		for(Entry<Integer, Integer> item : manifest.entrySet()) {
+			EquipmentType type = EquipmentType.convertID2Type(item.getKey());
+			for(int i = 0; i < item.getValue(); i++) {
+				var eq = EquipmentFactory.createEquipment(type, settlement);
+				if (!settlement.equals(holder)) {
+					eq.transfer(holder);
+				}
+			}
+		}
+	}
+
+
+	public static void loadAmountResources(EquipmentOwner target, Map<Integer, Double> resourcesMap) {
 		for (Entry<Integer, Double> resource : resourcesMap.entrySet()) {
 			// Add extra to the stored to give a tolerance
 			double amount = resource.getValue().doubleValue() + 0.01D;
@@ -272,9 +321,7 @@ public abstract class MarsSimUnitTest {
 		}
 	}
 
-	
-	public static void loadSettlementItems(Settlement source, Map<Integer, Integer> resourcesMap) {
-		var target = source.getEquipmentInventory();
+	public static void loadItemResources(EquipmentOwner target, Map<Integer, Integer> resourcesMap) {
 		for (Entry<Integer, Integer> resource : resourcesMap.entrySet()) {
 			target.storeItemResource(resource.getKey(), resource.getValue().intValue());
 		}
@@ -297,13 +344,13 @@ public abstract class MarsSimUnitTest {
 	 * Executes a Task for a number of steps or until it completes.
 	 * Note: for maven testing.
 	 * 
-	 * @param person
-	 * @param task
-	 * @param maxCalls
+	 * @param worker Worker that is executing the task
+	 * @param task Task to be executed
+	 * @param maxCalls Maximum number of calls to execute the task
 	 * @return The number of calls taken
 	 */
-	protected int executeTask(Person person, Task task, int maxCalls) {
-		PersonTaskManager tm = person.getMind().getTaskManager();
+	protected int executeTask(Worker worker, Task task, int maxCalls) {
+		var tm = worker.getTaskManager();
 		tm.checkReplaceTask(task);
 		
 		int callsLeft = maxCalls;
@@ -319,9 +366,9 @@ public abstract class MarsSimUnitTest {
 	 * Executes a Task for a number of steps or phase changes.
 	 * Note: for maven testing.
 	 * 
-	 * @param person
-	 * @param task
-	 * @param maxCalls
+	 * @param worker Worker that is executing the task
+	 * @param task Task to be executed
+	 * @param maxCalls Maximum number of calls to execute the task
 	 * @return The number of calls taken
 	 */
 	protected int executeTaskUntilPhase(Person person, Task task, int maxCalls) {
@@ -341,13 +388,13 @@ public abstract class MarsSimUnitTest {
 	/**
 	 * Executes a Task for a number of steps or subtask is Done.
 	 * 
-	 * @param person
-	 * @param task
-	 * @param maxCalls
+	 * @param worker Worker that is executing the task
+	 * @param task Task to be executed
+	 * @param maxCalls Maximum number of calls to execute the task
 	 * @return The number of calls taken
 	 */
-	protected int executeTaskUntilSubTask(Person person, Task task, int maxCalls) {
-		PersonTaskManager tm = person.getMind().getTaskManager();
+	protected int executeTaskUntilSubTask(Worker worker, Task task, int maxCalls) {
+		var tm = worker.getTaskManager();
 		tm.checkReplaceTask(task);
 		
 		int callsLeft = maxCalls;

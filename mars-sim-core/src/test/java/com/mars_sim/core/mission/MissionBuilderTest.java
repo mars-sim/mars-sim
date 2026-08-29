@@ -250,7 +250,7 @@ class MissionBuilderTest extends MarsSimUnitTest {
                                                 ResourceUtil.FOOD_ID, 100D,
                                                 r.getFuelTypeID(), 100D,
                                                 ResourceUtil.WATER_ID, 100D);
-        loadSettlementAmounts(settlement, resources);  
+        loadAmountResources(settlement.getEquipmentInventory(), resources);  
         
         return settlement;
     }

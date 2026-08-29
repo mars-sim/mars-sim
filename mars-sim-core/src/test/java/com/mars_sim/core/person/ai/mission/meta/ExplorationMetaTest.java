@@ -22,6 +22,7 @@ import com.mars_sim.core.mission.MetaMission.Roster;
 import com.mars_sim.core.mission.MissionCreationException;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
@@ -127,7 +128,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
                 ResourceUtil.WATER_ID, 200D,
                 ResourceUtil.FOOD_ID, 200D,
                 ResourceUtil.METHANOL_ID, 200D);
-        loadSettlementAmounts(s, resources);
+        loadAmountResources(s.getEquipmentInventory(), resources);
 
         for(int c = 0; c < containerCount; c++) {
             EquipmentFactory.createEquipment(containterType, s);

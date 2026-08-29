@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.mission;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
@@ -29,7 +29,7 @@ public interface MetaMission {
     public static final double LIMIT = 100D;
 
 	// The roster for a potential mission
-	record Roster(Person leader, Collection<? extends Worker> members, Vehicle vehicle) {}
+	record Roster(Person leader, List<? extends Worker> members, Vehicle vehicle) {}
 	
 	/**
 	 * Type of Mission created by this Meta object
