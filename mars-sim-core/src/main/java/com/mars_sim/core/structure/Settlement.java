@@ -352,7 +352,6 @@ public class Settlement extends Unit implements Temporal,
 	private MissionControl missionControl;
 	
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
-	private static SettlementTemplateConfig settlementTemplateConfig = simulationConfig.getSettlementTemplateConfiguration();
 	private static SurfaceFeatures surfaceFeatures;
 	private static TerrainElevation terrainElevation;
 	
@@ -586,7 +585,7 @@ public class Settlement extends Unit implements Temporal,
 		// Store limited amount of oxygen in this settlement
 		eqmInventory.storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN_AMOUNT);
 
-		SettlementTemplate sTemplate = settlementTemplateConfig.getItem(template);
+		SettlementTemplate sTemplate = simulationConfig.getSettlementTemplateConfiguration().getItem(template);
 		SettlementSupplies supplies = sTemplate.getSupplies();
 
 		initialiseEssentials(true, supplies.getBuildings());
