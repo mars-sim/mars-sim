@@ -45,9 +45,10 @@ class LoadEVASuitTest extends MarsSimUnitTest {
 		requiredResourcesMap.put(ResourceUtil.OXYGEN_ID, 1D);
 		requiredResourcesMap.put(ResourceUtil.WATER_ID, 4D);
 		
+		var personRH = person.getEquipmentInventory();
 		for (int i: requiredResourcesMap.keySet()) {
 			double amount = (double) requiredResourcesMap.get(i);
-			person.storeAmountResource(i, amount) ; 
+			personRH.storeAmountResource(i, amount) ; 
 		}
 		
 		EVASuit suitSettlement = (EVASuit)EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, settlement);

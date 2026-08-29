@@ -350,7 +350,7 @@ public class PartGood extends Good {
 
 		// Get number of resources carried by people on EVA.
         number += getPersonOnEVA(settlement)
-                    .map(p -> p.getItemResourceStored(getID()))
+                    .map(p -> p.getEquipmentInventory().getItemResourceStored(getID()))
                     .collect(Collectors.summingInt(Integer::intValue));
 
 		// Get the number of resources that will be produced by ongoing manufacturing

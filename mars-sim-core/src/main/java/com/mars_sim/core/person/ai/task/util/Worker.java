@@ -4,7 +4,6 @@
  * @date 2025-08-10
  * @author Barry Evans
  */
-
 package com.mars_sim.core.person.ai.task.util;
 
 import com.mars_sim.core.UnitIdentifer;
@@ -19,6 +18,9 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.MobileUnit;
 
+/**
+ * Represents a Worker that can execute Tasks & Missions.
+ */
 public interface Worker extends UnitIdentifer, MonitorableEntity, EquipmentOwner, SkillOwner, MobileUnit {
 
 	/**

@@ -129,14 +129,12 @@ public class CollectResources extends EVAOperation {
 		else if (num > 1) {
 			// Return extra containers
 			for (int i=0; i<num-1; i++) {
-				Container container = person.findContainer(containerType, false, resourceType); 
+				Container container = findPersonContainer(containerType, resourceType); 
 				if (container != null) {
 					boolean done = container.transfer(rover);
-					if (done) {
-//						logger.info(person, 5000, "Returned an extra " + containerType.getName().toLowerCase() + " from person back to rover.");
-					}
-					else
+					if (!done) {
 						logger.warning(person, 5000, "Unable to transfer a " + containerType.getName().toLowerCase() + " from person back to rover.");
+					}
 				}	
 			}
 		}
@@ -188,7 +186,7 @@ public class CollectResources extends EVAOperation {
 	 * @return true if carrying a container of this type.
 	 */
 	private int numContainers() {
-		return person.findNumContainersOfType(containerType);
+		return person.getEquipmentInventory().findNumContainersOfType(containerType);
 	}
 	
 	/**
@@ -229,7 +227,7 @@ public class CollectResources extends EVAOperation {
 		}
 
 		// Check container
-		Container container = person.findContainer(containerType, false, resourceType);
+		Container container = findPersonContainer(containerType, resourceType);
 		if (container == null) {
 			if (resourceType == ResourceUtil.ICE_ID) {
 				endEVA("No container available for ice.");
@@ -408,7 +406,7 @@ public class CollectResources extends EVAOperation {
 		if (num >= 1) {
 			// Return extra containers
 			for (int i=0; i<num; i++) {
-				Container container = person.findContainer(containerType, false, resourceType); 
+				Container container = findPersonContainer(containerType, resourceType); 
 				if (container != null) {
 					boolean done = container.transfer(rover);
 					if (done) {

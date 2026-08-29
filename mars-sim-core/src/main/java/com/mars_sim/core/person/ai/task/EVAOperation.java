@@ -19,6 +19,7 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
@@ -890,7 +891,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected void returnEquipmentToVehicle(Vehicle destination) {
 		// Return containers in rover Take a copy as the original will change.
-		List<Equipment> held = new ArrayList<>(person.getEquipmentSet());
+		List<Equipment> held = new ArrayList<>(person.getEquipmentInventory().getEquipmentSet());
 		for (Equipment e : held) {
 			// Place this equipment within a rover outside on Mars
 			if (e != null) {
@@ -940,6 +941,17 @@ public abstract class EVAOperation extends Task {
 		else {
 			problem.registerHistoricalEvent(HistoricalEventType.MEDICAL_RESCUE);
 		}
+	}
+
+	/**
+	 * Finds a container in the person's inventory.
+	 * 
+	 * @param containerType the type of container to find
+	 * @param resourceID the ID of the resource the container should hold
+	 * @return container or null if not found
+	 */
+	protected Container findPersonContainer(EquipmentType containerType, int resourceID) {
+		return person.getEquipmentInventory().findContainer(containerType, false, resourceID);
 	}
 
 	/**

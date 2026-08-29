@@ -117,7 +117,7 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 		
 		if (hasSpecimenContainer()) {
 
-			Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
+			Container box = findPersonContainer(EquipmentType.SPECIMEN_BOX, rockId);
 			
 			if (box != null) {
 				double mass = AVERAGE_ROCK_MASS * timeSkill * RandomUtil.getRandomDouble(.5, 2);
@@ -153,7 +153,7 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 	 * @return true if carrying container.
 	 */
 	private boolean hasSpecimenContainer() {
-		return person.containsEquipment(EquipmentType.SPECIMEN_BOX);
+		return person.getEquipmentInventory().containsEquipment(EquipmentType.SPECIMEN_BOX);
 	}
 
 	/**

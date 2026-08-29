@@ -59,8 +59,9 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		}
 		
 		// Identify the available amount first
-		double foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-		double waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+		var perrh = person.getEquipmentInventory();
+		double foodAmount = perrh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+		double waterAmount = perrh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		
 		var localrh = EquipmentOwner.getAttached(person.getContainerUnit());
 		if (localrh != null) {
@@ -131,9 +132,9 @@ public class EatDrinkMeta extends FactoryMetaTask {
 				// Note: if not, it may affect the amount of water/food available 
 				// for the mission
 				if (foodAmount < EatDrink.MIN)
-					foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+					foodAmount = perrh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 				if (waterAmount < EatDrink.MIN)
-					waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+					waterAmount = perrh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 	
 				if (foodAmount < EatDrink.MIN)
 					foodAmount = vehicle.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);

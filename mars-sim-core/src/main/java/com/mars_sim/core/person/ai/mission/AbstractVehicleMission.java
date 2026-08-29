@@ -1091,7 +1091,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 						Rover rover = (Rover) vehicle;
 						// Check people's possession
 						for (Person person: rover.getCrew()) {
-							amountStored += person.getSpecificAmountResourceStored(id);
+							amountStored += person.getEquipmentInventory().getSpecificAmountResourceStored(id);
 						}
 						// Check vehicle's equipment
 						for (Equipment equipment: rover.getContainerSet()) {
