@@ -65,7 +65,7 @@ public class ConnectOnlineMeta extends FactoryMetaTask {
         if (fatigue > 1500 || hunger > 1500)
             return EMPTY_TASKLIST;
             
-        double pref = person.getPreference().getPreferenceScore(this);
+        double pref = person.getPreference().getPreferenceScore(getIdentifier());
         
         // Use preference modifier
         double base = (RandomUtil.getRandomDouble(10) + pref) * .5;

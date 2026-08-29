@@ -256,10 +256,10 @@ public abstract class EVAOperation extends Task {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (person.isOutside()) {
-			if (isSuperUnfit()) {
-				walkBackInsidePhase();
-			}
-			else
+//			if (isSuperUnfit()) {
+//	            setPhase(WALK_BACK_INSIDE);
+//			}
+//			else
 				person.addEVATime(getTaskSimpleName(), time);
 		}
 
@@ -435,9 +435,8 @@ public abstract class EVAOperation extends Task {
 		}
 
 		else { // if a person is already inside, end the task gracefully here
-			logger.log(person, Level.WARNING, 10_000,
-					"Walked back inside. Ended '" 
-							+ person.getTaskDescription() + "'.");
+//			logger.log(person, Level.WARNING, 10_000, 
+//					"Case 6: Just went inside successfully. Current location: " + person.getContainerUnit());
 			endTask();
 		}
 
@@ -577,11 +576,11 @@ public abstract class EVAOperation extends Task {
 	 */
 	public void endEVA(String reason) {
 		if (person.isOutside()) {
-			logger.warning(worker, 1_000L, "Walking back in: " + reason);
+			logger.fine(worker, 1_000L, "EVA ended: " + reason + " Walking back inside.");
             setPhase(WALK_BACK_INSIDE);
 		}
     	else {
-			logger.warning(worker, 1_000L, "Ending EVA: " + reason);
+			logger.fine(worker, 1_000L, "EVA ended: " + reason);
         	endTask();
     	}
 	}
@@ -671,24 +670,6 @@ public abstract class EVAOperation extends Task {
         return CookMeal.isMealTime(person.getAssociatedSettlement(), prepTime) 
         		&& person.getPhysicalCondition().isDoubleHungry();
     }
-
-//	/**
-//	 * Checks if the person's settlement is physically drained.
-//	 *
-//	 * @param person
-//	 * @return
-//	 */
-//	public static boolean isExhausted(Person person) {
-//		if (isInEmergency(person)) {
-//			logger.info(person, "Medical Emergency.");
-//			return true;
-//		}	
-//
-//        return person.getPhysicalCondition().isDoubleHungry()
-//				&& person.getPhysicalCondition().getThirstLevel().isDoubleThirsty()
-//                && person.getPhysicalCondition().getFatigueLevel().isSleepy()
-//				&& person.getPhysicalCondition().getStressLevel().isStressedOut();
-//    }
 
 	/**
 	 * Checks if the person is physically fit for heavy EVA tasks.

@@ -50,7 +50,7 @@ public class ReturnLightUtilityVehicleMeta extends FactoryMetaTask {
             result = 500D;
 
 	        if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+            	result = result + result * person.getPreference().getPreferenceScore(getIdentifier())/5D;
 
 	        if (result < 0) result = 0;
         }

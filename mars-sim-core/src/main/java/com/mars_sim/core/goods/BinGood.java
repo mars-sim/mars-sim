@@ -133,6 +133,8 @@ public class BinGood extends Good {
 		// This method is not using cache
 		double tradeDemand = owner.determineTradeDemand(this);
 		
+		owner.setTradeDemandScore(this, tradeDemand);
+		
 		double ceiling = average + tradeDemand;
 		
 		if (previousDemand == INITIAL_DEMAND) {

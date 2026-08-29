@@ -52,14 +52,14 @@ public abstract class TaskManager implements Serializable {
 	private Task lastTask;
 
 	private transient CacheCreator<TaskJob> taskProbCache = null;
-
-
+	  // For TaskManager
+    public static final String TASK_EVENT = "task";
+    public static final int EVENTS = 500; // 50 is equivalent of ~1 days
 	/** The history of tasks. */
 	private History<OneActivity> allActivities;
 	/** The list of pending of tasks. */
 	private List<PendingTask> pendingTasks;
-    // For TaskManager
-    public static final String TASK_EVENT = "task";
+  
 	
 	/**
 	 * Constructor.
@@ -68,10 +68,28 @@ public abstract class TaskManager implements Serializable {
 	 */
 	protected TaskManager(Worker worker) {
 		this.worker = worker;
-		allActivities = new History<>(350);   // 150 equivalent of 3 days
+		allActivities = new History<>(EVENTS);
 		pendingTasks = new CopyOnWriteArrayList<>();
 	}
 
+    /**
+     * Sets the max entries.
+     * 
+     * @param max
+     */
+    public void setEntries(int max) {
+    	allActivities.setEntries(max);
+    }
+	
+    /**
+     * Gets the max entries.
+     * 
+     * @param max
+     */
+    public int getEntries() {
+    	return allActivities.getEntries();
+    }
+    
 	/**
 	 * Returns true if person has a task (may be inactive).
 	 * 
@@ -317,8 +335,9 @@ public abstract class TaskManager implements Serializable {
 	 * 
 	 * @param changed The active task.
 	 * @param mission Associated mission.
+	 * @param buildingName
 	 */
-	void recordTask(Task changed, Mission mission) {
+	void recordTask(Task changed, Mission mission, String buildingName) {
 		String newDescription = changed.getDescription();
 		String newPhase = "";
 		if (changed.getPhase() != null)
@@ -327,34 +346,42 @@ public abstract class TaskManager implements Serializable {
 		// If there is no details; then skip it
 		if (!newDescription.equals("") && !newPhase.equals("")) {
 			String newTask = changed.getName(false);
-
-			recordActivity(newTask, newPhase, newDescription, mission);
+			String missionName = (mission != null ? mission.getName() : null);
+			
+			recordActivity(newTask, newPhase, newDescription, missionName, buildingName);
 		}
 	}
 
 	/**
-	 * Record an activity on the Task Activity log.
+	 * Records an activity on the Task Activity log.
+	 * 
+	 * @param newTask
+	 * @param newPhase
+	 * @param newDescription
+	 * @param missionName
+	 * @param buildingName
 	 */
-	public void recordActivity(String newTask, String newPhase, String newDescription, Mission mission) {
-		String missionName = (mission != null ? mission.getName() : null);
-		
+	public void recordActivity(String newTask, String newPhase, String newDescription, String missionName, String buildingName) {
+
 		// This is temp.
-		String location = " in";
-		if (worker.isInVehicle()) {
-			location += " V";
-		}
-		if (worker.isInSettlement()) {
-			location += " S";
-		}
-		if (worker.isOutside()) {
-			location += " O";
-		}
+//		String location = " in";
+//		
+//		if (worker.isInVehicle()) {
+//			location += " V";
+//		}
+//		if (worker.isInSettlement()) {
+//			location += " S";
+//		}
+//		if (worker.isOutside()) {
+//			location += " O";
+//		}
 
 		OneActivity newActivity = new OneActivity(
-											newTask + location,
+											newTask,
 											newDescription,
 											newPhase, 
-											missionName);
+											missionName,
+											buildingName);
 
 		allActivities.add(newActivity);
 	}
@@ -440,9 +467,13 @@ public abstract class TaskManager implements Serializable {
 			else if ((currentTask == null) || !hasSameTask(newTask.getName())) {		
 				// Note: this is the only eligible condition for replacing the
 				// current task with the new task
-				replaceTask(newTask);
-				currentScore = null; // Clear score to show it was directly assigned
-				return true;
+				boolean canReplace = replaceTask(newTask);
+				if (canReplace) {
+					currentScore = null; // Clear score to show it was directly assigned
+					return true;
+				}
+				else
+					return false;
 			}
 		}
 		return false;
@@ -532,14 +563,14 @@ public abstract class TaskManager implements Serializable {
 	}
 	
 	/**
-	 * Checks to see if it's okay to replace a task.
+	 * Checks to see if the old task is the same as the new task.
 	 * 
 	 * @param newTask the task to be executed
 	 * @param allowSameTask is it allowed to execute the same task as previous
 	 */
 	public boolean checkReplaceTask(Task newTask, boolean allowSameTask) {
 		
-		if (newTask == null) {
+		if ((newTask == null) || newTask.equals(currentTask)) {
 			return false;
 		}
 		
@@ -562,9 +593,7 @@ public abstract class TaskManager implements Serializable {
 		}
 		
 		// Records current task as last task and replaces it with a new task.
-		replaceTask(newTask);
-		
-		return true;
+		return replaceTask(newTask);
 	}
 	
 	/**
@@ -572,10 +601,7 @@ public abstract class TaskManager implements Serializable {
 	 * 
 	 * @param newTask
 	 */
-	public void replaceTask(Task newTask) {
-		if ((newTask == null) || newTask.equals(currentTask)) {
-			return;
-		}
+	private boolean replaceTask(Task newTask) {
 			
 		// Backup the current task as last task
 		if (currentTask != null)
@@ -587,16 +613,20 @@ public abstract class TaskManager implements Serializable {
 			
 			currentTask.endTask();
 			
-			logger.info(worker, 5_000, "Quit '" + des + "' and replace with the new task of '"
-						+ newTask.getName() + "'.");
+			logger.info(worker, 5_000, "Quit old task: " + des + ". Replace with new task: "
+						+ newTask.getDescription() + ".");
 		}
 		
 		// Make the new task as the current task
 		currentTask = newTask;
+		
+		// Reset the task score
 		currentScore = null;
 		
 		// Send out the task event
 		worker.fireUnitUpdate(TASK_EVENT, newTask);
+		
+		return true;
 	}
 	
 	/**

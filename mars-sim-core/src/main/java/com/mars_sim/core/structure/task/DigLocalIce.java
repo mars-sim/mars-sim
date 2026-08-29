@@ -12,6 +12,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The DigLocalRegolith class is a task for digging and collecting
@@ -42,7 +43,7 @@ extends DigLocal {
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, COLLECT_ICE, ResourceUtil.ICE_ID, CONTAINER_TYPE, person, 150); 
+        super(NAME, COLLECT_ICE, ResourceUtil.ICE_ID, CONTAINER_TYPE, person, RandomUtil.getRandomInt(-20 + 20) + 200); 
         if (!isDone()) {
         	setCollectionRate(person.getAssociatedSettlement().getIceCollectionRate());
         }

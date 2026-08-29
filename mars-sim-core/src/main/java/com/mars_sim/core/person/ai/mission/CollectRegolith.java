@@ -96,7 +96,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	}
 	
 	@Override
-	public Set<ObjectiveType> getObjectiveSatisified() {
+	public Set<ObjectiveType> getObjectiveSatisfied() {
 		return OBJECTIVES;
 	}
 }

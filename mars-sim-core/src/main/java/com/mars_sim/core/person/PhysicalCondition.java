@@ -26,19 +26,19 @@ import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Sleep;
-import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
-import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
+import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
+import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
+import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.person.health.Medication;
-import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.time.ClockPulse;
@@ -70,6 +70,8 @@ public class PhysicalCondition implements Serializable {
 	/** The thirst ceiling immediately upon drinking water [millisols]. */
 	public static final int THIRST_CEILING_UPON_DRINKING = 500;
 	/** The amount of thirst threshold [millisols]. */
+	public static final int THIRST_THRESHOLD = 250;
+	/** The amount of hunger threshold [millisols]. */
 	public static final int HUNGER_THRESHOLD = 250;
 	/** The amount of thirst threshold [millisols]. */
 	public static final int ENERGY_THRESHOLD = 2525;
@@ -230,10 +232,7 @@ public class PhysicalCondition implements Serializable {
 	public static final String PERFORMANCE_EVENT = "physical perf";
 
 	private static MasterClock master;
-
-	private static EatDrinkMeta eatMealMeta = new EatDrinkMeta();
 	private static MedicalManager medicalManager;
-
 	private static PersonConfig personConfig;
 
 	/**
@@ -294,10 +293,10 @@ public class PhysicalCondition implements Serializable {
 
 		double sTime = personConfig.getStarvationStartTime();
 		starvationTrigger = (int)(1000 * RandomUtil.getGaussianPositive((1 + endurance / 500) * sTime * bodyMassDeviation, bodyMassDeviation / 15));
-		maxHunger = starvationTrigger * 6;
+		maxHunger = starvationTrigger * 8;
 		
 		double dTime = personConfig.getDehydrationStartTime();
-		dehydrationTrigger = (int)(1000 * RandomUtil.getGaussianPositive(dTime / bodyMassDeviation, bodyMassDeviation / 15));
+		dehydrationTrigger = (int)(1000 * RandomUtil.getGaussianPositive(dTime / bodyMassDeviation * 1.2, bodyMassDeviation / 15));
 		maxThirst = dehydrationTrigger * 4;
 		
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup
@@ -390,7 +389,7 @@ public class PhysicalCondition implements Serializable {
 		
 		double mod = (GhrelinLevel - leptinLevel * CircadianClock.LEPTIN_STEP)/250.0;
 		// Get eating pref 
-		double eatingPref = person.getPreference().getPreferenceScore(eatMealMeta)/10.0;
+		double eatingPref = person.getPreference().getPreferenceScore(MetaTaskUtil.getEatDrinkMetaID())/10.0;
 		// Derive the appetite
 		appetite = ageFactor/70.0 + massFactor + eatingPref + mod;
 		// Limit to between 0 and 1
@@ -1588,7 +1587,7 @@ public class PhysicalCondition implements Serializable {
 		BuildingManager.addPatientToMedicalBed(person, person.getAssociatedSettlement());
 
 		// Let the person go to sleep
-		person.getTaskManager().replaceTask(new Sleep(person, 500));
+		person.getTaskManager().checkReplaceTask(new Sleep(person, 500));
 	}
 
 	
@@ -1613,7 +1612,8 @@ public class PhysicalCondition implements Serializable {
 		this.mostSeriousProblem = problem;
 
 		// Create the death details
-		deathDetails = new DeathInfo(person, problem, reason, lastWord, master.getMarsTime());
+		deathDetails = new DeathInfo(person, 
+				problem, reason, lastWord, person.getContainerUnit().getName(), master.getMarsTime());
 
 		// Backup the role type
 		deathDetails.setRoleType(person.getRole().getType());
@@ -1998,6 +1998,16 @@ public class PhysicalCondition implements Serializable {
 	public boolean isDoubleHungry() {
 		return hunger > HUNGER_THRESHOLD * 2 || kJoules < ENERGY_THRESHOLD * 2;
 	}
+	
+	/**
+	 * Checks if it passes the thirsty x2 threshold
+	 *
+	 * @return
+	 */
+	public boolean isDoubleThirsty() {
+		return hunger > THIRST_THRESHOLD * 2;
+	}
+	
 	
 	/**
 	 * Checks if it passes the hunger threshold

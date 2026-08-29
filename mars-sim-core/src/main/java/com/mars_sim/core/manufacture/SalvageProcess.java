@@ -65,7 +65,8 @@ public class SalvageProcess extends WorkshopProcess {
     }
 
 	/**
-	 * Start the process by adding to the Workshop active list and claim input resources
+	 * Starts the process by adding to the Workshop active list and claim input resources.
+	 * 
 	 * @return Was the process started
 	 */
 	@Override

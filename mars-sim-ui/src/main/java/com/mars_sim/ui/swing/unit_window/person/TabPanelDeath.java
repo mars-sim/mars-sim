@@ -21,7 +21,6 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.EntityLabel;
 
 
 /**
@@ -81,11 +80,9 @@ class TabPanelDeath extends EntityTabPanel<Person> {
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.lastWord"), death.getLastWord());
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.placeOfDeath"), death.getPlaceOfDeath());
 	
-		var deathPlace = death.getContainerUnit();
-		if (deathPlace != null) {
-			var deathEntity = new EntityLabel(deathPlace, getContext());
-			deathLabelPanel.addLabelledItem(Msg.getString("TabPanelDeath.containerUnit"), deathEntity);
-		}
+		String deathPlace = death.getContainerUnitString();
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.containerUnit"), deathPlace);
+
 		
 		if (death.getCoordinates() != null) {
 			deathLabelPanel.addRow(Msg.getString("TabPanelDeath.coordinates"),

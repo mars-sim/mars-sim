@@ -16,7 +16,7 @@ public interface TaskFactory {
 
     String getName();
 
-	String getID();
+	String getCapitalizedName();
 
     /**
 	 * Constructs an instance of the associated task. 

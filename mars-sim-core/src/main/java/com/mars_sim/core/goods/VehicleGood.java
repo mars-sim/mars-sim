@@ -209,7 +209,9 @@ class VehicleGood extends Good {
 	
 		double average = computeVehiclePartsCost(owner);
 		
-		double tradeDemand = determineTradeVehicleValue(owner, settlement);
+		double tradeDemand = determineTradeVehicleValue(owner, settlement) / 10;
+		
+		owner.setTradeDemandScore(this, tradeDemand);
 		
 		// Gets the repair demand
 		// Note: need to look into parts and vehicle reliability in MalfunctionManager 
@@ -329,7 +331,7 @@ class VehicleGood extends Good {
 		    case DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE -> DRONE_FACTOR;
 		    case LUV -> LUV_FACTOR;
         };
-		return demand * (.5 + owner.getCommerceFactor(CommerceType.TRADE)) * typeModifier;
+		return demand * (1.5 + owner.getCommerceFactor(CommerceType.TRADE)) * typeModifier;
 	}
 
 	/**

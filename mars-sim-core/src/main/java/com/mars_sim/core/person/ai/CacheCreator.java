@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * CacheCreator.java
+ * @date 2024-09-12
+ * @author muybien3433
+ */
 package com.mars_sim.core.person.ai;
 
 import com.mars_sim.core.data.RatedActivity;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractVehicleMission.java
- * @date 2024-07-15
+  * @date 2026-08-25
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -25,6 +25,7 @@ import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.goods.GoodsUtil;
@@ -33,6 +34,8 @@ import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
@@ -98,14 +101,18 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final MissionPhase DISEMBARKING = new MissionPhase("disembarking", Stage.CLOSEDOWN);
 	
 	// Mission Status
-	protected static final MissionStatus NO_AVAILABLE_VEHICLE = new MissionStatus("Mission.status.noVehicle");
-	protected static final MissionStatus NO_VEHICLE_WITHIN_RANGE = new MissionStatus("Mission.status.noVehicleWithinRange");
-	protected static final MissionStatus VEHICLE_BEACON_ACTIVE = new MissionStatus("Mission.status.vehicleBeacon");
-	private static final MissionStatus VEHICLE_UNDER_MAINTENANCE = new MissionStatus("Mission.status.vehicleMaintenance");
-	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
-	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
-	protected static final MissionStatus MISSION_LEAD_NO_SHOW = new MissionStatus("Mission.status.leaderNoShow");
-	protected static final MissionStatus ONLY_ONE_MEMBER = new MissionStatus("Mission.status.onlyOneMember");
+	protected static final MissionStatus NO_AVAILABLE_VEHICLE = new MissionStatus("noVehicle");
+	protected static final MissionStatus NO_VEHICLE_WITHIN_RANGE = new MissionStatus("noVehicleWithinRange");
+	protected static final MissionStatus VEHICLE_BEACON_ACTIVE = new MissionStatus("vehicleBeacon");
+	private static final MissionStatus VEHICLE_UNDER_MAINTENANCE = new MissionStatus("vehicleMaintenance");
+	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("loadResources");
+	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("unrepairable");
+	protected static final MissionStatus LEADER_NO_SHOW = new MissionStatus("leaderNoShow");
+	protected static final MissionStatus ONLY_ONE_MEMBER = new MissionStatus("onlyOneMember");
+	protected static final MissionStatus VEHICLE_NOT_IN_SETTLEMENT = new MissionStatus("vehicleNotInSettlement");
+	protected static final MissionStatus TRAVEL_BACK_TO_SETTLEMENT = new MissionStatus("travelBackToSettlement");
+	protected static final MissionStatus TIMEOUT = new MissionStatus("timeout");
+	
 	
 	// Static members
 	private static final Set<Integer> UNNEEDED_PARTS = Set.of(ItemResourceUtil.FIBERGLASS_ID);
@@ -338,15 +345,20 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 			// What if a vehicle is still at a settlement and Mission is not approved ?
 			if (!isDroneDone() && !isRoverDone()) {
+				
+				
 				// Either the drone is still unloading or the rover is still unloading
 				continueToEndMission = false;
-				if (isCurrentNavpointSettlement()
-						&& getPhase() != DISEMBARKING) 
+				
+				if (isCurrentNavpointSettlement() && getPhase() != DISEMBARKING)
+					
+					removeAllMembers();
+					// disembarking will help unload cargoes
 					startDisembarkingPhase();
 			}
 			else {
 				// for ALL OTHER REASONS
-				setPhaseEnded(true);
+				super.endMission(endStatus);
 			}
 		}
 
@@ -512,7 +524,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			computeTotalDistanceRemaining();
 			computeTotalDistanceTravelled();
 			
-			endMission(null);
+//			endMission(AbstractMission.MISSION_ACCOMPLISHED);
 		}
 		else {
 			handled = false;
@@ -564,6 +576,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		Vehicle v = getVehicle();
 
 		if (v == null) {
+			addMissionLog(NO_AVAILABLE_VEHICLE.getName(), member.getName());
 			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
@@ -572,17 +585,20 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (settlement == null) {
 			logger.warning(member,
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			endMission(NO_AVAILABLE_VEHICLE);
+			addMissionLog(VEHICLE_NOT_IN_SETTLEMENT.getName(), member.getName());
+			endMission(VEHICLE_NOT_IN_SETTLEMENT);
 			return;
 		}
 
 		// While still in the settlement, check if the beacon is turned on and and endMission()
 		else if (v.isBeaconOn()) {
+			addMissionLog(VEHICLE_BEACON_ACTIVE.getName(), member.getName());
 			endMission(VEHICLE_BEACON_ACTIVE);
 			return;
 		}
 
 		if (loadCargo(member)) {
+			addMissionLog("Cargoes fully loaded", member.getName());
 			setPhaseEnded(true);
 		}
 	}
@@ -1623,33 +1639,40 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * Aborts the mission via established reasons and/or events.
 	 * If possible return to the starting Settlement.
 	 * 
+	 * @param status
+	 * @param eventType
+	 */
+	public void abortMission(MissionStatus status, HistoricalEventType eventType) {
+		abortMission(status, eventType, getStartingPerson());
+	}
+	
+	/**
+	 * Aborts the mission via established reasons and/or events.
+	 * If possible return to the starting Settlement.
+	 * 
 	 * @param status Reason for the abort.
 	 * @param eventType Optional register an event
 	 */
-	public void abortMission(MissionStatus status, HistoricalEventType eventType) {
+	public void abortMission(MissionStatus status, HistoricalEventType eventType, Person person) {
 
-		if (addMissionStatus(status)) {
-			// If the MissionFlag is not present then do it
+		addMissionStatus(status, person);
+		// If the MissionFlag is not present then do it
 			
-			// Create an event if needed
-			if (eventType != null) {
-				registerHistoricalEvent(getStartingPerson(), eventType, status.getName());
-			}
-			
-			// If mission is still at home then leave the vehicle
-			if (getStage() != Stage.PREPARATION) {
-				addMissionStatus(status);
+		// Create an event if needed
+		if (eventType != null) {
+			registerHistoricalEvent(getStartingPerson(), eventType, status.getName());
+		}
+		
+		// If mission is still at home then leave the vehicle
+		if (getStage() != Stage.PREPARATION) {
 
-				// What to do with status ?
-				travelDirectToSettlement(startingSettlement);
-			}
-			else {
-				// Already at home
-				
-				releaseVehicle(vehicle);
-			
-				super.abortMission(status);
-			}
+			addMissionStatus(TRAVEL_BACK_TO_SETTLEMENT);
+			travelDirectToSettlement(startingSettlement);
+		}
+		else {
+			// Already at home
+	
+			super.abortMission(status);
 		}
 	}
 
@@ -2041,4 +2064,94 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 		return true;
 	}
+	
+	
+	/**
+	 * Check needs.
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public boolean checkNeeds(Person person) {
+		
+		PhysicalCondition pc = person.getPhysicalCondition();
+		var persRH = person.getEquipmentInventory();
+
+		// Note: if a person is not in fatigue but is hungry or thirsty, don't need to sleep
+		double fatigue = person.getPhysicalCondition().getFatigue();
+//		if (person.getPhysicalCondition().getFatigueLevel().getMaxValue() >= FatigueLevel.RESTED.getMaxValue()) {
+		if (fatigue > 1000 && person.isInside()) {				
+			boolean canSleep = assignTask(person, new Sleep(person, 100));
+        	if (canSleep) {
+        		logger.log(person, Level.INFO, 4_000,
+            			"Instructed to sleep before piloting " + getVehicle() + ".  Fatigue: " + Math.round(fatigue) + ".");
+        		
+        		return false;
+        	}
+        	else {
+				logger.warning(person, 4_000, "Unable to sleep as assigned.");
+        	}
+    	}
+		
+		else if (RandomUtil.getRandomInt(1) == 0 && (pc.isDoubleHungry())) {
+			
+			// Identify the available amount first
+			double foodAmount = persRH.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+
+			var localrh = EquipmentOwner.getAttached(person.getContainerUnit());
+			if (localrh != null) {
+				if (foodAmount < EatDrink.MIN)
+					foodAmount = localrh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+			}
+			
+			if (foodAmount > EatDrink.MIN) {
+				boolean canEatDrink = assignTask(person, new EatDrink(person, getVehicle()));
+	        	if (canEatDrink) {
+	        		logger.log(person, Level.INFO, 4_000,
+	            			"Instructed to eat before piloting " + getVehicle() 
+	            			+ ".  Hunger: " + Math.round(pc.getHunger()) + ".");
+	        		
+	        		return false;
+	        	}
+				else {
+					logger.warning(person, 10_000, "Unable to eat as assigned.");
+				}
+			}
+			else {
+				logger.warning(person, 10_000, "No food left.");
+			}
+    	}	
+		
+		else if (RandomUtil.getRandomInt(1) == 0 && (pc.isDoubleThirsty())) {		
+			
+			// Identify the available amount first
+			double waterAmount = persRH.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+			
+			var localrh = EquipmentOwner.getAttached(person.getContainerUnit());
+			if (localrh != null) {
+				if (waterAmount < EatDrink.MIN)
+					waterAmount = localrh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+			}
+			
+			if (waterAmount > EatDrink.MIN) {
+				boolean canEatDrink = assignTask(person, new EatDrink(person, getVehicle()));
+	        	if (canEatDrink) {
+	        		logger.log(person, Level.INFO, 4_000,
+	            			"Instructed to drink before piloting " + getVehicle() 
+	            			+ ".  Thirst: " + Math.round(pc.getThirst()) + ".");
+	        		
+	        		return false;
+	        	}
+				else {
+					logger.warning(person, 10_000, "Unable to drink as assigned.");
+				}
+			}
+			else {
+				logger.warning(person, 10_000, "No water left.");
+			}
+    	}	
+		
+		return true;
+	}
+	
 }

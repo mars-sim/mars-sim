@@ -44,7 +44,7 @@ public class Repairbot extends RobotJob  {
 		result += settlement.getBuildingManager().getBuildingSet(FunctionType.LIFE_SUPPORT).size() / BUILDING_PER_BOT;
 
 		// Add number of vehicles parked at settlement.
-		result += settlement.getAllAssociatedVehicles().size() / VEHICLE_PER_BOT;
+		result += settlement.getOwnedVehicleNum() / VEHICLE_PER_BOT;
 		if (result < 1D) {
 			// Add settlements should have at least 1 repair bot
 			result = 1D;

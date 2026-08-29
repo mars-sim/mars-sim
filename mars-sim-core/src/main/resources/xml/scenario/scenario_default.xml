@@ -90,7 +90,7 @@
 			<location coordinates="15.1255 114.1535" />
 		</settlement>
 
-		<settlement name="Foundation" template="Sector Base 1" crew="Founders" persons="212" robots="84" sponsor="MS">
+		<settlement name="Foundation" template="Sector Base 2" crew="Founders" persons="240" robots="120" sponsor="MS">
 			<location coordinates="24.14 172.29" />
 		</settlement>
 

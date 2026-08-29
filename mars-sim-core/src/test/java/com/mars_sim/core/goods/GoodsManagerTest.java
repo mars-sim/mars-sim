@@ -57,15 +57,15 @@ class GoodsManagerTest extends MarsSimUnitTest {
 		 
         assertTrue(newDemand > previousDemand); // Demand has increased;
 
-        pg.injectPartDemand(sheet, gm, needNum); 
+        double tempDemand = pg.injectPartDemand(sheet, gm, needNum, 5); 
         
         int storedNum = s.getEquipmentInventory().getItemResourceStored(sheet.getID());
         
-        double demandScore = gm.getDemandScore(pg);
+//        double demandScore = gm.getDemandScore(pg);
         
         assertEquals(previousNum, storedNum, "Stored number matches previous number");
-        
-        assertEquals(newDemand, demandScore, "Demand score matches new demand");
+        // Note: For now, injectPartDemand will not set the demand score directly
+        assertEquals(newDemand, tempDemand, "Demand score matches new demand");
     }
     
     @Test

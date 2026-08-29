@@ -266,7 +266,7 @@ public class MedicalStation implements MedicalAid {
 			problemsAwaitingTreatment.remove(problem);
 		} else {
 			logger.warning("[" + name + "] " + problem.getComplaint()
-					+ " cannot be treated in medical station is not equipped to handle.");
+					+ " cannot be treated in medical station not equipped to handle.");
 		}
 	}
 

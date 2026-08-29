@@ -559,18 +559,18 @@ public class GoodsManager implements Serializable {
 				double baseValue = tempSettlement.getGoodsManager().getDemandScore(good);
 				double distance = settlement.getCoordinates().getDistance(
 												tempSettlement.getCoordinates());
-				double tradeValue = baseValue / (1D + (distance / 1000D));
-				if (tradeValue > selectedTradeValue)
-					// Gets the largest trade value
-					selectedTradeValue = tradeValue;
+				if (distance < 1500) {
+					double tradeValue = baseValue / (1D + (distance / 1500D));
+					if (tradeValue > selectedTradeValue)
+						// Gets the largest trade value
+						selectedTradeValue = tradeValue;
+				}
 			}
 		}
 		
 		double previousValue = getTradeDemandScore(good);
 				
-		double newValue = (previousValue + selectedTradeValue) / 2.2; 
-		
-		setTradeDemandScore(good, newValue);
+		double newValue = (.8 * previousValue + .2 * selectedTradeValue) / 1.1; 
 		
 		return newValue;
 	}

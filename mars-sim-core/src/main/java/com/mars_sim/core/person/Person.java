@@ -63,7 +63,7 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.social.Appraiser;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.meta.WorkoutMeta;
+import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.training.TrainingType;
@@ -399,7 +399,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		int endurance = attributes.getAttribute(NaturalAttributeType.ENDURANCE);
-		double gym = 2D * getPreference().getPreferenceScore(new WorkoutMeta());
+		double gym = 2D * getPreference().getPreferenceScore(MetaTaskUtil.getWorkoutMetaID()); 
 		if (getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
 			gym += RandomUtil.getRandomRegressionInteger(20);
 		else if (getFavorite().getFavoriteActivity() == FavoriteType.SPORT)
@@ -719,7 +719,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	/**
 	 * Declares the death status of a person.
 	 */
-	public void setDeclaredDead(boolean value) {
+	public void setTestDeclaredDead(boolean value) {
 		declaredDead = value;
 		
 		if (value) {
@@ -750,7 +750,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		declaredDead = true;
 		// Set description
 		setDescription("Dead");
-
 		// Deregister the person's quarters
 		deregisterBed();
 		
@@ -772,7 +771,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		mind.setInactive();
 
 		research.terminateStudy();
-
 		// Throw unit event
 		fireUnitUpdate(EntityEventType.DEATH_EVENT);
 	}
@@ -824,9 +822,9 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		}
 	
 		// Check to see if the person has deceased
-		if (condition.getDeathDetails() != null) {
-			setDeceased();
-		}
+//		if (condition.getDeathDetails() != null) {
+//			setDeceased();
+//		}
 		
 		// Check to see if the person is dead
 		if (condition.isDead()) {
@@ -905,26 +903,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 //				if (role.getType() == null)
 //					role.obtainNewRole();
 			}
-		}
-	}
-	
-	/**
-	 * Checks if the person has deceased.
-	 * 
-	 * @return
-	 */
-	public void setDeceased() {
-		if (!isBuried && !declaredDead) {
-			// Declares the person dead
-			setDeclaredDead();
-			
-			// Q: When should a person be removed from being a citizen of a settlement ?
-			// A: after being buried ? 
-			
-			// Deregisters the person's quarters
-			deregisterBed();
-			// Deactivates the person's mind
-			mind.setInactive();
 		}
 	}
 

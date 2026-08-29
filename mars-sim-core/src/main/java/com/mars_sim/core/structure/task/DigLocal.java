@@ -104,22 +104,19 @@ public abstract class DigLocal extends EVAOperation {
         this.resourceName = ResourceUtil.findAmountResourceName(resourceID);
         this.collectionPhase = collectionPhase;
 
-        // To dig local a person must be in a Settlement
-        if (!person.isInSettlement()) {
-        	endEVA("Not in a settlement.");
+        // To dig local, a person must start at a Settlement
+		settlement = person.getSettlement();
+        if (settlement == null) {
+        	endEVA("Not in settlement at the start.");
 			return;
         }
-
-		settlement = person.getSettlement();
      		
         // Get an available airlock in a settlement
-     	if (person.isInSettlement()) {
-	        airlock = getWalkableAvailableEgressAirlock(person);
-	        if (airlock == null) {
-	    		endEVA("No available walkable airlock for egress.");
-				return;
-	        }
-     	}
+        airlock = getWalkableAvailableEgressAirlock(person);
+        if (airlock == null) {
+        	endEVA("No available walkable airlock for egress.");
+        	return;
+        }
 
         // Take container for collecting resource.
         // If container are not available, end task.
@@ -223,7 +220,7 @@ public abstract class DigLocal extends EVAOperation {
 					logger.log(person, Level.WARNING, 4_000,
 							". Unable to add subtask WalkOutside.");
 					// Note: may call below many times
-					endTask();
+					endEVA("Unable to walk outside.");
 				}
         	}
     		
@@ -234,7 +231,7 @@ public abstract class DigLocal extends EVAOperation {
         
         else {
         	logger.severe(person, "Not outside. Unable to walk to the storage bin.");
-            endTask();
+        	endEVA("Not Outside");
         }
 
         return 0;

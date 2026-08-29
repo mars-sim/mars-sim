@@ -24,7 +24,8 @@ public class NameGenerator {
     }
 
     /**
-     * Get the list of potential names.
+     * Gets the list of potential names.
+     * 
      * @return
      */
     public List<String> getPotentials() {
@@ -32,8 +33,9 @@ public class NameGenerator {
     }
 
     /**
-     * Generate a random name from the list of potential names.
-     * Some namaes are excluded.
+     * Generates a random name from the list of potential names.
+     * Some names are excluded.
+     * 
      * @param excluded Names excluded.
      * @return
      */

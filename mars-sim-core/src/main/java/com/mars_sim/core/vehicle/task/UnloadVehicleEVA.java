@@ -75,7 +75,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		this.vehicle = vehicle;
 		
 		if (!vehicle.haveStatusType(StatusType.UNLOADING)) {
-			endEVA("Vehicle is not ready for ynloading.");
+			endEVA("Vehicle is not ready for unloading.");
         	return;
 		}
 
@@ -201,9 +201,11 @@ public class UnloadVehicleEVA extends EVAOperation {
 	 */
 	public static boolean isFullyUnloaded(Vehicle vehicle) {
 		double total = vehicle.getStoredMass();
-		for(Equipment e : vehicle.getSuitSet()) {
-			total -= e.getMass();
-		}
+		
+		// Note: getStoredMass() already accounted for any suit inside
+//		for(Equipment e : vehicle.getSuitSet()) {
+//			total -= e.getMass();
+//		}
 		
 		return total <= 0.001D;
 	}

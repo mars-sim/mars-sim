@@ -73,7 +73,7 @@ public class AreologyFieldStudy extends FieldStudyMission {
 	}
 
 	@Override
-	public Set<ObjectiveType> getObjectiveSatisified() {
+	public Set<ObjectiveType> getObjectiveSatisfied() {
 		return OBJECTIVES;
 	}
 }

@@ -44,9 +44,9 @@ public class CollectMinedMinerals extends EVAOperation {
 															createPhaseImpact(SkillType.AREOLOGY, SkillType.PROSPECTING));
 
 	/** The average labor time it takes to find the mineral */
-	public static final double LABOR_TIME = 40D;
+	public static final double LABOR_TIME = 20D;
 
-	public static final double COLLECTION_RATE = 0.3D;
+	public static final double COLLECTION_RATE = 2D;
 	
 	/** The container type to use to collect resource. */
 	private EquipmentType containerType = EquipmentType.LARGE_BAG;

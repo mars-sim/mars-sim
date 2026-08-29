@@ -58,7 +58,24 @@ public class MissionLog implements Serializable  {
         @Override
         public String toString() {
             return "MissionLogEntry [time=" + time + ", entry=" + entry + "]";
-        }		
+        }
+        
+    	/**
+    	 * Compares if an object is the same as this person.
+    	 *
+    	 * @param obj
+    	 */
+    	@Override
+    	public boolean equals(Object obj) {
+    		if (this == obj) return true;
+    		if (obj == null) return false;
+    		if (this.getClass() != obj.getClass()) return false;
+    		MissionLogEntry e = (MissionLogEntry) obj;
+    		return this.getEnterBy() == e.getEnterBy()
+    			&& this.getEntry() == e.getEntry()
+    			&& this.getTime() == e.getTime();
+    	}
+
     }
     
     private boolean done = false;
@@ -141,11 +158,11 @@ public class MissionLog implements Serializable  {
 	}
 
 	/**
-	 * Gets the completed timestamp when the mission was done.
+	 * Gets the timestamp when the mission ended.
 	 *
 	 * @return
 	 */
-	public MarsTime getTimestampCompleted() {
+	public MarsTime getTimestampEnded() {
 		if (done && !log.isEmpty()) {
 			return log.get(log.size()-1).getTime();
 		}

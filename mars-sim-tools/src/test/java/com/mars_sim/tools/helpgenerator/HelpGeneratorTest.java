@@ -245,7 +245,7 @@ class HelpGeneratorTest {
         var context = createGenerator();
         
         // Has both inputs and outputs
-        var spec = ResourceUtil.findAmountResource("Aluminum oxide");
+        var spec = ResourceUtil.findAmountResource("iron powder");
 
         var vg = new ResourceGenerator(context);
         var content = createDoc(vg, spec);

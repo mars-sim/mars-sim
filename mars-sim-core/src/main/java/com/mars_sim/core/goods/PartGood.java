@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
@@ -90,12 +91,12 @@ public class PartGood extends Good {
 	private static final int EVA_PART_DEMAND = 1;
     private static final int KITCHEN_DEMAND = 1;
 	private static final double SCRAP_METAL_DEMAND = 1;
-	private static final double STEEL_INGOT_DEMAND = 1.1;
-	private static final double IRON_INGOT_DEMAND = 0.65;
+	private static final double STEEL_INGOT_DEMAND = 1.5;
+	private static final double IRON_INGOT_DEMAND = 1.5;
 	private static final double INGOT_METAL_DEMAND = 1;
 	private static final double SHEET_METAL_DEMAND = .75;
-	private static final double TRUSS_DEMAND = .5;
-	private static final double STEEL_DEMAND = .5;
+	private static final double TRUSS_DEMAND = 1.25;
+	private static final double STEEL_DEMAND = 1.25;
 	private static final double BRICK_DEMAND = 1.0;
 	private static final double ELECTRICAL_DEMAND = 1.25;
 	private static final double INSTRUMENT_DEMAND = 1.2;
@@ -106,8 +107,8 @@ public class PartGood extends Good {
 	private static final double GLASS_SHEET_DEMAND = 0.025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	private static final double LOGIC_BOARD_DEMAND = 0.5;
-	private static final double ELECTRICAL_WIRE_DEMAND = .25;
-	private static final double WIRE_DEMAND = 0.2;
+	private static final double ELECTRICAL_WIRE_DEMAND = .5;
+	private static final double WIRE_DEMAND = 1.05;
 	
 	private static final double ATTACHMENT_PARTS_DEMAND = 1.5;
 	private static final double AEROGEL_TILE_DEMAND = 0.8;
@@ -117,7 +118,7 @@ public class PartGood extends Good {
 	private static final double FUEL_CELL_STACK_DEMAND = 8;
 	
 	private static final int PARTS_MAINTENANCE_VALUE = 2;
-	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 50D;
+	public static final int CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 25;
 	
 	// Cost modifiers
 	private static final double ITEM_COST = 1.1D;
@@ -403,7 +404,7 @@ public class PartGood extends Good {
 			// Add food production demand.
 			+ getPartFoodProductionDemand(owner, settlement, part)
 			// Add construction site demand.
-			+ getPartConstructionSiteDemand(owner, settlement)
+			+ getPartConstructionSiteDemand(owner, settlement, part)
 			// Calculate individual EVA suit-related part demand.
 			+ getEVASuitPartsDemand(owner)
 			// Calculate individual bot-related part demand.
@@ -434,8 +435,10 @@ public class PartGood extends Good {
 		owner.setProjectedDemandScore(this, projectedCache);
 		
 		// Add trade demand.
-		double tradeDemand = owner.determineTradeDemand(this);
+		double tradeDemand = owner.determineTradeDemand(this) / 10;
 
+		owner.setTradeDemandScore(this, tradeDemand);
+		
 		// Gets the repair part demand
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 * owner.getDemandScore(this);
@@ -591,25 +594,50 @@ public class PartGood extends Good {
 	
     /**
 	 * Gets the demand for a part from construction sites.
-	 *
-	 * @param part the part.
-	 * @return demand (# of parts).
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @param part
+	 * @return
 	 */
-	private double getPartConstructionSiteDemand(GoodsManager owner, Settlement settlement) {
+	private double getPartConstructionSiteDemand(GoodsManager owner, Settlement settlement, Part part) {
 		double base = 0D;
-
+		int id = getID();
 		for (var s : settlement.getConstructionManager().getConstructionSites()) {
 			if (s.isConstruction()) {
-				var stage = s.getCurrentConstructionStage();
-				double needed = stage.getResourceNeeded(getID());
-				int missing = (int)needed;
-				if (missing != 0) {
-					Part part = getPart();
+				double need = s.getCurrentConstructionStage().getPartNeeded(id);
+				int missing = (int)need;
+				if (missing > 0) {
+//					logger.info(settlement, 10_000L, "Case 1 for " + part);
 					if (part != null) {
 						// Inject demand need immediately here
-						injectPartDemand(part, owner, missing);
-						
-						base += missing * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
+						base += injectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR);
+					}
+				}
+			}
+			else {
+				// If construction has not started, should anticipate the need
+				double need = s.getCurrentConstructionStage().getPartNeeded(id);
+				int missing = (int)need;
+				if (missing > 0) {
+//					logger.info(settlement, 10_000L, "Case 2 for " + part);
+					if (part != null) {
+						// Inject demand need immediately here
+						base += injectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 5.0);
+					}
+				}
+			}
+			
+			// Anticipate the need for the next stage
+			ConstructionStageInfo info = s.getNextConstructionStageInfo();
+			if (info != null) {
+				double need = info.getPartRequired(id) / 2;
+				int missing = (int)need;
+				if (missing > 0) {
+//					logger.info(settlement, 10_000L, "Case 3 for " + part);
+					if (part != null) {
+						// Inject demand need immediately here
+						base += injectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 10.0);
 					}
 				}
 			}
@@ -625,17 +653,22 @@ public class PartGood extends Good {
 	 * @param part
 	 * @param owner
 	 * @param missing
+	 * @return
 	 */
-	public void injectPartDemand(Part part, GoodsManager owner, int missing) {
+	public double injectPartDemand(Part part, GoodsManager owner, int missing, double factor) {
 		double previousDemand = owner.getDemandScore(this);
 		
 		int storedNum = owner.getSettlement().getEquipmentInventory().getItemResourceStored(getID());
 
-		double constructionDemand = computeNewDemand(storedNum, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 10, previousDemand);
+		double constructionDemand = computeNewDemand(storedNum, missing, factor, previousDemand);
 		
 		double maintDemand = getMaintenancePartsDemand(storedNum, owner.getSettlement(), part, previousDemand);
 	
-		owner.setDemandScore(this, maintDemand + constructionDemand);
+		double finalDemand = maintDemand + constructionDemand;
+		
+		// Note: for now, it's good enough to use GoodManager's to gradually increase the projected demand 
+		// instead of directly setting the new demand score
+//		owner.setDemandScore(this, finalDemand);
 		
 		// Output a detailed message	
 		logger.info(owner.getSettlement(), 1_000L,
@@ -647,6 +680,8 @@ public class PartGood extends Good {
 				+ " + " + Math.round(maintDemand * 1000.0)/1000.0 
 				+ "  Quantity: " + missing
 				+ "/" + storedNum + " (missing/stored).");	
+		
+		return finalDemand;
 	}
 	
 	
@@ -675,7 +710,7 @@ public class PartGood extends Good {
 	 * @return
 	 */
 	double computeNewDemand(int previousNum, int request, double value, double previousDemand) {
-		return previousDemand * (1 + (request + 1) * value / Math.sqrt(1.0 + previousNum)) / 2;
+		return previousDemand * (1 + request * value / Math.sqrt(1.0 + previousNum)) / 2;
 	}
 	
     /**
@@ -861,9 +896,11 @@ public class PartGood extends Good {
 	
     /**
 	 * Gets the Food Production demand for a part.
-	 *
-	 * @param part the part.
-	 * @return demand (# of parts)
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @param part
+	 * @return
 	 */
 	private static double getPartFoodProductionDemand(GoodsManager owner, Settlement settlement, Part part) {
 		double demand = 0D;

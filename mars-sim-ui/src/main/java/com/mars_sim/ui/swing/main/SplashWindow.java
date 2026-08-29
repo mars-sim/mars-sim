@@ -55,7 +55,8 @@ public class SplashWindow extends JComponent {
 			new SplashImage("Interior_home.jpg", "Internal view of Mars Habitat. Hassell + Eckersley O’Callaghan"),
 			new SplashImage("greenhouse_lady.jpg", "Desolate life at a homestead. Settlers (2021) UK movie. humanmars.net"),
 			new SplashImage("MSC-AgriDomes-on-Mars.jpg", "Agridome for growing food on Mars. Mars Society. 2020"), 
-			new SplashImage("Cyanobacteria_terraforming.jpg", "Cyanobacteria help detoxify the environment")
+			new SplashImage("Cyanobacteria_terraforming.jpg", "Cyanobacteria help detoxify the environment"),
+			new SplashImage("Bjarke_Ingels_Group.jpg", "UAE Mars 2117 initiative, Mars Science City project by Bjarke Ingels Group")
 	};
 
 	private static final int STATUS_BOX_H = 30;
@@ -104,7 +105,6 @@ public class SplashWindow extends JComponent {
 		return metrics.stringWidth(text);
 	}
 
-	@SuppressWarnings("serial")
 	public SplashWindow() {
 		int rand = RandomUtil.getRandomInt(IMAGES.length - 1);
 		imageSource = IMAGES[rand].source();

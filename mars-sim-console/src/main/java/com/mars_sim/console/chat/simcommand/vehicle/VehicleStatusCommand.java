@@ -44,16 +44,31 @@ public class VehicleStatusCommand extends ChatCommand {
 		StructuredResponse buffer = new StructuredResponse();
 
 		buffer.appendLabeledString("Status", source.printStatusTypes());
+		
+		buffer.appendLabeledString("Salvage",
+				(source.isSalvaged() ? "Yes" : "No"));
+		
+		buffer.appendLabeledString("Reserved for Mission",
+				(source.isReservedForMission() ? "Yes" : "No"));
+		
+		buffer.appendLabeledString("Reserved for Maintenance",
+				(source.isReservedForMaintenance() ? "Yes" : "No"));
+	
+		
 		buffer.appendLabeledString("Settlement", source.getAssociatedSettlement().getName());
 		buffer.appendLabeledString("Location", source.getCoordinates().getFormattedString());
 		buffer.appendLabeledString("Speed", String.format(CommandHelper.KMPH_FORMAT, source.getSpeed()));
 		buffer.appendLabeledString("Beacon", source.isBeaconOn() ? "On" : "Off");
 
-		buffer.appendLabeledString("Reserved",
-					(source.isReservedForMission() ? "Yes" : "No"));
+		buffer.appendLabeledString("Battery Percent", String.format(CommandHelper.PERC1_FORMAT, source.getBatteryPercent()));
+		buffer.appendLabeledString("Fuel Percent", String.format(CommandHelper.PERC1_FORMAT, source.getFuelPercent()));
+				
 		Worker operator = source.getOperator();
 		if (operator != null) {
 			buffer.appendLabeledString("Operator", operator.getName());
+		}
+		else {
+			buffer.appendLabeledString("Operator", "");
 		}
 		
 		Mission m = source.getMission();

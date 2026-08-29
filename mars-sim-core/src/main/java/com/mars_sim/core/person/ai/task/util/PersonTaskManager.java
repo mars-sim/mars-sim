@@ -94,6 +94,7 @@ public class PersonTaskManager extends TaskManager {
 		List<FactoryMetaTask> mtList = null;
 		String shiftDesc = null;
 		WorkStatus workStatus = person.getShiftSlot().getStatus();
+		
         shiftDesc = switch (workStatus) {
             case OFF_DUTY, ON_LEAVE -> {
                 mtList = MetaTaskUtil.getNonDutyHourTasks();
@@ -151,13 +152,15 @@ public class PersonTaskManager extends TaskManager {
 			
 			// Create a fallback Task job that can always be done
 			RatingScore base = new RatingScore(1D);
+			
 			TaskJob sleepJob = new AbstractTaskJob(SLEEP, base) {
 				
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Task createTask(Person person) {
-					return new Sleep(person);
+					logger.info(person, 10_000L, "Sleeping by default.");
+					return new Sleep(person, 100);
 				}	
 			};
 			defaultInsideTasks.put(sleepJob);
@@ -168,6 +171,7 @@ public class PersonTaskManager extends TaskManager {
 
 				@Override
 				public Task createTask(Person person) {
+					logger.info(person, 10_000L, "Eating and drinking by default.");
 					return new EatDrink(person);
 				}	
 			};
@@ -184,13 +188,13 @@ public class PersonTaskManager extends TaskManager {
 			defaultOutsideTasks = new CacheCreator<>("Default Outside", null);
 
 			// Create a MetaTask to return inside
-			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(1D)) {
+			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(3D)) {
 				
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Task createTask(Person person) {
-					logger.info(person, 10_000L, "Returning inside to find work.");
+					logger.info(person, 10_000L, "Walking to return home by default.");
 					return new Walk(person);
 				}	
 			};
@@ -204,7 +208,7 @@ public class PersonTaskManager extends TaskManager {
 	 * @return Whether person is inside
 	 */
 	protected boolean isPendingPossible() {
-		return (!person.isOutside() || (person.getMission() == null));
+		return (!person.isOutside()); // || (person.getMission() == null));
 	}
 
 	@Override
@@ -240,9 +244,7 @@ public class PersonTaskManager extends TaskManager {
 
 			if (currentTaskName.equals(Sleep.NAME)) {
 	      		logger.info(person, 20_000, "Currently asleep. Not available to be assigned with other tasks.");
-				// If the person is asleep, 
-				// do not assign this task.
-	      		
+				// If the person is asleep, do not assign this task.
 	      		// Note: what if it's an emergency that one must wake up and respond ?
 				return false;
 			}
@@ -250,27 +252,33 @@ public class PersonTaskManager extends TaskManager {
 			Vehicle v = person.getVehicle();
 			if (v != null && v instanceof Rover r && r.isInAirlock(person)) {	
 	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
-		
 	      		// Note: need to wait until the person has exited the vehicular airlock
 				return false;
 			}
+			
 			Settlement settlement = person.getSettlement();
 			if (settlement != null && settlement.isInAirlock(person)) {	
-	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
-		
+	      		logger.info(person, 20_000, "Currently inside a settlement airlock. Not available to be assigned with other tasks.");
 	      		// Note: need to wait until the person has exited the vehicular airlock
 				return false;
 			}
 		}
 		
-		if (!newTaskName.equals(Sleep.NAME) && person.isSuperUnfit()) {
+		if (!(newTaskName.equals(Sleep.NAME) || newTaskName.equals(EatDrink.NAME)) && person.isSuperUnfit()) {
+			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + ".");
+			return false;
+		}
+
+		if (newTaskName.equals(Walk.NAME) && person.isSuperUnfit()) {
 			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + ".");
 			return false;
 		}
 		
 		// If Task is easy or person is fit enough, then assign the task.
 		if ((!newTask.isEffortDriven() || person.getPerformanceRating() > 0D)
+				// Call to replace the old task with this new task
 				 && checkReplaceTask(newTask, allowSameTask)) {
+			
 			return true;
 		}
 

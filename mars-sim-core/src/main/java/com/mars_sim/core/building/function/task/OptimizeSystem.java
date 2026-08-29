@@ -55,7 +55,7 @@ public class OptimizeSystem extends Task {
 	 */
 	public OptimizeSystem(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, 20D + RandomUtil.getRandomInt(15));
+		super(NAME, person, true, false, STRESS_MODIFIER, 30 + RandomUtil.getRandomInt(-5, 5));
 
 		if (person.isInSettlement()) {
 	
@@ -172,7 +172,7 @@ public class OptimizeSystem extends Task {
 	 */
 	@Override
 	protected void clearDown() {
-		logger.fine(person, 10_000L, "Reduced a total of " 
-			+ Math.round(totalEntropyReduce * 100.0)/100.0 + " entropy.");
+		logger.fine(person, 5_000L, "Reduced a total of " 
+			+ Math.round(totalEntropyReduce * 1000.0)/1000.0 + " entropy.");
 	}
 }

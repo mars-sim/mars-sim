@@ -53,6 +53,14 @@ public class StructuredResponse {
 	public void appendBlankLine() {
 		buffer.append(LF);
 	}
+	/**
+	 * Adds two blank lines to the structured output.
+	 */
+	public void appendDoubleBlankLine() {
+		buffer.append(LF);
+		buffer.append(LF);
+	}
+	
 	
 	/**
 	 * Adds a subheading to the output. This will also add a separator.

@@ -70,7 +70,7 @@ public class LoadVehicleEVA extends EVAOperation {
 		
 		settlement = person.getSettlement();
 		if (settlement == null) {
-			endTask();
+	       	endEVA("Not in settlement at the start.");
 			return;
 		}
 
@@ -82,14 +82,14 @@ public class LoadVehicleEVA extends EVAOperation {
 			return;
 		}
 
-		setDescription(DETAIL + vehicle.getName());
-
 		// Add the rover to a garage if possible.
 		if (settlement.getBuildingManager().addToGarage(vehicle)) {
 			// no need of doing EVA
 			endEVA("Vehicle in garage.");
 			return;
 		}
+		
+		setDescription(DETAIL + vehicle.getName());
 		
 		// Determine location for loading.
 		setOutsideLocation(vehicle);

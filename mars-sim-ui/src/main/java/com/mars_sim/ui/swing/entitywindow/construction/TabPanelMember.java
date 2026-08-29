@@ -16,6 +16,7 @@ import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -47,10 +48,7 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 		);
 		
         setTableTitle(Msg.getString("mission.members"));
-        
-		if (entity instanceof ConstructionMission cm) {
-			luv = cm.getConstructionVehicles().stream().findFirst().orElse(null);
-		}
+
     }
 
     /**
@@ -68,9 +66,13 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
         attributePanel.addLabelledItem(Msg.getString("entity.name"), new EntityLabel(luv, getContext()));
 		vehicleStatusLabel = attributePanel.addTextField(Msg.getString("vehicle.status"), "", null);
 		vehicleOperatorLabel = attributePanel.addTextField(Msg.getString("vehicle.operator"), "", null);
-
-        luv.addEntityListener(this);
-		updateVehicleInfo();
+		
+		if (getEntity() instanceof ConstructionMission cm) {
+			luv = cm.getConstructionVehicles().stream().findFirst().orElse(null);
+			if (luv != null) {
+		        luv.addEntityListener(this);
+			}
+		}
 		
         return attributePanel;
 	}
@@ -79,12 +81,19 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 	 * Updates the vehicle info.
 	 */
 	private void updateVehicleInfo() {
-		vehicleStatusLabel.setText(luv.printStatusTypes());
-		var op = luv.getOperator();
-		String name = "";
-		if (op != null);
-			name = op.getName();
-		vehicleOperatorLabel.setText(name);
+		if (luv == null && getEntity() instanceof ConstructionMission cm) {
+			luv = cm.getConstructionVehicles().stream().findFirst().orElse(null);
+			if (luv != null) {
+		        luv.addEntityListener(this);
+		        
+				vehicleStatusLabel.setText(luv.printStatusTypes());
+				Worker op = luv.getOperator();
+				String name = "";
+				if (op != null);
+					name = op.getName();
+				vehicleOperatorLabel.setText(name);
+			}
+		}
 	}
 	
     /**
@@ -106,9 +115,9 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 	protected void setColumnDetails(TableColumnModel columnModel) {
 		columnModel.getColumn(0).setPreferredWidth(60);
 		columnModel.getColumn(1).setPreferredWidth(80);
-		columnModel.getColumn(2).setPreferredWidth(15);
-		columnModel.getColumn(3).setPreferredWidth(15);
-		columnModel.getColumn(4).setPreferredWidth(15);
+		columnModel.getColumn(2).setPreferredWidth(12);
+		columnModel.getColumn(3).setPreferredWidth(12);
+		columnModel.getColumn(4).setPreferredWidth(20);
 	}
 
 
@@ -124,6 +133,7 @@ class TabPanelMember extends EntityTableTabPanel<Mission>
 			case EntityEventType.WORK_TIME_EVENT -> {
 				Mission context = (Mission)getContext();
 				if (context instanceof ConstructionMission cm) {
+					memberTableModel.updateOccupantList();
 					updateVehicleInfo();
 				}
 			}

@@ -229,7 +229,7 @@ public class ReviewMissionPlan extends Task {
 		// is preferred for the Objective
 		double obj = 0;
 		ObjectiveType objective = reviewerSettlement.getObjective();
-		Set<ObjectiveType> satisfiedObjectives = m.getObjectiveSatisified();
+		Set<ObjectiveType> satisfiedObjectives = m.getObjectiveSatisfied();
 		if (satisfiedObjectives.contains(objective)) {
 			CommerceType cFactor = ObjectiveUtil.toCommerce(objective);
 			if (cFactor != null) {
@@ -311,7 +311,7 @@ public class ReviewMissionPlan extends Task {
 		double relationshipWithReviewer = RelationshipUtil.getOpinionOfPerson(person, leader);
 			
 		double relationshipWithOthers = 0;
-		int num = reviewerSettlement.getAllAssociatedPeople().size();
+		int num = reviewerSettlement.getNumCitizens();
 		for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
 			relationshipWithOthers += RelationshipUtil.getOpinionOfPerson(person, pp);
 		}

@@ -1242,8 +1242,8 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Flood light" type="electrical" mass="3">
-		<description>a LED outdoor weather-proof, adjustable flood light with tripod stand</description>
+	<part name="Floodlight" type="electrical" mass="3">
+		<description>a LED outdoor weather-proof, adjustable floodlight with tripod stand</description>
 	</part>
 
 	<part name="Aerogel tile" type="construction" mass="0.3">

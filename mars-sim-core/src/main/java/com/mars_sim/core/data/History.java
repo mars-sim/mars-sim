@@ -119,6 +119,25 @@ public class History<T> implements Serializable {
     }
 
     /**
+     * Sets the max entries.
+     * 
+     * @param max
+     */
+    public void setEntries(int max) {
+    	maxItems = max;
+    }
+    
+	
+    /**
+     * Gets the max entries.
+     * 
+     * @param max
+     */
+    public int getEntries() {
+    	return maxItems;
+    }
+    
+    /**
      * Loads up the reference to the master clock.
      * 
      * @param mc

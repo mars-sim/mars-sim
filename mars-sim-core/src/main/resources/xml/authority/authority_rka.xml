@@ -29,7 +29,6 @@
 			<settlement-name name="Lomonosov" />
 			
 			<rover-name name="Kliper" /> <!-- which means clipper in Russian -->
-			<rover-name name="Ropa" /> <!-- which means mountain or in Russian -->
 			<rover-name name="Chizhevsky" />
 			<rover-name name="Lomonosov" />
 			<rover-name name="Lvov" />
@@ -50,7 +49,7 @@
 			<rover-name name="Bukhanka" />
 			<rover-name name="Gelik" />
 			<rover-name name="Boomer" />
-			<rover-name name="gruzovik" />
+			<rover-name name="Gruzovik" />
 			
 			<rover-name name="Angara" />
 			<rover-name name="Volga" />

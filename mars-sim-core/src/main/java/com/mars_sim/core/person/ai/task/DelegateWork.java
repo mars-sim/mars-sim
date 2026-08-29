@@ -55,7 +55,7 @@ public class DelegateWork extends Task {
 	 */
 	public DelegateWork(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomInt(20));
+		super(NAME, person, true, false, STRESS_MODIFIER, 30 + RandomUtil.getRandomInt(-5, 5));
 
 		if (person.isInSettlement()) {
 

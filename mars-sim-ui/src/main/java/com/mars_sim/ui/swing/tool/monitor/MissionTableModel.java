@@ -31,7 +31,7 @@ class MissionTableModel extends BaseMissionModel implements MonitorModel {
 	 * Constructor 1.
 	 */
 	public MissionTableModel() {
-		super(NAME, PHASE, DATE_FILED, DATE_EMBARKED, DATE_COMPLETED, SETTLEMENT, LEADER,
+		super(NAME, PHASE, DATE_FILED, DATE_EMBARKED, DATE_ENDED, SETTLEMENT, LEADER,
 				DESIGNATION, VEHICLE, STATUS, MEMBER_NUM,
 				REMAINING_TO_NAVPOINT, REMAINING_TO_END,
 				ACTUAL_TRAVELLED);

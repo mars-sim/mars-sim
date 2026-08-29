@@ -22,12 +22,14 @@ public final class OneActivity implements Serializable {
 	private String missionName;
 	private String description;
 	private String phase;
+	private String buildingName;
 
-	public OneActivity(String taskName, String description, String phase, String missionName) {
+	public OneActivity(String taskName, String description, String phase, String missionName, String buildingName) {
 		this.taskName = taskName;
 		this.description = description;
 		this.phase = phase;
 		this.missionName = missionName;
+		this.buildingName = buildingName;
 	}
 
 	/**
@@ -66,6 +68,15 @@ public final class OneActivity implements Serializable {
 		return missionName;
 	}
 
+	/**
+	 * Gets the building name.
+	 * 
+	 * @return
+	 */
+	public String getBuildingName() {
+		return buildingName;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

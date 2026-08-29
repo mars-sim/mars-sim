@@ -43,7 +43,7 @@ class DigLocalTest extends MarsSimUnitTest {
         assertEquals(DigLocalRegolith.COLLECT_REGOLITH, task.getPhase(), "Task completed collection");
 
         // Do collection
-        executeTaskUntilPhase(p, task, 2000);
+        executeTaskUntilPhase(p, task, 3000);
         assertEquals(DigLocal.WALK_TO_BIN, task.getPhase(), "Task completed collection");
 
         // Walk to bin
@@ -83,7 +83,7 @@ class DigLocalTest extends MarsSimUnitTest {
         assertEquals(DigLocalIce.COLLECT_ICE, task.getPhase(), "Task completed collection");
 
         // Do collection
-        executeTaskUntilPhase(p, task, 2000);
+        executeTaskUntilPhase(p, task, 3000);
         assertEquals(DigLocal.WALK_TO_BIN, task.getPhase(), "Task completed collection");
 
         // Walk to bin

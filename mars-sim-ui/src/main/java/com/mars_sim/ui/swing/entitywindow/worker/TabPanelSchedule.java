@@ -8,8 +8,8 @@ package com.mars_sim.ui.swing.entitywindow.worker;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,22 +43,30 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 				implements EntityListener {
 
 	private static final String SCH_ICON = "schedule";
-	private static final String NOTE = "Note : ";
+	private static final String NOTE = "Note";
+	private static final String ENTRIES = "Max Entries:";
+	private static final String MILLISOLS = " millisols";
+	
+	private int entriesCache;
 	
 	private String noteCache; 
 	private String shiftCache;
 	private String timePeriodCache;
 	private String statusCache;
 	
-	private JTextField shiftNoteTF;
-
+//	private JTextField shiftNoteTF;
+	private JTextField entriesTF;
+	
 	private JLabel shiftLabel;
 	private JLabel timeLabel;
 	private JLabel statusLabel;
+	private JLabel noteLabel;
 	
 	private ShiftSlot shiftSlot;
 
 	private ActivityPanel activityPanel;
+	
+	private TaskManager taskMgr;
 
 	/**
 	 * Constructor.
@@ -74,6 +82,8 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 			context, worker
 		);
 
+		taskMgr = worker.getTaskManager();
+		
 		if (worker instanceof Person person) {
 			shiftSlot = person.getShiftSlot();
 		} 
@@ -83,16 +93,17 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 	protected void buildUI(JPanel content) {
 
 		// Prepare label panel
-		JPanel northPanel = new JPanel(new BorderLayout());
+		JPanel northPanel = new JPanel(new BorderLayout(5, 5));
 		content.add(northPanel, BorderLayout.NORTH);
 				
 		AttributePanel attrPanel = new AttributePanel();
 		northPanel.add(attrPanel, BorderLayout.NORTH);
 		
+//		JPanel entriesPanel = new JPanel(new BorderLayout(5, 5));
 		// Create the shift panel.
-		JPanel shiftPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		
-		northPanel.add(shiftPane, BorderLayout.CENTER);
+		JPanel entryPane = new JPanel(new GridLayout(1, 6));
+		entryPane.setPreferredSize(new Dimension(225, 20));
+		northPanel.add(entryPane, BorderLayout.CENTER);
 		
 		if (shiftSlot != null) {
 
@@ -113,19 +124,31 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 			
 			noteCache = getShiftNote(shiftSlot);	
 			
-			shiftNoteTF = new JTextField();
-			shiftNoteTF.setFont(new Font("Arial", Font.ITALIC | Font.PLAIN, 12));
-			shiftNoteTF.setText(NOTE + noteCache);
-			
-			shiftNoteTF.setEditable(false);
-			shiftNoteTF.setColumns(20);
-			shiftNoteTF.setHorizontalAlignment(SwingConstants.CENTER);
-			
-			shiftPane.add(shiftNoteTF);
+			noteLabel = attrPanel.addRow(NOTE, 
+					noteCache + MILLISOLS);
 		}
 
+		entryPane.add(new JLabel(" "));
+		entryPane.add(new JLabel(" "));
+		JLabel entryLabel = new JLabel(ENTRIES, JLabel.RIGHT);
+//		entryLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		entryPane.add(entryLabel);
+		
+		entriesTF = new JTextField();
+		entriesTF.setFont(new Font("Arial", Font.ITALIC | Font.PLAIN, 12));
+		entriesTF.setText(NOTE + noteCache);
+		
+		entriesTF.setEditable(true);
+		entriesTF.setColumns(20);
+		entriesTF.setHorizontalAlignment(SwingConstants.LEFT);
+		
+		entryPane.add(entriesTF);
+		entryPane.add(new JLabel(" "));
+		entryPane.add(new JLabel(" "));
+		
 		activityPanel = new ActivityPanel(getEntity().getTaskManager().getAllActivities());
 		activityPanel.setPreferredSize(new Dimension(225, 100));
+
 
 		content.add(activityPanel, BorderLayout.CENTER);
 
@@ -222,8 +245,16 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 		String shiftDesc = getShiftNote(shiftSlot);
 		if (!noteCache.equalsIgnoreCase(shiftDesc)) {
 			noteCache = shiftDesc;
-			shiftNoteTF.setText(NOTE + shiftDesc);
+			noteLabel.setText(shiftDesc + MILLISOLS);
 		}
+		
+		int entries = taskMgr.getEntries();
+		if (entriesCache != entries) {
+			entriesCache = entries;
+			taskMgr.setEntries(entries);
+			entriesTF.setText(entries + "");
+		}
+		
 		updateShiftStatus();
 	}
 
@@ -250,6 +281,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 		private static final ColumnSpec[] COLUMNS = {
 								new ColumnSpec(Msg.getString("entity.description"), String.class),
 								new ColumnSpec(Msg.getString("task.phase"), String.class),
+								new ColumnSpec(Msg.getString("task.building"), String.class),
 								new ColumnSpec(Msg.getString("mission.singular"), String.class)
 										};
 
@@ -262,14 +294,16 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 			return switch(columnIndex) {
 				case 0 -> value.getDescription();
 				case 1 -> value.getPhase();
-				case 2 -> value.getMission();
+				case 2 -> value.getBuildingName();
+				case 3 -> value.getMission();
 				default -> null;
 			};
 		}
 	}
 
 	/**
-	 * Listens for Shift events
+	 * Listens for Shift events.
+	 * 
 	 * @param event
 	 */
 	@Override

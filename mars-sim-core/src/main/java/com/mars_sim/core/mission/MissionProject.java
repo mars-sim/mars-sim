@@ -195,7 +195,7 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
     }
 
     @Override
-    public Set<ObjectiveType> getObjectiveSatisified() {
+    public Set<ObjectiveType> getObjectiveSatisfied() {
         return Collections.emptySet();
     }
 

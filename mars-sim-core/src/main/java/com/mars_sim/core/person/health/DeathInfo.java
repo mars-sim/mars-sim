@@ -9,7 +9,6 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -61,6 +60,7 @@ public class DeathInfo implements Serializable {
 	private double estTotExamTime;
 	/** Percent of illness*/	
 	private double healthCondition;	
+	
 	/** Cause of death. */	
 	private String causeOfDeath;
 	/** Place of death. */
@@ -70,6 +70,8 @@ public class DeathInfo implements Serializable {
 	/** Name of the doctor who sign the death certificate. */	
 	private String doctorSigningCertificate;
 	
+	/** Container unit at time of death. */
+	private String containerUnitString;
 	/** Name of mission at time of death. */
 	private String mission;
 	/** Name of mission phase at time of death. */
@@ -89,8 +91,7 @@ public class DeathInfo implements Serializable {
 	private MarsTime timePostMortemExam;
 	/** Medical problem contributing to the death. */
 	private HealthProblem problem;
-	/** Container unit at time of death. */
-	private Entity containerUnit;
+
 	/** Coordinate at time of death. */
 	private Coordinates coordinates;
 	/** The person. */
@@ -116,14 +117,15 @@ public class DeathInfo implements Serializable {
 	 * @param problem
 	 * @param cause
 	 * @param lastWord
+	 * @param containerUnitString
 	 * @param martianTime
 	 */
 	public DeathInfo(Person person, HealthProblem problem, String cause, String lastWord,
-							MarsTime martianTime) {
+					String containerUnitString,	MarsTime martianTime) {
 		this.person = person;
 		this.problem = problem;
 		
-		containerUnit = person.getContainerUnit();
+		this.containerUnitString = containerUnitString;
 		
 		String medicalCause = "";
 		
@@ -273,12 +275,12 @@ public class DeathInfo implements Serializable {
 
 	
 	/**
-	 * Gets the container unit at the time of death. Returns null if none.
+	 * Gets the string name of the container unit at the time of death. Returns null if none.
 	 * 
 	 * @return container unit
 	 */
-	public Entity getContainerUnit() {
-		return containerUnit;
+	public String getContainerUnitString() {
+		return containerUnitString;
 	}
 	
 	/**

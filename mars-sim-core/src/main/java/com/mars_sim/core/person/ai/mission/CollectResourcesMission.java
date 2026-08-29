@@ -23,7 +23,6 @@ import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.mission.task.CollectResources;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -203,6 +202,12 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 	}
 
+	/**
+	 * Sets the objectives.
+	 * 
+	 * @param containerNum
+	 * @param numberSites
+	 */
 	private void setObjectives(int containerNum, double numberSites) {
 		int numMembers = getMembers().size();
 		int buffer = (int)(numMembers * 1.5);
@@ -211,7 +216,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		setEVAEquipment(containerID, newContainerNum);
 
 		double containerCap = ContainerUtil.getContainerCapacity(containerID);
-		var siteResourceGoal = NUM_EVA_PER_SITE * containerCap * containerNum / numberSites;
+		var siteResourceGoal = numMembers * NUM_EVA_PER_SITE * containerCap * containerNum / numberSites;
 
 		objective = new CollectResourceObjective(siteResourceGoal);
 		addObjective(objective);
@@ -302,31 +307,15 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 		
 		else if (person.isEVAUnFit()) {
-			logger.info(person, 4_000, "Not EVA fit to exit " + getRover() +  ".");
+			
+			logger.info(person, 4_000, "Not EVA fit.");
+			
+			// Question: Is the person inside or outside the vehicle ?
 			
 			// Note: How to take care of the person if he does not have high fatigue but other health issues ?
 			
-			// Note: if a person is not in fatigue but is hungry or thirsty, don't need to sleep
-			double fatigue = person.getPhysicalCondition().getFatigue();
-			if (fatigue > 750) {				
-				boolean canSleep = assignTask(person, new Sleep(person));
-	        	if (canSleep) {
-	        		logger.log(person, Level.INFO, 4_000,
-	            			"Instructed to sleep in " + getVehicle() + " since fatigue was " + Math.round(fatigue) + ".");
-	        	}
-        	}
-			
-			double hunger = person.getPhysicalCondition().getHunger();
-			double thirst = person.getPhysicalCondition().getThirst();
-			if (hunger > 500 || thirst > 350) {				
-				boolean canEatDrink = assignTask(person, new EatDrink(person));
-	        	if (canEatDrink) {
-	        		logger.log(person, Level.INFO, 4_000,
-	            			"Instructed to eat and drink in " + getVehicle() 
-	            			+ ".  Hunger: " + Math.round(hunger) 
-	            			+ ".  Thirst: " + Math.round(thirst)  + ".");
-	        	}
-        	}
+    		// If there are needs, unable to perform EVA
+        	return !checkNeeds(person);
 		}
 		
 		// If person can collect resources, start him/her on that task.

@@ -49,6 +49,8 @@ public class ConstructionPanel extends JPanel implements EntityListener, Objecti
     private MaterialsTableModel materialsTableModel;
     private JScrollPane scrollPane;
     private ConstructionObjective objective;
+    
+    private JLabel statusLabel;
     private JLabel stageLabel;
     private JLabel workRemaining;
 
@@ -78,7 +80,8 @@ public class ConstructionPanel extends JPanel implements EntityListener, Objecti
         String stageLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.stageLabel"); //-NLS-1$
         stageLabel = infoPanel.addTextField(stageLabelString, stage.getInfo().getName(),
                         ConstructionStageFormat.getTooltip(stage));
-        infoPanel.addTextField("Work Type", site.isConstruction() ? "Build" : "Demolish", null);
+        
+        statusLabel = infoPanel.addTextField("Status", "", null);
 
         workRemaining = infoPanel.addTextField("Work Remaining", "",  null);
          
@@ -107,7 +110,7 @@ public class ConstructionPanel extends JPanel implements EntityListener, Objecti
 
         site.addEntityListener(this);    
         
-        updateProgressBar();
+        updateProgress();
     }
 
     /**
@@ -119,7 +122,7 @@ public class ConstructionPanel extends JPanel implements EntityListener, Objecti
     public void entityUpdate(EntityEvent event) {
         if (ConstructionSite.ADD_CONSTRUCTION_WORK_EVENT.equals(event.getType())) {
             // Update the progress bar
-            updateProgressBar();
+            updateProgress();
         }
         else if (ConstructionSite.ADD_CONSTRUCTION_MATERIALS_EVENT.equals(event.getType())
                 && materialsTableModel != null) {
@@ -135,12 +138,15 @@ public class ConstructionPanel extends JPanel implements EntityListener, Objecti
     /**
      * Updates the progress bar.
      */
-    private void updateProgressBar() {
+    private void updateProgress() {
         ConstructionStage stage = objective.getStage();
         if (stage != null) {
             double workLeft = stage.getRequiredWorkTime() - stage.getCompletedWorkTime();
-            workRemaining.setText(StyleManager.DECIMAL2_MSOL.format(workLeft));
-        
+            
+            workRemaining.setText(StyleManager.DECIMAL1_MSOL.format(workLeft));
+            
+            String statusString = objective.getSite().getStatus();
+            statusLabel.setText(statusString);
             // Update the tool tip string.
             stageLabel.setToolTipText(ConstructionStageFormat.getTooltip(stage));
         }

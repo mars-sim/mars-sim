@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractMission.java
- * @date 2025-07-06
+ * @date 2026-08-25
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -62,18 +62,21 @@ public abstract class AbstractMission implements Mission, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(AbstractMission.class.getName());
 
-	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("completed", Stage.CLOSEDOWN);
-	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", Stage.CLOSEDOWN);
+	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("completed", Stage.DONE);
+	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", Stage.ABORTED);
 	protected static final MissionPhase REVIEWING = new MissionPhase("reviewing", Stage.PREPARATION);
 	private static final MissionPhase INIT_PHASE = new MissionPhase("initial", Stage.INITIAL);
-
-	private static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
-	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
-	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
-	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
-	public static final MissionStatus MISSION_MEDICAL_EMERGENCY = new MissionStatus("Mission.status.medicalEmergency");
+	private static final MissionPhase INCOMPLETE_PHASE = new MissionPhase("incomplete", Stage.CLOSEDOWN);
 	
-	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
+//	private static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
+	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
+	protected static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
+	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
+	protected static final MissionStatus MISSION_MEDICAL_EMERGENCY = new MissionStatus("Mission.status.medicalEmergency");
+
+//	public static final String INTERNAL_PROBLEM = "internalProblem";
+	public static final String DISBANDING = "Disbanding ";
+	public static final String MEMBERS = " member(s): ";
 	
 	// Data members
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
@@ -301,22 +304,23 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * A Member leaves the Mission and adjust his work shift.
 	 * Note: should use removeMember() to call memberLeave().
 	 */
-	private final void memberLeave(Worker member) {
+	private final void memberLeave(Worker worker) {
 		// Added codes in reassigning a work shift
-		if (member instanceof Person person) {
+		if (worker instanceof Person person) {
 			
-			logger.info(person, "Removed from " + member.getMission() + ".");
+			logger.info(person, "Removed from " + worker.getMission() + ".");
 			
-			member.setMission(null);
+			String buildingName = worker.getBuildingLocation() != null ? worker.getBuildingLocation().getName() : null;
+			worker.getTaskManager().recordActivity(getName(), getPhaseDescription(), "Leaving mission", getName(), buildingName);
 			
-			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
-		
+			worker.setMission(null);
+			
 	      	if (RoleType.GUEST != person.getRole().getType() && person.getShiftSlot() != null) {      
 	      		person.getShiftSlot().setOnCall(false);
 	      	}	
 
 			registerHistoricalEvent(person, HistoricalEventType.MISSION_FINISH, "Removing a member");
-			fireMissionUpdate(REMOVE_MEMBER_EVENT, member);
+			fireMissionUpdate(REMOVE_MEMBER_EVENT, worker);
 		}
 	}
 	
@@ -342,7 +346,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public final Set<Worker> getMembers() {
-		return members;
+		return Collections.unmodifiableSet(members);
 	}
 
 	/**
@@ -612,17 +616,31 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Aborts the mission by the user. Will stop current phase.
+	 * Aborts the mission. Will stop current phase.
 	 * 
 	 * @param endStatus Cause for abort
 	 */
 	@Override
 	public final void abortMission(MissionStatus endStatus) {
 		aborted = true;
-		logger.info(getStartingPerson(), "Aborted " + getName() 
-			+ ": " + endStatus.getName() + ".");
 		
-		endMission(endStatus);
+		if (endStatus == null) {
+			
+//			if (this instanceof AbstractVehicleMission avm) {
+//				avm.endMission(MISSION_ABORTED_BY_PLAYER);
+//			}
+//			else {
+				endMission(MISSION_ABORTED_BY_PLAYER);
+//			}
+		}
+		else {
+//			if (this instanceof AbstractVehicleMission avm) {
+//				avm.endMission(endStatus);
+//			}
+//			else {
+				endMission(endStatus);
+//			}
+		}
 	}
 
 	/**
@@ -659,9 +677,23 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param reason
 	 */
 	protected void endMissionProblem(Entity source, String reason) {
-		MissionStatus status = new MissionStatus(INTERNAL_PROBLEM, reason);
+		MissionStatus status = MissionStatus.createResourceStatus(reason);
 		logger.severe(this, "Ended with " + status.getName() + "; source was " + source.getName());
-		endMission(status);
+		
+		if (this instanceof AbstractVehicleMission avm) {
+			avm.endMission(status);
+		}
+		else {
+			endMission(status);
+		}
+	}
+	
+	/** 
+	 * Is the mission aborted ?
+	 * 
+	 */
+	protected boolean isAborted() {
+		return aborted;
 	}
 	
 	/**
@@ -672,7 +704,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected void endMission(MissionStatus endStatus) {
 		if (done) {
-			logger.warning(startingMember, "Mission " + getName() + " is already ended.");
+			logger.warning(startingMember, getName() + " already ended.");
 			return;
 		}
 
@@ -684,16 +716,19 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// If no mission flags have been added then it was accomplished
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
 		MissionPhase finalPhase = ABORTED_PHASE;
-		
-		if (!aborted) {
-			missionStatus.add(MISSION_ACCOMPLISHED);
+
+		 if (aborted) {
+			finalPhase = ABORTED_PHASE;
+		}
+		else if (endStatus == MISSION_ABORTED_BY_PLAYER) {
+			finalPhase = ABORTED_PHASE;
+		}
+		else if (endStatus == MISSION_ACCOMPLISHED) {
 			addMissionScore();
 			finalPhase = COMPLETED_PHASE;
 		}
-		
-		else if (endStatus == NOT_ENOUGH_MEMBERS) {
-			finalPhase = ABORTED_PHASE;
-			aborted = true;
+		else {
+			finalPhase = INCOMPLETE_PHASE;
 		}
 		
 		setPhase(finalPhase, listOfStatuses);
@@ -707,7 +742,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (listOfStatuses.isBlank()) {
 			status.append("Ended the ")
 			.append(getName())
-			.append(" without status flags.");
+			.append(" without status flag(s).");
 		}
 		else {
 			status.append("Ended the ")
@@ -721,19 +756,28 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Disband the members
 		if (members != null && !members.isEmpty()) {
 			String listOfMembers = members.stream().map(Worker::getName).collect(Collectors.joining(", "));
-			logger.info(startingMember, "Disbanding mission member(s): " + listOfMembers);
+			logger.info(startingMember, DISBANDING + getFullMissionDesignation() + MEMBERS + listOfMembers);
 			
-			// Take a copy as Worker will deregister themselves
-			List<Worker> oldMembers = new ArrayList<>(members);
-			for(Worker member : oldMembers) {
-				removeMember(member);
-			}	
-			members.clear();
+			removeAllMembers();
 		}
 
 		fireMissionUpdate(END_MISSION_EVENT);
 	}
 
+	/**
+	 * Removes all members.
+	 */
+	protected void removeAllMembers() {
+		// Take a copy as Worker will deregister themselves
+		List<Worker> oldMembers = new ArrayList<>(members);
+		for(Worker member : oldMembers) {
+			removeMember(member);
+		}	
+		members.clear();		
+	}
+	
+	
+	
 	/**
 	 * Checks if a worker has any issues in starting a new task.
 	 *
@@ -755,6 +799,17 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @return true if task can be performed.
 	 */
 	public boolean assignTask(Worker worker, Task newTask, boolean allowSameTask) {
+		if (worker instanceof Person p) {
+			if (p.getSuit() != null) {
+				logger.info(p, 20_000L, "Already donned an EVA Suit. Unable to perform '" + newTask.getName() + "' as assigned.");
+				return false;
+			}
+//			else if (p.getPhysicalCondition().computeHealthScore() <= 2 && !newTask.getName().equals(Sleep.NAME)) {
+//				logger.info(p, 20_000L, "Low health score. Unable to perform '" + newTask.getName() + "' as assigned.");
+//				return false;
+//			}
+		}
+		
 		return worker.getTaskManager().directlyAssignTask(newTask, allowSameTask);
 	}
 	
@@ -840,7 +895,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	@Override
-	public Set<ObjectiveType> getObjectiveSatisified() {
+	public Set<ObjectiveType> getObjectiveSatisfied() {
 		return Collections.emptySet();
 	}
 
@@ -1012,13 +1067,23 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param status
 	 */
 	protected boolean addMissionStatus(MissionStatus status) {
+		return addMissionStatus(status, getStartingPerson());
+	}
+
+
+	/**
+	 * Adds a new mission status.
+	 *
+	 * @param status
+	 */
+	protected boolean addMissionStatus(MissionStatus status, Person person) {
 		boolean newStatus = missionStatus.add(status);
 		if (newStatus) {
-			addMissionLog(status.getName(), getStartingPerson().getName());
+			addMissionLog(status.getName(), person.getName());
 		}
 		return newStatus;
 	}
-
+	
 	@Override
 	public int getPriority() {
 		return priority;

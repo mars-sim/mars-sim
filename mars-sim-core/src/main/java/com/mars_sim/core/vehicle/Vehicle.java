@@ -1934,20 +1934,20 @@ public abstract class Vehicle extends AbstractMobileUnit
 			BuildingManager.removeFromGarage(this);
 			// Note: removeVehicle or removeFlyer will automatically call 
 			// parkInVicinity which will in turns call findNewParkingLoc
-			logger.info(this, "Left garage and parked outside as instructed.");
+			logger.info(this, 3_000L, "Left garage and parked outside as instructed.");
 		}
 		else if (reservedForMaintenance || getPrimaryStatus() == StatusType.MAINTENANCE) {
 			// If it's under maintenance, go to a garage if possible
 			// else park outside
-			logger.info(this, "Under maintenance. Looking for a garage.");
+			logger.info(this, 3_000L, "Under maintenance. Looking for a garage.");
 			boolean done = addToAGarage();
 			if (!done) {
-				logger.info(this, "Garage space not found. Parked outside.");
+				logger.info(this, 3_000L, "Garage space not found. Parked outside.");
 				findNewParkingLoc();
 			}
 		}
 		else {
-			logger.info(this, "Looking for another spot to park outside.");
+			logger.info(this, 3_000L, "Looking for another spot to park outside.");
 			findNewParkingLoc();
 		}
 	}

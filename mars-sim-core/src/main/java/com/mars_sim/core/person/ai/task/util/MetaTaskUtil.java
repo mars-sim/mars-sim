@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MetaTaskUtil.java
- * @date 2023-06-16
+ * @date 2026-08-23
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task.util;
@@ -95,13 +95,19 @@ public class MetaTaskUtil {
 
 	private static List<FactoryMetaTask> robotMetaTasks = null;
 
-	private static Map<String, MetaTask> idToMetaTask;
+	private static Map<String, MetaTask> nameToMetaTask;
 	private static List<SettlementMetaTask> settlementTasks;
 	private static List<MetaTask> personMetaTasks = null;
 	private static List<TaskFactory> personTaskFactories;
 
-	private static ConverseMeta converseMeta = new ConverseMeta();
+	/**  Mapping of identifier to meta task name. */
+	private static Map<Integer, String> idToNameMap;
+	/**  Mapping of meta task name to identifier. */
+	private static Map<String, Integer> nameToIDMap;
 	
+	private static int converseMetaID = -1;
+	private static int eatdrinkMetaID = -1;
+	private static int workoutMetaID = -1;
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -113,7 +119,7 @@ public class MetaTaskUtil {
 	 */
 	public static synchronized void initializeMetaTasks() {
 
-		if (idToMetaTask != null) {
+		if (nameToMetaTask != null) {
 			// Created by another thread during the wait
 			return;
 		}
@@ -130,16 +136,24 @@ public class MetaTaskUtil {
 		
 		allMetaTasks.add(new ConsolidateContainersMeta());
 		allMetaTasks.add(new ConstructBuildingMeta());
+		
+		ConverseMeta converseMeta = new ConverseMeta();
+		converseMetaID = converseMeta.getIdentifier();
+		allMetaTasks.add(converseMeta);
+		
 		allMetaTasks.add(new CookMealMeta());
 		allMetaTasks.add(new DelegateWorkMeta());		
 		allMetaTasks.add(new DigLocalIceMeta());
 		
 		allMetaTasks.add(new DigLocalRegolithMeta());
 		allMetaTasks.add(new DoInventoryMeta());
-		allMetaTasks.add(new EatDrinkMeta());
+		
+		EatDrinkMeta eatDrinkMeta = new EatDrinkMeta();
+		eatdrinkMetaID = eatDrinkMeta.getIdentifier();
+		allMetaTasks.add(eatDrinkMeta);
+		
 		allMetaTasks.add(new ExamineBodyMeta());
-		converseMeta = new ConverseMeta();
-		allMetaTasks.add(converseMeta);
+
 		allMetaTasks.add(new GroupActivityMetaTask());
 
 		allMetaTasks.add(new InviteStudyCollaboratorMeta());
@@ -192,15 +206,35 @@ public class MetaTaskUtil {
 		
 		allMetaTasks.add(new TreatMedicalPatientMeta());
 		allMetaTasks.add(new UnloadVehicleMeta());
-		allMetaTasks.add(new WorkoutMeta());
+
+		WorkoutMeta workoutMeta = new WorkoutMeta();
+		workoutMetaID = workoutMeta.getIdentifier();
+		allMetaTasks.add(workoutMeta);
+	
 		allMetaTasks.add(new WriteReportMeta());
 		allMetaTasks.add(new YogaMeta());
-		
+				
 		TaskParameters.INSTANCE.registerMetaTasks(allMetaTasks);
 		
+		initializeMapsLists(allMetaTasks);	
+	}
+	
+	/**
+	 * Initializes all maps and lists.
+	 * 
+	 * @param allMetaTasks
+	 */
+	private static void initializeMapsLists(List<MetaTask> allMetaTasks) {
+		
+		nameToIDMap = allMetaTasks.stream()
+				.collect(Collectors.toMap(MetaTask::getProperName, MetaTask::getIdentifier));
+		
+		idToNameMap = allMetaTasks.stream()
+				.collect(Collectors.toMap(MetaTask::getIdentifier, MetaTask::getProperName));
+		
 		// Build the name lookup for later
-		idToMetaTask = allMetaTasks.stream()
-				.collect(Collectors.toMap(MetaTask::getID, Function.identity()));
+		nameToMetaTask = allMetaTasks.stream()
+				.collect(Collectors.toMap(MetaTask::getCapitalizedName, Function.identity()));
 
 		// Pick out settlement tasks
 		settlementTasks = allMetaTasks.stream()
@@ -211,8 +245,9 @@ public class MetaTaskUtil {
 		// Filter out All Unit Tasks
 		personMetaTasks = allMetaTasks.stream()
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
-								|| (m.getSupported() == WorkerType.PERSON)))
+						|| (m.getSupported() == WorkerType.PERSON)))
 				.toList();
+		
 		personTaskFactories = personMetaTasks.stream()
 				.filter(TaskFactory.class::isInstance)
 				.map(TaskFactory.class::cast)
@@ -223,13 +258,14 @@ public class MetaTaskUtil {
 				.filter(FactoryMetaTask.class::isInstance)
 				.map(FactoryMetaTask.class::cast)
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
-								|| (m.getSupported() == WorkerType.PERSON)))
+						|| (m.getSupported() == WorkerType.PERSON)))
 				.toList();
+		
 		robotMetaTasks = allMetaTasks.stream()
 				.filter(FactoryMetaTask.class::isInstance)
 				.map(FactoryMetaTask.class::cast)
 				.filter(m -> ((m.getSupported() == WorkerType.BOTH)
-								|| (m.getSupported() == WorkerType.ROBOT)))
+						|| (m.getSupported() == WorkerType.ROBOT)))
 				.toList();
 		
 		// Build special Shift based lists
@@ -254,9 +290,37 @@ public class MetaTaskUtil {
 	 * @return 
 	 */
 	public static Collection<MetaTask> getAllMetaTasks() {
-		return idToMetaTask.values(); 
+		return nameToMetaTask.values(); 
 	}
 
+	/**
+	 * Gets a list of proper names.
+	 * 
+	 * @return
+	 */
+	public static List<String> getProperNameList() {
+		return new ArrayList<>(nameToIDMap.keySet());
+	}
+	/**
+	 * Returns the proper name of a meta task, based on its id.
+	 *  
+	 * @param id
+	 * @return
+	 */
+	public static String getProperName(int id) {
+		return idToNameMap.get(id);
+	}
+	
+	/**
+	 * Returns the id of a meta task, based on its simple name.
+	 * 
+	 * @param simpleName
+	 * @return
+	 */
+	public static int getID(String simpleName) {
+		return nameToIDMap.get(simpleName);
+	}
+	
 	/**
 	 * Gets a list of all Person meta tasks.
 	 * 
@@ -300,7 +364,7 @@ public class MetaTaskUtil {
 	 * @return meta tasks.
 	 */
 	public static MetaTask getMetaTask(String name) {
-		return idToMetaTask.get(name.toUpperCase());
+		return nameToMetaTask.get(name.toUpperCase());
 	}
 
 	/**
@@ -332,9 +396,18 @@ public class MetaTaskUtil {
         return personTaskFactories;
     }
 
-	public static ConverseMeta getConverseMeta() {
-		return converseMeta;
+	public static int getConverseMetaID() {
+		return converseMetaID;
 	}
+	
+	public static int getEatDrinkMetaID() {
+		return eatdrinkMetaID;
+	}
+	
+	public static int getWorkoutMetaID() {
+		return workoutMetaID;
+	}
+	
 	
 	/**
 	 * Loads any references that MetaTasks need.

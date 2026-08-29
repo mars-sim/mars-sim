@@ -46,15 +46,18 @@ public class WorkerActivityCommand extends AbstractUnitCommand {
 		
 		StructuredResponse response = new StructuredResponse();
 		response.appendTableHeading("When", 8,
-						"Task", 20,
+									"Task", 20,
 									"Activity", -32,
-									"Phase");
+									"Phase", 
+									"Building");
 		for (HistoryItem<OneActivity> attr : tasks) {
 			OneActivity act = attr.getWhat();
 			response.appendTableRow(attr.getWhen().getDateTimeStamp(),
 									act.getTaskName(),
 									act.getDescription(),
-									act.getPhase());
+									act.getPhase(),
+									act.getBuildingName()
+									);
 		}
 		context.println(response.getOutput());
 		

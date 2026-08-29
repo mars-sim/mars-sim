@@ -47,7 +47,7 @@ public class EatDrink extends Task {
 	private static final String EATING_PRESERVED = Msg.getString("Task.description.eatDrink.preserved"); //$NON-NLS-1$
 	private static final String DRINKING = Msg.getString("Task.description.eatDrink.drinking"); //$NON-NLS-1$
 	private static final String EATING = Msg.getString("Task.description.eatDrink.eating"); //$NON-NLS-1$
-	private static final String NAME = EATING;
+	public static final String NAME = EATING;
 
 	/** Task phases. */
 	private static final TaskPhase LOOK_FOR_FOOD = new TaskPhase(Msg.getString("Task.phase.lookingforFood")); //$NON-NLS-1$
@@ -85,13 +85,15 @@ public class EatDrink extends Task {
 	private double eatingDuration = 0D;
 	private double waterEachServing;
 
+
+	
 	private PreparedDish cookedMeal;
 	private Cooking kitchen;
 	private PhysicalCondition pc;
 	private ResourceHolder localStores;
 
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 *
 	 * @param person the person to perform the task
 	 */
@@ -199,6 +201,79 @@ public class EatDrink extends Task {
 	}
 		
 	/**
+	 * Constructor 2. In a vehicle or outside.
+	 *
+	 * @param person the person to perform the task
+	 * @param vehicle
+	 */
+	public EatDrink(Person person, Vehicle vehicle) {
+		super(NAME, person, false, false, STRESS_MODIFIER, 10
+				+ RandomUtil.getRandomDouble(-2, 2));
+
+		pc = person.getPhysicalCondition();
+
+		// Checks if this person has eaten too much already 
+		if (pc.eatTooMuch()
+			// Checks if this person has drank enough water already
+			&& pc.drinkEnoughWater()) {
+			clearTask("Consumed enough today already.");
+			return;
+		}
+		
+		double dur = getDuration();
+		eatingDuration = dur;
+
+		foodConsumedPerServing = personConfig.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;			
+		millisolPerKgFood = HUNGER_RATIO_PER_FOOD_SERVING / foodConsumedPerServing; 
+		
+		// ~.03 kg per serving
+		waterEachServing = pc.getWaterConsumedPerServing();
+
+		double waterAmount = 0.0;
+
+		foodAmount = getAmountResourceOnPerson(ResourceUtil.FOOD_ID);
+		waterAmount = getAmountResourceOnPerson(ResourceUtil.WATER_ID);
+		
+		// If still no water, check bottle
+		if ((waterAmount == 0.0) && person.hasThermalBottle()) {
+			var bottle = person.lookForThermalBottle();
+			waterAmount = bottle.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+		}
+				
+		// Set the container unit of the person
+		localStores = EquipmentOwner.getAttached(person.getContainerUnit());
+		if (localStores != null) {
+			// Take preserved food from inventory if it is available.
+			if (foodAmount == 0.0)
+				foodAmount = localStores.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+			if (waterAmount == 0.0)
+				waterAmount = localStores.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+		}
+	
+		boolean hungry = pc.isHungry();
+		boolean thirsty = pc.getThirstLevel().isThirsty();
+
+		if (vehicle != null) {
+			checkPersonInVehicle(vehicle, hungry, thirsty);
+		}
+		else {
+			// if a person is on EVA suit
+			if (thirsty && waterAmount > 0) {
+				water = true;
+			}
+		}
+		
+		if (!food && !water) {
+			endTask();
+		}
+
+		if (food)
+			goForFood();
+		
+		if (water)
+			lookForWaterPhase();
+	}
+	/**
 	 * Walks to a dining facility in the settlement where the garage vehicle is at.
 	 * 
 	 * @param hungry
@@ -261,6 +336,9 @@ public class EatDrink extends Task {
 	}
 
 	
+	/**
+	 * Goes after the food.
+	 */
 	private void goForFood() {
 
 		if (person.isInSettlement()) {
@@ -292,7 +370,7 @@ public class EatDrink extends Task {
 
 		boolean want2Chat = true;
 		// See if a person wants to chat while eating
-		int score = person.getPreference().getPreferenceScore(MetaTaskUtil.getConverseMeta());
+		int score = person.getPreference().getPreferenceScore(MetaTaskUtil.getEatDrinkMetaID());
 		if (score > 0)
 			want2Chat = true;
 		else if (score < 0)

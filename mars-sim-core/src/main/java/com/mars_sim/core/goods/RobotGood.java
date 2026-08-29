@@ -171,7 +171,9 @@ class RobotGood extends Good {
 		owner.setProjectedDemandScore(this, projectedCache);
 		
 		// This method is not using cache
-		double tradeDemand = owner.determineTradeDemand(this);
+		double tradeDemand = owner.determineTradeDemand(this) / 10;
+		
+		owner.setTradeDemandScore(this, tradeDemand);
 		
 		// Gets the repair part demand
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 

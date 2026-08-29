@@ -49,7 +49,7 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 
 	private JLabel stageName;
 	private JLabel stageType;
-	private JLabel workType;
+	private JLabel statusType;
 
 	private JDoubleLabel workLeft;
 	
@@ -88,7 +88,7 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 		infoPanel.addTextField("Building Type", constructionSite.getBuildingName(), null);
 		stageName = infoPanel.addTextField("Current Stage", "", null);
 		stageType = infoPanel.addTextField("Current Stage Type", "", null);
-		workType = infoPanel.addTextField("Current Work Type", "", null);
+		statusType = infoPanel.addTextField("Current Status", "", null);
 
 		missionLabel = new EntityLabel(constructionSite.getWorkOnSite(), getContext());
 		infoPanel.addLabelledItem("Work Mission", missionLabel);
@@ -135,6 +135,7 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
         if (stage != null) {
 			double workRemaining = stage.getRequiredWorkTime() - stage.getCompletedWorkTime();
 			workLeft.setValue(workRemaining);
+			statusType.setText(constructionSite.getStatus());
         }
 
 		var activeStage = constructionSite.getCurrentConstructionStage();
@@ -144,7 +145,6 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 			var info = currentStage.getInfo();
 			stageName.setText(info.getName());
 			stageType.setText(info.getType().getName());
-			workType.setText(constructionSite.isConstruction() ? "Construct" : "Demolish");
 		}
 	}
 

@@ -37,7 +37,7 @@ public class EVAOperationTest extends MarsSimUnitTest{
     public static int executeEVAWalk(MarsSimContext context, EVA eva, EVAOperation task) {
         var person = (Person)task.getWorker();
 		PersonTaskManager tm = person.getMind().getTaskManager();
-		tm.replaceTask(task);
+		tm.checkReplaceTask(task);
 		
         var onSite = task.getOutsidePhase();
 		int callsUsed = 0;

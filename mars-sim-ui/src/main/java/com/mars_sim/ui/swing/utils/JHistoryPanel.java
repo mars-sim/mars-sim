@@ -36,13 +36,12 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
 @SuppressWarnings("serial")
 public abstract class JHistoryPanel<T> extends JPanel {
 
-	private static final int TIME_WIDTH = 100;
+	private static final int TIME_WIDTH = 110;
 	private static final String TIME_LABEL = Msg.getString("Time");
 
 	/**
      * Table model that holds the items in the history
      */
-	@SuppressWarnings("serial")
 	private class ItemModel extends AbstractTableModel {
 
 		private List<HistoryItem<T>> items;
@@ -124,7 +123,6 @@ public abstract class JHistoryPanel<T> extends JPanel {
 		itemModel = new ItemModel();
 
 		// Create schedule table
-		@SuppressWarnings("serial")
 		JTable table = new JTable(itemModel) {
 			@Override
             public String getToolTipText(MouseEvent e) {
@@ -148,6 +146,7 @@ public abstract class JHistoryPanel<T> extends JPanel {
 		columnModel.getColumn(0).setMinWidth(TIME_WIDTH);
 		columnModel.getColumn(0).setPreferredWidth(TIME_WIDTH);
 		columnModel.getColumn(1).setPreferredWidth(150);
+		columnModel.getColumn(2).setPreferredWidth(150);
 		
 		table.setRowSelectionAllowed(true);
 

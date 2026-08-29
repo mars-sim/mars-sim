@@ -67,7 +67,7 @@ public class Walk extends Task {
 	public static final String SIMPLE_NAME = Walk.class.getSimpleName();
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.walk"); //$NON-NLS-1$
+	public static final String NAME = Msg.getString("Task.description.walk"); //$NON-NLS-1$
 	
 	private static final String ARRIVED_AIRLOCK = Msg.getString("Task.description.walk.arrivedAirlock"); //$NON-NLS-1$
 

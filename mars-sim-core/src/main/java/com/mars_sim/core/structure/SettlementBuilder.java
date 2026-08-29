@@ -21,13 +21,13 @@ import org.apache.commons.lang3.time.StopWatch;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.authority.NationSpec;
 import com.mars_sim.core.authority.NationSpecConfig;
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.equipment.BinFactory;
@@ -565,8 +565,8 @@ public final class SettlementBuilder {
 					}
 				}
 
-				// Set specific Favourites
-				setFavorites(person, m);
+				// Set specific favorites
+				setPreconfiguredFavorites(person, m);
 								
 				// Initialize Preference
 				person.getPreference().initializePreference();
@@ -577,7 +577,13 @@ public final class SettlementBuilder {
 	}
 
 
-	private void setFavorites(Person person, Member m) {
+	/**
+	 * Sets the predefined favorites based on xmls.
+	 * 
+	 * @param person
+	 * @param m
+	 */
+	private void setPreconfiguredFavorites(Person person, Member m) {
 		
 		// Add Favorite class
 		String mainDish = m.getMainDish();

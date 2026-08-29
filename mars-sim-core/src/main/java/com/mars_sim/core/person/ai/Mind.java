@@ -277,21 +277,21 @@ public class Mind implements Serializable, Temporal {
 				hasActiveMission = true;
 			}
 		}
+		
+		boolean doesMission = false;
 
 		if (hasActiveMission && !mission.isDone()) {
-			// Missions have to be done and are stressfull so allow high stress.
-			if (person.getPhysicalCondition().getPerformanceFactor() < 0.7D)
-				// Cannot perform the mission if a person is not well
-				// Note: If everyone has dangerous medical condition during a mission,
-				// then it won't matter and someone needs to drive the rover home.
-				// Add penalty in resuming the mission
-				resumeMission(1);
-			else {
-				resumeMission(2);
-			}
+			
+			// Cannot perform the mission if a person is not well
+			// Note: If everyone has dangerous medical condition during a mission,
+			// then it won't matter and someone needs to drive the rover home.
+			// Add penalty in resuming the mission
+			
+			double mod = person.getPhysicalCondition().getPerformanceFactor() * 2;
+			doesMission = resumeMission(mod);
 		}
 
-		if (!taskManager.hasActiveTask()) {
+		if (!doesMission && !taskManager.hasActiveTask()) {
 			// don't have an active mission
 			taskManager.startNewTask();
 		}
@@ -302,13 +302,16 @@ public class Mind implements Serializable, Temporal {
 	 *
 	 * @param modifier
 	 */
-	private void resumeMission(int modifier) {
+	private boolean resumeMission(double modifier) {
 		int fitness = person.getPhysicalCondition().computeFitnessLevel();
 		int priority = mission.getPriority();
 		int rand = RandomUtil.getRandomInt(5);
 		if (rand - (fitness)/1.5D <= priority + modifier) {
 			mission.performMission(person);
+			return true;
 		}
+		
+		return false;
 	}
 
 	/**
@@ -446,7 +449,7 @@ public class Mind implements Serializable, Temporal {
 	public Mission startNewMission() {
 		boolean isPersonToWeak = person.getPerformanceRating() < MINIMUM_MISSION_PERFORMANCE;
 
-		if (!isPersonToWeak) {
+		if (!isPersonToWeak && !person.isDeclaredDead()) {
 			Mission newMission = person.getAssociatedSettlement().getMissionControl().getNewMission(person);
 			if (newMission != null) {
 				setMission(newMission);

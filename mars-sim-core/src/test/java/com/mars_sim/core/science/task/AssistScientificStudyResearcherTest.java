@@ -81,8 +81,10 @@ class AssistScientificStudyResearcherTest extends MarsSimUnitTest {
         var p = study.getPrimaryResearcher();
         p.getSkillManager().addNewSkill(science.getSkill(), 2); // Must have higher skill
         var task  = PerformLaboratoryResearch.createTask(p);
-        p.getMind().getTaskManager().replaceTask(task);
-
-        return task;
+        boolean canReplace = p.getMind().getTaskManager().checkReplaceTask(task);
+        if (canReplace)
+        	return task;
+        else
+        	return null;
     }
 }

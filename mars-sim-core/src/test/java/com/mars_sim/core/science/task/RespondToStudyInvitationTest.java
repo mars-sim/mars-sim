@@ -20,7 +20,7 @@ public class RespondToStudyInvitationTest extends MarsSimUnitTest {
     public void testRejectInvite() {
         var s = buildSettlement("Study", true);
 
-        // Collabarotr is a chef
+        // CollaboratoRespondToStudyInvitationTestr is a chef
         var c = buildPerson("Collab1", s);
         c.setJob(JobType.CHEF, "Boss");
 
