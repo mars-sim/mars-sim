@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.social.RelationshipType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
@@ -84,8 +83,7 @@ class GroupActivityMetaTaskTest extends MarsSimUnitTest{
         var s = buildSettlement("mock");
         buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
-        // Create a friendship group where friend has a better opinion of the insti
-        // gator and the enemy
+        // Create a friendship group where friend has a better opinion of the instigator and the enemy
         var i = buildPerson("instigator", s);
         var p1 = buildPerson("p1", s);
         RelationshipUtil.changeOpinion(p1, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, Relation.MAX_OPINION);

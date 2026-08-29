@@ -1616,24 +1616,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
-	 * Does this person have a set of clothing ?
-	 */
-	public boolean hasGarment() {
-		return hasItemResource(ItemResourceUtil.GARMENT_ID);
-	}
-
-	/**
-	 * Does this person have a pressure suit ?
-	 */
-	public boolean hasPressureSuit() {
-		return hasItemResource(ItemResourceUtil.PRESSURE_SUIT_ID);
-	}
-
-	private boolean hasItemResource(int itemId) {
-		return eqmInventory.getItemResourceStored(itemId) > 0;
-	}
-
-	/**
 	 * Does this person have a thermal bottle ?
 	 * 
 	 * @return
@@ -1735,8 +1717,10 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		claimItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, holder);
 	}
 
-	private void claimItemResource(int itemId, EquipmentOwner holder) {
-		if (!hasItemResource(itemId) && holder.retrieveItemResource(itemId, 1) == 0) {
+	private void claimItemResource(int itemId, EquipmentOwner store) {
+		// Local inventory has no item, and the store has an item to retrieve
+		if ((eqmInventory.getItemResourceStored(itemId) == 0)
+					&& store.retrieveItemResource(itemId, 1) == 0) {
 			eqmInventory.storeItemResource(itemId, 1);
 		}
 	}
@@ -1758,12 +1742,14 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @return true if successful
 	 */
 	public boolean unwearPressureSuit(EquipmentOwner holder) {
-		return releaseItemResource(MARS_SURFACE_UNIT_ID, holder);
+		return releaseItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, holder);
 	}
 
-	private boolean releaseItemResource(int itemId, EquipmentOwner holder) {
-		if (hasItemResource(itemId) && eqmInventory.retrieveItemResource(itemId, 1) == 0) {
-			return holder.storeItemResource(itemId, 1) == 0;
+	private boolean releaseItemResource(int itemId, EquipmentOwner store) {
+		// Local inventory has at least one item, and the store has an item to hold
+		if ((eqmInventory.getItemResourceStored(itemId) > 0)
+					&& eqmInventory.retrieveItemResource(itemId, 1) == 0) {
+			return store.storeItemResource(itemId, 1) == 0;
 		}
 		return false;
 	}
