@@ -50,7 +50,7 @@ public final class MalfunctionFactory implements Serializable {
 
 	public static SimulationConfig simulationConfig = SimulationConfig.instance();
 	public static MalfunctionConfig mc = simulationConfig.getMalfunctionConfiguration();
-	public static PartConfig partConfig = simulationConfig.getPartConfiguration();
+	public transient PartConfig partConfig = simulationConfig.getPartConfiguration();
 
 	/**
 	 * Constructs a MalfunctionFactory object.

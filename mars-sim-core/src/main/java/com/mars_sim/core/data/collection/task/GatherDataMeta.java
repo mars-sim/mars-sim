@@ -73,7 +73,7 @@ public abstract class GatherDataMeta extends MetaTask
     protected GatherDataMeta(String name, EquipmentType containerType) {
 		super(name, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION);
-		setTrait(TaskTrait.STRENGTH);
+		setTrait(TaskTrait.AGILITY);
 
 		this.containerType = containerType;
 	}
@@ -87,6 +87,7 @@ public abstract class GatherDataMeta extends MetaTask
      */
     protected List<SettlementTask> getSettlementTaskJobs(Settlement settlement,
                             double collectionProbability) {
+    	
         var rh = settlement.getEquipmentInventory();
 
         // Check preconditions
@@ -94,8 +95,7 @@ public abstract class GatherDataMeta extends MetaTask
         // - at least one EVA suit at settlement.
         // - at least one empty bag at settlement.
     	if ((collectionProbability == 0.0)
-//            || rh.getSuitSet().isEmpty()
-            || (rh.findNumContainersOfType(containerType) == 0)) {                
+            || (rh.findNumDataRecorder() == 0)) {                
     		return Collections.emptyList();
         }
 
@@ -110,29 +110,21 @@ public abstract class GatherDataMeta extends MetaTask
         // Determine the base score
         RatingScore result = new RatingScore(base);
 
-        boolean isEmergency = settlement.getRationing().isAtEmergency();
-        
-        int rationingLevel = settlement.getRationing().getRationingLevel();
-        
+        // Note: Will work on monitoringLevel based on what the settlement needs later.
+        int monitoringLevel = 1;
+        		
         // Calculate the capacity for more EVAs
-        int maxEVA = (int)Math.sqrt(1.0 + rationingLevel) 
+        int maxEVA = (int)Math.sqrt(1.0 + monitoringLevel) 
         		+ settlement.getPreferences().getIntValue(SettlementParameters.MAX_EVA,
                                                     DEFAULT_EVA_NUM);
         
-        if (!isEmergency) {
-            maxEVA -= getActiveEVAPersons(settlement);
-            if (maxEVA <= 0) {
-                return Collections.emptyList();
-            }
+        maxEVA -= getActiveEVAPersons(settlement);
+        if (maxEVA <= 0) {
+        	return Collections.emptyList();
         }
   
         // Should use the demand & resources stored to influence the score. 50% capacity is
         // the unmodified baseline
-//		var capacity = (rh.getRemainingCombinedCapacity(resourceId)
-//									/ rh.getSpecificCapacity(resourceId));
-//        if (capacity <= MIN_CAPACITY) {
-//            return Collections.emptyList();
-//        }
 //        result.addModifier("capacity", 1 + (capacity - MIN_CAPACITY));
 
         List<SettlementTask> resultList = new ArrayList<>();
@@ -168,9 +160,9 @@ public abstract class GatherDataMeta extends MetaTask
         // - Qualified for digging local
         // - Physically fit for heavy EVA tasks
     	if (!Walk.anyAirlocksForIngressEgress(p, false)
-    	|| p.getMission() != null
-        || !GatherData.canGatherData(p)
-        || !EVAOperation.isEVAFit(p)) {
+    			|| p.getMission() != null
+    			|| !GatherData.canGatherData(p)
+    			|| !EVAOperation.isEVAFit(p)) {
             return RatingScore.ZERO_RATING;
         }
 

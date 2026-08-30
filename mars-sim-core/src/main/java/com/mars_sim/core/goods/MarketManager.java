@@ -32,14 +32,14 @@ public class MarketManager implements Serializable, Temporal {
 	/** A map of Goods and the global market data. */
 	private Map<Good, MarketData> globalMarketBook;
 
-	private UnitManager unitManager;
+	private UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Constructor.
 	 */
-	public MarketManager(Simulation sim) {
-		this.unitManager = sim.getUnitManager();
-		// Initialize data members
+	public MarketManager() {
+
+		// Initialize the market book
 
 		if (globalMarketBook == null) {
 			globalMarketBook = new HashMap<>();
@@ -121,13 +121,6 @@ public class MarketManager implements Serializable, Temporal {
 		if (globalMarketBook.isEmpty())
 			return 0.0;
 		return globalMarketBook.get(g).getGoodValue();
-	}
-	
-	/**
-	 * Resets links to the unit manager classes after a reload.
-	 */
-	public void reinitalizeInstances(Simulation sim) {
-		this.unitManager = sim.getUnitManager();
 	}
 	
 	/**

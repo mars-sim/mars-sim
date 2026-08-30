@@ -61,7 +61,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(RoverMission.class.getName());
 
-	private static final String UNABLE_TO_ENTER = Msg.getString("RoverMission.log.unableToEnter"); // $NON-NLS-1$
+	private static final String UNABLE_TO_ENTER = "Unable to enter";
 	
 	private static final String MEMBERSHIP_CHECKED = "Membership Checked";
 	

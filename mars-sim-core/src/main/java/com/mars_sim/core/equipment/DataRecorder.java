@@ -6,7 +6,9 @@
  */
 package com.mars_sim.core.equipment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.SimulationConfig;
@@ -45,7 +47,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	// Data members
 	private static double usualMass = -1;
 	
-	private Map<Person, FieldDataSet> dataset = new HashMap<>();
+	private Map<Person, List<FieldDataSet>> dataset = new HashMap<>();
 	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -59,7 +61,19 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 */
 	protected DataRecorder(String name, Settlement settlement) {
 		// Use Equipment constructor.
-		super(name, TYPE, settlement);
+		this(name, EquipmentType.DATA_RECORDER, TYPE, settlement);
+	}
+	
+	/**
+	 * Constructor 2.
+	 * 
+	 * @param name
+	 * @param eType
+	 * @param type
+	 * @param settlement
+	 */
+	protected DataRecorder(String name, EquipmentType eType, String type, Settlement settlement) {
+		super(name, eType, type, settlement);
 		
 		setDescription("A standard data recorder.");
 
@@ -89,6 +103,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		// Sets the base mass.
 		setBaseMass(getEmptyMass());
 	}
+
 	
 	/**
 	 * Gets the usual mass of a data recorder.
@@ -103,18 +118,40 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	}
 	
 	/**
-	 * Constructor 2.
+	 * Gets the data set in this class.
 	 * 
-	 * @param name
-	 * @param eType
-	 * @param type
-	 * @param settlement
+	 * @return
 	 */
-	protected DataRecorder(String name, EquipmentType eType, String type, Settlement settlement) {
-		super(name, eType, type, settlement);
-		
+	public Map<Person, List<FieldDataSet>> getDataset() {
+		return dataset;
 	}
-
+	
+	/**
+	 * Adds a dataset.
+	 *  
+	 * @param person
+	 * @param dataSet
+	 */
+	public void addDataset(Person person, FieldDataSet dataSet) {
+		if (dataset.containsKey(person)) {
+			List<FieldDataSet> list = dataset.get(person);
+			for (FieldDataSet fds: list) {
+				if (fds.getIdentifier() == dataSet.getIdentifier()) {
+					// Overwrite the dataset
+					fds = dataSet;
+					return;
+				}
+			}
+			// Add the dataset
+			list.add(dataSet);
+		}
+		else {
+			List<FieldDataSet> list = new ArrayList<>();
+			// Add the dataset
+			dataset.put(person, list);
+		}
+	}
+	
 	/**
 	 * Time passing.
 	 *
@@ -126,9 +163,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		// It doesn't check the pulse value like other units
 		// because it is not called consistently every pulse. It is only
 		// called when in use by a Person.
-		malfunctionManager.timePassing(pulse);
-
-		return true;
+		return malfunctionManager.timePassing(pulse);
 	}
 
 

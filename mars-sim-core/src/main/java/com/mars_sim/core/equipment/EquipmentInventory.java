@@ -520,6 +520,18 @@ public class EquipmentInventory
 	}
 
 	/**
+	 * Finds the number of data recorder .
+	 *
+	 * Note: will not count EVA suits.
+	 * 
+	 * @param containerType the equipment type.
+	 * @return number of empty containers.
+	 */
+	public int findNumDataRecorder() {
+		return recorderSet.size();
+	}
+	
+	/**
 	 * Finds the number of empty bins of a particular bin type.
 	 * 
 	 * @param containerType the equipment type.

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -33,7 +34,7 @@ public class MedicalManager implements Serializable {
 	/** Settlement's Death Registry. */
 	private Map<Integer, List<DeathInfo>> deathRegistry;
 
-	private static MedicalConfig medicalConfig;
+	private static MedicalConfig medicalConfig = SimulationConfig.instance().getMedicalConfiguration();
 
 	/**
 	 * Constructs a new {@link MedicalManager}. This also constructs all the
@@ -138,14 +139,4 @@ public class MedicalManager implements Serializable {
 		
 		return Collections.emptyList();
 	}
-
-	/**
-	 * Initializes the Medical Complaints from the configuration.
-	 * 
-	 * @throws exception if not able to initialize complaints.
-	 */
-	public static void initializeInstances(MedicalConfig mc) {
-		medicalConfig = mc;
-	}
-
 }

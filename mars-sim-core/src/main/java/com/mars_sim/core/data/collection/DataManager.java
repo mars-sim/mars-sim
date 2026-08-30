@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.structure.Settlement;
 
 
@@ -23,9 +22,6 @@ public class DataManager implements Serializable {
 
 		/** The settlement's data library. */
 		private Map<Settlement, List<FieldDataSet>> dataArchive;
-
-		private static Simulation sim;
-			
 		/**
 		 * Constructor for a {@link DataManager}.
 		 */
@@ -35,14 +31,5 @@ public class DataManager implements Serializable {
 		
 		public Map<Settlement, List<FieldDataSet>> getDataArchive() {
 			return dataArchive;
-		}
-		
-		/**
-		 * Initializes the Medical Complaints from the configuration.
-		 * 
-		 * @throws exception if not able to initialize complaints.
-		 */
-		public static void initializeInstances(Simulation s) {
-			sim = s;
 		}
 }

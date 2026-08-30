@@ -340,9 +340,9 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Add it to unitManager
 		unitManager.addUnit(marsSurface);
 	
-		marketManager = new MarketManager(this);
+		marketManager = new MarketManager();
 		
-		transportManager = new TransportManager(this);
+		transportManager = new TransportManager();
 	
         // Initialize RoleUtil
         RoleUtil.initialize();
@@ -352,12 +352,11 @@ public class Simulation implements ClockPulseListener, Serializable {
 		GoodsManager.initializeInstances(masterClock, unitManager, marketManager);
 					
 		medicalManager = new MedicalManager();
-		MedicalManager.initializeInstances(mc);
-		
+	
 		dataManager = new DataManager();
-		DataManager.initializeInstances(this);
 
 		malfunctionFactory = new MalfunctionFactory();
+		
 		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
 												medicalManager,
 												simulationConfig.getPartConfiguration());
@@ -434,16 +433,13 @@ public class Simulation implements ClockPulseListener, Serializable {
 		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
 		// Initialize MedicalManager instance
 		medicalManager = new MedicalManager();
-		MedicalManager.initializeInstances(mc);
-		
 		// Initialize DataManager instance
 		dataManager = new DataManager();
-		DataManager.initializeInstances(this);
 		
 		// Initialize UnitManager instance		
 		eventManager = new HistoricalEventManager(masterClock);
 		// Initialize TransportManager instance		
-		transportManager = new TransportManager(this);
+		transportManager = new TransportManager();
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
 		// Compute the cpu load after unit manager is done
@@ -465,7 +461,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		unitManager.addUnit(marsSurface);
 		
 		// Initialize MarketManager instance		
-		marketManager = new MarketManager(this);
+		marketManager = new MarketManager();
 
 		// Initialize Unit
 		Unit.initializeInstances(masterClock, unitManager, weather);
@@ -569,23 +565,15 @@ public class Simulation implements ClockPulseListener, Serializable {
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
-		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
+//		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 		
 		// Re-initialize the data logger
 		DataLogger.changeTime(masterClock.getMarsTime());
 		
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
-		
-		// Re-initialize medical manager
-		MedicalManager.initializeInstances(mc);
-		
-		// Re-initialize DataManager instance
-		DataManager.initializeInstances(this);
-		
-		transportManager.reinitalizeInstances(sim);
 	
-		marketManager.reinitalizeInstances(sim);
+		transportManager.reinitalizeInstances(sim);
 		
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
