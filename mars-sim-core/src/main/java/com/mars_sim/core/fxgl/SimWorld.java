@@ -7,6 +7,12 @@
 
 package com.mars_sim.core.fxgl;
 
+/**
+ * Represents the simulation world for the Mars Simulation Project using FXGL.
+ *
+ * @author Manny Kung
+ * @date 2024-08-10
+ */
 public class SimWorld {
 
 }
