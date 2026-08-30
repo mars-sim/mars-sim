@@ -48,20 +48,13 @@ public final class EVASuitUtil {
 	 * @param disqualified  true if the person is disqualified from EVA.
 	 */
 	public static void checkIn(Person person, Object entity, boolean inSettlement, boolean disqualified) {
-		UnitHolder housingEntity;
-		EquipmentOwner eo;
-		switch (entity) {
-			case Building b -> {
-				housingEntity = b.getSettlement();
-				eo = b.getSettlement().getEquipmentInventory();
-			}
-			case Vehicle v -> {
-				housingEntity = v;
-				eo = v;
-			}
-			default -> throw new IllegalArgumentException("Entity must be a Building or Vehicle.");
-		}
-		
+		UnitHolder housingEntity = switch (entity) {
+			case Building b -> b.getSettlement();
+			case Vehicle v -> v;
+			case Settlement s -> s;
+			default -> throw new IllegalArgumentException("Entity must be a Building, Vehicle, or Settlement.");
+		};
+		var eo = EquipmentOwner.getAttached(housingEntity);
 		EVASuit suit = person.getSuit();
 		
 		// Transfer the EVA suit from person to the new destination
@@ -75,20 +68,9 @@ public final class EVASuitUtil {
 			}
 		}
 		
-		if (disqualified) {
+		if (disqualified && (eo != null)) {
 			// Remove pressure suit and put on garment
-			if (inSettlement) {
-				if (person.unwearPressureSuit(eo)) {
-					person.wearGarment(eo);
-				}
-			}
-			// Note: vehicle may or may not have garment available
-			else if (((Rover)eo).hasGarment() && person.unwearPressureSuit(eo)) {
-				person.wearGarment(eo);
-			}
-	
-			// Assign thermal bottle
-			person.assignThermalBottle();
+			person.dressForInside(eo);
 		}
 	}
 	

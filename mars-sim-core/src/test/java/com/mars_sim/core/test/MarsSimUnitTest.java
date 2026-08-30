@@ -16,6 +16,8 @@ import com.mars_sim.core.building.MockBuilding;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.environment.MarsSurface;
+import com.mars_sim.core.equipment.ItemHolder;
+import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.GenderType;
@@ -263,20 +265,27 @@ public abstract class MarsSimUnitTest {
 		return settlement;
 	}
 
+	@Deprecated
 	public static void loadSettlementAmounts(Settlement source, Map<Integer, Double> resourcesMap) {
-		var target = source.getEquipmentInventory();
+		loadAmounts(source.getEquipmentInventory(), resourcesMap);
+	}
+
+	public static void loadAmounts(ResourceHolder store, Map<Integer, Double> resourcesMap) {
 		for (Entry<Integer, Double> resource : resourcesMap.entrySet()) {
 			// Add extra to the stored to give a tolerance
 			double amount = resource.getValue().doubleValue() + 0.01D;
-			target.storeAmountResource(resource.getKey(), amount);
+			store.storeAmountResource(resource.getKey(), amount);
 		}
 	}
 
-	
+	@Deprecated
 	public static void loadSettlementItems(Settlement source, Map<Integer, Integer> resourcesMap) {
-		var target = source.getEquipmentInventory();
+		loadItems(source.getEquipmentInventory(), resourcesMap);
+	}
+
+	public static void loadItems(ItemHolder store, Map<Integer, Integer> resourcesMap) {
 		for (Entry<Integer, Integer> resource : resourcesMap.entrySet()) {
-			target.storeItemResource(resource.getKey(), resource.getValue().intValue());
+			store.storeItemResource(resource.getKey(), resource.getValue().intValue());
 		}
 	}
 

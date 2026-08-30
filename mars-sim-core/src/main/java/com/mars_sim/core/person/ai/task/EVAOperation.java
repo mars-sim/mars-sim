@@ -19,6 +19,7 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
@@ -933,6 +934,20 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected Container findPersonContainer(EquipmentType containerType, int resourceID) {
 		return person.getEquipmentInventory().findContainer(containerType, false, resourceID);
+	}
+
+	/**
+	 * Change the Person attire so they are suitable for inside life
+	 */
+	@Override
+	protected void clearDown() {
+		// Get the local Item sgtore where the Person is. Could be Vehicle or Settlement
+		var eo = EquipmentOwner.getAttached(person.getContainerUnit());
+
+		if (eo != null) {
+			person.dressForInside(eo);
+		}
+		super.clearDown();
 	}
 
 	/**

@@ -50,7 +50,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         // Create bottle and assign to person
         var b = EquipmentFactory.createEquipment(EquipmentType.THERMAL_BOTTLE, s);
         b.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
-        p.assignThermalBottle();
+        p.dressForInside(s.getEquipmentInventory());
 
         testWater(p, s);
         assertTrue(b.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");

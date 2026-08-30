@@ -314,9 +314,6 @@ public abstract class GatherData extends EVAOperation {
 		if (containerUnit == null) {
 			return;
 		}
-	
-		// Assign thermal bottle
-		person.assignThermalBottle();
 
 		super.clearDown();
     }

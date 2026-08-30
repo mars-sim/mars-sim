@@ -410,7 +410,6 @@ public class CollectResources extends EVAOperation {
 				if (container != null) {
 					boolean done = container.transfer(rover);
 					if (done) {
-//						logger.info(person, 5000, "Done transferring a " + containerType.getName().toLowerCase() + " from person back to rover.");
 						double amount = container.getSpecificAmountResourceStored(resourceType);
 						if (amount > 0) {
 							unloadContainer(container, amount, getTimeCompleted());
@@ -421,19 +420,6 @@ public class CollectResources extends EVAOperation {
 				}	
 			}
 		}
-		
-//		if (rover != null) {
-//			// Task may end early before a Rover is selected
-//			returnEquipmentToVehicle(rover);
-//		}
-		
-		// Remove pressure suit and put on garment
-		if (person.unwearPressureSuit(rover)) {
-			person.wearGarment(rover);
-		}
-	
-		// Assign thermal bottle
-		person.assignThermalBottle();
 
 		super.clearDown();
 	}

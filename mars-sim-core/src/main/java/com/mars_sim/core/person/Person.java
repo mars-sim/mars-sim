@@ -41,6 +41,7 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.Mind;
@@ -1615,12 +1616,13 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	
 	/**
 	 * Assigns a thermal bottle as a standard living necessity.
+	 * @param store the equipment owner to claim the thermal bottle from
 	 */
-	public void assignThermalBottle() {
+	private void assignThermalBottle(EquipmentOwner store) {
 
 		if (!hasThermalBottle() && isInside()) {
 			Equipment aBottle = null;
-			for (Equipment e : EquipmentOwner.getAttached(getContainerUnit()).getContainerSet()) {
+			for (Equipment e : store.getContainerSet()) {
 				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
 					Person originalOwner = e.getRegisteredOwner();
 					if (originalOwner != null && originalOwner.equals(this)) {
@@ -1654,7 +1656,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	/**
 	 * Drops off the thermal bottle such as when going out for an EVA.
 	 */
-	public void dropOffThermalBottle() {
+	private void dropOffThermalBottle() {
 
 		if (isInside()) {
 			var bottles = eqmInventory.getContainerSet().stream()
@@ -1665,26 +1667,28 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		}
 	}
 	
-	
 	/**
-	 * Puts on a garment.
-	 *
-	 * @param holder the current equipment holder of the clothing
+	 * This method prepares the Person for life inside. It involves removing any Pressure Suit and putting on a garment.
+	 * It also assigns a thermal bottle to the person.
+	 * @param eo Store whens items can be found.
 	 */
-	public void wearGarment(EquipmentOwner holder) {
-		claimItemResource(ItemResourceUtil.GARMENT_ID, holder);
+	public void dressForInside(EquipmentOwner eo) {
+		releaseItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, eo);
+		claimItemResource(ItemResourceUtil.GARMENT_ID, eo);
+		assignThermalBottle(eo);
 	}
 
 	/**
-	 * Puts on a pressure suit set.
-	 *
-	 * @param holder the current equipment holder of the clothing
+	 * This method prepares the Person for life outside. It involves removing any garment and putting on a Pressure Suit.
+	 * @param eo Store to hold items
 	 */
-	public void wearPressureSuit(EquipmentOwner holder) {
-		claimItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, holder);
+	public void dressForEVA(EquipmentOwner eo) {
+		releaseItemResource(ItemResourceUtil.GARMENT_ID, eo);
+		claimItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, eo);
+		dropOffThermalBottle();
 	}
 
-	private void claimItemResource(int itemId, EquipmentOwner store) {
+	private void claimItemResource(int itemId, ItemHolder store) {
 		// Local inventory has no item, and the store has an item to retrieve
 		if ((eqmInventory.getItemResourceStored(itemId) == 0)
 					&& store.retrieveItemResource(itemId, 1) == 0) {
@@ -1692,27 +1696,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		}
 	}
 
-	/**
-	 * Puts off the garment.
-	 *
-	 * @param holder the new holder of the clothing
-	 * @return true if successful
-	 */
-	public boolean unwearGarment(EquipmentOwner holder) {
-		return releaseItemResource(ItemResourceUtil.GARMENT_ID, holder);
-	}
-
-	/**
-	 * Puts off the pressure suit set.
-	 *
-	 * @param suit
-	 * @return true if successful
-	 */
-	public boolean unwearPressureSuit(EquipmentOwner holder) {
-		return releaseItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, holder);
-	}
-
-	private boolean releaseItemResource(int itemId, EquipmentOwner store) {
+	private boolean releaseItemResource(int itemId, ItemHolder store) {
 		// Local inventory has at least one item, and the store has an item to hold
 		if ((eqmInventory.getItemResourceStored(itemId) > 0)
 					&& eqmInventory.retrieveItemResource(itemId, 1) == 0) {
