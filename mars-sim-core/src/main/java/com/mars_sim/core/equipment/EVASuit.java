@@ -107,8 +107,8 @@ public class EVASuit extends Equipment
 	private static final double NORMAL_TEMP = 25D;
 	/** The wear lifetime value is 1 orbit. */
 	private static final double WEAR_LIFETIME = 668_000;
-	/** The maintenance time of 20 millisols. */
-	private static final double MAINTENANCE_TIME = 50D;
+	/** The maintenance time in millisols. */
+	private static final double MAINTENANCE_TIME = 200D;
 	/** The ratio of CO2 expelled to O2 breathed in. */
 	private static double gasRatio;
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
@@ -227,7 +227,7 @@ public class EVASuit extends Equipment
 		// Add TYPE to malfunction manager scope
 		malfunctionManager.addScopeString(TYPE);
 		
-		
+		// Add life support function type
 		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 	
 		// Initialize the scope map.
@@ -243,7 +243,6 @@ public class EVASuit extends Equipment
 		
 		// Sets the base mass of the bag.
 		setBaseMass(getEmptyMass());
-
 	}
 
 	/**

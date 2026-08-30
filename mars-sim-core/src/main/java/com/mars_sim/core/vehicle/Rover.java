@@ -126,10 +126,11 @@ public class Rover extends GroundVehicle implements Crewable,
 	private LightUtilityVehicle luv;
 
 	/**
-	 * Setup the various internal flags
+	 * Sets up the various internal flags.
+	 * 
 	 * @param simulationConfig
 	 */
-	public static void initializeInstances(SimulationConfig simulationConfig) {
+	public static void initializeInstances() {
 		PersonConfig personConfig = simulationConfig.getPersonConfig();
 		double o2Consumed = personConfig.getHighO2ConsumptionRate();
 		double cO2Expelled = personConfig.getCO2ExpelledRate();
@@ -137,8 +138,6 @@ public class Rover extends GroundVehicle implements Crewable,
 		
 		minO2Pressure = personConfig.getMinSuitO2Pressure();
 		tempRange = simulationConfig.getSettlementConfiguration().getLifeSupportRequirements(SettlementConfig.TEMPERATURE);
-	
-		Vehicle.initializeInstances();
 	}
 	
 	/**

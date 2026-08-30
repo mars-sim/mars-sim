@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SystemType.java
- * @date 2023-06-16
+ * @date 2026-08-27
  * @author stpa				
  */
 package com.mars_sim.core.building.function;
@@ -14,7 +14,7 @@ import com.mars_sim.core.tool.Msg;
 
 public enum SystemType implements Named {
 
-	BUILDING, EVA_SUIT, ROBOT, ROVER, VEHICLE;
+	BUILDING, EVA_SUIT, DATA_RECORDER, ROBOT, ROVER, VEHICLE;
 	
 	/**
 	 * Returns a set of all system types.
@@ -22,6 +22,7 @@ public enum SystemType implements Named {
 	public static final Set<SystemType> ALL_SYSTEMS =
 				Set.of(SystemType.BUILDING,
 						SystemType.EVA_SUIT,
+						SystemType.DATA_RECORDER,
 						SystemType.ROBOT,
 						SystemType.ROVER,
 						SystemType.VEHICLE);

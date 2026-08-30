@@ -203,9 +203,9 @@ public abstract class Transportable
 	 * Initializes instances.
 	 * 
 	 * @param mc
-	 * @param transportManager
+	 * @param tMgr
 	 */
-	static void initalizeInstances(TransportManager transportManager) {
-		tm = transportManager;
+	static void initalizeInstances(TransportManager tMgr) {
+		tm = tMgr;
 	}
 }

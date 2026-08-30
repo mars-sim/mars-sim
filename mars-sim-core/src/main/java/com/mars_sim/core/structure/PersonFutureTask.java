@@ -39,7 +39,7 @@ public class PersonFutureTask implements ScheduledEventHandler{
     public PersonFutureTask(Person p, TaskFactory mt) {
         this.person = p;
         this.factory = mt;
-        this.mtID = mt.getCapitalizedName();
+        this.mtID = mt.getUpperCaseName();
     }
 
     /**

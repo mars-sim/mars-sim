@@ -48,12 +48,14 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private static final double SKILL_FACTOR = 1D;
 	private static final double TECH_FACTOR = 2D;
 
-    protected static VehicleConfig vehicleConfig;
-	protected static PersonConfig personConfig;
-	protected static CropConfig cropConfig;
-	protected static BuildingConfig buildingConfig;
+	protected static SimulationConfig simConfig = SimulationConfig.instance();
+    protected static VehicleConfig vehicleConfig = simConfig.getVehicleConfiguration();
+	protected static PersonConfig personConfig = simConfig.getPersonConfig();
+	protected static CropConfig cropConfig = simConfig.getCropConfiguration();
+	protected static BuildingConfig buildingConfig = simConfig.getBuildingConfiguration();
+	
 	protected static UnitManager unitManager;
-
+	
 	// Data members
 	private String name;
 
@@ -547,14 +549,9 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	/**
 	 * Initialises the configs.
 	 * 
-	 * @param sc
 	 * @param m
 	 */
-	static void initializeInstances(SimulationConfig sc, UnitManager u) {
+	static void initializeInstances( UnitManager u) {
 		unitManager = u;
-		vehicleConfig = sc.getVehicleConfiguration();
-		personConfig = sc.getPersonConfig();
-		cropConfig = sc.getCropConfiguration();
-		buildingConfig = sc.getBuildingConfiguration();
 	}
 }

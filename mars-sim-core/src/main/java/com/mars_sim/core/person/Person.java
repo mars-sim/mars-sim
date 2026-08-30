@@ -250,13 +250,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 		// Create the role
 		role = new Role(this);
-//		// Assign a new job but do not bypass jobLock
-//		mind.getAJob(false, JobUtil.SETTLEMENT);
-		
-		
-//		// Add this person as a citizen
-//		settlement.addACitizen(this);
-		
 		// Set up life support type
 		support = getLifeSupportType();
 		// Create the mission experiences map
@@ -270,20 +263,15 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Construct the ResearchStudy instance
 		research = new ResearchStudy();
 		
-//		// Assign a new job but do not bypass jobLock
-//		mind.getAJob(false, JobUtil.SETTLEMENT);
-	}
-
-	/**
-	 * Initializes the person.
-	 */
-	public void init() {
+		// Assign a new job
+		mind.getAJob(true, JobUtil.SETTLEMENT);
+		
 		// Add this person as a citizen
-//		settlement.addACitizen(this);
-		// Note: at this point, role is not null but role type is still null,
-		//       and job type is still null 
+		settlement.addACitizen(this);
+		
 		// Create shift schedule
 		shiftSlot = getSettlement().getShiftManager().allocationShift(this);
+		
 		// Set up preference
 		getPreference().initializePreference();
 	}
@@ -1676,6 +1664,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			bottles.forEach(e -> e.transfer(getContainerUnit()));
 		}
 	}
+	
 	
 	/**
 	 * Puts on a garment.

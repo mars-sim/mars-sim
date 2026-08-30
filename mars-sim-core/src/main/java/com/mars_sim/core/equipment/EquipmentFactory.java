@@ -23,6 +23,7 @@ public final class EquipmentFactory {
 	// Base masses (kg) aligned with current manufacturing input-mass/output-quantity calculations.
 	private static final EnumMap<EquipmentType, Double> weights = new EnumMap<>(EquipmentType.class);
 	static {
+		weights.put(EquipmentType.DATA_RECORDER, 1.0);
 		weights.put(EquipmentType.EVA_SUIT, 16.18);
 		weights.put(EquipmentType.BAG, 0.1);
 		weights.put(EquipmentType.BARREL, 1.3);
@@ -55,6 +56,11 @@ public final class EquipmentFactory {
 
 		Equipment newEqm = null;
 		switch (type) {
+		
+		case DATA_RECORDER:
+			newEqm = new DataRecorder(newName, settlement);
+			break;
+			
 		case EVA_SUIT:
 			newEqm = new EVASuit(newName, settlement);
 			break;

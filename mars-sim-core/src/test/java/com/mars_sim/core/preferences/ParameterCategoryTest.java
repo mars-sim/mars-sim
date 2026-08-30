@@ -85,6 +85,7 @@ class ParameterCategoryTest {
 
         RoleUtil.initialize();
         MetaTaskUtil.initializeMetaTasks();
+        
         assertEquals(MetaTaskUtil.getAllMetaTasks().size(),
                      TaskParameters.INSTANCE.getRange().size(),
                      "Task values");

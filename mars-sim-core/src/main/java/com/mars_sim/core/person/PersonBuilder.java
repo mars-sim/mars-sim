@@ -17,7 +17,6 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.training.TrainingType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
@@ -347,14 +346,6 @@ public class PersonBuilder {
 		}
 		
 		Person p = new Person(name, settlement, gender, age, ethnicity, attributeMap);
-
-		// Assign a new job
-		p.getMind().getAJob(true, JobUtil.SETTLEMENT);
-		
-		// Add this person as a citizen
-		settlement.addACitizen(p);
-				
-		p.init();
 		
 		applyPersonality(p);
 		applySkillMap(p);

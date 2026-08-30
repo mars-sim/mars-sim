@@ -19,6 +19,7 @@ import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
@@ -159,7 +160,7 @@ public class GoodsManager implements Serializable {
 	// Fixed weights to apply to updates to commerce factors.
 	private static final Map<CommerceType, Double> FACTOR_WEIGHTS = Map.of(CommerceType.RESEARCH, 1.5D);
 
-	private static Map<Integer, ResourceLimits> resLimits;
+	private static Map<Integer, ResourceLimits> resLimits = SimulationConfig.instance().getSettlementConfiguration().getEssentialResources();
 
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static Set<Good> unsellableGoods = null;
@@ -1169,18 +1170,17 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 *
-	 * @param ms
-	 * @param s  {@link SimulationConfg}
+	 * @param ms {@link MasterClock}
+	 * @param sim  {@link Simulation}
 	 * @param u  {@link UnitManager}
 	 * @param mm  {@link MarketManager}
 	 */
-	public static void initializeInstances(MasterClock ms, SimulationConfig sc, UnitManager u, MarketManager mm) {
+	public static void initializeInstances(MasterClock ms, UnitManager u, MarketManager mm) {
 		unitManager = u;
 		masterClock = ms;
-		Good.initializeInstances(sc, u);
-		CommerceUtil.initializeInstances(u);
 		marketManager = mm;
-		resLimits = sc.getSettlementConfiguration().getEssentialResources();
+		Good.initializeInstances(u);
+		CommerceUtil.initializeInstances(u);
 	}
 
 	/**

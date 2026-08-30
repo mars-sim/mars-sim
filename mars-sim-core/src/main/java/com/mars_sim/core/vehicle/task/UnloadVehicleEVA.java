@@ -9,13 +9,12 @@ package com.mars_sim.core.vehicle.task;
 import java.util.logging.Level;
 
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
+import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;

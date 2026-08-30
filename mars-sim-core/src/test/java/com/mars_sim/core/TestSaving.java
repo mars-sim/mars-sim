@@ -18,6 +18,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.health.Complaint;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.MedicalManager;
+import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 
@@ -43,7 +44,6 @@ class TestSaving implements SimulationListener {
         Simulation sim = Simulation.instance();
         sim.createNewSimulation(64, null); 
 
-
         // Build a realistic simulation with entities to save
         SettlementBuilder builder = new SettlementBuilder(sim, simConfig, null);
         ScenarioConfig config = new ScenarioConfig(simConfig);
@@ -62,18 +62,20 @@ class TestSaving implements SimulationListener {
         saveFile = File.createTempFile("save-test", ".sim");
         sim.saveSimulation(Simulation.SaveType.SAVE_AS, saveFile, this);
 
-
         // Check simulations saved and it contains data
         assertEquals(SimulationListener.SAVE_COMPLETED, saveFeedback, "Simulation save status");
         assertTrue(saveFile.isFile(), "Simulation file exists");
         assertTrue(saveFile.length() > 0, "Save file is not empty");
 
         // Reload it
-        MedicalManager origMgr = sim.getMedicalManager();
+        MedicalManager mMgr = sim.getMedicalManager();
+        ScientificStudyManager sMgr = sim.getScientificStudyManager();
         sim.loadSimulation(saveFile);
-        assertNotEquals(origMgr, sim.getMedicalManager(), "Changed Medical Manager");
-
-
+        
+        Simulation sim1 = Simulation.instance();
+        assertNotEquals(mMgr, sim1.getMedicalManager(), "Changed Medical Manager");
+        assertNotEquals(sMgr, sim1.getScientificStudyManager(), "Changed Scientific Study Manager");
+        
         Person laterP = sim.getUnitManager().getPersonByID(p.getIdentifier());
         assertEquals(complaint, laterP.getPhysicalCondition().getMostSerious().getComplaint(), "Has complaint");
     }

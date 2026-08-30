@@ -232,6 +232,9 @@ class TradeTableModel extends CategoryTableModel<Good> {
 				EquipmentType type = EquipmentType.convertID2Type(id);
 				if (type == EquipmentType.EVA_SUIT)
 					return eo.getSuitSet().size();
+				else if (type == EquipmentType.DATA_RECORDER)
+					return eo.getRecorderSet().size();
+				
 				return eo.findNumContainersOfType(type);
 			}
 			case ResourceType.ROBOT_RESOURCE: return settlement.getNumBots();
@@ -274,6 +277,8 @@ class TradeTableModel extends CategoryTableModel<Good> {
 
 				if (type == EquipmentType.EVA_SUIT)
 					return eo.getSuitSet().size() * EquipmentFactory.getEquipmentMass(type);
+				else if (type == EquipmentType.DATA_RECORDER)
+					return eo.getRecorderSet().size() * EquipmentFactory.getEquipmentMass(type);
 				
 				return eo.findNumContainersOfType(type) * EquipmentFactory.getEquipmentMass(type);		
 			}

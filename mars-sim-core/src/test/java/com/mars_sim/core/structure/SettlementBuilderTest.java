@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -20,8 +19,6 @@ class SettlementBuilderTest extends MarsSimUnitTest{
      */
     @Test
     void testCreateFullSettlement() {
-
-        MetaTaskUtil.initializeMetaTasks();
 
         var templateName = "Alpha Base 1";
         var expectedAuthority = "NASA";

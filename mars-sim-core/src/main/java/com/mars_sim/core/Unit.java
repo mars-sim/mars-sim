@@ -19,6 +19,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * The Unit class is the abstract parent class to all units in the simulation.
@@ -65,7 +66,7 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	// File for diagnostics output
 	private static PrintWriter diagnosticFile = null;
 	
-	protected static SimulationConfig simulationConfig;
+	protected static SimulationConfig simulationConfig = Simulation.instance().getConfig();
 
 	/**
 	 * Enable the detailed diagnostics
@@ -358,11 +359,12 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	 * @param sc
 	 */
 	public static void initializeInstances(MasterClock c0, UnitManager um,
-			Weather w, SimulationConfig sc) {
+			Weather w) {
 		masterClock = c0;
-		simulationConfig = sc;
 		weather = w;
 		unitManager = um;
+		
+		Vehicle.initializeInstances();
 	}
 
 	/**

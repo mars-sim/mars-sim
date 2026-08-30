@@ -12,7 +12,8 @@ package com.mars_sim.core.map.location;
 public interface SurfacePOI {
 
     /**
-     * Location of the feature on the surface. 
+     * Gets the location of the feature on the surface. 
+     * 
      * This is a default implementation to support older code
      * @return
      */
@@ -21,13 +22,15 @@ public interface SurfacePOI {
     }
 
     /**
-     * Location of the feature on the surface
+     * Gets the location of the feature on the surface.
+     * 
      * @return
      */
     Coordinates getCoordinates();
 
     /**
-     * Name of the feature
+     * Gets the name of the feature.
+     * 
      * @return This may return null if the feature is unnamed.
      */
     String getName();

@@ -42,25 +42,19 @@ public class TransportManager implements Serializable {
 
 	private List<Transportable> transportItems;
 
-	private transient HistoricalEventManager eventManager;
-
-	private ScheduledEventManager futures;
-
-	private MasterClock clock;
+	private static Simulation sim 						= Simulation.instance();
+	private static HistoricalEventManager eventManager 	= sim.getEventManager();
+	private static ScheduledEventManager futures 		= sim.getScheduleManager();
+	private static MasterClock clock 					= sim.getMasterClock();
 
 	/**
 	 * Constructor.
 	 */
-	public TransportManager(Simulation sim) {
-		this.eventManager = sim.getEventManager();
-		this.clock = sim.getMasterClock();
-
-		Transportable.initalizeInstances(this);
-
+	public TransportManager() {
 		// Initialize data
 		transportItems = new ArrayList<>();
-
-		this.futures = sim.getScheduleManager();
+		
+		Transportable.initalizeInstances(this);
 	}
 	
 	public void init(Simulation sim) {
@@ -149,7 +143,7 @@ public class TransportManager implements Serializable {
 	 * Resets links to the managers classes after a reload. This also reinit's the TransportItems
 	 */
 	public void reinitalizeInstances(Simulation sim) {
-		this.eventManager = sim.getEventManager();
+		
 		Transportable.initalizeInstances(this);
 
 		UnitManager um = sim.getUnitManager();

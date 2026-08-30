@@ -88,6 +88,8 @@ public abstract class MetaTask {
 	
 	protected static SurfaceFeatures surfaceFeatures;
 	private static MasterClock masterClock;
+	
+	
 	/* Does this task primarily require physical effort ? */	
 	private boolean effortDriven = true;
 	
@@ -96,7 +98,7 @@ public abstract class MetaTask {
 	/* The given name for this meta task. */	
 	private String name;
 	/* The capitalized name for this task (Note: it's not the same as its task name found in Msg). */
-	private String CapitalizedName;
+	private String upperCaseName;
 	/* The proper name for this meta task. */	
 	private String properName;
 	
@@ -124,7 +126,7 @@ public abstract class MetaTask {
 		this.name = name;
 		this.workerType = workerType;
 		this.scope = scope;
-		this.CapitalizedName = this.getClass().getSimpleName().replace(META, "").toUpperCase();
+		this.upperCaseName = this.getClass().getSimpleName().replace(META, "").toUpperCase();
 		this.properName = createProperName();
 		
 		identifier = currentIdentifier;
@@ -291,12 +293,12 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Gets the capitalized name for this task.
+	 * Gets the upper case name for this task.
 	 * 
 	 * @return the MetaTask class name with "meta" removed
 	 */
-	public String getCapitalizedName() {
-		return CapitalizedName;
+	public String getUpperCaseName() {
+		return upperCaseName;
 	}
 
 	/**
@@ -457,7 +459,7 @@ public abstract class MetaTask {
 
 		// Apply the home base modifier
 		score.addModifier("settlement", person.getAssociatedSettlement().getPreferences()
-							.getDoubleValue(TaskParameters.INSTANCE.getKey(getCapitalizedName()), 1D));
+							.getDoubleValue(TaskParameters.INSTANCE.getKey(getUpperCaseName()), 1D));
 		
 		return score;
 	}
@@ -486,7 +488,7 @@ public abstract class MetaTask {
 
 		// Apply the home base modifier
 		score.addModifier("settlement", robot.getAssociatedSettlement().getPreferences()
-							.getDoubleValue(TaskParameters.INSTANCE.getKey(getCapitalizedName()), 1D));
+							.getDoubleValue(TaskParameters.INSTANCE.getKey(getUpperCaseName()), 1D));
 		
 		return score;
 	}
