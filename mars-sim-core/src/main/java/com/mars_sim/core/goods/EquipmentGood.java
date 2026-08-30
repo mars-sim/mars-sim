@@ -164,7 +164,7 @@ public class EquipmentGood extends Good {
 		// Get number of equipment carried by people on EVA.
 		for (Person person : settlement.getAllAssociatedPeople()) {
 			if (person.isOutside())
-				number += person.findNumEmptyContainersOfType(equipmentType, false);
+				number += person.getEquipmentInventory().findNumEmptyContainersOfType(equipmentType, false);
 		}
 
 		// Get the number of equipment that will be produced by ongoing manufacturing

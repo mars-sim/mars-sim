@@ -33,7 +33,7 @@ class LoadEVASuitTest extends MarsSimUnitTest {
 	 * Test if a person don an EVA suit and load it with resources.
 	 */
 	@Test
-	public void testLoadingEVA() {
+	void testLoadingEVA() {
 		Settlement settlement = buildSettlement("mock");
 		Person person = buildPerson("Loader", settlement);
 
@@ -45,16 +45,17 @@ class LoadEVASuitTest extends MarsSimUnitTest {
 		requiredResourcesMap.put(ResourceUtil.OXYGEN_ID, 1D);
 		requiredResourcesMap.put(ResourceUtil.WATER_ID, 4D);
 		
+		var personRH = person.getEquipmentInventory();
 		for (int i: requiredResourcesMap.keySet()) {
 			double amount = (double) requiredResourcesMap.get(i);
-			person.storeAmountResource(i, amount) ; 
+			personRH.storeAmountResource(i, amount) ; 
 		}
 		
 		EVASuit suitSettlement = (EVASuit)EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, settlement);
 		
 		var rh = settlement.getEquipmentInventory();
 		
-		EquipmentOwner personOwner = (EquipmentOwner)person;
+		EquipmentOwner personOwner = person.getEquipmentInventory();
 		
 		EVASuit suitPerson = EVASuitUtil.findEVASuitWithResources(rh, person);
 		

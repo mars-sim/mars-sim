@@ -1107,7 +1107,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 						Rover rover = (Rover) vehicle;
 						// Check people's possession
 						for (Person person: rover.getCrew()) {
-							amountStored += person.getSpecificAmountResourceStored(id);
+							amountStored += person.getEquipmentInventory().getSpecificAmountResourceStored(id);
 						}
 						// Check vehicle's equipment
 						for (Equipment equipment: rover.getContainerSet()) {
@@ -2075,7 +2075,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public boolean checkNeeds(Person person) {
 		
 		PhysicalCondition pc = person.getPhysicalCondition();
-		
+		var persRH = person.getEquipmentInventory();
+
 		// Note: if a person is not in fatigue but is hungry or thirsty, don't need to sleep
 		double fatigue = person.getPhysicalCondition().getFatigue();
 //		if (person.getPhysicalCondition().getFatigueLevel().getMaxValue() >= FatigueLevel.RESTED.getMaxValue()) {
@@ -2095,7 +2096,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		else if (RandomUtil.getRandomInt(1) == 0 && (pc.isDoubleHungry())) {
 			
 			// Identify the available amount first
-			double foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+			double foodAmount = persRH.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 
 			var localrh = EquipmentOwner.getAttached(person.getContainerUnit());
 			if (localrh != null) {
@@ -2124,7 +2125,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		else if (RandomUtil.getRandomInt(1) == 0 && (pc.isDoubleThirsty())) {		
 			
 			// Identify the available amount first
-			double waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+			double waterAmount = persRH.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 			
 			var localrh = EquipmentOwner.getAttached(person.getContainerUnit());
 			if (localrh != null) {

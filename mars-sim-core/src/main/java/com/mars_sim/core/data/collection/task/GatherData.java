@@ -154,7 +154,7 @@ public abstract class GatherData extends EVAOperation {
 	public void carryDataInstrument(EquipmentOwner holder, Person person, int intrumentID) {
 		
 		if (!hasInstrument(person, intrumentID) && holder.retrieveItemResource(intrumentID, 1) == 0) {
-			person.storeItemResource(intrumentID, 1);
+			person.getEquipmentInventory().storeItemResource(intrumentID, 1);
 		}
 	}
 	
@@ -162,7 +162,7 @@ public abstract class GatherData extends EVAOperation {
 	 * Does this person have this instrument ?
 	 */
 	public boolean hasInstrument(Person person, int intrumentID) {
-		return person.getItemResourceStored(intrumentID) > 0;
+		return person.getEquipmentInventory().getItemResourceStored(intrumentID) > 0;
 	}
 	
 	/**

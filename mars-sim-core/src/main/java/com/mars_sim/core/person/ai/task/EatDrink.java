@@ -120,10 +120,9 @@ public class EatDrink extends Task {
 		// ~.03 kg per serving
 		waterEachServing = pc.getWaterConsumedPerServing();
 
-		double waterAmount = 0.0;
 
-		foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-		waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+		foodAmount = getAmountResourceOnPerson(ResourceUtil.FOOD_ID);
+		double waterAmount = getAmountResourceOnPerson(ResourceUtil.WATER_ID);
 		
 		// If still no water, check bottle
 		if ((waterAmount == 0.0) && person.hasThermalBottle()) {
@@ -232,8 +231,8 @@ public class EatDrink extends Task {
 
 		double waterAmount = 0.0;
 
-		foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-		waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+		foodAmount = getAmountResourceOnPerson(ResourceUtil.FOOD_ID);
+		waterAmount = getAmountResourceOnPerson(ResourceUtil.WATER_ID);
 		
 		// If still no water, check bottle
 		if ((waterAmount == 0.0) && person.hasThermalBottle()) {
@@ -306,7 +305,7 @@ public class EatDrink extends Task {
 	 */
 	private void checkPersonInVehicle(Vehicle container, boolean hungry, boolean thirsty) {
 
-		foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+		foodAmount = getAmountResourceOnPerson(ResourceUtil.FOOD_ID);
 		
 		if (hungry && (foodAmount > 0)) {
 			food = true;
@@ -319,8 +318,7 @@ public class EatDrink extends Task {
 			}
 		}
 
-		var waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
-			
+		var waterAmount = getAmountResourceOnPerson(ResourceUtil.WATER_ID);
 		if (thirsty && waterAmount > 0) {
 			water = true;
 		}
@@ -332,6 +330,11 @@ public class EatDrink extends Task {
 			}
 		}
 	}
+
+	private double getAmountResourceOnPerson(int resourceId) {
+		return person.getEquipmentInventory().getSpecificAmountResourceStored(resourceId);
+	}
+
 	
 	/**
 	 * Goes after the food.
@@ -571,6 +574,8 @@ public class EatDrink extends Task {
 		if (proportion < MIN) {
 			return 0;
 		}
+
+		var perRH = person.getEquipmentInventory();
 				
 		// Check directly from settlement
 		if (person.isInSettlement()) {
@@ -580,7 +585,7 @@ public class EatDrink extends Task {
 			double shortfall = rh.retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
 			// Retrieve a portion from the settlement and store in the person
 			if (proportion * 0.1 - shortfall > 0) {
-				person.storeAmountResource(ResourceUtil.FOOD_ID, proportion * 0.1 - shortfall);
+				perRH.storeAmountResource(ResourceUtil.FOOD_ID, proportion * 0.1 - shortfall);
 			}
 			if (proportion > shortfall) {
 				proportion -= shortfall;			
@@ -598,7 +603,7 @@ public class EatDrink extends Task {
 					double shortfall = rh.retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
 					// Retrieve a portion from the settlement and store in the person
 					if (proportion * 0.1 - shortfall > 0) {
-						person.storeAmountResource(ResourceUtil.FOOD_ID, proportion * 0.1 - shortfall);
+						perRH.storeAmountResource(ResourceUtil.FOOD_ID, proportion * 0.1 - shortfall);
 					}
 				}
 				else {
@@ -648,7 +653,7 @@ public class EatDrink extends Task {
 				}
 				else {
 					// Store the food on a person
-					double excess = person.storeAmountResource(ResourceUtil.FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED - shortfall);
+					double excess = perRH.storeAmountResource(ResourceUtil.FOOD_ID, PACKED_PRESERVED_FOOD_CARRIED - shortfall);
 					if (excess > 0) {
 						// Transfer any excess that a person cannot carry back to the settlement
 						rh.storeAmountResource(ResourceUtil.FOOD_ID, excess);
@@ -668,7 +673,7 @@ public class EatDrink extends Task {
 	 */
 	private double retrieveFood(double proportion) {
 		// Assume the person carries preserved food 	
-		double shortfall = person.retrieveAmountResource(ResourceUtil.FOOD_ID, proportion);
+		double shortfall = person.getEquipmentInventory().retrieveAmountResource(ResourceUtil.FOOD_ID, proportion);
 		if ((shortfall > 0) && localStores != null) {
 			shortfall = localStores.retrieveAmountResource(ResourceUtil.FOOD_ID, shortfall);
 		}

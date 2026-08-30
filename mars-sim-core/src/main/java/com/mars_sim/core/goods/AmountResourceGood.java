@@ -548,7 +548,7 @@ class AmountResourceGood extends Good {
 
 		// Get amount of resource carried by people on EVA.
 		amount += getPersonOnEVA(settlement)
-                    .map(p -> p.getSpecificAmountResourceStored(getID()))
+                    .map(p -> p.getEquipmentInventory().getSpecificAmountResourceStored(getID()))
                     .collect(Collectors.summingDouble(f -> f));
 
 		// Get the amount of the resource that will be produced by ongoing manufacturing

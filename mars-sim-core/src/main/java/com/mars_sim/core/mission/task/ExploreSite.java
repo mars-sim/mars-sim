@@ -230,7 +230,7 @@ public class ExploreSite extends EVAOperation {
 		
 		if (hasSpecimenContainer()) {
 
-			Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
+			Container box = findPersonContainer(EquipmentType.SPECIMEN_BOX, rockId);
 			
 			if (box != null) {
 				double mass = averageRockMass * timeSkill * RandomUtil.getRandomDouble(.5, 1.5);
@@ -347,7 +347,7 @@ public class ExploreSite extends EVAOperation {
 	 * @return true if carrying container.
 	 */
 	private boolean hasSpecimenContainer() {
-		return person.containsEquipment(EquipmentType.SPECIMEN_BOX);
+		return person.getEquipmentInventory().containsEquipment(EquipmentType.SPECIMEN_BOX);
 	}
 
 	/**

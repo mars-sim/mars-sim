@@ -8,8 +8,6 @@ package com.mars_sim.core.equipment;
 
 import java.util.Set;
 
-import com.mars_sim.core.structure.Settlement;
-
 /**
  * Represents an entity that can hold item resources.
  *
@@ -76,9 +74,6 @@ public interface ItemHolder {
 		}
 
 		// Not nice having this in place but it will eventually be replaced with a more generic interface
-		else if (source instanceof Settlement s) {
-			return s.getEquipmentInventory();
-		}
-		return null;
+		return EquipmentOwner.getAttached(source);
     }
 }

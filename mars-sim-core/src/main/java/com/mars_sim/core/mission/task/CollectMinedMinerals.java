@@ -87,7 +87,9 @@ public class CollectMinedMinerals extends EVAOperation {
 		setRandomOutsideLocation(rover);
 
 		// Take container for collecting resource.
-		int num = numContainers();
+		var eo = person.getEquipmentInventory();
+		int num = eo.findNumContainersOfType(containerType);
+
 		if (num == 0) {
 			boolean hasIt = takeContainer(rover);
 
@@ -101,7 +103,7 @@ public class CollectMinedMinerals extends EVAOperation {
 		else if (num > 1) {
 			// Return extra containers
 			for (int i=0; i<num-1; i++) {
-				Container container = person.findContainer(containerType, false, mineralType); 
+				Container container = eo.findContainer(containerType, false, mineralType);
 				if (container != null) {
 					boolean done = container.transfer(rover);
 					if (done)
@@ -113,16 +115,6 @@ public class CollectMinedMinerals extends EVAOperation {
 		}
 	}
 
-	/**
-	 * Checks how many containers a person is carrying.
-	 *
-	 * @return true if carrying a container of this type.
-	 *
-	 */
-	private int numContainers() {
-		return person.findNumContainersOfType(containerType);
-	}
-	
 	/**
 	 * Takes the least full container from the rover.
 	 *
@@ -174,7 +166,8 @@ public class CollectMinedMinerals extends EVAOperation {
 
 		double remainingPersonCapacity = 0;
 			
-		remainingPersonCapacity = worker.getRemainingCargoCapacity();
+		var inv = worker.getEquipmentInventory();
+		remainingPersonCapacity = inv.getRemainingCargoCapacity();
 
 		// Modify collection rate by skill.
 		double mineralsCollected = time * COLLECTION_RATE;
@@ -194,7 +187,7 @@ public class CollectMinedMinerals extends EVAOperation {
 			addExperience(time);
 	
 			// Collect minerals.
-			worker.storeAmountResource(mineralType, mineralsCollected);
+			inv.storeAmountResource(mineralType, mineralsCollected);
 			
 			if ((maxAmount <= 0D) || (mineralsCollected >= remainingPersonCapacity)) {
 				endEVA("Excavated minerals collected exceeded capacity.");

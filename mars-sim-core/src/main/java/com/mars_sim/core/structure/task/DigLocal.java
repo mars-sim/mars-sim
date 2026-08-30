@@ -246,7 +246,7 @@ public abstract class DigLocal extends EVAOperation {
 	private double dropOffResource(double time) {
     	double remainingTime = time;
     	
-    	Container container = person.findContainer(containerType, false, resourceID);
+    	Container container = findPersonContainer(containerType, resourceID);
     	if (container == null)
     		return 0D;
     	
@@ -292,7 +292,7 @@ public abstract class DigLocal extends EVAOperation {
      */
     private double collectResource(double time) {
     	// Check container
-        Container container = person.findContainer(containerType, false, resourceID);
+        Container container = findPersonContainer(containerType, resourceID);
 		
 		if (checkReadiness(time) > 0) {
 			if (!((Equipment)container).isEmpty(false)) {
@@ -418,7 +418,7 @@ public abstract class DigLocal extends EVAOperation {
     	// Note: should take a container before leaving the airlock
     	// Note: also consider dropping off the resource in a shed
     	// or a shed outside of the workshop/landerhab for processing
-        Container container = person.findContainer(containerType, false, resourceID);
+        Container container = findPersonContainer(containerType, resourceID);
         if (container == null) {
         	// Doesn't have a container
         	container = settlement.getEquipmentInventory().findContainer(containerType, true, resourceID);
@@ -507,7 +507,7 @@ public abstract class DigLocal extends EVAOperation {
 		}
 
 		// This is the end of the Task so must return 
-		Container container = person.findContainer(containerType, false, resourceID);
+		Container container = findPersonContainer(containerType, resourceID);
 		if (container == null)
 			return;
 

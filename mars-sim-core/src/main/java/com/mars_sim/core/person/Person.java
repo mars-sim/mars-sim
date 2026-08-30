@@ -1302,7 +1302,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @return
 	 */
 	public EVASuit getSuit() {
-		return (EVASuit) getSuitSet().stream().findAny().orElse(null);
+		return (EVASuit) eqmInventory.getSuitSet().stream().findAny().orElse(null);
 	}
 
 	public int getExtrovertmodifier() {
@@ -1358,309 +1358,12 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 	
 	/**
-	 * Gets the equipment list.
+	 * Gets the equipment inventory for this person.
 	 *
-	 * @return the equipment list
+	 * @return the equipment inventory
 	 */
-	@Override
-	public Set<Equipment> getEquipmentSet() {
-		return eqmInventory.getEquipmentSet();
-	}
-
-	/**
-	 * Gets the container set.
-	 *
-	 * @return
-	 */
-	@Override
-	public Set<Equipment> getContainerSet() {
-		return eqmInventory.getContainerSet();
-	}
-	
-	/**
-	 * Gets the EVA suit set.
-	 * 
-	 * @return
-	 */
-	@Override
-	public Set<Equipment> getSuitSet() {
-		return eqmInventory.getSuitSet();
-	}
-	
-	
-	/**
-	 * Gets the data recorder set.
-	 * 
-	 * @return
-	 */
-	@Override
-	public Set<Equipment> getRecorderSet() {
-		return eqmInventory.getRecorderSet();
-	}
-	
-	/**
-	 * Gets the equipment inventory.
-	 * 
-	 * @return
-	 */
-	public EquipmentInventory getEquipmentInventory() {
+	public EquipmentOwner getEquipmentInventory() {
 		return eqmInventory;
-	}
-
-	/**
-	 * Finds all of the containers of a particular type (excluding EVA suit).
-	 *
-	 * @return collection of containers or empty collection if none.
-	 */
-	@Override
-	public Collection<Container> findContainersOfType(EquipmentType type){
-		return eqmInventory.findContainersOfType(type);
-	}
-
-	/**
-	 * Does this person possess an equipment of this equipment type ?
-	 *
-	 * @param typeID
-	 * @return true if this person possess this equipment type
-	 */
-	@Override
-	public boolean containsEquipment(EquipmentType type) {
-		return eqmInventory.containsEquipment(type);
-	}
-
-	/**
-	 * Adds an equipment to this person.
-	 *
-	 * @param equipment
-	 * @return true if this person can carry it
-	 */
-	@Override
-	public boolean addEquipment(Equipment e) {
-		return eqmInventory.addEquipment(e);
-	}
-
-	/**
-	 * Removes an equipment.
-	 *
-	 * @param equipment
-	 */
-	@Override
-	public boolean removeEquipment(Equipment equipment) {
-		return eqmInventory.removeEquipment(equipment);
-	}
-	
-	/**
-	 * Stores the item resource.
-	 *
-	 * @param resource the item resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public int storeItemResource(int resource, int quantity) {
-		return eqmInventory.storeItemResource(resource, quantity);
-	}
-
-	/**
-	 * Retrieves the item resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public int retrieveItemResource(int resource, int quantity) {
-		return eqmInventory.retrieveItemResource(resource, quantity);
-	}
-
-	@Override
-	public int getItemResourceRemainingQuantity(int resource) {
-		return eqmInventory.getItemResourceRemainingQuantity(resource);
-	}
-
-	/**
-	 * Gets the item resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public int getItemResourceStored(int resource) {
-		return eqmInventory.getItemResourceStored(resource);
-	}
-
-	/**
-	 * Stores the amount resource.
-	 *
-	 * @param resource the amount resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public double storeAmountResource(int resource, double quantity) {
-		return eqmInventory.storeAmountResource(resource, quantity);
-	}
-
-	/**
-	 * Retrieves the resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public double retrieveAmountResource(int resource, double quantity) {
-		return eqmInventory.retrieveAmountResource(resource, quantity);
-	}
-
-	/**
-	 * Gets the capacity of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return capacity
-	 */
-	@Override
-	public double getSpecificCapacity(int resource) {
-		return eqmInventory.getSpecificCapacity(resource);
-	}
-
-	/**
-	 * Obtains the remaining combined capacity of storage space of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingCombinedCapacity(int resource) {
-		return eqmInventory.getRemainingCombinedCapacity(resource);
-	}
-
-	/**
-	 * Obtains the remaining specific capacity of storage space of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingSpecificCapacity(int resource) {
-		return eqmInventory.getRemainingSpecificCapacity(resource);
-	}
-
-	/**
-	 * Does it have unused space or capacity for a particular resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory.hasAmountResourceRemainingCapacity(resource);
-	}
-	
-	/**
-     * Gets the total capacity that this person can hold.
-     *
-     * @return total capacity (kg).
-     */
-	@Override
-	public double getCargoCapacity() {
-		return eqmInventory.getCargoCapacity();
-	}
-
-	/**
-	 * Gets the amount resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getSpecificAmountResourceStored(int resource) {
-		return eqmInventory.getSpecificAmountResourceStored(resource);
-	}
-
-	/**
-	 * Gets the quantity of all stock and specific amount resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAllAmountResourceStored(int resource) {
-		return eqmInventory.getAllAmountResourceStored(resource);
-	}
-	
-	/**
-	 * Gets all stored amount resources in eqmInventory.
-	 *
-	 * @return all stored amount resources.
-	 */
-	@Override
-	public Set<Integer> getSpecificResourceStoredIDs() {
-		return eqmInventory.getSpecificResourceStoredIDs();
-	}
-	
-	/**
-	 * Gets all stored amount resources in eqmInventory, including inside equipment
-	 *
-	 * @return all stored amount resources.
-	 */
-	@Override
-	public Set<Integer> getAllAmountResourceStoredIDs() {
-		return eqmInventory.getAllAmountResourceStoredIDs();
-	}
-
-	/**
-	 * Gets all stored item resources.
-	 *
-	 * @return all stored item resources.
-	 */
-	@Override
-	public Set<Integer> getItemResourceIDs() {
-		return eqmInventory.getItemResourceIDs();
-	}
-
-
-	/**
-	 * Finds the number of empty containers of a class that are contained in storage and have
-	 * an empty inventory. 
-	 * 
-	 * Note: NOT for EVA suits.
-	 *
-	 * @param containerClass  the unit class.
-	 * @param brandNew  does it include brand new bag only
-	 * @return number of empty containers.
-	 */
-	@Override
-	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
-	}
-
-	/**
-	 * Finds the number of containers of a particular type.
-	 *
-	 * Note: will not count EVA suits.
-	 * 
-	 * @param containerType the equipment type.
-	 * @return number of empty containers.
-	 */
-	@Override
-	public int findNumContainersOfType(EquipmentType containerType) {
-		return eqmInventory.findNumContainersOfType(containerType);
-	}
-
-	/**
-	 * Finds a container in storage.
-	 *
-	 * Note: will not count EVA suits.
-	 * 
-	 * @param containerType
-	 * @param empty does it need to be empty ?
-	 * @param resource If -1 then resource doesn't matter
-	 * @return instance of container or null if none.
-	 */
-	@Override
-	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
-		return eqmInventory.findContainer(containerType, empty, resource);
 	}
 
 	/**
@@ -1670,36 +1373,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 */
 	public boolean isEmpty() {
 		return eqmInventory.isEmpty();
-	}
-
-
-	/**
-	 * Gets the stored mass.
-	 */
-	@Override
-	public double getStoredMass() {
-		return eqmInventory.getStoredMass();
-	}
-
-	/**
-	 * Obtains the remaining general storage space.
-	 *
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingCargoCapacity() {
-		return eqmInventory.getRemainingCargoCapacity();
-	}
-
-	/**
-	 * Does it have this item resource ?
-	 *
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasItemResource(int resource) {
-		return eqmInventory.hasItemResource(resource);
 	}
 
 	/**
@@ -1909,26 +1582,12 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
-	 * Does this person have a set of clothing ?
-	 */
-	public boolean hasGarment() {
-		return getItemResourceStored(ItemResourceUtil.GARMENT_ID) > 0;
-	}
-
-	/**
-	 * Does this person have a pressure suit ?
-	 */
-	public boolean hasPressureSuit() {
-		return getItemResourceStored(ItemResourceUtil.PRESSURE_SUIT_ID) > 0;
-	}
-
-	/**
 	 * Does this person have a thermal bottle ?
 	 * 
 	 * @return
 	 */
 	public boolean hasThermalBottle() {
-		return findNumContainersOfType(EquipmentType.THERMAL_BOTTLE) > 0;
+		return eqmInventory.findNumContainersOfType(EquipmentType.THERMAL_BOTTLE) > 0;
 	}
 	
 	/**
@@ -1949,7 +1608,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	public Container lookForThermalBottle() {
 		Container c = eqmInventory.findOwnedContainer(EquipmentType.THERMAL_BOTTLE, getIdentifier(), ResourceUtil.WATER_ID);
 		if (c == null)
-			return findContainer(EquipmentType.THERMAL_BOTTLE, false, ResourceUtil.WATER_ID);
+			return eqmInventory.findContainer(EquipmentType.THERMAL_BOTTLE, false, ResourceUtil.WATER_ID);
 		else
 			return c;
 	}
@@ -1998,7 +1657,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	public void dropOffThermalBottle() {
 
 		if (isInside()) {
-			var bottles = getContainerSet().stream()
+			var bottles = eqmInventory.getContainerSet().stream()
 					.filter(e -> e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE)
 					.toList();
 			
@@ -2013,9 +1672,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @param holder the current equipment holder of the clothing
 	 */
 	public void wearGarment(EquipmentOwner holder) {
-		if (!hasGarment() && holder.retrieveItemResource(ItemResourceUtil.GARMENT_ID, 1) == 0) {
-			storeItemResource(ItemResourceUtil.GARMENT_ID, 1);
-		}
+		claimItemResource(ItemResourceUtil.GARMENT_ID, holder);
 	}
 
 	/**
@@ -2024,11 +1681,16 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @param holder the current equipment holder of the clothing
 	 */
 	public void wearPressureSuit(EquipmentOwner holder) {
-		if (!hasPressureSuit() && holder.retrieveItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, 1) == 0) {
-			storeItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, 1);
-		}
+		claimItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, holder);
 	}
 
+	private void claimItemResource(int itemId, EquipmentOwner store) {
+		// Local inventory has no item, and the store has an item to retrieve
+		if ((eqmInventory.getItemResourceStored(itemId) == 0)
+					&& store.retrieveItemResource(itemId, 1) == 0) {
+			eqmInventory.storeItemResource(itemId, 1);
+		}
+	}
 
 	/**
 	 * Puts off the garment.
@@ -2037,12 +1699,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @return true if successful
 	 */
 	public boolean unwearGarment(EquipmentOwner holder) {
-		if (hasGarment() && retrieveItemResource(ItemResourceUtil.GARMENT_ID, 1) == 0) {
-			if (holder.storeItemResource(ItemResourceUtil.GARMENT_ID, 1) == 0) {
-				return true;
-			}
-		}
-		return false;
+		return releaseItemResource(ItemResourceUtil.GARMENT_ID, holder);
 	}
 
 	/**
@@ -2052,10 +1709,14 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @return true if successful
 	 */
 	public boolean unwearPressureSuit(EquipmentOwner holder) {
-		if (hasPressureSuit() && retrieveItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, 1) == 0) {
-			if (holder.storeItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, 1) == 0) {
-				return true;
-			}
+		return releaseItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, holder);
+	}
+
+	private boolean releaseItemResource(int itemId, EquipmentOwner store) {
+		// Local inventory has at least one item, and the store has an item to hold
+		if ((eqmInventory.getItemResourceStored(itemId) > 0)
+					&& eqmInventory.retrieveItemResource(itemId, 1) == 0) {
+			return store.storeItemResource(itemId, 1) == 0;
 		}
 		return false;
 	}

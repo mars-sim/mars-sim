@@ -51,18 +51,20 @@ class LoadPersonTest extends MarsSimUnitTest {
 		assertTrue(capacity > 0, person + " has no carrying capacity.");
 		
 		double amount = 1D;
-				
-		double remain0 = person.getRemainingSpecificCapacity(ResourceUtil.FOOD_ID);
+		
+		var personRH = person.getEquipmentInventory();
+
+		double remain0 = personRH.getRemainingSpecificCapacity(ResourceUtil.FOOD_ID);
 		assertEquals(1.0, remain0, "Incorrect remaining capacity.");
 		
-		double excess = person.storeAmountResource(ResourceUtil.FOOD_ID, amount);	
+		double excess = personRH.storeAmountResource(ResourceUtil.FOOD_ID, amount);	
 		
-		double remain1 = person.getRemainingSpecificCapacity(ResourceUtil.FOOD_ID);
+		double remain1 = personRH.getRemainingSpecificCapacity(ResourceUtil.FOOD_ID);
 		assertEquals(0.0, remain1, "Incorrect remaining capacity.");
 		
 		assertEquals(0.0, excess, "Can't carry " + amount + " kg of food.");
 		
-		double missing = person.retrieveAmountResource(ResourceUtil.FOOD_ID, amount);
+		double missing = personRH.retrieveAmountResource(ResourceUtil.FOOD_ID, amount);
 		assertEquals(0.0, missing, "Can't retrieve food.");
 	}
 	

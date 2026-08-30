@@ -9,6 +9,7 @@ package com.mars_sim.core.equipment;
 import java.util.Collection;
 import java.util.Set;
 
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 
 public interface EquipmentOwner extends ItemHolder, ResourceHolder {
@@ -169,15 +170,12 @@ public interface EquipmentOwner extends ItemHolder, ResourceHolder {
 	 * @return EquipmentOwner or null if not found.
 	 */
 	static EquipmentOwner getAttached(Object source) {
-		if (source instanceof EquipmentOwner eo) {
-			return eo;
-		}
-
-		// Not nice having this in place but it will eventually be replaced with a more generic interface
-		else if (source instanceof Settlement s) {
-			return s.getEquipmentInventory();
-		}
-		return null;
+		return switch (source) {
+			case EquipmentOwner eo -> eo;
+			case Worker w -> w.getEquipmentInventory();
+			case Settlement s -> s.getEquipmentInventory();
+			default -> null;
+		};
 	}
 
 }

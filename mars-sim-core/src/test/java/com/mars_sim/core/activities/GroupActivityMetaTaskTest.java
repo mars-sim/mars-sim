@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.social.RelationshipType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
@@ -89,21 +88,7 @@ class GroupActivityMetaTaskTest extends MarsSimUnitTest{
         var p1 = buildPerson("p1", s);
         RelationshipUtil.changeOpinion(p1, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, Relation.MAX_OPINION);
         RelationshipUtil.changeOpinion(p1, i, RelationshipType.FIRST_IMPRESSION , Relation.MAX_OPINION);
-        var p2 = buildPerson("p2", s);
-        RelationshipUtil.changeOpinion(p2, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, 0);
-        RelationshipUtil.changeOpinion(p2, i, RelationshipType.FIRST_IMPRESSION , 0);
-
-        Person e;
-        Person f;
-        if (p1.getRelation().getOpinion(i).getAverage() < 
-                                    p2.getRelation().getOpinion(i).getAverage()) {
-            e = p1;
-            f = p2;
-        }
-        else {
-            e = p2;
-            f = p1;
-        }
+        var firstOpinion = p1.getRelation().getOpinion(i).getAverage();
 
         // Create an activity  
         var now = getSim().getMasterClock().getMarsTime();
@@ -118,14 +103,22 @@ class GroupActivityMetaTaskTest extends MarsSimUnitTest{
         var selected = tasks.get(0);
 
         // Evaluate the Task for each person
-        var iScore = mt.assessPersonSuitability(selected, i);
-        var fScore = mt.assessPersonSuitability(selected, f);
-        var eScore = mt.assessPersonSuitability(selected, e);
+        var firstScore = mt.assessPersonSuitability(selected, p1);
+
+        RelationshipUtil.changeOpinion(p1, i, RelationshipType.FACE_TO_FACE_COMMUNICATION, -Relation.MAX_OPINION);
+        RelationshipUtil.changeOpinion(p1, i, RelationshipType.FIRST_IMPRESSION , -Relation.MAX_OPINION);
+        var secondOpinion = p1.getRelation().getOpinion(i).getAverage();
+        var secondScore = mt.assessPersonSuitability(selected, p1);
 
         // Check friend has a better score
-        assertGreaterThan("Friend better score than enemy", eScore.getScore(), fScore.getScore());
+        if (firstOpinion > secondOpinion) {
+            assertGreaterThan("Friend better score than enemy", secondScore.getScore(), firstScore.getScore());
+        } else {
+            assertGreaterThan("Enemy better score than friend", firstScore.getScore(), secondScore.getScore());
+        }
         
         // Check instigator has a very high score
+        var iScore = mt.assessPersonSuitability(selected, i);
         assertGreaterThan("Instigator score", 900D, iScore.getScore());
 
     }
