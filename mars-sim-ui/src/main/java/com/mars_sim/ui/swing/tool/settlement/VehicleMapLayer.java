@@ -173,8 +173,9 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 */
 	private void drawSVGPartAttachments(LightUtilityVehicle vehicle, GraphicsNode vehicleSvg,
 										MapViewPoint viewpoint) {
+		var ih = vehicle.getEquipmentInventory();
 		for(Part part : vehicle.getPossibleAttachmentParts()) {
-			if (vehicle.getItemResourceStored(part.getID()) > 0) {
+			if (ih.getItemResourceStored(part.getID()) > 0) {
 				// Use SVG image for part if available.
 				GraphicsNode partSvg = SVGMapUtil.getAttachmentPartSVG(part.getName().toLowerCase());
 				if ((partSvg != null) && (vehicleSvg != null)) {

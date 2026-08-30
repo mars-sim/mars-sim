@@ -61,13 +61,14 @@ class EatDrinkTest extends MarsSimUnitTest {
         var s = buildSettlement("mock");
         var p = buildPerson("eater", s);
         var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-        v.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
+        var vehEO = v.getEquipmentInventory();
+        vehEO.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE); 
 
         p.transfer(v);
         assertTrue(p.isInVehicle(), "In vehicle");
 
         testWater(p, v);
-        assertTrue(v.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
+        assertTrue(vehEO.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
 
     }
 

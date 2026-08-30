@@ -202,7 +202,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
 			case BATTERY_VAL -> entity.getController().getBattery().getBatteryStatus().getName();
 			case FUEL_VAL -> entity.getFuelPercent();
             case EST_RANGE_VAL -> entity.getEstimatedRange();
-            case CARGO_CAP_VAL -> entity.getCargoCapacity();
+            case CARGO_CAP_VAL -> entity.getEquipmentInventory().getCargoCapacity();
             case HASLAB_VAL -> {
                 if (entity instanceof Rover r)
                     yield r.hasLab();

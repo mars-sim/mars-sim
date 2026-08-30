@@ -21,17 +21,18 @@ class UnloadVehicleGarageTest extends MarsSimUnitTest {
     private static final int RESOURCE_AMOUNT = 10;
 
     @Test
-    public void testCreateTask() {
+    void testCreateTask() {
         var s = buildSettlement("Vehicle base");
         var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         // Load the vehicle
         var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
-        v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
-        v.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
+        var vehEO = v.getEquipmentInventory();
+        vehEO.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
+        vehEO.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
+        vehEO.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
         
-        double mass = v.getStoredMass();
+        double mass = vehEO.getStoredMass();
         
         assertGreaterThan("Initial stored mass", 0D, mass);
 
@@ -45,7 +46,7 @@ class UnloadVehicleGarageTest extends MarsSimUnitTest {
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
         
-        mass = v.getStoredMass();
+        mass = vehEO.getStoredMass();
 
         var rh = s.getEquipmentInventory();
         assertEquals(0.0, mass, "Final stored mass");
@@ -59,7 +60,7 @@ class UnloadVehicleGarageTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testMetaTask() {
+    void testMetaTask() {
         var s = buildSettlement("Vehicle base", true);
         buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
@@ -71,9 +72,10 @@ class UnloadVehicleGarageTest extends MarsSimUnitTest {
         assertEquals(0, tasks.size(), "Mo unload tasks found");
 
         // Load and make reserved
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
-        v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
-        v.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
+        var vehEO = v.getEquipmentInventory();
+        vehEO.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
+        vehEO.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
+        vehEO.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
 
         // Skip reserved vehicle
         tasks = mt.getSettlementTasks(s);

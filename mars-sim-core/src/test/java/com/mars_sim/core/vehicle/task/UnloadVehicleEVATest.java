@@ -28,11 +28,12 @@ class UnloadVehicleEVATest extends MarsSimUnitTest {
 
         // Load the vehicle
         var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
-        v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
-        v.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
+        var  vehEO = v.getEquipmentInventory();
+        vehEO.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
+        vehEO.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
+        vehEO.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
         
-        double mass = v.getStoredMass();
+        double mass = vehEO.getStoredMass();
         // 10 + 10 + .5 * 10 = 25.0
         
         assertGreaterThan("Initial stored mass", 0D, mass);
@@ -55,7 +56,7 @@ class UnloadVehicleEVATest extends MarsSimUnitTest {
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 3000);
         
-        mass = v.getStoredMass();
+        mass = vehEO.getStoredMass();
         
         assertEquals(0D, mass, "Final stored mass");
         assertFalse(v.haveStatusType(StatusType.UNLOADING), "Vehicle has UNLOADING");
@@ -90,9 +91,10 @@ class UnloadVehicleEVATest extends MarsSimUnitTest {
         assertEquals(0, tasks.size(), "Mo unload tasks found");
 
         // Load and make reserved
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, 10D);
-        v.storeAmountResource(ResourceUtil.FOOD_ID, 10D);
-        v.storeItemResource(ItemResourceUtil.GARMENT_ID, 10);
+        var vehEO = v.getEquipmentInventory();
+        vehEO.storeAmountResource(ResourceUtil.OXYGEN_ID, 10D);
+        vehEO.storeAmountResource(ResourceUtil.FOOD_ID, 10D);
+        vehEO.storeItemResource(ItemResourceUtil.GARMENT_ID, 10);
 
         // Skip reserved vehicle
         tasks = mt.getSettlementTasks(s);

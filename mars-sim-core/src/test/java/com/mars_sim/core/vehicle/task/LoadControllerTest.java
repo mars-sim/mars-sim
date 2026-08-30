@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentInventory;
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
@@ -87,7 +88,8 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		}
 		assertTrue((loadingCount > 1), "Multiple loadings");
 		assertTrue(controller.isCompleted(), "Loading controller complete");
-		checkVehicleResources(vehicle, requiredResourcesMap);
+
+		checkVehicleResources(vehicle.getEquipmentInventory(), requiredResourcesMap);
 	}
 
 	/*
@@ -140,10 +142,11 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		loadIt(100, expanded);
 
 		// Check Equipment that was present in settlement
-		checkVehicleInventory(vehicle, manifest);
+		var vechEO = vehicle.getEquipmentInventory();
+		checkVehicleInventory(vechEO, manifest);
 
 		EquipmentType eType = EquipmentType.convertID2Type(missingId);
-		long optionalLoaded = vehicle.getEquipmentSet().stream()
+		long optionalLoaded = vechEO.getEquipmentSet().stream()
 				.filter(e -> (e.getEquipmentType() == eType))
 				.count();
 		assertEquals(0, optionalLoaded, "Optional Equipment loaded");
@@ -293,23 +296,25 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		// Add resources to Settlement
 		loadSettlement(settlement, manifest);
 
+		var vechEO = vehicle.getEquipmentInventory();
+
 		// Make sure Vehicle has capacity
-		setVehicleCapacity(vehicle, manifest);
+		setVehicleCapacity(vechEO, manifest);
 
 		// Load the manifest
 		loadIt(maxCycles, manifest);
-		checkVehicleInventory(vehicle, manifest);
+		checkVehicleInventory(vechEO, manifest);
 
 		// Reload the same manifest which should complete immediately
 		reload(manifest);
 	}
 
-	private void checkVehicleInventory(Vehicle v, SuppliesManifest manifest) {
+	private void checkVehicleInventory(EquipmentOwner v, SuppliesManifest manifest) {
 		checkVehicleEquipment(v, manifest);
 		checkVehicleResources(v, manifest);
 	}
 
-	private void setVehicleCapacity(Vehicle v, SuppliesManifest manifest) {
+	private void setVehicleCapacity(EquipmentOwner v, SuppliesManifest manifest) {
 		setResourcesCapacity(v, manifest.getAmounts(true));
 		setResourcesCapacity(v, manifest.getAmounts(false));
 	}
@@ -338,7 +343,9 @@ public class LoadControllerTest extends MarsSimUnitTest {
 			SuppliesManifest manifest, int missingId) {
 
 		loadSettlement(settlement, manifest);
-		setVehicleCapacity(vehicle, manifest);
+
+		var vehEO = vehicle.getEquipmentInventory();
+		setVehicleCapacity(vehEO, manifest);
 
 		// Add an extra resource that will not be present
 		var extraOptionalResources = new SuppliesManifest(manifest);
@@ -346,14 +353,14 @@ public class LoadControllerTest extends MarsSimUnitTest {
 
 		loadIt(maxCycles, manifest);
 
-		checkVehicleInventory(vehicle, manifest);
+		checkVehicleInventory(vehEO, manifest);
 
 		double optionalLoaded;
 		if (ResourceType.getType(missingId) == ResourceType.AMOUNT_RESOURCE) {
-			optionalLoaded = vehicle.getSpecificAmountResourceStored(missingId);
+			optionalLoaded = vehEO.getSpecificAmountResourceStored(missingId);
 		}
 		else {
-			optionalLoaded = vehicle.getItemResourceStored(missingId);
+			optionalLoaded = vehEO.getItemResourceStored(missingId);
 		}
 
 		assertEquals(0D, optionalLoaded, "Optional resource loaded");
@@ -412,7 +419,7 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	 * @param source
 	 * @param equipmentManifest
 	 */
-	private void checkVehicleEquipment(Vehicle source, SuppliesManifest manifest) {
+	private void checkVehicleEquipment(EquipmentOwner source, SuppliesManifest manifest) {
 		var eqm = new HashMap<>(manifest.getEquipment(true));
 		eqm.putAll(manifest.getEquipment(false));
 
@@ -431,7 +438,7 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	 * @param source
 	 * @param manifest
 	 */
-	private void checkVehicleResources(Vehicle source, SuppliesManifest manifest) {
+	private void checkVehicleResources(EquipmentOwner source, SuppliesManifest manifest) {
 
 		var requiredResourcesMap = new HashMap<>(manifest.getAmounts(true));
 		requiredResourcesMap.putAll(manifest.getAmounts(false));
@@ -465,9 +472,10 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	 * @param target
 	 * @param requiredResourcesMap
 	 */
-	private void setResourcesCapacity(Vehicle target, Map<Integer, Double> requiredResourcesMap) {
-		EquipmentInventory inv = target.getEquipmentInventory();
+	private void setResourcesCapacity(EquipmentOwner target, Map<Integer, Double> requiredResourcesMap) {
 		
+		// Not nice, EquipmentOwner needs to support capacity changes
+		EquipmentInventory inv = (EquipmentInventory)target;
 		for (Entry<Integer, Double> v : requiredResourcesMap.entrySet()) {
 			inv.setSpecificResourceCapacity(v.getKey(), v.getValue().doubleValue() * 1.01D);
 		}
@@ -479,11 +487,12 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	 * @param requiredResourcesMap
 	 */
 	public static void loadSettlement(Settlement target, SuppliesManifest requiredResourcesMap) {
-		loadSettlementAmounts(target, requiredResourcesMap.getAmounts(true));
-		loadSettlementAmounts(target, requiredResourcesMap.getAmounts(false));
+		var settlementEO = target.getEquipmentInventory();
+		loadAmounts(settlementEO, requiredResourcesMap.getAmounts(true));
+		loadAmounts(settlementEO, requiredResourcesMap.getAmounts(false));
 		loadSettlementEquipment(target, requiredResourcesMap.getEquipment(true));
 		loadSettlementEquipment(target, requiredResourcesMap.getEquipment(false));
-		loadSettlementItems(target, requiredResourcesMap.getItems(true));
-		loadSettlementItems(target, requiredResourcesMap.getItems(false));
+		loadItems(settlementEO, requiredResourcesMap.getItems(true));
+		loadItems(settlementEO, requiredResourcesMap.getItems(false));
 	}
 }

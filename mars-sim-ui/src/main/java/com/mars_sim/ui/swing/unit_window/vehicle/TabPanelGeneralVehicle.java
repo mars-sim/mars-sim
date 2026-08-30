@@ -99,14 +99,15 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 		currentMassLabel = infoPanel.addTextField("Current Mass", StyleManager.DECIMAL_KG.format(vehicle.getMass()), null);
 		infoPanel.addTextField("Base Mass", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()), null);
 		
-		remainCapLabel = infoPanel.addTextField("Remaining Capacity", StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()), null);
-		infoPanel.addTextField("Cargo Capacity", StyleManager.DECIMAL_KG.format(vehicle.getCargoCapacity()), null);
+		var vehEO = vehicle.getEquipmentInventory();
+		remainCapLabel = infoPanel.addTextField("Remaining Capacity", StyleManager.DECIMAL_KG.format(vehEO.getRemainingCargoCapacity()), null);
+		infoPanel.addTextField("Cargo Capacity", StyleManager.DECIMAL_KG.format(vehEO.getCargoCapacity()), null);
 
 		fuelCap = vehicle.getFuelCapacity();
 		
 		infoPanel.addTextField(Msg.getString("vehicle.fuelType"), fuelTypeStr, null);
 		
-		double fuel = vehicle.getSpecificAmountResourceStored(fuelTypeID);
+		double fuel = vehEO.getSpecificAmountResourceStored(fuelTypeID);
 		
 		fuelTankLabel = infoPanel.addTextField("Fuel Tank", StyleManager.DECIMAL_KG.format(fuel) + " (" + 
 				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled)", null);
@@ -129,9 +130,10 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 		var vehicle = getEntity();
 		currentMassLabel.setText(StyleManager.DECIMAL_KG.format(vehicle.getMass()));
 
-		remainCapLabel.setText(StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
+		var vehEO = vehicle.getEquipmentInventory();
+		remainCapLabel.setText(StyleManager.DECIMAL_KG.format(vehEO.getRemainingCargoCapacity()));
 		
-		double fuel = vehicle.getSpecificAmountResourceStored(fuelTypeID);
+		double fuel = vehEO.getSpecificAmountResourceStored(fuelTypeID);
 		fuelTankLabel.setText(StyleManager.DECIMAL_KG.format(fuel) + " (" + 
 				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled Up)");
 		

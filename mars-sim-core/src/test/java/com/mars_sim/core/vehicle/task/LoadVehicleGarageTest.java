@@ -40,7 +40,7 @@ public class LoadVehicleGarageTest extends MarsSimUnitTest {
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
-        assertGreaterThan("Final stored mass", 0D, v.getStoredMass());
+        assertGreaterThan("Final stored mass", 0D, v.getEquipmentInventory().getStoredMass());
 
         // Return to base
         assertTrue(task.isDone(), "Task completed"); 
