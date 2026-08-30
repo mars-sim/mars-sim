@@ -160,7 +160,7 @@ public class ReturnLightUtilityVehicle extends Task {
 				// Transfer the luv to the rover
 				done = worker.transfer(r);
 				// Unload any attachment parts or inventory from light utility vehicle.
-				unloadLUVInventory(r);
+				unloadLUVInventory(r.getEquipmentInventory());
 			}
 			else if (returnContainer.getUnitType() == UnitType.SETTLEMENT) {
 				s = (Settlement)returnContainer;

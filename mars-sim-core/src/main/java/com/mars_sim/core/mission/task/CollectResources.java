@@ -195,7 +195,7 @@ public class CollectResources extends EVAOperation {
 	 * @throws Exception if error taking container.
 	 */
 	private boolean takeContainer() {
-		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+		Container container = ContainerUtil.findLeastFullContainer(rover.getEquipmentInventory(), containerType, resourceType);
 
 		if (container != null) {
 			boolean success = container.transfer(person);
@@ -364,7 +364,7 @@ public class CollectResources extends EVAOperation {
 			Container container = ContainerUtil.findLeastFullContainer(person.getEquipmentInventory(), containerType, resourceType);
 			if (container == null) {
 				// Checks if the rover has an available container with remaining capacity for resource.
-				container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+				container = ContainerUtil.findLeastFullContainer(rover.getEquipmentInventory(), containerType, resourceType);
 			}
 			// Transfer that container from rover to person
 			boolean containerAvailable = false;

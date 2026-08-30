@@ -6,13 +6,14 @@
  */
 package com.mars_sim.core.equipment;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 
-public interface EquipmentOwner extends ItemHolder, ResourceHolder {
+public interface EquipmentOwner extends ItemHolder, ResourceHolder, Serializable {
 	  
 	/**
 	 * Gets the total mass held in this entity.

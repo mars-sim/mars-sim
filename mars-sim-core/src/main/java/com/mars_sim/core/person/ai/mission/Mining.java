@@ -375,7 +375,7 @@ public class Mining extends EVAMission
 	private  boolean canCollectMinerals(Person member, Rover rover, int mineralType) {
 		
 		// Checks if available bags with remaining capacity for resource.
-		Container bag = ContainerUtil.findLeastFullContainer(rover,
+		Container bag = ContainerUtil.findLeastFullContainer(rover.getEquipmentInventory(),
 															EquipmentType.LARGE_BAG,
 															mineralType);
 		boolean bagAvailable = (bag != null);

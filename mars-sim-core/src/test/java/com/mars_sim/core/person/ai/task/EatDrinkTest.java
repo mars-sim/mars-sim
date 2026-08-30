@@ -122,7 +122,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         p.transfer(v);
         assertTrue(p.isInVehicle(), "In vehicle");
 
-        testHunger(p, v);
+        testHunger(p, v.getEquipmentInventory());
     }
 
     private void testHunger(Person p, ResourceHolder rh) {

@@ -911,7 +911,7 @@ public class ExitAirlock extends Task {
 			if (inSettlement)
 				housing = ((Building)airlock.getEntity()).getSettlement().getEquipmentInventory();
 			else
-				housing = (Vehicle)airlock.getEntity();
+				housing = ((Vehicle)airlock.getEntity()).getEquipmentInventory();
 
 			
 			// 1. Get a good EVA suit's instance from entity inventory
@@ -967,7 +967,7 @@ public class ExitAirlock extends Task {
 			if (inSettlement)
 				housing = ((Building)airlock.getEntity()).getSettlement().getEquipmentInventory();
 			else
-				housing = (Vehicle)airlock.getEntity();
+				housing = ((Vehicle)airlock.getEntity()).getEquipmentInventory();
 			
 			// 5. Loads the resources into the EVA suit
 			if (suit.loadResources(housing) < 0.9D) {

@@ -757,7 +757,7 @@ public class EnterAirlock extends Task {
 			if (inSettlement)
 				housing = ((Building) airlock.getEntity()).getSettlement().getEquipmentInventory();
 			else
-				housing = (Vehicle) airlock.getEntity();
+				housing = ((Vehicle) airlock.getEntity()).getEquipmentInventory();
 
 			// 1. Doff off the suit, transfer it to the entity, take back the garment and
 			// thermal bottle

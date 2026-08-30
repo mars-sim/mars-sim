@@ -192,7 +192,7 @@ public final class EVASuitUtil {
 	 * @return instance of EVASuit or null if none
 	 */
 	public static EVASuit findEVASuitFromVehicle(Person p,  Vehicle v) {
-		return findEVASuitWithResources(v, p);
+		return findEVASuitWithResources(v.getEquipmentInventory(), p);
 	}
 	
 	

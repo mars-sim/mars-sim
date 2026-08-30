@@ -928,11 +928,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private void preloadEVASuits(Set<Person> crew, Rover rover) {
 		// Outside so preload all EVASuits before the Unloading starts
     	int suitsNeeded = crew.size();
+		var eo = rover.getEquipmentInventory();
     	logger.info(rover, 10_000, "Preloading " + suitsNeeded + " EVA suits for disembarking.");
-    	Iterator<Equipment> eIt = rover.getSuitSet().iterator();
+    	Iterator<Equipment> eIt = eo.getSuitSet().iterator();
     	while ((suitsNeeded > 0) && eIt.hasNext()) {
     		Equipment e = eIt.next();
-    		if (((EVASuit)e).loadResources(rover) >= EVA_LOWEST_FILL) {
+    		if (((EVASuit)e).loadResources(eo) >= EVA_LOWEST_FILL) {
     			suitsNeeded--;
     		}
     	}
