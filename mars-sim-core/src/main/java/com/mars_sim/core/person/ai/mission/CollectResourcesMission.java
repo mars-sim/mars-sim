@@ -269,17 +269,18 @@ public abstract class CollectResourcesMission extends EVAMission
 	protected boolean performEVA(Person person) {
 
 		Rover rover = getRover();
-		double roverRemainingCap = rover.getCargoCapacity() - rover.getStoredMass();
+		var roverRH = rover.getEquipmentInventory();
+		double roverRemainingCap = roverRH.getCargoCapacity() - roverRH.getStoredMass();
 
 		if (roverRemainingCap <= 0) {
-			logger.info(getRover(), "No more room in " + rover.getName());
+			logger.info(rover, "No more room in " + rover.getName());
 			addMissionLog("No remaining rover capacity", person.getName());
 			return false;
 		}
 
 		double weight = person.getMass();
 		if (roverRemainingCap < weight) {
-			logger.warning(getRover(), "No enough capacity to fit " + person.getName() + "(" + weight + " kg).");
+			logger.warning(rover, "No enough capacity to fit " + person.getName() + "(" + weight + " kg).");
 			addMissionLog("Rover capacity full", person.getName());
 			return false;
 		}
@@ -319,7 +320,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		}
 		
 		// If person can collect resources, start him/her on that task.
-		else if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {		
+		else if (CollectResources.canCollectResources(person, rover, containerID, resourceID)) {		
 			// Set the type of resource
 			resourceID = pickType(person);
 			
@@ -328,9 +329,9 @@ public abstract class CollectResourcesMission extends EVAMission
 					* (1 + RandomUtil.getRandomDouble(-.2, .2));
 			
 			EVAOperation collectResources = new CollectResources(person,
-					getRover(), resourceID, rate,
+					rover, resourceID, rate,
 					objective.getSiteResourceGoal() - amountCollectedAtSiteSoFar0, 
-					rover.getSpecificAmountResourceStored(resourceID),
+					roverRH.getSpecificAmountResourceStored(resourceID),
 					containerID, this);
 			
 			assignTask(person, collectResources);

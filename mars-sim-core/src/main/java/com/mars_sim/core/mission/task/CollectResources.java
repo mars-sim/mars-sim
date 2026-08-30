@@ -325,7 +325,7 @@ public class CollectResources extends EVAOperation {
 		// Add to the daily output
 		rover.getAssociatedSettlement().addOutput(newResourceID, amount, effort);
 		// Store the amount in the settlement
-		rover.storeAmountResource(newResourceID, amount);
+		rover.getEquipmentInventory().storeAmountResource(newResourceID, amount);
 		mission.recordResourceCollected(resourceType, newResourceID);
 	}
     

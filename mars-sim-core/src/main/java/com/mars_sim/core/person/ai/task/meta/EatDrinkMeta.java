@@ -136,10 +136,11 @@ public class EatDrinkMeta extends FactoryMetaTask {
 				if (waterAmount < EatDrink.MIN)
 					waterAmount = perrh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 	
+				var vehRH = vehicle.getEquipmentInventory();
 				if (foodAmount < EatDrink.MIN)
-					foodAmount = vehicle.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+					foodAmount = vehRH.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 				if (waterAmount < EatDrink.MIN)
-					waterAmount = vehicle.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+					waterAmount = vehRH.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 				
 				needFood = (hungry && (foodAmount >= EatDrink.MIN || dFactor > 1));
 			}

@@ -199,7 +199,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 	 * @return is vehicle fully unloaded?
 	 */
 	public static boolean isFullyUnloaded(Vehicle vehicle) {
-		double total = vehicle.getStoredMass();
+		double total = vehicle.getEquipmentInventory().getStoredMass();
 		
 		// Note: getStoredMass() already accounted for any suit inside
 //		for(Equipment e : vehicle.getSuitSet()) {

@@ -1093,6 +1093,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private int hasEnoughResources(Map<Integer, Number> neededResources) {
 
+		var vehAH = vehicle.getEquipmentInventory();
 		for (Map.Entry<Integer, Number> entry : neededResources.entrySet()) {
 			int id = entry.getKey();
 			Object value = entry.getValue();
@@ -1100,7 +1101,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			switch(ResourceType.getType(id)) {
 				case ResourceType.AMOUNT_RESOURCE: {
 					double amount = (Double) value;
-					double amountStored = vehicle.getSpecificAmountResourceStored(id);
+					double amountStored = vehAH.getSpecificAmountResourceStored(id);
 
 					// Check inside vehicle
 					if (VehicleType.isRover(vehicle.getVehicleType())) {
@@ -1110,7 +1111,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 							amountStored += person.getEquipmentInventory().getSpecificAmountResourceStored(id);
 						}
 						// Check vehicle's equipment
-						for (Equipment equipment: rover.getContainerSet()) {
+						for (Equipment equipment: vehAH.getContainerSet()) {
 							amountStored += equipment.getSpecificAmountResourceStored(id);
 						}
 					}
@@ -1127,7 +1128,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				
 				case ResourceType.ITEM_RESOURCE: {
 					int num = (Integer) value;
-					int numStored = vehicle.getItemResourceStored(id);
+					int numStored = vehAH.getItemResourceStored(id);
 
 					if (numStored < num) {
 						String newLog = "Not enough "
@@ -1288,7 +1289,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private boolean hasUnrepairableMalfunction() {
 		if (vehicle != null) {
-			vehicle.getMalfunctionManager();
+			var vehRH = vehicle.getEquipmentInventory();
 			Iterator<Malfunction> i = vehicle.getMalfunctionManager().getMalfunctions().iterator();
 			while (i.hasNext()) {
 				Malfunction malfunction = i.next();
@@ -1297,7 +1298,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				while (j.hasNext()) {
 					MaintenanceScope ms = j.next();
 					int number = map.get(ms);
-					if (vehicle.getItemResourceStored(ms.getPart().getID()) < number) {
+					if (vehRH.getItemResourceStored(ms.getPart().getID()) < number) {
 						return true;
 					}
 				}

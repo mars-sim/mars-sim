@@ -346,7 +346,7 @@ public class PartGood extends Good {
 
 		// Get number of resources out on mission vehicles.
         number += getVehiclesOnMissions(settlement)
-               .map(v -> v.getItemResourceStored(getID()))
+               .map(v -> v.getEquipmentInventory().getItemResourceStored(getID()))
                .collect(Collectors.summingInt(Integer::intValue));
 
 		// Get number of resources carried by people on EVA.

@@ -357,7 +357,7 @@ public class ExploreSite extends EVAOperation {
 	 */
 	private boolean takeSpecimenContainer() {
 		
-		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, true, rockId);
+		Container container = rover.getEquipmentInventory().findContainer(EquipmentType.SPECIMEN_BOX, true, rockId);
 		if (container != null) {
 			return container.transfer(person);
 		}

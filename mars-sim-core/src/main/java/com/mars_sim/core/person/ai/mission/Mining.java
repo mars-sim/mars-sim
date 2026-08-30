@@ -238,13 +238,14 @@ public class Mining extends EVAMission
 		if (!isDone() && (getRover().getTowedVehicle() == null)) {
 
 			Settlement settlement = getStartingSettlement();
-			var ih = settlement.getEquipmentInventory();
+			var setIH = settlement.getEquipmentInventory();
 
 			var luv = attachLUV(true);
 			settlement.removeParkedNGaragedVehicle(luv);
+			var luvIH = luv.getEquipmentInventory();
 
-			if (!ih.hasItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID)
-					|| !ih.hasItemResource(ItemResourceUtil.BACKHOE_ID)) {
+			if (!setIH.hasItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID)
+					|| !setIH.hasItemResource(ItemResourceUtil.BACKHOE_ID)) {
 				logger.warning(luv, 
 						"Could not load LUV and/or its attachment parts for mission " + getName());
 				endMission(LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
@@ -252,11 +253,11 @@ public class Mining extends EVAMission
 			}
 			
 			// Load light utility vehicle with attachment parts.
-			ih.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
-			luv.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
+			setIH.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
+			luvIH.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
 
-			ih.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
-			luv.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
+			setIH.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
+			luvIH.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
 		}
 	}
 
@@ -275,18 +276,19 @@ public class Mining extends EVAMission
 		// Unload towed light utility vehicle.
 		if (!isDone() && (getRover().getTowedVehicle() != null)) {
 			Settlement settlement = getStartingSettlement();
-			var ih = settlement.getEquipmentInventory();
+			var setIH = settlement.getEquipmentInventory();
 
 			var luv = attachLUV(false);
 			settlement.removeParkedNGaragedVehicle(luv);
+			var luvIH = luv.getEquipmentInventory();
 			luv.findNewParkingLoc();
 
 			// Unload attachment parts.
-			luv.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
-			ih.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
+			luvIH.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
+			setIH.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
 
-			luv.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
-			ih.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
+			luvIH.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
+			setIH.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
 		}
 	}
 
@@ -297,7 +299,8 @@ public class Mining extends EVAMission
 	protected boolean performEVA(Person person) {
 
 		Rover rover = getRover();
-		double roverRemainingCap = rover.getCargoCapacity() - rover.getStoredMass();
+		var roverEO = rover.getEquipmentInventory();
+		double roverRemainingCap = roverEO.getCargoCapacity() - roverEO.getStoredMass();
 
 		if (roverRemainingCap <= 0) {
 			logger.info(getRover(), "No more room in " + rover.getName());
@@ -307,7 +310,7 @@ public class Mining extends EVAMission
 
 		double weight = person.getMass();
 		if (roverRemainingCap < weight) {
-			logger.info(getRover(), "No enough capacity to fit " + person.getName() + "(" + weight + " kg).");
+			logger.info(rover, "No enough capacity to fit " + person.getName() + "(" + weight + " kg).");
 			addMissionLog("Rover capacity full", person.getName());
 			return false;
 		}
@@ -320,14 +323,14 @@ public class Mining extends EVAMission
 			if (getExtractMineralsStream(person).findAny().isPresent()) {
 				int mineralToCollect = getMineralToCollect(person);
 				if (mineralToCollect > MIN_COLLECTION) {
-					assignTask(person, new CollectMinedMinerals(person, objective, getRover(), mineralToCollect, this));
+					assignTask(person, new CollectMinedMinerals(person, objective, rover, mineralToCollect, this));
 					doMining = false;
 				}
 			}
 			
 			// Nothing to collect so mine
 			if (doMining) {
-				assignTask(person, new MineSite(person, objective, getRover(), this));
+				assignTask(person, new MineSite(person, objective, rover, this));
 			}	
 		}
 		return true;

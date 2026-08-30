@@ -543,7 +543,7 @@ class AmountResourceGood extends Good {
         
         // Get amount of resource out on mission vehicles.
         amount += getVehiclesOnMissions(settlement)
-                        .map(v -> v.getSpecificAmountResourceStored(getID()))
+                        .map(v -> v.getEquipmentInventory().getSpecificAmountResourceStored(getID()))
                         .collect(Collectors.summingDouble(f -> f));
 
 		// Get amount of resource carried by people on EVA.
@@ -1504,7 +1504,7 @@ class AmountResourceGood extends Good {
 		switch(getID()) {
 			case ResourceUtil.METHANOL_ID: {
 				for(Vehicle v: settlement.getAllAssociatedVehicles()) {
-					double fuelDemand = v.getSpecificCapacity(getID());
+					double fuelDemand = v.getEquipmentInventory().getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
 				demand = demand * transFactor * METHANOL_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;
@@ -1512,7 +1512,7 @@ class AmountResourceGood extends Good {
 		
 			case ResourceUtil.METHANE_ID: {
 				for(Vehicle v: settlement.getAllAssociatedVehicles()) {
-					double fuelDemand = v.getSpecificCapacity(getID());
+					double fuelDemand = v.getEquipmentInventory().getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
 				demand = demand * transFactor * METHANE_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;

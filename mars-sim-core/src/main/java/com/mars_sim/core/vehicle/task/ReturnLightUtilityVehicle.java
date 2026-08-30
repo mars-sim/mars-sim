@@ -160,7 +160,7 @@ public class ReturnLightUtilityVehicle extends Task {
 				// Transfer the luv to the rover
 				done = worker.transfer(r);
 				// Unload any attachment parts or inventory from light utility vehicle.
-				unloadLUVInventory(r.getEquipmentInventory());
+				returnLUV(r);
 			}
 			else if (returnContainer.getUnitType() == UnitType.SETTLEMENT) {
 				s = (Settlement)returnContainer;
@@ -168,7 +168,7 @@ public class ReturnLightUtilityVehicle extends Task {
 				done = worker.transfer(s);
 //				done = s.addVicinityVehicle(luv);
 				// Unload any attachment parts or inventory from light utility vehicle.
-				unloadLUVInventory(s.getEquipmentInventory());
+				returnLUV(s);
 			}
 	
 			if (!done) {
@@ -184,26 +184,34 @@ public class ReturnLightUtilityVehicle extends Task {
 	
 	/**
 	 * Unload all attachment parts and inventory from light utility vehicle.
+	 * @param destination the destination to unload to.
 	 */
-	private void unloadLUVInventory(EquipmentOwner eo) {
+	private void returnLUV(UnitHolder destination) {
 
-		UnitHolder eqmHolder = (UnitHolder) eo;
-		
+		var luvEO = luv.getEquipmentInventory();
+
 		// Unload all units.
-		List<Equipment> eqmCopy = new ArrayList<>(luv.getContainerSet());
+		List<Equipment> eqmCopy = new ArrayList<>(luvEO.getContainerSet());
 		for(Equipment unit : eqmCopy) {
-			if (!unit.transfer(eqmHolder)) {
+			if (!unit.transfer(destination)) {
 				logger.severe(unit, "Cannot be stored in " + returnContainer.getName());
 			}
 		}
 
+		// Where do the resoruce get transferred to?
+		var eo = EquipmentOwner.getAttached(destination);
+		if (eo == null) {
+			logger.severe(destination, "Does not have an equipment inventory.");
+			return;
+		}
+
 		// Unload all parts.
-		for(int id : luv.getItemResourceIDs()) { 
-			int num = luv.getItemResourceStored(id);
+		for(int id : luvEO.getItemResourceIDs()) { 
+			int num = luvEO.getItemResourceStored(id);
 			Part part = ItemResourceUtil.findItemResource(id);
 			double mass = part.getMassPerItem() * num;
 			if (eo.getRemainingCargoCapacity() >= mass) {
-				luv.retrieveItemResource(id, num);
+				luvEO.retrieveItemResource(id, num);
 				eo.storeItemResource(id, num);
 			} else {
 				logger.severe(returnContainer, part.getName() + " numbered " + num
@@ -212,10 +220,10 @@ public class ReturnLightUtilityVehicle extends Task {
 		}
 
 		// Unload all amount resources.
-		for(int id : luv.getSpecificResourceStoredIDs()) {
-			double amount = luv.getSpecificAmountResourceStored(id);
+		for(int id : luvEO.getSpecificResourceStoredIDs()) {
+			double amount = luvEO.getSpecificAmountResourceStored(id);
 			if (eo.getRemainingSpecificCapacity(id) >= amount) {
-				luv.retrieveAmountResource(id, amount);
+				luvEO.retrieveAmountResource(id, amount);
 				eo.storeAmountResource(id, amount);
 			} else {
 				logger.severe(returnContainer, ResourceUtil.findAmountResourceName(id)

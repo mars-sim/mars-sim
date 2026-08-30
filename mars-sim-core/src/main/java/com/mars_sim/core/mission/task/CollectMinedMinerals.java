@@ -121,7 +121,7 @@ public class CollectMinedMinerals extends EVAOperation {
 	 */
 	private boolean takeContainer(Rover rover) {
 		
-		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, mineralType);
+		Container container = ContainerUtil.findLeastFullContainer(rover.getEquipmentInventory(), containerType, mineralType);
 
 		if (container != null) {
 			boolean success = container.transfer(person);

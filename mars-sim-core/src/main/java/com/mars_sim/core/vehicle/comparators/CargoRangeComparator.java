@@ -23,8 +23,8 @@ public class CargoRangeComparator extends RangeComparator {
         int result = 0;
 
         // Check if one has more general cargo capacity than the other.
-        double firstCapacity = o1.getCargoCapacity();
-        double secondCapacity = o2.getCargoCapacity();
+        double firstCapacity = o1.getEquipmentInventory().getCargoCapacity();
+        double secondCapacity = o2.getEquipmentInventory().getCargoCapacity();
         if (firstCapacity > secondCapacity) {
             result = 1;
         } else if (secondCapacity > firstCapacity) {

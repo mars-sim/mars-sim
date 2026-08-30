@@ -424,7 +424,8 @@ public class Rover extends GroundVehicle implements Crewable,
 		if (isPluggedIn()) {
 			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
 
-				double o2 = getTowingVehicle().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				var towingRH = getTowingVehicle().getEquipmentInventory();
+				double o2 = towingRH.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 				if (o2 < SMALL_AMOUNT) {
 					logger.log(this, Level.WARNING, 60_000,
 						"No more oxygen.");
@@ -438,7 +439,7 @@ public class Rover extends GroundVehicle implements Crewable,
 					return false;
 				}
 
-				if (getTowingVehicle().getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
+				if (towingRH.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 					logger.log(this, Level.WARNING, 60_000,
 							"Ran out of water.");
 					return false;
@@ -471,8 +472,8 @@ public class Rover extends GroundVehicle implements Crewable,
 
 		}
 		else {
-
-			double o2 = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			var vehRH = getEquipmentInventory();
+			double o2 = vehRH.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			if (o2 < SMALL_AMOUNT) {
 				logger.log(this, Level.WARNING, 60_000,
 					"No more oxygen.");
@@ -486,7 +487,7 @@ public class Rover extends GroundVehicle implements Crewable,
 				return false;
 			}
 
-			if (getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
+			if (vehRH.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 				logger.log(this, Level.WARNING, 60_000,
 						"Ran out of water.");
 				return false;
@@ -552,12 +553,10 @@ public class Rover extends GroundVehicle implements Crewable,
 		// for retrieving O2 here
 		double lacking = 0;
 
-		Vehicle v = null;
-
 		// NOTE: need to draw the the hose connecting between the vehicle and the settlement to supply resources
 		if (isPluggedIn()) {
 			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
-				v = getTowingVehicle();
+				var v = getTowingVehicle().getEquipmentInventory();
 
 				lacking = v.retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
 				v.storeAmountResource(ResourceUtil.CO2_ID, gasRatio * (oxygenTaken - lacking));
@@ -572,8 +571,8 @@ public class Rover extends GroundVehicle implements Crewable,
 
 		else {
 
-			lacking = retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
-			storeAmountResource(ResourceUtil.CO2_ID, gasRatio * (oxygenTaken - lacking));
+			lacking = getEquipmentInventory().retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
+			getEquipmentInventory().storeAmountResource(ResourceUtil.CO2_ID, gasRatio * (oxygenTaken - lacking));
 		}
 
 		return oxygenTaken - lacking;
@@ -589,12 +588,10 @@ public class Rover extends GroundVehicle implements Crewable,
 	public double provideWater(double waterTaken) {
 		double lacking = 0;
 
-		Vehicle v = null;
-
 		// Note: need to draw the the hose connecting between the vehicle and the settlement to supply resources
 		if (isPluggedIn()) {
 			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
-				v = getTowingVehicle();
+				var v = getTowingVehicle().getEquipmentInventory();
 
 				lacking = v.retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
 			}
@@ -606,7 +603,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		}
 		else {
 
-			lacking = retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
+			lacking = getEquipmentInventory().retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
 		}
 
 		return waterTaken - lacking;
@@ -629,11 +626,12 @@ public class Rover extends GroundVehicle implements Crewable,
 		double oxygenLeft = 0;
 
 		if (!isInSettlement()) {
-			if (getTowingVehicle() != null) {
-				oxygenLeft = getTowingVehicle().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			var tv = getTowingVehicle();
+			if (tv != null) {
+				oxygenLeft = tv.getEquipmentInventory().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			}
 			else
-				oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				oxygenLeft = getEquipmentInventory().getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		}
 		else {
 			var rh = getSettlement().getEquipmentInventory();
@@ -942,22 +940,24 @@ public class Rover extends GroundVehicle implements Crewable,
 		// Gets the life support resource margin
 		double margin = getLifeSupportRangeErrorMargin();
 
+		var rh = getEquipmentInventory();
+
 		// Check food capacity as range limit.
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = getSpecificCapacity(ResourceUtil.FOOD_ID);
+		double foodCapacity = rh.getSpecificCapacity(ResourceUtil.FOOD_ID);
 		double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
 		double foodRange = distancePerSol * foodSols / margin;
 
 		// Check water capacity as range limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = getSpecificCapacity(ResourceUtil.WATER_ID);
+		double waterCapacity = rh.getSpecificCapacity(ResourceUtil.WATER_ID);
 		double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
 		double waterRange = distancePerSol * waterSols / margin;
 
 		// Check oxygen capacity as range limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = getSpecificCapacity(ResourceUtil.OXYGEN_ID);
+		double oxygenCapacity = rh.getSpecificCapacity(ResourceUtil.OXYGEN_ID);
 		double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
 		double oxygenRange = distancePerSol * oxygenSols / margin;
 
@@ -1032,13 +1032,6 @@ public class Rover extends GroundVehicle implements Crewable,
 
 	public boolean hasLUV() {
 		return luv != null;
-	}
-
-	/**
-	 * Does this rover have a set of clothing ?
-	 */
-	public boolean hasGarment() {
-		return getItemResourceStored(ItemResourceUtil.GARMENT_ID) > 0;
 	}
 
 	@Override

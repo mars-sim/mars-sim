@@ -872,6 +872,8 @@ public abstract class EVAOperation extends Task {
 	 * @param destination
 	 */
 	protected void returnEquipmentToVehicle(Vehicle destination) {
+		var vehRH = destination.getEquipmentInventory();
+
 		// Return containers in rover Take a copy as the original will change.
 		List<Equipment> held = new ArrayList<>(person.getEquipmentInventory().getEquipmentSet());
 		for (Equipment e : held) {
@@ -886,7 +888,7 @@ public abstract class EVAOperation extends Task {
 							if (amount > 0) {
 								// Retrieve this amount from the container
 								c.retrieveAmountResource(resource, amount);
-								destination.storeAmountResource(resource, amount);
+								vehRH.storeAmountResource(resource, amount);
 								logger.info(person, 5000, "Done unloading all resources from person back to rover.");
 							}
 						}

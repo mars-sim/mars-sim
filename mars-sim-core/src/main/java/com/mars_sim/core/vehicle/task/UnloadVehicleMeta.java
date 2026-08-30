@@ -170,10 +170,11 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
     private static SettlementTask createUnloadJob(Settlement settlement, Vehicle vehicle,
                                                 boolean insideOnlyTasks,
                                                 SettlementMetaTask owner) {
-        double remaining = vehicle.getStoredMass();
+        var vehEO = vehicle.getEquipmentInventory();                                            
+        double remaining = vehEO.getStoredMass();
         if (remaining > 0D) {
             RatingScore score = new RatingScore(BASE_SCORE);
-            score.addBase("vehicle", (100D * remaining)/vehicle.getCargoCapacity());
+            score.addBase("vehicle", (100D * remaining)/vehEO.getCargoCapacity());
 
             score = applyCommerceFactor(score, settlement, CommerceType.TRANSPORT);
 
