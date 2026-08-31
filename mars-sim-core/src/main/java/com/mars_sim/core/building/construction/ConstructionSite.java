@@ -389,4 +389,22 @@ public class ConstructionSite extends FixedUnit {
         return result;
     }
     
+	/**
+	 * Is this object the same as another object ?
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+	
+	/**
+	 * Gets the hash code value.
+	 *
+	 * @return hash code
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
 }

@@ -171,7 +171,7 @@ public abstract class DigLocal extends EVAOperation {
         setDuration(getDuration() * (1 + endurance/200.0));
         
         fatigueFactor = .5 * (1 - (agility + strength + endurance) / 300D);
-		compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva / 50 + .1);
+		compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva / 50D + .1);
 	}
 
     /**

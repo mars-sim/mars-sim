@@ -26,6 +26,7 @@ import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ItemResourceUtil;
@@ -164,25 +165,31 @@ public abstract class GatherData extends EVAOperation {
             }
             coord = v.getCoordinates();
             
-            dataCollectionSite = v.getDataCollectionSite();
-            
-            if (dataCollectionSite == null) {
+            if (v.getMission() instanceof AbstractVehicleMission avm) {
             	
-            	Settlement settlement = v.getAssociatedSettlement();
+            	dataCollectionSite = avm.getDataCollectionSite();
             	
-            	dataCollectionSite = findSiteMap(settlement, coord, false);
+            	if (dataCollectionSite == null) {
+            		// The site has not been attached to the abstract vehicle mission yet
+                	dataCollectionSite = findSiteMap(v.getAssociatedSettlement(), coord, false);
+
+                }
+            	
+        		// Note: in future, more than one person may work on this data collection site.
+            	// Therefore, it's good to set a reference in AbstractVehicleMission
+            	
+            	if (dataCollectionSite != null) {
+                	// Attach this site to AbstractVehicleMission
+                	avm.addDataCollectionSite(dataCollectionSite);
+                	
+                	findInstrument(v.getEquipmentInventory());
+            	}
+               	else {
+               		logger.warning(person, 5_000L, "No available data collection site found near " + v + ".");
+               		endTask();
+               		return;
+               	}
             }
-            
-        	if (dataCollectionSite != null) {
-            	// Add this site to vehicle
-            	v.addDataCollectionSite(dataCollectionSite);
-            	findInstrument(v.getEquipmentInventory());
-        	}
-           	else {
-           		logger.warning(person, 5_000L, "No available data collection site found near " + v + ".");
-           		endTask();
-           		return;
-           	}
         }
         
         setOutsideSiteLocation(locationPos);
@@ -197,7 +204,7 @@ public abstract class GatherData extends EVAOperation {
 	 */
 	private boolean findInstrument(EquipmentInventory ei) {
 		// Look at how many types of instruments a settlement/vehicle would have
-    	List<Integer> settlementAvailableList = ei.getAvailableWaterDetectionTool();
+    	List<Integer> settlementAvailableList = getAvailableWaterDetectionTool(ei);
 
         List<Integer> siteAvailableList = dataCollectionSite.getInstrumentAvailability();
         
@@ -227,6 +234,22 @@ public abstract class GatherData extends EVAOperation {
         return false;
 	}
 	
+	/**
+	 * Gets an available list of water detection tool.
+	 * 
+	 * @return
+	 */
+	public List<Integer> getAvailableWaterDetectionTool(EquipmentInventory ei) {
+		List<Integer> availableTool = new ArrayList<>();
+		
+		List<Integer> allInstruments = new ArrayList<>(GatherDataMeta.waterDetectionTool);
+		for (int instrumentID: allInstruments) {
+			if (ei.getItemResourceStored(instrumentID) > 0)
+				availableTool.add(instrumentID);
+		}
+
+		return availableTool;
+	}
 	
 	/**
 	 * Finds the site map.

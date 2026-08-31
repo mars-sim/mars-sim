@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractVehicleMission.java
-  * @date 2026-08-25
+ * @date 2026-08-25
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -23,6 +23,7 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -143,10 +144,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private OperateVehicle operateVehicleTask;
 	/** Details of the loading operation */
 	private LoadingController loadingPlan;
-
+	/** The starting settlement. */
 	private Settlement startingSettlement;
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
+	/** The designated data collection site */
+	private DataCollectionSite dataCollectionSite;
 	
 	/** Equipment Caches */
 	private transient Map<Integer, Integer> equipmentNeededCache;
@@ -419,7 +422,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				logger.info(vehicle, 20_000, message.append(".").toString().toLowerCase());
 		
 				vehicle.setEmergencyBeacon(true);
-		
 				// Creating mission emergency beacon event.
 				registerHistoricalEvent(vehicle, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason.getName());
 			}
@@ -1158,11 +1160,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		if (beaconOn) {
 			registerHistoricalEvent(vehicle, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason);
-			logger.info(vehicle, member.getName()
-					+ " activated emergency beacon.");
+			logger.info(vehicle, member.getName() + " activated emergency beacon.");
 		} else {
-			logger.info(vehicle, member.getName()
-					+ " deactivated emergency beacon.");
+			logger.info(vehicle, member.getName() + " deactivated emergency beacon.");
 		}
 
 		vehicle.setEmergencyBeacon(beaconOn);
@@ -2154,5 +2154,20 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		
 		return true;
 	}
+	
+	/** 
+	 * Gets the designated data collection site. 
+	 */
+	public DataCollectionSite getDataCollectionSite() {
+		return dataCollectionSite;
+	}
+	
+	/** 
+	 * Sets a designated data collection site. 
+	 */
+	public void addDataCollectionSite(DataCollectionSite site) {
+		dataCollectionSite = site;
+	}
+	
 	
 }

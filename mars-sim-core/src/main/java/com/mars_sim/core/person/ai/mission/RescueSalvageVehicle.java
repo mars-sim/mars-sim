@@ -258,6 +258,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	private void reportMalfunction(Rover rover) {
 
     	Malfunction serious = objective.getRecoverVehicle().getMalfunctionManager().getMostSeriousMalfunction();
+    	
 		if (serious != null) {
 			registerHistoricalEvent(rover, HistoricalEventType.MISSION_SALVAGE_VEHICLE, serious.getName());
 		}

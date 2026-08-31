@@ -68,15 +68,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final MissionPhase INIT_PHASE = new MissionPhase("initial", Stage.INITIAL);
 	private static final MissionPhase INCOMPLETE_PHASE = new MissionPhase("incomplete", Stage.CLOSEDOWN);
 	
-//	private static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	protected static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
 	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
 	protected static final MissionStatus MISSION_MEDICAL_EMERGENCY = new MissionStatus("Mission.status.medicalEmergency");
 
-//	public static final String INTERNAL_PROBLEM = "internalProblem";
 	public static final String DISBANDING = "Disbanding ";
-	public static final String MEMBERS = " member(s): ";
+	public static final String MEMBERS_ = " member(s): ";
 	
 	// Data members
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
@@ -293,7 +291,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param message 	
 	 */
 	protected void registerHistoricalEvent(Entity affected, HistoricalEventType type, String message) {
-		
+		// Add entry to the log
+		addMissionLog(message, affected.getName());
 		// Creating mission joining event.
 		HistoricalEvent newEvent = new HistoricalEvent(type, this, getAssociatedSettlement(),
 														message, null, affected, getCurrentMissionLocation());
@@ -475,9 +474,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		else {
 			phaseDescription = "";
 		}
-
-		// Add entry to the log
-		addMissionLog(newPhase.getName(), getStartingPerson().getName());
 
 		registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_PHASE, phaseDescription);
 
@@ -756,7 +752,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Disband the members
 		if (members != null && !members.isEmpty()) {
 			String listOfMembers = members.stream().map(Worker::getName).collect(Collectors.joining(", "));
-			logger.info(startingMember, DISBANDING + getFullMissionDesignation() + MEMBERS + listOfMembers);
+			logger.info(startingMember, DISBANDING + getFullMissionDesignation() + MEMBERS_ + listOfMembers);
 			
 			removeAllMembers();
 		}
