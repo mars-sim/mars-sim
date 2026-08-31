@@ -244,13 +244,13 @@ public final class EVASuitUtil {
 	public static boolean hasBaselineNumEVASuit(Vehicle vehicle, Mission mission) {
 		boolean result = false;
 
-		int numV = vehicle.findNumEVASuits();
+		int numV = vehicle.getEquipmentInventory().getSuitSet().size();
 
 		int baseline = mission.getMembers().size();
 
 		int numP = 0;
 
-		for (Worker w: mission.getMembers()) { //((Crewable)vehicle).getCrew()) {
+		for (Worker w: mission.getMembers()) { 
 			if (w instanceof Person p && p.getSuit() != null)
 				numP++;
 		}
