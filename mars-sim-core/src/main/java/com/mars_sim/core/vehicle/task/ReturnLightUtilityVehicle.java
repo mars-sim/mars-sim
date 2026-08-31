@@ -198,7 +198,7 @@ public class ReturnLightUtilityVehicle extends Task {
 			}
 		}
 
-		// Where do the resoruce get transferred to?
+		// Where do the resource get transferred to?
 		var eo = EquipmentOwner.getAttached(destination);
 		if (eo == null) {
 			logger.severe(destination, "Does not have an equipment inventory.");

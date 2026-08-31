@@ -475,10 +475,15 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	private void setResourcesCapacity(EquipmentOwner target, Map<Integer, Double> requiredResourcesMap) {
 		
 		// Not nice, EquipmentOwner needs to support capacity changes
-		EquipmentInventory inv = (EquipmentInventory)target;
-		for (Entry<Integer, Double> v : requiredResourcesMap.entrySet()) {
-			inv.setSpecificResourceCapacity(v.getKey(), v.getValue().doubleValue() * 1.01D);
+		if (target instanceof EquipmentInventory inv) {
+			for (Entry<Integer, Double> v : requiredResourcesMap.entrySet()) {
+				inv.setSpecificResourceCapacity(v.getKey(), v.getValue().doubleValue() * 1.01D);
+			}
 		}
+		else {
+			assertTrue(false, "EquipmentOwner is not an EquipmentInventory");
+		}
+
 	}
 
 	/**

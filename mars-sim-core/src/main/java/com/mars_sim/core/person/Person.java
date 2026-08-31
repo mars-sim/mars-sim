@@ -1670,7 +1670,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	/**
 	 * This method prepares the Person for life inside. It involves removing any Pressure Suit and putting on a garment.
 	 * It also assigns a thermal bottle to the person.
-	 * @param eo Store whens items can be found.
+	 * @param eo Store where items can be found
 	 */
 	public void dressForInside(EquipmentOwner eo) {
 		releaseItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, eo);
@@ -1680,7 +1680,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 	/**
 	 * This method prepares the Person for life outside. It involves removing any garment and putting on a Pressure Suit.
-	 * @param eo Store to hold items
+	 * @param eo Store where items can be found
 	 */
 	public void dressForEVA(EquipmentOwner eo) {
 		releaseItemResource(ItemResourceUtil.GARMENT_ID, eo);

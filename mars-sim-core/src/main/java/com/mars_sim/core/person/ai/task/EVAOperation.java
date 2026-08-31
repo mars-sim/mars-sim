@@ -943,7 +943,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	@Override
 	protected void clearDown() {
-		// Get the local Item sgtore where the Person is. Could be Vehicle or Settlement
+		// Get the local Item store where the Person is. Could be Vehicle or Settlement
 		var eo = EquipmentOwner.getAttached(person.getContainerUnit());
 
 		if (eo != null) {
