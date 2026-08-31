@@ -26,6 +26,7 @@ import com.mars_sim.core.building.function.task.OptimizeSystemMeta;
 import com.mars_sim.core.building.function.task.ProduceFoodMeta;
 import com.mars_sim.core.building.function.task.ToggleFuelPowerSourceMeta;
 import com.mars_sim.core.building.task.MaintainBuildingMeta;
+import com.mars_sim.core.data.collection.task.GatherGroundDataMeta;
 import com.mars_sim.core.maintenance.MaintainRobotMeta;
 import com.mars_sim.core.malfunction.task.RepairMalfunctionMeta;
 import com.mars_sim.core.manufacture.task.ManufacturingMetaTask;
@@ -153,7 +154,7 @@ public class MetaTaskUtil {
 		allMetaTasks.add(eatDrinkMeta);
 		
 		allMetaTasks.add(new ExamineBodyMeta());
-
+		allMetaTasks.add(new GatherGroundDataMeta());
 		allMetaTasks.add(new GroupActivityMetaTask());
 
 		allMetaTasks.add(new InviteStudyCollaboratorMeta());

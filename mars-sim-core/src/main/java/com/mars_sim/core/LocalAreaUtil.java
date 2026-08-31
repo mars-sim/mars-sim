@@ -190,6 +190,7 @@ public class LocalAreaUtil {
 	/**
 	 * Gets a random position outside a local bounded object at a given distance
 	 * away.
+	 * Note: start with local position position as close as possible and radially going outward. 
 	 *
 	 * @param boundedObject the local bounded object.
 	 * @param distance      the distance away from the object.
@@ -204,14 +205,14 @@ public class LocalAreaUtil {
 		switch (side) {
 		// Front side.
 		case 0:
-			x = RandomUtil.getRandomDouble(boundedObject.getWidth() + (distance * 2D))
+			x = RandomUtil.getRandomRegressionInteger((int)(1 + boundedObject.getWidth() + (distance * 2D)))
 					- ((boundedObject.getWidth() / 2D) + distance);
 			y = (boundedObject.getLength() / 2D) + distance;
 			break;
 
 		// Back side.
 		case 1:
-			x = RandomUtil.getRandomDouble(boundedObject.getWidth() + (distance * 2D))
+			x = RandomUtil.getRandomRegressionInteger((int)(1 + boundedObject.getWidth() + (distance * 2D)))
 					- (boundedObject.getWidth() + distance);
 			y = (boundedObject.getLength() / -2D) - distance;
 			break;
@@ -219,14 +220,14 @@ public class LocalAreaUtil {
 		// Left side.
 		case 2:
 			x = (boundedObject.getWidth() / 2D) + distance;
-			y = RandomUtil.getRandomDouble(boundedObject.getLength() + (distance * 2D))
+			y = RandomUtil.getRandomRegressionInteger((int)(1 + boundedObject.getLength() + (distance * 2D)))
 					- ((boundedObject.getLength() / 2D) + distance);
 			break;
 
 		// Right side.
 		case 3:
 			x = (boundedObject.getWidth() / -2D) - distance;
-			y = RandomUtil.getRandomDouble(boundedObject.getLength() + (distance * 2D))
+			y = RandomUtil.getRandomRegressionInteger((int)(1 + boundedObject.getLength() + (distance * 2D)))
 					- ((boundedObject.getLength() / 2D) + distance);
 			break;
 
@@ -297,14 +298,14 @@ public class LocalAreaUtil {
 	 * Gets a random position near a base that is collision free.
 	 * 
 	 * @param b Base point for new local position.
-	 * @param maxDistance Maximum distance from the base
 	 * @param c The coordinate to avoid collision
+	 * @param maxDistance Maximum distance from the base
 	 * @return Position or null if none found
 	 */
 	public static LocalPosition getCollisionFreeRandomPosition(LocalBoundedObject b, Coordinates c, double maxDistance)  {
 		boolean goodLocation = false;
 		LocalPosition sLoc = null;
-		for (int x = 0; (x < 50) && !goodLocation; x++) {
+		for (int x = 0; (x < 200) && !goodLocation; x++) {
 			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(b, maxDistance);
 			sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, b);
 			goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, c);

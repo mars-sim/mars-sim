@@ -81,7 +81,7 @@ public class PartGood extends Good {
 	private static final double EVA_PARTS_VALUE = .25;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 0.1;
 	
-	private static final double BASE_DEMAND = 0.5;
+	private static final double RAW_BASE_DEMAND = 1D;
 
 	private static final double DRILL_DEMAND  = .75;
 	private static final double BOTTLE_DEMAND = .02;
@@ -504,7 +504,7 @@ public class PartGood extends Good {
 	 * @param part   the part.
 	 */
 	private static double calculateFlattenRawPartDemand(Part part) {
-		double base = BASE_DEMAND; 
+		double base = RAW_BASE_DEMAND; 
 		String name = part.getName();
 		// Reduce the demand on the steel/aluminum scrap metal
 		// since they can only be produced by salvaging a vehicle

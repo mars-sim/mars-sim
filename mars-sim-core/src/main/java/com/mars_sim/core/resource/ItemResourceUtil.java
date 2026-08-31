@@ -46,15 +46,23 @@ public class ItemResourceUtil {
 	public static final int BACKHOE_ID = SLS_3D_PRINTER_ID + 1;
 	public static final int PNEUMATIC_DRILL_ID = BACKHOE_ID + 1;
 	
-	// Data gathering instruments
+	// rock composition data gathering instruments
 	public static final int GAS_CHROMATOGRAPH_ID = PNEUMATIC_DRILL_ID + 1;
 	public static final int MASS_SPECTROMETER_ID = GAS_CHROMATOGRAPH_ID + 1;
 	public static final int XRAY_SPECTROMETER_ID = MASS_SPECTROMETER_ID + 1;
 	public static final int IR_SPECTROMETER_ID = XRAY_SPECTROMETER_ID + 1;
 	public static final int HEAT_PROBE_ID = IR_SPECTROMETER_ID + 1;
 	
+	// water detection instruments
+	public static final int SNMRS_ID 				 = HEAT_PROBE_ID + 1;
+	public static final int TDEM_SOUNDER_ID 		 = SNMRS_ID + 1;
+	public static final int DAN_ID			 		 = TDEM_SOUNDER_ID + 1;
+	public static final int GPR_ID					 = DAN_ID + 1;
+	public static final int GRAVITY_GRADIOMETER_ID 	 = GPR_ID + 1;
+	public static final int SEISMOELECTRIC_SENSOR_ID = GRAVITY_GRADIOMETER_ID + 1;
+	
 	// Must be one after the last fixed resource
-	public static final int FIRST_FREE_ITEM_RESOURCE_ID = HEAT_PROBE_ID + 1;
+	public static final int FIRST_FREE_ITEM_RESOURCE_ID = SEISMOELECTRIC_SENSOR_ID + 1;
 	
 	// Light utility vehicle attachment parts for mining or construction.
 
@@ -80,15 +88,21 @@ public class ItemResourceUtil {
 
 	static {
 		// Map the pre-defined resources to their names
-		
-		// Must be in lowercase
+		// All must be in lowercase
+
+		// Related to water discovery
+		fixedItemResources.put("surface nuclear magnetic resonance sounder", SNMRS_ID);
+		fixedItemResources.put("time domain electromagnetic sounder", TDEM_SOUNDER_ID);
+		fixedItemResources.put("dynamic albedo of neutrons meter", DAN_ID);
+		fixedItemResources.put("ground penetrating radar", GPR_ID);
+		fixedItemResources.put("gravity gradiometer", GRAVITY_GRADIOMETER_ID);
+		fixedItemResources.put("seismoelectric sensor", SEISMOELECTRIC_SENSOR_ID);
 		
 		fixedItemResources.put("gas chromatograph", GAS_CHROMATOGRAPH_ID);
 		fixedItemResources.put("mass spectrometer", MASS_SPECTROMETER_ID);
 		fixedItemResources.put("x-ray fluorescene spectrometer", XRAY_SPECTROMETER_ID);
-		fixedItemResources.put("infra-red spectrometer", IR_SPECTROMETER_ID);
+		fixedItemResources.put("infrared spectrometer", IR_SPECTROMETER_ID);
 		fixedItemResources.put("heat probe", HEAT_PROBE_ID);
-		
 		
 		fixedItemResources.put("airleak patch", AIRLEAK_PATCH_ID);
 		fixedItemResources.put("battery module",  BATTERY_MODULE_ID);

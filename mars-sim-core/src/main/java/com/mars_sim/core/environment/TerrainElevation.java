@@ -31,6 +31,8 @@ import com.mars_sim.core.tool.RandomUtil;
 
 // See https://github.com/mars-sim/mars-sim/issues/225 on past effort in finding elevation via color shaded maps
 
+// See https://gis.stackexchange.com/questions/254175/get-mars-dem-data on GIS projects about getting Mars DEM Data
+
 /**
  * The TerrainElevation class represents the surface terrain of the virtual
  * Mars. It provides information about elevation and terrain ruggedness and

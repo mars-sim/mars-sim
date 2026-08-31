@@ -84,6 +84,7 @@
 	
 	    <!-- Equipment -->
 	    <equipment type="EVA Suit" number="8" />
+   	    <equipment type="Data Recorder" number="4" />
 	    
 	    <!-- Containers-->
 		<equipment type="barrel" number="40" />
@@ -129,8 +130,10 @@
 	    <!-- Part packages (see part_packages.xml) -->
 	    <!-- name: the part package name. -->
 	    <!-- number: the number of packages. -->
+  		<part-package name="Instrument Package 1" number="1" />	
 	    <part-package name="Standard Part Package 1" number="1" />
-	   
+        <part-package name="Tech Part Package 5" number="1" />
+        
 		<!-- The resupply missions from Earth scheduled for this type of settlement. -->
     </initial-supplies>
 

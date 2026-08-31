@@ -30,6 +30,7 @@ import com.mars_sim.core.building.task.MaintainBuilding;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.MSolDataLogger;
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.Container;
@@ -210,6 +211,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private List<LocalPosition> passengerActivitySpots;
 	/** List of status types. */
 	private Set<StatusType> statusTypes = new HashSet<>();
+	/** The designated data collection site */
+	private DataCollectionSite dataCollectionSite;
 	
 	/** The vehicle's status log. */
 	private History<Set<StatusType>> vehicleLog = new History<>(28);
@@ -2644,6 +2647,20 @@ public abstract class Vehicle extends AbstractMobileUnit
 
 	public VehicleSpec getVehicleSpec() {
 		return spec;
+	}
+	
+	/** 
+	 * Gets the designated data collection site. 
+	 */
+	public DataCollectionSite getDataCollectionSite() {
+		return dataCollectionSite;
+	}
+	
+	/** 
+	 * Sets a designated data collection site. 
+	 */
+	public void addDataCollectionSite(DataCollectionSite site) {
+		dataCollectionSite = site;
 	}
 	
 	/**

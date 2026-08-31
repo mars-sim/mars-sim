@@ -8,7 +8,10 @@ package com.mars_sim.core.data.collection.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
@@ -16,6 +19,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.shift.ShiftManager;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
@@ -24,6 +28,7 @@ import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementParameters;
@@ -59,20 +64,38 @@ public abstract class GatherDataMeta extends MetaTask
         }
     }
 
-	private static final int MAX_BASE = 20_000;
+    private static final int BASE = 100;
+	private static final int MAX_BASE = 2_000;
 	private static final int DEFAULT_EVA_NUM = 5;
 	
-    private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger gathering
-    
     /* The maximum shift fraction completed for a person to start this task.
     If above this value, the person will not consider picking this task. */
     private static final double MAX_SHIFT_FRACTION = 0.66D;
     	
+	public static Set<Integer> sensorSuite = Set.of(
+			ItemResourceUtil.SEISMOELECTRIC_SENSOR_ID, 
+			ItemResourceUtil.HEAT_PROBE_ID);
+
+	public static Set<Integer> rockCompositionTool = Set.of(
+			ItemResourceUtil.GAS_CHROMATOGRAPH_ID, 
+			ItemResourceUtil.IR_SPECTROMETER_ID,
+			ItemResourceUtil.MASS_SPECTROMETER_ID, 
+			ItemResourceUtil.XRAY_SPECTROMETER_ID);
+	
+	public static Set<Integer> waterDetectionTool = Set.of(
+			ItemResourceUtil.SNMRS_ID,
+			ItemResourceUtil.TDEM_SOUNDER_ID, 
+			ItemResourceUtil.DAN_ID,
+			ItemResourceUtil.GPR_ID, 
+			ItemResourceUtil.GRAVITY_GRADIOMETER_ID);
+	
 	private EquipmentType containerType;
 
     protected GatherDataMeta(String name, EquipmentType containerType) {
 		super(name, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		setFavorite(FavoriteType.OPERATION);
+		setPreferredJob(JobType.SCIENTISTS);
+		setPreferredJob(JobType.ARCHITECT, JobType.ENGINEER, JobType.TECHNICIAN, JobType.AREOLOGIST, JobType.TECHNICIAN);
 		setTrait(TaskTrait.AGILITY);
 
 		this.containerType = containerType;
@@ -89,7 +112,27 @@ public abstract class GatherDataMeta extends MetaTask
                             double collectionProbability) {
     	
         var rh = settlement.getEquipmentInventory();
-
+        double popfactor = settlement.getPopulationFactor0();
+        
+        Map<Integer, Integer> instrumentAvailability = new HashMap<>();
+        
+        double instrumentAverageScore = 0;
+        
+        for (int id: waterDetectionTool) {
+        	int num = rh.getItemResourceStored(id);
+        	instrumentAvailability.put(id, num);
+        }
+        
+        int size = waterDetectionTool.size();
+        
+        int availableSize = instrumentAvailability.size();
+        for (int id: instrumentAvailability.keySet()) {
+        	instrumentAverageScore += instrumentAvailability.get(id) / popfactor * BASE;
+        }
+        
+        // If one of the instrument is not available, the score would be lower.
+        instrumentAverageScore = instrumentAverageScore * availableSize / size;
+        
         // Check preconditions
         // - an airlock is available for egress
         // - at least one EVA suit at settlement.
@@ -108,10 +151,10 @@ public abstract class GatherDataMeta extends MetaTask
         }
  
         // Determine the base score
-        RatingScore result = new RatingScore(base);
+        RatingScore score = new RatingScore(base);
 
         // Note: Will work on monitoringLevel based on what the settlement needs later.
-        int monitoringLevel = 1;
+        int monitoringLevel = 10;
         		
         // Calculate the capacity for more EVAs
         int maxEVA = (int)Math.sqrt(1.0 + monitoringLevel) 
@@ -128,7 +171,7 @@ public abstract class GatherDataMeta extends MetaTask
 //        result.addModifier("capacity", 1 + (capacity - MIN_CAPACITY));
 
         List<SettlementTask> resultList = new ArrayList<>();
-        resultList.add(new GatherDataTaskJob(this, settlement, result, maxEVA));
+        resultList.add(new GatherDataTaskJob(this, settlement, score, maxEVA));
         return resultList;
     }
 
@@ -159,8 +202,8 @@ public abstract class GatherDataMeta extends MetaTask
     	// - Not signing up for a mission
         // - Qualified for digging local
         // - Physically fit for heavy EVA tasks
-    	if (!Walk.anyAirlocksForIngressEgress(p, false)
-    			|| p.getMission() != null
+    	if ((p.isInSettlement() && !Walk.anyAirlocksForIngressEgress(p, false))
+//    			|| p.getMission() != null
     			|| !GatherData.canGatherData(p)
     			|| !EVAOperation.isEVAFit(p)) {
             return RatingScore.ZERO_RATING;

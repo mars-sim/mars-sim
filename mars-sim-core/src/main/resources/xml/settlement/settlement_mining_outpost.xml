@@ -156,9 +156,11 @@
     <robot type="MedicBot-Standard" number="1"/>
     <robot type="RepairBot-Standard" number="1"/>
     <robot type="DeliveryBot-Standard" number="1"/>
-
-    <equipment type="EVA Suit" number="8" />
     
+	<!-- Equipment -->
+    <equipment type="EVA Suit" number="8" />
+   	<equipment type="Data Recorder" number="4" />
+   	    
     <!-- Containers-->
 	<equipment type="barrel" number="40" />
 	<equipment type="bag" number="40" />
@@ -177,8 +179,8 @@
 	<resource type="methanol" amount="7200" />
 	
     <part-package name="Standard Part Package 1" number="1" />
+    <part-package name="Instrument Package 1" number="1" />
 
- 	
     </initial-supplies>
 
   

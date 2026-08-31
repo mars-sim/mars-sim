@@ -1057,11 +1057,121 @@
 		</description>
 	</part>
 
-	<part name="Infra-Red spectrometer" type="instrument" mass="10.0">
+	<part name="Infrared spectrometer" type="instrument" mass="10.0">
 		<description>This portable instrument can identify and study chemicals on a given sample (solid, liquid, or gaseous)
 		by using IR spectroscopy to produce an infrared spectrum of the sample. </description>
 	</part>
 
+	<part name="Surface Nuclear Magnetic Resonance Sounder" type="instrument" mass="11.0">
+		<description>Surface Nuclear Magnetic Resonance (SNMR) is the only
+		noninvasive geophysical method that responds nearly uniquely to water. As the measured
+		EMF is proportional to the proton-precession frequency, which in turn is proportional to
+		the planet’s static magnetic field, SNMR signals are comparatively weak. 
+		
+		Using small systems of several kilograms and several watts, the exploration depth of 
+		SNMR is one to two orders of magnitude smaller than TDEM.
+		
+		TDEM can detect water to depths up to a	few kilometers, whereas SNMR is limited to 
+		depths of a few tens of meters.
+		
+		https://space.stackexchange.com/questions/8653/how-to-find-underground-resources-water-caves-on-mars
+		https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2002JE001882</description>
+	</part>
+
+
+	<part name="Time Domain Electromagnetic Sounder" type="instrument" mass="6.0">
+		<description>Time-Domain Electromagnetic (TDEM) Sounder: This is the most effective method for 
+		deep groundwater (up to 5 km depth).  It uses a ballistically deployed wire loop to induce 
+		eddy currents in the subsurface, detecting the high electrical conductivity of saline water 
+		that has been isolated from atmospheric circulation for eons. 
+		
+		Mars Time Domain Electromagnetic Sounder prototype was built by Southwest Research Institute
+		(SWRI) and the University of Colorado Boulder, funded by NASA, and reached TRL 5 (prototype 
+		demonstrated in a relevant environment).
+		
+		https://phys.org/news/2009-06-instrument-potential-deep-underground-mars.html</description>
+	</part>
+
+
+	<part name="Dynamic Albedo of Neutrons Meter" type="instrument" mass="5.0">
+		<description>Dynamic Albedo of Neutrons (DAN): This instrument, carried by the Curiosity rover,
+		 uses a pulsing neutron generator to detect hydrogen in the shallow subsurface 
+		 (up to ~50 cm depth).  It identifies water-bearing minerals or ice with high sensitivity 
+		 (detecting as low as 0.1% water content). Hydrated minerals are the only hydrogen-bearing 
+		 compounds found in significant quantity on Mars.
+		 
+		 Neutron moderation by hydrogen :
+
+		- The PNG fires a short pulse (~1–2 µs, up to 10 Hz) of 14.1 MeV fast neutrons into the 
+		  ground from ~80 cm above the surface. 
+		- Neutrons penetrate ~0.5–1 m into the regolith, colliding with atomic nuclei along the way.
+		- A neutron that hits a hydrogen nucleus (nearly the same mass as the neutron, like two 
+		  billiard balls) loses roughly half its energy in a single collision.  
+		- Other nuclei (oxygen, silicon, iron, etc.) are much heavier and barely slow the neutron.
+		- The moderated neutrons that escape back up to the surface are detected by two ³He 
+		  proportional counters in the DE module, which record both the energy (thermal vs. epithermal) 
+		  and the time-of-flight after each pulse.
+		  
+		  https://www.jpl.nasa.gov/news/mars-rover-carries-device-for-underground-scouting/
+		 </description>
+	</part>
+	
+	<part name="Ground Penetrating Radar" type="instrument" mass="6.0">
+		<description>Ground-Penetrating Radar (GPR): Instruments like RIMFAX on the Perseverance 
+		rover operate at high frequencies (150 MHz–1200 MHz) to map shallow stratified structures 
+		and detect water ice or geological subsurface features, though they have limited depth 
+		penetration compared to electromagnetic methods.
+		
+		RIMFAX is a gated Frequency-Modulated Continuous Wave (FMCW) radar — fundamentally 
+		different from the short-pulse GPR systems common on Earth. 
+		
+		All three modes are collected every 5–10 cm along the rover's traverse, building up a 
+		2D radargram (cross-section image) of the subsurface.
+		
+		- Surface Mode:	675 MHz. ~0 to 1 m Depth Range. ~10 cm Vertical Resolution.
+		- Shallow Mode:	675 MHz. ~1 to 5 m Depth Range. 10-20 cm Vertical Resolution. 
+		- Deep Mode:	375 MHz. up to 10m (33 ft) Depth Range. 20-40 cm Vertical Resolution. 
+		
+		What It Can Detect:
+		- Layered geology (parallel reflectors = sedimentary beds or lava flows)
+		- Buried boulders / point scatterers (hyperbolic diffraction signatures)
+		- Water ice or brine (higher permittivity → different velocity and stronger reflection)
+		- Unconformities and truncations (structural discontinuities)
+		- Surface property changes over time (diurnal cycle passive mode, with Tx off, 
+		  measuring surface reflection coefficient shifts) 
+		
+		In essence, RIMFAX is the radar equivalent of what DAN does with neutrons — it "sees" 
+		subsurface structure — but it does so with centimeter-scale spatial resolution and the 
+		ability to distinguish geologic layering, not just bulk hydrogen content.
+		
+		</description>
+	</part>
+	
+	<part name="Gravity Gradiometer" type="instrument" mass="5.0">
+		<description> 
+		Gravity Gradiometer uses Gravity Gradiometry as the method for measuring underground density
+		based on local gravitational field anomaly. It builds a picture of subsurface anomalies 
+		which can then be used to more accurately image water column density, when locating 
+		submerged objects, or determining water depth (bathymetry). It may even target oil, 
+		gas and mineral deposits for terrestrial applications. 
+		
+		Physical scientists use gravimeters to determine the exact size and shape of the earth. 
+
+		See https://en.wikipedia.org/wiki/Gravity_gradiometry
+		See https://en.wikipedia.org/wiki/Gravity_anomaly
+		 </description>
+	</part>
+	
+	<part name="Seismoelectric Sensor" type="instrument" mass="2.0">
+		<description>Seismoelectric Sensor (Listening to Marsquakes): By combining data from 
+		seismometers and magnetometers, scientists can detect electromagnetic signals generated 
+		by marsquakes passing through subsurface aquifers.  This method helps determine aquifer 
+		depth, volume, and chemical composition, such as salinity.
+		
+		https://earthsky.org/space/water-on-mars-aquifers-marsquakes-seismoelectrical-method/
+		</description>
+	</part>
+	
 	<part name="Heat probe" type="instrument" mass="1.0">
 		<description>This instrument is used for thermometry applications in that one can measure temperature inside
 		fluid containers, tanks, and pipes and underground environment</description>
@@ -1234,7 +1344,7 @@
 		<description>a small dish shaped like a cylinder for growing cells. Made of polystyrene.</description>
 	</part>
 
-	<part name="Plasma cutter" type="instrument" mass="20">
+	<part name="Plasma cutter" type="utility" mass="20">
 		<description> Plasma is electrified gas. a plasma cutter will cut any material 
 			that conducts electricity. Aluminum, steel, stainless, brass, copper, etc.
 		</description>
