@@ -59,7 +59,7 @@ public abstract class EVAMissionStep extends MissionStep {
         resources.addAmount(ResourceUtil.OXYGEN_ID, 3D * numSuits, true);
         resources.addAmount(ResourceUtil.WATER_ID, 3D * numSuits, true);
 
-        resources.addEquipment(EquipmentType.EVA_SUIT.getResourceID(), numSuits, true);
+        resources.setMinEquipment(EquipmentType.EVA_SUIT.getResourceID(), numSuits, true);
     }
 
     /**

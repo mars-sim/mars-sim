@@ -98,9 +98,9 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	@Test
 	void testLoadRequiredEquipment() {
 		var manifest = new SuppliesManifest();
-		manifest.addEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
-		manifest.addEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
-		manifest.addEquipment(EquipmentType.EVA_SUIT.getResourceID(), 2, true);
+		manifest.setMinEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
+		manifest.setMinEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
+		manifest.setMinEquipment(EquipmentType.EVA_SUIT.getResourceID(), 2, true);
 
 		// Load the manifest
 		testLoading(100, manifest);
@@ -112,10 +112,10 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	@Test
 	void testLoadOptionalEquipment() {
 		var manifest = new SuppliesManifest();
-		manifest.addEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
-		manifest.addEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
+		manifest.setMinEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
+		manifest.setMinEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
 
-		manifest.addEquipment(EquipmentType.GAS_CANISTER.getResourceID(), 10, false);
+		manifest.setMinEquipment(EquipmentType.GAS_CANISTER.getResourceID(), 10, false);
 
 		// Load the manifest
 		testLoading(100, manifest);
@@ -127,17 +127,17 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	@Test
 	void testLoadMissingOptionalEquipment() {
 		var manifest = new SuppliesManifest();
-		manifest.addEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
-		manifest.addEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
+		manifest.setMinEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
+		manifest.setMinEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
 
-		manifest.addEquipment(EquipmentType.GAS_CANISTER.getResourceID(), 10, false);
+		manifest.setMinEquipment(EquipmentType.GAS_CANISTER.getResourceID(), 10, false);
 
 		loadSettlement(settlement, manifest);
 
 		// Add an extra resource that will not be present
 		int missingId = EquipmentType.LARGE_BAG.getResourceID();
 		var expanded = new SuppliesManifest(manifest);
-		expanded.addEquipment(missingId, 10, false);
+		expanded.setMinEquipment(missingId, 10, false);
 
 		loadIt(100, expanded);
 
@@ -272,10 +272,10 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	@Test
 	void testLoadFull() {
 		var manifest = new SuppliesManifest();
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 5, true);
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
+		manifest.setMinEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 5, true);
+		manifest.setMinEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
 
-		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 5, false);
+		manifest.setMinEquipment(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 5, false);
 
 		manifest.addAmount(ResourceUtil.FOOD_ID, 100D, true);
 		manifest.addItem(fireExtinguisherID, 1, true);

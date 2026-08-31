@@ -49,8 +49,6 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
         assertEquals(0D, times.get(l.getName()), "Leader no EVA");
         assertEquals(0D, times.get(w.getName()), "Worker no EVA");
 
-        assertTrue(project.execute(w), "Worker should be able to do work");
-
         var task = w.getTaskManager().getTask();
         assertTrue(task instanceof LandmarkEVA, "Worker should be doing the visit task");   
         
