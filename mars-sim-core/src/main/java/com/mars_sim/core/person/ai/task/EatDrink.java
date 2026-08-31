@@ -305,13 +305,14 @@ public class EatDrink extends Task {
 	 */
 	private void checkPersonInVehicle(Vehicle container, boolean hungry, boolean thirsty) {
 
+		var vehEO = container.getEquipmentInventory();
 		foodAmount = getAmountResourceOnPerson(ResourceUtil.FOOD_ID);
 		
 		if (hungry && (foodAmount > 0)) {
 			food = true;
 		}
 		else {
-			foodAmount = container.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+			foodAmount = vehEO.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 			
 			if (hungry && (foodAmount > 0)) {
 				food = true;
@@ -323,7 +324,7 @@ public class EatDrink extends Task {
 			water = true;
 		}
 		else {
-			waterAmount = container.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+			waterAmount = vehEO.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 			
 			if (thirsty && waterAmount > 0) {
 				water = true;

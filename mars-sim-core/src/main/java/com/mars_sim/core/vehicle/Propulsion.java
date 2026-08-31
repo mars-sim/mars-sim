@@ -82,23 +82,24 @@ public abstract class Propulsion implements Serializable {
 	 */
 	public void retrieveFuelNOxidizer(double fuelNeeded, int fuelTypeID) {
 		 if (fuelNeeded > 0) {
-			 
+			 var vehRH = vehicle.getEquipmentInventory();
+
 			 if (fuelTypeID == ResourceUtil.METHANOL_ID) {
 				 // Retrieve the fuel needed for the distance traveled
-				 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
+				 vehRH.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume oxygen as fuel oxidizer
-				 vehicle.retrieveAmountResource(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANOL * fuelNeeded);
+				 vehRH.retrieveAmountResource(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANOL * fuelNeeded);
 				 // Generate  water from the fuel cells
-				 vehicle.storeAmountResource(ResourceUtil.WATER_ID, RATIO_WATER_METHANOL * fuelNeeded);
+				 vehRH.storeAmountResource(ResourceUtil.WATER_ID, RATIO_WATER_METHANOL * fuelNeeded);
 			 }
 
 			 else if (fuelTypeID == ResourceUtil.METHANE_ID) {
 				 // Retrieve the fuel needed for the distance traveled
-				 vehicle.retrieveAmountResource(fuelTypeID, fuelNeeded);
+				 vehRH.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume oxygen as fuel oxidizer
-				 vehicle.retrieveAmountResource(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANE * fuelNeeded);
+				 vehRH.retrieveAmountResource(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANE * fuelNeeded);
 				 // Generate the water from the fuel cells
-				 vehicle.storeAmountResource(ResourceUtil.WATER_ID, RATIO_WATER_METHANE * fuelNeeded);
+				 vehRH.storeAmountResource(ResourceUtil.WATER_ID, RATIO_WATER_METHANE * fuelNeeded);
 			 }				 
 		 }
 	}

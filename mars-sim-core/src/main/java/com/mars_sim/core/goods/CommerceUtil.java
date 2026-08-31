@@ -243,7 +243,7 @@ public final class CommerceUtil {
 		Map<Good, ShoppingItem> buyList = buyingSettlement.getGoodsManager().getBuyList();
 		Map<Good, ShoppingItem> sellList = sellingSettlement.getGoodsManager().getSellList();
 
-		double massCapacity = delivery.getCargoCapacity() * 0.8D;
+		double massCapacity = delivery.getEquipmentInventory().getCargoCapacity() * 0.8D;
 
 		// Find the matching Goods being sold and bought
 		Set<Good> unionGoods = new HashSet<>(buyList.keySet());

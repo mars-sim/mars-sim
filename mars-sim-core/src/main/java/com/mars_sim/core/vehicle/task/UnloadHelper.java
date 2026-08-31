@@ -107,12 +107,14 @@ public final class UnloadHelper {
     /**
      * Unloads any items from a Vehicle to a Settlement.
      * 
-     * @param source Vehicle being unloaded
+     * @param v Vehicle being unloaded
      * @param dest Destination for any Items
      * @param amountUnloading Maximum amount to unloaded
      * @return Amount not used
      */
-    private static double unloadItems(Vehicle source, ItemHolder dest, double amountUnloading) {
+    private static double unloadItems(Vehicle v, ItemHolder dest, double amountUnloading) {
+		var source = v.getEquipmentInventory();
+
     	for(int id : source.getItemResourceIDs()) {
     		Part part = ItemResourceUtil.findItemResource(id);
     		double mass = part.getMassPerItem();
@@ -137,13 +139,14 @@ public final class UnloadHelper {
     /**
      * Unloads any resources from a Vehicle to a Settlement.
      * 
-     * @param source Vehicle being unloaded
+     * @param v Vehicle being unloaded
      * @param dest Destination for any Resources
      * @param amountUnloading Maximum amount to unloaded
      * @return Amount not used
      */
-    private static double unloadResources(Vehicle source, Settlement dest, double amountUnloading) {
+    private static double unloadResources(Vehicle v, Settlement dest, double amountUnloading) {
 		var destStore = dest.getEquipmentInventory();
+		var source = v.getEquipmentInventory();
     	for (int id : source.getAllAmountResourceStoredIDs()) {
     		double amount = source.getAllAmountResourceStored(id);
     		if (amount > amountUnloading) {
@@ -186,7 +189,7 @@ public final class UnloadHelper {
     static double unloadEVASuits(Vehicle source, Settlement dest, double amountUnloading, int minSuits) {
     	// FInd the suits that can be removed
     	Set<EVASuit> surplus = new HashSet<>();
-    	for(var suit : source.getSuitSet()) {
+    	for(var suit : source.getEquipmentInventory().getSuitSet()) {
     		if (minSuits > 0) {
     			// Skip this suit
     			minSuits--;
@@ -238,7 +241,7 @@ public final class UnloadHelper {
 	private static double unloadEquipment(Vehicle source, Settlement dest, double amountUnloading) {
 		// Unload equipment.
 		// Take own copy as the equipment list changes as we remove items. ??
-		List<Equipment> held = new ArrayList<>(source.getEquipmentSet());
+		List<Equipment> held = new ArrayList<>(source.getEquipmentInventory().getEquipmentSet());
 		for(Equipment equipment : held) {
 			var rh = ResourceHolder.getAttached(equipment);
 			if (rh != null) {

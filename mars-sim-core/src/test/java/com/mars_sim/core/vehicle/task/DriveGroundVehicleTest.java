@@ -10,6 +10,9 @@ import static com.mars_sim.core.test.SimulationAssertions.assertEqualLessThan;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
@@ -32,8 +35,9 @@ class DriveGroundVehicleTest extends MarsSimUnitTest {
     void testDriveVehicle() {
         var s = buildSettlement("Test Settlement");
         var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-        v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+                        ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        loadAmounts(v.getEquipmentInventory(), res);
 
         // move rover to outside
         v.transfer(getSim().getUnitManager().getMarsSurface());
@@ -72,8 +76,10 @@ class DriveGroundVehicleTest extends MarsSimUnitTest {
     void testDriveVehicleNoFuel() {
         var s = buildSettlement("Test Settlement");
         var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-        v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+                        ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        var vechEO = v.getEquipmentInventory();
+        loadAmounts(vechEO, res);
 
         // move to plant
         v.transfer(getSim().getUnitManager().getMarsSurface());
@@ -93,12 +99,12 @@ class DriveGroundVehicleTest extends MarsSimUnitTest {
 
         
         // If Battery power is used, instead of fuel
-        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
-        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getSpecificAmountResourceStored(v.getFuelTypeID()));
+        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, vechEO.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
+        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, vechEO.getSpecificAmountResourceStored(v.getFuelTypeID()));
         
         // Remove methanol
-        v.retrieveAmountResource(v.getFuelTypeID(), v.getSpecificAmountResourceStored(v.getFuelTypeID()));
-        assertEquals(0.0D, v.getSpecificAmountResourceStored(v.getFuelTypeID()), "Fuel emptied");
+        vechEO.retrieveAmountResource(v.getFuelTypeID(), vechEO.getSpecificAmountResourceStored(v.getFuelTypeID()));
+        assertEquals(0.0D, vechEO.getSpecificAmountResourceStored(v.getFuelTypeID()), "Fuel emptied");
 
         var b = v.getController().getBattery();
         b.dischargeAll();

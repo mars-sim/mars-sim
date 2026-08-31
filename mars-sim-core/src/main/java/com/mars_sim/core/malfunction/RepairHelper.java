@@ -133,7 +133,7 @@ public final class RepairHelper {
 	public static EquipmentOwner getClosestRepairStore(Worker repairer) {
 		EquipmentOwner partStore;
 		if (repairer.isInVehicle()) {
-			partStore = repairer.getVehicle();
+			partStore = repairer.getVehicle().getEquipmentInventory();
 		}
 		else {
 			partStore = repairer.getSettlement().getEquipmentInventory();

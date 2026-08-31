@@ -19,6 +19,7 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
@@ -882,6 +883,8 @@ public abstract class EVAOperation extends Task {
 	 * @param destination
 	 */
 	protected void returnEquipmentToVehicle(Vehicle destination) {
+		var vehRH = destination.getEquipmentInventory();
+
 		// Return containers in rover Take a copy as the original will change.
 		List<Equipment> held = new ArrayList<>(person.getEquipmentInventory().getEquipmentSet());
 		for (Equipment e : held) {
@@ -896,7 +899,7 @@ public abstract class EVAOperation extends Task {
 							if (amount > 0) {
 								// Retrieve this amount from the container
 								c.retrieveAmountResource(resource, amount);
-								destination.storeAmountResource(resource, amount);
+								vehRH.storeAmountResource(resource, amount);
 								logger.info(person, 5000, "Done unloading all resources from person back to rover.");
 							}
 						}
@@ -944,6 +947,20 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected Container findPersonContainer(EquipmentType containerType, int resourceID) {
 		return person.getEquipmentInventory().findContainer(containerType, false, resourceID);
+	}
+
+	/**
+	 * Change the Person attire so they are suitable for inside life
+	 */
+	@Override
+	protected void clearDown() {
+		// Get the local Item store where the Person is. Could be Vehicle or Settlement
+		var eo = EquipmentOwner.getAttached(person.getContainerUnit());
+
+		if (eo != null) {
+			person.dressForInside(eo);
+		}
+		super.clearDown();
 	}
 
 	/**

@@ -156,7 +156,7 @@ public class Walk extends Task {
 				
 					// Check if person has a good EVA suit available if in a rover.
 					boolean goodEVASuit = true;
-					boolean roverSuit = vehicle.containsEquipment(EquipmentType.EVA_SUIT);
+					boolean roverSuit = vehicle.getEquipmentInventory().containsEquipment(EquipmentType.EVA_SUIT);
 					boolean wearingSuit = (person.getSuit() != null);
 					goodEVASuit = roverSuit || wearingSuit;
 

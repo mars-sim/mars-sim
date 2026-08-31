@@ -50,7 +50,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         // Create bottle and assign to person
         var b = EquipmentFactory.createEquipment(EquipmentType.THERMAL_BOTTLE, s);
         b.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
-        p.assignThermalBottle();
+        p.dressForInside(s.getEquipmentInventory());
 
         testWater(p, s);
         assertTrue(b.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
@@ -61,13 +61,14 @@ class EatDrinkTest extends MarsSimUnitTest {
         var s = buildSettlement("mock");
         var p = buildPerson("eater", s);
         var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-        v.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
+        var vehEO = v.getEquipmentInventory();
+        vehEO.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE); 
 
         p.transfer(v);
         assertTrue(p.isInVehicle(), "In vehicle");
 
         testWater(p, v);
-        assertTrue(v.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
+        assertTrue(vehEO.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
 
     }
 
@@ -122,7 +123,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         p.transfer(v);
         assertTrue(p.isInVehicle(), "In vehicle");
 
-        testHunger(p, v);
+        testHunger(p, v.getEquipmentInventory());
     }
 
     private void testHunger(Person p, ResourceHolder rh) {

@@ -148,7 +148,7 @@ extends Task {
             return u.getSettlement().getEquipmentInventory();
         }
         else if (u.isInVehicle()) {
-            return u.getVehicle();
+            return u.getVehicle().getEquipmentInventory();
         }
         else {
             throw new IllegalStateException("Worker is not in a container to consolidate containers");

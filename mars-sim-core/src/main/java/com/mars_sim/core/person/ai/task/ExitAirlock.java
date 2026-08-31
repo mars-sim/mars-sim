@@ -911,10 +911,8 @@ public class ExitAirlock extends Task {
 			if (inSettlement)
 				housing = ((Building)airlock.getEntity()).getSettlement().getEquipmentInventory();
 			else
-				housing = (Vehicle)airlock.getEntity();
-	
-			// 0. Drop off the thermal bottle 
-			person.dropOffThermalBottle();
+				housing = ((Vehicle)airlock.getEntity()).getEquipmentInventory();
+
 			
 			// 1. Get a good EVA suit's instance from entity inventory
 			suit = EVASuitUtil.findEVASuitWithResources(housing, person);
@@ -935,10 +933,8 @@ public class ExitAirlock extends Task {
 			
 			// if a person hasn't donned the suit yet
 			// 0. Remove garment and put on pressure suit
-			if (person.unwearGarment(housing)) {
-				person.wearPressureSuit(housing);
-			}
-			
+			person.dressForEVA(housing);
+
 			// 2. Transfer the EVA suit from entity to person	
 			boolean success = suit.transfer(person);
 			
@@ -971,7 +967,7 @@ public class ExitAirlock extends Task {
 			if (inSettlement)
 				housing = ((Building)airlock.getEntity()).getSettlement().getEquipmentInventory();
 			else
-				housing = (Vehicle)airlock.getEntity();
+				housing = ((Vehicle)airlock.getEntity()).getEquipmentInventory();
 			
 			// 5. Loads the resources into the EVA suit
 			if (suit.loadResources(housing) < 0.9D) {

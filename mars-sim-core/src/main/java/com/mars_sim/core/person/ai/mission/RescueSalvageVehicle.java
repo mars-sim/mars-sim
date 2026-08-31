@@ -195,6 +195,9 @@ public class RescueSalvageVehicle extends RoverMission {
 	 */
 	private void rendezvousPhase(Worker member) {
 		var vehicleTarget = objective.getRecoverVehicle();
+		var targetRH = vehicleTarget.getEquipmentInventory();
+		var localRH = getRover().getEquipmentInventory();
+
 		logger.info(member, 5000, "Has arrived to rendezvous with " + vehicleTarget.getName() + ".");
 
 		// If rescuing vehicle crew, load rescue life support resources into vehicle (if
@@ -205,11 +208,11 @@ public class RescueSalvageVehicle extends RoverMission {
 			for (var required : rescueResources.entrySet()) {
 				int resource = required.getKey();
 				double amount = required.getValue().doubleValue();
-				double amountNeeded = amount - vehicleTarget.getSpecificAmountResourceStored(resource);
+				double amountNeeded = amount - targetRH.getSpecificAmountResourceStored(resource);
 
-				if ((amountNeeded > 0) && (getRover().getSpecificAmountResourceStored(resource) > amountNeeded)) {
-					getRover().retrieveAmountResource(resource, amountNeeded);
-					vehicleTarget.storeAmountResource(resource, amountNeeded);
+				if ((amountNeeded > 0) && (localRH.getSpecificAmountResourceStored(resource) > amountNeeded)) {
+					localRH.retrieveAmountResource(resource, amountNeeded);
+					targetRH.storeAmountResource(resource, amountNeeded);
 				}
 			}
 		}

@@ -101,8 +101,7 @@ public class Sleep extends Task {
 			var eo = EquipmentOwner.getAttached(person.getContainerUnit());
 			if (eo != null) {
 				// Finally assign essentials for sleeping
-				person.wearGarment(eo);
-				person.assignThermalBottle();
+				person.dressForInside(eo);
 			}
 			
 			// Note: each REM cycle lasts about 90 to 120 mins or 60 to 80 millisols

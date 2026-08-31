@@ -357,7 +357,7 @@ public class ExploreSite extends EVAOperation {
 	 */
 	private boolean takeSpecimenContainer() {
 		
-		Container container = rover.findContainer(EquipmentType.SPECIMEN_BOX, true, rockId);
+		Container container = rover.getEquipmentInventory().findContainer(EquipmentType.SPECIMEN_BOX, true, rockId);
 		if (container != null) {
 			return container.transfer(person);
 		}
@@ -373,14 +373,6 @@ public class ExploreSite extends EVAOperation {
 			// Task may end early before a Rover is selected
 			returnEquipmentToVehicle(rover);
 		}
-		
-		// Remove pressure suit and put on garment
-		if (person.unwearPressureSuit(rover)) {
-			person.wearGarment(rover);
-		}
-	
-		// Assign thermal bottle
-		person.assignThermalBottle();
 				
 		super.clearDown();
 	}

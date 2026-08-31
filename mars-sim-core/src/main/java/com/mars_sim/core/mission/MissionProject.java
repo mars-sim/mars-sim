@@ -95,6 +95,7 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
         leader.setMission(this);
         
         this.log = new MissionLog();
+        log.addEntry("Initiated");
 
         // Inviite them in
         recruits.forEach(r -> r.setMission(this));

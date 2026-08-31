@@ -11,6 +11,9 @@ import static com.mars_sim.core.test.SimulationAssertions.assertEqualLessThan;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
@@ -27,7 +30,7 @@ import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.VehicleController;
 
-public class PilotDroneTest extends MarsSimUnitTest {
+class PilotDroneTest extends MarsSimUnitTest {
     private static final double DIST = OperateVehicle.DISTANCE_BUFFER_ARRIVING * 10;  // Drive 5 km
     private static final double METHANOL_AMOUNT = 30D;
     private static final double OXYGEN_AMOUNT = METHANOL_AMOUNT * OperateVehicle.RATIO_OXIDIZER_FUEL;
@@ -68,11 +71,12 @@ public class PilotDroneTest extends MarsSimUnitTest {
 	}
 
     @Test
-    public void testFlyDrone() {
+    void testFlyDrone() {
         var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+                    ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        loadAmounts(v.getEquipmentInventory(), res);
 
         // move to plant
         v.transfer(getSurface());
@@ -122,11 +126,13 @@ public class PilotDroneTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testDroneNoFuel() {
+    void testDroneNoFuel() {
         var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+                    ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        var vehEO = v.getEquipmentInventory();
+        loadAmounts(vehEO, res);
 
         // move to plant
         v.transfer(getSim().getUnitManager().getMarsSurface());
@@ -148,8 +154,8 @@ public class PilotDroneTest extends MarsSimUnitTest {
         // Now that regen is possible for recharging the battery, the line below won't work
 //        assertEqualLessThan("Battery Percent", originalBatteryPercent, nowBatteryPercent);
             
-        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
-        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, v.getSpecificAmountResourceStored(v.getFuelTypeID()));
+        assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, vehEO.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
+        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, vehEO.getSpecificAmountResourceStored(v.getFuelTypeID()));
        
         // Now it will rely on its battery to power the flight
 
@@ -166,8 +172,8 @@ public class PilotDroneTest extends MarsSimUnitTest {
         executeTask(p, task, 7);  
 
         // Take away the fuel
-        v.retrieveAmountResource(v.getFuelTypeID(), v.getSpecificAmountResourceStored(v.getFuelTypeID()));
-        assertEquals(0.0D, v.getSpecificAmountResourceStored(v.getFuelTypeID()), "Fuel emptied");
+        vehEO.retrieveAmountResource(v.getFuelTypeID(), vehEO.getSpecificAmountResourceStored(v.getFuelTypeID()));
+        assertEquals(0.0D, vehEO.getSpecificAmountResourceStored(v.getFuelTypeID()), "Fuel emptied");
       
         // Pilot
         executeTask(p, task, 8);
@@ -185,12 +191,13 @@ public class PilotDroneTest extends MarsSimUnitTest {
      * Tests the thrust calculation for ascent flight condition.
      */
     @Test
-    public void testAscentThrust() {
+    void testAscentThrust() {
     	
       	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+                    ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        loadAmounts(v.getEquipmentInventory(), res);
         
         double currentHoveringHeight = 0;
 		
@@ -218,12 +225,13 @@ public class PilotDroneTest extends MarsSimUnitTest {
      * Tests the thrust calculation for descent flight condition.
      */
     @Test
-    public void testDescentThrust() {
+    void testDescentThrust() {
     	
       	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+                    ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        loadAmounts(v.getEquipmentInventory(), res);
         
         double currentHoveringHeight = Flyer.ELEVATION_ABOVE_GROUND;
 		
@@ -259,11 +267,12 @@ public class PilotDroneTest extends MarsSimUnitTest {
      * Tests the thrust calculation for hovering. 
      */
     @Test
-    public void testHoverThrust() {
+    void testHoverThrust() {
     	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+                    ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        loadAmounts(v.getEquipmentInventory(), res);
         
     	double currentHoveringHeight = .1;
     	
@@ -299,13 +308,14 @@ public class PilotDroneTest extends MarsSimUnitTest {
      * Tests the thrust calculation for tilted flight condition.
      */
     @Test
-    public void testTiltedThrust() {
+    void testTiltedThrust() {
     	
       	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
-        v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
-        
+        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+        					ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
+        loadAmounts(v.getEquipmentInventory(), res);
+
         double currentHoveringHeight = 0;
         
 		double ascentHeight = 1000 * Flyer.ELEVATION_ABOVE_GROUND / 50;

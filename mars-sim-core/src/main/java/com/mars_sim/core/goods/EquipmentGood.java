@@ -157,7 +157,7 @@ public class EquipmentGood extends Good {
 			if (mission instanceof VehicleMission vehicleMission) {
 				Vehicle vehicle = vehicleMission.getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
-					number += vehicle.findNumEmptyContainersOfType(equipmentType, false);
+					number += vehicle.getEquipmentInventory().findNumEmptyContainersOfType(equipmentType, false);
 			}
 		}
 
@@ -376,7 +376,7 @@ public class EquipmentGood extends Good {
 			if (mission instanceof VehicleMission vehicleMission) {
 				Vehicle vehicle = vehicleMission.getVehicle();
 				if ((vehicle != null) && (vehicle.getSettlement() == null)) {
-					equipmentList.addAll(vehicle.findContainersOfType(equipmentType));
+					equipmentList.addAll(vehicle.getEquipmentInventory().findContainersOfType(equipmentType));
 				}
 			}
 		}

@@ -195,7 +195,7 @@ public class CollectResources extends EVAOperation {
 	 * @throws Exception if error taking container.
 	 */
 	private boolean takeContainer() {
-		Container container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+		Container container = ContainerUtil.findLeastFullContainer(rover.getEquipmentInventory(), containerType, resourceType);
 
 		if (container != null) {
 			boolean success = container.transfer(person);
@@ -325,7 +325,7 @@ public class CollectResources extends EVAOperation {
 		// Add to the daily output
 		rover.getAssociatedSettlement().addOutput(newResourceID, amount, effort);
 		// Store the amount in the settlement
-		rover.storeAmountResource(newResourceID, amount);
+		rover.getEquipmentInventory().storeAmountResource(newResourceID, amount);
 		mission.recordResourceCollected(resourceType, newResourceID);
 	}
     
@@ -364,7 +364,7 @@ public class CollectResources extends EVAOperation {
 			Container container = ContainerUtil.findLeastFullContainer(person.getEquipmentInventory(), containerType, resourceType);
 			if (container == null) {
 				// Checks if the rover has an available container with remaining capacity for resource.
-				container = ContainerUtil.findLeastFullContainer(rover, containerType, resourceType);
+				container = ContainerUtil.findLeastFullContainer(rover.getEquipmentInventory(), containerType, resourceType);
 			}
 			// Transfer that container from rover to person
 			boolean containerAvailable = false;
@@ -410,7 +410,6 @@ public class CollectResources extends EVAOperation {
 				if (container != null) {
 					boolean done = container.transfer(rover);
 					if (done) {
-//						logger.info(person, 5000, "Done transferring a " + containerType.getName().toLowerCase() + " from person back to rover.");
 						double amount = container.getSpecificAmountResourceStored(resourceType);
 						if (amount > 0) {
 							unloadContainer(container, amount, getTimeCompleted());
@@ -421,19 +420,6 @@ public class CollectResources extends EVAOperation {
 				}	
 			}
 		}
-		
-//		if (rover != null) {
-//			// Task may end early before a Rover is selected
-//			returnEquipmentToVehicle(rover);
-//		}
-		
-		// Remove pressure suit and put on garment
-		if (person.unwearPressureSuit(rover)) {
-			person.wearGarment(rover);
-		}
-	
-		// Assign thermal bottle
-		person.assignThermalBottle();
 
 		super.clearDown();
 	}

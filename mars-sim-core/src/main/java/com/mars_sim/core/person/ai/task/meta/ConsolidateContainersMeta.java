@@ -80,7 +80,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
     public List<TaskJob> getTaskJobs(Person person) {
         List<TaskJob> result = Collections.emptyList();
         if (person.isInVehicle() && person.isInside() &&
-                        needsConsolidation(person.getVehicle(), false)) {
+                        needsConsolidation(person.getVehicle().getEquipmentInventory(), false)) {
             // Create a real list
             result = new ArrayList<>();
             RatingScore score = new RatingScore(DEFAULT_SCORE);

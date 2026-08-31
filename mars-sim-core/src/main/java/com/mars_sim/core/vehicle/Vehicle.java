@@ -33,12 +33,7 @@ import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.TerrainElevation;
-import com.mars_sim.core.equipment.Container;
-import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
-import com.mars_sim.core.equipment.EquipmentOwner;
-import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
@@ -77,7 +72,7 @@ import com.mars_sim.core.vehicle.task.LoadingController;
  */
 public abstract class Vehicle extends AbstractMobileUnit
 		implements Malfunctionable, Salvagable, Temporal,
-		LocalBoundedObject, EquipmentOwner, ItemHolder, UnitHolder, Towed {
+		LocalBoundedObject, UnitHolder, Towed {
 
 	private static final long serialVersionUID = 1L;
 
@@ -940,7 +935,7 @@ public abstract class Vehicle extends AbstractMobileUnit
     			range = MAXIMUM_RANGE;
     		}
     		else {
-                double amountOfFuel = getSpecificAmountResourceStored(fuelTypeID);
+                double amountOfFuel = getEquipmentInventory().getSpecificAmountResourceStored(fuelTypeID);
             	// During the journey, the range would be based on the amount of fuel in the vehicle
         		range = getEstimatedFuelEconomy() * amountOfFuel;
     		}
@@ -973,7 +968,7 @@ public abstract class Vehicle extends AbstractMobileUnit
      * @return
      */
     public double getFuelPercent() {
-    	return getSpecificAmountResourceStored(getFuelTypeID()) / getFuelCapacity() * 100;
+    	return getEquipmentInventory().getSpecificAmountResourceStored(getFuelTypeID()) / getFuelCapacity() * 100;
     }
     
 	/**
@@ -2041,347 +2036,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public boolean isUsableVehicle() {
 		return isVehicleReady(); 
 		// Note: isEmpty() doesn't need to be true
-	}
-
-	
-	/**
-	 * Gets the total mass on this vehicle (not including vehicle's weight).
-	 *
-	 * @return
-	 */
-	@Override
-	public double getStoredMass() {
-		return eqmInventory.getStoredMass();
-	}
-
-	/**
-	 * Gets the equipment list.
-	 *
-	 * @return
-	 */
-	@Override
-	public Set<Equipment> getEquipmentSet() {
-		return eqmInventory.getEquipmentSet();
-	}
-
-	/**
-	 * Gets the container set.
-	 *
-	 * @return
-	 */
-	@Override
-	public Set<Equipment> getContainerSet() {
-		return eqmInventory.getContainerSet();
-	}
-
-	/**
-	 * Gets the EVA suit set.
-	 * 
-	 * @return
-	 */
-	@Override
-	public Set<Equipment> getSuitSet() {
-		return eqmInventory.getSuitSet();
-	}
-	
-	/**
-	 * Gets the data recorder set.
-	 * 
-	 * @return
-	 */
-	@Override
-	public Set<Equipment> getRecorderSet() {
-		return eqmInventory.getRecorderSet();
-	}
-	
-	/**
-	 * Finds all of the containers of a particular type (excluding EVA suit).
-	 *
-	 * @return collection of containers or empty collection if none.
-	 */
-	@Override
-	public Collection<Container> findContainersOfType(EquipmentType type){
-		return eqmInventory.findContainersOfType(type);
-	}
-
-	/**
-	 * Does this unit possess an equipment of this type ?
-	 *
-	 * @param typeID
-	 * @return
-	 */
-	@Override
-	public boolean containsEquipment(EquipmentType type) {
-		return eqmInventory.containsEquipment(type);
-	}
-
-	/**
-	 * Adds an equipment to this unit.
-	 *
-	 * @param equipment
-	 * @return true if it can be carried
-	 */
-	@Override
-	public boolean addEquipment(Equipment e) {
-		return eqmInventory.addEquipment(e);
-	}
-
-	/**
-	 * Removes an equipment.
-	 *
-	 * @param equipment
-	 */
-	@Override
-	public boolean removeEquipment(Equipment equipment) {
-		return eqmInventory.removeEquipment(equipment);
-	}
-
-	/**
-	 * Stores the item resource.
-	 *
-	 * @param resource the item resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public int storeItemResource(int resource, int quantity) {
-		return eqmInventory.storeItemResource(resource, quantity);
-	}
-
-	/**
-	 * Retrieves the item resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public int retrieveItemResource(int resource, int quantity) {
-		return eqmInventory.retrieveItemResource(resource, quantity);
-	}
-
-	/**
-	 * Retrieves the resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public double retrieveAmountResource(int resource, double quantity) {
-		return eqmInventory.retrieveAmountResource(resource, quantity);
-	}
-
-	/**
-	 * Stores the resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public double storeAmountResource(int resource, double quantity) {
-		return eqmInventory.storeAmountResource(resource, quantity);
-	}
-
-	/**
-	 * Gets the item resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public int getItemResourceStored(int resource) {
-		return eqmInventory.getItemResourceStored(resource);
-	}
-
-	/**
-	 * Gets the capacity of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return capacity
-	 */
-	@Override
-	public double getSpecificCapacity(int resource) {
-		return eqmInventory.getSpecificCapacity(resource);
-	}
-
-	/**
-	 * Obtains the remaining combined capacity of storage space of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingCombinedCapacity(int resource) {
-		return eqmInventory.getRemainingCombinedCapacity(resource);
-	}
-
-	/**
-	 * Obtains the remaining specific capacity of storage space of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingSpecificCapacity(int resource) {
-		return eqmInventory.getRemainingSpecificCapacity(resource);
-	}
-
-	/**
-	 * Does it have unused space or capacity for a particular resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return eqmInventory.hasAmountResourceRemainingCapacity(resource);
-	}
-	
-	/**
-     * Gets the total capacity that it can hold.
-     *
-     * @return total capacity (kg).
-     */
-	@Override
-	public double getCargoCapacity() {
-		return eqmInventory.getCargoCapacity();
-	}
-
-	/**
-	 * Gets the specific amount resources stored, NOT including those inside equipment.
-	 *
-	 * @param resource
-	 * @return amount
-	 */
-	@Override
-	public double getSpecificAmountResourceStored(int resource) {
-		return eqmInventory.getSpecificAmountResourceStored(resource);
-	}
-
-	/**
-	 * Gets the quantity of all stock and specific amount resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAllAmountResourceStored(int resource) {
-		return eqmInventory.getAllAmountResourceStored(resource);
-	}
-	
-	/**
-	 * Finds the number of empty containers of a class that are contained in storage and have
-	 * an empty inventory.
-	 *
-	 * @param containerClass  the unit class
-	 * @param brandNew  does it include brand new bag only
-	 * @return number of empty containers
-	 */
-	@Override
-	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		return eqmInventory.findNumEmptyContainersOfType(containerType, brandNew);
-	}
-
-	/**
-	 * Finds the number of containers of a particular type.
-	 * 
-	 * Note: will not count EVA suits.
-	 *
-	 * @param containerType the equipment type
-	 * @return number of empty containers
-	 */
-	@Override
-	public int findNumContainersOfType(EquipmentType containerType) {
-		return eqmInventory.findNumContainersOfType(containerType);
-	}
-
-	/**
-	 * Finds a container in storage.
-	 *
-	 * Note: will not count EVA suits.
-	 * 
-	 * @param containerType
-	 * @param empty does it need to be empty ?
-	 * @param resource If -1 then resource doesn't matter
-	 * @return instance of container or null if none
-	 */
-	@Override
-	public Container findContainer(EquipmentType containerType, boolean empty, int resource) {
-		return eqmInventory.findContainer(containerType, empty, resource);
-	}
-
-
-	/**
-	 * Finds the number of EVA suits (may or may not have resources inside) that are contained in storage.
-	 *
-	 * @return number of EVA suits
-	 */
-	public int findNumEVASuits() {
-		return getSuitSet().size();
-	}
-
-	/**
-	 * Gets a set of item resources in storage.
-	 * 
-	 * @return  a set of resources
-	 */
-	@Override
-	public Set<Integer> getItemResourceIDs() {
-		return eqmInventory.getItemResourceIDs();
-	}
-
-	/**
-	 * Gets a set of resources in storage.
-	 * 
-	 * @return  a set of resources
-	 */
-	@Override
-	public Set<Integer> getSpecificResourceStoredIDs() {
-		return eqmInventory.getSpecificResourceStoredIDs();
-	}
-	
-	/**
-	 * Gets all stored amount resources in eqmInventory, including inside equipment.
-	 *
-	 * @return all stored amount resources.
-	 */
-	@Override
-	public Set<Integer> getAllAmountResourceStoredIDs() {
-		return eqmInventory.getAllAmountResourceStoredIDs();
-	}
-	
-	/**
-	 * Obtains the remaining general storage space.
-	 *
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingCargoCapacity() {
-		return eqmInventory.getRemainingCargoCapacity();
-	}
-
-	/**
-	 * Does it have this item resource ?
-	 *
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasItemResource(int resource) {
-		return eqmInventory.hasItemResource(resource);
-	}
-
-	/**
-	 * Gets the remaining quantity of an item resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public int getItemResourceRemainingQuantity(int resource) {
-		return eqmInventory.getItemResourceRemainingQuantity(resource);
 	}
 
 	/**

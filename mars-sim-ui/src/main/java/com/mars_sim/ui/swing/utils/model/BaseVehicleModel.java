@@ -192,7 +192,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
         return switch(valueIndex) {
             case NAME_VAL -> entity.getName();
             case MISSION_VAL -> (entity.getMission() != null) ? entity.getMission().getName() : "";
-            case TYPE_VAL -> entity.getVehicleSpec().getName(); //.getVehicleType().getName();
+            case TYPE_VAL -> entity.getVehicleSpec().getName();
             case STATUS_VAL -> entity.printStatusTypes();
             case SETTLEMENT_VAL -> entity.getAssociatedSettlement().getName();
 			case SPEED_VAL  -> entity.getSpeed();
@@ -202,7 +202,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
 			case BATTERY_VAL -> entity.getController().getBattery().getBatteryStatus().getName();
 			case FUEL_VAL -> entity.getFuelPercent();
             case EST_RANGE_VAL -> entity.getEstimatedRange();
-            case CARGO_CAP_VAL -> entity.getCargoCapacity();
+            case CARGO_CAP_VAL -> entity.getEquipmentInventory().getCargoCapacity();
             case HASLAB_VAL -> {
                 if (entity instanceof Rover r)
                     yield r.hasLab();
@@ -263,7 +263,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
 			}
 
             // Check for a resource column
-            default -> InventoryColumnHelper.getValue(entity, valueIndex);
+            default -> InventoryColumnHelper.getValue(entity.getEquipmentInventory(), valueIndex);
         };
     }
 

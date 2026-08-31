@@ -164,10 +164,10 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 		List<TaskJob> tasks = new ArrayList<>();
 
         if (person.isInVehicle()) {
-			var partStore = person.getVehicle();
-			Collection<Malfunctionable> source = MalfunctionFactory.getMalfunctionables(person.getVehicle());
+			var partStore = person.getVehicle().getEquipmentInventory();
+			var source = MalfunctionFactory.getMalfunctionables(person.getVehicle());
 			for (RepairNeeded t: getRepairTasks(source, partStore)) {
-				RatingScore score = new RatingScore(t.score);
+				var score = new RatingScore(t.score);
 				score.addModifier("inside", 3D); //Repairs in Vehicles are important
 				tasks.add(new RepairTaskJob(t));
 			}

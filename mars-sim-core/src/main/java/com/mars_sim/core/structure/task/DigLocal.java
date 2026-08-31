@@ -508,27 +508,18 @@ public abstract class DigLocal extends EVAOperation {
 
 		// This is the end of the Task so must return 
 		Container container = findPersonContainer(containerType, resourceID);
-		if (container == null)
-			return;
+		if (container != null) {
 
-		// Transfer the container back to the settlement
-		boolean success = container.transfer(settlement);
-		if (!success)
-			logger.warning(person, "Unable to transfer " + containerType.getName() + " back.");
+			// Transfer the container back to the settlement
+			boolean success = container.transfer(settlement);
+			if (!success)
+				logger.warning(person, "Unable to transfer " + containerType.getName() + " back.");
 
-		double amount = container.getSpecificAmountResourceStored(resourceID);
-		if (amount > 0) {
-			unloadContainer(container, amount, getTimeCompleted());
+			double amount = container.getSpecificAmountResourceStored(resourceID);
+			if (amount > 0) {
+				unloadContainer(container, amount, getTimeCompleted());
+			}
 		}
-		
-		// Remove pressure suit and put on garment
-		var eo = settlement.getEquipmentInventory();
-		if (person.unwearPressureSuit(eo)) {
-			person.wearGarment(eo);
-		}
-	
-		// Assign thermal bottle
-		person.assignThermalBottle();
 
 		super.clearDown();
     }

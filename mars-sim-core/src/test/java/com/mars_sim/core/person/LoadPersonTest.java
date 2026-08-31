@@ -8,7 +8,10 @@
 package com.mars_sim.core.person;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,7 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 
@@ -80,19 +84,56 @@ class LoadPersonTest extends MarsSimUnitTest {
 		assertTrue(canTransfer, bag + " cannot be transferred from " + settlement 
 				+ " to " + person.getName() + ".");
 	}
-	
+
+		/*
+	 * Test if a person can be assigned a thermal bottle.
+	 */
+	@Test
+	void testDressEVA() {
+		EquipmentFactory.createEquipment(EquipmentType.THERMAL_BOTTLE, settlement);
+		var setEO = settlement.getEquipmentInventory();
+
+		Map<Integer, Integer> toWear = Map.of(ItemResourceUtil.PRESSURE_SUIT_ID, 1);
+		loadItems(setEO, toWear);
+
+		var personEO = person.getEquipmentInventory();
+		Map<Integer, Integer> wearing = Map.of(ItemResourceUtil.GARMENT_ID, 1);
+		loadItems(personEO, wearing);
+		person.dressForEVA(setEO);
+		
+		boolean hasIt = person.hasThermalBottle();
+		assertFalse(hasIt, "Bottle assigned");
+
+		assertEquals(0, personEO.getItemResourceStored(ItemResourceUtil.GARMENT_ID), "Garment removed");
+		assertEquals(1, setEO.getItemResourceStored(ItemResourceUtil.GARMENT_ID), "Garment stored");
+
+		assertEquals(1, personEO.getItemResourceStored(ItemResourceUtil.PRESSURE_SUIT_ID), "Pressure suit worn");
+		assertEquals(0, setEO.getItemResourceStored(ItemResourceUtil.PRESSURE_SUIT_ID), "Pressure suit claimed");
+	}	
+
 	/*
 	 * Test if a person can be assigned a thermal bottle.
 	 */
 	@Test
-	void testAssignThermalBottle() {
-		Equipment bottle = EquipmentFactory.createEquipment(EquipmentType.THERMAL_BOTTLE, settlement);
+	void testDressInside() {
+		EquipmentFactory.createEquipment(EquipmentType.THERMAL_BOTTLE, settlement);
+		var setEO = settlement.getEquipmentInventory();
 
-		person.assignThermalBottle();
+		Map<Integer, Integer> toWear = Map.of(ItemResourceUtil.GARMENT_ID, 1);
+		loadItems(setEO, toWear);
+
+		var personEO = person.getEquipmentInventory();
+		Map<Integer, Integer> wearing = Map.of(ItemResourceUtil.PRESSURE_SUIT_ID, 1);
+		loadItems(personEO, wearing);
+		person.dressForInside(setEO);
 		
 		boolean hasIt = person.hasThermalBottle();
-		
-		assertTrue(hasIt, bottle + " cannot be transferred from " + settlement 
-				+ " to " + person.getName() + ".");
+		assertTrue(hasIt, "Bottle assigned");
+
+		assertEquals(1, personEO.getItemResourceStored(ItemResourceUtil.GARMENT_ID), "Garment wearing");
+		assertEquals(0, setEO.getItemResourceStored(ItemResourceUtil.GARMENT_ID), "Garment removed");
+
+		assertEquals(0, personEO.getItemResourceStored(ItemResourceUtil.PRESSURE_SUIT_ID), "Pressure suit returned");
+		assertEquals(1, setEO.getItemResourceStored(ItemResourceUtil.PRESSURE_SUIT_ID), "Pressure suit stored");
 	}	
 }

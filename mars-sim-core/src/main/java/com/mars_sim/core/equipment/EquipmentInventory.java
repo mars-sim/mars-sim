@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.equipment;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +30,7 @@ import com.mars_sim.core.resource.ResourceUtil;
  * basic capacity management.
  */
 public class EquipmentInventory
-		implements EquipmentOwner, BinHolder, Serializable {
+		implements EquipmentOwner, BinHolder{
 
 	private static final long serialVersionUID = 1L;
 

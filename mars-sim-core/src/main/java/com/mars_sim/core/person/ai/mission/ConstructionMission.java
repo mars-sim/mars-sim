@@ -230,7 +230,7 @@ public class ConstructionMission extends AbstractMission {
 				try {
 					ih.retrieveItemResource(part, 1);
 					if (vehicle != null) {
-						vehicle.storeItemResource(part, 1);
+						vehicle.getEquipmentInventory().storeItemResource(part, 1);
 					}
 					luvAttachmentParts.add(part);
 				} catch (Exception _) {

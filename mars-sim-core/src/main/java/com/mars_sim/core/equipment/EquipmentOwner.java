@@ -6,13 +6,15 @@
  */
 package com.mars_sim.core.equipment;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.Vehicle;
 
-public interface EquipmentOwner extends ItemHolder, ResourceHolder {
+public interface EquipmentOwner extends ItemHolder, ResourceHolder, Serializable {
 	  
 	/**
 	 * Gets the total mass held in this entity.
@@ -172,6 +174,7 @@ public interface EquipmentOwner extends ItemHolder, ResourceHolder {
 	static EquipmentOwner getAttached(Object source) {
 		return switch (source) {
 			case EquipmentOwner eo -> eo;
+			case Vehicle v -> v.getEquipmentInventory();
 			case Worker w -> w.getEquipmentInventory();
 			case Settlement s -> s.getEquipmentInventory();
 			default -> null;

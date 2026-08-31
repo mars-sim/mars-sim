@@ -75,7 +75,8 @@ public class LoadingController implements Serializable {
 	private Map<Integer, Integer> itemManifest;
 	private Map<Integer, Integer> optionalItemManifest;
 	
-	private EquipmentInventory stores;
+	private EquipmentOwner stores;
+	private EquipmentOwner vehicleStores;
 	private Settlement settlement;
 	private Vehicle vehicle;
 
@@ -92,6 +93,7 @@ public class LoadingController implements Serializable {
 		this.settlement = settlement;
 		this.stores = settlement.getEquipmentInventory();
 		this.vehicle = vehicle;
+		this.vehicleStores = vehicle.getEquipmentInventory();
 
 		// Take copies to form the manifest as the quantities will be reduced
 		this.amountManifest = new HashMap<>(manifest.getAmounts(true));
@@ -125,7 +127,7 @@ public class LoadingController implements Serializable {
 		Set<Integer> ids = new HashSet<>(equipment.keySet());
 		for (Integer eqmId : ids) {
 			EquipmentType eType = EquipmentType.convertID2Type(eqmId);
-			int amountLoaded = getEquipmentSet(vehicle, eType).size();
+			int amountLoaded = getEquipmentSet(vehicleStores, eType).size();
 			if (amountLoaded > 0) {
 				int newAmount = equipment.get(eqmId).intValue() - amountLoaded;
 				if (newAmount <= 0D) {
@@ -147,8 +149,8 @@ public class LoadingController implements Serializable {
 	private void removeVehicleAmounts(Map<Integer, Double> resources) {
 		Set<Integer> ids = new HashSet<>(resources.keySet());
 		for (Integer resourceId : ids) {
-			double amountLoaded = vehicle.getAllAmountResourceStored(resourceId);
-			double capacity = vehicle.getSpecificCapacity(resourceId);
+			double amountLoaded = vehicleStores.getAllAmountResourceStored(resourceId);
+			double capacity = vehicleStores.getSpecificCapacity(resourceId);
 			double amountRequired = resources.get(resourceId).doubleValue();
 			if (capacity < amountRequired) {
 				// So the vehicle can not handle the Manifest volume
@@ -181,7 +183,7 @@ public class LoadingController implements Serializable {
 	private void removeVehicleItems(Map<Integer, Integer> resources) {
 		Set<Integer> ids = new HashSet<>(resources.keySet());
 		for (Integer resourceId : ids) {
-			int amountLoaded = vehicle.getItemResourceStored(resourceId);
+			int amountLoaded = vehicleStores.getItemResourceStored(resourceId);
 			if (amountLoaded > 0) {
 				int newAmount = resources.get(resourceId).intValue() - amountLoaded;
 				if (newAmount <= 0D) {
@@ -247,7 +249,7 @@ public class LoadingController implements Serializable {
 		
 		// If not completed then check that the vehicle still has a capacity
 		if (!completed) {
-			vehicleFull = vehicle.getRemainingCargoCapacity() < 10D;
+			vehicleFull = vehicleStores.getRemainingCargoCapacity() < 10D;
 			if (vehicleFull) {
 				completed = true;
 				logger.warning(vehicle, "Vehicle full so loading completed");
@@ -364,7 +366,7 @@ public class LoadingController implements Serializable {
 			}
 
 			// Check remaining capacity in vehicle inventory.
-			double remainingCapacity = vehicle.getRemainingSpecificCapacity(resource);
+			double remainingCapacity = vehicleStores.getRemainingSpecificCapacity(resource);
 			if (remainingCapacity < amountToLoad) {
 				if (remainingCapacity < SMALLEST_RESOURCE_LOAD) {
 					// Nothing left for this type so stop loading this resource
@@ -389,7 +391,7 @@ public class LoadingController implements Serializable {
 				// Take resource from the settlement
 				stores.retrieveAmountResource(resource, amountToLoad);
 				// Store resource in the vehicle
-				vehicle.storeAmountResource(resource, amountToLoad);
+				vehicleStores.storeAmountResource(resource, amountToLoad);
 			}
 		}
 
@@ -453,7 +455,7 @@ public class LoadingController implements Serializable {
 			}
 
 			// Check remaining capacity in vehicle inventory.
-			double remainingMassCapacity = vehicle.getRemainingCargoCapacity();
+			double remainingMassCapacity = vehicleStores.getRemainingCargoCapacity();
 			if (remainingMassCapacity < 0D) {
 				remainingMassCapacity = 0D;
 			}
@@ -476,7 +478,7 @@ public class LoadingController implements Serializable {
 				// Take resource from the settlement
 				stores.retrieveItemResource(id, amountToLoad);
 				// Store resource in the vehicle
-				vehicle.storeItemResource(id, amountToLoad);
+				vehicleStores.storeItemResource(id, amountToLoad);
 			} catch (Exception e) {
 				logger.severe(vehicle, "Cannot transfer Item from settlement to vehicle: ", e);
 				return amountLoading;

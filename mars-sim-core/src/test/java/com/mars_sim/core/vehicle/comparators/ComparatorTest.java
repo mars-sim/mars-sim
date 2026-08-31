@@ -57,7 +57,8 @@ class ComparatorTest extends MarsSimUnitTest {
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
         var e = buildRover(s, "Explorer", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
 
-        assertTrue(e.getCargoCapacity() < c.getCargoCapacity(), "Explorer has less cargo capacity than Cargo");
+        assertTrue(e.getEquipmentInventory().getCargoCapacity()
+                    < c.getEquipmentInventory().getCargoCapacity(), "Explorer has less cargo capacity than Cargo");
 
         var v = new ArrayList<>(List.of(t,c,e));
 

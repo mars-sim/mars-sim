@@ -739,21 +739,6 @@ public abstract class GatherData extends EVAOperation {
 //		}
 //      return null;
     }
-
-    /**
-     * Closes out this task. If person is inside then transfer the resource from the container to the Settlement.
-     */
-    @Override
-    protected void clearDown() {
-		if (containerUnit == null) {
-			return;
-		}
-	
-		// Assign thermal bottle
-//		person.assignThermalBottle();
-
-		super.clearDown();
-    }
     
 	/**
 	 * Is the person qualified for gathering data ?

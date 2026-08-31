@@ -11,6 +11,7 @@ import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
+import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Lab;
@@ -80,8 +81,7 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("averagePower", String.format(CommandHelper.KW_FORMAT, source.getBasePower()));
 		buffer.appendLabeledString("Base Range", String.format(CommandHelper.KM_FORMAT, source.getBaseRange()));
 	
-		if (source instanceof GroundVehicle) {
-			GroundVehicle gv = (GroundVehicle) source;
+		if (source instanceof GroundVehicle gv) {
 			buffer.appendLabeledString("Terrain Handling", String.format("%.2f", gv.getTerrainHandlingCapability()));
 		}
 		
@@ -97,19 +97,22 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("Instantaneous Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getIFuelConsumption()));
 		buffer.appendLabeledString("Cumulative Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getCumFuelConsumption()));	
 	
-		if (source instanceof Crewable) {
-			int crewSize = ((Crewable) source).getCrewCapacity();
+		if (source instanceof Crewable c) {
+			int crewSize = c.getCrewCapacity();
 			buffer.appendLabelledDigit("Crew Size", crewSize);
 		}	
 
 		if (isRover || isDrone) {
-			buffer.appendLabeledString("Cargo Capacity", String.format(CommandHelper.KG_FORMAT, source.getCargoCapacity()));
 			buffer.appendLabeledString("Odometer Distance", String.format(CommandHelper.KM_FORMAT, source.getOdometerMileage()));	
 			buffer.appendLabeledString("Cumulative Energy Usage", String.format(CommandHelper.KWH_FORMAT, source.getCumEnergyUsage()));	
 		}
+		 var inv = EquipmentOwner.getAttached(source);
+		if (inv != null) {
+			buffer.appendLabeledString("Cargo Capacity", String.format(CommandHelper.KG_FORMAT, inv.getCargoCapacity()));
+		}
 
-		if (source instanceof Medical) {
-			SickBay sickbay = ((Medical) source).getSickBay();
+		if (source instanceof Medical m) {
+			SickBay sickbay = m.getSickBay();
 			if (sickbay != null) {
 				buffer.appendLabelledDigit("Bed Capacity (Sick Bay)", sickbay.getBedCapacity());
 				buffer.appendLabelledDigit("# Open Beds (Sick Bay)", sickbay.getOpenBedNum());

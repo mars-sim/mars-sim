@@ -75,32 +75,35 @@ class UnloadHelperTest extends MarsSimUnitTest{
     void testUnloadInventory() {
         var s = buildSettlement("towing");
         var v = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-        s.getEquipmentInventory().setCargoCapacity(50);
-        v.getEquipmentInventory().setCargoCapacity(60);
+
+        var srh = s.getEquipmentInventory();
+        srh.setCargoCapacity(50);
+
+        var vehEO = v.getEquipmentInventory();
+        vehEO.setCargoCapacity(60);
         
         // Load the vehicle
         int res1 = ResourceUtil.OXYGEN_ID;
-        v.storeAmountResource(res1, 10D);
+        vehEO.storeAmountResource(res1, 10D);
         int res2 = ResourceUtil.FOOD_ID;
-        v.storeAmountResource(res2, 10D);
+        vehEO.storeAmountResource(res2, 10D);
         int part1 = ItemResourceUtil.GARMENT_ID;
-        v.storeItemResource(part1, 10);
+        vehEO.storeItemResource(part1, 10);
 
-        double mass = v.getStoredMass();
+        double mass = vehEO.getStoredMass();
         
         assertGreaterThan("Initial stored mass", 0D, mass);
 
         double amountNotUsed = UnloadHelper.unloadInventory(v, s, mass);
         assertEquals(0D, amountNotUsed, "All efforts being used up");
         
-        mass = v.getStoredMass();
+        mass = vehEO.getStoredMass();
         
         assertEquals(0D, mass, "Final stored mass");
         
-        var rh = s.getEquipmentInventory();
-        assertEquals(10D, rh.getSpecificAmountResourceStored(res1), "Settlement res1");
-        assertEquals(10D, rh.getSpecificAmountResourceStored(res2), "Settlement res2");
-        assertEquals(10, rh.getItemResourceStored(part1), "Settlement part1");
+        assertEquals(10D, srh.getSpecificAmountResourceStored(res1), "Settlement res1");
+        assertEquals(10D, srh.getSpecificAmountResourceStored(res2), "Settlement res2");
+        assertEquals(10, srh.getItemResourceStored(part1), "Settlement part1");
 
     }
 }

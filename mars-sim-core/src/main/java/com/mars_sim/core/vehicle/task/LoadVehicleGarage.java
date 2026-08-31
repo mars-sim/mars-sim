@@ -178,7 +178,8 @@ public class LoadVehicleGarage extends Task {
 		// Check input parameters.
 		if (settlement == null)
 			throw new IllegalArgumentException("settlement is null");
-		var rh = settlement.getEquipmentInventory();
+		var setEO = settlement.getEquipmentInventory();
+		var vehEO = vehicle.getEquipmentInventory();
 
 		boolean roverInSettlement = false;
 		// Check defensively to make sure the vehicle is NOT parked in the settlement vicinity
@@ -193,10 +194,10 @@ public class LoadVehicleGarage extends Task {
 			int resource = required.getKey();
 			if (ResourceType.getType(resource) == ResourceType.AMOUNT_RESOURCE) {
 
-				double stored = rh.getAllAmountResourceStored(resource);
+				double stored = setEO.getAllAmountResourceStored(resource);
 				double needed = required.getValue().doubleValue();
 				double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
-				double loaded = vehicle.getAllAmountResourceStored(resource);
+				double loaded = vehEO.getAllAmountResourceStored(resource);
 				double totalNeeded = needed + settlementNeed - loaded;
 					
 				if (stored < totalNeeded) {
@@ -210,10 +211,10 @@ public class LoadVehicleGarage extends Task {
 			else if (ResourceType.getType(resource) == ResourceType.ITEM_RESOURCE) {
 				int needed = required.getValue().intValue();
 				int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
-				int numLoaded = vehicle.getItemResourceStored(resource);
+				int numLoaded = vehEO.getItemResourceStored(resource);
 				int totalNeeded = needed + settlementNeed - numLoaded;
-				if (rh.getItemResourceStored(resource) < totalNeeded) {
-					int stored = rh.getItemResourceStored(resource);
+				if (setEO.getItemResourceStored(resource) < totalNeeded) {
+					int stored = setEO.getItemResourceStored(resource);
 					if (logger.isLoggable(Level.INFO))
 						logSettlementShortageNum(vehicle, ItemResourceUtil.findItemResourceName(resource),
 								numLoaded, needed, settlementNeed, stored);
@@ -229,9 +230,9 @@ public class LoadVehicleGarage extends Task {
 			EquipmentType eType = EquipmentType.convertID2Type(equipmentType);
 			int needed = eRequired.getValue();
 			int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
-			int numLoaded = vehicle.findNumEmptyContainersOfType(eType, false);
+			int numLoaded = vehEO.findNumEmptyContainersOfType(eType, false);
 			int totalNeeded = needed + settlementNeed - numLoaded;
-			int stored = rh.findNumEmptyContainersOfType(eType, false);
+			int stored = setEO.findNumEmptyContainersOfType(eType, false);
 			if (stored < totalNeeded) {	
 				if (logger.isLoggable(Level.INFO)) {
 					logSettlementShortageNum(vehicle, eType.toString(),

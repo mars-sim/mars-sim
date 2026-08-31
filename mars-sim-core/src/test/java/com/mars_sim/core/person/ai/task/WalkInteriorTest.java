@@ -39,7 +39,7 @@ import com.mars_sim.core.vehicle.task.LoadVehicleGarage;
 /**
  * A unit test suite for the WalkInterior task class.
  */
-public class WalkInteriorTest extends MarsSimUnitTest {
+class WalkInteriorTest extends MarsSimUnitTest {
 
 	private static final LocalPosition HATCH2_POSITION = new LocalPosition(-7.5D, 0D);
 
@@ -52,7 +52,7 @@ public class WalkInteriorTest extends MarsSimUnitTest {
      * Test the walkingPhase method.
      */
     @Test
-    public void testWalkingInSameBuildings() {
+    void testWalkingInSameBuildings() {
 
         Settlement settlement = buildSettlement("mock");
         BuildingManager buildingManager = settlement.getBuildingManager();
@@ -79,7 +79,7 @@ public class WalkInteriorTest extends MarsSimUnitTest {
      * Test the walking to a garage
      */
     @Test
-    public void testWalkingInGarageBuildings() {
+    void testWalkingInGarageBuildings() {
 
         Settlement settlement = buildSettlement("mock");
         BuildingManager buildingManager = settlement.getBuildingManager();
@@ -134,7 +134,7 @@ public class WalkInteriorTest extends MarsSimUnitTest {
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(person, task, 1000);
-        assertGreaterThan("Final stored mass", 0D, v.getStoredMass());
+        assertGreaterThan("Final stored mass", 0D, v.getEquipmentInventory().getStoredMass());
         
         assertEquals(b1, person.getBuildingLocation(), "Person building position");
 		assertFalse(person.isInSettlement(), "Person in settlement");
@@ -198,7 +198,7 @@ public class WalkInteriorTest extends MarsSimUnitTest {
      * Test the walkingPhase method.
      */
     @Test
-    public void testWalkingBetweenThreeBuildings() {
+    void testWalkingBetweenThreeBuildings() {
 
         Settlement settlement = buildSettlement("mock");
         BuildingManager buildingManager = settlement.getBuildingManager();
@@ -234,7 +234,7 @@ public class WalkInteriorTest extends MarsSimUnitTest {
      * Test the walkingPhase method.
      */
     @Test
-    public void testWalkingBetweenTwoBuildings() {
+    void testWalkingBetweenTwoBuildings() {
 
         Settlement settlement = buildSettlement("mock");
         BuildingManager buildingManager = settlement.getBuildingManager();

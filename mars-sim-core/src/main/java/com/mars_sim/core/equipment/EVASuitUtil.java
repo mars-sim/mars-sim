@@ -48,20 +48,13 @@ public final class EVASuitUtil {
 	 * @param disqualified  true if the person is disqualified from EVA.
 	 */
 	public static void checkIn(Person person, Object entity, boolean inSettlement, boolean disqualified) {
-		UnitHolder housingEntity;
-		EquipmentOwner eo;
-		switch (entity) {
-			case Building b -> {
-				housingEntity = b.getSettlement();
-				eo = b.getSettlement().getEquipmentInventory();
-			}
-			case Vehicle v -> {
-				housingEntity = v;
-				eo = v;
-			}
-			default -> throw new IllegalArgumentException("Entity must be a Building or Vehicle.");
-		}
-		
+		UnitHolder housingEntity = switch (entity) {
+			case Building b -> b.getSettlement();
+			case Vehicle v -> v;
+			case Settlement s -> s;
+			default -> throw new IllegalArgumentException("Entity must be a Building, Vehicle, or Settlement.");
+		};
+		var eo = EquipmentOwner.getAttached(housingEntity);
 		EVASuit suit = person.getSuit();
 		
 		// Transfer the EVA suit from person to the new destination
@@ -75,20 +68,9 @@ public final class EVASuitUtil {
 			}
 		}
 		
-		if (disqualified) {
+		if (disqualified && (eo != null)) {
 			// Remove pressure suit and put on garment
-			if (inSettlement) {
-				if (person.unwearPressureSuit(eo)) {
-					person.wearGarment(eo);
-				}
-			}
-			// Note: vehicle may or may not have garment available
-			else if (((Rover)eo).hasGarment() && person.unwearPressureSuit(eo)) {
-				person.wearGarment(eo);
-			}
-	
-			// Assign thermal bottle
-			person.assignThermalBottle();
+			person.dressForInside(eo);
 		}
 	}
 	
@@ -210,7 +192,7 @@ public final class EVASuitUtil {
 	 * @return instance of EVASuit or null if none
 	 */
 	public static EVASuit findEVASuitFromVehicle(Person p,  Vehicle v) {
-		return findEVASuitWithResources(v, p);
+		return findEVASuitWithResources(v.getEquipmentInventory(), p);
 	}
 	
 	
@@ -262,13 +244,13 @@ public final class EVASuitUtil {
 	public static boolean hasBaselineNumEVASuit(Vehicle vehicle, Mission mission) {
 		boolean result = false;
 
-		int numV = vehicle.findNumEVASuits();
+		int numV = vehicle.getEquipmentInventory().getSuitSet().size();
 
 		int baseline = mission.getMembers().size();
 
 		int numP = 0;
 
-		for (Worker w: mission.getMembers()) { //((Crewable)vehicle).getCrew()) {
+		for (Worker w: mission.getMembers()) { 
 			if (w instanceof Person p && p.getSuit() != null)
 				numP++;
 		}
