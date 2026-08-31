@@ -253,6 +253,15 @@ public abstract class EVAOperation extends Task {
 	protected void setOutsideSiteLocation(LocalPosition pos) {
 		outsideSitePos = pos;
 	}
+	
+	/**
+	 * Gets the outside side local location.
+	 *
+	 * @return The outside position of the EVA
+	 */
+	protected LocalPosition getOutsideSiteLocation() {
+		return outsideSitePos;
+	}
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -771,26 +780,26 @@ public abstract class EVAOperation extends Task {
 
 
 	/**
-	 * Determines a random location for for working outside a Vehicle for the
+	 * Determines a random location for working outside a vehicle for the
 	 * assigned Worker.
 	 * <p>If no site is found then the Task is ended.
 	 *
-	 * @param rover Base vehicle for the outside location
+	 * @param lbo the origin
 	 * @return Was a site found
 	 */
-	protected boolean setRandomOutsideLocation(Vehicle rover) {
+	protected boolean setRandomOutsideLocation(LocalBoundedObject lbo) {
 
 		LocalPosition sLoc = null;
 		boolean goodLocation = false;
-		for (int x = 0; (x < 5) && !goodLocation; x++) {
-			for (int y = 0; (y < 10) && !goodLocation; y++) {
+		for (int x = 0; (x < 20) && !goodLocation; x++) {
+			for (int y = 0; (y < 20) && !goodLocation; y++) {
 
-				double distance = RandomUtil.getRandomDouble(50D) + (x * 100D) + 50D;
-				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+				double distance = RandomUtil.getRandomRegressionInteger(50) + (x * 2);
+				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2);
 
-				LocalPosition boundedLocalPoint = rover.getPosition().getPosition(distance, radianDirection);
+				LocalPosition boundedLocalPoint = lbo.getPosition().getPosition(distance, radianDirection);
 
-				sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, rover);
+				sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, lbo);
 				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, worker.getCoordinates());
 			}
 		}
@@ -805,6 +814,8 @@ public abstract class EVAOperation extends Task {
 		return goodLocation;
 	}
 
+	
+	
 	/**
 	 * Sets the outside location near a BoundedObject.
 	 *

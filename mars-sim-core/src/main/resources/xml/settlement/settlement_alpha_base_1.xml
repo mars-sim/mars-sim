@@ -300,9 +300,11 @@
 	    <robot type="MakerBot-Standard" number="2"/>
 	    <robot type="MedicBot-Advanced" number="1"/>
 	    <robot type="RepairBot-Standard" number="2"/>
-	
+
+	    <!-- Equipment -->
 	    <equipment type="EVA Suit" number="36" />
-	
+   		<equipment type="Data Recorder" number="24" />
+   	
 	    <!-- Containers-->
 		<equipment type="barrel" number="120" />
 		<equipment type="bag" number="120" />
@@ -317,7 +319,8 @@
 		<resource type="water" amount="7200" />
 		<resource type="oxygen" amount="5760" />
 		
-	    <part-package name="Tech Part Package 0" number="1" />
+   		<part-package name="Instrument Package 1" number="4" />
+	    <part-package name="Tech Part Package 4" number="1" />
 	    <part-package name="Standard Part Package 1" number="6" />
 
     </initial-supplies>

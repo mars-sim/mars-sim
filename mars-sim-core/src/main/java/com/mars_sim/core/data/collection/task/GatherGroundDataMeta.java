@@ -21,7 +21,7 @@ public class GatherGroundDataMeta extends GatherDataMeta {
     		
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.digLocalRegolith"); //$NON-NLS-1$
+            "Task.description.gatherGroundData"); //$NON-NLS-1$
     
     public GatherGroundDataMeta() {
 		super(NAME, GatherGroundData.CONTAINER_TYPE);
@@ -40,6 +40,8 @@ public class GatherGroundDataMeta extends GatherDataMeta {
     @Override
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
     	
-    	return getSettlementTaskJobs(settlement, 0.0);
+      	double iceValue = settlement.getIceDigValueCache();
+      	
+    	return getSettlementTaskJobs(settlement, iceValue);
     }
 }

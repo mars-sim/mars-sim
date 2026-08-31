@@ -78,6 +78,8 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 	private JLabel iceLabel;
 	private JLabel regolithLabel;
 	private JLabel areothermalLabel;
+	private JLabel localDataCollectionSitesLabel;
+	private JLabel remoteDataCollectionSitesLabel;
 	
 	private DisplaySingle lcdLong;
 	private DisplaySingle lcdLat;
@@ -210,6 +212,8 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 			iceLabel = dataPanel.addRow("Ice Score", "");
 			regolithLabel = dataPanel.addRow("Regolith Score", "");
 			areothermalLabel = dataPanel.addRow("Areothermal Score", "");
+			localDataCollectionSitesLabel = dataPanel.addRow("Local Data Collection Sites", "");
+			remoteDataCollectionSitesLabel = dataPanel.addRow("Remote Data Collection Sites", "");
 		}
 
 		// Update the elevation in the gauge
@@ -437,6 +441,8 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 		iceLabel.setText(Math.round(s.getIceCollectionRate() * 100.0)/100.0 + "");
 		regolithLabel.setText(Math.round(s.getRegolithCollectionRate() * 100.0)/100.0 + "");
 		areothermalLabel.setText(Math.round(s.getAreothermalPotential() * 100.0)/100.0 + " %");
+		localDataCollectionSitesLabel.setText(s.getNumDataCollectionSite(true) + "");
+		remoteDataCollectionSitesLabel.setText(s.getNumDataCollectionSite(false) + "");
 	}
 	
 	/**

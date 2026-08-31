@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.equipment;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -19,6 +21,7 @@ import java.util.stream.Stream;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.data.collection.task.GatherDataMeta;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 
@@ -83,6 +86,23 @@ public class EquipmentInventory
 		amountResourceBinSet.add(crates);
 	}
 
+	/**
+	 * Gets an available list of water detection tool.
+	 * 
+	 * @return
+	 */
+	public List<Integer> getAvailableWaterDetectionTool() {
+		List<Integer> availableTool = new ArrayList<>();
+		
+		List<Integer> allInstruments = new ArrayList<>(GatherDataMeta.waterDetectionTool);
+		for (int instrumentID: allInstruments) {
+			if (getItemResourceStored(instrumentID) > 0)
+				availableTool.add(instrumentID);
+		}
+
+		return availableTool;
+	}
+	
 	/**
 	 * Gets the locally held amount resource bin set.
 	 * 

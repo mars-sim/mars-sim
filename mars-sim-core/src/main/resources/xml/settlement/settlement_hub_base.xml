@@ -387,8 +387,10 @@
         <robot type="MedicBot-Advanced" number="2"/>
         <robot type="RepairBot-Standard" number="5"/>
 
+	    <!-- Equipment -->
         <equipment type="EVA Suit" number="60" />
-
+   	    <equipment type="Data Recorder" number="40" />
+   	    
         <!-- Containers-->
         <equipment type="barrel" number="240" />
         <equipment type="bag" number="240" />
@@ -408,7 +410,8 @@
         <resource type="water" amount="7200" />
         <resource type="oxygen" amount="5760" />
 
-        <part-package name="Tech Part Package 1" number="1" />
+  		<part-package name="Instrument Package 1" number="5" />	
+        <part-package name="Tech Part Package 5" number="1" />
         <part-package name="Standard Part Package 1" number="8" />
     </initial-supplies>
 

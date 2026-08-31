@@ -133,37 +133,37 @@
 
     <initial-supplies>
 
-
-    <vehicle type="Cargo Rover" number="2" />
-    <vehicle type="Light Utility Vehicle" number="1" />
-    <vehicle type="Delivery Drone" number="1" />
-
-    <robot type="MakerBot-Standard" number="1"/>
-    <robot type="MedicBot-Standard" number="1"/>
-    <robot type="RepairBot-Standard" number="1"/>
-    <robot type="DeliveryBot-Standard" number="1"/>
-
-    <equipment type="EVA Suit" number="8" />
-
-    <!-- Containers-->
-	<equipment type="barrel" number="40" />
-	<equipment type="bag" number="40" />
-	<equipment type="gas canister" number="40" />		
-	<equipment type="large bag" number="40" />
-	<equipment type="specimen box" number="40" />
-    <equipment type="thermal bottle" number="8" />	
- 	<equipment type="wheelbarrow" number="12" />
-    
-    <!-- Life Support Resources -->
-	<resource type="food" amount="2880" />
-	<resource type="water" amount="7200" />
-	<resource type="oxygen" amount="7200" />
-	<resource type="hydrogen" amount="7200" />
-	<resource type="methane" amount="7200" />
-	<resource type="methanol" amount="7200" />
+	    <vehicle type="Cargo Rover" number="2" />
+	    <vehicle type="Light Utility Vehicle" number="1" />
+	    <vehicle type="Delivery Drone" number="1" />
 	
-    <part-package name="Standard Part Package 1" number="1" />
-
+	    <robot type="MakerBot-Standard" number="1"/>
+	    <robot type="MedicBot-Standard" number="1"/>
+	    <robot type="RepairBot-Standard" number="1"/>
+	    <robot type="DeliveryBot-Standard" number="1"/>
+	
+	    <equipment type="EVA Suit" number="8" />
+   	    <equipment type="Data Recorder" number="4" />
+   	    
+	    <!-- Containers-->
+		<equipment type="barrel" number="40" />
+		<equipment type="bag" number="40" />
+		<equipment type="gas canister" number="40" />		
+		<equipment type="large bag" number="40" />
+		<equipment type="specimen box" number="40" />
+	    <equipment type="thermal bottle" number="8" />	
+	 	<equipment type="wheelbarrow" number="12" />
+	    
+	    <!-- Life Support Resources -->
+		<resource type="food" amount="2880" />
+		<resource type="water" amount="7200" />
+		<resource type="oxygen" amount="7200" />
+		<resource type="hydrogen" amount="7200" />
+		<resource type="methane" amount="7200" />
+		<resource type="methanol" amount="7200" />
+		
+	  	<part-package name="Instrument Package 1" number="1" />	
+    	<part-package name="Standard Part Package 1" number="1" />
 
     </initial-supplies>
 

@@ -84,10 +84,11 @@ public class SettlementTemplateConfigTest {
             "bag", 240,
             "gas canister", 240,
             "large bag", 240,
-            "eva suit", 60,
             "specimen box", 240,
             "thermal bottle", 64,
-            "wheelbarrow", 48
+            "wheelbarrow", 48,
+            "eva suit", 60,
+      	    "data recorder", 40
         );
         assertEquals(expectedEquipment, supplies.getEquipment(), "Equipment");
 

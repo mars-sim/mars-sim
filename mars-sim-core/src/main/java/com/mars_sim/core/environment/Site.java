@@ -25,7 +25,7 @@ public class Site implements Serializable {
 
 	private double elevation = -10_000;
 
-	public Site (Coordinates location) {
+	public Site(Coordinates location) {
 		this.location = location;
 	}
 

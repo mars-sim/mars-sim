@@ -41,6 +41,7 @@ import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.environment.DustStorm;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.SurfaceFeatures;
@@ -141,8 +142,6 @@ public class Settlement extends Unit implements Temporal,
 	private static final int WATER_MAX = 10_000;
 	private static final int HYDROGEN_MAX = 10_000;
 	private static final int OXYGEN_MAX = 10_000;
-
-
 
 	/** The settlement sampling resources. */
 	private static final int[] samplingResources;
@@ -330,22 +329,24 @@ public class Settlement extends Unit implements Temporal,
 	private Set<Building> pressurizedAirlocks = new UnitSet<>();
 	/** The set of available depressurized/depressurizing airlocks. */
 	private Set<Building> depressurizedAirlocks = new UnitSet<>();
-	/** The settlement's list of citizens. */
+	/** The settlement's citizens. */
 	private Set<Person> citizens;
-	/** The settlement's list of owned robots. */
+	/** The settlement's owned robots. */
 	private Set<Robot> ownedRobots;
-	/** The settlement's list of owned vehicles. */
+	/** The settlement's owned vehicles. */
 	private Set<Vehicle> ownedVehicles;
-	/** The settlement's list of parked vehicles in vicinity and garaged. */
+	/** The settlement's parked vehicles in vicinity and garaged. */
 	private Set<Vehicle> parkedNGaragedVehicles;
 	/** The list of people currently within the settlement. */
 	private Set<Person> indoorPeople;
-	/** The settlement's list of robots within. */
+	/** The settlement's robots within. */
 	private Set<Robot> robotsWithin;
-	/** The list of tourists registered with the settlement. */
+	/** The tourists registered with the settlement. */
 	private Set<Person> touristPool;
-	/** The settlement's list of dead people. */
+	/** The settlement's dead people. */
 	private Set<Person> deathRegistry;
+	/** The settlement's data collection site map. key = distance, value = site. */
+	private Map<Double, List<DataCollectionSite>> dataCollectionSiteMap;
 	
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(80);
@@ -389,6 +390,8 @@ public class Settlement extends Unit implements Temporal,
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
 		
+		dataCollectionSiteMap = new HashMap<>();
+		
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
@@ -427,6 +430,8 @@ public class Settlement extends Unit implements Temporal,
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
+		
+		dataCollectionSiteMap = new HashMap<>();
 		
 		// Create equipment inventory
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
@@ -481,6 +486,8 @@ public class Settlement extends Unit implements Temporal,
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
+		
+		dataCollectionSiteMap = new HashMap<>();
 		
 		allowTradeMissionSettlements = new HashMap<>();
 		
@@ -1384,7 +1391,24 @@ public class Settlement extends Unit implements Temporal,
 			// The longest wait 
 			result = getOptimalAirlock((Person)worker, pressurizedAirlocks, false, true);
 		}	
-	
+		if (result == null) {
+			for (Building airlockBdg : buildingManager.getAirlocks()) {
+				Airlock airlock = airlockBdg.getEVA().getAirlock();
+				if (airlock.isPressurized()) {
+					return airlock;
+				}
+				else if (airlock.isPressurizing()) {
+					return airlock;
+				}
+				else if (airlock.isDepressurized()) {
+					return airlock;
+				}
+				else if (airlock.isDepressurizing()) {
+					return airlock;
+				}
+			}
+		}
+		
 		return result;
 	}
 
@@ -1423,8 +1447,23 @@ public class Settlement extends Unit implements Temporal,
 			// The longest wait 
 			result = getOptimalAirlock(person, depressurizedAirlocks, false, true);
 		}
-		
-		
+		if (result == null) {
+			for (Building airlockBdg : buildingManager.getAirlocks()) {
+				Airlock airlock = airlockBdg.getEVA().getAirlock();
+				if (airlock.isDepressurized()) {
+					return airlock;
+				}
+				else if (airlock.isDepressurizing()) {
+					return airlock;
+				}
+				else if (airlock.isPressurized()) {
+					return airlock;
+				}
+				else if (airlock.isPressurizing())
+					return airlock;
+			}
+		}
+
 		return result;
 	}
 	
@@ -3114,13 +3153,69 @@ public class Settlement extends Unit implements Temporal,
 	}
 	
 	/**
-	 * Get the control for Missions of this Settlement.
+	 * Gets the control for Missions of this Settlement.
+	 * 
 	 * @return
 	 */
 	public MissionControl getMissionControl() {
 		return missionControl;
 	}
-
+	
+	/** 
+	 * Gets the settlement's data collection site map. 
+	 */
+	public Map<Double, List<DataCollectionSite>> getDataCollectionSiteMap() {
+		return dataCollectionSiteMap;
+	}
+	
+	/**
+	 * Gets the number of sites.
+	 * 
+	 * @param local Should we count the sites only in settlement vicinity ?
+	 * @return
+	 */
+	public int getNumDataCollectionSite(boolean local) {
+		if (dataCollectionSiteMap.isEmpty()) {
+			return 0;
+		}
+		
+		if (local && dataCollectionSiteMap.containsKey(0.0)) {
+			return dataCollectionSiteMap.get(0.0).size();
+		}
+		else {
+			
+			return dataCollectionSiteMap.entrySet().stream()
+					.filter(entry -> entry.getKey() == 0.0)
+					.mapToInt(entry -> entry.getValue() != null ? entry.getValue().size() : 0)
+	                .sum();
+			
+//			return dataCollectionSiteMap.values().stream()
+//					.filter(entry -> entry.getKey().startsWith("group1") || entry.getKey().startsWith("group2"))
+//					.mapToInt(list -> list != null ? list.size() : 0)
+//	                .sum();
+		}
+	}
+	
+	/**
+	 * Adds the data collection site.
+	 * 
+	 * @param distance
+	 * @param site
+	 */
+	public void addSite(double distance, DataCollectionSite site) {
+		if (dataCollectionSiteMap.containsKey(distance)) {
+			List<DataCollectionSite> sites = dataCollectionSiteMap.get(distance);
+			if (!sites.contains(site)) {
+				sites.add(site);
+			}
+		}
+		else {
+			List<DataCollectionSite> sites = new ArrayList<>();
+			sites.add(site);
+			dataCollectionSiteMap.put(distance, sites);
+		}
+	}
+	
 	/**
 	 * Reinitializes references after loading from a saved sim.
 	 */

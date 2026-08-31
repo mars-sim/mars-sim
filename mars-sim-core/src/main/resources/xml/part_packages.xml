@@ -15,16 +15,40 @@
 
 	<!-- Part package -->
 	<!-- name: the unique name of the package. -->
-	<part-package name="Tech Part Package 0" >
+	
+	<part-package name="Instrument Package 1" >
 
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
+		
+		<part type="Gravity Gradiometer" number="1" />
+		<part type="Time Domain Electromagnetic Sounder" number="1" />
+		<part type="Dynamic Albedo of Neutrons Meter" number="1" />
+		<part type="Ground Penetrating Radar" number="1" />
+		<part type="Surface Nuclear Magnetic Resonance Sounder" number="1" />
+				
+		<part type="Seismoelectric Sensor" number="10" />
+		<part type="Heat probe" number="10" />	
+		
+	</part-package>
+		
+	<part-package name="Tech Part Package 4" >
+
 		<part type="logic board" number="10"/>
 		<part type="microcontroller" number="30" />
 		<part type="communications circuit board" number="3" />
 		<part type="navigation circuit board" number="2" />
 		<part type="Biosensor" number="10" />	
+		
+		<part type="Gravity Gradiometer" number="1" />
+		<part type="Time Domain Electromagnetic Sounder" number="1" />
+		<part type="Dynamic Albedo of Neutrons Meter" number="1" />			
+		<part type="Ground Penetrating Radar" number="1" />
+		<part type="Surface Nuclear Magnetic Resonance Sounder" number="1" />	
+				
+		<part type="Seismoelectric Sensor" number="10" />
+		<part type="Heat probe" number="10" />	
 				
 		<part type="methane fuel cell" number="100"/>
 		<part type="methane fuel cell stack" number="2"/>
@@ -61,7 +85,7 @@
 		
 	</part-package>
 
-		<part-package name="Tech Part Package 1" >
+		<part-package name="Tech Part Package 5" >
 
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->
@@ -72,6 +96,15 @@
 		<part type="navigation circuit board" number="4" />
 		<part type="Biosensor" number="20" />	
 				
+		<part type="Gravity Gradiometer" number="3" />
+		<part type="Time Domain Electromagnetic Sounder" number="3" />
+		<part type="Dynamic Albedo of Neutrons Meter" number="3" />			
+		<part type="Ground Penetrating Radar" number="3" />
+		<part type="Surface Nuclear Magnetic Resonance Sounder" number="3" />	
+				
+		<part type="Seismoelectric Sensor" number="25" />
+		<part type="Heat probe" number="25" />	
+						
 		<part type="methane fuel cell" number="200"/>
 		<part type="methane fuel cell stack" number="4"/>
 		<part type="methanol fuel cell" number="200"/>
@@ -230,7 +263,6 @@
 
 	<part-package name="package 2" >
 	</part-package>
-
 
 	<part-package name="package 3">	
 	</part-package>

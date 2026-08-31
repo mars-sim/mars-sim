@@ -666,45 +666,47 @@
      
     <initial-supplies>
      
-    <vehicle type="Explorer Rover" number="4" />
-    <vehicle type="Long Range Explorer" number="4" />
-    <vehicle type="Transport Rover" number="2" />
-    <vehicle type="Cargo Rover" number="2" />
-    <vehicle type="Light Utility Vehicle" number="12" />
-    <vehicle type="Delivery Drone" number="4" />
-    <vehicle type="Cargo Drone" number="4" />
-     
-    <!-- Robots -->
-    <robot type="ChefBot-Standard" number="2"/>
-    <robot type="DeliveryBot-Standard" number="3"/>
-    <robot type="GardenBot-Advanced" number="4"/>
-    <robot type="MakerBot-Standard" number="3"/>
-    <robot type="MedicBot-Advanced" number="1"/>
-    <robot type="RepairBot-Advanced" number="3"/>
+	    <vehicle type="Explorer Rover" number="4" />
+	    <vehicle type="Long Range Explorer" number="4" />
+	    <vehicle type="Transport Rover" number="2" />
+	    <vehicle type="Cargo Rover" number="2" />
+	    <vehicle type="Light Utility Vehicle" number="12" />
+	    <vehicle type="Delivery Drone" number="4" />
+	    <vehicle type="Cargo Drone" number="4" />
+	     
+	    <!-- Robots -->
+	    <robot type="ChefBot-Standard" number="2"/>
+	    <robot type="DeliveryBot-Standard" number="3"/>
+	    <robot type="GardenBot-Advanced" number="4"/>
+	    <robot type="MakerBot-Standard" number="3"/>
+	    <robot type="MedicBot-Advanced" number="1"/>
+	    <robot type="RepairBot-Advanced" number="3"/>
+	
+	    <equipment type="EVA Suit" number="156" />
+   	    <equipment type="Data Recorder" number="120" />
+	
+	    <!-- Containers-->
+		<equipment type="barrel" number="320" />
+		<equipment type="bag" number="320" />
+		<equipment type="gas canister" number="320" />		
+		<equipment type="large bag" number="320" />
+		<equipment type="specimen box" number="320" />
+	    <equipment type="thermal bottle" number="216" />	
+	 	<equipment type="wheelbarrow" number="96" />
+	
+	    <!-- Bins -->
+		<bin type="crate" number="40" />
+		<bin type="basket" number="40" />
+		<bin type="pot" number="40" />
+			
+		<!-- Life Support Resources -->
+		<resource type="food" amount="12000" />
+		<resource type="water" amount="14400" />
+		<resource type="oxygen" amount="12000" />
 
-    <equipment type="EVA Suit" number="156" />
-
-    <!-- Containers-->
-	<equipment type="barrel" number="320" />
-	<equipment type="bag" number="320" />
-	<equipment type="gas canister" number="320" />		
-	<equipment type="large bag" number="320" />
-	<equipment type="specimen box" number="320" />
-    <equipment type="thermal bottle" number="216" />	
- 	<equipment type="wheelbarrow" number="96" />
-
-    <!-- Bins -->
-	<bin type="crate" number="40" />
-	<bin type="basket" number="40" />
-	<bin type="pot" number="40" />
-		
-	<!-- Life Support Resources -->
-	<resource type="food" amount="12000" />
-	<resource type="water" amount="14400" />
-	<resource type="oxygen" amount="12000" />
-
-    <part-package name="Tech Part Package 1" number="2" />
-    <part-package name="Standard Part Package 1" number="12" />
+  		<part-package name="Instrument Package 1" number="6" />	
+	    <part-package name="Tech Part Package 5" number="2" />
+	    <part-package name="Standard Part Package 1" number="12" />
 
     <!-- The resupply missions from Earth scheduled for this type of settlement. -->
      
