@@ -156,11 +156,11 @@ public abstract class DigLocal extends EVAOperation {
 	}
 
 	/**
-	 * Sets the collection rate for the resource.
+	 * Determines the collection factors.
 	 * 
 	 * @param collectionRate
 	 */
-	protected void setCollectionRate(double collectionRate) {
+	protected void determineCollectionFactors(double collectionRate) {
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
         int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
@@ -171,7 +171,7 @@ public abstract class DigLocal extends EVAOperation {
         setDuration(getDuration() * (1 + endurance/200.0));
         
         fatigueFactor = .5 * (1 - (agility + strength + endurance) / 300D);
-		compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1);
+		compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva / 50 + .1);
 	}
 
     /**

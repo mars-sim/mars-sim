@@ -31,6 +31,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Rover;
@@ -58,9 +59,11 @@ public abstract class GatherData extends EVAOperation {
 
 	public static final String WALK = "walk";
 	
-	static final TaskPhase COLLECT_DATA = new TaskPhase("Collect data");
+	static final TaskPhase COLLECT_DATA = new TaskPhase(Msg.getString(
+            "Task.phase.collectGroundData"));
 	
-	static final TaskPhase TEAR_DOWN = new TaskPhase("Tear down site");
+	static final TaskPhase TEAR_DOWN = new TaskPhase(Msg.getString(
+            "Task.phase.tearDownSite"));
 
 	private boolean isSettlement = false;
 	
@@ -182,8 +185,6 @@ public abstract class GatherData extends EVAOperation {
            	}
         }
         
-        determineRates(1);
-        
         setOutsideSiteLocation(locationPos);
         
         setPhase(WALK_TO_OUTSIDE_SITE);
@@ -271,8 +272,14 @@ public abstract class GatherData extends EVAOperation {
 			if (siteMap.isEmpty()) {
 				siteList = new ArrayList<>();
 			}
+			else {
+				// Note: for now, must force distance to be 0.0. 
+				// No need of computing distance since it's in settlement vicinity 
+				siteList = siteMap.getOrDefault(0.0, new ArrayList<>());
+			}
 			
-			// Set distance to 0.0 since it's in settlement vicinity 
+			// Note: for now, must force distance to be 0.0. 
+			// No need of computing distance since it's in settlement vicinity 
    			return registerSite(s, coord, siteList, 0.0);
 		}
 		else {
@@ -303,8 +310,8 @@ public abstract class GatherData extends EVAOperation {
         	s.addSite(distance, dataCollectionSite);
 		}
 		else {
-			
-			if (RandomUtil.getRandomInt(20) == 0) {
+			// Give it a 5% chance to create a new data collection site
+			if (RandomUtil.getRandomInt(19) == 0) {
 				// Create and add this site to settlement
 	        	dataCollectionSite = new DataCollectionSite(coord, locationPos);
 	        	
@@ -443,11 +450,11 @@ public abstract class GatherData extends EVAOperation {
 	}
 	
 	/**
-	 * Determines the data collection rate
+	 * Determines the data collection factors.
 	 * 
 	 * @param collectionRate
 	 */
-	protected void determineRates(double collectionRate) {
+	protected void determineCollectionFactors(double collectionRate) {
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int acad = nManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         int areo = person.getSkillManager().getSkillLevel(SkillType.AREOLOGY);
@@ -459,7 +466,8 @@ public abstract class GatherData extends EVAOperation {
         // Increase the duration of this task based upon one's attribute
         setDuration(getDuration() * (1 + meti/200.0));
         
-        fatigueFactor = .5 * (1 - (agility + creat) / 200D);
+        fatigueFactor = .5 * (1 - (agility + creat) / 200D) / (1 + collectionRate);
+        // The higher the collection rate, the faster the data can be gathered
 		compositeRate = collectionRate * ((acad + meti) / 100D) * areo / 50;
 	}
 
@@ -551,6 +559,9 @@ public abstract class GatherData extends EVAOperation {
 			
 	        // Add experience points
 	        addExperience(time);
+	        
+		    // Check for an accident during the EVA operation.
+		    checkForAccident(time);
 
 	        if (finishedPreparing) {
 	            logger.info(person, 5_000, "Done with site and '" + ItemResourceUtil.findItemResourceName(selectedInstrument) 
@@ -560,10 +571,6 @@ public abstract class GatherData extends EVAOperation {
 	            
 				logger.info(person, 5_000, "Starting the collecting data phase at " + locationPos + ".");
 	    	}
-	        
-		    // Check for an accident during the EVA operation.
-		    checkForAccident(time);
-
 		}
 		
     	return 0;
@@ -609,7 +616,8 @@ public abstract class GatherData extends EVAOperation {
 	        collectionTime += time * skillFactor * compositeRate;
 
 	        // See if it exceeds the prescribed collection time limit
-			finishedPreparing = collectionTime >= collectionTimeLimit || getTimeCompleted() >= collectionTimeLimit;
+			finishedPreparing = collectionTime >= collectionTimeLimit 
+					|| getTimeCompleted() >= preparationTimeLimit + collectionTimeLimit;
 
 	        PhysicalCondition condition = person.getPhysicalCondition();
 	        double strengthMod = condition.getStrengthMod();
@@ -623,6 +631,9 @@ public abstract class GatherData extends EVAOperation {
 			
 	        // Add experience points
 	        addExperience(time);
+	        
+		    // Check for an accident during the EVA operation.
+		    checkForAccident(time);
 
 	        if (finishedPreparing) {
 	            logger.info(person, 5_000, "Done with gathering data using '" + ItemResourceUtil.findItemResourceName(selectedInstrument) 
@@ -632,9 +643,6 @@ public abstract class GatherData extends EVAOperation {
 	            
 				logger.info(person, 5_000, "Starting to disassemble the intrument(s) at " + locationPos + ".");
 	    	}
-	        
-		    // Check for an accident during the EVA operation.
-		    checkForAccident(time);
 		}
 
         return 0;
@@ -674,7 +682,8 @@ public abstract class GatherData extends EVAOperation {
 	        teardownTime += time * skillFactor * compositeRate;
 
 	        // See if it exceeds the prescribed tear down time limit
-			finishedPreparing = teardownTime >= teardownTimeLimit || getTimeCompleted() >= teardownTimeLimit;
+			finishedPreparing = teardownTime >= teardownTimeLimit 
+					|| getTimeCompleted() >= getDuration();
 
 	        PhysicalCondition condition = person.getPhysicalCondition();
 	        double strengthMod = condition.getStrengthMod();

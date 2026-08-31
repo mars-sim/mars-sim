@@ -2951,6 +2951,15 @@ public class Settlement extends Unit implements Temporal,
     	return iceCollectionRate;
     }
 
+	/**
+	 * Sets the ice collection rate in the vicinity of this settlement.
+	 * 
+	 * @param value
+	 */
+    public void setIceCollectionRate(double value) {
+    	iceCollectionRate = value;
+    }
+    
     /**
 	 * Returns the regolith collection rate in the vicinity of this settlement.
      * 
@@ -3179,13 +3188,14 @@ public class Settlement extends Unit implements Temporal,
 			return 0;
 		}
 		
+		// Note: for now, must force the distance to be 0.0 if in settlement vicinity
 		if (local && dataCollectionSiteMap.containsKey(0.0)) {
 			return dataCollectionSiteMap.get(0.0).size();
 		}
 		else {
 			
 			return dataCollectionSiteMap.entrySet().stream()
-					.filter(entry -> entry.getKey() == 0.0)
+					.filter(entry -> entry.getKey() != 0.0)
 					.mapToInt(entry -> entry.getValue() != null ? entry.getValue().size() : 0)
 	                .sum();
 			

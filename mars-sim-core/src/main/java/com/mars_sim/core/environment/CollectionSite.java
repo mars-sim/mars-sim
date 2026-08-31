@@ -58,9 +58,9 @@ public class CollectionSite extends Site {
 		if (this == o) return true;
 		if ((o != null) && (o instanceof CollectionSite)) {
 			CollectionSite s = (CollectionSite) o;
-            return this.location.equals(s.getLocation())
-                    && this.iceCollectionRate == s.getIceCollectionRate()
-                    && this.regolithCollectionRate == s.getRegolithCollectionRate();
+            return this.location.equals(s.getLocation());
+//                    && this.iceCollectionRate == s.getIceCollectionRate()
+//                    && this.regolithCollectionRate == s.getRegolithCollectionRate();
 		}
 
 		return false;
@@ -72,6 +72,6 @@ public class CollectionSite extends Site {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		return (int)(Math.abs(iceCollectionRate) + Math.abs(regolithCollectionRate)) + location.hashCode();
+		return location.hashCode(); // + (int)(Math.abs(iceCollectionRate) + Math.abs(regolithCollectionRate));
 	}
 }

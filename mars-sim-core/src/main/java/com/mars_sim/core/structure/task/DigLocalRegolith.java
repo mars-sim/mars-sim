@@ -48,7 +48,7 @@ extends DigLocal {
         super(NAME, COLLECT_REGOLITH, ResourceUtil.REGOLITH_ID, 
         	  CONTAINER_TYPE, person, RandomUtil.getRandomInt(-20 + 20) + 200);
         if (!isDone()) {
-        	setCollectionRate(person.getAssociatedSettlement().getRegolithCollectionRate());
+        	determineCollectionFactors(person.getAssociatedSettlement().getRegolithCollectionRate());
         }
     }
 }
