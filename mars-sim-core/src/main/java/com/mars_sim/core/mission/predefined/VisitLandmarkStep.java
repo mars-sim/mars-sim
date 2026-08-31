@@ -37,8 +37,9 @@ class VisitLandmarkStep extends EVAMissionStep {
         super.start();
 
         // Add a zero entry for each member
-        getMission().getMembers().forEach(w -> objective.recordEVA(w, 0D));
-        getMission().fireMissionUpdate(MissionObjective.CHANGE_EVENT, null);
+        var m = getMission();
+        m.getMembers().forEach(w -> objective.recordEVA(w, 0D));
+        m.fireMissionUpdate(MissionObjective.CHANGE_EVENT, null);
     }
 
     /**
@@ -52,8 +53,7 @@ class VisitLandmarkStep extends EVAMissionStep {
         if (!objective.isEVADone(worker)) {
             // Do EVA to visit the landmark
             var newTask = new LandmarkEVA(worker, getMission(), objective);
-            assignTask(worker, newTask);
-            return true;
+            return assignTask(worker, newTask);
         }
 
         // nothing to do

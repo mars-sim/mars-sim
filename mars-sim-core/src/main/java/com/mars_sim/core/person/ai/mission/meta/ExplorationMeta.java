@@ -21,6 +21,11 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MissionCreationException;
+import com.mars_sim.core.mission.MissionStep;
+import com.mars_sim.core.mission.MissionVehicleProject;
+import com.mars_sim.core.mission.objectives.ExplorationObjective;
+import com.mars_sim.core.mission.predefined.ExploreSiteStep;
+import com.mars_sim.core.mission.steps.MissionTravelStep;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -28,6 +33,7 @@ import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
+import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -63,6 +69,8 @@ public class ExplorationMeta extends AbstractMetaMission {
 		setPreferredVehicle(VehicleType.ROVER_TYPES);
 		setPopulationRatio(5);
 		setSolThreshold(MIN_STARTING_SOL);
+
+		// setObjectives(Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB));
 	}
 
 	
@@ -238,7 +246,27 @@ public class ExplorationMeta extends AbstractMetaMission {
 	 * @return a new instance of the Exploration mission.
 	 */
 	public Mission constructInstance(Roster crew, boolean needsReview, List<MineralSite> sites) {
-		return new Exploration(crew, needsReview, sites);
+        Settlement base = crew.leader().getAssociatedSettlement();
+        Coordinates lastLocation = base.getCoordinates();
+
+		var mission = new MissionVehicleProject(null, MissionType.EXPLORATION, 10, crew);
+		var objectives = new ExplorationObjective();
+
+        List<MissionStep> plan = new ArrayList<>();
+		for (MineralSite site : sites) {
+			var siteLocn = site.getCoordinates();
+        	plan.add(new MissionTravelStep(mission, new NavPoint(siteLocn, site.getName(),
+                                                            lastLocation)));
+        	plan.add(new ExploreSiteStep(mission, objectives, site));
+
+        	lastLocation = siteLocn;
+		}
+
+		// Return home
+		plan.add(new MissionTravelStep(mission, new NavPoint(base, lastLocation)));
+        mission.setSteps(plan);  
+
+        return mission;
 	}
 
 	@Override

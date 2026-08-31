@@ -147,7 +147,7 @@ public class Exploration extends EVAMission
 					return false;
 				}
 			}
-			canAssign = assignTask(person, new ExploreSite(person, currentSite, getRover(), this));
+			canAssign = assignTask(person, new ExploreSite(person, currentSite, getRover(), objective));
 			
 			if (canAssign) {
 				logger.info(person, 20_000, "Ready to explore site and collect rocks.");
@@ -164,7 +164,7 @@ public class Exploration extends EVAMission
 				
 				fireMissionUpdate(SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 
-				objective.updateSiteCompletion(getCurrentNavpointDescription(), completion);
+				objective.addOnSiteTime(getCurrentNavpointDescription(), completion);
 			}
 		}
 		else {

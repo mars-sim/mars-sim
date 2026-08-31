@@ -51,14 +51,21 @@ public class ExplorationObjective implements MissionObjective {
     }
 
     /**
+     * Get the target time for exploring a site. This is a fixed value for now.
+     * @return
+     */
+    public int getTargetExploreTime() {
+        return 100; // TODO increase
+    }
+
+    /**
      * Gets the completed exploration by site name.
      * 
      * @return
      */
-    public Map<String, Double> getCompletion() {
+    public Map<String, Double> getSiteTime() {
         return completedBySite;
     }
-
 
     /**
      * Updates how much is completed on a site.
@@ -66,7 +73,7 @@ public class ExplorationObjective implements MissionObjective {
      * @param siteName
      * @param completion
      */
-    public void updateSiteCompletion(String siteName, double completion) {
-        completedBySite.put(siteName, completion);
+    public void addOnSiteTime(String siteName, double completion) {
+        completedBySite.merge(siteName, completion, Double::sum);                				
     }
 }
