@@ -49,7 +49,7 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
         assertEquals(0D, times.get(l.getName()), "Leader no EVA");
         assertEquals(0D, times.get(w.getName()), "Worker no EVA");
 
-        assertTrue(st.execute(w), "Worker should be able to do work");
+        assertTrue(project.execute(w), "Worker should be able to do work");
 
         var task = w.getTaskManager().getTask();
         assertTrue(task instanceof LandmarkEVA, "Worker should be doing the visit task");   
@@ -72,7 +72,7 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
         clock.setMarsTime(clock.getMarsTime().addTime(landObj.getMSolAtSite() + 1));
 
         // Worker cannot execute because step is completed
-        assertFalse(st.execute(w), "Worker should have nothing to do after EVA complete");
+        assertFalse(project.execute(w), "Worker should have nothing to do after EVA complete");
         assertTrue(st.isCompleted(), "Step should be complete after EVA");
     }
 }

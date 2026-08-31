@@ -307,8 +307,7 @@ public class Mind implements Serializable, Temporal {
 		int priority = mission.getPriority();
 		int rand = RandomUtil.getRandomInt(5);
 		if (rand - (fitness)/1.5D <= priority + modifier) {
-			mission.performMission(person);
-			return true;
+			return mission.performMission(person);
 		}
 		
 		return false;
