@@ -16,9 +16,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.data.collection.MapUnit;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.time.MarsTime;
@@ -37,8 +38,12 @@ public class PopUpUnitMenu extends JPopupMenu {
 	public static final int WIDTH_1 = WIDTH_0;
 	public static final int HEIGHT_1 = 300;
 
-    public PopUpUnitMenu(final Unit unit, UIContext context){
-		add(unit.getUnitType().getName() + " : " + unit.getName());
+    public PopUpUnitMenu(final Entity unit, UIContext context){
+    	String unitType = "";
+    	if (unit instanceof MapUnit mapUnit) {
+    		unitType = mapUnit.getType();
+    	}
+		add(unitType + ": " + unit.getName());
 		addSeparator();
     	
     	switch (unit) {
@@ -83,7 +88,7 @@ public class PopUpUnitMenu extends JPopupMenu {
      *
      * @param unit
      */
-    private JMenuItem buildDescriptionitem(final Unit unit) {
+    private JMenuItem buildDescriptionitem(final Entity unit) {
         
 		return createItem("description", unit, t -> {
 
@@ -130,7 +135,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 	
 	/**
-	 * Class to operatino the demolish of a Building async to avoid the removal causing a problem with 
+	 * Demolishes an async to avoid the removal causing a problem with 
 	 * the active simulation logic.
 	 */
 	@SuppressWarnings("serial")
@@ -170,14 +175,18 @@ public class PopUpUnitMenu extends JPopupMenu {
      * @param unit
      * @param mainDesktopPane
      */
-    private JMenuItem buildDetailsItem(final Unit unit, final UIContext context) {
+    private JMenuItem buildDetailsItem(final Entity unit, final UIContext context) {
 		return createItem("details", unit, context::showDetails);
     }
  
 	/**
-     * Create a menu item
-     *
-     * @param unit
+     * Creates a menu item.
+     * 
+     * @param <T>
+     * @param name
+     * @param target
+     * @param action
+     * @return
      */
 	private <T> JMenuItem createItem(String name, T target, Consumer<T> action) {
 		JMenuItem relocateItem = new JMenuItem(Msg.getString("PopUpUnitMenu." + name));

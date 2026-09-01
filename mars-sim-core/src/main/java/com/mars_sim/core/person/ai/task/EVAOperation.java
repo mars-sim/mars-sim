@@ -794,7 +794,8 @@ public abstract class EVAOperation extends Task {
 		for (int x = 0; (x < 20) && !goodLocation; x++) {
 			for (int y = 0; (y < 20) && !goodLocation; y++) {
 
-				double distance = RandomUtil.getRandomRegressionInteger(50) + (x * 2);
+				double radius = 2 + Math.max(lbo.getLength(), lbo.getWidth()) / 2D;
+				double distance = RandomUtil.getRandomRegressionInteger(50) + (x * 2) + (y * 2) + radius; //'+ (x * 100D) + 50D; //
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2);
 
 				LocalPosition boundedLocalPoint = lbo.getPosition().getPosition(distance, radianDirection);

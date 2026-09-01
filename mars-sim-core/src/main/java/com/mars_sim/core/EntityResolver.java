@@ -28,6 +28,11 @@ public class EntityResolver {
 			case "PERSON", "VEHICLE", "SETTLEMENT", "BUILDING", "EVA_SUIT", "CONTAINER",
                     "ROBOT", "CONSTRUCTION" -> getUnit(simulation, identifier);
 
+			case "DATACOLLECTIONSITE" -> CollectionUtils.getDataCollectionSites().stream()
+		            .filter(item -> item.getEntityIdentifier().id().equals(identifier.id()))
+		            .findFirst()
+		            .orElseThrow(() -> new IllegalArgumentException("No data collection site found with id: " + identifier.id()));
+			
             case "AUTHORITY" -> SimulationConfig.instance().getReportingAuthorityFactory().getItem(identifier.id());
 
             case "SCIENTIFICSTUDY" -> simulation.getScientificStudyManager().getAllStudies().stream()

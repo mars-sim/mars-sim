@@ -124,8 +124,8 @@ public abstract class GatherData extends EVAOperation {
         this.dataRecorderType = containerType;
         this.preparePhase = preparePhase;
         this.preparationTimeLimit = duration * 0.2;
-        this.collectionTimeLimit = duration * 0.7;
-        this.teardownTimeLimit = duration * 0.1;
+        this.collectionTimeLimit = duration * 0.6;
+        this.teardownTimeLimit = duration * 0.2;
         
         // To dig local, a person must start at a Settlement
         containerUnit = person.getContainerUnit();
@@ -534,14 +534,20 @@ public abstract class GatherData extends EVAOperation {
 			return time;
 		}
 
+		String instrumentName = "an instrument";
+		
+		if (selectedInstrument != -1)
+			instrumentName = ItemResourceUtil.findItemResourceName(selectedInstrument);
+
 		if (selectedInstrument != -1 && !doneDroppingOffInstrument) {
+			
 	    	if (moveInstrumentPersonToSite(person, dataCollectionSite, selectedInstrument)) {
-	    		logger.info(person, 5_000L, "Successfully dropped off " + ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	    		logger.info(person, 5_000L, "Successfully dropped off " + instrumentName 
 	    			+ " at " + locationPos + ".");
 	    		doneDroppingOffInstrument = true;
 	    	}
 	    	else {
-	    		logger.warning(person, 5_000L, "Unable to drop off " + ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	    		logger.warning(person, 5_000L, "Unable to drop off " + instrumentName 
 					+ " at " + locationPos + ".");
 	    		return time * .5;
 	    	}
@@ -565,7 +571,7 @@ public abstract class GatherData extends EVAOperation {
 
 	        boolean finishedPreparing = false;
 
-	        preparationTime += time * skillFactor * compositeRate;
+	        preparationTime += time * (skillFactor + compositeRate);
 
 	        // See if it exceeds the prescribed preparation time limit
 			finishedPreparing = preparationTime >= preparationTimeLimit || getTimeCompleted() >= preparationTimeLimit;
@@ -587,8 +593,8 @@ public abstract class GatherData extends EVAOperation {
 		    checkForAccident(time);
 
 	        if (finishedPreparing) {
-	            logger.info(person, 5_000, "Done with site and '" + ItemResourceUtil.findItemResourceName(selectedInstrument) 
-	            	+ "' preparation at " + locationPos + ".");
+	            logger.info(person, 5_000, "Done with preparing the site and '" + instrumentName 
+	            	+ "' at " + locationPos + ".");
 	           
 	            setPhase(COLLECT_DATA);
 	            
@@ -636,7 +642,7 @@ public abstract class GatherData extends EVAOperation {
 
 	        boolean finishedPreparing = false;
 
-	        collectionTime += time * skillFactor * compositeRate;
+	        collectionTime += time * (skillFactor + compositeRate);
 
 	        // See if it exceeds the prescribed collection time limit
 			finishedPreparing = collectionTime >= collectionTimeLimit 
@@ -659,7 +665,13 @@ public abstract class GatherData extends EVAOperation {
 		    checkForAccident(time);
 
 	        if (finishedPreparing) {
-	            logger.info(person, 5_000, "Done with gathering data using '" + ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	        	String instrumentName = "an instrument";
+
+	    		if (selectedInstrument != -1) {
+	    			instrumentName = ItemResourceUtil.findItemResourceName(selectedInstrument);
+	    		}
+	    			
+	            logger.info(person, 5_000, "Done with gathering data using '" + instrumentName 
 	            	+ "' at " + locationPos + ".");
 	           
 	            setPhase(TEAR_DOWN);
@@ -702,7 +714,7 @@ public abstract class GatherData extends EVAOperation {
 
 	        boolean finishedPreparing = false;
 
-	        teardownTime += time * skillFactor * compositeRate;
+	        teardownTime += time * (skillFactor + compositeRate);
 
 	        // See if it exceeds the prescribed tear down time limit
 			finishedPreparing = teardownTime >= teardownTimeLimit 
@@ -726,15 +738,19 @@ public abstract class GatherData extends EVAOperation {
 		    
 	        if (finishedPreparing) {
 	
+	    		String instrumentName = "an instrument";
+
 	    		if (selectedInstrument != -1) {
+	    			instrumentName = ItemResourceUtil.findItemResourceName(selectedInstrument);
+	    			
 	    	    	if (moveInstrumentSiteToPerson(dataCollectionSite, person, selectedInstrument)) {
 	    	            logger.info(person, 5_000, "Done with tearing down the site, picking up '" 
-	    	            		+ ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	    	            		+ instrumentName 
 	    	            		+ "' at " + locationPos + ".");
 	    	    	}
 	    	    	else {
 	    	    		logger.warning(person, 5_000L, "Unable to tear down the site and pick up " 
-	    	    				+ ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	    	    				+ instrumentName
 	    	    				+ " at " + locationPos + ".");
 	    	    		return time * .5;
 	    	    	}
@@ -759,16 +775,18 @@ public abstract class GatherData extends EVAOperation {
     	if (isSettlement) {
     		setRandomOutsideLocation((Building)airlock.getEntity());
         	return getOutsideSiteLocation();
+        	
+//    		if (airlock.getEntity() instanceof LocalBoundedObject boundedObject) {
+//    			return LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
+//																 person.getCoordinates(), MAX_SITE_DISTANCE);
+//    		}
+        	
     	}
     	else {
         	setRandomOutsideLocation(person.getVehicle());
         	return getOutsideSiteLocation();
     	}
-    	
-//		if (airlock.getEntity() instanceof LocalBoundedObject boundedObject) {
-//			return LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
-//																 person.getCoordinates(), MAX_SITE_DISTANCE);
-//		}
+
 //      return null;
     }
     

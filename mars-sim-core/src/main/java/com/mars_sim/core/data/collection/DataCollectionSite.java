@@ -1,17 +1,36 @@
+/*
+ * Mars Simulation Project
+ * DataCollectionSite.java
+ * @date 2026-08-27
+ * @author Manny Kung
+ */
+
 package com.mars_sim.core.data.collection;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.environment.CollectionSite;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 
-public class DataCollectionSite extends CollectionSite {
+public class DataCollectionSite extends CollectionSite implements LocalBoundedObject, MapUnit, Entity{
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	/** Static string */
+	private static final String DATACOLLECTIONSITE = "DATACOLLECTIONSITE";
+	private static final String DATA_COLLECTION_SITE = "Data Collection Site";
+	private static final String DATA_SITE_ = "DC Site ";
+	/** Static identifier that increment when a new site is created. */
+	private static int currentIdentifier;
+	/** Unique identifier for each site. */
+	private int identifier;
+	
+	
 	/** The quality of being known about this site. */
 	private int familiarity = 0;
 	/** The list of instruments present on site. */
@@ -28,8 +47,20 @@ public class DataCollectionSite extends CollectionSite {
 		super(location);
 		
 		this.localPosition = localPosition;
+		
+		identifier = currentIdentifier;
+		currentIdentifier++;
 	}
 
+	/**
+	 * Gets the identifier.
+	 * 
+	 * @return
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
 	/**
 	 * Gets the degree of familiarity.
 	 *  
@@ -105,8 +136,51 @@ public class DataCollectionSite extends CollectionSite {
 	 * 
 	 * @return
 	 */
-	public LocalPosition getLocalPosition() {
+	public LocalPosition getPosition() {
 		return localPosition;
+	}
+	
+	/**
+	 * Gets the name of the site.
+	 * 
+	 * @return
+	 */
+	public String getName() {
+		return DATA_SITE_ + identifier;
+	}
+
+	/**
+	 * Gets the type.
+	 * 
+	 * @return name
+	 */
+	public String getType() {
+		return DATA_COLLECTION_SITE;
+	}
+	
+	@Override
+	public double getWidth() {
+		return 2;
+	}
+
+	@Override
+	public double getLength() {
+		return 2;
+	}
+
+	@Override
+	public double getFacing() {
+		return 0;
+	}
+
+	@Override
+	public String getContext() {
+		return getLocation().getFormattedString();
+	}
+
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier(DATACOLLECTIONSITE, String.valueOf(identifier));
 	}
 	
 	/**
@@ -120,7 +194,7 @@ public class DataCollectionSite extends CollectionSite {
 		if ((o != null) && (o instanceof DataCollectionSite)) {
 			DataCollectionSite s = (DataCollectionSite) o;
             return this.location.equals(s.getLocation())
-                    && this.localPosition == s.getLocalPosition();
+                    && this.localPosition == s.getPosition();
 		}
 
 		return false;

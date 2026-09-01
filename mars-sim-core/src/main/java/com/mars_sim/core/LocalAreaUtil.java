@@ -307,6 +307,7 @@ public class LocalAreaUtil {
 		LocalPosition sLoc = null;
 		for (int x = 0; (x < 200) && !goodLocation; x++) {
 			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(b, maxDistance);
+			
 			sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, b);
 			goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, c);
 		}

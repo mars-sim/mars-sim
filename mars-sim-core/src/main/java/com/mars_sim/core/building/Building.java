@@ -57,6 +57,7 @@ import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerMonitor;
 import com.mars_sim.core.building.utility.power.PowerStorage;
+import com.mars_sim.core.data.collection.MapUnit;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -86,7 +87,7 @@ import com.mars_sim.core.unit.UnitHolder;
  * The Building class is a settlement's building.
  */
 public class Building extends FixedUnit implements Malfunctionable,
-	 InsidePathLocation, Temporal, ResourceHolder, UnitHolder, ItemHolder {
+	 InsidePathLocation, Temporal, ResourceHolder, UnitHolder, ItemHolder, MapUnit {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1602,6 +1603,12 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 	
 	@Override
+	public String getType() {
+		return getUnitType().getName();
+	}
+	
+	
+	@Override
 	public boolean equals(Object obj) {
 		return super.equals(obj);
 	}
@@ -1615,5 +1622,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public int hashCode() {
 		return super.hashCode();
 	}
+
 }
 

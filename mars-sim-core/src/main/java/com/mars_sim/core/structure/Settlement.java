@@ -3178,6 +3178,30 @@ public class Settlement extends Unit implements Temporal,
 	}
 	
 	/**
+	 * Gets a local list of data collection sites.
+	 *
+	 * @return
+	 */
+	public List<DataCollectionSite> getLocalSiteLists() {
+		if (dataCollectionSiteMap.containsKey(0.0)) {
+			return dataCollectionSiteMap.get(0.0);
+		}
+		return new ArrayList<>();
+	}
+	
+	/**
+	 * Gets a flat list of data collection sites.
+	 * 
+	 * @return
+	 */
+	public  Set<DataCollectionSite> getSiteLists() {
+		return dataCollectionSiteMap.values()
+			    .stream()
+			    .flatMap(Collection::stream)
+			    .collect(Collectors.toSet());
+	}
+	
+	/**
 	 * Gets the number of sites.
 	 * 
 	 * @param local Should we count the sites only in settlement vicinity ?

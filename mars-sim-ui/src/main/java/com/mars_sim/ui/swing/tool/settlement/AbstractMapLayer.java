@@ -584,15 +584,13 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			// Save original stroke
         	Stroke oldStroke = g2d.getStroke();
 			// Draw the dashed border over the selected 
-			g2d.setStroke(THICK_DASH);                                           
+			g2d.setStroke(THICK_DASH);
 			g2d.draw(bounds);
 			
 			// Restore the stroke
 			g2d.setStroke(oldStroke);
         }
-        
-//        image.flush();
-     
+
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
     }
@@ -610,39 +608,61 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 
 		var g2d = viewpoint.graphics();
 		double scale = viewpoint.scale();
-
+		
+        double xLoc = placement.getXLocation();
+        double yLoc = placement.getYLocation();
+        
         double width = placement.getWidth();
         double length = placement.getLength();
-
+        double facing = placement.getFacing();
+        
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
-        // Save original stroke
-        Stroke oldStroke = g2d.getStroke();
+
    
+        AffineTransform newTransform = new AffineTransform();
+        
         // Determine bounds.
-        Rectangle2D bounds = new Rectangle2D.Double(0, 0, width, length);
+        Rectangle2D bounds = new Rectangle2D.Double(-width/2, -length/2, width, length);
 
         // Determine transform information.
-        double scalingWidth = width / bounds.getWidth() * scale;
-        double scalingLength = length / bounds.getHeight() * scale;
-  
-        AffineTransform newTransform = new AffineTransform();
-       
-		// Draw filled rectangle.
-		newTransform.scale(scalingWidth, scalingLength);
-		g2d.transform(newTransform);
-		
-		g2d.setColor(color);
-		g2d.fill(bounds);
-		
+        double scalingWidth = width / bounds.getWidth() * scale;// / 2;
+        double scalingLength = length / bounds.getHeight() * scale;// / 2;
+        double boundsPosX = bounds.getX() * scalingWidth;
+        double boundsPosY = bounds.getY() * scalingLength;
+        
+        double centerX = width * scale / 2;
+        double centerY = length * scale / 2;
+        double translationX = (-1D * xLoc) - boundsPosX - centerX;
+        double translationY = (-1D * yLoc) - boundsPosY- centerY;
+//        double facingRadian = facing / 180D * Math.PI;
+        
+        // Save original stroke
+        Stroke oldStroke = g2d.getStroke();
+
 		if (selectedColor != null) {
-			// Draw the dashed border
-			g2d.setPaint(selectedColor);
-			g2d.setStroke(THIN_DASH);
-			g2d.draw(bounds);
-			g2d.setStroke(oldStroke);
+			// Draw filled rectangle.
+			newTransform.scale(scalingWidth, scalingLength);
+			// Apply graphic transforms for structure.		
+			newTransform.translate(translationX, translationY);
+//			newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);
+			
+			g2d.transform(newTransform);
+
+//			g2d.setPaint(selectedColor);			
+			g2d.setColor(color);
+			
+			g2d.fill(bounds);
+
+			// Note: need to define the width of the dash before it can be used.
+			// Draw the dashed border over the selected 
+//			g2d.setStroke(THIN_DASH);
+//			g2d.draw(bounds);
 		}
         
+		// Restore original stroke
+		g2d.setStroke(oldStroke);
+		
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
     }

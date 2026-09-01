@@ -8,11 +8,13 @@ package com.mars_sim.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
@@ -207,6 +209,25 @@ public class CollectionUtils {
 		
 		group0.removeAll(group1);
 		return group0;
+	}
+	
+	/**
+	 * Gets all the data collection sites in the simulation.
+	 * 
+	 * @return
+	 */
+	public static Collection<DataCollectionSite> getDataCollectionSites() {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+	
+		Set<DataCollectionSite> sites = new HashSet<>();
+		
+		Collection<Settlement> settlements = unitManager.getSettlements();
+		for (Settlement s: settlements) {
+			sites.addAll(s.getSiteLists());
+		}
+		
+		return sites;		
 	}
 	
 	/**

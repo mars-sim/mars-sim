@@ -25,6 +25,7 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.equipment.DataRecorder;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -244,6 +245,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 			
 			deployedTime = RandomUtil.getRandomDouble(250);
 		}
+		else if (UnitType.DATA_RECORDER == entity.getUnitType()) {
+			
+			this.standardInspectionWindow = .5;
+			
+			deployedTime = RandomUtil.getRandomDouble(50);
+		}
+		
 		else if (UnitType.VEHICLE == entity.getUnitType()) {
 	
 			this.standardInspectionWindow = .75;
@@ -707,6 +715,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 				whileDoing = ""; 
 				whoAffected = ((EVASuit)actor).getContainerUnit().getName();
 			}
+			else if (actor.getUnitType() == UnitType.DATA_RECORDER) {
+				eventType = HistoricalEventType.MALFUNCTION_PARTS_FAILURE;
+				whileDoing = ""; 
+				whoAffected = ((DataRecorder)actor).getContainerUnit().getName();
+			}
 			else {
 				eventType = HistoricalEventType.MALFUNCTION_PARTS_FAILURE;
 				whileDoing = "";
@@ -913,7 +926,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 		double time = pulse.getElapsed();
 
 		if (entity.getUnitType() == UnitType.BUILDING
-				|| entity.getUnitType() == UnitType.EVA_SUIT) {
+				|| entity.getUnitType() == UnitType.EVA_SUIT
+				|| entity.getUnitType() == UnitType.DATA_RECORDER) {
 			// Check if life support modifiers are still in effect.
 			setLifeSupportModifiers(time);
 			// Check if resources is still draining

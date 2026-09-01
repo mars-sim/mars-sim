@@ -43,7 +43,7 @@ extends GatherData {
 	 */
 	GatherGroundData(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, PREPARE_SITE_INSTRUMENTS, CONTAINER_TYPE, person, RandomUtil.getRandomInt(-20 + 20) + 250);
+        super(NAME, PREPARE_SITE_INSTRUMENTS, CONTAINER_TYPE, person, RandomUtil.getRandomInt(-20 + 20) + 300);
         if (!isDone()) {
         	determineCollectionFactors(person.getAssociatedSettlement().getIceCollectionRate());
         }

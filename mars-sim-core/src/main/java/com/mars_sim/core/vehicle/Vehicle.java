@@ -30,6 +30,7 @@ import com.mars_sim.core.building.task.MaintainBuilding;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.MSolDataLogger;
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.data.collection.MapUnit;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.EquipmentInventory;
@@ -71,7 +72,7 @@ import com.mars_sim.core.vehicle.task.LoadingController;
  */
 public abstract class Vehicle extends AbstractMobileUnit
 		implements Malfunctionable, Salvagable, Temporal,
-		LocalBoundedObject, UnitHolder, Towed {
+		LocalBoundedObject, UnitHolder, Towed, MapUnit {
 
 	private static final long serialVersionUID = 1L;
 
@@ -2299,7 +2300,16 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public VehicleSpec getVehicleSpec() {
 		return spec;
 	}
+
+	@Override
+	public String getType() {
+		return getUnitType().getName();
+	}
 	
+    public String getChildContext() {
+        return getContext() + ENTITY_SEPERATOR + getName();
+    }
+    
 	/**
 	 * Compares if an object is the same as this unit.
 	 *
@@ -2344,7 +2354,4 @@ public abstract class Vehicle extends AbstractMobileUnit
 		salvageInfo = null;
 	}
 
-    public String getChildContext() {
-        return getContext() + ENTITY_SEPERATOR + getName();
-    }
 }
