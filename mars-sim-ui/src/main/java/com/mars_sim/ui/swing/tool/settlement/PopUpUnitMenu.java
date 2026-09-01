@@ -20,13 +20,13 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.data.collection.DataCollectionSite;
-import com.mars_sim.core.data.collection.MapUnit;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
@@ -40,10 +40,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 	public static final int HEIGHT_1 = 300;
 
     public PopUpUnitMenu(final Entity unit, UIContext context){
-    	String unitType = "";
-    	if (unit instanceof MapUnit mapUnit) {
-    		unitType = mapUnit.getType();
-    	}
+    	String unitType = EntityDisplayInfoFactory.getDisplayInfo(unit).getSingularLabel();
+
 		add(unitType + ": " + unit.getName());
 		addSeparator();
     	

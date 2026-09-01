@@ -17,7 +17,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
-import com.mars_sim.core.data.collection.MapUnit;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
@@ -30,7 +29,7 @@ import com.mars_sim.core.unit.FixedUnit;
 /**
  * A building construction site.
  */
-public class ConstructionSite extends FixedUnit implements MapUnit{
+public class ConstructionSite extends FixedUnit {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -380,12 +379,7 @@ public class ConstructionSite extends FixedUnit implements MapUnit{
         }
         return result;
     }
-    
-	@Override
-	public String getType() {
-		return getUnitType().getName();
-	}
-	
+
 	/**
 	 * Is this object the same as another object ?
 	 */

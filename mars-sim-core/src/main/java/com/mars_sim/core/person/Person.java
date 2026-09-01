@@ -34,7 +34,6 @@ import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.data.SolMetricDataLogger;
-import com.mars_sim.core.data.collection.MapUnit;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
@@ -91,7 +90,7 @@ import com.mars_sim.core.vehicle.Vehicle;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends AbstractMobileUnit implements Worker, Temporal, UnitHolder, Appraiser, MapUnit {
+public class Person extends AbstractMobileUnit implements Worker, Temporal, UnitHolder, Appraiser {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1812,12 +1811,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	public String getStringType() {
 		return gender.getName().toLowerCase();
 	}
-	
-	@Override
-	public String getType() {
-		return getUnitType().getName();
-	}
-	
+
 	/**
 	 * Reinitialize references after loading from a saved sim.
 	 */

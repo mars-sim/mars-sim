@@ -29,7 +29,6 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.data.UnitSet;
-import com.mars_sim.core.data.collection.MapUnit;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.logging.SimLogger;
@@ -61,7 +60,7 @@ import com.mars_sim.core.vehicle.LightUtilityVehicle;
 /**
  * The robot class represents operating a robot on Mars.
  */
-public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, Malfunctionable, Worker, MapUnit{
+public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, Malfunctionable, Worker {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1031,11 +1030,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	public String getStringType() {
 		return TYPE.toLowerCase();
 	}
-	
-	@Override
-	public String getType() {
-		return getUnitType().getName();
-	}
+
 	
 	/**
 	 * Compares if an object is the same as this robot
