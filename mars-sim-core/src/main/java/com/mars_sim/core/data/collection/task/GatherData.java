@@ -117,7 +117,7 @@ public abstract class GatherData extends EVAOperation {
 	protected GatherData(String name, TaskPhase preparePhase,
 					EquipmentType containerType, Person person, int duration) {
         // Use EVAOperation constructor.
-        super(name, person, duration, preparePhase);
+        super(name, person, person.getAssociatedSettlement(), duration, preparePhase);
 
 		setMinimumSunlight(LightLevel.NONE);
 

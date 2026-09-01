@@ -41,7 +41,7 @@ public class WalkOutsideTest extends MarsSimUnitTest {
 		assertTrue(person.isOutside(), "Person starts outside");
 
 		LocalPosition target = new LocalPosition(-10D, 10D);
-		WalkOutside outsideWalk = new WalkOutside(person, person.getPosition(), target, true);
+		WalkOutside outsideWalk = new WalkOutside(person, settlement, person.getPosition(), target, true);
 		assertFalse(outsideWalk.isDone(), "Person can do walk");
 		assertEquals(2, outsideWalk.getNumberWayPoints(), "Waypoints direct");
 
@@ -74,7 +74,7 @@ public class WalkOutsideTest extends MarsSimUnitTest {
 		buildBuilding(settlement.getBuildingManager(), new LocalPosition(1D + BUILDING_WIDTH, -BUILDING_LENGTH/2), 0D);
 		
 		LocalPosition target = new LocalPosition(20D, 0D);
-		WalkOutside outsideWalk = new WalkOutside(person, person.getPosition(), target, true);
+		WalkOutside outsideWalk = new WalkOutside(person, settlement, person.getPosition(), target, true);
 		assertFalse(outsideWalk.isDone(), "Person can do walk");
 		assertNotEquals(2, outsideWalk.getNumberWayPoints(), "Waypoints has a path");
 		
@@ -107,7 +107,7 @@ public class WalkOutsideTest extends MarsSimUnitTest {
 		buildRover(settlement, "Rover", new LocalPosition(10D, -1D), EXPLORER_ROVER);
 		
 		LocalPosition target = new LocalPosition(20D, 0D);
-		WalkOutside outsideWalk = new WalkOutside(person, person.getPosition(), target, true);
+		WalkOutside outsideWalk = new WalkOutside(person, settlement, person.getPosition(), target, true);
 		assertFalse(outsideWalk.isDone(), "Person can do walk");
 		assertNotEquals(2, outsideWalk.getNumberWayPoints(), "Waypoints has a path");
 
@@ -141,7 +141,7 @@ public class WalkOutsideTest extends MarsSimUnitTest {
 		buildRover(settlement, "Rover", new LocalPosition(10D, -1D), EXPLORER_ROVER);
 		
 		LocalPosition target = new LocalPosition(30D, 0D);
-		WalkOutside outsideWalk = new WalkOutside(person, person.getPosition(), target, true);
+		WalkOutside outsideWalk = new WalkOutside(person, settlement, person.getPosition(), target, true);
 		assertFalse(outsideWalk.isDone(), "Person can do walk");
 		assertNotEquals(2, outsideWalk.getNumberWayPoints(), "Waypoints has a path");
 		

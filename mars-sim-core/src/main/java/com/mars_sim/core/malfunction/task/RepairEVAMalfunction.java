@@ -55,7 +55,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 	private EquipmentOwner partStore;
 	
 	public RepairEVAMalfunction(Person person, Malfunctionable entity, Malfunction malfunction) {
-		super(NAME, person, 25, REPAIRING);
+		super(NAME, person, person.getAssociatedSettlement(), 25, REPAIRING);
 		setMinimumSunlight(LightLevel.NONE);
 
 		if (isSuperUnfit()) {

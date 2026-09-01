@@ -75,7 +75,7 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	public ConstructBuilding(Person person, ConstructionSite site) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, RandomUtil.getRandomInt(-10 + 10) + 200D, CONSTRUCTION);
+		super(NAME, person, person.getAssociatedSettlement(), RandomUtil.getRandomInt(-10 + 10) + 200D, CONSTRUCTION);
 
 		if (person.isEVAUnFit()) {
 			endEVA("Not EVA fit.");
@@ -121,7 +121,7 @@ public class ConstructBuilding extends EVAOperation {
 	public ConstructBuilding(Person person, ConstructionStage stage, ConstructionSite site,
 			List<LightUtilityVehicle> vehicles) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, RandomUtil.getRandomInt(-20 + 20) + 200D, CONSTRUCTION);
+		super(NAME, person, person.getAssociatedSettlement(), RandomUtil.getRandomInt(-20 + 20) + 200D, CONSTRUCTION);
 
 		// Initialize data members.
 		this.stage = stage;

@@ -425,27 +425,37 @@ public class LocalAreaUtil {
 	 */
 	public static Set<LocalBoundedObject> getAllLocalBoundedObjectsAtLocation(Coordinates coordinates) {
 
-		Set<LocalBoundedObject> result = new HashSet<>();
-
 		// Check for any settlements at coordinates.
 		Iterator<Settlement> l = unitManager.getSettlements().iterator();
 		while (l.hasNext()) {
 			Settlement settlement = l.next();
-			if (settlement.getCoordinates().equals(coordinates)) {
-				// Add all local vehicles at settlement vicinity.
-				result.addAll(settlement.getParkedNGaragedVehicles());
-				// Add all buildings at settlement vicinity.
-				result.addAll(settlement.getBuildingManager().getBuildingSet());			
-				// Add all construction sites at settlement vicinity.
-				result.addAll(settlement.getConstructionManager().getConstructionSites());
-				// Add all data collection sites at settlement vicinity.
-				result.addAll(settlement.getLocalDataCollectionSitesList());
-			}
+			return getAllLocalBoundedObjectsAtLocation(settlement);
 		}
+
+		return new HashSet<>();
+	}
+
+	/**
+	 * Gets a set of local bounded objects at a given coordinate location.
+	 *
+	 * @param settlement
+	 * @return set of local bounded objects at location (may be empty).
+	 */
+	public static Set<LocalBoundedObject> getAllLocalBoundedObjectsAtLocation(Settlement settlement) {
+
+		Set<LocalBoundedObject> result = new HashSet<>();
+		// Add all local vehicles at settlement vicinity.
+		result.addAll(settlement.getParkedNGaragedVehicles());
+		// Add all buildings at settlement vicinity.
+		result.addAll(settlement.getBuildingManager().getBuildingSet());			
+		// Add all construction sites at settlement vicinity.
+		result.addAll(settlement.getConstructionManager().getConstructionSites());
+		// Add all data collection sites at settlement vicinity.
+		result.addAll(settlement.getLocalDataCollectionSitesList());
 
 		return result;
 	}
-
+	
 	/**
 	 * Helper method to output the various geometry aspects in string format.
 	 */
@@ -518,9 +528,10 @@ public class LocalAreaUtil {
 	 * @param start	   the starting point.
 	 * @param destination the destination point.
 	 * @param coordinates the global coordinate location to check.
+	 * @param settlement
 	 * @return true if line path doesn't collide with anything.
 	 */
-	public static boolean isLinePathCollisionFree(LocalPosition start, LocalPosition destination, Coordinates coordinates) {
+	public static boolean isLinePathCollisionFree(LocalPosition start, LocalPosition destination, Coordinates coordinates, Settlement settlement) {
 		Line2D line = new Line2D.Double(start.getX(), start.getY(), destination.getX(), destination.getY());
 		return isPathCollisionFree(null, createLinePath(line), coordinates, true);
 	}

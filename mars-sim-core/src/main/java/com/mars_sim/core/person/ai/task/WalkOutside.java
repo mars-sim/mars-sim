@@ -17,6 +17,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.task.walk.CollisionPathFinder;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 
@@ -58,6 +59,8 @@ public class WalkOutside extends Task {
 	private boolean ignoreEndEVA;
 	private int walkingPathIndex;
 
+	private Settlement settlement;
+	
 	private List<LocalPosition> walkingPath;
 
 	/**
@@ -69,12 +72,14 @@ public class WalkOutside extends Task {
 	 * @param ignoreEndEVA         ignore end EVA situations and continue walking
 	 *                             task.
 	 */
-	public WalkOutside(Worker worker, LocalPosition start, LocalPosition destination,
+	public WalkOutside(Worker worker, Settlement settlement, LocalPosition start, LocalPosition destination,
 			boolean ignoreEndEVA) {
 
 		// Use Task constructor.
 		super(NAME, worker, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 
+		this.settlement = settlement;
+		
 		// Check that the worker is currently outside a settlement or vehicle so that he may start walking.
 		if (!worker.isOutside())
 			throw new IllegalStateException("WalkOutside task started when " + worker + " was in " + worker.getContainerUnit());
@@ -90,7 +95,7 @@ public class WalkOutside extends Task {
 		walkingPathIndex = 1;
 
 		// Determine walking path.
-		var pathFinder = new CollisionPathFinder(worker, start);
+		var pathFinder = new CollisionPathFinder(worker, settlement, start);
 		walkingPath = pathFinder.determineWalkingPath(destination).path();
 
 		// Initialize task phase.

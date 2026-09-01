@@ -54,7 +54,7 @@ public class MaintainEVAVehicle extends EVAOperation {
      * @param target
      */
     public MaintainEVAVehicle(Person person, Vehicle target) {
-        super(NAME, person, AVERAGE_EVA_TIME + RandomUtil.getRandomDouble(80, 120), MAINTAIN_VEHICLE);
+        super(NAME, person, person.getAssociatedSettlement(), AVERAGE_EVA_TIME + RandomUtil.getRandomDouble(80, 120), MAINTAIN_VEHICLE);
 
 		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");

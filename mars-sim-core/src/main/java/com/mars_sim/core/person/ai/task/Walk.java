@@ -18,6 +18,7 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.ClassicAirlock;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
@@ -100,6 +101,7 @@ public class Walk extends Task {
 	// Data members
 	private int walkingStepIndex;
 	
+	private Settlement settlement;
 	/** The WalkingSteps instance. */
 	private WalkingSteps walkingSteps;
 
@@ -115,8 +117,9 @@ public class Walk extends Task {
 
 		LocalBoundedObject targetObject = null;
 		if (person.isInSettlement()) {
+			settlement = person.getSettlement();
 			// Walk to random inhabitable building at settlement.
-			List<Building> buildingList = person.getSettlement().getBuildingManager()
+			List<Building> buildingList = settlement.getBuildingManager()
 					.getBuildings(FunctionType.LIFE_SUPPORT)
 					.stream()
 					.filter(b -> b != person.getBuildingLocation())
@@ -185,6 +188,10 @@ public class Walk extends Task {
 			Airlock airlock = findEmergencyAirlock(person);
 			if (airlock != null) {
 				targetObject = (LocalBoundedObject) airlock.getEntity();
+				
+				if (airlock instanceof ClassicAirlock ca) {
+					settlement = ca.getSettlement();
+				}
 			}
 		}
 
@@ -685,7 +692,7 @@ public class Walk extends Task {
 				setDescription(WALKING_OUTSIDE + " toward " + step.loc.getShortFormat());
 
         		// Note that addSubTask() will internally check if the task is a duplicate
-				boolean canAdd = addSubTask(new WalkOutside(worker, worker.getPosition(), step.loc, true));
+				boolean canAdd = addSubTask(new WalkOutside(worker, settlement, worker.getPosition(), step.loc, true));
 				if (!canAdd) {
 					logger.log(worker, Level.WARNING, 4_000,
 							"Unable to add WalkOutside subtask.");

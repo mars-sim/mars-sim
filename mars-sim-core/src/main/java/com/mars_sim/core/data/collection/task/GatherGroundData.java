@@ -33,7 +33,7 @@ extends GatherData {
 
     /** Task phases. */
     static final TaskPhase PREPARE_SITE_INSTRUMENTS = new TaskPhase(Msg.getString(
-            "Task.phase.prepareSiteInstrument"),
+            "Task.phase.prepareSiteInstruments"),
 			createPhaseImpact(SkillType.COMPUTING, SkillType.AREOLOGY));
 
 	/**

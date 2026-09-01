@@ -93,9 +93,9 @@ public abstract class DigLocal extends EVAOperation {
 	 * @param person the person performing the task.
 	 */
 	protected DigLocal(String name, TaskPhase collectionPhase, int resourceID,
-					EquipmentType containerType, Person person, int duration) {
+					EquipmentType containerType, Person person, Settlement settlement, int duration) {
         // Use EVAOperation constructor.
-        super(name, person, duration, collectionPhase);
+        super(name, person, settlement, duration, collectionPhase);
 
 		setMinimumSunlight(LightLevel.NONE);
 
@@ -105,7 +105,8 @@ public abstract class DigLocal extends EVAOperation {
         this.collectionPhase = collectionPhase;
 
         // To dig local, a person must start at a Settlement
-		settlement = person.getSettlement();
+		this.settlement = settlement;
+//       settlement = person.getSettlement();
         if (settlement == null) {
         	endEVA("Not in settlement at the start.");
 			return;
@@ -215,7 +216,7 @@ public abstract class DigLocal extends EVAOperation {
     			
         		// Note that addSubTask() will internally check if the task is a duplicate
 
-				boolean canAdd = addSubTask(new WalkOutside(person, person.getPosition(), dropOffLoc, false));
+				boolean canAdd = addSubTask(new WalkOutside(person, settlement, person.getPosition(), dropOffLoc, false));
 				if (!canAdd) {
 					logger.log(person, Level.WARNING, 4_000,
 							". Unable to add subtask WalkOutside.");

@@ -298,6 +298,14 @@ public class ClassicAirlock extends Airlock {
         return building;
     }
 
+    public Building getBuilding() {
+    	return building;
+    }
+    
+    public Settlement getSettlement() {
+    	return building.getSettlement();
+    }
+    
     @Override
     public LocalPosition getAvailableInteriorPosition() {
         return airlockInteriorPos;

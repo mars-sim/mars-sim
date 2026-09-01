@@ -91,7 +91,7 @@ public class CollectResources extends EVAOperation {
 			double targettedAmount, double startingCargo, EquipmentType containerType, CollectResourcesMission mission) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person,
+		super(NAME, person, null,
 					LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D), COLLECT_RESOURCES);
 
 		setMinimumSunlight(LIGHT_LEVEL);

@@ -43,7 +43,8 @@ extends DigLocal {
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, COLLECT_ICE, ResourceUtil.ICE_ID, CONTAINER_TYPE, person, RandomUtil.getRandomInt(-20 + 20) + 200); 
+        super(NAME, COLLECT_ICE, ResourceUtil.ICE_ID, CONTAINER_TYPE, 
+        		person, person.getAssociatedSettlement(), RandomUtil.getRandomInt(-20 + 20) + 200); 
         if (!isDone()) {
         	determineCollectionFactors(person.getAssociatedSettlement().getIceCollectionRate());
         }

@@ -77,7 +77,7 @@ public class ExploreSite extends EVAOperation {
 	 */
 	public ExploreSite(Person person, MineralSite site, Rover rover, Exploration mission) {
 		// Use EVAOperation parent constructor.
-		super(NAME, person, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), EXPLORING);
+		super(NAME, person, null, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), EXPLORING);
 
 		setMinimumSunlight(LIGHT_LEVEL);
 		

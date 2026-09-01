@@ -93,18 +93,22 @@ public abstract class EVAOperation extends Task {
 
 	private TaskPhase outsidePhase;
 
+	private Settlement settlement;
+	
 	/**
 	 * Constructor.
 	 *
 	 * @param name   the name of the task
 	 * @param person the person to perform the task
+	 * @param settlement
 	 * @param siteDuration How long is the onsite work; zero means there is not a fixed duration
 	 * @param onSitePhase The TaskPhase for the actual onsite work
 	 */
-	protected EVAOperation(String name, Person person, double siteDuration, TaskPhase onSitePhase) {
+	protected EVAOperation(String name, Person person, Settlement settlement, double siteDuration, TaskPhase onSitePhase) {
 		super(name, person, true, IMPACT, 0D);
-
+	
 		// Initialize data members
+		this.settlement = settlement;
 		this.minEVASunlight = LightLevel.LOW;
 		this.timeOnSiteRemaining = (siteDuration > 0 ? siteDuration : 1000D);
 		this.outsidePhase = onSitePhase;
@@ -120,6 +124,8 @@ public abstract class EVAOperation extends Task {
 				// Set initial phase.
 				setPhase(WALK_TO_OUTSIDE_SITE);
 			}
+			
+			
 		}
 
 		else if (person.isInVehicleInGarage()) {
@@ -328,7 +334,7 @@ public abstract class EVAOperation extends Task {
         		  
         		// Note that addSubTask() will internally check if the task is a duplicate
  
-				boolean canAdd = addSubTask(new WalkOutside(person, person.getPosition(),
+				boolean canAdd = addSubTask(new WalkOutside(person, settlement, person.getPosition(),
         				outsideSitePos, false));
 				if (!canAdd) {
 					logger.log(person, Level.WARNING, 4_000,

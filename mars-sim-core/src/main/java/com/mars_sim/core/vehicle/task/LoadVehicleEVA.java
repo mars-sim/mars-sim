@@ -56,7 +56,7 @@ public class LoadVehicleEVA extends EVAOperation {
 	 */
 	public LoadVehicleEVA(Person person, Vehicle vehicle) {
 		// Use Task constructor.
-		super(NAME, person, 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), LOADING);
+		super(NAME, person, person.getAssociatedSettlement(), 20D + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5), LOADING);
 
 		setMinimumSunlight(LightLevel.NONE);
 

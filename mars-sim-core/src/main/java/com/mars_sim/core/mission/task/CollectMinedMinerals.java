@@ -72,7 +72,7 @@ public class CollectMinedMinerals extends EVAOperation {
 						Mission eventSource) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5), COLLECT_MINERALS);
+		super(NAME, person, null, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5), COLLECT_MINERALS);
 
 		setMinimumSunlight(MineSite.LIGHT_LEVEL);
 	       

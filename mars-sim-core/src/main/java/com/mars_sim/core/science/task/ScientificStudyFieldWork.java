@@ -59,7 +59,7 @@ public  class ScientificStudyFieldWork extends EVAOperation {
 									   ScientificStudy study, Rover rover) {
 
 		// Use EVAOperation parent constructor.
-		super(name, person, RandomUtil.getRandomDouble(50D) + 10D, fieldwork);
+		super(name, person, null, RandomUtil.getRandomDouble(50D) + 10D, fieldwork);
 		
 		setMinimumSunlight(LIGHT_LEVEL);
 

@@ -71,7 +71,7 @@ public class MineSite extends EVAOperation {
 	public MineSite(Person person, MiningObjective objective, Rover rover, Mission eventSource) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, RandomUtil.getRandomDouble(50D) + 50D, MINING);
+		super(NAME, person, null, RandomUtil.getRandomDouble(50D) + 50D, MINING);
 		setMinimumSunlight(LIGHT_LEVEL);
 
 		// Initialize data members.
