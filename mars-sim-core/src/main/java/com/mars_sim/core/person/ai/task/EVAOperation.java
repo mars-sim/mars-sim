@@ -785,6 +785,7 @@ public abstract class EVAOperation extends Task {
 	 * <p>If no site is found then the Task is ended.
 	 *
 	 * @param lbo the origin
+	 * @param settlement
 	 * @return Was a site found
 	 */
 	protected boolean setRandomOutsideLocation(LocalBoundedObject lbo) {
@@ -794,7 +795,7 @@ public abstract class EVAOperation extends Task {
 		for (int x = 0; (x < 20) && !goodLocation; x++) {
 			for (int y = 0; (y < 20) && !goodLocation; y++) {
 
-				double radius = 2 + Math.max(lbo.getLength(), lbo.getWidth()) / 2D;
+				double radius = Math.max(lbo.getLength(), lbo.getWidth());
 				double distance = RandomUtil.getRandomRegressionInteger(50) + (x * 2) + (y * 2) + radius; //'+ (x * 100D) + 50D; //
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2);
 
@@ -815,6 +816,43 @@ public abstract class EVAOperation extends Task {
 		return goodLocation;
 	}
 
+	/**
+	 * Determines a random location for working outside a vehicle for the
+	 * assigned Worker.
+	 * <p>If no site is found then the Task is ended.
+	 *
+	 * @param lbo the origin
+	 * @param settlement
+	 * @return Was a site found
+	 */
+	protected boolean setRandomOutsideLocation(LocalBoundedObject lbo, Settlement settlement) {
+
+		LocalPosition sLoc = null;
+		boolean goodLocation = false;
+		for (int x = 0; (x < 20) && !goodLocation; x++) {
+			for (int y = 0; (y < 20) && !goodLocation; y++) {
+
+				double radius = 2 + Math.max(lbo.getLength(), lbo.getWidth()) / 2D;
+				double distance = RandomUtil.getRandomRegressionInteger(50) + (x * 2) + (y * 2) + radius; //'+ (x * 100D) + 50D; //
+				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2);
+
+				LocalPosition boundedLocalPoint = lbo.getPosition().getPosition(distance, radianDirection);
+
+				sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, lbo);
+				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, settlement);
+			}
+		}
+
+		if (goodLocation) {
+			setOutsideSiteLocation(sLoc);
+		}
+		else {
+			endTask();
+			logger.warning(worker, "Can not find a suitable random EVA location");
+		}
+		return goodLocation;
+	}
+	
 	
 	
 	/**

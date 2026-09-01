@@ -224,7 +224,7 @@ public class CollectionUtils {
 		
 		Collection<Settlement> settlements = unitManager.getSettlements();
 		for (Settlement s: settlements) {
-			sites.addAll(s.getSiteLists());
+			sites.addAll(s.getAllDataCollectionSites());
 		}
 		
 		return sites;		

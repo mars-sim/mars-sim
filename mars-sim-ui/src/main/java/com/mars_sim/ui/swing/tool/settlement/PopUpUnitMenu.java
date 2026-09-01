@@ -19,6 +19,7 @@ import javax.swing.JPopupMenu;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.data.collection.MapUnit;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.person.Person;
@@ -52,14 +53,14 @@ public class PopUpUnitMenu extends JPopupMenu {
 				break;
         	
 			case Vehicle v: 
-				add(buildDescriptionitem(unit));
+				add(buildInfoItem(unit));
 				add(buildDetailsItem(unit, context));
 				add(createItem("relocate", v, Vehicle::relocateVehicle));
 				add(createItem("maintain", v, Vehicle::maintainVehicle));
 				break;
 
         	case Building b:
-				add(buildDescriptionitem(unit));
+				add(buildInfoItem(unit));
 				add(buildDetailsItem(unit, context));
 				if (b.getAssociatedSettlement().getConstructionManager().canDemolish(b)) {
 					add(createItem("demolish", b, this::triggerDemolish));
@@ -68,7 +69,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 
         	// Note: for construction sites
 			case ConstructionSite cs:
-				add(buildDescriptionitem(unit));
+				add(buildInfoItem(unit));
 				add(buildDetailsItem(unit, context));
 				if (cs.isProposed()) {
 					add(createItem("relocate", cs, t -> t.relocateSite()));
@@ -77,6 +78,11 @@ public class PopUpUnitMenu extends JPopupMenu {
 				}
 				break;
 
+        	case DataCollectionSite dcs:
+				add(buildInfoItem(unit));
+				add(buildDetailsItem(unit, context));
+				break;
+				
 			default:
 				add(buildDetailsItem(unit, context));
 				break;
@@ -88,37 +94,47 @@ public class PopUpUnitMenu extends JPopupMenu {
      *
      * @param unit
      */
-    private JMenuItem buildDescriptionitem(final Entity unit) {
+    private JMenuItem buildInfoItem(final Entity unit) {
         
-		return createItem("description", unit, t -> {
+		return createItem("info", unit, t -> {
 
             String description = null;
             String type = null;
             String name = null;
-
+            String position = null;
+            
 			switch (t) {
 				case Vehicle vehicle -> {
                 	description = vehicle.getDescription();
+                	position = vehicle.getPosition().getShortFormat();
                 	type = vehicle.getVehicleType().getName();
                 	name = vehicle.getName();
                 }
                 case Building building -> {
                 	description = building.getDescription();
+                	position = building.getPosition().getShortFormat();
                 	type = building.getBuildingType();
                 	name = building.getName();
                 }
                 case ConstructionSite site -> {
 					var stageInfo = site.getCurrentConstructionStage().getInfo();
                 	description = stageInfo.getName();
+                	position = site.getPosition().getShortFormat();
                 	type = stageInfo.getType().name().toLowerCase();
                 	name = site.getName();
+                }
+                case DataCollectionSite dcs -> {
+                	description = dcs.getDescription();
+                	position = dcs.getPosition().getShortFormat();
+                	type = dcs.getType();
+                	name = dcs.getName();
                 }
                 default -> {
                 	return;
 				}
 			}
 
-			UnitInfoPanel b = new UnitInfoPanel(name, type, description);
+			UnitInfoPanel b = new UnitInfoPanel(name, type, description, position);
 			b.setOpaque(false);
 			b.setBackground(new Color(0,0,0,128));
 			

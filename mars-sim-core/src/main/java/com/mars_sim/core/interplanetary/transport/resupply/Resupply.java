@@ -344,7 +344,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 */
 	private static boolean isCollisionFreeVehicle(BuildingTemplate t, Settlement settlement) {
 		return !LocalAreaUtil.isVehicleBoundedOjectIntersected(t.getBounds(),
-				settlement.getCoordinates(), true);
+				settlement, true);
 
 	}
 
@@ -357,7 +357,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	private static boolean isCollisionFreeImmovable(BuildingTemplate t, Settlement settlement) {
 
 		return !LocalAreaUtil.isImmovableBoundedOjectIntersected(t.getBounds(), 
-				settlement.getCoordinates());
+				settlement);
 	}
 
 	/**

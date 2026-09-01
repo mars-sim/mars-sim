@@ -39,7 +39,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.collection.DataCollectionSite;
-import com.mars_sim.core.data.collection.MapUnit;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
@@ -856,7 +855,7 @@ public class SettlementMapPanel extends JPanel {
 	 * @return selected site
 	 */
 	private DataCollectionSite selectDataCollectionSiteAt(LocalPosition settlementPosition) {
-		for (DataCollectionSite site : settlement.getLocalSiteLists()) {
+		for (DataCollectionSite site : settlement.getLocalDataCollectionSitesList()) {
 			if (isWithin(settlementPosition, site)) {
 				selectDataSite(site);
 				return site;

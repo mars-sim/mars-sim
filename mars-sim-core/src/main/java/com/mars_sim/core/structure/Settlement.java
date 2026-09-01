@@ -3182,7 +3182,7 @@ public class Settlement extends Unit implements Temporal,
 	 *
 	 * @return
 	 */
-	public List<DataCollectionSite> getLocalSiteLists() {
+	public List<DataCollectionSite> getLocalDataCollectionSitesList() {
 		if (dataCollectionSiteMap.containsKey(0.0)) {
 			return dataCollectionSiteMap.get(0.0);
 		}
@@ -3190,11 +3190,11 @@ public class Settlement extends Unit implements Temporal,
 	}
 	
 	/**
-	 * Gets a flat list of data collection sites.
+	 * Gets a flat set of data collection sites.
 	 * 
 	 * @return
 	 */
-	public  Set<DataCollectionSite> getSiteLists() {
+	public  Set<DataCollectionSite> getAllDataCollectionSites() {
 		return dataCollectionSiteMap.values()
 			    .stream()
 			    .flatMap(Collection::stream)

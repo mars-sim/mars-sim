@@ -158,6 +158,15 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 		return DATA_COLLECTION_SITE;
 	}
 	
+	/**
+	 * Gets the description of this site.
+	 * 
+	 * @return
+	 */
+	public String getDescription() {
+		return "# Instruments available: " + getNumInstrumentAvailable();
+	}
+	
 	@Override
 	public double getWidth() {
 		return 2;

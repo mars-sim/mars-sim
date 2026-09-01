@@ -773,7 +773,7 @@ public abstract class GatherData extends EVAOperation {
     private LocalPosition determineSiteLocation() {
     	
     	if (isSettlement) {
-    		setRandomOutsideLocation((Building)airlock.getEntity());
+    		setRandomOutsideLocation((Building)airlock.getEntity(), person.getSettlement());
         	return getOutsideSiteLocation();
         	
 //    		if (airlock.getEntity() instanceof LocalBoundedObject boundedObject) {
