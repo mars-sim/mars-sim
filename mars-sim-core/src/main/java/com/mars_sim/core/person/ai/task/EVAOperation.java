@@ -869,7 +869,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected boolean setOutsideLocation(LocalBoundedObject basePoint) {
 
-		LocalPosition newLocation = LocalAreaUtil.getCollisionFreeRandomPosition(basePoint, worker.getCoordinates(), 1D);
+		LocalPosition newLocation = LocalAreaUtil.getCollisionFreeRandomPosition(basePoint, worker.getCoordinates(), settlement, 1D);
 		boolean found = false;
 		if (newLocation != null) {
 			setOutsideSiteLocation(newLocation);

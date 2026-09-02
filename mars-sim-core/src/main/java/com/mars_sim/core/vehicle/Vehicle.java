@@ -1904,7 +1904,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 				// Note: excessive calling increase CPU Util
 				foundGoodLocation = LocalAreaUtil.isObjectCollisionFree(this, w, l,
 								newLoc.getX(), newLoc.getY(), 
-								newFacing, getCoordinates());
+								newFacing, getCoordinates(), settlement);
 				
 				count++;
 			}

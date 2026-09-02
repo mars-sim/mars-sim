@@ -249,13 +249,6 @@ public class LocalAreaUtil {
 	 */
 	public static boolean isPositionCollisionFree(LocalPosition pos, Coordinates coordinates) {
 
-//		Iterator<LocalBoundedObject> i = getAllLocalBoundedObjectsAtLocation(coordinates).iterator();
-//		while (i.hasNext()) {
-//			if (isPositionWithinLocalBoundedObject(pos, i.next())) {
-//				return false;
-//			}
-//		}
-
 		// Add all vehicles at location.
 		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
 		while (i.hasNext()) {
@@ -286,6 +279,14 @@ public class LocalAreaUtil {
 				Iterator<ConstructionSite> k = settlement.getConstructionManager().getConstructionSites().iterator();
 				while (k.hasNext()) {
 					if (isPositionWithinLocalBoundedObject(pos, k.next())) {
+						return false;
+					}
+				}
+				
+				// Check all data collection sites at settlement.
+				Iterator<DataCollectionSite> s = settlement.getLocalDataCollectionSitesList().iterator();
+				while (s.hasNext()) {
+					if (isPositionWithinLocalBoundedObject(pos, s.next())) {
 						return false;
 					}
 				}
@@ -330,6 +331,14 @@ public class LocalAreaUtil {
 			}
 		}
 
+		// Check all data collection sites at settlement.
+		Iterator<DataCollectionSite> s = settlement.getLocalDataCollectionSitesList().iterator();
+		while (s.hasNext()) {
+			if (isPositionWithinLocalBoundedObject(pos, s.next())) {
+				return false;
+			}
+		}
+		
 		return true;
 	}
 	
@@ -339,19 +348,23 @@ public class LocalAreaUtil {
 	 * 
 	 * @param b Base point for new local position.
 	 * @param c The coordinate to avoid collision
+	 * @param settlement
 	 * @param maxDistance Maximum distance from the base
 	 * @return Position or null if none found
 	 */
-	public static LocalPosition getCollisionFreeRandomPosition(LocalBoundedObject b, Coordinates c, double maxDistance)  {
+	public static LocalPosition getCollisionFreeRandomPosition(LocalBoundedObject b, Coordinates c, Settlement settlement, double maxDistance)  {
 		boolean goodLocation = false;
 		LocalPosition sLoc = null;
 		for (int x = 0; (x < 200) && !goodLocation; x++) {
 			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(b, maxDistance);
 			
 			sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, b);
-			goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, c);
+			
+			if (settlement != null)
+				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, settlement);
+			else
+				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, c);
 		}
-
 		return sLoc;
 	}
 
@@ -508,7 +521,7 @@ public class LocalAreaUtil {
 	 * @return true if object doesn't collide with anything.
 	 */
 	public static boolean isObjectCollisionFree(Object object, double width, double length, double xLoc, double yLoc,
-			double facing, Coordinates coordinates) {
+			double facing, Coordinates coordinates, Settlement settlement) {
 
 		boolean result = true;
 
@@ -516,7 +529,7 @@ public class LocalAreaUtil {
 		Rectangle2D objectRect = new Rectangle2D.Double(xLoc - (width / 2D), yLoc - (length / 2D), width, length);
 		Path2D objectPath = getPathFromRectangleRotation(objectRect, facing);
 
-		result = isPathCollisionFree(object, objectPath, coordinates, false);
+		result = isPathCollisionFree(object, objectPath, coordinates, settlement, false);
 
 		return result;
 	}
@@ -533,7 +546,7 @@ public class LocalAreaUtil {
 	 */
 	public static boolean isLinePathCollisionFree(LocalPosition start, LocalPosition destination, Coordinates coordinates, Settlement settlement) {
 		Line2D line = new Line2D.Double(start.getX(), start.getY(), destination.getX(), destination.getY());
-		return isPathCollisionFree(null, createLinePath(line), coordinates, true);
+		return isPathCollisionFree(null, createLinePath(line), coordinates, settlement, true);
 	}
 
 	/**
@@ -542,12 +555,13 @@ public class LocalAreaUtil {
 	 *
 	 * @param line        the line.
 	 * @param coordinates the global coordinate location to check.
+	 * @param settlement
 	 * @param useCache    true if caching should be used.
 	 * @return true if line path doesn't collide with anything.
 	 */
-	public static boolean isLinePathCollisionFree(Line2D line, Coordinates coordinates, boolean useCache) {
+	public static boolean isLinePathCollisionFree(Line2D line, Coordinates coordinates, Settlement settlement, boolean useCache) {
 		// Create line path
-		return isPathCollisionFree(null, createLinePath(line), coordinates, useCache);
+		return isPathCollisionFree(null, createLinePath(line), coordinates, settlement, useCache);
 
 	}
 
@@ -704,10 +718,11 @@ public class LocalAreaUtil {
 	 * @param object      the object being checked (may be null if no object).
 	 * @param path        the path to check.
 	 * @param coordinates the global coordinate location to check.
+	 * @param settlement
 	 * @param useCache    true if caching should be used.
 	 * @return true if path doesn't collide with anything.
 	 */
-	private static boolean isPathCollisionFree(Object object, Path2D path, Coordinates coordinates, boolean useCache) {
+	private static boolean isPathCollisionFree(Object object, Path2D path, Coordinates coordinates, Settlement settlement, boolean useCache) {
 
 		boolean result = true;
 
@@ -724,8 +739,16 @@ public class LocalAreaUtil {
 		}
 
 		if (!cached) {
+			
+			Set<LocalBoundedObject> set = null;
+			if (settlement != null)	{
+				set = getAllLocalBoundedObjectsAtLocation(settlement);
+			}
+			else {
+				set = getAllLocalBoundedObjectsAtLocation(coordinates);
+			}
 			// Add all obstacle areas at location together to create a total obstacle area.
-			Iterator<LocalBoundedObject> i = getAllLocalBoundedObjectsAtLocation(coordinates).iterator();
+			Iterator<LocalBoundedObject> i = set.iterator();
 			while (i.hasNext()) {
 				LocalBoundedObject lbo = i.next();
 				if (object == null || lbo != object) {

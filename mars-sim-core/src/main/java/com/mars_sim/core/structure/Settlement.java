@@ -543,18 +543,16 @@ public class Settlement extends Unit implements Temporal,
 	 * @param list
 	 */
 	protected void initialiseEssentials(boolean needGoods, List<BuildingTemplate> list) {
-		// Initialize building manager
-		buildingManager = new BuildingManager(this, list);
-
-		// Initialize building connector manager.
-		buildingConnectorManager = new BuildingConnectorManager(this, list);
-
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
-
+		// Initialize building manager
+		buildingManager = new BuildingManager(this, list);
+		// Initialize building templates
+		buildingManager.initializeBuildingTemplates();
+		// Initialize building connector manager.
+		buildingConnectorManager = new BuildingConnectorManager(this, list);
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
-		
 		// Initialize the thermal system
 		thermalSystem = new ThermalSystem(this);
 

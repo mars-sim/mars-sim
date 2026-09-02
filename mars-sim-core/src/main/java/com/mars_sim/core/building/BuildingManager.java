@@ -134,6 +134,8 @@ public class BuildingManager implements Serializable {
 	private static MasterClock masterClock;
 	private static UnitManager unitManager;
 
+	private transient List<BuildingTemplate> buildingTemplates;
+	
 	/**
 	 * Constructor 1 : construct buildings from name list. Called by constructor 1.
 	 *
@@ -144,9 +146,14 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
 		this.settlement = settlement;
 		this.settlementID = settlement.getIdentifier();
+		this.buildings = new UnitSet<>();
+		this.buildingTemplates = buildingTemplates;
+	}
 
-		// Construct all buildings in the settlement.
-		buildings = new UnitSet<>();
+	/**
+	 * Initializes building templates.
+	 */
+	public void initializeBuildingTemplates() {
 
 		if (buildingTemplates != null && !buildingTemplates.isEmpty()) {
 			for (var bt : buildingTemplates) {
@@ -164,7 +171,6 @@ public class BuildingManager implements Serializable {
 			}
 		}
 	}
-
 	/**
 	 * Initializes functions map and meteorite instance.
 	 */
@@ -1863,7 +1869,7 @@ public class BuildingManager implements Serializable {
 		boolean goodLocation = true;
 
 		goodLocation = LocalAreaUtil.isObjectCollisionFree(site, position.getWidth(), position.getLength(),
-				position.getXLocation(), position.getYLocation(), position.getFacing(), settlement.getCoordinates());
+				position.getXLocation(), position.getYLocation(), position.getFacing(), settlement.getCoordinates(), settlement);
 
 		return goodLocation;
 	}

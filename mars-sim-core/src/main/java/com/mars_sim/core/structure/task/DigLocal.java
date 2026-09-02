@@ -477,7 +477,7 @@ public abstract class DigLocal extends EVAOperation {
 			b = (Building)(airlock.getEntity());
 		}
 
-		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), MAX_DROPOFF_DISTANCE);
+		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), settlement, MAX_DROPOFF_DISTANCE);
 		if (p == null) {
 			endEVA("No suitable drop-off location near " + b + ".");
 		}
@@ -492,7 +492,7 @@ public abstract class DigLocal extends EVAOperation {
     private LocalPosition determineDiggingLocation() {
 		if (airlock.getEntity() instanceof LocalBoundedObject boundedObject) {
 			return LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
-																 person.getCoordinates(), MAX_DIGGING_DISTANCE);
+					person.getCoordinates(), settlement, MAX_DIGGING_DISTANCE);
 		}
 
         return null;
