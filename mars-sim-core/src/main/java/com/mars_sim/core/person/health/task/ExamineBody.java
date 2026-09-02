@@ -67,7 +67,7 @@ public class ExamineBody extends MedicalAidTask {
 		MedicalAid aid = MedicalHelper.determineMedicalAid(examiner, Collections.emptySet());
 
 		if (aid == null) {
-			logger.warning(examiner, "Could not find medical aid to examine " + body.getPerson().getName());
+			logger.warning(examiner, 5_000, "Could not find medical aid to examine " + body.getPerson().getName() + ".");
 		}
 		return new ExamineBody(examiner, body, aid);
 	}
@@ -76,7 +76,7 @@ public class ExamineBody extends MedicalAidTask {
 		MedicalAid aid = MedicalHelper.determineMedicalAid(examiner, Collections.emptySet());
 
 		if (aid == null) {
-			logger.warning(examiner, "Could not find medical aid to examine " + body.getPerson().getName());
+			logger.warning(examiner, 5_000, "Could not find medical aid to examine " + body.getPerson().getName()+ ".");
 		}
 		return new ExamineBody(examiner, body, aid);
 	}

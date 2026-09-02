@@ -454,6 +454,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * Checks if a building template's position is clear of collisions with any
 	 * existing structures.
 	 * 
+	 * @param spec
 	 * @param template the building template.
 	 * @param buildingConfig 
 	 * @return true if building template position is clear.

@@ -60,7 +60,7 @@ public final class MedicalHelper {
         Set<MedicalAid> goodMedicalAids = new HashSet<>();
     
         // Check all medical care buildings.
-        for(Building building : settlement.getBuildingManager().getBuildingSet(
+        for (Building building : settlement.getBuildingManager().getBuildingSet(
                                             FunctionType.MEDICAL_CARE)) {
     
             // Check if building currently has a malfunction.

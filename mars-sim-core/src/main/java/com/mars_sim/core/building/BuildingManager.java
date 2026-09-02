@@ -28,7 +28,6 @@ import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.connection.BuildingConnector;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
-import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.Computation;
 import com.mars_sim.core.building.function.Function;
@@ -162,7 +161,8 @@ public class BuildingManager implements Serializable {
 
 				// Check for possibility of collision
 				if (!Resupply.isTemplatePositionClear(spec, bt, this)) {
-					throw new IllegalArgumentException(bt.getBuildingName() + " collided with another building.");
+					throw new IllegalArgumentException(settlement.getName() + " - Type: " + bt.getBuildingType() 
+						+ ". ID: " + bt.getID() + ". Name: " + bt.getBuildingName() + ". This buildingTemplate collides with an existing BuildingTemplate.");
 					// May relocate with bt = Resupply.clearCollision(spec, bt,
 					// Resupply.MAX_COUNTDOWN, this);
 				}
@@ -1846,29 +1846,28 @@ public class BuildingManager implements Serializable {
 		return totalBuildingValues;
 	}
 
-	/**
-	 * Checks if a proposed building location is open or intersects with existing
-	 * buildings or construction sites.
-	 *
-	 * @param position The position of the new building
-	 * @return true if new building location is open.
-	 */
-	public boolean isBuildingLocationOpen(BoundedObject position) {
-		return isBuildingLocationOpen(position, null);
-	}
+//	/**
+//	 * Checks if a proposed building location is open or intersects with existing
+//	 * buildings or construction sites.
+//	 *
+//	 * @param position The position of the new building
+//	 * @return true if new building location is open.
+//	 */
+//	public boolean isBuildingLocationOpen(BoundedObject position) {
+//		return isBuildingLocationOpen(position, null);
+//	}
 
 	/**
 	 * Checks if a proposed building location is open and without intersecting with
 	 * any existing buildings or construction sites.
 	 *
 	 * @param position New building position
-	 * @param site     the new construction site or null if none.
 	 * @return true if new building location is open.
 	 */
-	public boolean isBuildingLocationOpen(BoundedObject position, ConstructionSite site) {
+	public boolean isBuildingLocationOpen(BoundedObject position) {
 		boolean goodLocation = true;
 
-		goodLocation = LocalAreaUtil.isObjectCollisionFree(site, position.getWidth(), position.getLength(),
+		goodLocation = LocalAreaUtil.isObjectCollisionFree(position, position.getWidth(), position.getLength(),
 				position.getXLocation(), position.getYLocation(), position.getFacing(), settlement.getCoordinates(), settlement);
 
 		return goodLocation;

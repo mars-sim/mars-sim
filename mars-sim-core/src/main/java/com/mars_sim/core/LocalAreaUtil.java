@@ -514,10 +514,11 @@ public class LocalAreaUtil {
 	 * @param object      the boundedObject to be moved.
 	 * @param width       the object's width.
 	 * @param length      the object's length.
-	 * @param xLoc        the object's X location.
-	 * @param yLoc        the object's Y location.
+	 * @param xLoc        the object's future x location.
+	 * @param yLoc        the object's future y location.
 	 * @param facing      the object's facing (degrees clockwise from North).
 	 * @param coordinates the global coordinate location to check.
+	 * @param settlement
 	 * @return true if object doesn't collide with anything.
 	 */
 	public static boolean isObjectCollisionFree(Object object, double width, double length, double xLoc, double yLoc,

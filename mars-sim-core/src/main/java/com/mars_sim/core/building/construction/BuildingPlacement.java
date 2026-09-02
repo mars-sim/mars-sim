@@ -326,7 +326,7 @@ public class BuildingPlacement {
 			// buildings
 			// or construction sites.
 			BoundedObject sitePosition = new BoundedObject(rectCenter, spec.getWidth(), spec.getLength(), rectRotation);
-			if (bldMgr.isBuildingLocationOpen(sitePosition, null)) {
+			if (bldMgr.isBuildingLocationOpen(sitePosition)) {
 				return sitePosition;
 			}
 		}
