@@ -1382,8 +1382,9 @@ public class BuildingManager implements Serializable {
 		if (garage == null) {
 			return false;
 		}
-
-		if (vehicle instanceof Rover rover && garage.getVehicleMaintenance().removeRover(rover, true)) {
+		
+		if (vehicle instanceof Rover rover 
+				&& garage.getVehicleMaintenance().removeRover(rover, true)) {
 			return true;
 		} else if (vehicle instanceof Flyer flyer && garage.getVehicleMaintenance().removeFlyer(flyer, true)) {
 			return true;

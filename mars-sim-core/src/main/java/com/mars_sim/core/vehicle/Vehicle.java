@@ -313,6 +313,15 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 	
 	/**
+	 * Sets the vehicle ready to be drawn on the map.
+	 * 	
+	 * @param value
+	 */
+	public void setReady(boolean value) {
+		this.isReady = value;
+	}
+	
+	/**
 	 * Sets the scope string.
 	 */
 	protected void setupScopeString() {

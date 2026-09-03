@@ -265,12 +265,12 @@ public class PersonTaskManager extends TaskManager {
 		}
 		
 		if (!(newTaskName.equals(Sleep.NAME) || newTaskName.equals(EatDrink.NAME)) && person.isSuperUnfit()) {
-			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + ".");
+			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + "'.");
 			return false;
 		}
 
 		if (newTaskName.equals(Walk.NAME) && person.isSuperUnfit()) {
-			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + ".");
+			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + "'.");
 			return false;
 		}
 		

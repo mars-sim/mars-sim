@@ -773,7 +773,7 @@ public class Walk extends Task {
 					
 				} else {
 					logger.log(person, Level.INFO, 4_000,
-							"Unable to physically exit the airlock of "
+							"Unable to physically exit "
 		      				+ airlock.getEntityName() + ".");
 					// Consume all of the time waiting to enter; prevents repeated tries
 					remainingTime = 0D;
