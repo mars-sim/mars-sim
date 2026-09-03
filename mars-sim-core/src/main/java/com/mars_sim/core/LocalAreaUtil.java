@@ -396,9 +396,9 @@ public class LocalAreaUtil {
 	/**
 	 * Checks for collisions with any immovable objects.
 	 *
-	 * @return true if location collides with something.
 	 * @param LocalBoundedObject object
 	 * @param settlement
+	 * @return true if location collides with something.
 	 */
 	public static boolean isImmovableBoundedOjectIntersected(LocalBoundedObject object, Settlement settlement) { 
 
@@ -641,6 +641,12 @@ public class LocalAreaUtil {
 		return doAreasCollide(getBoundedObjectArea(o1), getBoundedObjectArea(o2));
 	}
 
+	/**
+	 * Gets the line segments.
+	 * 
+	 * @param object
+	 * @return
+	 */
 	private static Set<Line2D> getLocalBoundedObjectLineSegments(LocalBoundedObject object) {
 
 		Set<Line2D> result = new HashSet<>(4);// ConcurrentHashMap.newKeySet(4);

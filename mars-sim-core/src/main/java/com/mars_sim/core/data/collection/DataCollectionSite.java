@@ -21,10 +21,15 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** Static string */
+	
+	/** Static members */
+	private static final int WIDTH = 6;
+	private static final int LENGTH = 6;
+	public static final double HYPOTENUSE = Math.sqrt(WIDTH * WIDTH + LENGTH * LENGTH);
+	
 	private static final String DATACOLLECTIONSITE = "DATACOLLECTIONSITE";
 	private static final String DATA_COLLECTION_SITE = "Data Collection Site";
-	private static final String DATA_SITE_ = "DC Site ";
+	private static final String DATA_SITE_ = "DCS ";
 	/** Static identifier that increment when a new site is created. */
 	private static int currentIdentifier;
 	/** Unique identifier for each site. */
@@ -39,7 +44,7 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	private LocalPosition localPosition;
 	
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 * 
 	 * @param location
 	 */
@@ -52,6 +57,25 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 		currentIdentifier++;
 	}
 
+	/**
+	 * Constructor 2.
+	 * 
+	 * @param location
+	 */
+	public DataCollectionSite(Coordinates location) {
+		super(location);
+	}
+	
+	/**
+	 * Creates a empty site.
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public static DataCollectionSite creatEmptySite(Coordinates location) {
+		return new DataCollectionSite(location);
+	}
+	
 	/**
 	 * Gets the identifier.
 	 * 
@@ -141,6 +165,16 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	}
 	
 	/**
+	 * Sets the local position.
+	 * 
+	 * @return
+	 */
+	public void setPosition(LocalPosition localPosition) {
+		this.localPosition = localPosition;
+	}
+	
+	
+	/**
 	 * Gets the name of the site.
 	 * 
 	 * @return
@@ -169,12 +203,12 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	
 	@Override
 	public double getWidth() {
-		return 2;
+		return WIDTH;
 	}
 
 	@Override
 	public double getLength() {
-		return 2;
+		return LENGTH;
 	}
 
 	@Override
