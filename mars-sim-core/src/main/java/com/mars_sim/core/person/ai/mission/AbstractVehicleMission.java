@@ -359,10 +359,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 					// disembarking will help unload cargoes
 					startDisembarkingPhase();
 			}
-			else {
-				// for ALL OTHER REASONS
-				super.endMission(endStatus);
-			}
 		}
 
 		if (continueToEndMission) {
