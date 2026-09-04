@@ -78,10 +78,18 @@ public class RestingMedicalRecovery extends MedicalAidTask {
         // Initialize data members.
         restingTime = 0D;
         
-        if (person.isInSettlement())
+        if (person.isInSettlement()) {
 	       	// Send the person as a patient to a medical bed
-	    	BuildingManager.addPatientToMedicalBed(person, worker.getSettlement());
- 
+        	if (BuildingManager.addPatientToMedicalBed(person, person.getSettlement())) {
+    			logger.info(person, 10_000, "Successfully being added to a medical bed during treatment.");
+    		}
+    		else {
+    			logger.info(person, 10_000, "Unsuccessfully being added to a medical bed during treatment.");
+    		}
+        	
+        }
+
+
     	// Note: Get the doctor approve for taking this person off the work shift for a recovery
     	person.getShiftSlot().setOnLeave((int)RESTING_DURATION);
     	

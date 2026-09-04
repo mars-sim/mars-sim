@@ -135,8 +135,12 @@ public class RequestMedicalTreatment extends MedicalAidTask {
         double remainingTime = 0D;
         
     	// Send the person as a patient to a medical bed
-		if (BuildingManager.addPatientToMedicalBed(person, worker.getSettlement())) {
+		if (BuildingManager.addPatientToMedicalBed(person, person.getSettlement())) {
+			logger.info(person, 10_000, "Successfully being added to a medical bed during treatment.");
 			setPhase(WAITING_FOR_TREATMENT);
+		}
+		else {
+			logger.info(person, 10_000, "Unsuccessfully being added to a medical bed during treatment.");
 		}
 		
         return remainingTime;

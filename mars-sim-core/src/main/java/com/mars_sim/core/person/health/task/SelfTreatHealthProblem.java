@@ -82,8 +82,17 @@ public class SelfTreatHealthProblem extends TreatHealthProblem {
             aid.requestTreatment(problem);
         }
         
-        if (healer.isInSettlement())
-        	BuildingManager.addPatientToMedicalBed(healer, healer.getSettlement());
+        if (healer.isInSettlement()) {
+	       	// Send the person as a patient to a medical bed
+        	if (BuildingManager.addPatientToMedicalBed(healer, healer.getSettlement())) {
+    			logger.info(healer, 10_000, "Successfully being added to a medical bed during treatment.");
+    		}
+    		else {
+    			logger.info(healer, 10_000, "Unsuccessfully being added to a medical bed during treatment.");
+    		}
+        	
+        }
+
         
         // In future, simulate offering telemedicine via mission control
     }
