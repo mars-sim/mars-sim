@@ -87,21 +87,27 @@ public class PrescribeMedication extends Task {
         		boolean success = walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
 	
         		if (!success) {
-        			logger.info(worker, 10_000, "Tried to walk to Doctor's station unsuccessfully.");
+        			logger.info(worker, 10_000, "Unsuccessfully tried to walk to Doctor's station.");
         			// Note: Avoid calling this to instantly send the doctor there.
         			// Check if the doctor is already at a medical activity spot	
         			success = MedicalCare.dispatchToMedical(worker);
         			
         			if (!success) {
-        				logger.info(worker, 10_000, "Dispatched to Doctor's station unsuccessfully.");
+        				logger.info(worker, 10_000, "Unsuccessfully dispatched to Doctor's station to prescribe medication to " + patient.getName() + ".");
         				// If no medical activity spot is available, end the task
-        				endTask();
+        				
+        				// Note: for now, do NOT call endTask, or else this task may not be able to get done
+        				
+//        				endTask();
         				// Note: should be able to 'remotely' treat a patient
-        				return ;
+//        				return ;
+        			}
+        			else {
+        				logger.info(worker, 10_000, "Successfully dispatched to Doctor's station to prescribe medication to " + patient.getName() + ".");
         			}
         		} 
         		else {
-        			logger.info(worker, 10_000, "Arrived at Doctor's station successfully.");
+        			logger.info(worker, 10_000, "Successfully arrived at Doctor's station to prescribe medication to " + patient.getName() + ".");
         		}
             }
             else {
@@ -115,8 +121,8 @@ public class PrescribeMedication extends Task {
             endTask();
         }
 
-        String des = "Prescribing medicine for " + patient;
-        logger.log(pharmacist, Level.INFO, 0, des + ".");
+        String des = "Prescribing medication for " + patient;
+        logger.log(pharmacist, Level.INFO, 10_000, des + ".");
         setDescription(des);
         
         // Initialize phase
