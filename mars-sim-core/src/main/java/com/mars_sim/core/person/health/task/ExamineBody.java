@@ -198,7 +198,9 @@ public class ExamineBody extends MedicalAidTask {
 				// Send the worker as a patient to a medical bed
 				boolean toSend = BuildingManager.addPatientToMedicalBed(deceasedPerson, worker.getSettlement());
 
-				if (toSend) {
+				// Note: For now, do not check if addPatientToMedicalBed is successful
+				
+//				if (toSend) {
 
 					String name = deathInfo.getDoctorRetrievingBody();
 					
@@ -207,7 +209,7 @@ public class ExamineBody extends MedicalAidTask {
 						deathInfo.setDoctorRetrievingBody(worker.getName());
 					}
 					
-					logger.info(worker, "Just retrieved and transferred the body of " + deceasedPerson.getName() + " to the medical facility.");
+					logger.info(worker, "Assumed having retrieved and transferred the body of " + deceasedPerson.getName() + " to the medical facility.");
 					
 					// The first physician gets to set the estimate exam time
 					
@@ -233,19 +235,19 @@ public class ExamineBody extends MedicalAidTask {
 					
 					// Initialize phase.
 					setPhase(EXAMINING);
-				}
+//				}
 				
-				else {
-					logger.info(worker, "Unable to retrieve and transfer the body of " + deceasedPerson.getName() + " to the medical facility.");
-					
-					String name = deathInfo.getDoctorRetrievingBody();
-					
-					if (name != null)
-						// Set it back to null
-						deathInfo.setDoctorRetrievingBody(null);
-					
-					endTask();
-				}
+//				else {
+//					logger.info(worker, "Unable to retrieve and transfer the body of " + deceasedPerson.getName() + " to the medical facility.");
+//					
+//					String name = deathInfo.getDoctorRetrievingBody();
+//					
+//					if (name != null)
+//						// Set it back to null
+//						deathInfo.setDoctorRetrievingBody(null);
+//					
+//					endTask();
+//				}
 			}
 		}
 

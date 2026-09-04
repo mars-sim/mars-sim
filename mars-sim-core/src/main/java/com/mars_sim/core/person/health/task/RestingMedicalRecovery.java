@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -78,23 +77,46 @@ public class RestingMedicalRecovery extends MedicalAidTask {
         // Initialize data members.
         restingTime = 0D;
         
-        if (person.isInSettlement()) {
-	       	// Send the person as a patient to a medical bed
-        	if (BuildingManager.addPatientToMedicalBed(person, person.getSettlement())) {
-    			logger.info(person, 10_000, "Successfully being added to a medical bed during treatment.");
-    		}
-    		else {
-    			logger.info(person, 10_000, "Unsuccessfully being added to a medical bed during treatment.");
-    		}
+       // Note: For now, no need of checking for the location state of the doctor
+        
+        // Future: Simulate offering telemedicine via mission control if a person is on a mission and in a vehicle
+		
+		if (person.isInVehicleInGarage()) {
+        	logger.info(person, 10_000, "Starting in-garaged-vehicle resting medical recovery.");
         	
+        	// Note: Get the doctor approve for taking this person off the work shift for a recovery
+	    	person.getShiftSlot().setOnLeave((int)RESTING_DURATION);
+	        // Initialize phase.
+	        setPhase(RESTING);
         }
-
-
-    	// Note: Get the doctor approve for taking this person off the work shift for a recovery
-    	person.getShiftSlot().setOnLeave((int)RESTING_DURATION);
-    	
-        // Initialize phase.
-        setPhase(RESTING);
+		else if (person.isInSettlement()) {	
+	       	logger.info(person, 10_000, "Starting in-settlement resting medical recovery.");
+	       	
+        	// Send the person as a patient to a medical bed
+//        	if (BuildingManager.addPatientToMedicalBed(person, person.getSettlement())) {
+//    			logger.info(person, 10_000, "Successfully being added to a medical bed during treatment.");
+//    		}
+//    		else {
+//    			logger.info(person, 10_000, "Unsuccessfully being added to a medical bed during treatment.");
+//    		}
+  
+	    	// Note: Get the doctor approve for taking this person off the work shift for a recovery
+	    	person.getShiftSlot().setOnLeave((int)RESTING_DURATION);
+	        // Initialize phase.
+	        setPhase(RESTING);
+		}
+		else if (person.isInVehicle()) {
+			logger.info(person, 10_000, "Starting in-vehicle resting medical recovery.");
+			
+	    	// Note: Get the doctor approve for taking this person off the work shift for a recovery
+	    	person.getShiftSlot().setOnLeave((int)RESTING_DURATION);
+	        // Initialize phase.
+	        setPhase(RESTING);
+		}
+		else {
+			logger.info(person, 10_000, "Being outside and unable to start resting medical recovery.");
+			endTask();
+		}
     }
 
     @Override

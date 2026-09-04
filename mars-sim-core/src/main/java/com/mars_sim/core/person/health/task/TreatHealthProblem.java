@@ -75,17 +75,47 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
             treatmentDuration = treatment.getAdjustedDuration(skill);
         }
         else {
-            logger.warning(doctor, healthProblem + " does not have treatment.");
+            logger.warning(doctor, healthProblem + " had no treatment plan.");
             endTask();
             return;
         }
 
-        if (doctor.isInSettlement())
+        
+        if (doctor.isInVehicleInGarage()) {
+        	
 	        // Initialize phase.
         	setPhase(DISPATCH);
-        else 
-        	// In future, simulate offering telemedicine via mission control
+        	
+        	logger.info(doctor, 10_000, "Dispatching to  a patient in a garaged vehicle to treat " + healthProblem + ".");
+        }
+        
+        else if (doctor.isInSettlement()) {
+        	
+	        // Initialize phase.
+        	setPhase(DISPATCH);
+        	
+        	logger.info(doctor, 10_000, "Dispatching to a patient in a settlement to treat " + healthProblem + ".");
+        	
+//	       	// Send the person as a patient to a medical bed
+//            else if (BuildingManager.addPatientToMedicalBed(healer, healer.getSettlement())) {
+//    			logger.info(healer, 10_000, "Successfully being added to a medical bed during self-treatment.");
+//    		}
+//    		else {
+//    			logger.info(healer, 10_000, "Unsuccessfully being added to a medical bed during self-treatment.");
+//    		}
+        }
+        else if (doctor.isInVehicle() ) {
+        	
+	        // Initialize phase.
         	setPhase(TREATMENT);
+        	
+        	logger.info(doctor, 10_000, "Instructing a patient to treat " + healthProblem + ".");
+        }
+        else {
+        	logger.info(doctor, 10_000, "Being outside and unable to treat " + healthProblem + ".");
+        	endTask();
+        }
+        
     }
 
     @Override
@@ -124,13 +154,13 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
 		boolean success = walkToDoctorStation(true);
 
 		if (!success) {
-			logger.info(worker, 10_000, "Unsuccessfully tried to walk to Doctor's station to treat health problem.");
+			logger.info(worker, 10_000, "Unsuccessfully tried to walk to Doctor's station to treat " + healthProblem + ".");
 			
 			// First walk to a medical activity spot
 			success = MedicalCare.dispatchToMedical(worker);
 			
 			if (!success) {
-				logger.info(worker, 10_000, "Unsuccessfully dispatched to Doctor's station to treat health problem.");
+				logger.info(worker, 10_000, "Unsuccessfully dispatched to Doctor's station to treat " + healthProblem + ".");
 				
 				// If no medical activity spot is available, end the task
 				
@@ -141,11 +171,11 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
 //				return timeLeft / 2;
 			}
 			else {
-				logger.info(worker, 10_000, "Successfully dispatched to Doctor's station to treat health problem.");
+				logger.info(worker, 10_000, "Successfully dispatched to Doctor's station to treat " + healthProblem + ".");
 			}
 		}
 		else {
-			logger.info(worker, 10_000, "Successfully arrived at Doctor's station to treat health problem.");
+			logger.info(worker, 10_000, "Successfully arrived at Doctor's station to treat " + healthProblem + ".");
 		}
 		
 		setPhase(TREATMENT);

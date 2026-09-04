@@ -9,7 +9,6 @@ package com.mars_sim.core.person.health.task;
 import java.util.Comparator;
 import java.util.Set;
 
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.health.HealthProblem;
@@ -76,25 +75,38 @@ public class SelfTreatHealthProblem extends TreatHealthProblem {
     		return;
     	}
        	
-        // Has the treatment been queued
+        // Check queuing the treatment
         if (!aid.getProblemsAwaitingTreatment().contains(problem)) {
-            logger.info(healer, "Requesting treatment. " + problem);
+            logger.info(healer, "Queuing self-treatment of a health problem, namely, " + problem + ".");
             aid.requestTreatment(problem);
         }
         
-        if (healer.isInSettlement()) {
-	       	// Send the person as a patient to a medical bed
-        	if (BuildingManager.addPatientToMedicalBed(healer, healer.getSettlement())) {
-    			logger.info(healer, 10_000, "Successfully being added to a medical bed during treatment.");
-    		}
-    		else {
-    			logger.info(healer, 10_000, "Unsuccessfully being added to a medical bed during treatment.");
-    		}
-        	
-        }
-
+        // Note: For now, no need of checking for the location state of the doctor
         
-        // In future, simulate offering telemedicine via mission control
+        // Future: Simulate offering telemedicine via mission control if a person is on a mission and in a vehicle
+
+        if (healer.isInVehicleInGarage()) {
+        	logger.info(healer, 10_000, "Starting in-garaged-vehicle self-treatment of health problem " + problem + ".");
+        }
+        
+        else if (healer.isInSettlement()) {
+        	logger.info(healer, 10_000, "Starting in-settlement self-treatment of health problem " + problem + ".");
+        	
+//	       	// Send the person as a patient to a medical bed
+//            else if (BuildingManager.addPatientToMedicalBed(healer, healer.getSettlement())) {
+//    			logger.info(healer, 10_000, "Successfully being added to a medical bed during self-treatment.");
+//    		}
+//    		else {
+//    			logger.info(healer, 10_000, "Unsuccessfully being added to a medical bed during self-treatment.");
+//    		}
+        }
+        else if (healer.isInVehicle() ) {
+        	logger.info(healer, 10_000, "Starting in-vehicle self-treatment of health problem " + problem + ".");
+        }
+        else {
+        	logger.info(healer, 10_000, "Being outside and unable to start self-treatment of health problem " + problem + ".");
+        	endTask();
+        }
     }
 
     /**

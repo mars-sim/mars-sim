@@ -75,20 +75,36 @@ public class RequestMedicalTreatment extends MedicalAidTask {
      * Creates a task where a patient requests medical treatment at a medical aid.
      * 
      * @param patient the person to perform the task
-     * @param aid Where will teh treatment be done
+     * @param aid Where will the treatment be done
      * 
      */
     private RequestMedicalTreatment(Person patient, MedicalAid aid) {
         super(NAME, patient, aid, IMPACT, 0);
 	    
-    	// Send the person as a patient to a medical bed
-		if (patient.isInSettlement()) {	
+        // Note: For now, no need of checking for the location state of the doctor
+        
+        // Future: Simulate offering telemedicine via mission control if a person is on a mission and in a vehicle
+		
+		if (patient.isInVehicleInGarage()) {
+        	logger.info(patient, 10_000, "Requesting in-garaged-vehicle medical treatment.");
+            // Initialize phase.
+	        setPhase(SHOWING_UP);
+        }
+		else if (patient.isInSettlement()) {	
+	       	logger.info(patient, 10_000, "Requesting in-settlement medical treatment.");
+	       	
+	    	// Future: Send the person as a patient to a medical bed
+	       	
 	        // Initialize phase.
 	        setPhase(SHOWING_UP);
 		}
+		else if (patient.isInVehicle()) {
+			logger.info(patient, 10_000, "Requesting in-vehicle medical treatment.");
+	        setPhase(SHOWING_UP);
+		}
 		else {
-			// Future: will simulate contacting the mission control for medical help			
-			setPhase(WAITING_FOR_TREATMENT);
+			logger.info(patient, 10_000, "Being outside and unable to request medical treatment.");
+			endTask();
 		}
     }
 
@@ -134,14 +150,17 @@ public class RequestMedicalTreatment extends MedicalAidTask {
 
         double remainingTime = 0D;
         
-    	// Send the person as a patient to a medical bed
-		if (BuildingManager.addPatientToMedicalBed(person, person.getSettlement())) {
-			logger.info(person, 10_000, "Successfully being added to a medical bed during treatment.");
-			setPhase(WAITING_FOR_TREATMENT);
-		}
-		else {
-			logger.info(person, 10_000, "Unsuccessfully being added to a medical bed during treatment.");
-		}
+        if (person.isInSettlement()) {
+	    	// Send the person as a patient to a medical bed
+			if (BuildingManager.addPatientToMedicalBed(person, person.getSettlement())) {
+				logger.info(person, 10_000, "Successfully being added to a medical bed during treatment.");
+			}
+			else {
+				logger.info(person, 10_000, "Unsuccessfully being added to a medical bed during treatment.");
+			}
+        }
+		
+		setPhase(WAITING_FOR_TREATMENT);
 		
         return remainingTime;
     }
