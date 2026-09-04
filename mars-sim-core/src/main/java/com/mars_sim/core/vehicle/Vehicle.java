@@ -2088,8 +2088,16 @@ public abstract class Vehicle extends AbstractMobileUnit
 			}
 
 			if (!canTransferOut) {
-				logger.warning(this, 20_000L, "Cannot be stored into " + destination + ".");
-				// NOTE: need to revert back the storage action
+				logger.warning(this, 20_000, "Cannot be stored into " + destination + ".");
+				// Note: need to revert back to where the vehicle used to belong
+				if (transfer(cu)) {
+					logger.info(this, 20_000, "Successfully reverted back to " + cu + ".");
+				}
+				else {
+					logger.warning(this, 20_000, "Unable to reverted back to " + cu + ".");
+				}
+				
+				return false;
 			}
 			else {
 				// Set the container unit for this vehicle

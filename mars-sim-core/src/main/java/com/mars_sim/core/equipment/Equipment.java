@@ -311,7 +311,8 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	public boolean transfer(UnitHolder destination) {
 		boolean canRetrieve = false;
 		boolean canStore = false;
-		var deo = EquipmentOwner.getAttached(getContainerUnit());
+		var cu = getContainerUnit();
+		var deo = EquipmentOwner.getAttached(cu);
 		if (deo != null) {
 			canRetrieve = deo.removeEquipment(this);
 		}
@@ -322,7 +323,7 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 
 		if (!canRetrieve) {
 				logger.warning(this, 60_000L, "Could not be retrieved/transferred from '"
-						+ getContainerUnit() + "'.");
+						+ cu + "'.");
 		}
 		else {	
 			// Does the dest
@@ -348,6 +349,18 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 
 				// Call setContainerUnit
 				setContainerUnit(destination);
+			}
+			else {
+				logger.warning(this, 20_000, "Cannot be stored into " + destination + ".");
+				// Note: need to revert back to where the equipment used to belong
+				if (transfer(cu)) {
+					logger.info(this, 20_000, "Successfully reverted back to " + cu + ".");
+				}
+				else {
+					logger.warning(this, 20_000, "Unable to reverted back to " + cu + ".");
+				}
+				
+				return false;
 			}
 		}
 		
