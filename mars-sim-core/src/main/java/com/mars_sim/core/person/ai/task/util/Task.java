@@ -60,7 +60,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private static SimLogger logger = SimLogger.getLogger(Task.class.getName());
 
 	// Static members
-
+	/** The default timeout for directly assigned tasks (in millisols). */
+	private static final int DEFAULT_TIMEOUT_MILLISOLS = 500;
 	/** Level of top level Task */
 	private static final int TOP_LEVEL = 1;
 	/** The standard stress effect of a task within a person's job. */
@@ -662,6 +663,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				double remainingTime = timeLeft;
 				timeLeft = performMappedPhase(timeLeft);
 				timeCompleted += remainingTime;
+				
+				if (timeCompleted > DEFAULT_TIMEOUT_MILLISOLS) {
+					endTask();
+				}
 			}
 
 			// Some Task return a percentage of the time which can produce a very small number
