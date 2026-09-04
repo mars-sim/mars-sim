@@ -127,14 +127,21 @@ public class ExamineBody extends MedicalAidTask {
 			if (!success) {
 				logger.info(worker, 10_000, "Dispatched to Doctor's station unsuccessfully to examine " + deceasedPerson.getName() + ".");
 				// If no medical activity spot is available, end the task
-				endTask();
+				
+				// Note: for now, do NOT call endTask, or else this task may not be able to get done
+				
+//				endTask();
 				// Note: should be able to 'remotely' treat a patient
-				return ;
+//				return ;
 			}
 		} 
 		else {
 			logger.info(worker, 10_000, "Arrived at Doctor's station successfully to examine " + deceasedPerson.getName() + ".");
 		}
+		
+        String des = "Performing postmortem exam on " + deceasedPerson;
+        logger.log(examiner, Level.INFO, 10_000, des + ".");
+        setDescription(des);
 		
 		// Initialize phase.
 		setPhase(PREPARING);

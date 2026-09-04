@@ -115,6 +115,10 @@ public class PrescribeMedication extends Task {
             endTask();
         }
 
+        String des = "Prescribing medicine for " + patient;
+        logger.log(pharmacist, Level.INFO, 0, des + ".");
+        setDescription(des);
+        
         // Initialize phase
         setPhase(MEDICATING);
     }

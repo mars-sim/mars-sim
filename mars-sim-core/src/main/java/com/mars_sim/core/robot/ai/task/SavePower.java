@@ -41,7 +41,7 @@ public class SavePower extends Task {
 		// If robot is low power, leave the power save mode
 		if (robot.getSystemCondition().isLowPower()) {
 			
-			setDescriptionDone(END_POWER_SAVING);
+			setQuickDescription(END_POWER_SAVING);
         	// this task has ended
 			endTask();
 		}
@@ -83,7 +83,7 @@ public class SavePower extends Task {
 		// If robot is low power, leave the power save mode
 		if (robot.getSystemCondition().isLowPower()) {
 			
-			setDescriptionDone(END_POWER_SAVING);
+			setQuickDescription(END_POWER_SAVING);
         	// this task has ended
 			endTask();
 			

@@ -175,13 +175,18 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
         var aid = getMedicalAid();
         if (!aid.getProblemsBeingTreated().contains(healthProblem)) {
             aid.startTreatment(healthProblem, treatmentDuration);
-
+            String des = "";
             if (worker.getName().equals(healthProblem.getSufferer().getName())) {
-            	logger.log(worker, Level.INFO, 0, "Self-treating for " + healthProblem.getComplaint().getType().getName() + ".");
+            	des = "Self-treating for " + healthProblem.getComplaint().getType().getName();
+            	logger.log(worker, Level.INFO, 0, des + ".");
             }
-            else
-            	logger.log(worker, Level.INFO, 0, "Treating " + healthProblem.getSufferer().getName()
-        			+ " for " + healthProblem.getComplaint().getType().getName() + ".");
+            else {
+            	des = "Treating " + healthProblem.getSufferer().getName()
+            			+ " for " + healthProblem.getComplaint().getType().getName();
+            	logger.log(worker, Level.INFO, 0, des + ".");
+            	
+            }
+            setDescription(des);
         }
 
         // Check for accident in medical aid.

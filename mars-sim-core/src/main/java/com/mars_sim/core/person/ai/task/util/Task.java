@@ -396,7 +396,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Sets the task's description.
+	 * Sets the task's description and record the task description.
 	 * 
 	 * @param des the task description.
 	 */
@@ -405,11 +405,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Sets the task's description without recording the task.
+	 * Sets the task's description quickly without recording the task.
 	 * 
 	 * @param des the task description.
 	 */
-	protected void setDescriptionDone(String des) {
+	protected void setQuickDescription(String des) {
 		if (!description.equalsIgnoreCase(des)) {
 			description = des;
 			eventTarget.fireUnitUpdate(EntityEventType.TASK_DESCRIPTION_EVENT, des);
@@ -417,7 +417,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 		
 	/**
-	 * Sets the task's description.
+	 * Sets the task's description and record the task description.
 	 * 
 	 * @param des the task description.
 	 * @param recordTask true if wanting to record
