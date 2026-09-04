@@ -2108,6 +2108,8 @@ public class Settlement extends Unit implements Temporal,
 			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
 			// Mark the vehicle is not ready to be drawn to the map
 			vehicle.setReady(false);
+			
+			return true;
 		}
 		
 		return false;
