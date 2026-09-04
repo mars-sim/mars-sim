@@ -269,7 +269,7 @@ public class PersonTaskManager extends TaskManager {
 			return false;
 		}
 
-		if (newTaskName.equals(Walk.NAME) && person.isSuperUnfit()) {
+		if (person.isSuperUnfit()) { // newTaskName.equals(Walk.NAME)
 			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + "'.");
 			return false;
 		}

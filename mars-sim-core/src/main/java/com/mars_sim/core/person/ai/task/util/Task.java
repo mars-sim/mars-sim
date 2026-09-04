@@ -146,7 +146,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private static Simulation sim;
 	
 	/**
-	 * Constructs a Task object that has a fixed duration.
+	 * Constructor 1. Creates a Task object with a fixed duration.
 	 * 
 	 * @param name            the name of the task
 	 * @param worker          the worker performing the task
@@ -173,7 +173,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Constructs a Task object that has an impact on the worker
+	 * Constructor 2. Creates a Task object that has an experience impact on the worker with a fixed duration.
 	 * 
 	 * @param name            the name of the task
 	 * @param worker          the worker performing the task
@@ -194,7 +194,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	
 	/**
-	 * Constructs a Task object.
+	 * Constructor 3. Creates a Task object with no duration.
 	 * 
 	 * @param name            the name of the task
 	 * @param worker          the worker performing the task
@@ -646,7 +646,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			if (hasDuration) {
 				// Keep track of the duration of the task.
 				double timeRequired = duration - timeCompleted;
-				if (timeLeft > timeRequired) {
+				if (timeLeft > timeRequired || duration <= 0) {
 					timeLeft = timeLeft - timeRequired;
 					// No need to record consumed time as already know the duration
 					performMappedPhase(timeRequired);
