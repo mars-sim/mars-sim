@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -25,7 +26,9 @@ public class RequestMedicalTreatment extends MedicalAidTask {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(RequestMedicalTreatment.class.getName());
+  
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = RequestMedicalTreatment.class.getSimpleName();
 	
@@ -147,6 +150,12 @@ public class RequestMedicalTreatment extends MedicalAidTask {
      */
     private double waitingForTreatmentPhase(double time) {
 
+       	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+       	
         double remainingTime = 0D;
         var medicalAid = getMedicalAid();
 
@@ -200,6 +209,12 @@ public class RequestMedicalTreatment extends MedicalAidTask {
      */
     private double treatmentPhase(double time) {
 
+       	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+       	
         double remainingTime = 0D;
         var medicalAid = getMedicalAid();
 

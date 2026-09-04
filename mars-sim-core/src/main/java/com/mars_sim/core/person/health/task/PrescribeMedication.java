@@ -68,6 +68,12 @@ public class PrescribeMedication extends Task {
         // Use task constructor.
         super(NAME, pharmacist, false, IMPACT, 10D);
 
+       	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return;
+    	}
+       	
         // Determine patient needing medication
         patient = determinePatient(pharmacist);
         if (patient != null) {
@@ -184,6 +190,12 @@ public class PrescribeMedication extends Task {
      */
     private double medicatingPhase(double time) {
 
+       	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+       	
         // Add experience.
         addExperience(time);
 

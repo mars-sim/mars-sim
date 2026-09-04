@@ -70,6 +70,12 @@ public class SelfTreatHealthProblem extends TreatHealthProblem {
     private SelfTreatHealthProblem(Person healer, MedicalAid aid, HealthProblem problem) {
         super(NAME, healer, aid, problem);
 
+       	if (healer.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return;
+    	}
+       	
         // Has the treatment been queued
         if (!aid.getProblemsAwaitingTreatment().contains(problem)) {
             logger.info(healer, "Requesting treatment. " + problem);

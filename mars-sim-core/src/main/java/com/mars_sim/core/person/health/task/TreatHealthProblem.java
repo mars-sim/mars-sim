@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -59,6 +60,12 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
         
         healthProblem = condition;
 
+       	if (doctor instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(doctor, "Super Unfit.");
+    		endTask();
+    		return;
+    	}
+       	
         // Get the person's medical skill.
         int skill = doctor.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
@@ -105,6 +112,12 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
      */
     private double dispatchingPhase(double time) {
 
+    	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+    	
     	double timeLeft = 0D;
     	
 		// Check if the doctor is already at a medical activity spot	
@@ -142,6 +155,12 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
      */
     private double treatmentPhase(double time) {
 
+    	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+    	
         var mal = getMalfunctionable();
 
         // If medical aid has malfunction, end task.

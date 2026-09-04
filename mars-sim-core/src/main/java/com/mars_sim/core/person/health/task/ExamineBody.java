@@ -169,6 +169,12 @@ public class ExamineBody extends MedicalAidTask {
 			return 0;
 		}
 		
+    	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+    	
 		if (!attemptTransfer) {
 			
 			attemptTransfer = true;
@@ -244,6 +250,12 @@ public class ExamineBody extends MedicalAidTask {
 	 */
 	private double examiningPhase(double time) {
 	
+	   	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+	   	
 		var mal = getMalfunctionable();
 
 		// If medical aid has malfunction, end task.
@@ -305,6 +317,12 @@ public class ExamineBody extends MedicalAidTask {
 	 */
 	private double recordingPhase(double time) {
 
+	   	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+	   	
 		double remainingTime = 0D;
 		
 		var mal = getMalfunctionable();
