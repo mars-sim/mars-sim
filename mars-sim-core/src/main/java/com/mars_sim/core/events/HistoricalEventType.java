@@ -41,6 +41,8 @@ public enum HistoricalEventType implements Named {
 	MISSION_ONLY_ONE_MEMBER			(HistoricalEventCategory.MISSION),
 	MISSION_LEAD_NO_SHOW			(HistoricalEventCategory.MISSION),
 	MISSION_TIMEOUT					(HistoricalEventCategory.MISSION),
+	MISSION_ABORTED_BY_PLAYER		(HistoricalEventCategory.MISSION),
+	MISSION_INVALID_SITE			(HistoricalEventCategory.MISSION),
 	
 	STUDY_START_PHASE				(HistoricalEventCategory.SCIENCE_STUDY),
 	STUDY_FINISH					(HistoricalEventCategory.SCIENCE_STUDY),

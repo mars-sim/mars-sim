@@ -1035,8 +1035,13 @@ public class BuildingManager implements Serializable {
 		if (walkingTask != null) {
 
 			// Walk back home
-			worker.getTaskManager().directlyAssignTask(walkingTask, false);
-			return true;
+			if (worker.getTaskManager().directlyAssignTask(walkingTask, false)) {
+				return true;
+			}
+			else {
+				logger.log(worker, Level.INFO, 4_000, "Failed to be assigned to walk to " + interiorObject + ".");
+				return false;
+			}
 		} else {
 			if (!allowFail) {
 				logger.log(worker, Level.INFO, 4_000, "Failed to walk to " + interiorObject + ".");
