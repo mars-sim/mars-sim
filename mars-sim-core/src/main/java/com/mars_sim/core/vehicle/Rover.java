@@ -30,7 +30,6 @@ import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Airlock;
@@ -1033,7 +1032,25 @@ public class Rover extends GroundVehicle implements Crewable,
 	public boolean hasLUV() {
 		return luv != null;
 	}
-
+	
+	/**
+	 * Is this object the same as another object ?
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+	
+	/**
+	 * Gets the hash code value.
+	 *
+	 * @return hash code
+	 */
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

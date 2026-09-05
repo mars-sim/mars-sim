@@ -33,11 +33,12 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
@@ -82,6 +83,7 @@ public class SettlementMapPanel extends JPanel {
 	public enum DisplayOption {
 		BUILDING_LABELS,
 		CONSTRUCTION_LABELS,
+		DATA_COLLECTION_SITE_LABELS,
 		PERSON_LABELS,
 		ROBOT_LABELS,
 		VEHICLE_LABELS,
@@ -130,6 +132,7 @@ public class SettlementMapPanel extends JPanel {
 	private Map<Settlement, Building> selectedBuilding;
 	private Map<Settlement, Vehicle>  selectedVehicle;
 	private Map<Settlement, ConstructionSite>  selectedSite;
+	private Map<Settlement, DataCollectionSite>  selectedDataColSite;
 	
 	private static final Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
 
@@ -202,7 +205,8 @@ public class SettlementMapPanel extends JPanel {
 		selectedPerson = new HashMap<>();
 		selectedRobot = new HashMap<>();
 		selectedSite = new HashMap<>();
-
+		selectedDataColSite = new HashMap<>();
+		
 		initLayers(context);
 
 		// Set foreground and background colors.
@@ -239,6 +243,7 @@ public class SettlementMapPanel extends JPanel {
 		mapLayers.add(dayNightMapLayer);
 		mapLayers.add(new BuildingMapLayer(this));
 		mapLayers.add(new ConstructionMapLayer(this));
+		mapLayers.add(new DataCollectionSiteMapLayer(this));
 		mapLayers.add(new VehicleMapLayer(this));
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new RobotMapLayer(this));
@@ -352,7 +357,7 @@ public class SettlementMapPanel extends JPanel {
 
 		// Deconflict cases by the virtue of the if-else order below
 		// when one or more are detected
-		Unit selectedUnit = selectPersonAt(settlementPosition);
+		Entity selectedUnit = selectPersonAt(settlementPosition);
 		if (selectedUnit == null) {
 			selectedUnit = selectRobotAt(settlementPosition);
 			if (selectedUnit == null) {
@@ -361,6 +366,9 @@ public class SettlementMapPanel extends JPanel {
 					selectedUnit = selectBuildingAt(settlementPosition);
 					if (selectedUnit == null) {
 						selectedUnit = selectConstructionSiteAt(settlementPosition);
+						if (selectedUnit == null) {
+							selectedUnit = selectDataCollectionSiteAt(settlementPosition);
+						}
 					}
 				}
 			}
@@ -371,7 +379,7 @@ public class SettlementMapPanel extends JPanel {
 		repaint();
 	}
 
-	private void setPopUp(final MouseEvent evt, int x, int y, Unit unit) {
+	private void setPopUp(final MouseEvent evt, int x, int y, Entity unit) {
 		var menu = new PopUpUnitMenu(unit, context);
 		menu.show(evt.getComponent(), x, y);
 	}
@@ -839,6 +847,24 @@ public class SettlementMapPanel extends JPanel {
 		return null;
 	}
 
+
+	/**
+	 * Selects a data collection site.
+	 *
+	 * @param settlementPosition Position to search
+	 * @return selected site
+	 */
+	private DataCollectionSite selectDataCollectionSiteAt(LocalPosition settlementPosition) {
+		for (DataCollectionSite site : settlement.getLocalDataCollectionSitesList()) {
+			if (isWithin(settlementPosition, site)) {
+				selectDataSite(site);
+				return site;
+			}
+		}
+
+		return null;
+	}
+	
 	/**
 	 * Selects a vehicle.
 	 *
@@ -948,6 +974,35 @@ public class SettlementMapPanel extends JPanel {
 		ConstructionSite result = null;
 		if (settlement != null) {
 			result = selectedSite.get(settlement);
+		}
+		return result;
+	}
+	
+	/**
+	 * Selects a data site on the map.
+	 *
+	 * @param site the selected site.
+	 */
+	public void selectDataSite(DataCollectionSite site) {
+		if ((settlement != null) && (site != null)) {
+			DataCollectionSite currentlySelected = selectedDataColSite.get(settlement);
+			if (site.equals(currentlySelected)) {
+				selectedDataColSite.put(settlement, null);
+			} else {
+				selectedDataColSite.put(settlement, site);
+			}
+		}
+	}
+	
+	/**
+	 * Gets the selected data collection site for the current settlement.
+	 *
+	 * @return the selected site.
+	 */
+	public DataCollectionSite getSelectedDataSite() {
+		DataCollectionSite result = null;
+		if (settlement != null) {
+			result = selectedDataColSite.get(settlement);
 		}
 		return result;
 	}

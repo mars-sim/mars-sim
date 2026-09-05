@@ -39,6 +39,7 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.sound.AudioControl;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
+import com.mars_sim.ui.swing.tool.CircleLabel;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
@@ -69,12 +70,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private DateTimeFormatter EARTH_TIMESTAMP_FORMATTER = 
 			DateTimeFormatter.ofPattern("EEE yyyy-MMM-dd HH:mm:ss ");
 
-	private String SOL = "Sol:";
+	private final int HEIGHT = 27;
+	private String SOL = " Sol ";
 	
 	private String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //-NLS-1$
 
-	private Font font12 = new Font(Font.MONOSPACED, Font.ROMAN_BASELINE, 12);
-	private Font font14 = new Font(Font.SANS_SERIF, Font.BOLD, 14);
+	private final Font FONT_MONOSPACED = new Font(Font.MONOSPACED, Font.ROMAN_BASELINE, 12);
+	private final Font FONT_SANS_SERIF = new Font(Font.SANS_SERIF, Font.BOLD, 12);
 
 	
 	private UIContext context;
@@ -85,7 +87,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private JLabel weeksolLabel;
 
 	private JLabel earthDate;
-	private JLabel missionSol;
+	private CircleLabel missionSol;
 	private JLabel marsTime;
 	
 	private JPanel calendarPane;
@@ -95,6 +97,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 	private ContentManager manager;
 
+	private Dimension dim = new Dimension(HEIGHT, HEIGHT);
 	/**
 	 * Constructs a ToolToolBar object.
 	 * 
@@ -117,35 +120,34 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		setAlignmentY(Component.CENTER_ALIGNMENT);
 		setAlignmentX(Component.CENTER_ALIGNMENT);
 		
-		addSeparator(new Dimension(20, 20));
-		
-////////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //-NLS-1$
-		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //-NLS-1$
-		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //-NLS-1$
-
-		addSeparator(new Dimension(20, 20));
-
 		// Specialists buttons
 		if (audioPlayer != null) {	
 			addToolButton(AUDIO_CONTROL, AudioControl.TITLE, AudioControl.ICON);
 		}	
+		
+		addSeparator(dim);
+		
+////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //-NLS-1$
+		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //-NLS-1$
+		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //-NLS-1$
+
+		addSeparator(dim);
+
 		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
 		addToolButton(GuideWindow.NAME, "Help Tool", GuideWindow.guideIcon);
-		
-		addSeparator(new Dimension(20, 20));
-		
+
 		createCalendarPanel(masterClock.getMarsTime());	
 
 		addToolButton(MARSCAL, "Mars Calendar", "schedule");
+		
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		addSeparator(new Dimension(20, 20));
+		addSeparator(dim);
 
 		createDatePanel();
 
-		addSeparator(new Dimension(20, 20));
 		
 		// Prepare tool window buttons
 		prepareToolWindowButtons();
@@ -164,12 +166,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				addToolButton(ts.name(), ts.title(), ts.iconName());
 			}
 		}
-		addSeparator(new Dimension(20, 20));
+		
+		addSeparator(dim);
 
 		// Add Wizards buttons
 		addToolButton(MissionCreate.NAME, MissionCreate.TITLE, MissionCreate.ICON);
 		addToolButton(TransportableWizard.NAME, TransportableWizard.TITLE, TransportableWizard.ICON);
-		addSeparator(new Dimension(20, 20));
+		addSeparator(dim);
 	}
   
 	
@@ -180,13 +183,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		
 		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));	
 		
-		earthDate = createTextLabel(font12, false, true, "Greenwich Mean Time (GMT) for Earth. Format: 'Week Year-Month-Date Hour:Minute:Second'");
+		earthDate = createTextLabel(FONT_MONOSPACED, false, true, "Greenwich Mean Time (GMT) for Earth. Format: 'Week Year-Month-Date Hour:Minute:Second'");
 		timePanel.add(earthDate);
 			
-		missionSol = createTextLabel(font14, false, false, "Simulation Mission Sol");
+		missionSol = createCircleLabel(HEIGHT, HEIGHT, FONT_SANS_SERIF, "Simulation Mission Sol");
 		timePanel.add(missionSol);
 	
-		marsTime = createTextLabel(font12, true, true, "Mars Coordinated Time (MCT) for Mars. Format: 'Weeksol Orbit-Month-Sol:Millisols'");
+		marsTime = createTextLabel(FONT_MONOSPACED, true, true, "Mars Coordinated Time (MCT) for Mars. Format: 'Weeksol Orbit-Month-Sol:Millisols'");
 		timePanel.add(marsTime);		
 
 		add(timePanel);
@@ -213,11 +216,34 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private void addToolButton(String toolName, String tooltip, Icon icon) {
 		JButton toolButton = new JButton(icon);
 		toolButton.setActionCommand(toolName);
-		toolButton.setPreferredSize(new Dimension(25, 25));
-		toolButton.setMaximumSize(new Dimension(25, 25));
+		toolButton.setPreferredSize(dim);
+		toolButton.setMaximumSize(dim);
 		toolButton.setToolTipText(tooltip);
 		toolButton.addActionListener(this);
 		add(toolButton);
+	}
+	
+	
+	/**
+	 * Creates circle label.
+	 * 
+	 * @param width
+	 * @param height
+	 * @param font
+	 * @param tooltip
+	 * @return
+	 */
+	private CircleLabel createCircleLabel(int width, int height, Font font, String tooltip) {
+		// Set as label icon
+		CircleLabel circlePanel = new CircleLabel(width, height);
+//		label.setVerticalAlignment(SwingConstants.CENTER);
+//		label.setAlignmentY(SwingConstants.CENTER);
+		int style = font.getStyle();
+		int size = font.getSize();
+		String fontType = font.getFontName();
+		circlePanel.setFont(new Font(fontType, style, size));
+		circlePanel.setToolTipText(tooltip);
+		return circlePanel;
 	}
 	
 	
@@ -312,7 +338,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 */
 	public void incrementClocks(MasterClock master) {
         SwingUtilities.invokeLater(() -> {
-    		missionSol.setText(SOL + master.getMarsTime().getMissionSol());
+    		missionSol.setText(SOL + master.getMarsTime().getMissionSol() + " ");
     		earthDate.setText(WHITESPACE + master.getEarthTime().format(EARTH_TIMESTAMP_FORMATTER));
     		marsTime.setText(WHITESPACE + MarsTimeFormat.getSolOfWeekString(master.getMarsTime().getSolOfWeek()) + WHITESPACE 
     				+ master.getMarsTime().getTruncatedDateTimeStamp() + WHITESPACE);

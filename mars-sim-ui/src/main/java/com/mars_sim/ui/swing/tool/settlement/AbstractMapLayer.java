@@ -11,13 +11,17 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.LinearGradientPaint;
+import java.awt.MultipleGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +41,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
     // A data record to represent a structure key.
     private record StructureKey(GraphicsNode svg, double width, double length) {}
 
-	private float[] DASHES = {50.0f, 20.0f, 10.0f, 20.0f};
+	private float[] DASHES = {10.0f, 20.0f, 10.0f, 20.0f};
     
 //	private static final String H = "H ";
 //	private static final String T = "T ";
@@ -50,11 +54,23 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 //	private static final String C3 = "C3. ";
 	
     // See https://docstore.mik.ua/orelly/java-ent/jfc/ch04_05.htm for instructions on BasicStroke
-    private BasicStroke THIN_DASH = new BasicStroke(2.0f,
-    	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, DASHES, 0.0f);
+//    private BasicStroke THIN_DASH = new BasicStroke(2.0f,
+//    	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, DASHES, 0.0f);
 	private BasicStroke THICK_DASH = new BasicStroke(10.0f,
 			  BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 50.0f, DASHES, 0.0f);
 
+	// Dash pattern: {on, off, on, off, ...}
+	private float[] dash = {5.0f, 2.0f};  // 10px dash, 5px gap
+
+	private BasicStroke dashed = new BasicStroke(
+	    .1f,                     // line width
+	    BasicStroke.CAP_BUTT,     // end cap style
+	    BasicStroke.JOIN_MITER,   // corner join style
+	    6.0f,                    // miter limit
+	    dash,                     // dash pattern
+	    0.0f                      // dash phase (offset)
+	);
+	
     private Map<String, BufferedImage> labelImageCache = new HashMap<>();
 	private Map<Double, Map<StructureKey, BufferedImage>> svgImageCache = new HashMap<>();
 
@@ -580,19 +596,16 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
             g2d.transform(newTransform1);
             
 			g2d.setPaint(selectedColor);
-
 			// Save original stroke
         	Stroke oldStroke = g2d.getStroke();
 			// Draw the dashed border over the selected 
-			g2d.setStroke(THICK_DASH);                                           
+			g2d.setStroke(THICK_DASH);
+			// Draw the svg
 			g2d.draw(bounds);
-			
 			// Restore the stroke
 			g2d.setStroke(oldStroke);
         }
-        
-//        image.flush();
-     
+
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
     }
@@ -609,40 +622,105 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
             Color color, Color selectedColor, MapViewPoint viewpoint) {
 
 		var g2d = viewpoint.graphics();
+
+    	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    	g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
 		double scale = viewpoint.scale();
-
-        double width = placement.getWidth();
-        double length = placement.getLength();
-
+		
+        double xLoc = placement.getXLocation();
+        double yLoc = placement.getYLocation();
+        
+        double width = placement.getWidth() * .8;
+        double length = placement.getLength() * .8;
+//        double facing = placement.getFacing();
+        
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
-        // Save original stroke
-        Stroke oldStroke = g2d.getStroke();
    
+        AffineTransform newTransform = new AffineTransform();
+        
         // Determine bounds.
-        Rectangle2D bounds = new Rectangle2D.Double(0, 0, width, length);
-
+//        Rectangle2D bounds = new Rectangle2D.Double(-width/2, -length/2, width, length);
+        RoundRectangle2D bounds = new RoundRectangle2D.Double(-width/2, -length/2, width, length, width/6, length/6);
+        
         // Determine transform information.
         double scalingWidth = width / bounds.getWidth() * scale;
         double scalingLength = length / bounds.getHeight() * scale;
-  
-        AffineTransform newTransform = new AffineTransform();
-       
+        double boundsPosX = bounds.getX() * scalingWidth;
+        double boundsPosY = bounds.getY() * scalingLength;
+        
+        double centerX = width * scale / 2;
+        double centerY = length * scale / 2;
+        double translationX = (-1D * xLoc) - boundsPosX - centerX;
+        double translationY = (-1D * yLoc) - boundsPosY- centerY;
+//        double facingRadian = facing / 180D * Math.PI;
+        
 		// Draw filled rectangle.
 		newTransform.scale(scalingWidth, scalingLength);
+		// Apply graphic transforms for structure.		
+		newTransform.translate(translationX, translationY);
+//			newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);	
 		g2d.transform(newTransform);
+
 		
-		g2d.setColor(color);
-		g2d.fill(bounds);
-		
+		// Define the gradient
+//			GradientPaint gradient = new GradientPaint(
+//			    0, 0,                   		// start point (x, y)
+//			    Color.WHITE,             		// start color
+//			    (float) width, (float) length,  // end point (x, y)
+//			    Color.GRAY         				// end color
+//		);
+			
+		// Define the multi-stop gradient
+		float[] fractions = {0f, 0.5f, 1f};
+
 		if (selectedColor != null) {
-			// Draw the dashed border
-			g2d.setPaint(selectedColor);
-			g2d.setStroke(THIN_DASH);
+			Color[] colors = {selectedColor.brighter().brighter(), Color.GRAY, Color.WHITE};	
+			
+			// Create the linear gradient (top-to-bottom over the recot)
+			LinearGradientPaint gradient = new LinearGradientPaint(
+			    new Point2D.Float(0, 0),          // start point
+			    new Point2D.Float((float) width, (float) length),        // end point
+			    fractions,
+			    colors,
+			    MultipleGradientPaint.CycleMethod.NO_CYCLE
+			);
+		
+			g2d.setPaint(gradient);
+//			g2d.setColor(color);
+		}
+		else {
+			Color[] colors = {color, Color.GRAY, color};
+			
+			// Create the linear gradient (top-to-bottom over the recot)
+			LinearGradientPaint gradient = new LinearGradientPaint(
+			    new Point2D.Float(0, 0),          // start point
+			    new Point2D.Float((float) width, (float) length),        // end point
+			    fractions,
+			    colors,
+			    MultipleGradientPaint.CycleMethod.NO_CYCLE
+			);
+		
+			g2d.setPaint(gradient);
+			
+			// Save original stroke
+	    	Stroke oldStroke = g2d.getStroke();
+			// Draw the dashed border over the selected 
+			g2d.setStroke(dashed);
+			// Draw the svg
 			g2d.draw(bounds);
+			// Restore the stroke
 			g2d.setStroke(oldStroke);
 		}
-        
+			
+		// Make it semi-transparent
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
+		// Fill the rect
+		g2d.fill(bounds);
+		
+		// Reset to fully opaque
+		g2d.setComposite(AlphaComposite.SrcOver);
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
     }

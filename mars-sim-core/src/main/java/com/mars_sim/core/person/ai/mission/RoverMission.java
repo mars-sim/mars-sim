@@ -1335,6 +1335,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		// Register the historical event
 		var serious = p.getPhysicalCondition().getMostSerious();
+		
 		registerHistoricalEvent(p, HistoricalEventType.MISSION_RESCUE_PERSON,
 					(serious != null ? serious.printStatus() : "Unknown")
 		);

@@ -51,8 +51,8 @@
         facing="270.0">
         <connection-list>
             <connection id="4" xloc="0.0" yloc="4.5" />
-            <connection id="11" xloc="-3.0" yloc="0.0" />
-            <connection id="12" xloc="3.0" yloc="0.0" />
+            <connection id="11" xloc="-3.5" yloc="0.0" />
+            <connection id="12" xloc="3.5" yloc="0.0" />
         </connection-list>
     </building>
 
@@ -98,20 +98,20 @@
 
     <!-- This hallway connects the inflatable greenhouse on the first row
         and the inflatable greenhouse on the second row -->
-    <building id="11" type="Hallway" length="7.0" xloc="-24.0"
-        yloc="6.5" facing="0.0">
+    <building id="11" type="Hallway" length="6.5" xloc="-24.0"
+        yloc="6.75" facing="0.0">
         <connection-list>
-            <connection id="5" xloc="0.0" yloc="-3.5" />
-            <connection id="10" xloc="0.0" yloc="3.5" />
+            <connection id="5" xloc="0.0" yloc="-3.25" />
+            <connection id="10" xloc="0.0" yloc="3.25" />
         </connection-list>
     </building>
 
     <!-- This hallway connects the inflatable greenhouse to the garage -->
-    <building id="12" type="Hallway" length="4.0" xloc="-24.0"
-        yloc="-5.0" facing="0.0">
+    <building id="12" type="Hallway" length="3.5" xloc="-24.0"
+        yloc="-5.25" facing="0.0">
         <connection-list>
-            <connection id="5" xloc="0.0" yloc="2.0" />
-            <connection id="13" xloc="0.0" yloc="-2.0" />
+            <connection id="5" xloc="0.0" yloc="1.75" />
+            <connection id="13" xloc="0.0" yloc="-1.75" />
         </connection-list>
     </building>
 

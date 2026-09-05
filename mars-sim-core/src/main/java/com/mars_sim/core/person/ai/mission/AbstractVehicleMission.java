@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AbstractVehicleMission.java
-  * @date 2026-08-25
+ * @date 2026-08-25
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -23,6 +23,7 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -143,10 +144,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private OperateVehicle operateVehicleTask;
 	/** Details of the loading operation */
 	private LoadingController loadingPlan;
-
+	/** The starting settlement. */
 	private Settlement startingSettlement;
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
+	/** The designated data collection site */
+	private DataCollectionSite dataCollectionSite;
 	
 	/** Equipment Caches */
 	private transient Map<Integer, Integer> equipmentNeededCache;
@@ -337,7 +340,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		equipmentNeededCache = null;
 		cachedParts = null;
 
-		boolean continueToEndMission = true;
+//		boolean continueToEndMission = true;
+		
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			// Check if user aborted the mission and if
@@ -346,29 +350,34 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// What if a vehicle is still at a settlement and Mission is not approved ?
 			if (!isDroneDone() && !isRoverDone()) {
 				
-				
 				// Either the drone is still unloading or the rover is still unloading
-				continueToEndMission = false;
+//				continueToEndMission = false;
 				
-				if (isCurrentNavpointSettlement() && getPhase() != DISEMBARKING)
+				if (isCurrentNavpointSettlement() && getPhase() != DISEMBARKING) {
 					
+					// This is to remove all members ahead of disembarking
 					removeAllMembers();
 					// disembarking will help unload cargoes
 					startDisembarkingPhase();
-			}
-			else {
-				// for ALL OTHER REASONS
-				super.endMission(endStatus);
+				}
 			}
 		}
 
-		if (continueToEndMission) {
+//		if (continueToEndMission) {
 			setPhaseEnded(true);
 			releaseVehicle(vehicle);
+			
 			super.endMission(endStatus);
-		}
+//		}
 	}
 
+	/**
+	 * Releases the vehicle.
+	 */
+	protected void releaseVehicle() {
+		releaseVehicle(vehicle);
+	}
+	
 	/**
 	 * Is the unloading done on this drone ?
 	 * 
@@ -419,7 +428,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				logger.info(vehicle, 20_000, message.append(".").toString().toLowerCase());
 		
 				vehicle.setEmergencyBeacon(true);
-		
 				// Creating mission emergency beacon event.
 				registerHistoricalEvent(vehicle, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason.getName());
 			}
@@ -1158,11 +1166,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		if (beaconOn) {
 			registerHistoricalEvent(vehicle, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason);
-			logger.info(vehicle, member.getName()
-					+ " activated emergency beacon.");
+			logger.info(vehicle, member.getName() + " activated emergency beacon.");
 		} else {
-			logger.info(vehicle, member.getName()
-					+ " deactivated emergency beacon.");
+			logger.info(vehicle, member.getName() + " deactivated emergency beacon.");
 		}
 
 		vehicle.setEmergencyBeacon(beaconOn);
@@ -1672,7 +1678,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 		else {
 			// Already at home
-	
 			super.abortMission(status);
 		}
 	}
@@ -2154,5 +2159,20 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		
 		return true;
 	}
+	
+	/** 
+	 * Gets the designated data collection site. 
+	 */
+	public DataCollectionSite getDataCollectionSite() {
+		return dataCollectionSite;
+	}
+	
+	/** 
+	 * Sets a designated data collection site. 
+	 */
+	public void addDataCollectionSite(DataCollectionSite site) {
+		dataCollectionSite = site;
+	}
+	
 	
 }

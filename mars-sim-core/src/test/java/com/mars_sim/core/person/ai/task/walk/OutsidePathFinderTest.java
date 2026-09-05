@@ -26,17 +26,23 @@ import com.mars_sim.core.test.MarsSimUnitTest;
  */
 class OutsidePathFinderTest extends MarsSimUnitTest {
 
+	private Settlement settlement;
+	
+	//	private OutsidePathFinderTest() {
+//		settlement = buildSettlement("Outside");
+//	}
+//	
 	/**
 	 * Factory method to create the path finder.
 	 * @param person
 	 * @param start
 	 * @return
 	 */
-	private static OutsidePathFinder createPathFinder(Person person, LocalPosition start) {		
+	private OutsidePathFinder createPathFinder(Person person, LocalPosition start) {		
 		// Clear obstacle cache.
 		LocalAreaUtil.clearObstacleCache();
-
-		return new CollisionPathFinder(person, start);
+	
+		return new CollisionPathFinder(person, settlement, start);
 	}
 
 	/**
@@ -44,10 +50,8 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 	 */
 	@Test
 	void testClearPath() {
-
-		// Create test settlement.
-		Settlement settlement = buildSettlement("Outside");
-
+		settlement = buildSettlement("Outside");
+				
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
 		person.transfer(getSurface());
@@ -67,7 +71,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 		LocalPosition from = path.get(0);
 		for(int idx = 1; idx < path.size(); idx++) {
 			var to = path.get(idx);
-			assertTrue(LocalAreaUtil.isLinePathCollisionFree(from, to, person.getCoordinates()),
+			assertTrue(LocalAreaUtil.isLinePathCollisionFree(from, to, person.getCoordinates(), null),
 						context + " segment " + idx + " clear");
 			from = to;
 		}
@@ -79,7 +83,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 	@Test
 	void testAvoidBuilding() {
 		// Create test settlement.
-		Settlement settlement = buildSettlement("AvoidBuilding");
+		settlement = buildSettlement("AvoidBuilding");
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
@@ -106,7 +110,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 	@Test
 	void testAvoidVehicle() {
 		// Create test settlement.
-		Settlement settlement = buildSettlement("AvoidVehicle");
+		settlement = buildSettlement("AvoidVehicle");
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
@@ -132,7 +136,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 	@Test
 	 void testAvoidBuildingVehicle() {
 		// Create test settlement.
-		Settlement settlement = buildSettlement("BuildingVehicle");
+		settlement = buildSettlement("BuildingVehicle");
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);

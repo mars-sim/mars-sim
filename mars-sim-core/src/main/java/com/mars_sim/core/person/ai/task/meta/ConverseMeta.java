@@ -30,11 +30,11 @@ public class ConverseMeta extends FactoryMetaTask {
             Msg.getString("Task.description.converse"); //$NON-NLS-1$
 
     private static final double VALUE = 0.8;
-    private static final int CAP = 5;
+    private static final int CAP = 3;
 
     public ConverseMeta() {
         // Use inherited protected enums without importing them.
-        super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+        super(NAME, WorkerType.PERSON, TaskScope.NONWORK_HOUR);
         setTrait(TaskTrait.PEOPLE, TaskTrait.RELAXATION);
     }
 
@@ -52,9 +52,9 @@ public class ConverseMeta extends FactoryMetaTask {
     @Override
     public double getProbability(Person person) {
         // Avoid chatting when outside
-//        if (person.isOutside()) {
-//            return 0D;
-//        }
+        if (person.isOutside()) {
+            return 0D;
+        }
 
         // Compute Converse-specific probability.
         double result = RandomUtil.getRandomDouble(

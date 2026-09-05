@@ -18,6 +18,7 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.ClassicAirlock;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
@@ -100,6 +101,7 @@ public class Walk extends Task {
 	// Data members
 	private int walkingStepIndex;
 	
+	private Settlement settlement;
 	/** The WalkingSteps instance. */
 	private WalkingSteps walkingSteps;
 
@@ -115,8 +117,9 @@ public class Walk extends Task {
 
 		LocalBoundedObject targetObject = null;
 		if (person.isInSettlement()) {
+			settlement = person.getSettlement();
 			// Walk to random inhabitable building at settlement.
-			List<Building> buildingList = person.getSettlement().getBuildingManager()
+			List<Building> buildingList = settlement.getBuildingManager()
 					.getBuildings(FunctionType.LIFE_SUPPORT)
 					.stream()
 					.filter(b -> b != person.getBuildingLocation())
@@ -185,6 +188,10 @@ public class Walk extends Task {
 			Airlock airlock = findEmergencyAirlock(person);
 			if (airlock != null) {
 				targetObject = (LocalBoundedObject) airlock.getEntity();
+				
+				if (airlock instanceof ClassicAirlock ca) {
+					settlement = ca.getSettlement();
+				}
 			}
 		}
 
@@ -504,6 +511,10 @@ public class Walk extends Task {
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
+		}
+		else if (worker instanceof Person p && !p.isOutside() && p.isSuperUnfit()) {
+			endTask();
+			return time;
 		} else if (WALKING_SETTLEMENT_INTERIOR.equals(getPhase())) {
 			return walkingSettlementInteriorPhase(time);
 		} else if (WALKING_ROVER_INTERIOR.equals(getPhase())) {
@@ -685,7 +696,7 @@ public class Walk extends Task {
 				setDescription(WALKING_OUTSIDE + " toward " + step.loc.getShortFormat());
 
         		// Note that addSubTask() will internally check if the task is a duplicate
-				boolean canAdd = addSubTask(new WalkOutside(worker, worker.getPosition(), step.loc, true));
+				boolean canAdd = addSubTask(new WalkOutside(worker, settlement, worker.getPosition(), step.loc, true));
 				if (!canAdd) {
 					logger.log(worker, Level.WARNING, 4_000,
 							"Unable to add WalkOutside subtask.");
@@ -766,7 +777,7 @@ public class Walk extends Task {
 					
 				} else {
 					logger.log(person, Level.INFO, 4_000,
-							"Unable to physically exit the airlock of "
+							"Unable to physically exit "
 		      				+ airlock.getEntityName() + ".");
 					// Consume all of the time waiting to enter; prevents repeated tries
 					remainingTime = 0D;

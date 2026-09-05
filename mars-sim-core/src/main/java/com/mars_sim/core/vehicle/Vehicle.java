@@ -30,7 +30,6 @@ import com.mars_sim.core.building.task.MaintainBuilding;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.MSolDataLogger;
 import com.mars_sim.core.data.UnitSet;
-import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.EquipmentInventory;
@@ -206,8 +205,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private List<LocalPosition> passengerActivitySpots;
 	/** List of status types. */
 	private Set<StatusType> statusTypes = new HashSet<>();
-	/** The designated data collection site */
-	private DataCollectionSite dataCollectionSite;
 	
 	/** The vehicle's status log. */
 	private History<Set<StatusType>> vehicleLog = new History<>(28);
@@ -313,6 +310,15 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	public boolean isReady() {
 		return isReady;
+	}
+	
+	/**
+	 * Sets the vehicle ready to be drawn on the map.
+	 * 	
+	 * @param value
+	 */
+	public void setReady(boolean value) {
+		this.isReady = value;
 	}
 	
 	/**
@@ -1896,7 +1902,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		for (int x = oX; (x < 500) && !foundGoodLocation; x+=step) {
 			// Try random locations at each distance range.
 			for (int y = oY; (y < 500) && !foundGoodLocation; y++) {
-				double distance = Math.max(y, RandomUtil.getRandomDouble(-.5*x, .5*x) + .5*y);
+				double distance = Math.max(y, RandomUtil.getRandomRegressionInteger((int)(-.5*x), (int)(.5*x)) + .5*y);
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 				
 				newLoc = centerLoc.getPosition(distance, radianDirection);
@@ -1907,7 +1913,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 				// Note: excessive calling increase CPU Util
 				foundGoodLocation = LocalAreaUtil.isObjectCollisionFree(this, w, l,
 								newLoc.getX(), newLoc.getY(), 
-								newFacing, getCoordinates());
+								newFacing, getCoordinates(), settlement);
 				
 				count++;
 			}
@@ -2082,8 +2088,16 @@ public abstract class Vehicle extends AbstractMobileUnit
 			}
 
 			if (!canTransferOut) {
-				logger.warning(this, 20_000L, "Cannot be stored into " + destination + ".");
-				// NOTE: need to revert back the storage action
+				logger.warning(this, 20_000, "Cannot be stored into " + destination + ".");
+				// Note: need to revert back to where the vehicle used to belong
+				if (transfer(cu)) {
+					logger.info(this, 20_000, "Successfully reverted back to " + cu + ".");
+				}
+				else {
+					logger.warning(this, 20_000, "Unable to reverted back to " + cu + ".");
+				}
+				
+				return false;
 			}
 			else {
 				// Set the container unit for this vehicle
@@ -2303,20 +2317,10 @@ public abstract class Vehicle extends AbstractMobileUnit
 		return spec;
 	}
 	
-	/** 
-	 * Gets the designated data collection site. 
-	 */
-	public DataCollectionSite getDataCollectionSite() {
-		return dataCollectionSite;
-	}
-	
-	/** 
-	 * Sets a designated data collection site. 
-	 */
-	public void addDataCollectionSite(DataCollectionSite site) {
-		dataCollectionSite = site;
-	}
-	
+    public String getChildContext() {
+        return getContext() + ENTITY_SEPERATOR + getName();
+    }
+    
 	/**
 	 * Compares if an object is the same as this unit.
 	 *
@@ -2361,7 +2365,4 @@ public abstract class Vehicle extends AbstractMobileUnit
 		salvageInfo = null;
 	}
 
-    public String getChildContext() {
-        return getContext() + ENTITY_SEPERATOR + getName();
-    }
 }

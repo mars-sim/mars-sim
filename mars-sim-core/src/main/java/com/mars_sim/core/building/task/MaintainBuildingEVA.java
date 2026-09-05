@@ -54,7 +54,7 @@ extends EVAOperation {
 	 * @param person the person to perform the task
 	 */
 	public MaintainBuildingEVA(Person person, Building target) {
-		super(NAME, person, AVERAGE_EVA_TIME + RandomUtil.getRandomDouble(80, 120), MAINTAIN);
+		super(NAME, person, person.getAssociatedSettlement(), AVERAGE_EVA_TIME + RandomUtil.getRandomDouble(80, 120), MAINTAIN);
 
 		if (isSuperUnfit()) {
 			endEVA("Super Unfit.");

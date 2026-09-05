@@ -130,13 +130,18 @@ public class Converse extends Task {
         // Use Task constructor.
         super(NAME, person, true,
         		INSTIGATOR_IMPACT,
-        		Math.max(1,
+        		Math.max(3,
         		 1 + RandomUtil.getRandomDouble(person.getNaturalAttributeManager()
         				 .getAttribute(NaturalAttributeType.CONVERSATION))/20
         		 + RandomUtil.getRandomDouble(person.getPreference()
         				 .getPreferenceScore(MetaTaskUtil.getConverseMetaID())/3.0))
         		);
     	
+        if (person.isOutside()) {
+        	endTask();
+            return;
+        }
+        
     	findInvitee();
         
         if (getTarget() != null) {
@@ -147,6 +152,25 @@ public class Converse extends Task {
             endTask();
         }
     }
+
+    /**
+     * Constructor 2.
+     * 
+     * @param invitee the one being invited to join this conversation
+     * @param initiator the one who started this conversation
+     */
+    public Converse(Person invitee, Person initiator) {
+        // Use Task constructor.
+        super(NAME, invitee, true, 
+				INSTIGATOR_IMPACT,
+        		RandomUtil.getRandomDouble(0, Math.max(5, initiator.getTaskManager().getTask().getTimeLeft())));
+    	
+    	setTarget(initiator, true);
+    	
+    	// Initialize phase
+        setPhase(RESPONDING);
+    }
+    
 
     /**
      * Finds an invitee.
@@ -163,36 +187,17 @@ public class Converse extends Task {
         	if (p != null)
         		setTarget(p, true);
         }
-        else {
-        	// Allow a person who are walking on the surface of Mars to have conversation
-        	p = selectforEVA(2);
-        	if (p != null)
-        		setTarget(p, true);
-        }
+//        else {
+//        	// Allow a person who are walking on the surface of Mars to have conversation
+//        	p = selectforEVA(2);
+//        	if (p != null)
+//        		setTarget(p, true);
+//        }
         
         // If no one is available, then end the task
         if (p == null)
         	endTask();
         
-    }
-    
-    /**
-     * Constructor 2.
-     * 
-     * @param invitee the invitee of this conversation
-     * @param initiator the initiator of this conversation
-     */
-    public Converse(Person invitee, Person initiator) {
-        // Use Task constructor.
-        super(NAME, invitee, true, 
-				INSTIGATOR_IMPACT,
-        		RandomUtil.getRandomDouble(initiator.getTaskManager().getTask().getTimeLeft())
-        		);
-    	
-    	setTarget(initiator, true);
-    	
-    	// Initialize phase
-        setPhase(RESPONDING);
     }
     
 	
@@ -622,14 +627,17 @@ public class Converse extends Task {
     public void talkWithInvitee() {
 		Task task = getTarget().getMind().getTaskManager().getTask();
 		boolean canAdd = false;
-		if (!hasConservation(getTarget())) {
-			if (task == null)
-				canAdd = getTarget().getMind().getTaskManager()
-					.checkReplaceTask(new Converse(getTarget(), person));
-			else {
-				// Add conversation as a subtask to the invitee
-				canAdd = task.addSubTask(new Converse(getTarget(), person));
+		if (!isConversing(getTarget())) {
+			if (task == null) {
+				// Note: need to double check if this is safe
+//				canAdd = getTarget().getMind().getTaskManager()
+//					.checkReplaceTask(new Converse(getTarget(), person));
 			}
+//			else {
+//				// Note: need to double check if this is safe
+//				// Add conversation as a subtask to the invitee
+//				canAdd = task.addSubTask(new Converse(getTarget(), person));
+//			}
 		}
 		else {
 			canAdd = true;
@@ -653,7 +661,7 @@ public class Converse extends Task {
      * @param person
      * @return
      */
-    private boolean hasConservation(Person person) {
+    private boolean isConversing(Person person) {
     	for (Task t : person.getTaskManager().getTaskStack()) {
     		if (t.getName().equalsIgnoreCase(Converse.NAME))
     			return true;
@@ -780,20 +788,20 @@ public class Converse extends Task {
 	 * Adds a person to the people list.
 	 * 
 	 * @param checkIdle
-	 * @param task
+	 * @param inviteeTask invitee's task
 	 * @param initiator
 	 * @param people
 	 * @param person
 	 */
-	private static void addPerson(boolean checkIdle, Task task, Person initiator, Collection<Person> people, Person person) {
+	private static void addPerson(boolean checkIdle, Task inviteeTask, Person initiator, Collection<Person> people, Person person) {
 		if (checkIdle
-			&& TaskUtil.isIdleTask(task)) {
+			&& TaskUtil.isIdleTask(inviteeTask)) {
 				people.add(person);
 	
-		} else if ((task == null 
+		} else if ((inviteeTask == null 
 			|| initiator.getMind().getTaskManager().getTask() == null
-			|| task.getName().equals(initiator.getMind().getTaskManager().getTask().getName())
-			|| task instanceof Converse)) {
+			|| inviteeTask.getName().equals(initiator.getMind().getTaskManager().getTask().getName())
+			|| inviteeTask instanceof Converse)) {
 				people.add(person);
 		}
 	}

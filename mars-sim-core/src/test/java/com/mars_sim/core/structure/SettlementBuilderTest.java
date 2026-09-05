@@ -39,7 +39,7 @@ class SettlementBuilderTest extends MarsSimUnitTest{
         assertEquals(expectedPop, settlement.getCitizens().size(), "Settlement population");
         assertEquals(expectedAuthority, settlement.getReportingAuthority().getName(), "Settlement sponsor");
 
-        // Must force to Interger not Long
+        // Must force to Integer not Long
         Map<String,Integer> actualRobots = settlement.getAllAssociatedRobots().stream()
                 .map(Robot::getModel)
                 .collect(Collectors.groupingBy(name -> name, Collectors.reducing(0, e -> 1, (a,b) -> a+b)));

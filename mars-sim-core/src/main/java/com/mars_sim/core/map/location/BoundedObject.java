@@ -90,5 +90,4 @@ public class BoundedObject implements LocalBoundedObject {
 			
 		return false;
 	}
-	
 }

@@ -15,6 +15,7 @@ import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.cooking.task.CookMeal;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
@@ -93,18 +94,22 @@ public abstract class EVAOperation extends Task {
 
 	private TaskPhase outsidePhase;
 
+	private Settlement settlement;
+	
 	/**
 	 * Constructor.
 	 *
 	 * @param name   the name of the task
 	 * @param person the person to perform the task
+	 * @param settlement
 	 * @param siteDuration How long is the onsite work; zero means there is not a fixed duration
 	 * @param onSitePhase The TaskPhase for the actual onsite work
 	 */
-	protected EVAOperation(String name, Person person, double siteDuration, TaskPhase onSitePhase) {
+	protected EVAOperation(String name, Person person, Settlement settlement, double siteDuration, TaskPhase onSitePhase) {
 		super(name, person, true, IMPACT, 0D);
-
+	
 		// Initialize data members
+		this.settlement = settlement;
 		this.minEVASunlight = LightLevel.LOW;
 		this.timeOnSiteRemaining = (siteDuration > 0 ? siteDuration : 1000D);
 		this.outsidePhase = onSitePhase;
@@ -120,6 +125,8 @@ public abstract class EVAOperation extends Task {
 				// Set initial phase.
 				setPhase(WALK_TO_OUTSIDE_SITE);
 			}
+			
+			
 		}
 
 		else if (person.isInVehicleInGarage()) {
@@ -328,7 +335,7 @@ public abstract class EVAOperation extends Task {
         		  
         		// Note that addSubTask() will internally check if the task is a duplicate
  
-				boolean canAdd = addSubTask(new WalkOutside(person, person.getPosition(),
+				boolean canAdd = addSubTask(new WalkOutside(person, settlement, person.getPosition(),
         				outsideSitePos, false));
 				if (!canAdd) {
 					logger.log(person, Level.WARNING, 4_000,
@@ -601,11 +608,11 @@ public abstract class EVAOperation extends Task {
 	 */
 	@Override
 	public void endTask() {		
-//		if (person.isOutside()) {
-//			logger.warning(worker, 1_000L, "Walking back inside.");
-//            setPhase(WALK_BACK_INSIDE);
-//		}
-//    	else
+		if (person.isOutside()) {
+			logger.warning(worker, 1_000L, "Walking back inside.");
+            setPhase(WALK_BACK_INSIDE);
+		}
+    	else
         	super.endTask();
 	}
 	
@@ -785,6 +792,7 @@ public abstract class EVAOperation extends Task {
 	 * <p>If no site is found then the Task is ended.
 	 *
 	 * @param lbo the origin
+	 * @param settlement
 	 * @return Was a site found
 	 */
 	protected boolean setRandomOutsideLocation(LocalBoundedObject lbo) {
@@ -794,7 +802,8 @@ public abstract class EVAOperation extends Task {
 		for (int x = 0; (x < 20) && !goodLocation; x++) {
 			for (int y = 0; (y < 20) && !goodLocation; y++) {
 
-				double distance = RandomUtil.getRandomRegressionInteger(50) + (x * 2);
+				double radius = Math.max(lbo.getLength(), lbo.getWidth());
+				double distance = RandomUtil.getRandomRegressionInteger(50) + (x * 2) + (y * 2) + radius; //'+ (x * 100D) + 50D; //
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2);
 
 				LocalPosition boundedLocalPoint = lbo.getPosition().getPosition(distance, radianDirection);
@@ -808,12 +817,65 @@ public abstract class EVAOperation extends Task {
 			setOutsideSiteLocation(sLoc);
 		}
 		else {
-			endTask();
-			logger.warning(worker, "Can not find a suitable random EVA location");
+            endEVA("No good random outside location found.");
+			logger.warning(worker, "No good random outside location found.");
 		}
 		return goodLocation;
 	}
 
+	/**
+	 * Determines a random outside data collection location.
+	 *
+	 * @param lbo the origin building's LBO
+	 * @param dcs the data center site LBO
+	 * @param settlement
+	 * @return Was a site found
+	 */
+	protected boolean findRandomDataCollectionOutsideLoc(LocalBoundedObject lbo, Coordinates coord, Settlement settlement) {
+
+		DataCollectionSite emptyDCS = DataCollectionSite.creatEmptySite(coord);
+		
+		LocalPosition sLoc = null;
+		boolean goodLocation = false;
+		
+		int width = (int) lbo.getWidth();
+		int length = (int) lbo.getLength();
+		double hypotenuse = Math.sqrt(length * length + width * width);
+		
+		for (int x = 0; (x < 30) && !goodLocation; x++) {
+			for (int y = 0; (y < 30) && !goodLocation; y++) {
+
+				double distance = RandomUtil.getRandomRegressionInteger(length * width) 
+						+ (x + 1) * width /2 + (y + 1) * length / 2 + hypotenuse + DataCollectionSite.HYPOTENUSE;
+				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2);
+
+				LocalPosition boundedLocalPoint = lbo.getPosition().getPosition(distance, radianDirection);
+
+				sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, lbo);
+				
+				// Set the local position in the empty DCS
+				emptyDCS.setPosition(sLoc);
+				
+				// Vehicles will move from place to place. No need to check
+//				goodLocation = LocalAreaUtil.isVehicleBoundedOjectIntersected(emptyLBO, settlement, false);
+				// Check only immovable objects
+				goodLocation = !LocalAreaUtil.isImmovableBoundedOjectIntersected(emptyDCS, settlement);
+				
+				// Note: isPositionCollisionFree doesn't consider the size of the proposed data collection site
+//				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, settlement);
+			}
+		}
+
+		if (goodLocation) {
+			setOutsideSiteLocation(sLoc);
+		}
+		else {
+            endEVA("No good random outside location found.");
+			logger.warning(worker, "No good random outside location found.");
+		}
+		return goodLocation;
+	}
+	
 	
 	
 	/**
@@ -824,7 +886,7 @@ public abstract class EVAOperation extends Task {
 	 */
 	protected boolean setOutsideLocation(LocalBoundedObject basePoint) {
 
-		LocalPosition newLocation = LocalAreaUtil.getCollisionFreeRandomPosition(basePoint, worker.getCoordinates(), 1D);
+		LocalPosition newLocation = LocalAreaUtil.getCollisionFreeRandomPosition(basePoint, worker.getCoordinates(), settlement, 1D);
 		boolean found = false;
 		if (newLocation != null) {
 			setOutsideSiteLocation(newLocation);

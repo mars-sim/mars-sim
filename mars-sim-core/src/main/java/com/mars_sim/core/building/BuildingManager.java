@@ -28,7 +28,6 @@ import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.connection.BuildingConnector;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
-import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.Computation;
 import com.mars_sim.core.building.function.Function;
@@ -134,6 +133,8 @@ public class BuildingManager implements Serializable {
 	private static MasterClock masterClock;
 	private static UnitManager unitManager;
 
+	private transient List<BuildingTemplate> buildingTemplates;
+	
 	/**
 	 * Constructor 1 : construct buildings from name list. Called by constructor 1.
 	 *
@@ -144,9 +145,14 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
 		this.settlement = settlement;
 		this.settlementID = settlement.getIdentifier();
+		this.buildings = new UnitSet<>();
+		this.buildingTemplates = buildingTemplates;
+	}
 
-		// Construct all buildings in the settlement.
-		buildings = new UnitSet<>();
+	/**
+	 * Initializes building templates.
+	 */
+	public void initializeBuildingTemplates() {
 
 		if (buildingTemplates != null && !buildingTemplates.isEmpty()) {
 			for (var bt : buildingTemplates) {
@@ -155,7 +161,8 @@ public class BuildingManager implements Serializable {
 
 				// Check for possibility of collision
 				if (!Resupply.isTemplatePositionClear(spec, bt, this)) {
-					throw new IllegalArgumentException(bt.getBuildingName() + " collided with another building.");
+					throw new IllegalArgumentException(settlement.getName() + " - Type: " + bt.getBuildingType() 
+						+ ". ID: " + bt.getID() + ". Name: " + bt.getBuildingName() + ". This buildingTemplate collides with an existing BuildingTemplate.");
 					// May relocate with bt = Resupply.clearCollision(spec, bt,
 					// Resupply.MAX_COUNTDOWN, this);
 				}
@@ -164,7 +171,6 @@ public class BuildingManager implements Serializable {
 			}
 		}
 	}
-
 	/**
 	 * Initializes functions map and meteorite instance.
 	 */
@@ -914,13 +920,13 @@ public class BuildingManager implements Serializable {
 			
 			if (success) {
 				
-				success = building.getMedical().addToBed(); 
+//				success = building.getMedical().addToBed(); 
 	
 				if (success) {
 					logger.info(p, 10_000L, "Sent to a medical bed in " + building.getName() + ".");
 				}
 				else {	
-					building.getMedical().removeFromBed();				
+//					building.getMedical().removeFromBed();				
 					logger.info(p, 10_000L, "Unable to find a bed or an activity spot in " + building.getName() + ".");
 				}
 			}
@@ -1029,8 +1035,13 @@ public class BuildingManager implements Serializable {
 		if (walkingTask != null) {
 
 			// Walk back home
-			worker.getTaskManager().directlyAssignTask(walkingTask, false);
-			return true;
+			if (worker.getTaskManager().directlyAssignTask(walkingTask, false)) {
+				return true;
+			}
+			else {
+				logger.log(worker, Level.INFO, 4_000, "Failed to be assigned to walk to " + interiorObject + ".");
+				return false;
+			}
 		} else {
 			if (!allowFail) {
 				logger.log(worker, Level.INFO, 4_000, "Failed to walk to " + interiorObject + ".");
@@ -1376,8 +1387,9 @@ public class BuildingManager implements Serializable {
 		if (garage == null) {
 			return false;
 		}
-
-		if (vehicle instanceof Rover rover && garage.getVehicleMaintenance().removeRover(rover, true)) {
+		
+		if (vehicle instanceof Rover rover 
+				&& garage.getVehicleMaintenance().removeRover(rover, true)) {
 			return true;
 		} else if (vehicle instanceof Flyer flyer && garage.getVehicleMaintenance().removeFlyer(flyer, true)) {
 			return true;
@@ -1840,30 +1852,29 @@ public class BuildingManager implements Serializable {
 		return totalBuildingValues;
 	}
 
-	/**
-	 * Checks if a proposed building location is open or intersects with existing
-	 * buildings or construction sites.
-	 *
-	 * @param position The position of the new building
-	 * @return true if new building location is open.
-	 */
-	public boolean isBuildingLocationOpen(BoundedObject position) {
-		return isBuildingLocationOpen(position, null);
-	}
+//	/**
+//	 * Checks if a proposed building location is open or intersects with existing
+//	 * buildings or construction sites.
+//	 *
+//	 * @param position The position of the new building
+//	 * @return true if new building location is open.
+//	 */
+//	public boolean isBuildingLocationOpen(BoundedObject position) {
+//		return isBuildingLocationOpen(position, null);
+//	}
 
 	/**
 	 * Checks if a proposed building location is open and without intersecting with
 	 * any existing buildings or construction sites.
 	 *
 	 * @param position New building position
-	 * @param site     the new construction site or null if none.
 	 * @return true if new building location is open.
 	 */
-	public boolean isBuildingLocationOpen(BoundedObject position, ConstructionSite site) {
+	public boolean isBuildingLocationOpen(BoundedObject position) {
 		boolean goodLocation = true;
 
-		goodLocation = LocalAreaUtil.isObjectCollisionFree(site, position.getWidth(), position.getLength(),
-				position.getXLocation(), position.getYLocation(), position.getFacing(), settlement.getCoordinates());
+		goodLocation = LocalAreaUtil.isObjectCollisionFree(position, position.getWidth(), position.getLength(),
+				position.getXLocation(), position.getYLocation(), position.getFacing(), settlement.getCoordinates(), settlement);
 
 		return goodLocation;
 	}

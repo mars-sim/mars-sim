@@ -72,7 +72,7 @@ public class CollectMinedMinerals extends EVAOperation {
 						Mission eventSource) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5), COLLECT_MINERALS);
+		super(NAME, person, null, LABOR_TIME + RandomUtil.getRandomDouble(-5, 5), COLLECT_MINERALS);
 
 		setMinimumSunlight(MineSite.LIGHT_LEVEL);
 	       
@@ -95,9 +95,9 @@ public class CollectMinedMinerals extends EVAOperation {
 
 			// If container is not available, end task.
 			if (!hasIt) {
-				logger.warning(person, 5000,
-						"Unable to find a " + containerType.getName() + " to collect resources.");
-				endTask();
+				String log = "Unable to find a " + containerType.getName() + " to collect resources.";
+				logger.warning(person, 5000, log);
+                endEVA(log);
 			}
 		}
 		else if (num > 1) {

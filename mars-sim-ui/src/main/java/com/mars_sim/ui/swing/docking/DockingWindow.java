@@ -57,6 +57,7 @@ import io.github.andrewauclair.moderndocking.ext.ui.DockingUI;
  * The main window for the Mars Simulation UI that uses a docking approach to the window layout.
  * It implements the UIContext interface to provide access to the simulation and other UI features.
  */
+@SuppressWarnings("serial")
 public class DockingWindow extends ContentManager 
         implements ClockPulseListener, UIContext {
     /**

@@ -205,7 +205,7 @@
 		<!-- Gangrene is death and decay of body tissue due to lack of blood flow.  -->
 		<!-- It is extremely dangerous but can be treated by antibiotics. -->
 		<medical-complaint name="Gangrene">
-			<seriousness value="100" />
+			<seriousness value="80" />
 			<degrade-time value="7.0" />
 			<recovery-time min="15.0" />			
 			<performance-percent value="40.0" />

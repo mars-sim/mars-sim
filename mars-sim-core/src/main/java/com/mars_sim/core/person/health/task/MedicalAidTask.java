@@ -61,7 +61,7 @@ public abstract class MedicalAidTask extends Task {
             }
         }
         else {
-            logger.severe(person, "Medical aid could not be determined.");
+            logger.severe(person, 5_000, "Medical aid could not be determined.");
             
             endTask();
         }

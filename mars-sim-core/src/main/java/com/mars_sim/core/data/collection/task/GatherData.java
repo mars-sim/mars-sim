@@ -9,9 +9,9 @@ package com.mars_sim.core.data.collection.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.collection.DataCollectionSite;
@@ -20,17 +20,20 @@ import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Rover;
@@ -49,8 +52,8 @@ public abstract class GatherData extends EVAOperation {
 
 	public static final int MAX_SITE_DISTANCE = 100;
 	
-	/** The precision is 1 cm. 1 km = 100_000 cm */
-	public static final double PRECISION = 100_000.0;
+	/** The precision is 1 m. 1 km = 100_000 cm */
+	public static final double PRECISION = 1_000.0;
 	
 	public static final double SMALL_AMOUNT = 0.001;
 	/** The loading speed of the resource at the storage bin [kg/millisols]. */
@@ -58,9 +61,11 @@ public abstract class GatherData extends EVAOperation {
 
 	public static final String WALK = "walk";
 	
-	static final TaskPhase COLLECT_DATA = new TaskPhase("Collect data");
+	static final TaskPhase COLLECT_DATA = new TaskPhase(Msg.getString(
+            "Task.phase.collectGroundData"));
 	
-	static final TaskPhase TEAR_DOWN = new TaskPhase("Tear down site");
+	static final TaskPhase TEAR_DOWN = new TaskPhase(Msg.getString(
+            "Task.phase.tearDownSite"));
 
 	private boolean isSettlement = false;
 	
@@ -113,15 +118,15 @@ public abstract class GatherData extends EVAOperation {
 	protected GatherData(String name, TaskPhase preparePhase,
 					EquipmentType containerType, Person person, int duration) {
         // Use EVAOperation constructor.
-        super(name, person, duration, preparePhase);
+        super(name, person, person.getAssociatedSettlement(), duration, preparePhase);
 
 		setMinimumSunlight(LightLevel.NONE);
 
         this.dataRecorderType = containerType;
         this.preparePhase = preparePhase;
         this.preparationTimeLimit = duration * 0.2;
-        this.collectionTimeLimit = duration * 0.7;
-        this.teardownTimeLimit = duration * 0.1;
+        this.collectionTimeLimit = duration * 0.6;
+        this.teardownTimeLimit = duration * 0.2;
         
         // To dig local, a person must start at a Settlement
         containerUnit = person.getContainerUnit();
@@ -134,19 +139,19 @@ public abstract class GatherData extends EVAOperation {
             airlock = getWalkableAvailableEgressAirlock(person);
             if (airlock == null) {
             	logger.warning(person, 5_000L, "No available settlement airlock.");
-            	endTask();
+                endEVA("No available settlement airlock.");
             	return;
             }
             coord = s.getCoordinates();
  
-            dataCollectionSite = findSiteMap(s, coord, true);
+            dataCollectionSite = findSiteMap(s, coord, isSettlement);
             
-           	if (dataCollectionSite != null) {
+           	if (dataCollectionSite != null && locationPos != null) {
             	findInstrument(s.getEquipmentInventory());
         	}
            	else {
            		logger.warning(person, 5_000L, "No available data collection site found near " + s + ".");
-           		endTask();
+                endEVA("No available data collection site found near " + s + ".");
            		return;
            	}
         }
@@ -156,33 +161,37 @@ public abstract class GatherData extends EVAOperation {
             airlock = ((Rover)v).getAirlock();
             if (airlock == null) {
             	logger.warning(person, 5_000L, "No available vehicular airlock.");
-            	endTask();
+                endEVA("No available vehicular airlock.");
             	return;
             }
             coord = v.getCoordinates();
             
-            dataCollectionSite = v.getDataCollectionSite();
-            
-            if (dataCollectionSite == null) {
+            if (v.getMission() instanceof AbstractVehicleMission avm) {
             	
-            	Settlement settlement = v.getAssociatedSettlement();
+            	dataCollectionSite = avm.getDataCollectionSite();
             	
-            	dataCollectionSite = findSiteMap(settlement, coord, false);
+            	if (dataCollectionSite == null && locationPos != null) {
+            		// The site has not been attached to the abstract vehicle mission yet
+                	dataCollectionSite = findSiteMap(v.getAssociatedSettlement(), coord, isSettlement);
+
+                }
+            	
+        		// Note: in future, more than one person may work on this data collection site.
+            	// Therefore, it's good to set a reference in AbstractVehicleMission
+            	
+            	if (dataCollectionSite != null) {
+                	// Attach this site to AbstractVehicleMission
+                	avm.addDataCollectionSite(dataCollectionSite);
+                	
+                	findInstrument(v.getEquipmentInventory());
+            	}
+               	else {
+               		logger.warning(person, 5_000L, "No available data collection site found near " + v + ".");
+                    endEVA("No available data collection site found near " + v + ".");
+               		return;
+               	}
             }
-            
-        	if (dataCollectionSite != null) {
-            	// Add this site to vehicle
-            	v.addDataCollectionSite(dataCollectionSite);
-            	findInstrument(v.getEquipmentInventory());
-        	}
-           	else {
-           		logger.warning(person, 5_000L, "No available data collection site found near " + v + ".");
-           		endTask();
-           		return;
-           	}
         }
-        
-        determineRates(1);
         
         setOutsideSiteLocation(locationPos);
         
@@ -196,18 +205,18 @@ public abstract class GatherData extends EVAOperation {
 	 */
 	private boolean findInstrument(EquipmentInventory ei) {
 		// Look at how many types of instruments a settlement/vehicle would have
-    	List<Integer> settlementAvailableList = ei.getAvailableWaterDetectionTool();
+    	List<Integer> availableList = getAvailableWaterDetectionTool(ei);
 
         List<Integer> siteAvailableList = dataCollectionSite.getInstrumentAvailability();
         
-        if (siteAvailableList.size() > 0) {
+        if (!siteAvailableList.isEmpty()) {
         	// already available at the site. For now, no need of deploying another one.
         	logger.info(person, 5_000L, "The site at " + locationPos
         			+ " already had instrument(s). No need to bring more for now.");
         	return false;
         }
-        else if (settlementAvailableList.size() > 0){
-        	int selected = settlementAvailableList.get(0);
+        else if (!availableList.isEmpty()) {
+        	int selected = availableList.get(0);
         	// Can a person pick up an instrument from a settlement/vehicle and carries it ?
         	if (carryDataInstrument(EquipmentOwner.getAttached(containerUnit), person, selected)) {
         		selectedInstrument = selected;
@@ -221,11 +230,30 @@ public abstract class GatherData extends EVAOperation {
         		return false;
         	}
         }
-        
-        logger.warning(person, 5_000L, "No available instrument in " + ei + " to carry it to the site at " + locationPos + "."); 
+        else {
+            logger.warning(containerUnit, 5_000L, "Instruments not available for " + person 
+            		+ " to carry to the site at " + locationPos + "."); 
+        }
+
         return false;
 	}
 	
+	/**
+	 * Gets an available list of water detection tool.
+	 * 
+	 * @return
+	 */
+	public List<Integer> getAvailableWaterDetectionTool(EquipmentInventory ei) {
+		List<Integer> availableTool = new ArrayList<>();
+		
+		List<Integer> allInstruments = new ArrayList<>(GatherDataMeta.waterDetectionTool);
+		for (int instrumentID: allInstruments) {
+			if (ei.getItemResourceStored(instrumentID) > 0)
+				availableTool.add(instrumentID);
+		}
+
+		return availableTool;
+	}
 	
 	/**
 	 * Finds the site map.
@@ -234,100 +262,69 @@ public abstract class GatherData extends EVAOperation {
 	 * @param coord
 	 * @param local. Is this in a settlement vicinity ?
 	 */
-	private DataCollectionSite findSiteMap(Settlement s, Coordinates coord, boolean local) {
+	private DataCollectionSite findSiteMap(Settlement settlement, Coordinates coord, boolean local) {
 	
-    	if (locationPos == null) {
-        	locationPos = determineSiteLocation();
-	        if (locationPos == null) {
-				endEVA("No good site found.");
-	        	return null;
-	        }
-        }
-		
-		Map<Double, List<DataCollectionSite>> siteMap = s.getDataCollectionSiteMap();
-
-        if (siteMap == null) {
-        	siteMap = new HashMap<>();
-        }
-
-        return settleWithSiteList(s, coord, local, siteMap);
-	}
-	
-	/**
-	 * Settles with a list of sites.
-	 * 
-	 * @param s
-	 * @param coord
-	 * @param local
-	 * @param siteMap
-	 * @return
-	 */
-	private DataCollectionSite settleWithSiteList(Settlement s, Coordinates coord, 
-			boolean local, Map<Double, List<DataCollectionSite>> siteMap) {
-		
-		List<DataCollectionSite> siteList = null;
-		
+		DataCollectionSite dataCollectionSite = null;
+    	List<DataCollectionSite> siteList = null;
+    	Map<Double, List<DataCollectionSite>> siteMap = settlement.getDataCollectionSiteMap();
+    	
+    	double distance = 0.0;
+    	int numExistingSites = 0;
+    	
 		if (local) {
 			if (siteMap.isEmpty()) {
 				siteList = new ArrayList<>();
 			}
-			
-			// Set distance to 0.0 since it's in settlement vicinity 
-   			return registerSite(s, coord, siteList, 0.0);
-		}
-		else {
-			// Set accuracy to 1 cm
-			double distance = Math.round(s.getCoordinates().getDistance(coord) * PRECISION) / PRECISION;
-			siteList = siteMap.getOrDefault(distance, new ArrayList<>());
-
-			return registerSite(s, coord, siteList, distance);
-		}
-	}
-	
-	/**
-	 * Registers a site.
-	 * 
-	 * @param s
-	 * @param coord
-	 * @param siteList
-	 * @param distance
-	 * @return
-	 */
-	private DataCollectionSite registerSite(Settlement s, Coordinates coord, List<DataCollectionSite> siteList, double distance) {
-		DataCollectionSite dataCollectionSite = null;
-		
-		if (siteList.isEmpty()) {
-			// Create and add this site to settlement
-        	dataCollectionSite = new DataCollectionSite(coord, locationPos);
-        	
-        	s.addSite(distance, dataCollectionSite);
-		}
-		else {
-			
-			if (RandomUtil.getRandomInt(20) == 0) {
-				// Create and add this site to settlement
-	        	dataCollectionSite = new DataCollectionSite(coord, locationPos);
-	        	
-	        	s.addSite(distance, dataCollectionSite);
-			}
 			else {
-//
-	        	// Randomly rearrange the site list order 
-	        	Collections.shuffle(siteList);
-	        	
-	        	return siteList.get(0);
-	        	
-	        	// Note: in future, select a site by probability of its familiarity value
-//				int mostNumInstrument = -1;
-//	            for (DataCollectionSite site: siteList) {
-//	//            	int familiar = site.getFamiliarity();
-//	            	int num = site.getNumInstrumentAvailable();
-//	            	if (num > mostNumInstrument) {
-//	            		dataCollectionSite = site;
-//	            		break;
-//	            	}
-//	            }
+				// Note: for now, must force distance to be 0.0. 
+				// No need of computing distance since it's in settlement vicinity 
+				siteList = siteMap.getOrDefault(0.0, new ArrayList<>());
+				if (siteList == null) {
+					siteList = new ArrayList<>();
+				}
 			}
+			
+			// Note: for now, must force distance to be 0.0. 
+			// No need of computing distance since it's in settlement vicinity 
+			
+		}
+		else {
+			// Set accuracy
+			distance = Math.round(settlement.getCoordinates().getDistance(coord) * PRECISION) / PRECISION;
+			siteList = siteMap.getOrDefault(distance, new ArrayList<>());
+			if (!siteList.isEmpty())
+				siteList = siteList.stream()
+				    .filter(site -> site.getLocation().equals(coord))
+				    .collect(Collectors.toList());
+			if (siteList == null) {
+				siteList = new ArrayList<>();
+			}
+		}
+		
+		if (!siteList.isEmpty()) {
+			Collections.shuffle(siteList);
+			numExistingSites = siteList.size();
+		}
+		
+		// Note: even if there are existing sites, give it a chance to start a new site
+		if (siteList.isEmpty() || RandomUtil.getRandomInt(numExistingSites + 3) == 0) {
+			
+	    	if (locationPos == null) {
+	        	locationPos = determineSiteLocation(coord, settlement, local);
+		        if (locationPos == null) {
+					endEVA("No good location position found.");
+		        	return null;
+		        }
+	        }
+	    	
+	    	if (locationPos != null) { 
+				// Create and add this site to settlement
+		    	dataCollectionSite = new DataCollectionSite(coord, locationPos);
+		    	settlement.addSite(distance, dataCollectionSite);
+	    	}
+		}
+		else {
+			dataCollectionSite = siteList.get(0);
 		}
 		
 		return dataCollectionSite;
@@ -340,6 +337,50 @@ public abstract class GatherData extends EVAOperation {
 		return locationPos;
 	}
 
+    /**
+     * Determines location for the site.
+     * 
+     * @param coord
+     * @param settlement
+     * @return X and Y local position of the site .
+     */
+    private LocalPosition determineSiteLocation(Coordinates coord, Settlement settlement, boolean local) {
+    	
+    	if (isSettlement) {
+    		LocalBoundedObject lbo = (Building)airlock.getEntity();
+    		
+    		int num = person.getSettlement().getLocalDataCollectionSitesList().size();
+    		// Give it a 50% chance to pick an existing site
+    		if (num > 0 && RandomUtil.getRandomInt(1) == 0) {
+    			List<DataCollectionSite> list = person.getSettlement().getLocalDataCollectionSitesList();
+    			if (num > 1)
+    				Collections.shuffle(list);
+    			// Choose lbo to be from one of the data collection site
+    			// and from this site, look for another new site position
+    			lbo = list.get(0);
+    		}
+    		
+    		boolean found = false;
+
+    		for (int i = 0; i<100 && !found; i++) {	
+    			found = findRandomDataCollectionOutsideLoc(lbo, coord, person.getSettlement());
+    		}
+    		
+    		if (found)
+    			return getOutsideSiteLocation();
+    		else {
+                endEVA("No good outside location found.");
+    			logger.warning(worker, "Can not find a suitable random EVA location.");
+    			return null;
+    		}
+    	}
+    	else {
+        	setRandomOutsideLocation(person.getVehicle());
+        	return getOutsideSiteLocation();
+    	}
+    }
+
+    
 	/**
 	 * Moves an instrument from a settlement/vehicle to a person.
 	 *
@@ -443,11 +484,11 @@ public abstract class GatherData extends EVAOperation {
 	}
 	
 	/**
-	 * Determines the data collection rate
+	 * Determines the data collection factors.
 	 * 
 	 * @param collectionRate
 	 */
-	protected void determineRates(double collectionRate) {
+	protected void determineCollectionFactors(double collectionRate) {
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int acad = nManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         int areo = person.getSkillManager().getSkillLevel(SkillType.AREOLOGY);
@@ -459,7 +500,8 @@ public abstract class GatherData extends EVAOperation {
         // Increase the duration of this task based upon one's attribute
         setDuration(getDuration() * (1 + meti/200.0));
         
-        fatigueFactor = .5 * (1 - (agility + creat) / 200D);
+        fatigueFactor = .5 * (1 - (agility + creat) / 200D) / (1 + collectionRate);
+        // The higher the collection rate, the faster the data can be gathered
 		compositeRate = collectionRate * ((acad + meti) / 100D) * areo / 50;
 	}
 
@@ -503,14 +545,20 @@ public abstract class GatherData extends EVAOperation {
 			return time;
 		}
 
+		String instrumentName = "an instrument";
+		
+		if (selectedInstrument != -1)
+			instrumentName = ItemResourceUtil.findItemResourceName(selectedInstrument);
+
 		if (selectedInstrument != -1 && !doneDroppingOffInstrument) {
+			
 	    	if (moveInstrumentPersonToSite(person, dataCollectionSite, selectedInstrument)) {
-	    		logger.info(person, 5_000L, "Successfully dropped off " + ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	    		logger.info(person, 5_000L, "Successfully dropped off " + instrumentName 
 	    			+ " at " + locationPos + ".");
 	    		doneDroppingOffInstrument = true;
 	    	}
 	    	else {
-	    		logger.warning(person, 5_000L, "Unable to drop off " + ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	    		logger.warning(person, 5_000L, "Unable to drop off " + instrumentName 
 					+ " at " + locationPos + ".");
 	    		return time * .5;
 	    	}
@@ -534,7 +582,7 @@ public abstract class GatherData extends EVAOperation {
 
 	        boolean finishedPreparing = false;
 
-	        preparationTime += time * skillFactor * compositeRate;
+	        preparationTime += time * (skillFactor + compositeRate);
 
 	        // See if it exceeds the prescribed preparation time limit
 			finishedPreparing = preparationTime >= preparationTimeLimit || getTimeCompleted() >= preparationTimeLimit;
@@ -551,19 +599,18 @@ public abstract class GatherData extends EVAOperation {
 			
 	        // Add experience points
 	        addExperience(time);
+	        
+		    // Check for an accident during the EVA operation.
+		    checkForAccident(time);
 
 	        if (finishedPreparing) {
-	            logger.info(person, 5_000, "Done with site and '" + ItemResourceUtil.findItemResourceName(selectedInstrument) 
-	            	+ "' preparation at " + locationPos + ".");
+	            logger.info(person, 5_000, "Done with preparing the site and '" + instrumentName 
+	            	+ "' at " + locationPos + ".");
 	           
 	            setPhase(COLLECT_DATA);
 	            
 				logger.info(person, 5_000, "Starting the collecting data phase at " + locationPos + ".");
 	    	}
-	        
-		    // Check for an accident during the EVA operation.
-		    checkForAccident(time);
-
 		}
 		
     	return 0;
@@ -606,10 +653,11 @@ public abstract class GatherData extends EVAOperation {
 
 	        boolean finishedPreparing = false;
 
-	        collectionTime += time * skillFactor * compositeRate;
+	        collectionTime += time * (skillFactor + compositeRate);
 
 	        // See if it exceeds the prescribed collection time limit
-			finishedPreparing = collectionTime >= collectionTimeLimit || getTimeCompleted() >= collectionTimeLimit;
+			finishedPreparing = collectionTime >= collectionTimeLimit 
+					|| getTimeCompleted() >= preparationTimeLimit + collectionTimeLimit;
 
 	        PhysicalCondition condition = person.getPhysicalCondition();
 	        double strengthMod = condition.getStrengthMod();
@@ -623,18 +671,24 @@ public abstract class GatherData extends EVAOperation {
 			
 	        // Add experience points
 	        addExperience(time);
+	        
+		    // Check for an accident during the EVA operation.
+		    checkForAccident(time);
 
 	        if (finishedPreparing) {
-	            logger.info(person, 5_000, "Done with gathering data using '" + ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	        	String instrumentName = "an instrument";
+
+	    		if (selectedInstrument != -1) {
+	    			instrumentName = ItemResourceUtil.findItemResourceName(selectedInstrument);
+	    		}
+	    			
+	            logger.info(person, 5_000, "Done with gathering data using '" + instrumentName 
 	            	+ "' at " + locationPos + ".");
 	           
 	            setPhase(TEAR_DOWN);
 	            
 				logger.info(person, 5_000, "Starting to disassemble the intrument(s) at " + locationPos + ".");
 	    	}
-	        
-		    // Check for an accident during the EVA operation.
-		    checkForAccident(time);
 		}
 
         return 0;
@@ -671,10 +725,11 @@ public abstract class GatherData extends EVAOperation {
 
 	        boolean finishedPreparing = false;
 
-	        teardownTime += time * skillFactor * compositeRate;
+	        teardownTime += time * (skillFactor + compositeRate);
 
 	        // See if it exceeds the prescribed tear down time limit
-			finishedPreparing = teardownTime >= teardownTimeLimit || getTimeCompleted() >= teardownTimeLimit;
+			finishedPreparing = teardownTime >= teardownTimeLimit 
+					|| getTimeCompleted() >= getDuration();
 
 	        PhysicalCondition condition = person.getPhysicalCondition();
 	        double strengthMod = condition.getStrengthMod();
@@ -694,15 +749,19 @@ public abstract class GatherData extends EVAOperation {
 		    
 	        if (finishedPreparing) {
 	
+	    		String instrumentName = "an instrument";
+
 	    		if (selectedInstrument != -1) {
+	    			instrumentName = ItemResourceUtil.findItemResourceName(selectedInstrument);
+	    			
 	    	    	if (moveInstrumentSiteToPerson(dataCollectionSite, person, selectedInstrument)) {
 	    	            logger.info(person, 5_000, "Done with tearing down the site, picking up '" 
-	    	            		+ ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	    	            		+ instrumentName 
 	    	            		+ "' at " + locationPos + ".");
 	    	    	}
 	    	    	else {
 	    	    		logger.warning(person, 5_000L, "Unable to tear down the site and pick up " 
-	    	    				+ ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	    	    				+ instrumentName
 	    	    				+ " at " + locationPos + ".");
 	    	    		return time * .5;
 	    	    	}
@@ -710,35 +769,13 @@ public abstract class GatherData extends EVAOperation {
 	            
 				logger.info(person, 5_000, "Ending the tear down phase at " + locationPos + ".");
 				
-	            endTask();
+	            endEVA("Ended tear down phase.");
 	    	}
 		}
 		
     	return 0;
     }    
-    
-    /**
-     * Determines location for the site.
-     * 
-     * @return X and Y location outside settlement.
-     */
-    private LocalPosition determineSiteLocation() {
-    	
-    	if (isSettlement) {
-    		setRandomOutsideLocation((Building)airlock.getEntity());
-        	return getOutsideSiteLocation();
-    	}
-    	else {
-        	setRandomOutsideLocation(person.getVehicle());
-        	return getOutsideSiteLocation();
-    	}
-    	
-//		if (airlock.getEntity() instanceof LocalBoundedObject boundedObject) {
-//			return LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
-//																 person.getCoordinates(), MAX_SITE_DISTANCE);
-//		}
-//      return null;
-    }
+  
     
 	/**
 	 * Is the person qualified for gathering data ?
@@ -765,6 +802,30 @@ public abstract class GatherData extends EVAOperation {
 		
 		return true;
 	}
+	
+	/**
+	 * Ends the EVA.
+	 * 
+	 * @param reason
+	 */
+	public void endEVA(String reason) {
+		
+		if (selectedInstrument != -1) {
+			// Can a person pick up an instrument from a settlement/vehicle and carries it ?
+	    	if (carryDataInstrument(person, EquipmentOwner.getAttached(containerUnit), selectedInstrument)) {
+	    		logger.info(person, 5_000L, "Returned " + ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	    			+ " to " + containerUnit + ".");
+
+	    	}
+	    	else {
+	    		logger.warning(person, 5_000L, "Unable to return " + ItemResourceUtil.findItemResourceName(selectedInstrument) 
+					+ " to " + containerUnit + ".");
+	    	}
+		}
+		
+    	super.endEVA(reason);
+	}
+	
 	
 	/**
 	 * Prepares object for garbage collection.

@@ -66,7 +66,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 	 */
 	public UnloadVehicleEVA(Person person, Vehicle vehicle) {
 		// Use EVAOperation constructor.
-		super(NAME, person, RandomUtil.getRandomDouble(25D) + 10D, UNLOADING);
+		super(NAME, person, person.getAssociatedSettlement(), RandomUtil.getRandomDouble(25D) + 10D, UNLOADING);
 		setMinimumSunlight(LightLevel.NONE);
 
 		setDescription(DETAIL + vehicle.getName());
@@ -95,7 +95,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		// Add the vehicle to a garage if possible
 		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
 		if (garage != null) {
-			
+			// No need of doing it by EVA
 			endTask();
 			return;
 		}

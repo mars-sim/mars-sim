@@ -235,6 +235,14 @@ public class StyleManager {
     }
 
     /**
+     * Is a light theme being in use ?
+     * 
+     * @return
+     */
+    public static boolean isLightTheme() {
+    	return getLAF().contains("Light") || getLAF().contains("System");
+    }
+    /**
 	 * Sets the look and feel of the UI.
 	 *
 	 * @param style Name of the LAF style to apply.

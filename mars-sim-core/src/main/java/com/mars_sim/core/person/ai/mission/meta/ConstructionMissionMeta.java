@@ -114,7 +114,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 		var missionProbability = new RatingScore(need);
 
 	    
-        missionProbability.addModifier("skill", skill * 50);
+        missionProbability.addModifier("skill", skill * 50D);
 		
        	RoleType roleType = person.getRole().getType();
         double roleModifier = switch(roleType) {

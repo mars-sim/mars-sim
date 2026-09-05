@@ -243,6 +243,7 @@ public class TaskUtil {
 	 */
     public static boolean isIdleTask(Task task) {
         return task instanceof Relax
+        		|| !(task instanceof EVAOperation)
         		|| task instanceof Yoga
         		|| task instanceof Workout
                 || task instanceof Read

@@ -60,12 +60,11 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		boolean drawLabel = mapPanel.isOptionDisplayed(DisplayOption.VEHICLE_LABELS);
 
 		// Vehicles parked take a copy to avoid changes during iteration.
-		Collection<Vehicle> vehicles = settlement.getParkedNGaragedVehicles().stream().toList();
-
+		Collection<Vehicle> vehicles = settlement.getReadyToMapVehicles();
+		
 		// Draw all parked vehicles at this settlement location
 		for (Vehicle v : vehicles) {
-			if (v.isReady())
-				drawVehicle(v, drawLabel, viewpoint);
+			drawVehicle(v, drawLabel, viewpoint);
 		}
 
 		// Restore original graphic transforms.

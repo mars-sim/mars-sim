@@ -130,7 +130,7 @@ public class UnitManager implements Serializable, Temporal {
 			case VEHICLE -> lookupVehicle;
 			case SETTLEMENT -> lookupSettlement;
 			case BUILDING -> lookupBuilding;
-			case EVA_SUIT, CONTAINER -> lookupEquipment;
+			case EVA_SUIT, CONTAINER, DATA_RECORDER -> lookupEquipment;
 			case ROBOT -> lookupRobot;
 			case CONSTRUCTION -> lookupSite;
 			default -> throw new IllegalArgumentException("No Unit map for type " + type);
@@ -400,15 +400,27 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets a collection of data recorder.
+	 *
+	 * @return Collection of data recorder
+	 */
+	public Collection<Equipment> getDataRecorder() {
+		return lookupEquipment.values().stream()
+				.filter(e -> e.getUnitType() == UnitType.DATA_RECORDER)
+				.collect(Collectors.toSet());
+	}
+	
+	/**
 	 * Gets a composite load score from people, robots, buildings and vehicles.
 	 * 
 	 * @return
 	 */
 	public float getObjectsLoad() {
-		return (.45f * lookupPerson.entrySet().stream().count() 
+		return (.3f * lookupPerson.entrySet().stream().count() 
 				+ .2f * lookupRobot.entrySet().stream().count()
 				+ .25f * lookupBuilding.entrySet().stream().count()
 				+ .1f * lookupVehicle.entrySet().stream().count()
+				+ .05f * lookupEquipment.entrySet().stream().count()
 				);
 	}
 	

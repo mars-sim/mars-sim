@@ -32,8 +32,8 @@ extends GatherData {
             "Task.description.gatherGroundData"); //$NON-NLS-1$
 
     /** Task phases. */
-    static final TaskPhase PREPARE_GROUND_DATA_EQUIPMENT = new TaskPhase(Msg.getString(
-            "Task.phase.gatherGroundData"),
+    static final TaskPhase PREPARE_SITE_INSTRUMENTS = new TaskPhase(Msg.getString(
+            "Task.phase.prepareSiteInstruments"),
 			createPhaseImpact(SkillType.COMPUTING, SkillType.AREOLOGY));
 
 	/**
@@ -43,9 +43,9 @@ extends GatherData {
 	 */
 	GatherGroundData(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, PREPARE_GROUND_DATA_EQUIPMENT, CONTAINER_TYPE, person, RandomUtil.getRandomInt(-20 + 20) + 200);
+        super(NAME, PREPARE_SITE_INSTRUMENTS, CONTAINER_TYPE, person, RandomUtil.getRandomInt(-20 + 20) + 300);
         if (!isDone()) {
-//        	setCollectionRate(person.getAssociatedSettlement().getRegolithCollectionRate());
+        	determineCollectionFactors(person.getAssociatedSettlement().getIceCollectionRate());
         }
     }
 }

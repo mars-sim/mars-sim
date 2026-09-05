@@ -93,9 +93,9 @@ public abstract class DigLocal extends EVAOperation {
 	 * @param person the person performing the task.
 	 */
 	protected DigLocal(String name, TaskPhase collectionPhase, int resourceID,
-					EquipmentType containerType, Person person, int duration) {
+					EquipmentType containerType, Person person, Settlement settlement, int duration) {
         // Use EVAOperation constructor.
-        super(name, person, duration, collectionPhase);
+        super(name, person, settlement, duration, collectionPhase);
 
 		setMinimumSunlight(LightLevel.NONE);
 
@@ -105,7 +105,8 @@ public abstract class DigLocal extends EVAOperation {
         this.collectionPhase = collectionPhase;
 
         // To dig local, a person must start at a Settlement
-		settlement = person.getSettlement();
+		this.settlement = settlement;
+//       settlement = person.getSettlement();
         if (settlement == null) {
         	endEVA("Not in settlement at the start.");
 			return;
@@ -156,11 +157,11 @@ public abstract class DigLocal extends EVAOperation {
 	}
 
 	/**
-	 * Sets the collection rate for the resource.
+	 * Determines the collection factors.
 	 * 
 	 * @param collectionRate
 	 */
-	protected void setCollectionRate(double collectionRate) {
+	protected void determineCollectionFactors(double collectionRate) {
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
         int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
@@ -171,7 +172,7 @@ public abstract class DigLocal extends EVAOperation {
         setDuration(getDuration() * (1 + endurance/200.0));
         
         fatigueFactor = .5 * (1 - (agility + strength + endurance) / 300D);
-		compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1);
+		compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva / 50D + .1);
 	}
 
     /**
@@ -215,7 +216,7 @@ public abstract class DigLocal extends EVAOperation {
     			
         		// Note that addSubTask() will internally check if the task is a duplicate
 
-				boolean canAdd = addSubTask(new WalkOutside(person, person.getPosition(), dropOffLoc, false));
+				boolean canAdd = addSubTask(new WalkOutside(person, settlement, person.getPosition(), dropOffLoc, false));
 				if (!canAdd) {
 					logger.log(person, Level.WARNING, 4_000,
 							". Unable to add subtask WalkOutside.");
@@ -476,7 +477,7 @@ public abstract class DigLocal extends EVAOperation {
 			b = (Building)(airlock.getEntity());
 		}
 
-		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), MAX_DROPOFF_DISTANCE);
+		LocalPosition p = LocalAreaUtil.getCollisionFreeRandomPosition(b, worker.getCoordinates(), settlement, MAX_DROPOFF_DISTANCE);
 		if (p == null) {
 			endEVA("No suitable drop-off location near " + b + ".");
 		}
@@ -491,7 +492,7 @@ public abstract class DigLocal extends EVAOperation {
     private LocalPosition determineDiggingLocation() {
 		if (airlock.getEntity() instanceof LocalBoundedObject boundedObject) {
 			return LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
-																 person.getCoordinates(), MAX_DIGGING_DISTANCE);
+					person.getCoordinates(), settlement, MAX_DIGGING_DISTANCE);
 		}
 
         return null;

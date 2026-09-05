@@ -1615,5 +1615,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public int hashCode() {
 		return super.hashCode();
 	}
+
 }
 

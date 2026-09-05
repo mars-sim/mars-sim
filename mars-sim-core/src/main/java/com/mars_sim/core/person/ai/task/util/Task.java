@@ -60,7 +60,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private static SimLogger logger = SimLogger.getLogger(Task.class.getName());
 
 	// Static members
-
+	/** The default timeout for directly assigned tasks (in millisols). */
+	private static final int DEFAULT_TIMEOUT_MILLISOLS = 500;
 	/** Level of top level Task */
 	private static final int TOP_LEVEL = 1;
 	/** The standard stress effect of a task within a person's job. */
@@ -146,7 +147,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private static Simulation sim;
 	
 	/**
-	 * Constructs a Task object that has a fixed duration.
+	 * Constructor 1. Creates a Task object with a fixed duration.
 	 * 
 	 * @param name            the name of the task
 	 * @param worker          the worker performing the task
@@ -173,7 +174,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Constructs a Task object that has an impact on the worker
+	 * Constructor 2. Creates a Task object that has an experience impact on the worker with a fixed duration.
 	 * 
 	 * @param name            the name of the task
 	 * @param worker          the worker performing the task
@@ -194,7 +195,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	
 	/**
-	 * Constructs a Task object.
+	 * Constructor 3. Creates a Task object with no duration.
 	 * 
 	 * @param name            the name of the task
 	 * @param worker          the worker performing the task
@@ -271,7 +272,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param reason Reason for the end.
 	 */
 	protected void clearTask(String reason) {
-		logger.warning(worker, "Ended '" + name + "' early. Reason: " + reason);
+		logger.warning(worker, 10_000, "Ended '" + name + "' early. Reason: " + reason);
 		endTask();
 	}
 
@@ -395,7 +396,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Sets the task's description.
+	 * Sets the task's description and record the task description.
 	 * 
 	 * @param des the task description.
 	 */
@@ -404,11 +405,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
-	 * Sets the task's description without recording the task.
+	 * Sets the task's description quickly without recording the task.
 	 * 
 	 * @param des the task description.
 	 */
-	protected void setDescriptionDone(String des) {
+	protected void setQuickDescription(String des) {
 		if (!description.equalsIgnoreCase(des)) {
 			description = des;
 			eventTarget.fireUnitUpdate(EntityEventType.TASK_DESCRIPTION_EVENT, des);
@@ -416,7 +417,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 		
 	/**
-	 * Sets the task's description.
+	 * Sets the task's description and record the task description.
 	 * 
 	 * @param des the task description.
 	 * @param recordTask true if wanting to record
@@ -646,7 +647,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			if (hasDuration) {
 				// Keep track of the duration of the task.
 				double timeRequired = duration - timeCompleted;
-				if (timeLeft > timeRequired) {
+				if (timeLeft > timeRequired || duration <= 0) {
 					timeLeft = timeLeft - timeRequired;
 					// No need to record consumed time as already know the duration
 					performMappedPhase(timeRequired);
@@ -662,6 +663,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				double remainingTime = timeLeft;
 				timeLeft = performMappedPhase(timeLeft);
 				timeCompleted += remainingTime;
+				
+				if (timeCompleted > DEFAULT_TIMEOUT_MILLISOLS) {
+					endTask();
+				}
 			}
 
 			// Some Task return a percentage of the time which can produce a very small number

@@ -344,7 +344,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 */
 	private static boolean isCollisionFreeVehicle(BuildingTemplate t, Settlement settlement) {
 		return !LocalAreaUtil.isVehicleBoundedOjectIntersected(t.getBounds(),
-				settlement.getCoordinates(), true);
+				settlement, true);
 
 	}
 
@@ -357,7 +357,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	private static boolean isCollisionFreeImmovable(BuildingTemplate t, Settlement settlement) {
 
 		return !LocalAreaUtil.isImmovableBoundedOjectIntersected(t.getBounds(), 
-				settlement.getCoordinates());
+				settlement);
 	}
 
 	/**
@@ -454,6 +454,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * Checks if a building template's position is clear of collisions with any
 	 * existing structures.
 	 * 
+	 * @param spec
 	 * @param template the building template.
 	 * @param buildingConfig 
 	 * @return true if building template position is clear.
@@ -975,7 +976,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 					// Check line rect between positions for obstacle collision.
 					Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(),
 							secondBuildingPos.getX(), secondBuildingPos.getY());
-					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, buildingManager.getSettlement().getCoordinates(), false);
+					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, 
+							buildingManager.getSettlement().getCoordinates(), buildingManager.getSettlement(), false);
 					if (clearPath) {
 						validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
 					}

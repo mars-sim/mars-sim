@@ -543,18 +543,16 @@ public class Settlement extends Unit implements Temporal,
 	 * @param list
 	 */
 	protected void initialiseEssentials(boolean needGoods, List<BuildingTemplate> list) {
-		// Initialize building manager
-		buildingManager = new BuildingManager(this, list);
-
-		// Initialize building connector manager.
-		buildingConnectorManager = new BuildingConnectorManager(this, list);
-
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
-
+		// Initialize building manager
+		buildingManager = new BuildingManager(this, list);
+		// Initialize building templates
+		buildingManager.initializeBuildingTemplates();
+		// Initialize building connector manager.
+		buildingConnectorManager = new BuildingConnectorManager(this, list);
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
-		
 		// Initialize the thermal system
 		thermalSystem = new ThermalSystem(this);
 
@@ -2086,8 +2084,12 @@ public class Settlement extends Unit implements Temporal,
 			else
 				fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
+			// Mark the vehicle is not ready to be drawn to the map
+			vehicle.setReady(true);
+			
 			return true;
 		}
+
 		return false;
 	}
 
@@ -2101,9 +2103,16 @@ public class Settlement extends Unit implements Temporal,
 		if (!parkedNGaragedVehicles.contains(vehicle))
 			return true;
 		
-		fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
-
-		return parkedNGaragedVehicles.remove(vehicle);
+		if (parkedNGaragedVehicles.remove(vehicle)) {
+			
+			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
+			// Mark the vehicle is not ready to be drawn to the map
+			vehicle.setReady(false);
+			
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -2306,6 +2315,18 @@ public class Settlement extends Unit implements Temporal,
 		return Collections.unmodifiableSet(parkedNGaragedVehicles);
 	}
 
+	/**
+	 * Gets a collection of ready vehicles (parked in vicinity and garaged at the settlement) for displaying
+	 * in the map.
+	 *
+	 * @return Collection of vehicles
+	 */
+	public Collection<Vehicle> getReadyToMapVehicles() {
+		return parkedNGaragedVehicles.stream()
+		.filter(v -> v.isReady())
+		.toList();
+	}
+	
 	/**
 	 * Gets the number of vehicles (rovers, LUVs, and drones) parked in vicinity and garaged at the settlement.
 	 *
@@ -2951,6 +2972,15 @@ public class Settlement extends Unit implements Temporal,
     	return iceCollectionRate;
     }
 
+	/**
+	 * Sets the ice collection rate in the vicinity of this settlement.
+	 * 
+	 * @param value
+	 */
+    public void setIceCollectionRate(double value) {
+    	iceCollectionRate = value;
+    }
+    
     /**
 	 * Returns the regolith collection rate in the vicinity of this settlement.
      * 
@@ -3169,6 +3199,30 @@ public class Settlement extends Unit implements Temporal,
 	}
 	
 	/**
+	 * Gets a local list of data collection sites.
+	 *
+	 * @return
+	 */
+	public List<DataCollectionSite> getLocalDataCollectionSitesList() {
+		if (dataCollectionSiteMap.containsKey(0.0)) {
+			return dataCollectionSiteMap.get(0.0);
+		}
+		return new ArrayList<>();
+	}
+	
+	/**
+	 * Gets a flat set of data collection sites.
+	 * 
+	 * @return
+	 */
+	public  Set<DataCollectionSite> getAllDataCollectionSites() {
+		return dataCollectionSiteMap.values()
+			    .stream()
+			    .flatMap(Collection::stream)
+			    .collect(Collectors.toSet());
+	}
+	
+	/**
 	 * Gets the number of sites.
 	 * 
 	 * @param local Should we count the sites only in settlement vicinity ?
@@ -3179,13 +3233,14 @@ public class Settlement extends Unit implements Temporal,
 			return 0;
 		}
 		
+		// Note: for now, must force the distance to be 0.0 if in settlement vicinity
 		if (local && dataCollectionSiteMap.containsKey(0.0)) {
 			return dataCollectionSiteMap.get(0.0).size();
 		}
 		else {
 			
 			return dataCollectionSiteMap.entrySet().stream()
-					.filter(entry -> entry.getKey() == 0.0)
+					.filter(entry -> entry.getKey() != 0.0)
 					.mapToInt(entry -> entry.getValue() != null ? entry.getValue().size() : 0)
 	                .sum();
 			

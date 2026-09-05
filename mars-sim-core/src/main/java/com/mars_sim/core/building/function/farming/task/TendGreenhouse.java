@@ -160,7 +160,7 @@ public class TendGreenhouse extends TendHousekeeping {
 	 * Sets the task description of being done with tending crops.
 	 */
 	private void setDescriptionTendingDone() {
-		setDescription(DONE_TENDING + " " + previousCropName, false);
+		setQuickDescription(DONE_TENDING + " " + previousCropName);
 	}
 	
 	/**

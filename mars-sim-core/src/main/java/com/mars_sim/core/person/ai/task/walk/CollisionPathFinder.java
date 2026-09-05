@@ -14,6 +14,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.structure.Settlement;
 
 /**
  * A path finder that avoids obstacles using a collision detection algorithm.
@@ -24,14 +25,16 @@ public class CollisionPathFinder implements OutsidePathFinder {
     /** Obstacle avoidance path neighbor distance (meters). */
 	private static final double NEIGHBOR_DISTANCE = 7D;
 
+	private Settlement settlement;
     private LocalPosition start;
     private Worker walker;
 
     private double[] obstacleSearchLimits;
     private int maxAttempts;
 
-    public CollisionPathFinder(Worker walker, LocalPosition start) {
+    public CollisionPathFinder(Worker walker, Settlement settlement, LocalPosition start) {
         this.walker = walker;
+        this.settlement = settlement;
         this.start = start;
         this.maxAttempts = 40;
     }
@@ -49,7 +52,7 @@ public class CollisionPathFinder implements OutsidePathFinder {
 		result.add(start);
 
 		// Check if direct walking path to destination is free of obstacles.
-		boolean freePath = LocalAreaUtil.isLinePathCollisionFree(start, destination, walker.getCoordinates());
+		boolean freePath = LocalAreaUtil.isLinePathCollisionFree(start, destination, walker.getCoordinates(), settlement);
 
 		boolean obstaclesInPath = false;
 
@@ -86,14 +89,27 @@ public class CollisionPathFinder implements OutsidePathFinder {
 
 		// Check if start or destination locations are within obstacles.
 		// Return null if either are within obstacles.
-		boolean startLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(start, walker.getCoordinates());
-		if (startLocWithinObstacle) {
-			return null;
+		if (settlement != null) {
+			boolean startLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(start, settlement);
+			if (startLocWithinObstacle) {
+				return null;
+			}
+			
+			boolean destinationLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(destination, settlement);
+			if (destinationLocWithinObstacle) {
+				return null;
+			}
 		}
-		
-		boolean destinationLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(destination, walker.getCoordinates());
-		if (destinationLocWithinObstacle) {
-			return null;
+		else {
+			boolean startLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(start, walker.getCoordinates());
+			if (startLocWithinObstacle) {
+				return null;
+			}
+			
+			boolean destinationLocWithinObstacle = !LocalAreaUtil.isPositionCollisionFree(destination, walker.getCoordinates());
+			if (destinationLocWithinObstacle) {
+				return null;
+			}
 		}
 	
         // Do this once up front
@@ -141,7 +157,7 @@ public class CollisionPathFinder implements OutsidePathFinder {
 			// A note on benchmark: The 3 path methods below take between 2 and 5 ms to complete
 			
 			// Check if clear path to destination.
-			if (LocalAreaUtil.isLinePathCollisionFree(currentLoc, destination, walker.getCoordinates())) {
+			if (LocalAreaUtil.isLinePathCollisionFree(currentLoc, destination, walker.getCoordinates(), settlement)) {
 
 				// Create path from currentLoc.
 				result = optimizePath(recreatePath(cameFrom, currentLoc, destination));
@@ -271,7 +287,7 @@ public class CollisionPathFinder implements OutsidePathFinder {
 
 				// If clear path between previous and next location,
 				// remove this location from path.
-				if (LocalAreaUtil.isLinePathCollisionFree(nextLoc, prevLoc, walker.getCoordinates())) {
+				if (LocalAreaUtil.isLinePathCollisionFree(nextLoc, prevLoc, walker.getCoordinates(), settlement)) {
 					i.remove();
 				}
 			}
@@ -319,27 +335,27 @@ public class CollisionPathFinder implements OutsidePathFinder {
 
 		// Get location North of currentLoc.
 		LocalPosition northLoc = new LocalPosition(currentLoc.getX(), currentLoc.getY() + NEIGHBOR_DISTANCE);
-		if (LocalAreaUtil.isLinePathCollisionFree(currentLoc, northLoc, walker.getCoordinates())) {
+		if (LocalAreaUtil.isLinePathCollisionFree(currentLoc, northLoc, walker.getCoordinates(), settlement)) {
 			result.add(northLoc);
 		}
 
 
 		// Get location East of currentLoc.
 		LocalPosition eastLoc = new LocalPosition(currentLoc.getX() - NEIGHBOR_DISTANCE, currentLoc.getY());
-		if (LocalAreaUtil.isLinePathCollisionFree(currentLoc, eastLoc, walker.getCoordinates())) {
+		if (LocalAreaUtil.isLinePathCollisionFree(currentLoc, eastLoc, walker.getCoordinates(), settlement)) {
 			result.add(eastLoc);
 		}
 
 		// Get location South of currentLoc.
 		LocalPosition southLoc = new LocalPosition(currentLoc.getX(), currentLoc.getY() - NEIGHBOR_DISTANCE);
-		if (LocalAreaUtil.isLinePathCollisionFree(currentLoc, southLoc, walker.getCoordinates())) {
+		if (LocalAreaUtil.isLinePathCollisionFree(currentLoc, southLoc, walker.getCoordinates(), settlement)) {
 			result.add(southLoc);
 		}
 
 
 		// Get location West of currentLoc.
 		LocalPosition westLoc = new LocalPosition(currentLoc.getX() + NEIGHBOR_DISTANCE, currentLoc.getY());
-		if (LocalAreaUtil.isLinePathCollisionFree(currentLoc, westLoc, walker.getCoordinates())) {
+		if (LocalAreaUtil.isLinePathCollisionFree(currentLoc, westLoc, walker.getCoordinates(), settlement)) {
 			result.add(westLoc);
 		}
 

@@ -326,7 +326,7 @@ public class BuildingPlacement {
 			// buildings
 			// or construction sites.
 			BoundedObject sitePosition = new BoundedObject(rectCenter, spec.getWidth(), spec.getLength(), rectRotation);
-			if (bldMgr.isBuildingLocationOpen(sitePosition, null)) {
+			if (bldMgr.isBuildingLocationOpen(sitePosition)) {
 				return sitePosition;
 			}
 		}
@@ -367,7 +367,7 @@ public class BuildingPlacement {
 					// Check line rect between positions for obstacle collision.
 					Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(),
 							secondBuildingPos.getX(), secondBuildingPos.getY());
-					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, settlement.getCoordinates(), false);
+					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, settlement.getCoordinates(), settlement, false);
 					if (clearPath) {
 						validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
 					}

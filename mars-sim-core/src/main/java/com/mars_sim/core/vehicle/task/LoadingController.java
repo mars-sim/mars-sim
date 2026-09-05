@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.equipment.Equipment;
-import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;

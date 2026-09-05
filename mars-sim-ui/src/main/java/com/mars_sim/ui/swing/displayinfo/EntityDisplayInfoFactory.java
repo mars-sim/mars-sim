@@ -11,6 +11,7 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.person.Person;
@@ -30,6 +31,7 @@ public final class EntityDisplayInfoFactory {
 	public static final String STUDY_TYPE = "scientificstudy";
 	public static final String EQUIPMENT_TYPE = "equipment";
 	public static final String CONSTRUCTION_TYPE = "constructionsite";
+	public static final String DATA_COLLECTION_TYPE = "datacollectionsite";
 	public static final String TRANSPORTABLE_TYPE = "transportable";
 	private static final String SND_EQUIPMENT = "equipment.ogg";
 
@@ -47,6 +49,7 @@ public final class EntityDisplayInfoFactory {
 	private static EntityDisplayInfo deliveryDroneBean = new VehicleDisplayInfoBean("unit/drone");
 	private static EntityDisplayInfo equipmentBean = new EntityDisplayInfo(EQUIPMENT_TYPE, SND_EQUIPMENT);
 	private static EntityDisplayInfo constructionBean = new EntityDisplayInfo(CONSTRUCTION_TYPE);
+	private static EntityDisplayInfo dataCollectionBean = new EntityDisplayInfo(DATA_COLLECTION_TYPE);
 	private static EntityDisplayInfo missionBean = new EntityDisplayInfo(MISSION_TYPE);
 	private static EntityDisplayInfo transportBean = new EntityDisplayInfo(TRANSPORTABLE_TYPE);
 
@@ -77,17 +80,18 @@ public final class EntityDisplayInfoFactory {
 				case TRANSPORT_ROVER -> transportRoverBean;
 				case CARGO_ROVER -> cargoRoverBean;
 				case LUV -> luvBean;
-				case PASSENGER_DRONE,DELIVERY_DRONE, CARGO_DRONE -> deliveryDroneBean;
+				case PASSENGER_DRONE, DELIVERY_DRONE, CARGO_DRONE -> deliveryDroneBean;
 			};
 			case Equipment equipment -> equipmentBean;
 			case ConstructionSite constructionSite -> constructionBean;
+			case DataCollectionSite dataCollectionSite -> dataCollectionBean;
 			case Transportable transportable -> transportBean;
 			default -> null;
 		};
 	}
 
 	/**
-	 * This is a convience method to get a sounds for an Entity.
+	 * This is a convenience method to get a sounds for an Entity.
 	 * It is the equivalent of
 	 * <code>
 	 * var displayInfo = EntityDisplayInfoFactory.getDisplayInfo(entity);
@@ -96,7 +100,7 @@ public final class EntityDisplayInfoFactory {
 	 * }
 	 * return null;
 	 * </code>
-	 * @param entity Entity a soudns is needed for
+	 * @param entity Entity a sound is needed for
 	 * @return Sounds name or null.
 	 */
     public static String getSound(Entity entity) {

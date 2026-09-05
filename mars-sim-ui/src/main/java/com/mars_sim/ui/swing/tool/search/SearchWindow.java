@@ -92,6 +92,7 @@ extends ContentPanel {
 			UnitType.SETTLEMENT,
 			UnitType.VEHICLE,
 			UnitType.ROBOT,
+			UnitType.DATA_RECORDER,
 			UnitType.EVA_SUIT
 		};
 		searchForType = new JComboBox<>(categories);
@@ -224,6 +225,7 @@ extends ContentPanel {
 				case VEHICLE -> unitManager.getVehicles();
 				case ROBOT -> unitManager.getRobots();
 				case EVA_SUIT -> unitManager.getEVASuits();
+				case DATA_RECORDER -> unitManager.getDataRecorder();
 				default -> Collections.emptyList();
 			};
 			

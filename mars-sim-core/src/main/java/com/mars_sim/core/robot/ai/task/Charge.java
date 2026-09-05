@@ -70,7 +70,7 @@ public class Charge extends Task {
 		
 		if (currentBuilding == null) {
 			
-			setDescriptionDone(NO_STATION);
+			setQuickDescription(NO_STATION);
 		}
 		
 		else {
@@ -292,7 +292,7 @@ public class Charge extends Task {
 	 * Ends the charging.
 	 */
 	private void endCharging() {
-		setDescriptionDone(END_CHARGING);
+		setQuickDescription(END_CHARGING);
 		
 		setDuration(0);
 	}

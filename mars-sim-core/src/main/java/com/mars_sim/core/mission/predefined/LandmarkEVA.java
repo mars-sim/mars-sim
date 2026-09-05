@@ -28,7 +28,7 @@ class LandmarkEVA extends EVAOperation {
     private MissionProject parent;
 
     public LandmarkEVA(Person p, MissionProject parent, LandmarkObjective objective) {
-        super("Landmark EVA", p, EVA_DURATION, EVA_PHASE);
+        super("Landmark EVA", p, null, EVA_DURATION, EVA_PHASE);
         this.objective = objective;
         setRandomOutsideLocation(p.getVehicle());
 

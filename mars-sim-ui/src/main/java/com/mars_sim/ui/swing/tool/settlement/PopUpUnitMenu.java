@@ -16,15 +16,17 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
@@ -37,8 +39,10 @@ public class PopUpUnitMenu extends JPopupMenu {
 	public static final int WIDTH_1 = WIDTH_0;
 	public static final int HEIGHT_1 = 300;
 
-    public PopUpUnitMenu(final Unit unit, UIContext context){
-		add(unit.getUnitType().getName() + " : " + unit.getName());
+    public PopUpUnitMenu(final Entity unit, UIContext context){
+    	String unitType = EntityDisplayInfoFactory.getDisplayInfo(unit).getSingularLabel();
+
+		add(unitType + ": " + unit.getName());
 		addSeparator();
     	
     	switch (unit) {
@@ -47,14 +51,14 @@ public class PopUpUnitMenu extends JPopupMenu {
 				break;
         	
 			case Vehicle v: 
-				add(buildDescriptionitem(unit));
+				add(buildInfoItem(unit));
 				add(buildDetailsItem(unit, context));
 				add(createItem("relocate", v, Vehicle::relocateVehicle));
 				add(createItem("maintain", v, Vehicle::maintainVehicle));
 				break;
 
         	case Building b:
-				add(buildDescriptionitem(unit));
+				add(buildInfoItem(unit));
 				add(buildDetailsItem(unit, context));
 				if (b.getAssociatedSettlement().getConstructionManager().canDemolish(b)) {
 					add(createItem("demolish", b, this::triggerDemolish));
@@ -63,7 +67,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 
         	// Note: for construction sites
 			case ConstructionSite cs:
-				add(buildDescriptionitem(unit));
+				add(buildInfoItem(unit));
 				add(buildDetailsItem(unit, context));
 				if (cs.isProposed()) {
 					add(createItem("relocate", cs, t -> t.relocateSite()));
@@ -72,6 +76,11 @@ public class PopUpUnitMenu extends JPopupMenu {
 				}
 				break;
 
+        	case DataCollectionSite dcs:
+				add(buildInfoItem(unit));
+				add(buildDetailsItem(unit, context));
+				break;
+				
 			default:
 				add(buildDetailsItem(unit, context));
 				break;
@@ -83,37 +92,47 @@ public class PopUpUnitMenu extends JPopupMenu {
      *
      * @param unit
      */
-    private JMenuItem buildDescriptionitem(final Unit unit) {
+    private JMenuItem buildInfoItem(final Entity unit) {
         
-		return createItem("description", unit, t -> {
+		return createItem("info", unit, t -> {
 
             String description = null;
             String type = null;
             String name = null;
-
+            String position = null;
+            
 			switch (t) {
 				case Vehicle vehicle -> {
                 	description = vehicle.getDescription();
+                	position = vehicle.getPosition().getShortFormat();
                 	type = vehicle.getVehicleType().getName();
                 	name = vehicle.getName();
                 }
                 case Building building -> {
                 	description = building.getDescription();
+                	position = building.getPosition().getShortFormat();
                 	type = building.getBuildingType();
                 	name = building.getName();
                 }
                 case ConstructionSite site -> {
 					var stageInfo = site.getCurrentConstructionStage().getInfo();
                 	description = stageInfo.getName();
+                	position = site.getPosition().getShortFormat();
                 	type = stageInfo.getType().name().toLowerCase();
                 	name = site.getName();
+                }
+                case DataCollectionSite dcs -> {
+                	description = dcs.getDescription();
+                	position = dcs.getPosition().getShortFormat();
+                	type = dcs.getType();
+                	name = dcs.getName();
                 }
                 default -> {
                 	return;
 				}
 			}
 
-			UnitInfoPanel b = new UnitInfoPanel(name, type, description);
+			UnitInfoPanel b = new UnitInfoPanel(name, type, description, position);
 			b.setOpaque(false);
 			b.setBackground(new Color(0,0,0,128));
 			
@@ -130,7 +149,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 	
 	/**
-	 * Class to operatino the demolish of a Building async to avoid the removal causing a problem with 
+	 * Demolishes an async to avoid the removal causing a problem with 
 	 * the active simulation logic.
 	 */
 	@SuppressWarnings("serial")
@@ -170,14 +189,18 @@ public class PopUpUnitMenu extends JPopupMenu {
      * @param unit
      * @param mainDesktopPane
      */
-    private JMenuItem buildDetailsItem(final Unit unit, final UIContext context) {
+    private JMenuItem buildDetailsItem(final Entity unit, final UIContext context) {
 		return createItem("details", unit, context::showDetails);
     }
  
 	/**
-     * Create a menu item
-     *
-     * @param unit
+     * Creates a menu item.
+     * 
+     * @param <T>
+     * @param name
+     * @param target
+     * @param action
+     * @return
      */
 	private <T> JMenuItem createItem(String name, T target, Consumer<T> action) {
 		JMenuItem relocateItem = new JMenuItem(Msg.getString("PopUpUnitMenu." + name));

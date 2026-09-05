@@ -21,6 +21,7 @@ import java.util.Set;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -89,7 +90,7 @@ public class LocalAreaUtil {
 	 * @param xLoc
 	 * @param yLoc
 	 * @param boundedObject
-	 * @return
+	 * @return a 2D double array with translated x and translated y 
 	 */
 	public static double[] translateLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
 		double radianRotation = Math.toRadians(boundedObject.getFacing());
@@ -248,13 +249,6 @@ public class LocalAreaUtil {
 	 */
 	public static boolean isPositionCollisionFree(LocalPosition pos, Coordinates coordinates) {
 
-//		Iterator<LocalBoundedObject> i = getAllLocalBoundedObjectsAtLocation(coordinates).iterator();
-//		while (i.hasNext()) {
-//			if (isPositionWithinLocalBoundedObject(pos, i.next())) {
-//				return false;
-//			}
-//		}
-
 		// Add all vehicles at location.
 		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
 		while (i.hasNext()) {
@@ -288,6 +282,14 @@ public class LocalAreaUtil {
 						return false;
 					}
 				}
+				
+				// Check all data collection sites at settlement.
+				Iterator<DataCollectionSite> s = settlement.getLocalDataCollectionSitesList().iterator();
+				while (s.hasNext()) {
+					if (isPositionWithinLocalBoundedObject(pos, s.next())) {
+						return false;
+					}
+				}
 			}
 		}
 		
@@ -295,22 +297,74 @@ public class LocalAreaUtil {
 	}
 
 	/**
+	 * Checks if a point position does not collide with any existing vehicle,
+	 * building, or construction site.
+	 *
+	 * @param pos Position to check.
+	 * @param settlement
+	 * @return true if location doesn't collide with anything.
+	 */
+	public static boolean isPositionCollisionFree(LocalPosition pos, Settlement settlement) {
+
+		// Add all vehicles at location.
+		Iterator<Vehicle> i = settlement.getParkedNGaragedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			if (isPositionWithinLocalBoundedObject(pos, vehicle)) {
+				return false;
+			}
+		}
+
+		// Add all buildings at settlement.
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
+		while (j.hasNext()) {
+			if (isPositionWithinLocalBoundedObject(pos, j.next())) {
+				return false;
+			}
+		}
+
+		// Check all construction sites at settlement.
+		Iterator<ConstructionSite> k = settlement.getConstructionManager().getConstructionSites().iterator();
+		while (k.hasNext()) {
+			if (isPositionWithinLocalBoundedObject(pos, k.next())) {
+				return false;
+			}
+		}
+
+		// Check all data collection sites at settlement.
+		Iterator<DataCollectionSite> s = settlement.getLocalDataCollectionSitesList().iterator();
+		while (s.hasNext()) {
+			if (isPositionWithinLocalBoundedObject(pos, s.next())) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	
+	/**
 	 * Gets a random position near a base that is collision free.
 	 * 
 	 * @param b Base point for new local position.
 	 * @param c The coordinate to avoid collision
+	 * @param settlement
 	 * @param maxDistance Maximum distance from the base
 	 * @return Position or null if none found
 	 */
-	public static LocalPosition getCollisionFreeRandomPosition(LocalBoundedObject b, Coordinates c, double maxDistance)  {
+	public static LocalPosition getCollisionFreeRandomPosition(LocalBoundedObject b, Coordinates c, Settlement settlement, double maxDistance)  {
 		boolean goodLocation = false;
 		LocalPosition sLoc = null;
 		for (int x = 0; (x < 200) && !goodLocation; x++) {
 			LocalPosition boundedLocalPoint = LocalAreaUtil.getRandomExteriorPosition(b, maxDistance);
+			
 			sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, b);
-			goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, c);
+			
+			if (settlement != null)
+				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, settlement);
+			else
+				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, c);
 		}
-
 		return sLoc;
 	}
 
@@ -320,147 +374,61 @@ public class LocalAreaUtil {
 	 * construction site.
 	 *
 	 * @param object      LocalBoundedObject
-	 * @param coordinates Coordinates
+	 * @param settlement
 	 * @param needToMove  does it need to move the intersected vehicle, if any
 	 * @return true if location collide with any vehicles.
 	 */
-	public static boolean isVehicleBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates,
+	public static boolean isVehicleBoundedOjectIntersected(LocalBoundedObject object, Settlement settlement,
 			boolean needToMove) {
 		
-//		boolean result = false;
-
-//		Iterator<LocalBoundedObject> i = getAllVehicleBoundedObjectsAtLocation(coordinates).iterator();
-//		while (i.hasNext()) {
-//			LocalBoundedObject vehicle = i.next();
-//
-//			if (isTwoBoundedOjectsIntersected(object, vehicle)) {
-//				result = true;
-//				if (needToMove) {
-//					Vehicle v = (Vehicle) vehicle;
-//					logger.info(v, "Collided with '" + object + "'.");
-//					v.findNewParkingLoc();
-//					// Call again recursively to clear any vehicles
-//					result = isVehicleBoundedOjectIntersected(object, coordinates, needToMove);
-//				}
-//			}
-//		}
-		
 		// Add all vehicles at location.
-		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getParkedNGaragedVehicles().iterator();
 		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			if (vehicle.getCoordinates().equals(coordinates)) {				
-				if (isTwoBoundedOjectsIntersected(object, vehicle)) {
-					return true;
-				}
+			Vehicle vehicle = i.next();		
+			if (isTwoBoundedOjectsIntersected(object, vehicle)) {
+				return true;
 			}
 		}
 
 		return false;
 	}
-
-
-//	/**
-//	 * Gets a set of vehicles at a given coordinate location.
-//	 *
-//	 * @param coordinates the coordinate location.
-//	 * @return set of local bounded objects at location (may be empty).
-//	 */
-//	public static Set<LocalBoundedObject> getAllVehicleBoundedObjectsAtLocation(Coordinates coordinates) {
-//
-//		Set<LocalBoundedObject> result = new HashSet<>(); //ConcurrentHashMap.newKeySet();
-//
-//		// Add all vehicles at location.
-//		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
-//		while (i.hasNext()) {
-//			Vehicle vehicle = i.next();
-//			if (vehicle.getCoordinates().equals(coordinates)) {
-//				result.add(vehicle);
-//			}
-//		}
-//
-//		return result;
-//	}
 
 	/**
 	 * Checks for collisions with any immovable objects.
 	 *
-	 * @return true if location collides with something.
 	 * @param LocalBoundedObject object
-	 * @param Coordinates        coordinates
+	 * @param settlement
+	 * @return true if location collides with something.
 	 */
-	public static boolean isImmovableBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates) { 
-//		Iterator<LocalBoundedObject> i = getAllImmovableBoundedObjectsAtLocation(coordinates).iterator();
-//		while (i.hasNext()) {
-//			LocalBoundedObject immovable = i.next();
-//			if (isTwoBoundedOjectsIntersected(object, immovable)) {
-//				return true;
-//			}
-//		}
-		
-		// Check for any settlements at coordinates.
-		Iterator<Settlement> l = unitManager.getSettlements().iterator();
-		while (l.hasNext()) {
-			Settlement settlement = l.next();
-			if (settlement.getCoordinates().equals(coordinates)) {
+	public static boolean isImmovableBoundedOjectIntersected(LocalBoundedObject object, Settlement settlement) { 
 
-				// Add all buildings at settlement.
-				Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
-				while (j.hasNext()) {
-					Building b = j.next();
-					if (!b.getInTransport() && isTwoBoundedOjectsIntersected(object, b)) {
-						return true;
-					}
-				}
+		// Add all buildings at settlement.
+		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
+		while (j.hasNext()) {
+			Building b = j.next();
+			if (!b.getInTransport() && isTwoBoundedOjectsIntersected(object, b)) {
+				return true;
+			}
+		}
 
-				// Check all construction sites at settlement.
-				Iterator<ConstructionSite> k = settlement.getConstructionManager().getConstructionSites().iterator();
-				while (k.hasNext()) {
-					if (isTwoBoundedOjectsIntersected(object, k.next())) {
-						return true;
-					}
-				}
+		// Check all construction sites at settlement.
+		Iterator<ConstructionSite> k = settlement.getConstructionManager().getConstructionSites().iterator();
+		while (k.hasNext()) {
+			if (isTwoBoundedOjectsIntersected(object, k.next())) {
+				return true;
+			}
+		}
+
+		// Check all data collection sites at settlement.
+		Iterator<DataCollectionSite> i = settlement.getLocalDataCollectionSitesList().iterator();
+		while (i.hasNext()) {
+			if (isTwoBoundedOjectsIntersected(object, i.next())) {
+				return true;
 			}
 		}
 		
 		return false;
 	}
-
-//	/**
-//	 * Gets a set of local Immovable bounded objects (buildings and construction
-//	 * sites) at a given coordinate location.
-//	 *
-//	 * @param coordinates the coordinate location.
-//	 * @return set of local bounded objects at location (may be empty).
-//	 */
-//	private static Set<LocalBoundedObject> getAllImmovableBoundedObjectsAtLocation(Coordinates coordinates) {
-//
-//		Set<LocalBoundedObject> result = new HashSet<>(); //ConcurrentHashMap.newKeySet();
-//
-//		// Check for any settlements at coordinates.
-//		Iterator<Settlement> l = unitManager.getSettlements().iterator();
-//		while (l.hasNext()) {
-//			Settlement settlement = l.next();
-//			if (settlement.getCoordinates().equals(coordinates)) {
-//
-//				// Add all buildings at settlement.
-//				Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
-//				while (j.hasNext()) {
-//					Building b = j.next();
-//					if (!b.getInTransport())
-//						result.add(b);
-//				}
-//
-//				// Check all construction sites at settlement.
-//				Iterator<ConstructionSite> k = settlement.getConstructionManager().getConstructionSites().iterator();
-//				while (k.hasNext()) {
-//					result.add(k.next());
-//				}
-//			}
-//		}
-//
-//		return result;
-//	}
 
 	/**
 	 * Gets a set of local bounded objects at a given coordinate location.
@@ -470,44 +438,37 @@ public class LocalAreaUtil {
 	 */
 	public static Set<LocalBoundedObject> getAllLocalBoundedObjectsAtLocation(Coordinates coordinates) {
 
-		Set<LocalBoundedObject> result = new HashSet<>();
-
-		// Add all vehicles at location.
-		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			if (vehicle.getCoordinates().equals(coordinates)) {
-				result.add(vehicle);
-			}
-		}
-
 		// Check for any settlements at coordinates.
 		Iterator<Settlement> l = unitManager.getSettlements().iterator();
 		while (l.hasNext()) {
 			Settlement settlement = l.next();
-			if (settlement.getCoordinates().equals(coordinates)) {
-
-				// Add all buildings at settlement.
-//				Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
-//				while (j.hasNext()) {
-//					result.add(j.next());
-//				}
-
-				result.addAll(settlement.getBuildingManager().getBuildingSet());
-				
-				// Check all construction sites at settlement.
-//				Iterator<ConstructionSite> k = settlement.getConstructionManager().getConstructionSites().iterator();
-//				while (k.hasNext()) {
-//					result.add(k.next());
-//				}
-				
-				result.addAll(settlement.getConstructionManager().getConstructionSites());
-			}
+			return getAllLocalBoundedObjectsAtLocation(settlement);
 		}
+
+		return new HashSet<>();
+	}
+
+	/**
+	 * Gets a set of local bounded objects at a given coordinate location.
+	 *
+	 * @param settlement
+	 * @return set of local bounded objects at location (may be empty).
+	 */
+	public static Set<LocalBoundedObject> getAllLocalBoundedObjectsAtLocation(Settlement settlement) {
+
+		Set<LocalBoundedObject> result = new HashSet<>();
+		// Add all local vehicles at settlement vicinity.
+		result.addAll(settlement.getParkedNGaragedVehicles());
+		// Add all buildings at settlement vicinity.
+		result.addAll(settlement.getBuildingManager().getBuildingSet());			
+		// Add all construction sites at settlement vicinity.
+		result.addAll(settlement.getConstructionManager().getConstructionSites());
+		// Add all data collection sites at settlement vicinity.
+		result.addAll(settlement.getLocalDataCollectionSitesList());
 
 		return result;
 	}
-
+	
 	/**
 	 * Helper method to output the various geometry aspects in string format.
 	 */
@@ -553,14 +514,15 @@ public class LocalAreaUtil {
 	 * @param object      the boundedObject to be moved.
 	 * @param width       the object's width.
 	 * @param length      the object's length.
-	 * @param xLoc        the object's X location.
-	 * @param yLoc        the object's Y location.
+	 * @param xLoc        the object's future x location.
+	 * @param yLoc        the object's future y location.
 	 * @param facing      the object's facing (degrees clockwise from North).
 	 * @param coordinates the global coordinate location to check.
+	 * @param settlement
 	 * @return true if object doesn't collide with anything.
 	 */
 	public static boolean isObjectCollisionFree(Object object, double width, double length, double xLoc, double yLoc,
-			double facing, Coordinates coordinates) {
+			double facing, Coordinates coordinates, Settlement settlement) {
 
 		boolean result = true;
 
@@ -568,7 +530,7 @@ public class LocalAreaUtil {
 		Rectangle2D objectRect = new Rectangle2D.Double(xLoc - (width / 2D), yLoc - (length / 2D), width, length);
 		Path2D objectPath = getPathFromRectangleRotation(objectRect, facing);
 
-		result = isPathCollisionFree(object, objectPath, coordinates, false);
+		result = isPathCollisionFree(object, objectPath, coordinates, settlement, false);
 
 		return result;
 	}
@@ -580,11 +542,12 @@ public class LocalAreaUtil {
 	 * @param start	   the starting point.
 	 * @param destination the destination point.
 	 * @param coordinates the global coordinate location to check.
+	 * @param settlement
 	 * @return true if line path doesn't collide with anything.
 	 */
-	public static boolean isLinePathCollisionFree(LocalPosition start, LocalPosition destination, Coordinates coordinates) {
+	public static boolean isLinePathCollisionFree(LocalPosition start, LocalPosition destination, Coordinates coordinates, Settlement settlement) {
 		Line2D line = new Line2D.Double(start.getX(), start.getY(), destination.getX(), destination.getY());
-		return isPathCollisionFree(null, createLinePath(line), coordinates, true);
+		return isPathCollisionFree(null, createLinePath(line), coordinates, settlement, true);
 	}
 
 	/**
@@ -593,12 +556,13 @@ public class LocalAreaUtil {
 	 *
 	 * @param line        the line.
 	 * @param coordinates the global coordinate location to check.
+	 * @param settlement
 	 * @param useCache    true if caching should be used.
 	 * @return true if line path doesn't collide with anything.
 	 */
-	public static boolean isLinePathCollisionFree(Line2D line, Coordinates coordinates, boolean useCache) {
+	public static boolean isLinePathCollisionFree(Line2D line, Coordinates coordinates, Settlement settlement, boolean useCache) {
 		// Create line path
-		return isPathCollisionFree(null, createLinePath(line), coordinates, useCache);
+		return isPathCollisionFree(null, createLinePath(line), coordinates, settlement, useCache);
 
 	}
 
@@ -677,6 +641,12 @@ public class LocalAreaUtil {
 		return doAreasCollide(getBoundedObjectArea(o1), getBoundedObjectArea(o2));
 	}
 
+	/**
+	 * Gets the line segments.
+	 * 
+	 * @param object
+	 * @return
+	 */
 	private static Set<Line2D> getLocalBoundedObjectLineSegments(LocalBoundedObject object) {
 
 		Set<Line2D> result = new HashSet<>(4);// ConcurrentHashMap.newKeySet(4);
@@ -755,10 +725,11 @@ public class LocalAreaUtil {
 	 * @param object      the object being checked (may be null if no object).
 	 * @param path        the path to check.
 	 * @param coordinates the global coordinate location to check.
+	 * @param settlement
 	 * @param useCache    true if caching should be used.
 	 * @return true if path doesn't collide with anything.
 	 */
-	private static boolean isPathCollisionFree(Object object, Path2D path, Coordinates coordinates, boolean useCache) {
+	private static boolean isPathCollisionFree(Object object, Path2D path, Coordinates coordinates, Settlement settlement, boolean useCache) {
 
 		boolean result = true;
 
@@ -775,8 +746,16 @@ public class LocalAreaUtil {
 		}
 
 		if (!cached) {
+			
+			Set<LocalBoundedObject> set = null;
+			if (settlement != null)	{
+				set = getAllLocalBoundedObjectsAtLocation(settlement);
+			}
+			else {
+				set = getAllLocalBoundedObjectsAtLocation(coordinates);
+			}
 			// Add all obstacle areas at location together to create a total obstacle area.
-			Iterator<LocalBoundedObject> i = getAllLocalBoundedObjectsAtLocation(coordinates).iterator();
+			Iterator<LocalBoundedObject> i = set.iterator();
 			while (i.hasNext()) {
 				LocalBoundedObject lbo = i.next();
 				if (object == null || lbo != object) {

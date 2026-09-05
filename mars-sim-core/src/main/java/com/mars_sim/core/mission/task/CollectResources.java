@@ -91,7 +91,7 @@ public class CollectResources extends EVAOperation {
 			double targettedAmount, double startingCargo, EquipmentType containerType, CollectResourcesMission mission) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person,
+		super(NAME, person, null,
 					LABOR_TIME + RandomUtil.getRandomDouble(-10D, 10D), COLLECT_RESOURCES);
 
 		setMinimumSunlight(LIGHT_LEVEL);
@@ -120,9 +120,9 @@ public class CollectResources extends EVAOperation {
 
 			// If container is not available, end task.
 			if (!hasIt) {
-				logger.warning(person, 5000,
-						"Unable to find a " + containerType.getName().toLowerCase() + " to collect resources.");
-				endTask();
+				String log = "Unable to find a " + containerType.getName() + " to collect resources.";
+				logger.warning(person, 5000, log);
+                endEVA(log);
 				return;
 			}
 		}
