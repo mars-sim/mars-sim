@@ -55,7 +55,7 @@ public class ExplorationObjective implements MissionObjective {
      * @return
      */
     public int getTargetExploreTime() {
-        return 100; // TODO increase
+        return 400;
     }
 
     /**

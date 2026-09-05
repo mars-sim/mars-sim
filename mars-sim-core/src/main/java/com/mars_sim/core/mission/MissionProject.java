@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
@@ -326,10 +327,11 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
      */
     @Override
     public List<MissionObjective> getObjectives() {
-        return getSteps().stream()
+        var uniqueObjs = getSteps().stream()
                 .map(s -> s.getObjective())
                 .filter(o -> o != null)
-                .toList();
+                .collect(Collectors.toSet());
+        return new ArrayList<>(uniqueObjs);
     }
 
     /**
@@ -406,12 +408,10 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
      */
     protected void clearDown() {
         // Force release of any remaining members
-        if (members.isEmpty()) {
+        if (!members.isEmpty()) {
             List<Worker> oldmembers = new ArrayList<>(members);
             for(Worker w : oldmembers) {
                 logger.warning(w, "Still attached to Mission " + getName() + " at clear down");
-            	// Log what time and why in mission log
-                addMissionLog("Clear down", w.getName());
                 w.setMission(null);
             }
         }
