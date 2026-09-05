@@ -10,7 +10,7 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.health.ComplaintType;
+
 import com.mars_sim.core.person.health.HealthProblemState;
 
 public class TreatMedicalPatientTest extends MarsSimUnitTest {
@@ -22,7 +22,7 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
         var patient = buildPerson("Patient", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         // Laceration is self heal
-        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.APPENDICITIS);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, "APPENDICITIS");
         sb.getMedical().requestTreatment(hp);
         var recoveryTime = hp.getComplaint().getRecoveryTreatment().getDuration();
 
@@ -61,7 +61,7 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
         patient.transfer(r);
 
         // Laceration is self heal
-        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.APPENDICITIS);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, "APPENDICITIS");
         sb.requestTreatment(hp);
         var recoveryTime = hp.getComplaint().getRecoveryTreatment().getDuration();
 
@@ -100,7 +100,7 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
         var mt = new TreatMedicalPatientMeta();
 
         // Self heal
-        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.LACERATION);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, "LACERATION");
         sb.getMedical().requestTreatment(hp);
 
         var doctor = buildPerson("Docter", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
@@ -109,7 +109,7 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
         assertTrue(tasks.isEmpty(), "No dotor health problems");
 
         // Not self healing
-        hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.APPENDICITIS);
+        hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, "APPENDICITIS");
         sb.getMedical().requestTreatment(hp);
         tasks = mt.getTaskJobs(doctor);
         assertFalse(tasks.isEmpty(), "Problems found");

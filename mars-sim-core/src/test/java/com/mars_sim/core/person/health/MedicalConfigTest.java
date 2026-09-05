@@ -77,7 +77,7 @@ class MedicalConfigTest {
         var c = medConfig.getComplaintList();
         assertTrue(!c.isEmpty(), "Complaint list is not empty");
 
-        var found = medConfig.getComplaintByName(ComplaintType.DEHYDRATION);
+        var found = medConfig.getComplaintByID("DEHYDRATION");
         assertNotNull(found, "Found dehydration complaint");
 
         assertTrue(found.isEnvironmental(), "Is environmental");
@@ -98,7 +98,7 @@ class MedicalConfigTest {
         var c = medConfig.getComplaintList();
         assertTrue(!c.isEmpty(), "Complaint list is not empty");
 
-        var found = medConfig.getComplaintByName(ComplaintType.APPENDICITIS);
+        var found = medConfig.getComplaintByID("APPENDICITIS");
         assertNotNull(found, "Found appendictics complaint");
 
         assertFalse(found.isEnvironmental(), "Is environmental");
@@ -111,7 +111,7 @@ class MedicalConfigTest {
         assertEquals(PhysicalEffort.NONE, found.getEffortInfluence(), "Effort influence");
 
         assertEquals("Minor Operation", found.getRecoveryTreatment().getName(), "Treatment");
-        assertEquals(ComplaintType.RUPTURED_APPENDIX, found.getNextPhase().getType(), "Next complaint");
+        assertEquals("RUPTURED_APPENDIX", found.getNextPhase().getID(), "Next complaint");
     }
 
 		
@@ -120,7 +120,7 @@ class MedicalConfigTest {
         var c = medConfig.getComplaintList();
         assertTrue(!c.isEmpty(), "Complaint list is not empty");
 
-        var found = medConfig.getComplaintByName(ComplaintType.BURNS);
+        var found = medConfig.getComplaintByID("BURNS");
         assertNotNull(found, "Found burns complaint");
 
         assertFalse(found.isEnvironmental(), "Is environmental");

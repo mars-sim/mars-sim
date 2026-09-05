@@ -9,10 +9,10 @@ package com.mars_sim.core.person.health;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -51,10 +51,19 @@ public class MedicalConfig {
 	private static final String ENVIRONMENTAL = "environmental";
 	private static final String EFFORT_INFLUENCE = "effort-influence";
 	
-	private Map<ComplaintType,Complaint> complaintList = new EnumMap<>(ComplaintType.class);
+	private Map<String,Complaint> complaintList = new HashMap<>();
 	private Map<Integer,List<Treatment>> treatmentsByTechLevel = new HashMap<>();
 
 	private int highestLevel;
+
+	/**
+	 * Complaints that must be present in medical.xml because they are directly
+	 * referenced by simulation logic (see {@code MedicalManager} constants).
+	 */
+	private static final Set<String> REQUIRED_COMPLAINTS = Set.of(
+		"RADIATION_SICKNESS", "DECOMPRESSION", "DEHYDRATION", "STARVATION",
+		"PANIC_ATTACK", "DEPRESSION", "SUFFOCATION", "FREEZING", "HEAT_STROKE"
+	);
 
 	/**
 	 * Constructor.
@@ -77,12 +86,12 @@ public class MedicalConfig {
 	}
 	
 	/**
-	 * Find a complaint by it's name
-	 * @param type
-	 * @return
+	 * Find a complaint by its identifier name
+	 * @param name the UPPERCASE_UNDERSCORE identifier
+	 * @return matching Complaint or null
 	 */
-	public Complaint getComplaintByName(ComplaintType type) {
-		return complaintList.get(type);
+	public Complaint getComplaintByID(String name) {
+		return complaintList.get(name);
 	}
 	
 	/**
@@ -147,7 +156,7 @@ public class MedicalConfig {
 		
 		for (Element medicalComplaint : medicalComplaints) {				
 			// Get name.
-			String complaintName = medicalComplaint.getAttributeValue(NAME).toUpperCase().replace(' ', '_');
+			String complaintName = ConfigHelper.convertToEnumName(medicalComplaint.getAttributeValue(NAME));
 						
 			int seriousness = getIntValue(medicalComplaint, SERIOUSNESS, true, 0);
 			double degradeTime = getDoubleValue(medicalComplaint, DEGRADE_TIME, false, 0D);
@@ -183,10 +192,10 @@ public class MedicalConfig {
 			Element degradeComplaintElement = medicalComplaint.getChild(DEGRADE_COMPLAINT);
 			if (degradeComplaintElement != null) {
 			    String degradeComplaintName = degradeComplaintElement.getAttributeValue(VALUE);
-				var degradeType = ConfigHelper.getEnum(ComplaintType.class, degradeComplaintName);
-				degradeComplaint = complaintList.get(degradeType);
+				var degradeKey = ConfigHelper.convertToEnumName(degradeComplaintName);
+				degradeComplaint = complaintList.get(degradeKey);
 				if (degradeComplaint == null) {
-					throw new IllegalStateException("Degrade Complaint: " + degradeType + " could not be found");
+					throw new IllegalStateException("Degrade Complaint: " + degradeKey + " could not be found");
 				}
 			}
 
@@ -196,13 +205,20 @@ public class MedicalConfig {
 				effort = ConfigHelper.getEnum(PhysicalEffort.class, effortName);
 			}
 
-			ComplaintType type = ConfigHelper.getEnum(ComplaintType.class, complaintName);
-			Complaint complaint = new Complaint(type, seriousness, degradeTime * 1000D,
+			Complaint complaint = new Complaint(complaintName, seriousness, degradeTime * 1000D,
 											recoveryTime, probability, treatment, degradeComplaint,
 											performance, bedRestRecovery, environmental,
 											effort);
 
-			complaintList.put(type, complaint);
+			complaintList.put(complaintName, complaint);
+		}
+
+		// Verify all predefined complaints referenced by simulation logic are present.
+		for (String required : REQUIRED_COMPLAINTS) {
+			if (!complaintList.containsKey(required)) {
+				throw new IllegalStateException(
+					"Required medical complaint '" + required + "' is missing from medical.xml");
+			}
 		}
 	}
 

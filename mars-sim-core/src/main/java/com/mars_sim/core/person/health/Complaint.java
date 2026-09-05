@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * This class represents the definition of a specific Medical Complaint that can
@@ -36,8 +37,10 @@ public class Complaint implements Serializable {
 	private double performanceFactor; // Factor effecting Person performance
 	private boolean bedRestRecovery; // Does complaint require bed rest during recovery?
 
-	/** The complaint type of this illness. */
-	private ComplaintType type;
+	/** The identifier (UPPERCASE_UNDERSCORE key) of this illness. */
+	private String id;
+	/** The cached display name of this illness. */
+	private String displayName;
 	/** Treatment needed for recoveryNext phase of this illness. */
 	private Treatment recoveryTreatment;
 	/** Next phase of this illness. */
@@ -48,9 +51,9 @@ public class Complaint implements Serializable {
 	private PhysicalEffort effortInfluence;
 
 	/**
-	 * Constructor 3 : create a Medical Complaint instance from medical.xml
-	 * 
-	 * @param type              ComplaintYype
+	 * Constructor: creates a Medical Complaint instance from medical.xml
+	 *
+	 * @param id                identifier key (UPPERCASE_UNDERSCORE format)
 	 * @param seriousness       seriousness of complaint
 	 * @param degrade           degrade time until next complaint
 	 * @param recovery          recovery time
@@ -60,11 +63,13 @@ public class Complaint implements Serializable {
 	 * @param performance       performance factor
 	 * @param bedRestRecovery   True if bed rest is required during recovery.
 	 * @param environmental     Is this trigger by an environmental change
+	 * @param effort            Physical effort influence
 	 */
-	Complaint(ComplaintType type, int seriousness, double degrade, Range recovery, double probability,
+	Complaint(String id, int seriousness, double degrade, Range recovery, double probability,
 			Treatment recoveryTreatment, Complaint degradeComplaint, double performance, boolean bedRestRecovery,
 				boolean environmental, PhysicalEffort effort) {
-		this.type = type;
+		this.id = id;
+		this.displayName = Msg.getStringOptional("ComplaintType", id);
 		this.seriousness = seriousness;
 		this.degradePeriod = degrade;
 		this.recoveryPeriod = recovery;
@@ -87,20 +92,21 @@ public class Complaint implements Serializable {
 	}
 
 	/**
-	 * Get the name of this Complaint
-	 * @return
+	 * Get the display name of this Complaint.
+	 *
+	 * @return human-readable complaint name
 	 */
 	public String getName() {
-		return type.getName();
+		return displayName;
 	}
-	
+
 	/**
-	 * Get the type of complaint.
-	 * 
-	 * @return Complaint type.
+	 * Get the identifier key of this Complaint (UPPERCASE_UNDERSCORE format).
+	 *
+	 * @return complaint identifier
 	 */
-	public ComplaintType getType() {
-		return type;
+	public String getID() {
+		return id;
 	}
 
 	/**
@@ -185,10 +191,10 @@ public class Complaint implements Serializable {
 	/**
 	 * Get a string representation.
 	 * 
-	 * @return The String name of the ComplaintType.
+	 * @return The String name of the Complaint.
 	 */
 	public String toString() {
-		return type.getName();
+		return getName();
 	}
 
 	/**

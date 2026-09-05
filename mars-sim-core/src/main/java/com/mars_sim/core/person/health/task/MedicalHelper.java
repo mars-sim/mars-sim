@@ -15,10 +15,10 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.MedicalAid;
+import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.person.health.Treatment;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
@@ -113,12 +113,12 @@ public final class MedicalHelper {
     
         for(HealthProblem problem  : problems) {
             if (problem.getState() == HealthProblemState.DEGRADING) {
-            	ComplaintType complaintType = problem.getComplaint().getType();
+            	String complaintId = problem.getComplaint().getID();
             	Treatment treatment = problem.getComplaint().getRecoveryTreatment();
             	if ((treatment != null) && (treatment.getSelfAdminister() == selfHeal)) {
                     int requiredSkill = treatment.getSkill();
-                	if (ComplaintType.PANIC_ATTACK == complaintType
-                		|| ComplaintType.DEPRESSION == complaintType) {
+                	if (MedicalManager.PANIC_ATTACK.equals(complaintId)
+                		|| MedicalManager.DEPRESSION.equals(complaintId)) {
                         if (skillPsych >= requiredSkill) {
                             result.add(problem);
                         }

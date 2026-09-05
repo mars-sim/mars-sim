@@ -48,14 +48,14 @@ public class HealthProblem implements Serializable {
 	 * object. It also references a complaint that defines the behaviour. If the
 	 * Complaint has no degrade period then self-recovery starts immediately.
 	 *
-	 * @param complaintType Medical complaint enum being suffered.
+	 * @param complaint Medical complaint being suffered.
 	 * @param person    The person whose physical condition being effected.
 	 */
-	public HealthProblem(ComplaintType complaintType, Person person) {
+	public HealthProblem(Complaint complaint, Person person) {
 		sufferer = person;
 		timePassed = 0D;
 		state = HealthProblemState.DEGRADING;
-		complaint = new ComplaintReference(complaintType);
+		this.complaint = new ComplaintReference(complaint);
 		duration = getComplaint().getDegradePeriod();
 		started = eventManager.getClock().getMarsTime();
 		usedAid = null;
@@ -64,7 +64,7 @@ public class HealthProblem implements Serializable {
 		// Create medical event for health problem.
 		registerHistoricalEvent(HistoricalEventType.MEDICAL_STARTS);
 
-		logger.fine(person, " had a new health problem of " + complaintType.getName());
+		logger.fine(person, " had a new health problem of " + complaint.getName());
 	}
 
 	/**
@@ -138,12 +138,12 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * Returns the complaint type.
+	 * Returns the complaint identifier type name.
 	 *
-	 * @return Complaint Type.
+	 * @return Complaint identifier.
 	 */
-	public ComplaintType getType() {
-		return complaint.getType();
+	public String getID() {
+		return complaint.getID();
 	}
 	
 	/**

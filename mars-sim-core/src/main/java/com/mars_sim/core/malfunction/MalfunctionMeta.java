@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.person.health.ComplaintType;
-
 /**
  * The MalfunctionMeta class represents a definition of a malfunction in a vehicle, structure or
  * equipment.
@@ -59,7 +57,7 @@ public class MalfunctionMeta implements Serializable {
 	private List<RepairPart> parts;
 	private Map<Integer, Double> resourceEffects;
 	private Map<String, Double> lifeSupportEffects;
-	private Map<ComplaintType, Double> medicalComplaints;
+	private Map<String, Double> medicalComplaints;
 	private Map<MalfunctionRepairWork, EffortSpec> repairEffort;
 
 	/**
@@ -69,7 +67,7 @@ public class MalfunctionMeta implements Serializable {
 	 */
 	MalfunctionMeta(String name, int severity, double probability, Map<MalfunctionRepairWork, EffortSpec> repairEffort,
 			Set<String> entities, Map<Integer, Double> resourceEffects,
-			Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints,
+			Map<String, Double> lifeSupportEffects, Map<String, Double> medicalComplaints,
 			List<RepairPart> parts) {
 
 		// Initialize data members
@@ -181,7 +179,7 @@ public class MalfunctionMeta implements Serializable {
 	 *
 	 * @return medical complaints as name-value pairs in Map
 	 */
-	public Map<ComplaintType, Double> getMedicalComplaints() {
+	public Map<String, Double> getMedicalComplaints() {
 		return medicalComplaints;
 	}
 

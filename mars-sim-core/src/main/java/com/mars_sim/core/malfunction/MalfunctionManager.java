@@ -38,7 +38,6 @@ import com.mars_sim.core.metrics.MetricCategory;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
 import com.mars_sim.core.person.health.Complaint;
-import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.MaintenanceScope;
@@ -1242,9 +1241,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private void issueMedicalComplaints(Malfunction malfunction) {
 
 		// Determine medical complaints for each malfunction.
-		for (Entry<ComplaintType, Double> impact : malfunction.getMedicalComplaints().entrySet()) {
-			// Replace the use of String name with ComplaintType
-			Complaint complaint = medic.getComplaintByName(impact.getKey());
+		for (Entry<String, Double> impact : malfunction.getMedicalComplaints().entrySet()) {
+			Complaint complaint = medic.getComplaintByID(impact.getKey());
 			if (complaint != null) {
 				double probability = impact.getValue();
 
