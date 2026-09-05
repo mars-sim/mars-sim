@@ -8,6 +8,8 @@
 package com.mars_sim.ui.swing.tool.settlement;
 
 import java.awt.Color;
+import java.util.Collection;
+import java.util.Collections;
 
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.structure.Settlement;
@@ -36,7 +38,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
     }
     
 	@Override
-	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 
 		if (mapPanel.isOptionDisplayed(DisplayOption.DAYLIGHT_LAYER)) {
 
@@ -57,6 +59,8 @@ public class DayNightMapLayer implements SettlementMapLayer {
     
             }
 		}
+
+		return Collections.emptyList();
 	}
 
 	@Override

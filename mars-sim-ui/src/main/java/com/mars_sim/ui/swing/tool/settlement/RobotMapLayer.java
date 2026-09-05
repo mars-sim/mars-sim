@@ -37,12 +37,12 @@ public class RobotMapLayer extends WorkerMapLayer<Robot> {
 
 
 	@Override
-	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 
 		Collection<Robot> robots = CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement);
 		Robot selectedRobot = mapPanel.getSelectedRobot();
 
-		drawWorkers(robots, selectedRobot, mapPanel.isOptionDisplayed(DisplayOption.ROBOT_LABELS), viewpoint);
+		return drawWorkers(robots, selectedRobot, mapPanel.isOptionDisplayed(DisplayOption.ROBOT_LABELS), viewpoint);
 	}
 
 	/**
@@ -55,11 +55,5 @@ public class RobotMapLayer extends WorkerMapLayer<Robot> {
 	@Override
     protected ColorChoice getColor(Robot r, boolean selected) {
 		return (selected ? ROBOT_SELECTED : ROBOT_UNSELECTED);
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		mapPanel = null;
 	}
 }

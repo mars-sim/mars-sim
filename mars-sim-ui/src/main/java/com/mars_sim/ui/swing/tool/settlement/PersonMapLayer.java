@@ -39,11 +39,11 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 	}
 	
 	@Override
-	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement, false);		
 		Person selectedPerson = mapPanel.getSelectedPerson();
 
-		drawWorkers(people, selectedPerson, mapPanel.isOptionDisplayed(DisplayOption.PERSON_LABELS), viewpoint);
+		return drawWorkers(people, selectedPerson, mapPanel.isOptionDisplayed(DisplayOption.PERSON_LABELS), viewpoint);
 	}
 
 	/**
@@ -61,11 +61,5 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 		else {
 			return (p.getGender() == GenderType.MALE ? MALE_UNSELECTED : FEMALE_UNSELECTED);
 		}
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		mapPanel = null;
 	}
 }

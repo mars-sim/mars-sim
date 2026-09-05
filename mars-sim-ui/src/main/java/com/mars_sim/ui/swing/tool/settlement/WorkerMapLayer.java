@@ -12,6 +12,7 @@ import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.batik.gvt.GraphicsNode;
@@ -45,31 +46,34 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
      * @param selected The selected Worker
      * @param showLabels Show the labels
 	 * @param viewpoint Map viewpoint for rendering
+     * @return List of clickable hotspots
 	 */
-	protected void drawWorkers(Collection<T> workers, T selected, boolean showLabels,
+	protected Collection<? extends MapHotspot<?>> drawWorkers(Collection<T> workers, T selected, boolean showLabels,
                                 MapViewPoint viewpoint) {
                                 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
+        Collection<MapHotspot<T>> hotspots = new ArrayList<>();
 
 		// Draw all workers except selected person.
 		for (T w : workers) {
 			if (selected == null || !w.equals(selected)) {
-				drawUnselectedWorker(w, showLabels, viewpoint);
+				hotspots.add(drawUnselectedWorker(w, showLabels, viewpoint));
 			}
 		}
 
 		// Draw selected person.
 		if (selected != null && workers.contains(selected)) {
-            drawSelectedWorker(selected, viewpoint);
+            hotspots.add(drawSelectedWorker(selected, viewpoint));
 		}
 
         // Restore original graphic transforms.
         viewpoint.graphics().setTransform(saveTransform);
+        return hotspots;
 	}
 
-    private void drawUnselectedWorker(T w, boolean showLabels, MapViewPoint viewpoint) {
+    private MapHotspot<T> drawUnselectedWorker(T w, boolean showLabels, MapViewPoint viewpoint) {
         ColorChoice color = getColor(w, false);
         LocalPosition pos = w.getPosition();
 
@@ -87,6 +91,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
             drawRightLabel(false, w.getName(), pos, color,
                         NAME_FONT, LABEL_XOFFSET, LABEL_YOFFSET, viewpoint);
         }
+        return new WorkerHotspot<T>(w, pos);
     }
 
     /**
@@ -94,8 +99,9 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
      * 
      * @param g2d
      * @param w
+     * @return 
      */
-    private void drawSelectedWorker(T w, MapViewPoint viewpoint) {
+    private MapHotspot<T> drawSelectedWorker(T w, MapViewPoint viewpoint) {
         ColorChoice color = getColor(w, true);
 
         LocalPosition pos = w.getPosition();
@@ -139,7 +145,28 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
         		drawRightLabel(true, w.getName(), pos, color,
                         NAME_FONT, LABEL_XOFFSET, 1.9f * LABEL_YOFFSET, viewpoint);
         	}
-       	} 
+       	}
+
+        return new WorkerHotspot<T>(w, pos);
+    }
+
+    /**
+     * This represents a clickable hotspot for a Worker on the Map.
+     * @param <T> The Worker subtype being rendered
+     */
+    private static final class WorkerHotspot<T extends Worker> extends MapHotspot<T> {
+        private final LocalPosition pos;
+	    private static final double SELECTION_RANGE = 0.25; // Settlement coordinate frame, 25 cm
+
+        private WorkerHotspot(T target, LocalPosition pos) {
+            super(target);
+            this.pos = pos;
+        }
+
+        @Override
+        boolean isSelected(LocalPosition point) {
+            return pos.getDistanceTo(point) <= SELECTION_RANGE;
+        }
     }
 
 	/**

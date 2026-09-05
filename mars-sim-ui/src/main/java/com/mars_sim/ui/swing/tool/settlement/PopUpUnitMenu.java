@@ -4,7 +4,6 @@
  * @date 2021-11-28
  * @author Manny Kung
  */
-
 package com.mars_sim.ui.swing.tool.settlement;
 
 import java.awt.Color;
@@ -13,126 +12,60 @@ import java.util.function.Consumer;
 
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.construction.ConstructionSite;
-import com.mars_sim.core.data.collection.DataCollectionSite;
-import com.mars_sim.core.events.ScheduledEventHandler;
-import com.mars_sim.core.person.Person;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
+import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
-public class PopUpUnitMenu extends JPopupMenu {
+class PopUpUnitMenu extends JPopupMenu {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final int WIDTH_0 = 350;
-
-	public static final int WIDTH_1 = WIDTH_0;
+	public static final int WIDTH_1 = 350;
 	public static final int HEIGHT_1 = 300;
 
-    public PopUpUnitMenu(final Entity unit, UIContext context){
-    	String unitType = EntityDisplayInfoFactory.getDisplayInfo(unit).getSingularLabel();
+    public PopUpUnitMenu(final MapHotspot<?> selected, UIContext context){
+		var entity = selected.target;
+    	String unitType = EntityDisplayInfoFactory.getDisplayInfo(entity).getSingularLabel();
 
-		add(unitType + ": " + unit.getName());
+		add(unitType + ": " + entity.getName());
 		addSeparator();
-    	
-    	switch (unit) {
-			case Person p:
-        		add(buildDetailsItem(p, context));
-				break;
-        	
-			case Vehicle v: 
-				add(buildInfoItem(unit));
-				add(buildDetailsItem(unit, context));
-				add(createItem("relocate", v, Vehicle::relocateVehicle));
-				add(createItem("maintain", v, Vehicle::maintainVehicle));
-				break;
 
-        	case Building b:
-				add(buildInfoItem(unit));
-				add(buildDetailsItem(unit, context));
-				if (b.getAssociatedSettlement().getConstructionManager().canDemolish(b)) {
-					add(createItem("demolish", b, this::triggerDemolish));
-				}
-				break;
+		// Add summary details for Entity
+		UnitSummary summary = selected.getSummary();
+		if (summary != null) {
+			add(buildInfoItem(entity, summary));
+		}    	
+		
+		// Standard Entity launcher action
+		add(createItem("details", entity, context::showDetails));
 
-        	// Note: for construction sites
-			case ConstructionSite cs:
-				add(buildInfoItem(unit));
-				add(buildDetailsItem(unit, context));
-				if (cs.isProposed()) {
-					add(createItem("relocate", cs, t -> t.relocateSite()));
-					add(createItem("delete", cs,
-								 t -> t.getAssociatedSettlement().getConstructionManager().removeSite(t)));
-				}
-				break;
-
-        	case DataCollectionSite dcs:
-				add(buildInfoItem(unit));
-				add(buildDetailsItem(unit, context));
-				break;
-				
-			default:
-				add(buildDetailsItem(unit, context));
-				break;
-        }
+		// Custom actions for specific entity types
+		for(var a : selected.getActions()) {
+			var actionItem = new JMenuItem(Msg.getString("PopUpUnitMenu." + a));
+			actionItem.addActionListener(e -> {
+				selected.applyAction(a);
+				repaint();
+			});
+			add(actionItem);
+		}
     }
 
     /**
-     * Builds item one.
+     * Builds info dialog action based on a summary of the target
      *
-     * @param unit
+     * @param e the target entity
+     * @param summary the summary of the target entity
      */
-    private JMenuItem buildInfoItem(final Entity unit) {
+    private JMenuItem buildInfoItem(final Entity e, UnitSummary summary) {
         
-		return createItem("info", unit, t -> {
-
-            String description = null;
-            String type = null;
-            String name = null;
-            String position = null;
-            
-			switch (t) {
-				case Vehicle vehicle -> {
-                	description = vehicle.getDescription();
-                	position = vehicle.getPosition().getShortFormat();
-                	type = vehicle.getVehicleType().getName();
-                	name = vehicle.getName();
-                }
-                case Building building -> {
-                	description = building.getDescription();
-                	position = building.getPosition().getShortFormat();
-                	type = building.getBuildingType();
-                	name = building.getName();
-                }
-                case ConstructionSite site -> {
-					var stageInfo = site.getCurrentConstructionStage().getInfo();
-                	description = stageInfo.getName();
-                	position = site.getPosition().getShortFormat();
-                	type = stageInfo.getType().name().toLowerCase();
-                	name = site.getName();
-                }
-                case DataCollectionSite dcs -> {
-                	description = dcs.getDescription();
-                	position = dcs.getPosition().getShortFormat();
-                	type = dcs.getType();
-                	name = dcs.getName();
-                }
-                default -> {
-                	return;
-				}
-			}
-
-			UnitInfoPanel b = new UnitInfoPanel(name, type, description, position);
+		return createItem("info", e, t -> {
+			UnitInfoPanel b = new UnitInfoPanel(e.getName(), summary);
 			b.setOpaque(false);
 			b.setBackground(new Color(0,0,0,128));
 			
@@ -147,52 +80,6 @@ public class PopUpUnitMenu extends JPopupMenu {
 		});
     }
 
-	
-	/**
-	 * Demolishes an async to avoid the removal causing a problem with 
-	 * the active simulation logic.
-	 */
-	@SuppressWarnings("serial")
-	private class DemolishHandler implements ScheduledEventHandler {
-		private Building b;
-
-		public DemolishHandler(Building b) {
-			this.b = b;
-		}
-
-		@Override
-		public String getEventDescription() {
-			return "Start demolishing of " + b.getName();
-		}
-
-		@Override
-		public int execute(MarsTime currentTime) {
-			b.getAssociatedSettlement().getConstructionManager().createNewSalvageConstructionSite(b);
-			return 0;
-		}
-	}
-
-	private void triggerDemolish(Building b) {
-		if (JOptionPane.showConfirmDialog(null,
-						"Confirm the demolition of " + b.getName(), "Confirm demolish",
-						JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
-			var fm = b.getAssociatedSettlement().getFutureManager();
-
-			var handler = new DemolishHandler(b);
-			fm.addEvent(1, handler);
-		}
-	}
-
-    /**
-     * Builds item two.
-     *
-     * @param unit
-     * @param mainDesktopPane
-     */
-    private JMenuItem buildDetailsItem(final Entity unit, final UIContext context) {
-		return createItem("details", unit, context::showDetails);
-    }
- 
 	/**
      * Creates a menu item.
      * 

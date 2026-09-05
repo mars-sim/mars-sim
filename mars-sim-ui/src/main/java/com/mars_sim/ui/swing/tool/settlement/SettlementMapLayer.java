@@ -6,6 +6,8 @@
  */
 package com.mars_sim.ui.swing.tool.settlement;
 
+import java.util.Collection;
+
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -18,8 +20,9 @@ public interface SettlementMapLayer {
 	 * 
 	 * @param settlement the settlement to display.
 	 * @param viewpoint  the viewpoint of the Map.
+	 * @return 
 	 */
-	public void displayLayer(Settlement settlement, MapViewPoint viewpoint);
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint);
 
 	/**
 	 * Destroy the map layer.
