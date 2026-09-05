@@ -17,6 +17,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 
 class MineralSiteTest {
 
+    private static final String SITE_NAME = "Mineral Site 1";
     private static final int MAGNETITE = ResourceUtil.MAGNETITE_ID;
     private static final int HEMATITE = ResourceUtil.HEMATITE_ID;
 
@@ -30,14 +31,14 @@ class MineralSiteTest {
         Map<Integer, Double> minerals = new HashMap<>();
         minerals.put(HEMATITE, 10D);
         minerals.put(MAGNETITE, 5D);
-        return new MineralSite("Mineral Site 1", new Coordinates(0.5, 1.0), 2, minerals);
+        return new MineralSite(SITE_NAME, new Coordinates(0.5, 1.0), 2, minerals);
     }
 
     @Test
     void testConstructionAndFlags() {
         MineralSite site = createMineralSite();
 
-        assertEquals("Site-1", site.getName());
+        assertEquals(SITE_NAME, site.getName());
         assertFalse(site.isExplored());
         assertFalse(site.isReserved());
         assertFalse(site.isClaimed());
