@@ -31,7 +31,6 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.health.Complaint;
-import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
@@ -202,7 +201,7 @@ public class PhysicalCondition implements Serializable {
 	private List<CuredProblem> history;
 
 	/** Record of Illness frequency. */
-	private Map<ComplaintType, Integer> healthLog;
+	private Map<String, Integer> healthLog;
 
 	/** Health Risk probability. */
 	private Map<HealthRiskType, Double> healthRisks;
@@ -569,18 +568,18 @@ public class PhysicalCondition implements Serializable {
 	 * Close out a HealthProblem. It may not be cured but could have degraded.
 	 */
 	private void closeHealthProblem(HealthProblem problem, MarsTime now) {
-		ComplaintType type = problem.getType();
+		String type = problem.getType();
 
-		logger.info(person, "Ended problem " + type.getName() + ".");
+		logger.info(person, "Ended problem " + problem.getComplaint().getName() + ".");
 
-		if (type == ComplaintType.RADIATION_SICKNESS)
+		if (MedicalManager.RADIATION_SICKNESS.equals(type))
 			isRadiationPoisoned = false;
 	
 		problems.remove(problem);				
 		history.add(problem.toCured(now));
 
 		Medication expired = medicationList.stream()
-				.filter(med -> med.getComplaintType() == type || !med.isMedicated())
+				.filter(med -> type.equals(med.getComplaintType()) || !med.isMedicated())
 				.findFirst()
 				.orElse(null);
 		if (expired != null) {
@@ -600,7 +599,7 @@ public class PhysicalCondition implements Serializable {
 		if (time > 0) {
 			if (lackOxygen(support, currentO2Consumption * (time / 1000D)))
 				logger.severe(person, 60_000, "Reported lack of oxygen.");
-			if (checkResourceConsumption(support.getAirPressure(), minAirPressure, MIN_VALUE, ComplaintType.DECOMPRESSION))
+			if (checkResourceConsumption(support.getAirPressure(), minAirPressure, MIN_VALUE, medicalManager.getComplaintByName(MedicalManager.DECOMPRESSION)))
 				logger.severe(person, 60_000, "Reported non-optimal air pressure.");
 			if (badTemperature(support, minTemperature, maxTemperature))
 				logger.severe(person, 60_000, "Reported non-optimal temperature.");
@@ -953,7 +952,7 @@ public class PhysicalCondition implements Serializable {
 		thirstLevel = newThirstLevel;
 		person.fireUnitUpdate(THIRST_EVENT);
 		
-		var dehydrated = getProblemByType(ComplaintType.DEHYDRATION);
+		var dehydrated = getProblemByComplaint(medicalManager.getComplaintByName(MedicalManager.DEHYDRATION));
 
 		if (dehydrated != null) {
 			// Start recovery if thirst is below threshold
@@ -975,14 +974,14 @@ public class PhysicalCondition implements Serializable {
 		// If thirst at critical, person is dead
 		if (thirst >= maxThirst) {
 			// Add operation will return existing if one already exists
-			var dehydrated = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
+			var dehydrated = addMedicalComplaint(medicalManager.getComplaintByName(MedicalManager.DEHYDRATION));
 			dehydrated.setState(HealthProblemState.DEAD);
 			recordDead(dehydrated, false, ThirstLevel.DEATH_QUOTE);
 		}
 		
 		// If the person's thirst at top level for a period then trigger dehydration
-		else if (thirst > dehydrationTrigger && getProblemByType(ComplaintType.DEHYDRATION) == null) {
-			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
+		else if (thirst > dehydrationTrigger && getProblemByComplaint(medicalManager.getComplaintByName(MedicalManager.DEHYDRATION)) == null) {
+			addMedicalComplaint(medicalManager.getComplaintByName(MedicalManager.DEHYDRATION));
 			logger.info(person, "Dehydration triggered. Thirst: " + Math.round(thirst));
 		}
 	}
@@ -1084,7 +1083,7 @@ public class PhysicalCondition implements Serializable {
 		hungerLevel = newHungerLevel;
 		person.fireUnitUpdate(HUNGER_EVENT);
 		
-		var starved = getProblemByType(ComplaintType.STARVATION);
+		var starved = getProblemByComplaint(medicalManager.getComplaintByName(MedicalManager.STARVATION));
 
 		if (starved != null) {
 			// Start recovery if hunger is below threshold
@@ -1107,15 +1106,15 @@ public class PhysicalCondition implements Serializable {
 		// If hunger at critical, person is dead
 		if (hunger >= maxHunger) {
 			// AddMedicalComplaint will return existing if one already exists
-			var starved = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
+			var starved = addMedicalComplaint(medicalManager.getComplaintByName(MedicalManager.STARVATION));
 			starved.setState(HealthProblemState.DEAD);
 			recordDead(starved, false, HungerLevel.DEATH_QUOTE);
 			return;
 		}
 		
 		// If the person's hunger at top level for a period then trigger starvation
-		else if (hunger > starvationTrigger && getProblemByType(ComplaintType.STARVATION) == null) {
-			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
+		else if (hunger > starvationTrigger && getProblemByComplaint(medicalManager.getComplaintByName(MedicalManager.STARVATION)) == null) {
+			addMedicalComplaint(medicalManager.getComplaintByName(MedicalManager.STARVATION));
 			logger.info(person, "Starvation triggered. Hunger: " + Math.round(hunger));
 		}
 	}
@@ -1220,7 +1219,7 @@ public class PhysicalCondition implements Serializable {
 		
 		// Check Panic Attack cured at the end of the checkStress() method
 		// Or else 
-		HealthProblem activePanic = getProblemByType(ComplaintType.PANIC_ATTACK);	
+		HealthProblem activePanic = getProblemByComplaint(medicalManager.getComplaintByName(MedicalManager.PANIC_ATTACK));	
 		if (activePanic != null && !stressLevel.isStressedOut()) {
 			activePanic.setCured();
 			logger.log(person, Level.INFO, 0, "No longer having panic attack (case 2).");
@@ -1233,20 +1232,21 @@ public class PhysicalCondition implements Serializable {
 	private void processStress() {
 		// Always check for panic attack
 		if (stress >= 100D) {
-			HealthProblem panic = getProblemByType(ComplaintType.PANIC_ATTACK);
+			HealthProblem panic = getProblemByComplaint(medicalManager.getComplaintByName(MedicalManager.PANIC_ATTACK));
 			if (panic == null) {
-				addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK));
+				addMedicalComplaint(medicalManager.getComplaintByName(MedicalManager.PANIC_ATTACK));
 			}
 		}
 	}
 	/**
-	 * Gets the health problem by a certain complaint type.
+	 * Gets the health problem by a certain complaint.
 	 *
 	 * @return Health problem or null if the Person does not have it
 	 */
-	private HealthProblem getProblemByType(ComplaintType type) {
+	private HealthProblem getProblemByComplaint(Complaint complaint) {
+		if (complaint == null) return null;
 		for (HealthProblem p: problems) {
-			if (p.getType() == type) {
+			if (p.getType().equals(complaint.getType())) {
 				return p;
 			}
 		}
@@ -1263,12 +1263,12 @@ public class PhysicalCondition implements Serializable {
 		
 		// Future: need to double check on a person's radiation dosage to determine if he's sick with it.
 		
-		var radiationPoisoned = getProblemByType(ComplaintType.RADIATION_SICKNESS);
+		var radiationPoisoned = getProblemByComplaint(medicalManager.getComplaintByName(MedicalManager.RADIATION_SICKNESS));
 
 		if (!isRadiationPoisoned && radiation.isSick()) {
 
 			if (radiationPoisoned == null || !problems.contains(radiationPoisoned)) {
-				addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS));
+				addMedicalComplaint(medicalManager.getComplaintByName(MedicalManager.RADIATION_SICKNESS));
 				isRadiationPoisoned = true;
 				logger.log(person, Level.INFO, 3000, "Collapsed because of radiation poisoning.");
 			}
@@ -1299,7 +1299,7 @@ public class PhysicalCondition implements Serializable {
 			else if (hasMedication(RadioProtectiveAgent.NAME)) {
 
 				if (radiationPoisoned == null)
-					radiationPoisoned = getProblemByType(ComplaintType.RADIATION_SICKNESS);
+					radiationPoisoned = getProblemByComplaint(medicalManager.getComplaintByName(MedicalManager.RADIATION_SICKNESS));
 
 				if (radiationPoisoned != null) {
 					radiationPoisoned.startRecovery();
@@ -1338,8 +1338,8 @@ public class PhysicalCondition implements Serializable {
 		Collection<Complaint> list = medicalManager.getAllMedicalComplaints();
 		for (Complaint complaint : list) {
 			// Check each possible medical complaint.
-			ComplaintType ct = complaint.getType();
-			boolean hasComplaintAlready = getProblemByType(ct) != null;
+			String ct = complaint.getType();
+			boolean hasComplaintAlready = getProblemByComplaint(complaint) != null;
 
 			if (!hasComplaintAlready) {
 				var t = person.getTaskManager().getTask();
@@ -1416,14 +1416,13 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public HealthProblem addMedicalComplaint(Complaint c) {
 		for (HealthProblem problem : problems) {
-			if (problem.getType() == c.getType()) {
+			if (problem.getType().equals(c.getType())) {
 				return problem;
 			}
 		}
 
-		ComplaintType type = c.getType();
 		// Create a new health problem
-		HealthProblem newProblem = new HealthProblem(type, person);
+		HealthProblem newProblem = new HealthProblem(c, person);
 		problems.add(newProblem);
 
 		// Is this the most serious problem ? If so, update the most serious problem.
@@ -1432,11 +1431,12 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		// Record this complaint type
+		String type = c.getType();
 		int freq = 0;
 		if (healthLog.get(type) != null)
 			freq = healthLog.get(type);
 		healthLog.put(type, freq + 1);
-		logger.log(person, Level.INFO, 0, "Suffering from " + type.getName() + ".");
+		logger.log(person, Level.INFO, 0, "Suffering from " + c.getName() + ".");
 		
 //		recalculatePerformance();
 
@@ -1468,7 +1468,7 @@ public class PhysicalCondition implements Serializable {
 				// Assume one half as the bare minimum
 				double required = amount / 2D;
 
-				return checkResourceConsumption(received, required, MIN_VALUE, ComplaintType.SUFFOCATION);
+				return checkResourceConsumption(received, required, MIN_VALUE, medicalManager.getComplaintByName(MedicalManager.SUFFOCATION));
 			}
 		}
 
@@ -1486,7 +1486,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return Has a new problem been added.
 	 */
 	private boolean checkResourceConsumption(double actual, double required, int bounds,
-					ComplaintType complaint) {
+					Complaint complaint) {
 
 		boolean newProblem = false;
 		if (actual - required > 0.000_1 || required - actual > 0.000_1)
@@ -1500,36 +1500,27 @@ public class PhysicalCondition implements Serializable {
 			String reading = "";
 			String unit = "";
 			double decimals = 10.0;
-			switch (complaint) {
-				case SUFFOCATION: 
-					reading = "Oxygen";
-					unit = " kg";
-					decimals = 10_000.0;
-					break;
-				
-				case DECOMPRESSION:
-					reading = "Pressure";
-					unit = " kPa";
-					break;
-
-				case FREEZING:
-					reading = "Low Temperature";
-					unit = " " + DEGREE_CELSIUS;
-					break;
-
-				case HEAT_STROKE:
-					reading = "High Temperature";
-					unit = " " + DEGREE_CELSIUS;
-					break;
-					
-				default:
+			String complaintType = complaint.getType();
+			if (MedicalManager.SUFFOCATION.equals(complaintType)) {
+				reading = "Oxygen";
+				unit = " kg";
+				decimals = 10_000.0;
+			} else if (MedicalManager.DECOMPRESSION.equals(complaintType)) {
+				reading = "Pressure";
+				unit = " kPa";
+			} else if (MedicalManager.FREEZING.equals(complaintType)) {
+				reading = "Low Temperature";
+				unit = " " + DEGREE_CELSIUS;
+			} else if (MedicalManager.HEAT_STROKE.equals(complaintType)) {
+				reading = "High Temperature";
+				unit = " " + DEGREE_CELSIUS;
 			}
 			String s = reading + " sensor triggered. "
 					+ " Actual: " + Math.round(actual*decimals)/decimals + unit
 					+ " Required: " + Math.round(required*decimals)/decimals + unit;
 			logger.log(person, Level.SEVERE, 20_000, s);
 
-			addMedicalComplaint(medicalManager.getComplaintByName(complaint));
+			addMedicalComplaint(complaint);
 		}
 		return newProblem;
 	}
@@ -1542,8 +1533,8 @@ public class PhysicalCondition implements Serializable {
 	 * @return new problem added.
 	 */
 	private boolean badTemperature(LifeSupportInterface support, double minTemperature, double maxTemperature) {
-		boolean freeze = checkResourceConsumption(support.getTemperature(), minTemperature, MIN_VALUE, ComplaintType.FREEZING);
-		boolean hot = checkResourceConsumption(support.getTemperature(), maxTemperature, MAX_VALUE, ComplaintType.HEAT_STROKE);
+		boolean freeze = checkResourceConsumption(support.getTemperature(), minTemperature, MIN_VALUE, medicalManager.getComplaintByName(MedicalManager.FREEZING));
+		boolean hot = checkResourceConsumption(support.getTemperature(), maxTemperature, MAX_VALUE, medicalManager.getComplaintByName(MedicalManager.HEAT_STROKE));
 		return freeze || hot;
 	}
 

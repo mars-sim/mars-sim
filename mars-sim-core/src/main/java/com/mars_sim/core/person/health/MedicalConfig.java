@@ -9,7 +9,6 @@ package com.mars_sim.core.person.health;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +50,7 @@ public class MedicalConfig {
 	private static final String ENVIRONMENTAL = "environmental";
 	private static final String EFFORT_INFLUENCE = "effort-influence";
 	
-	private Map<ComplaintType,Complaint> complaintList = new EnumMap<>(ComplaintType.class);
+	private Map<String,Complaint> complaintList = new HashMap<>();
 	private Map<Integer,List<Treatment>> treatmentsByTechLevel = new HashMap<>();
 
 	private int highestLevel;
@@ -77,12 +76,12 @@ public class MedicalConfig {
 	}
 	
 	/**
-	 * Find a complaint by it's name
-	 * @param type
-	 * @return
+	 * Find a complaint by its identifier name
+	 * @param name the UPPERCASE_UNDERSCORE identifier
+	 * @return matching Complaint or null
 	 */
-	public Complaint getComplaintByName(ComplaintType type) {
-		return complaintList.get(type);
+	public Complaint getComplaintByName(String name) {
+		return complaintList.get(name);
 	}
 	
 	/**
@@ -183,10 +182,10 @@ public class MedicalConfig {
 			Element degradeComplaintElement = medicalComplaint.getChild(DEGRADE_COMPLAINT);
 			if (degradeComplaintElement != null) {
 			    String degradeComplaintName = degradeComplaintElement.getAttributeValue(VALUE);
-				var degradeType = ConfigHelper.getEnum(ComplaintType.class, degradeComplaintName);
-				degradeComplaint = complaintList.get(degradeType);
+				var degradeKey = degradeComplaintName.toUpperCase().replace(' ', '_');
+				degradeComplaint = complaintList.get(degradeKey);
 				if (degradeComplaint == null) {
-					throw new IllegalStateException("Degrade Complaint: " + degradeType + " could not be found");
+					throw new IllegalStateException("Degrade Complaint: " + degradeKey + " could not be found");
 				}
 			}
 
@@ -196,13 +195,12 @@ public class MedicalConfig {
 				effort = ConfigHelper.getEnum(PhysicalEffort.class, effortName);
 			}
 
-			ComplaintType type = ConfigHelper.getEnum(ComplaintType.class, complaintName);
-			Complaint complaint = new Complaint(type, seriousness, degradeTime * 1000D,
+			Complaint complaint = new Complaint(complaintName, seriousness, degradeTime * 1000D,
 											recoveryTime, probability, treatment, degradeComplaint,
 											performance, bedRestRecovery, environmental,
 											effort);
 
-			complaintList.put(type, complaint);
+			complaintList.put(complaintName, complaint);
 		}
 	}
 

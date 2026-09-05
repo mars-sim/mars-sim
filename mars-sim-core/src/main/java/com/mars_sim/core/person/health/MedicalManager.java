@@ -29,6 +29,16 @@ public class MedicalManager implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	// Constants for complaint identifiers that are directly referenced in code.
+	public static final String RADIATION_SICKNESS = "RADIATION_SICKNESS";
+	public static final String DECOMPRESSION = "DECOMPRESSION";
+	public static final String DEHYDRATION = "DEHYDRATION";
+	public static final String STARVATION = "STARVATION";
+	public static final String PANIC_ATTACK = "PANIC_ATTACK";
+	public static final String SUFFOCATION = "SUFFOCATION";
+	public static final String FREEZING = "FREEZING";
+	public static final String HEAT_STROKE = "HEAT_STROKE";
+
 	/** Settlement's Postmortem Exam waiting list. */
 	private Map<Integer, List<DeathInfo>> awaitingPostmortemExam;
 	/** Settlement's Death Registry. */
@@ -58,13 +68,13 @@ public class MedicalManager implements Serializable {
 
 	/**
 	 * This is a finder method that returns a Medical Complaint matching the
-	 * specified name.
+	 * specified identifier name.
 	 * 
-	 * @param name Name of the complaintType to retrieve.
+	 * @param name identifier (UPPERCASE_UNDERSCORE format) of the complaint to retrieve.
 	 * @return Matched complaint, if none is found then a null.
 	 */
-	public Complaint getComplaintByName(ComplaintType type) {
-		return medicalConfig.getComplaintByName(type);
+	public Complaint getComplaintByName(String name) {
+		return medicalConfig.getComplaintByName(name);
 	}
 
 	/**

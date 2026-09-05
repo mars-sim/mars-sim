@@ -16,7 +16,7 @@ import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.health.Complaint;
-import com.mars_sim.core.person.health.ComplaintType;
+
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
@@ -55,7 +55,7 @@ class TestSaving implements SimulationListener {
         EquipmentFactory.createEquipment(EquipmentType.BAG, s);
 
         // Find a person and add a medical complaint
-        Complaint complaint = sim.getMedicalManager().getComplaintByName(ComplaintType.APPENDICITIS);
+        Complaint complaint = sim.getMedicalManager().getComplaintByName("APPENDICITIS");
         Person p = (new ArrayList<>(sim.getUnitManager().getPeople())).get(0);
         p.getPhysicalCondition().addMedicalComplaint(complaint);
 

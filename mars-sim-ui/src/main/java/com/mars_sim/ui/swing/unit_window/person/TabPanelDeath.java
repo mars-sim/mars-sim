@@ -72,7 +72,7 @@ class TabPanelDeath extends EntityTabPanel<Person> {
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.task"), death.getTask());
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.mission"), death.getMission());
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.mission.phase"), death.getMissionPhase());
-		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.cause"), death.getIllness().getName());
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.cause"), death.getIllness());
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.time"), death.getTimeOfDeath().getZonedDateTimeStamp(timeZoneID));
  		doctorRetrievingBodyLabel = deathLabelPanel.addRow(Msg.getString("TabPanelDeath.retrievingBody"), death.getDoctorRetrievingBody());
 		examinerLabel = deathLabelPanel.addRow(Msg.getString("TabPanelDeath.examiner"), death.getDoctorSigningCertificate());

@@ -214,12 +214,12 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
             aid.startTreatment(healthProblem, treatmentDuration);
             String des = "";
             if (worker.getName().equals(healthProblem.getSufferer().getName())) {
-            	des = "Self-treating for " + healthProblem.getComplaint().getType().getName();
+            	des = "Self-treating for " + healthProblem.getComplaint().getName();
             	logger.log(worker, Level.INFO, 0, des + ".");
             }
             else {
             	des = "Treating " + healthProblem.getSufferer().getName()
-            			+ " for " + healthProblem.getComplaint().getType().getName();
+            			+ " for " + healthProblem.getComplaint().getName();
             	logger.log(worker, Level.INFO, 0, des + ".");
             	
             }

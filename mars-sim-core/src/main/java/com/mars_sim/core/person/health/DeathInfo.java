@@ -106,7 +106,7 @@ public class DeathInfo implements Serializable {
 	/** The person's job at time of death. */
 	private JobType job;
 	/** Medical cause of death. */
-	private ComplaintType illness;
+	private String illness;
 	/** Person's role type. */
 	private RoleType roleType;
 
@@ -147,7 +147,7 @@ public class DeathInfo implements Serializable {
 			if (serious != null) {
 				this.illness = serious.getType();
 				healthCondition = 0;
-				medicalCause = illness.getName();
+				medicalCause = illness;
 			}
 			else {
 				medicalCause = "Non-Illness Related";
@@ -156,7 +156,7 @@ public class DeathInfo implements Serializable {
 		else {
 			this.illness = problem.getComplaint().getType();
 			healthCondition = problem.getHealthRating();
-			medicalCause = illness.getName();
+			medicalCause = problem.getComplaint().getName();
 		}
 
 		// Set the cause of death
@@ -284,15 +284,12 @@ public class DeathInfo implements Serializable {
 	}
 	
 	/**
-	 * Get the type of the illness that caused the death.
+	 * Get the identifier of the illness that caused the death.
 	 * 
-	 * @return type of the illness.
+	 * @return identifier of the illness.
 	 */
-	public ComplaintType getIllness() {
-		if (illness != null)
-			return illness;
-		else
-			return null;
+	public String getIllness() {
+		return illness;
 	}
 
 	/**

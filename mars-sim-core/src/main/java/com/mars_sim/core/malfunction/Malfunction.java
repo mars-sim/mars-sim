@@ -18,7 +18,6 @@ import java.util.Map.Entry;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionMeta.EffortSpec;
-import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -558,7 +557,7 @@ public class Malfunction implements Serializable {
 	 *
 	 * @return medical complaints as name-value pairs in Map
 	 */
-	public Map<ComplaintType, Double> getMedicalComplaints() {
+	public Map<String, Double> getMedicalComplaints() {
 		return definition.getMedicalComplaints();
 	}
 

@@ -16,11 +16,11 @@ class HealthProblemTest extends MarsSimUnitTest {
         var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var p = buildPerson("Ill", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
-        var hp1 = SelfTreatHealthProblemTest.addComplaint(getContext(), p, ComplaintType.BROKEN_BONE);
-        var hp2 = SelfTreatHealthProblemTest.addComplaint(getContext(), p, ComplaintType.PANIC_ATTACK);
+        var hp1 = SelfTreatHealthProblemTest.addComplaint(getContext(), p, "BROKEN_BONE");
+        var hp2 = SelfTreatHealthProblemTest.addComplaint(getContext(), p, MedicalManager.PANIC_ATTACK);
 
-        assertEquals(ComplaintType.BROKEN_BONE, hp1.getComplaint().getType());
-        assertEquals(ComplaintType.PANIC_ATTACK, hp2.getComplaint().getType());
+        assertEquals("BROKEN_BONE", hp1.getComplaint().getType());
+        assertEquals(MedicalManager.PANIC_ATTACK, hp2.getComplaint().getType());
 
         assertEquals(true, hp1.isMoreSeriousThan(hp2), "Broken bone should be more serious than panic attack");
         assertEquals(false, hp2.isMoreSeriousThan(hp1), "Panic attack should not be more serious than broken bone");
@@ -37,7 +37,7 @@ class HealthProblemTest extends MarsSimUnitTest {
         var pc = p.getPhysicalCondition();
 
         var startedOn = getSim().getMasterClock().getMarsTime();
-        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), p, ComplaintType.BROKEN_BONE);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), p, "BROKEN_BONE");
         assertEquals(1, pc.getProblems().size(), "Problems registered");
         assertEquals(0, pc.getHealthHistory().size(), "Problems history");
 
