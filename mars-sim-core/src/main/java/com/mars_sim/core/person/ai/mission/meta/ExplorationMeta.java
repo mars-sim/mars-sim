@@ -35,6 +35,7 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
@@ -70,10 +71,9 @@ public class ExplorationMeta extends AbstractMetaMission {
 		setPopulationRatio(5);
 		setSolThreshold(MIN_STARTING_SOL);
 
-		// setObjectives(Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB));
+		setObjectives(Set.of(ObjectiveType.RESEARCH_CAMPUS, ObjectiveType.TRANSPORTATION_HUB));
 	}
 
-	
 	/**
 	 * Gets the Vehicle comparator that is based on largest cargo.
 	 */

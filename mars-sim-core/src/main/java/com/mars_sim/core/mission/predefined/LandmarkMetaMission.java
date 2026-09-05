@@ -24,6 +24,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.NavPoint;
+import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -39,6 +40,7 @@ public class LandmarkMetaMission extends AbstractMetaMission {
         super(MissionType.VISIT_LANDMARK, 4, Set.of(JobType.PILOT), Collections.emptySet());
 
         setPreferredVehicle(VehicleType.ROVER_TYPES);
+        setObjectives(Set.of(ObjectiveType.TOURISM));
     }
 
 	/**

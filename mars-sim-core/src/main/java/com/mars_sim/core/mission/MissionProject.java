@@ -198,6 +198,11 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
 
     @Override
     public Set<ObjectiveType> getObjectiveSatisfied() {
+        var meta = MetaMissionRegistry.getMetaMission(getMissionType());
+        if (meta != null) {
+            return meta.getObjectives();
+        }
+
         return Collections.emptySet();
     }
 
