@@ -17,7 +17,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 
-public class DataCollectionSite extends CollectionSite implements LocalBoundedObject, Entity{
+public class DataCollectionSite extends CollectionSite implements LocalBoundedObject, Entity {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

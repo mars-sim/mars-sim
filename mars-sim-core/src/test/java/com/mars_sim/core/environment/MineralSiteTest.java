@@ -30,7 +30,7 @@ class MineralSiteTest {
         Map<Integer, Double> minerals = new HashMap<>();
         minerals.put(HEMATITE, 10D);
         minerals.put(MAGNETITE, 5D);
-        return new MineralSite("Site-1", new Coordinates(0.5, 1.0), 2, minerals);
+        return new MineralSite("Mineral Site 1", new Coordinates(0.5, 1.0), 2, minerals);
     }
 
     @Test
