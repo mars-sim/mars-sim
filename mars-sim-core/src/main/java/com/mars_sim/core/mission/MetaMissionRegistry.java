@@ -9,6 +9,7 @@ package com.mars_sim.core.mission;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mars_sim.core.mission.predefined.ExplorationMeta;
 import com.mars_sim.core.mission.predefined.LandmarkMetaMission;
 import com.mars_sim.core.mission.predefined.TestDriveMetaMission;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -19,7 +20,6 @@ import com.mars_sim.core.person.ai.mission.meta.CollectRegolithMeta;
 import com.mars_sim.core.person.ai.mission.meta.ConstructionMissionMeta;
 import com.mars_sim.core.person.ai.mission.meta.DeliveryMeta;
 import com.mars_sim.core.person.ai.mission.meta.EmergencySupplyMeta;
-import com.mars_sim.core.person.ai.mission.meta.ExplorationMeta;
 import com.mars_sim.core.person.ai.mission.meta.MeteorologyFieldStudyMeta;
 import com.mars_sim.core.person.ai.mission.meta.MiningMeta;
 import com.mars_sim.core.person.ai.mission.meta.RescueSalvageVehicleMeta;

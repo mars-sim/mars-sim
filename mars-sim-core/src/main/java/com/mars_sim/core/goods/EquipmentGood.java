@@ -14,12 +14,12 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.predefined.ExplorationMeta;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.mission.CollectIce;
 import com.mars_sim.core.person.ai.mission.CollectRegolith;
-import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
@@ -183,7 +183,6 @@ public class EquipmentGood extends Good {
 		double supply = settlement.getGoodsManager().getSupplyScore(getID());
         if (equipmentType == EquipmentType.EVA_SUIT) {
     		mass = EquipmentFactory.getEquipmentMass(equipmentType);
-//    		quantity = settlement.getNumEVASuit();
     		
             // Need to increase the value for EVA
     		factor = 2.4 * Math.log(mass/80.0 + 1) / supply;
@@ -191,7 +190,6 @@ public class EquipmentGood extends Good {
     	else {
     		// For containers
     		mass = EquipmentFactory.getEquipmentMass(equipmentType);
-//    		quantity = settlement.findNumContainersOfType(equipmentType);
     		factor = 2.0 * Math.log(mass/5 + 1) / supply;
     	}
         
@@ -343,7 +341,7 @@ public class EquipmentGood extends Good {
 				return Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 10) * (0.1 + areologistFactor) * BARREL_DEMAND;
 
 			case SPECIMEN_BOX:
-				return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 10) * (1 + areologistFactor) * SPECIMEN_BOX_DEMAND;
+				return Math.max(baseDemand * ratio * ExplorationMeta.REQUIRED_SPECIMEN_CONTAINERS, 10) * (1 + areologistFactor) * SPECIMEN_BOX_DEMAND;
 
 			case GAS_CANISTER:
 				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 10) * GAS_CANISTER_DEMAND;

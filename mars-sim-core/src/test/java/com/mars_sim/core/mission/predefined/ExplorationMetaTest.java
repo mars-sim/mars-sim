@@ -1,4 +1,4 @@
-package com.mars_sim.core.person.ai.mission.meta;
+package com.mars_sim.core.mission.predefined;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -126,7 +126,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
                 ResourceUtil.WATER_ID, 200D,
                 ResourceUtil.FOOD_ID, 200D,
                 ResourceUtil.METHANOL_ID, 200D);
-        loadSettlementAmounts(s, resources);
+        loadAmounts(s.getEquipmentInventory(), resources);
 
         for(int c = 0; c < containerCount; c++) {
             EquipmentFactory.createEquipment(containterType, s);

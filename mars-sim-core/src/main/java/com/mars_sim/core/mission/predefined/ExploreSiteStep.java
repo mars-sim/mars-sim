@@ -9,7 +9,6 @@ package com.mars_sim.core.mission.predefined;
 import com.mars_sim.core.mission.steps.EVAMissionStep;
 import com.mars_sim.core.mission.task.ExploreSite;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.mission.MissionObjective;
@@ -23,9 +22,6 @@ import com.mars_sim.core.vehicle.Rover;
  * A predefined mission step for exploring a mineral site.
  */
 public class ExploreSiteStep extends EVAMissionStep {
-
-    /** Number of specimen containers required for the mission. */
-	public static final int REQUIRED_SPECIMEN_CONTAINERS = 8;
 
     private MineralSite site;
     private ExplorationObjective objective;
@@ -50,7 +46,7 @@ public class ExploreSiteStep extends EVAMissionStep {
         super.getRequiredResources(resources, includeOptionals);
       
     	int buffer = (int)(getMission().getMembers().size() * 1.5);
-		int newContainerNum = Math.max(buffer, REQUIRED_SPECIMEN_CONTAINERS);
+		int newContainerNum = Math.max(buffer, ExplorationMeta.REQUIRED_SPECIMEN_CONTAINERS);
         resources.setMinEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), newContainerNum, true);
     }
 
@@ -70,7 +66,7 @@ public class ExploreSiteStep extends EVAMissionStep {
         var rover = (Rover)((MissionVehicleProject)getMission()).getVehicle();
         var newTask = new ExploreSite(worker, site, rover, objective);
 
-        getMission().fireMissionUpdate(Exploration.SITE_EXPLORATION_EVENT, site.getName());
+        getMission().fireMissionUpdate(ExplorationMeta.SITE_EXPLORATION_EVENT, site.getName());
         return assignTask(worker, newTask);
     }
 
@@ -79,7 +75,7 @@ public class ExploreSiteStep extends EVAMissionStep {
      */
     @Override
     protected void complete() {
-        getMission().fireMissionUpdate(Exploration.SITE_EXPLORATION_EVENT, site.getName());
+        getMission().fireMissionUpdate(ExplorationMeta.SITE_EXPLORATION_EVENT, site.getName());
         super.complete();
     }
 
