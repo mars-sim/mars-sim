@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -54,6 +55,15 @@ public class MedicalConfig {
 	private Map<Integer,List<Treatment>> treatmentsByTechLevel = new HashMap<>();
 
 	private int highestLevel;
+
+	/**
+	 * Complaints that must be present in medical.xml because they are directly
+	 * referenced by simulation logic (see {@code MedicalManager} constants).
+	 */
+	private static final Set<String> REQUIRED_COMPLAINTS = Set.of(
+		"RADIATION_SICKNESS", "DECOMPRESSION", "DEHYDRATION", "STARVATION",
+		"PANIC_ATTACK", "SUFFOCATION", "FREEZING", "HEAT_STROKE"
+	);
 
 	/**
 	 * Constructor.
@@ -201,6 +211,14 @@ public class MedicalConfig {
 											effort);
 
 			complaintList.put(complaintName, complaint);
+		}
+
+		// Verify all predefined complaints referenced by simulation logic are present.
+		for (String required : REQUIRED_COMPLAINTS) {
+			if (!complaintList.containsKey(required)) {
+				throw new IllegalStateException(
+					"Required medical complaint '" + required + "' is missing from medical.xml");
+			}
 		}
 	}
 
