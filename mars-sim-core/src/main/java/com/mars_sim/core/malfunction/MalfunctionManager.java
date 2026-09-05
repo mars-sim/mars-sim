@@ -1242,7 +1242,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		// Determine medical complaints for each malfunction.
 		for (Entry<String, Double> impact : malfunction.getMedicalComplaints().entrySet()) {
-			Complaint complaint = medic.getComplaintByName(impact.getKey());
+			Complaint complaint = medic.getComplaintByID(impact.getKey());
 			if (complaint != null) {
 				double probability = impact.getValue();
 

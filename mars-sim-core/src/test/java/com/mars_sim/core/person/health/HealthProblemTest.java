@@ -19,8 +19,8 @@ class HealthProblemTest extends MarsSimUnitTest {
         var hp1 = SelfTreatHealthProblemTest.addComplaint(getContext(), p, "BROKEN_BONE");
         var hp2 = SelfTreatHealthProblemTest.addComplaint(getContext(), p, "PANIC_ATTACK");
 
-        assertEquals("BROKEN_BONE", hp1.getComplaint().getType());
-        assertEquals("PANIC_ATTACK", hp2.getComplaint().getType());
+        assertEquals("BROKEN_BONE", hp1.getComplaint().getID());
+        assertEquals("PANIC_ATTACK", hp2.getComplaint().getID());
 
         assertEquals(true, hp1.isMoreSeriousThan(hp2), "Broken bone should be more serious than panic attack");
         assertEquals(false, hp2.isMoreSeriousThan(hp1), "Panic attack should not be more serious than broken bone");

@@ -22,7 +22,7 @@ class ComplaintReference implements Serializable {
     private transient Complaint complaint;
 
     ComplaintReference(Complaint complaint) {
-        this.name = complaint.getType();
+        this.name = complaint.getID();
         this.complaint = complaint;
     }
 
@@ -33,7 +33,7 @@ class ComplaintReference implements Serializable {
 	 */
 	public Complaint getComplaint() {
 		if (complaint == null) {
-			complaint = medicalManager.getComplaintByName(name);
+			complaint = medicalManager.getComplaintByID(name);
 		}
 		return complaint;
 	}
@@ -42,7 +42,7 @@ class ComplaintReference implements Serializable {
      * Returns the complaint identifier name.
      * @return complaint type name
      */
-    public String getType() {
+    public String getID() {
         return name;
     }
 

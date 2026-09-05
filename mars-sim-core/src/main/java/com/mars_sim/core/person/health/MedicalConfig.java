@@ -90,7 +90,7 @@ public class MedicalConfig {
 	 * @param name the UPPERCASE_UNDERSCORE identifier
 	 * @return matching Complaint or null
 	 */
-	public Complaint getComplaintByName(String name) {
+	public Complaint getComplaintByID(String name) {
 		return complaintList.get(name);
 	}
 	
@@ -156,7 +156,7 @@ public class MedicalConfig {
 		
 		for (Element medicalComplaint : medicalComplaints) {				
 			// Get name.
-			String complaintName = medicalComplaint.getAttributeValue(NAME).toUpperCase().replace(' ', '_');
+			String complaintName = ConfigHelper.convertToEnumName(medicalComplaint.getAttributeValue(NAME));
 						
 			int seriousness = getIntValue(medicalComplaint, SERIOUSNESS, true, 0);
 			double degradeTime = getDoubleValue(medicalComplaint, DEGRADE_TIME, false, 0D);
@@ -192,7 +192,7 @@ public class MedicalConfig {
 			Element degradeComplaintElement = medicalComplaint.getChild(DEGRADE_COMPLAINT);
 			if (degradeComplaintElement != null) {
 			    String degradeComplaintName = degradeComplaintElement.getAttributeValue(VALUE);
-				var degradeKey = degradeComplaintName.toUpperCase().replace(' ', '_');
+				var degradeKey = ConfigHelper.convertToEnumName(degradeComplaintName);
 				degradeComplaint = complaintList.get(degradeKey);
 				if (degradeComplaint == null) {
 					throw new IllegalStateException("Degrade Complaint: " + degradeKey + " could not be found");

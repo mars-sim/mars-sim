@@ -13,7 +13,6 @@ import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.health.HealthProblem;
-import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 
@@ -41,7 +40,7 @@ class UnloadHelperTest extends MarsSimUnitTest{
         p1.transfer(v);
         var p2 = buildPerson("Dead", s);
         p2.transfer(v);
-        var burns = getContext().getSim().getMedicalManager().getComplaintByName("BURNS");
+        var burns = getContext().getSim().getMedicalManager().getComplaintByID("BURNS");
         p2.getPhysicalCondition().recordDead(new HealthProblem(burns, p2), true, "Dead");
         assertEquals(2, v.getCrewNum(), "Inital size of crew");
 

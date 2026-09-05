@@ -73,8 +73,8 @@ public class MedicalManager implements Serializable {
 	 * @param name identifier (UPPERCASE_UNDERSCORE format) of the complaint to retrieve.
 	 * @return Matched complaint, if none is found then a null.
 	 */
-	public Complaint getComplaintByName(String name) {
-		return medicalConfig.getComplaintByName(name);
+	public Complaint getComplaintByID(String name) {
+		return medicalConfig.getComplaintByID(name);
 	}
 
 	/**

@@ -142,8 +142,8 @@ public class HealthProblem implements Serializable {
 	 *
 	 * @return Complaint identifier.
 	 */
-	public String getType() {
-		return complaint.getType();
+	public String getID() {
+		return complaint.getID();
 	}
 	
 	/**

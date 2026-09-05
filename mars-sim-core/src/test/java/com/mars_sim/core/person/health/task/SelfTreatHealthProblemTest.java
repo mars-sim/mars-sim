@@ -30,7 +30,7 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
     }
 
     public static HealthProblem addComplaint(MarsSimContext context, Person p, String ct) {
-        var c = context.getSim().getMedicalManager().getComplaintByName(ct);
+        var c = context.getSim().getMedicalManager().getComplaintByID(ct);
         var pc = p.getPhysicalCondition();
         return pc.addMedicalComplaint(c);
     }

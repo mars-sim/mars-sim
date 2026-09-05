@@ -105,7 +105,7 @@ public class Complaint implements Serializable {
 	 *
 	 * @return complaint identifier
 	 */
-	public String getType() {
+	public String getID() {
 		return name;
 	}
 

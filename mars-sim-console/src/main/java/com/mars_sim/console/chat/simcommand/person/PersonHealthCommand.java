@@ -170,7 +170,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 		var problem = pc.addMedicalComplaint(choosen);
 
 		// Radition has extra values
-		if (MedicalManager.RADIATION_SICKNESS.equals(choosen.getType())) {			
+		if (MedicalManager.RADIATION_SICKNESS.equals(choosen.getID())) {			
 			RadiationExposure exposure = person.getPhysicalCondition().getRadiationExposure();
 					
 			int region = RandomUtil.getRandomInt(2);

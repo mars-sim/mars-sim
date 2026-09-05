@@ -55,7 +55,7 @@ class TestSaving implements SimulationListener {
         EquipmentFactory.createEquipment(EquipmentType.BAG, s);
 
         // Find a person and add a medical complaint
-        Complaint complaint = sim.getMedicalManager().getComplaintByName("APPENDICITIS");
+        Complaint complaint = sim.getMedicalManager().getComplaintByID("APPENDICITIS");
         Person p = (new ArrayList<>(sim.getUnitManager().getPeople())).get(0);
         p.getPhysicalCondition().addMedicalComplaint(complaint);
 
