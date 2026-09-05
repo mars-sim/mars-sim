@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -25,7 +26,9 @@ public class RequestMedicalTreatment extends MedicalAidTask {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(RequestMedicalTreatment.class.getName());
+  
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = RequestMedicalTreatment.class.getSimpleName();
 	
@@ -72,20 +75,36 @@ public class RequestMedicalTreatment extends MedicalAidTask {
      * Creates a task where a patient requests medical treatment at a medical aid.
      * 
      * @param patient the person to perform the task
-     * @param aid Where will teh treatment be done
+     * @param aid Where will the treatment be done
      * 
      */
     private RequestMedicalTreatment(Person patient, MedicalAid aid) {
         super(NAME, patient, aid, IMPACT, 0);
 	    
-    	// Send the person as a patient to a medical bed
-		if (patient.isInSettlement()) {	
+        // Note: For now, no need of checking for the location state of the doctor
+        
+        // Future: Simulate offering telemedicine via mission control if a person is on a mission and in a vehicle
+		
+		if (patient.isInVehicleInGarage()) {
+        	logger.info(patient, 10_000, "Requesting in-garaged-vehicle medical treatment.");
+            // Initialize phase.
+	        setPhase(SHOWING_UP);
+        }
+		else if (patient.isInSettlement()) {	
+	       	logger.info(patient, 10_000, "Requesting in-settlement medical treatment.");
+	       	
+	    	// Future: Send the person as a patient to a medical bed
+	       	
 	        // Initialize phase.
 	        setPhase(SHOWING_UP);
 		}
+		else if (patient.isInVehicle()) {
+			logger.info(patient, 10_000, "Requesting in-vehicle medical treatment.");
+	        setPhase(SHOWING_UP);
+		}
 		else {
-			// Future: will simulate contacting the mission control for medical help			
-			setPhase(WAITING_FOR_TREATMENT);
+			logger.info(patient, 10_000, "Being outside and unable to request medical treatment.");
+			endTask();
 		}
     }
 
@@ -131,10 +150,17 @@ public class RequestMedicalTreatment extends MedicalAidTask {
 
         double remainingTime = 0D;
         
-    	// Send the person as a patient to a medical bed
-		if (BuildingManager.addPatientToMedicalBed(person, worker.getSettlement())) {
-			setPhase(WAITING_FOR_TREATMENT);
-		}
+        if (person.isInSettlement()) {
+	    	// Send the person as a patient to a medical bed
+			if (BuildingManager.addPatientToMedicalBed(person, person.getSettlement())) {
+				logger.info(person, 10_000, "Successfully being added to a medical bed during treatment.");
+			}
+			else {
+				logger.info(person, 10_000, "Unsuccessfully being added to a medical bed during treatment.");
+			}
+        }
+		
+		setPhase(WAITING_FOR_TREATMENT);
 		
         return remainingTime;
     }
@@ -147,6 +173,12 @@ public class RequestMedicalTreatment extends MedicalAidTask {
      */
     private double waitingForTreatmentPhase(double time) {
 
+       	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+       	
         double remainingTime = 0D;
         var medicalAid = getMedicalAid();
 
@@ -200,6 +232,12 @@ public class RequestMedicalTreatment extends MedicalAidTask {
      */
     private double treatmentPhase(double time) {
 
+       	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+       	
         double remainingTime = 0D;
         var medicalAid = getMedicalAid();
 
@@ -223,7 +261,7 @@ public class RequestMedicalTreatment extends MedicalAidTask {
         }
 
         // Clear the bed
-     	getMedicalAid().removeFromBed();
+//     	getMedicalAid().removeFromBed();
         
         return remainingTime;
     }

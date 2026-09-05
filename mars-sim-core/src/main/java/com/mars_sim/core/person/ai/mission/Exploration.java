@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
@@ -142,8 +143,13 @@ public class Exploration extends EVAMission
 			// Add new explored site if just starting exploring.
 			if (currentSite == null) {
 				currentSite = retrieveASiteToClaim();
+				
 				if (currentSite == null) {
-					abortMission(INVALID_EXPLORATION_SITE);
+					if (this instanceof AbstractVehicleMission avm) {
+						// Calling AbstractVehicleMission's abortMission, not AbstractMission's abortMission
+						avm.abortMission(INVALID_EXPLORATION_SITE, HistoricalEventType.MISSION_INVALID_SITE, person);
+					}
+
 					return false;
 				}
 			}

@@ -81,7 +81,7 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
 
         // Get the local medical aids to use.
         var result = new RatingScore(VALUE);
-        result.addModifier("patients", Math.max(1D, (treatable.size()/0.33)));
+        result.addModifier("patient", Math.max(1D, (treatable.size()/0.33)));
         result = assessPersonSuitability(result, person);
         
         return createTaskJobs(result);
@@ -110,7 +110,7 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
 
         // Get the local medical aids to use.
         var result = new RatingScore(VALUE);
-        result.addModifier("patients", Math.max(1D, (treatable.size()/0.33)));
+        result.addModifier("patient", Math.max(1D, (treatable.size()/0.33)));
         result = assessRobotSuitability(result, robot);
         
         return createTaskJobs(result);

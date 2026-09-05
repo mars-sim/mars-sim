@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.health.task;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.logging.Level;
 
 import com.mars_sim.core.building.function.FunctionType;
@@ -32,7 +31,7 @@ import com.mars_sim.core.tool.RandomUtil;
 /**
  * A task in which a doctor prescribes (and provides) a medication to a patient.
  */
-public class PrescribeMedication extends Task {
+public class PrescribeMedication extends Task { //MedicalAidTask {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -66,49 +65,70 @@ public class PrescribeMedication extends Task {
 	 */
 	PrescribeMedication(Worker pharmacist) {
         // Use task constructor.
-        super(NAME, pharmacist, false, IMPACT, 10D);
+//		super(NAME, pharmacist, aid, IMPACT, 0D);
+        super(NAME, pharmacist, false, IMPACT, 20D);
 
+       	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return;
+    	}
+       	
         // Determine patient needing medication
         patient = determinePatient(pharmacist);
+        
         if (patient != null) {
+        	logger.warning(pharmacist, 10_000, "No patient found.");
+        }
         	
-            if (patient.isOutside())
-            	endTask();
-            // If in settlement, move doctor to building patient is in.
-            else if (patient.isInSettlement() && patient.getBuildingLocation() != null) {
-
-            	// First walk to a medical activity spot 
-        		boolean success = walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
-	
-        		if (!success) {
-        			logger.info(worker, 10_000, "Tried to walk to Doctor's station unsuccessfully.");
-        			// Note: Avoid calling this to instantly send the doctor there.
-        			// Check if the doctor is already at a medical activity spot	
-        			success = MedicalCare.dispatchToMedical(worker);
-        			
-        			if (!success) {
-        				logger.info(worker, 10_000, "Dispatched to Doctor's station unsuccessfully.");
-        				// If no medical activity spot is available, end the task
-        				endTask();
-        				// Note: should be able to 'remotely' treat a patient
-        				return ;
-        			}
-        		} 
-        		else {
-        			logger.info(worker, 10_000, "Arrived at Doctor's station successfully.");
-        		}
-            }
-            else {
-            	logger.info(patient, "Not in settlement.");
-            	endTask();
-            }
-
+        if (pharmacist.isInVehicleInGarage()) {
+        	logger.info(pharmacist, 10_000, "Starting in-garaged-vehicle prescribing medication to " + patient.getName() + ".");
         }
+        
+        else if (patient.isInSettlement() && patient.getBuildingLocation() != null) {
+
+        	// First walk to a medical activity spot 
+    		boolean success = walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
+
+    		if (!success) {
+    			logger.info(pharmacist, 10_000, "Unsuccessfully tried to walk to Doctor's station.");
+    			// Note: Avoid calling this to instantly send the doctor there.
+    			// Check if the doctor is already at a medical activity spot	
+    			success = MedicalCare.dispatchToMedical(pharmacist);
+    			
+    			if (!success) {
+    				logger.info(pharmacist, 10_000, "Unsuccessfully dispatched to Doctor's station to prescribe medication to " + patient.getName() + ".");
+    				// If no medical activity spot is available, end the task
+    				
+    				// Note: for now, do NOT call endTask, or else this task may not be able to get done
+    				
+//        				endTask();
+    				// Note: should be able to 'remotely' treat a patient
+//        				return ;
+    			}
+    			else {
+    				logger.info(pharmacist, 10_000, "Successfully dispatched to Doctor's station to prescribe medication to " + patient.getName() + ".");
+    			}
+    		} 
+    		else {
+    			logger.info(pharmacist, 10_000, "Successfully arrived at Doctor's station to prescribe medication to " + patient.getName() + ".");
+    		}
+        }
+        
+        else if (pharmacist.isInVehicle()) {
+        	logger.info(pharmacist, 10_000, "Starting in-vehicle prescribing medication to " + patient.getName() + ".");
+        }
+        
         else {
-        	logger.info(pharmacist, "No patient found.");
-            endTask();
+        	logger.info(pharmacist, "Not in settlement.");
+        	endTask();
+        	return;
         }
 
+        String des = "Prescribing medication for " + patient;
+        logger.log(pharmacist, Level.INFO, 10_000, des + ".");
+        setDescription(des);
+        
         // Initialize phase
         setPhase(MEDICATING);
     }
@@ -121,37 +141,6 @@ public class PrescribeMedication extends Task {
      */
     Person getPatient() {
         return patient;
-    }
-
-    /**
-     * Determines source of patients.
-     * 
-     * @param pharmacist the Worker prescribing the medication.
-     * @return patient if one found, null otherwise.
-     */
-    static Collection<Person> determinePatients(Worker pharmacist) {
-
-        // Get possible patient list.
-        // Note: Doctor can also prescribe medication for himself.
-        Collection<Person> patientList = null;
-        if (pharmacist.isInSettlement()) {
-            patientList = pharmacist.getSettlement().getIndoorPeople();
-        }
-        else {
-            patientList = Collections.emptyList();
-        }
-        return patientList;
-    }
-
-    /**
-     * Does this person need medication ?
-     */
-    static boolean needsMedication(Person patient) {
-        PhysicalCondition condition = patient.getPhysicalCondition();
-        RadiationExposure exposure = condition.getRadiationExposure();
-        return (!condition.isDead()
-            && ((condition.getStressLevel().isStressedOut() && !condition.hasMedication(AnxietyMedication.NAME))
-                || (exposure.isSick() && !condition.hasMedication(RadioProtectiveAgent.NAME))));
     }
 
     /**
@@ -177,6 +166,40 @@ public class PrescribeMedication extends Task {
     }
 
     /**
+     * Determines source of patients.
+     * 
+     * @param pharmacist the Worker prescribing the medication.
+     * @return patient if one found, null otherwise.
+     */
+    static Collection<Person> determinePatients(Worker pharmacist) {
+
+        // Note: Doctor can also prescribe medication for himself.
+        
+    	// Note: For now, allow remote prescription of medication
+    	Collection<Person> patientList = pharmacist.getAssociatedSettlement().getAllAssociatedPeople();
+
+//        if (pharmacist.isInSettlement()) {
+//            patientList = pharmacist.getSettlement().getIndoorPeople();
+//        }
+//        else {
+//            patientList = Collections.emptyList();
+//        }
+        return patientList;
+    }
+
+    /**
+     * Does this person need medication ?
+     */
+    static boolean needsMedication(Person patient) {
+        PhysicalCondition condition = patient.getPhysicalCondition();
+        RadiationExposure exposure = condition.getRadiationExposure();
+        return (!condition.isDead()
+            && ((condition.getStressLevel().isStressedOut() && !condition.hasMedication(AnxietyMedication.NAME))
+                || (exposure.isSick() && !condition.hasMedication(RadioProtectiveAgent.NAME))));
+    }
+
+
+    /**
      * Performs the medicating phase.
      * 
      * @param time the amount of time (millisols) to perform the phase.
@@ -184,13 +207,23 @@ public class PrescribeMedication extends Task {
      */
     private double medicatingPhase(double time) {
 
+       	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+       	
         // Add experience.
         addExperience(time);
 
         // If duration, provide medication.
         if (getDuration() <= (getTimeCompleted() + time)) {
+        	
+        	// Note: for now, allow remote prescription until the walking bug is fixed.
+        	
             var patientLocn = patient.getBuildingLocation();
-            if (patientLocn != null) {
+            
+//            if (patientLocn != null) {
                 PhysicalCondition condition = patient.getPhysicalCondition();
 
                 Medication medication = null;
@@ -210,42 +243,45 @@ public class PrescribeMedication extends Task {
                 // Medicate patient.
                 condition.addMedication(medication);
  
-                StringBuilder phrase = new StringBuilder();
+                StringBuilder des = new StringBuilder();
                 
                 if (!worker.equals(patient)) {
-                    phrase = phrase.append("Prescribing ").append(medication.getName())
-                        .append(" to ").append(patient.getName()).append(" in ")
-                        .append(patientLocn.getName())
+                    des = des.append("Prescribing ").append(medication.getName())
+                        .append(" to ").append(patient.getName())
+//                        .append(" in ").append(patientLocn.getName())
                         .append("."); 
-
                 }
                 else {
-                    phrase = phrase.append("Self-prescribing ").append(medication.getName()); 
+                    des = des.append("Self-prescribing ").append(medication.getName()).append("."); 
                     
-                    
-                    MedicalCare care = null;
-                    
-                    if (patient.getBuildingLocation() != null) {
-                    	care = patient.getBuildingLocation().getMedical();
-                    	if (care != null)
-                    		care.removeFromBed();
-                    }
+
+//                    MedicalCare care = null;
+//                    
+//                    if (patientLocn != null) {
+//                    	care = patientLocn.getMedical();
+//                    	if (care != null)
+//                    		care.removeFromBed();
+//                    }
 
                 }
                 
-                logger.log(worker, Level.INFO, 5000, phrase.toString());
+                logger.log(worker, Level.INFO, 10_000, des.toString());
+                
+                setDescription(des.toString());
                 
                 produceMedicalWaste();
 
-            }
-            else 
-            	logger.info(patient, "Not in a proper place to receive medication.");
+//            }
+//            else 
+//            	logger.info(patient, "Not in a proper place to receive medication.");
         }
 
         return 0D;
     }
 
-
+    /**
+     * Creates medical wastes.
+     */
 	private void produceMedicalWaste() {
 		if (!worker.isOutside()) {
             worker.getEquipmentInventory().storeAmountResource(ResourceUtil.TOXIC_WASTE_ID, AVERAGE_MEDICAL_WASTE);

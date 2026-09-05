@@ -15,6 +15,7 @@ import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.cooking.task.CookMeal;
+import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
@@ -607,11 +608,11 @@ public abstract class EVAOperation extends Task {
 	 */
 	@Override
 	public void endTask() {		
-//		if (person.isOutside()) {
-//			logger.warning(worker, 1_000L, "Walking back inside.");
-//            setPhase(WALK_BACK_INSIDE);
-//		}
-//    	else
+		if (person.isOutside()) {
+			logger.warning(worker, 1_000L, "Walking back inside.");
+            setPhase(WALK_BACK_INSIDE);
+		}
+    	else
         	super.endTask();
 	}
 	
@@ -816,36 +817,52 @@ public abstract class EVAOperation extends Task {
 			setOutsideSiteLocation(sLoc);
 		}
 		else {
-			endTask();
-			logger.warning(worker, "Can not find a suitable random EVA location");
+            endEVA("No good random outside location found.");
+			logger.warning(worker, "No good random outside location found.");
 		}
 		return goodLocation;
 	}
 
 	/**
-	 * Determines a random location for working outside a vehicle for the
-	 * assigned Worker.
-	 * <p>If no site is found then the Task is ended.
+	 * Determines a random outside data collection location.
 	 *
-	 * @param lbo the origin
+	 * @param lbo the origin building's LBO
+	 * @param dcs the data center site LBO
 	 * @param settlement
 	 * @return Was a site found
 	 */
-	protected boolean setRandomOutsideLocation(LocalBoundedObject lbo, Settlement settlement) {
+	protected boolean findRandomDataCollectionOutsideLoc(LocalBoundedObject lbo, Coordinates coord, Settlement settlement) {
 
+		DataCollectionSite emptyDCS = DataCollectionSite.creatEmptySite(coord);
+		
 		LocalPosition sLoc = null;
 		boolean goodLocation = false;
-		for (int x = 0; (x < 20) && !goodLocation; x++) {
-			for (int y = 0; (y < 20) && !goodLocation; y++) {
+		
+		int width = (int) lbo.getWidth();
+		int length = (int) lbo.getLength();
+		double hypotenuse = Math.sqrt(length * length + width * width);
+		
+		for (int x = 0; (x < 30) && !goodLocation; x++) {
+			for (int y = 0; (y < 30) && !goodLocation; y++) {
 
-				double radius = 2 + Math.max(lbo.getLength(), lbo.getWidth()) / 2D;
-				double distance = RandomUtil.getRandomRegressionInteger(50) + (x * 2) + (y * 2) + radius; //'+ (x * 100D) + 50D; //
+				double distance = RandomUtil.getRandomRegressionInteger(length * width) 
+						+ (x + 1) * width /2 + (y + 1) * length / 2 + hypotenuse + DataCollectionSite.HYPOTENUSE;
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2);
 
 				LocalPosition boundedLocalPoint = lbo.getPosition().getPosition(distance, radianDirection);
 
 				sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, lbo);
-				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, settlement);
+				
+				// Set the local position in the empty DCS
+				emptyDCS.setPosition(sLoc);
+				
+				// Vehicles will move from place to place. No need to check
+//				goodLocation = LocalAreaUtil.isVehicleBoundedOjectIntersected(emptyLBO, settlement, false);
+				// Check only immovable objects
+				goodLocation = !LocalAreaUtil.isImmovableBoundedOjectIntersected(emptyDCS, settlement);
+				
+				// Note: isPositionCollisionFree doesn't consider the size of the proposed data collection site
+//				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, settlement);
 			}
 		}
 
@@ -853,8 +870,8 @@ public abstract class EVAOperation extends Task {
 			setOutsideSiteLocation(sLoc);
 		}
 		else {
-			endTask();
-			logger.warning(worker, "Can not find a suitable random EVA location");
+            endEVA("No good random outside location found.");
+			logger.warning(worker, "No good random outside location found.");
 		}
 		return goodLocation;
 	}

@@ -1308,23 +1308,23 @@ public class ExitAirlock extends Task {
 					"Could not exit the airlock from " + airlock.getEntityName()
 					+ " due to crippling performance rating of " + person.getPerformanceRating() + ".");
 
-			try {
-
-				if (person.isInVehicle() 
-						&& (person.getVehicle().isRightOutsideSettlement()
-							|| person.getVehicle().isInSettlement())) {
-					Settlement settlement = person.getVehicle().getSettlement();
-
-					logger.warning(person, 4_000, "Attempting a rescue operation in/near " + settlement.getName() + ".");  
-					// Attempt a rescue operation
-					person.rescueOperation((Rover) person.getVehicle(), settlement);
-					// Note: rescueOperation() is more like a hack, rather than a legitimate way 
-					// of transferring a person through the airlock into the settlement 
-				}
-
-			} catch (Exception e) {
-				logger.severe(person, 4_000, "Could not get new action: ", e);
-			}
+//			try {
+//
+//				if (person.isInVehicle() 
+//						&& (person.getVehicle().isRightOutsideSettlement()
+//							|| person.getVehicle().isInSettlement())) {
+//					Settlement settlement = person.getVehicle().getSettlement();
+//
+//					logger.warning(person, 4_000, "Attempting a rescue operation in/near " + settlement.getName() + ".");  
+//					// Attempt a rescue operation
+//					person.rescueOperation((Rover) person.getVehicle(), settlement);
+//					// Note: rescueOperation() is more like a hack, rather than a legitimate way 
+//					// of transferring a person through the airlock into the settlement 
+//				}
+//
+//			} catch (Exception e) {
+//				logger.severe(person, 4_000, "Could not get new action: ", e);
+//			}
 
 			return false;
 		}
@@ -1359,10 +1359,23 @@ public class ExitAirlock extends Task {
 
 		else if (person.isInVehicle()) {
 
+			Vehicle v = person.getVehicle();
+
+			if (v.isRightOutsideSettlement()
+						|| v.isInSettlement()) {
+				Settlement settlement = v.getSettlement();
+
+				logger.warning(person, 4_000, "Attempting a rescue operation in/near " + settlement.getName() + ".");  
+				// Attempt a rescue operation
+				person.rescueOperation((Rover)v, settlement);
+				// Note: rescueOperation() is more like a hack, rather than a legitimate way 
+				// of transferring a person through the airlock into the settlement 
+				
+				return true;
+			}
+			
 			EVASuit suit = person.getSuit();
 
-			Vehicle v = person.getVehicle();
-			
 			if (suit != null) {
 				// Reset counter
 				airlock.resetCheckEVASuit();
@@ -1397,7 +1410,7 @@ public class ExitAirlock extends Task {
 			
 			// Add to the counter
 			airlock.addCheckEVASuit();
-			// EVA suit is not available.
+
 			return false;
 		}
 

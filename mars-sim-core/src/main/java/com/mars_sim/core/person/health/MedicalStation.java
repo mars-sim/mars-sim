@@ -46,10 +46,8 @@ public class MedicalStation implements MedicalAid {
 	private List<HealthProblem> problemsBeingTreated;
 	/** List of health problems awaiting treatment. */
 	private List<HealthProblem> problemsAwaitingTreatment;
-	
 	/** List of people resting to recover a health problem. */
 	private List<Person> restingRecoveryPeople;
-	
 	/** Treatments supported by the medical station. */
 	private List<Treatment> supportedTreatments;
 

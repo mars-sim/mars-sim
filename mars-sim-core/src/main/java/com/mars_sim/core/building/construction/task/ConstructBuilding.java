@@ -281,7 +281,7 @@ public class ConstructBuilding extends EVAOperation {
 			LightUtilityVehicle v = i.next();
 
 			if (!v.getMalfunctionManager().hasMalfunction() && !v.isFull() && v.getOperator() == null) {
-					
+				
 				// if the luv is inside a garage, come out of it
 				BuildingManager.removeFromGarage(v);
 					

@@ -182,12 +182,13 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 	private JPanel createTaskPanel() {
 		JPanel taskMainPanel = new JPanel(new BorderLayout(1, 3));
 		taskMainPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("task.singular")));
-
+		taskMainPanel.setToolTipText("Show the Phase and the Description of a task and its subtask(s)");
+		
 		JPanel taskSubPanel = new JPanel(new BorderLayout(1, 3));
 		taskMainPanel.add(taskSubPanel, BorderLayout.NORTH);
 
 		taskStack = new JTextArea(3, 30);
-		taskStack.setToolTipText("Show the description and phase of a task and its subtask(s)");
+		taskStack.setToolTipText("Show the Phase and the Description of a task and its subtask(s)");
 		taskSubPanel.add(taskStack, BorderLayout.NORTH);
 
 		AttributePanel taskScorePanel = new AttributePanel();
@@ -300,9 +301,14 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 		boolean addLine = false;
 		StringBuilder prefix = new StringBuilder();
 		StringBuilder newTaskText = new StringBuilder();
+		
+		
 		for (Task t : taskManager.getTaskStack()) {
 			if (addLine) {
 				newTaskText.append("\n");
+			}
+			else {
+				newTaskText.append(" << " + t.getName() + " >> ").append("\n");
 			}
 			newTaskText.append(prefix);
 			var phase = t.getPhase();

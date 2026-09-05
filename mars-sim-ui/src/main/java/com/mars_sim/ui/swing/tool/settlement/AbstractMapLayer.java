@@ -60,13 +60,13 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			  BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 50.0f, DASHES, 0.0f);
 
 	// Dash pattern: {on, off, on, off, ...}
-	private float[] dash = {10.0f, 5.0f};  // 10px dash, 5px gap
+	private float[] dash = {5.0f, 2.0f};  // 10px dash, 5px gap
 
 	private BasicStroke dashed = new BasicStroke(
-	    .25f,                     // line width
+	    .1f,                     // line width
 	    BasicStroke.CAP_BUTT,     // end cap style
 	    BasicStroke.JOIN_MITER,   // corner join style
-	    3.0f,                    // miter limit
+	    6.0f,                    // miter limit
 	    dash,                     // dash pattern
 	    0.0f                      // dash phase (offset)
 	);
@@ -631,8 +631,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         double xLoc = placement.getXLocation();
         double yLoc = placement.getYLocation();
         
-        double width = placement.getWidth();
-        double length = placement.getLength();
+        double width = placement.getWidth() * .8;
+        double length = placement.getLength() * .8;
 //        double facing = placement.getFacing();
         
         // Save original graphics transforms.
@@ -642,11 +642,11 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         
         // Determine bounds.
 //        Rectangle2D bounds = new Rectangle2D.Double(-width/2, -length/2, width, length);
-        RoundRectangle2D bounds = new RoundRectangle2D.Double(-width/2, -length/2, width, length, width/10, length/10);
+        RoundRectangle2D bounds = new RoundRectangle2D.Double(-width/2, -length/2, width, length, width/6, length/6);
         
         // Determine transform information.
-        double scalingWidth = width / bounds.getWidth() * scale;// / 2;
-        double scalingLength = length / bounds.getHeight() * scale;// / 2;
+        double scalingWidth = width / bounds.getWidth() * scale;
+        double scalingLength = length / bounds.getHeight() * scale;
         double boundsPosX = bounds.getX() * scalingWidth;
         double boundsPosY = bounds.getY() * scalingLength;
         
@@ -676,7 +676,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		float[] fractions = {0f, 0.5f, 1f};
 
 		if (selectedColor != null) {
-			Color[] colors = {selectedColor, Color.GRAY, Color.WHITE};	
+			Color[] colors = {selectedColor.brighter().brighter(), Color.GRAY, Color.WHITE};	
 			
 			// Create the linear gradient (top-to-bottom over the recot)
 			LinearGradientPaint gradient = new LinearGradientPaint(
@@ -703,7 +703,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			);
 		
 			g2d.setPaint(gradient);
-			
 			
 			// Save original stroke
 	    	Stroke oldStroke = g2d.getStroke();

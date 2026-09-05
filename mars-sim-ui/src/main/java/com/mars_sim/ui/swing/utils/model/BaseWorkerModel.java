@@ -19,6 +19,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  * The subclass defines which columns are to be rendered.
  * The model automatically monitors the Worker for changes and updates the table as needed.
  */
+@SuppressWarnings("serial")
 public abstract class BaseWorkerModel extends AbstractEntityModel<Worker> {
 
     private static final int NAME_VAL = 0;

@@ -810,6 +810,11 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			return false;
 		}
 	
+		if (isInSettlement) {
+			if (getBuildingLocation() == null && !getTaskManager().getTask().getName().contains("EVA")) {
+				logger.warning(this, 20_000, "Not in a building.");
+			}
+		}
 		// Check to see if the person has deceased
 //		if (condition.getDeathDetails() != null) {
 //			setDeceased();
@@ -1503,6 +1508,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	public boolean transfer(UnitHolder destination) {
 		boolean transferred = false;
 		var cu = getContainerUnit();
+		Building building = getBuildingLocation();
+		
 		if (destination.equals(cu)) {
 			return true;
 		}
@@ -1524,11 +1531,11 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			//     as the vehicle leaves the garage ?
 			transferred = s.removePeopleWithin(this);
 			if (transferred)
-				BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
+				BuildingManager.removePersonFromBuilding(this, building);
 		}
 
 		if (!transferred) {
-			logger.severe(this, 20_000, "Cannot be retrieved from " + cu + ".");
+			logger.severe(this, 20_000, "Could not be retrieved from " + cu + ".");
 			// NOTE: need to revert back to the previous container unit cu
 		}
 		
@@ -1558,15 +1565,30 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 				// See Walk::exitingRoverGaragePhase
 				transferred = b.getSettlement().addToIndoor(this);
 				// Turn a building destination to a settlement to avoid 
-				// casting issue with making containerUnit a building instance
-				BuildingManager.transferToBldg(this, null, b);
-				// Switch the destination from building to settlement
-				destination = b.getSettlement();
+				if (transferred) {
+					// Note: there is a casting issue if making destination as building 
+					BuildingManager.transferToBldg(this, null, b);
+					// Switch the destination from building to settlement
+					destination = b.getSettlement();
+				}
 			}
 
 			if (!transferred) {
 				logger.warning(this, 20_000, "Cannot be stored into " + destination + ".");
-				// NOTE: need to revert back the storage action
+				// Note: need to revert back to where he used to belong
+				if (transfer(cu)) {
+					logger.info(this, 20_000, "Successfully reverted back to " + cu + ".");
+					if (cu instanceof Settlement) {
+						// Need to put the person back to the building where he used to be in
+						BuildingManager.transferToBldg(this, null, building);
+					}
+					
+				}
+				else {
+					logger.warning(this, 20_000, "Unable to reverted back to " + cu + ".");
+				}
+				
+				return false;
 			}
 			else {
 				// Set the new container unit (which will internally set the container unit id)

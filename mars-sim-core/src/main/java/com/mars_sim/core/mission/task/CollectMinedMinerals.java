@@ -95,9 +95,9 @@ public class CollectMinedMinerals extends EVAOperation {
 
 			// If container is not available, end task.
 			if (!hasIt) {
-				logger.warning(person, 5000,
-						"Unable to find a " + containerType.getName() + " to collect resources.");
-				endTask();
+				String log = "Unable to find a " + containerType.getName() + " to collect resources.";
+				logger.warning(person, 5000, log);
+                endEVA(log);
 			}
 		}
 		else if (num > 1) {

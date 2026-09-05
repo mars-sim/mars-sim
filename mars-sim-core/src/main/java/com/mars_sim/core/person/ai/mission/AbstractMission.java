@@ -622,20 +622,20 @@ public abstract class AbstractMission implements Mission, Temporal {
 		
 		if (endStatus == null) {
 			
-//			if (this instanceof AbstractVehicleMission avm) {
-//				avm.endMission(MISSION_ABORTED_BY_PLAYER);
-//			}
-//			else {
+			if (this instanceof AbstractVehicleMission avm) {
+				avm.endMission(MISSION_ABORTED_BY_PLAYER);
+			}
+			else {
 				endMission(MISSION_ABORTED_BY_PLAYER);
-//			}
+			}
 		}
 		else {
-//			if (this instanceof AbstractVehicleMission avm) {
-//				avm.endMission(endStatus);
-//			}
-//			else {
+			if (this instanceof AbstractVehicleMission avm) {
+				avm.endMission(endStatus);
+			}
+			else {
 				endMission(endStatus);
-//			}
+			}
 		}
 	}
 
@@ -757,6 +757,15 @@ public abstract class AbstractMission implements Mission, Temporal {
 			removeAllMembers();
 		}
 
+		setPhaseEnded(true);
+		
+		if (this instanceof AbstractVehicleMission avm) {
+			avm.releaseVehicle();
+		}
+		else {
+			endMission(MISSION_ABORTED_BY_PLAYER);
+		}
+		
 		fireMissionUpdate(END_MISSION_EVENT);
 	}
 
@@ -771,9 +780,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}	
 		members.clear();		
 	}
-	
-	
-	
+
 	/**
 	 * Checks if a worker has any issues in starting a new task.
 	 *

@@ -18,6 +18,7 @@ import java.util.List;
 import org.apache.batik.gvt.GraphicsNode;
 
 import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
@@ -44,7 +45,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		}
 
 		@Override
-		boolean isSelected(com.mars_sim.core.map.location.LocalPosition point) {
+		boolean isSelected(LocalPosition point) {
 			return target.getPosition().getDistanceTo(point) <= selectionRange;
 		}
 
@@ -104,8 +105,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		// Draw all parked vehicles at this settlement location
 		for (Vehicle v : vehicles) {
-			if (v.isReady())
-				hotspots.add(drawVehicle(v, drawLabel, viewpoint));
+			drawVehicle(v, drawLabel, viewpoint);
 		}
 
 		// Restore original graphic transforms.

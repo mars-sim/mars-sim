@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -59,6 +60,12 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
         
         healthProblem = condition;
 
+       	if (doctor instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(doctor, "Super Unfit.");
+    		endTask();
+    		return;
+    	}
+       	
         // Get the person's medical skill.
         int skill = doctor.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
@@ -68,17 +75,47 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
             treatmentDuration = treatment.getAdjustedDuration(skill);
         }
         else {
-            logger.warning(doctor, healthProblem + " does not have treatment.");
+            logger.warning(doctor, healthProblem + " had no treatment plan.");
             endTask();
             return;
         }
 
-        if (doctor.isInSettlement())
+        
+        if (doctor.isInVehicleInGarage()) {
+        	
 	        // Initialize phase.
         	setPhase(DISPATCH);
-        else 
-        	// In future, simulate offering telemedicine via mission control
+        	
+        	logger.info(doctor, 10_000, "Dispatching to  a patient in a garaged vehicle to treat " + healthProblem + ".");
+        }
+        
+        else if (doctor.isInSettlement()) {
+        	
+	        // Initialize phase.
+        	setPhase(DISPATCH);
+        	
+        	logger.info(doctor, 10_000, "Dispatching to a patient in a settlement to treat " + healthProblem + ".");
+        	
+//	       	// Send the person as a patient to a medical bed
+//            else if (BuildingManager.addPatientToMedicalBed(healer, healer.getSettlement())) {
+//    			logger.info(healer, 10_000, "Successfully being added to a medical bed during self-treatment.");
+//    		}
+//    		else {
+//    			logger.info(healer, 10_000, "Unsuccessfully being added to a medical bed during self-treatment.");
+//    		}
+        }
+        else if (doctor.isInVehicle() ) {
+        	
+	        // Initialize phase.
         	setPhase(TREATMENT);
+        	
+        	logger.info(doctor, 10_000, "Instructing a patient to treat " + healthProblem + ".");
+        }
+        else {
+        	logger.info(doctor, 10_000, "Being outside and unable to treat " + healthProblem + ".");
+        	endTask();
+        }
+        
     }
 
     @Override
@@ -105,30 +142,43 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
      */
     private double dispatchingPhase(double time) {
 
+    	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+    	
     	double timeLeft = 0D;
     	
 		// Check if the doctor is already at a medical activity spot	
 		boolean success = walkToDoctorStation(true);
 
 		if (!success) {
+			logger.info(worker, 10_000, "Unsuccessfully tried to walk to Doctor's station to treat " + healthProblem + ".");
+			
 			// First walk to a medical activity spot
 			success = MedicalCare.dispatchToMedical(worker);
 			
 			if (!success) {
-				// If no medical activity spot is available, end the task
-				endTask();
+				logger.info(worker, 10_000, "Unsuccessfully dispatched to Doctor's station to treat " + healthProblem + ".");
 				
-				return timeLeft / 2;
+				// If no medical activity spot is available, end the task
+				
+				// Note: for now, do NOT call endTask, or else this task may not be able to get done
+				
+//				endTask();
+				
+//				return timeLeft / 2;
 			}
 			else {
-				setPhase(TREATMENT);
+				logger.info(worker, 10_000, "Successfully dispatched to Doctor's station to treat " + healthProblem + ".");
 			}
 		}
 		else {
-			logger.info(worker, 10_000, "Dispatched to Doctor's station successfully to treat health problem.");
-			
-			setPhase(TREATMENT);
+			logger.info(worker, 10_000, "Successfully arrived at Doctor's station to treat " + healthProblem + ".");
 		}
+		
+		setPhase(TREATMENT);
 		
     	return timeLeft;
     }
@@ -142,6 +192,12 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
      */
     private double treatmentPhase(double time) {
 
+    	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+    	
         var mal = getMalfunctionable();
 
         // If medical aid has malfunction, end task.
@@ -156,13 +212,18 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
         var aid = getMedicalAid();
         if (!aid.getProblemsBeingTreated().contains(healthProblem)) {
             aid.startTreatment(healthProblem, treatmentDuration);
-
+            String des = "";
             if (worker.getName().equals(healthProblem.getSufferer().getName())) {
-            	logger.log(worker, Level.INFO, 0, "Self-treating for " + healthProblem.getComplaint().getType().getName() + ".");
+            	des = "Self-treating for " + healthProblem.getComplaint().getType().getName();
+            	logger.log(worker, Level.INFO, 0, des + ".");
             }
-            else
-            	logger.log(worker, Level.INFO, 0, "Treating " + healthProblem.getSufferer().getName()
-        			+ " for " + healthProblem.getComplaint().getType().getName() + ".");
+            else {
+            	des = "Treating " + healthProblem.getSufferer().getName()
+            			+ " for " + healthProblem.getComplaint().getType().getName();
+            	logger.log(worker, Level.INFO, 0, des + ".");
+            	
+            }
+            setDescription(des);
         }
 
         // Check for accident in medical aid.

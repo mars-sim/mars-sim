@@ -66,7 +66,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 		if (malfunction.numRepairerSlotsEmpty(MalfunctionRepairWork.EVA) == 0
 					|| malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
 			logger.warning(person, "EVA Repair not needed @ " + malfunction.getName());
-			endTask();
+            endEVA("EVA Repair not needed");
 			return;
 		}
 
@@ -80,7 +80,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 		} 
 		else {
 			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' NOT available from " + entity.getName() + ".");
-			endTask();
+            endEVA("Parts not available.");
 		}	
 		
 		// Start if found

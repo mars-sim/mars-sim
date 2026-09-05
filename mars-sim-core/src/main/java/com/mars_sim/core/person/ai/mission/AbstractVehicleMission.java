@@ -340,7 +340,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		equipmentNeededCache = null;
 		cachedParts = null;
 
-		boolean continueToEndMission = true;
+//		boolean continueToEndMission = true;
+		
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			// Check if user aborted the mission and if
@@ -349,29 +350,34 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// What if a vehicle is still at a settlement and Mission is not approved ?
 			if (!isDroneDone() && !isRoverDone()) {
 				
-				
 				// Either the drone is still unloading or the rover is still unloading
-				continueToEndMission = false;
+//				continueToEndMission = false;
 				
-				if (isCurrentNavpointSettlement() && getPhase() != DISEMBARKING)
+				if (isCurrentNavpointSettlement() && getPhase() != DISEMBARKING) {
 					
+					// This is to remove all members ahead of disembarking
 					removeAllMembers();
 					// disembarking will help unload cargoes
 					startDisembarkingPhase();
-			}
-			else {
-				// for ALL OTHER REASONS
-				super.endMission(endStatus);
+				}
 			}
 		}
 
-		if (continueToEndMission) {
+//		if (continueToEndMission) {
 			setPhaseEnded(true);
 			releaseVehicle(vehicle);
+			
 			super.endMission(endStatus);
-		}
+//		}
 	}
 
+	/**
+	 * Releases the vehicle.
+	 */
+	protected void releaseVehicle() {
+		releaseVehicle(vehicle);
+	}
+	
 	/**
 	 * Is the unloading done on this drone ?
 	 * 
@@ -1672,7 +1678,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 		else {
 			// Already at home
-	
 			super.abortMission(status);
 		}
 	}

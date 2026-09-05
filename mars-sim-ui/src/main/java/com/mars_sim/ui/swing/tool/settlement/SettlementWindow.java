@@ -247,7 +247,8 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 		LocalPosition p = null;
 		if (w.isInSettlement()) {
 			home = w.getSettlement();
-			p = w.getBuildingLocation().getPosition();
+			if (w.getBuildingLocation() != null)
+				p = w.getBuildingLocation().getPosition();
 		}
 		else if (w.isInVehicle()) {
 			Vehicle v = w.getVehicle();

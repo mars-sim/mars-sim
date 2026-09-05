@@ -26,7 +26,7 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
         sb.getMedical().requestTreatment(hp);
         var recoveryTime = hp.getComplaint().getRecoveryTreatment().getDuration();
 
-        var doctor = buildPerson("Docter", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
+        var doctor = buildPerson("Doctor", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
         doctor.getSkillManager().addNewSkill(SkillType.MEDICINE, 20);
 
         var task = TreatMedicalPatient.createTask(doctor);

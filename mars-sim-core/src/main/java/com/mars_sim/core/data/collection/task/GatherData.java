@@ -9,9 +9,9 @@ package com.mars_sim.core.data.collection.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.collection.DataCollectionSite;
@@ -20,6 +20,7 @@ import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -51,8 +52,8 @@ public abstract class GatherData extends EVAOperation {
 
 	public static final int MAX_SITE_DISTANCE = 100;
 	
-	/** The precision is 1 cm. 1 km = 100_000 cm */
-	public static final double PRECISION = 100_000.0;
+	/** The precision is 1 m. 1 km = 100_000 cm */
+	public static final double PRECISION = 1_000.0;
 	
 	public static final double SMALL_AMOUNT = 0.001;
 	/** The loading speed of the resource at the storage bin [kg/millisols]. */
@@ -138,19 +139,19 @@ public abstract class GatherData extends EVAOperation {
             airlock = getWalkableAvailableEgressAirlock(person);
             if (airlock == null) {
             	logger.warning(person, 5_000L, "No available settlement airlock.");
-            	endTask();
+                endEVA("No available settlement airlock.");
             	return;
             }
             coord = s.getCoordinates();
  
-            dataCollectionSite = findSiteMap(s, coord, true);
+            dataCollectionSite = findSiteMap(s, coord, isSettlement);
             
-           	if (dataCollectionSite != null) {
+           	if (dataCollectionSite != null && locationPos != null) {
             	findInstrument(s.getEquipmentInventory());
         	}
            	else {
            		logger.warning(person, 5_000L, "No available data collection site found near " + s + ".");
-           		endTask();
+                endEVA("No available data collection site found near " + s + ".");
            		return;
            	}
         }
@@ -160,7 +161,7 @@ public abstract class GatherData extends EVAOperation {
             airlock = ((Rover)v).getAirlock();
             if (airlock == null) {
             	logger.warning(person, 5_000L, "No available vehicular airlock.");
-            	endTask();
+                endEVA("No available vehicular airlock.");
             	return;
             }
             coord = v.getCoordinates();
@@ -169,9 +170,9 @@ public abstract class GatherData extends EVAOperation {
             	
             	dataCollectionSite = avm.getDataCollectionSite();
             	
-            	if (dataCollectionSite == null) {
+            	if (dataCollectionSite == null && locationPos != null) {
             		// The site has not been attached to the abstract vehicle mission yet
-                	dataCollectionSite = findSiteMap(v.getAssociatedSettlement(), coord, false);
+                	dataCollectionSite = findSiteMap(v.getAssociatedSettlement(), coord, isSettlement);
 
                 }
             	
@@ -186,7 +187,7 @@ public abstract class GatherData extends EVAOperation {
             	}
                	else {
                		logger.warning(person, 5_000L, "No available data collection site found near " + v + ".");
-               		endTask();
+                    endEVA("No available data collection site found near " + v + ".");
                		return;
                	}
             }
@@ -204,18 +205,18 @@ public abstract class GatherData extends EVAOperation {
 	 */
 	private boolean findInstrument(EquipmentInventory ei) {
 		// Look at how many types of instruments a settlement/vehicle would have
-    	List<Integer> settlementAvailableList = getAvailableWaterDetectionTool(ei);
+    	List<Integer> availableList = getAvailableWaterDetectionTool(ei);
 
         List<Integer> siteAvailableList = dataCollectionSite.getInstrumentAvailability();
         
-        if (siteAvailableList.size() > 0) {
+        if (!siteAvailableList.isEmpty()) {
         	// already available at the site. For now, no need of deploying another one.
         	logger.info(person, 5_000L, "The site at " + locationPos
         			+ " already had instrument(s). No need to bring more for now.");
         	return false;
         }
-        else if (settlementAvailableList.size() > 0){
-        	int selected = settlementAvailableList.get(0);
+        else if (!availableList.isEmpty()) {
+        	int selected = availableList.get(0);
         	// Can a person pick up an instrument from a settlement/vehicle and carries it ?
         	if (carryDataInstrument(EquipmentOwner.getAttached(containerUnit), person, selected)) {
         		selectedInstrument = selected;
@@ -229,8 +230,11 @@ public abstract class GatherData extends EVAOperation {
         		return false;
         	}
         }
-        
-        logger.warning(person, 5_000L, "No available instrument in " + ei + " to carry it to the site at " + locationPos + "."); 
+        else {
+            logger.warning(containerUnit, 5_000L, "Instruments not available for " + person 
+            		+ " to carry to the site at " + locationPos + "."); 
+        }
+
         return false;
 	}
 	
@@ -258,39 +262,15 @@ public abstract class GatherData extends EVAOperation {
 	 * @param coord
 	 * @param local. Is this in a settlement vicinity ?
 	 */
-	private DataCollectionSite findSiteMap(Settlement s, Coordinates coord, boolean local) {
+	private DataCollectionSite findSiteMap(Settlement settlement, Coordinates coord, boolean local) {
 	
-    	if (locationPos == null) {
-        	locationPos = determineSiteLocation();
-	        if (locationPos == null) {
-				endEVA("No good site found.");
-	        	return null;
-	        }
-        }
-		
-		Map<Double, List<DataCollectionSite>> siteMap = s.getDataCollectionSiteMap();
-
-        if (siteMap == null) {
-        	siteMap = new HashMap<>();
-        }
-
-        return settleWithSiteList(s, coord, local, siteMap);
-	}
-	
-	/**
-	 * Settles with a list of sites.
-	 * 
-	 * @param s
-	 * @param coord
-	 * @param local
-	 * @param siteMap
-	 * @return
-	 */
-	private DataCollectionSite settleWithSiteList(Settlement s, Coordinates coord, 
-			boolean local, Map<Double, List<DataCollectionSite>> siteMap) {
-		
-		List<DataCollectionSite> siteList = null;
-		
+		DataCollectionSite dataCollectionSite = null;
+    	List<DataCollectionSite> siteList = null;
+    	Map<Double, List<DataCollectionSite>> siteMap = settlement.getDataCollectionSiteMap();
+    	
+    	double distance = 0.0;
+    	int numExistingSites = 0;
+    	
 		if (local) {
 			if (siteMap.isEmpty()) {
 				siteList = new ArrayList<>();
@@ -299,65 +279,52 @@ public abstract class GatherData extends EVAOperation {
 				// Note: for now, must force distance to be 0.0. 
 				// No need of computing distance since it's in settlement vicinity 
 				siteList = siteMap.getOrDefault(0.0, new ArrayList<>());
+				if (siteList == null) {
+					siteList = new ArrayList<>();
+				}
 			}
 			
 			// Note: for now, must force distance to be 0.0. 
 			// No need of computing distance since it's in settlement vicinity 
-   			return registerSite(s, coord, siteList, 0.0);
+			
 		}
 		else {
-			// Set accuracy to 1 cm
-			double distance = Math.round(s.getCoordinates().getDistance(coord) * PRECISION) / PRECISION;
+			// Set accuracy
+			distance = Math.round(settlement.getCoordinates().getDistance(coord) * PRECISION) / PRECISION;
 			siteList = siteMap.getOrDefault(distance, new ArrayList<>());
-
-			return registerSite(s, coord, siteList, distance);
+			if (!siteList.isEmpty())
+				siteList = siteList.stream()
+				    .filter(site -> site.getLocation().equals(coord))
+				    .collect(Collectors.toList());
+			if (siteList == null) {
+				siteList = new ArrayList<>();
+			}
 		}
-	}
-	
-	/**
-	 * Registers a site.
-	 * 
-	 * @param s
-	 * @param coord
-	 * @param siteList
-	 * @param distance
-	 * @return
-	 */
-	private DataCollectionSite registerSite(Settlement s, Coordinates coord, List<DataCollectionSite> siteList, double distance) {
-		DataCollectionSite dataCollectionSite = null;
 		
-		if (siteList.isEmpty()) {
-			// Create and add this site to settlement
-        	dataCollectionSite = new DataCollectionSite(coord, locationPos);
-        	
-        	s.addSite(distance, dataCollectionSite);
+		if (!siteList.isEmpty()) {
+			Collections.shuffle(siteList);
+			numExistingSites = siteList.size();
+		}
+		
+		// Note: even if there are existing sites, give it a chance to start a new site
+		if (siteList.isEmpty() || RandomUtil.getRandomInt(numExistingSites + 3) == 0) {
+			
+	    	if (locationPos == null) {
+	        	locationPos = determineSiteLocation(coord, settlement, local);
+		        if (locationPos == null) {
+					endEVA("No good location position found.");
+		        	return null;
+		        }
+	        }
+	    	
+	    	if (locationPos != null) { 
+				// Create and add this site to settlement
+		    	dataCollectionSite = new DataCollectionSite(coord, locationPos);
+		    	settlement.addSite(distance, dataCollectionSite);
+	    	}
 		}
 		else {
-			// Give it a 5% chance to create a new data collection site
-			if (RandomUtil.getRandomInt(19) == 0) {
-				// Create and add this site to settlement
-	        	dataCollectionSite = new DataCollectionSite(coord, locationPos);
-	        	
-	        	s.addSite(distance, dataCollectionSite);
-			}
-			else {
-//
-	        	// Randomly rearrange the site list order 
-	        	Collections.shuffle(siteList);
-	        	
-	        	return siteList.get(0);
-	        	
-	        	// Note: in future, select a site by probability of its familiarity value
-//				int mostNumInstrument = -1;
-//	            for (DataCollectionSite site: siteList) {
-//	//            	int familiar = site.getFamiliarity();
-//	            	int num = site.getNumInstrumentAvailable();
-//	            	if (num > mostNumInstrument) {
-//	            		dataCollectionSite = site;
-//	            		break;
-//	            	}
-//	            }
-			}
+			dataCollectionSite = siteList.get(0);
 		}
 		
 		return dataCollectionSite;
@@ -370,6 +337,50 @@ public abstract class GatherData extends EVAOperation {
 		return locationPos;
 	}
 
+    /**
+     * Determines location for the site.
+     * 
+     * @param coord
+     * @param settlement
+     * @return X and Y local position of the site .
+     */
+    private LocalPosition determineSiteLocation(Coordinates coord, Settlement settlement, boolean local) {
+    	
+    	if (isSettlement) {
+    		LocalBoundedObject lbo = (Building)airlock.getEntity();
+    		
+    		int num = person.getSettlement().getLocalDataCollectionSitesList().size();
+    		// Give it a 50% chance to pick an existing site
+    		if (num > 0 && RandomUtil.getRandomInt(1) == 0) {
+    			List<DataCollectionSite> list = person.getSettlement().getLocalDataCollectionSitesList();
+    			if (num > 1)
+    				Collections.shuffle(list);
+    			// Choose lbo to be from one of the data collection site
+    			// and from this site, look for another new site position
+    			lbo = list.get(0);
+    		}
+    		
+    		boolean found = false;
+
+    		for (int i = 0; i<100 && !found; i++) {	
+    			found = findRandomDataCollectionOutsideLoc(lbo, coord, person.getSettlement());
+    		}
+    		
+    		if (found)
+    			return getOutsideSiteLocation();
+    		else {
+                endEVA("No good outside location found.");
+    			logger.warning(worker, "Can not find a suitable random EVA location.");
+    			return null;
+    		}
+    	}
+    	else {
+        	setRandomOutsideLocation(person.getVehicle());
+        	return getOutsideSiteLocation();
+    	}
+    }
+
+    
 	/**
 	 * Moves an instrument from a settlement/vehicle to a person.
 	 *
@@ -758,37 +769,13 @@ public abstract class GatherData extends EVAOperation {
 	            
 				logger.info(person, 5_000, "Ending the tear down phase at " + locationPos + ".");
 				
-	            endTask();
+	            endEVA("Ended tear down phase.");
 	    	}
 		}
 		
     	return 0;
     }    
-    
-    /**
-     * Determines location for the site.
-     * 
-     * @return X and Y location outside settlement.
-     */
-    private LocalPosition determineSiteLocation() {
-    	
-    	if (isSettlement) {
-    		setRandomOutsideLocation((Building)airlock.getEntity(), person.getSettlement());
-        	return getOutsideSiteLocation();
-        	
-//    		if (airlock.getEntity() instanceof LocalBoundedObject boundedObject) {
-//    			return LocalAreaUtil.getCollisionFreeRandomPosition(boundedObject,
-//																 person.getCoordinates(), MAX_SITE_DISTANCE);
-//    		}
-        	
-    	}
-    	else {
-        	setRandomOutsideLocation(person.getVehicle());
-        	return getOutsideSiteLocation();
-    	}
-
-//      return null;
-    }
+  
     
 	/**
 	 * Is the person qualified for gathering data ?
@@ -815,6 +802,30 @@ public abstract class GatherData extends EVAOperation {
 		
 		return true;
 	}
+	
+	/**
+	 * Ends the EVA.
+	 * 
+	 * @param reason
+	 */
+	public void endEVA(String reason) {
+		
+		if (selectedInstrument != -1) {
+			// Can a person pick up an instrument from a settlement/vehicle and carries it ?
+	    	if (carryDataInstrument(person, EquipmentOwner.getAttached(containerUnit), selectedInstrument)) {
+	    		logger.info(person, 5_000L, "Returned " + ItemResourceUtil.findItemResourceName(selectedInstrument) 
+	    			+ " to " + containerUnit + ".");
+
+	    	}
+	    	else {
+	    		logger.warning(person, 5_000L, "Unable to return " + ItemResourceUtil.findItemResourceName(selectedInstrument) 
+					+ " to " + containerUnit + ".");
+	    	}
+		}
+		
+    	super.endEVA(reason);
+	}
+	
 	
 	/**
 	 * Prepares object for garbage collection.

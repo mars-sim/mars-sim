@@ -39,6 +39,8 @@ public abstract class TaskManager implements Serializable {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TaskManager.class.getName());
 
+//	private static final int DIRECT_TASK_DEFAULT_DURATION = 1000;
+	
 	/** Number of days to record Tack Activities. */	
 	private static MasterClock master;
 
@@ -46,6 +48,7 @@ public abstract class TaskManager implements Serializable {
 	private transient Worker worker;
 	/** The current task the worker is doing. */
 	private Task currentTask;
+	/** The rating of this task **/
 	private Rating currentScore;
 
 	/** The last task the person was doing. */
@@ -518,15 +521,18 @@ public abstract class TaskManager implements Serializable {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			selectedTask = createTask(selectedJob);
 			
-			if (taskProbCache.getCreatedTime() != null) {
-				// If it is a cache made dynamically then log it
-				RatingLog.logSelectedRating(getDiagnosticsModule(), worker.getName(), selectedJob,
-									taskProbCache.getCache());
+			if (selectedTask != null) {
+				if (taskProbCache.getCreatedTime() != null) {
+					// If it is a cache made dynamically then log it
+					RatingLog.logSelectedRating(getDiagnosticsModule(), worker.getName(), selectedJob,
+										taskProbCache.getCache());
+				}
+	
+				// Start this newly selected task
+				if (replaceTask(selectedTask)) {	
+					currentScore = selectedJob.getScore();
+				}
 			}
-
-			// Start this newly selected task
-			replaceTask(selectedTask);
-			currentScore = selectedJob.getScore();
 		}
 	}
 
@@ -592,6 +598,9 @@ public abstract class TaskManager implements Serializable {
 			}
 		}
 		
+		// Limit the new task to a default duration 
+//		newTask.setDuration(DIRECT_TASK_DEFAULT_DURATION);
+		
 		// Records current task as last task and replaces it with a new task.
 		return replaceTask(newTask);
 	}
@@ -619,7 +628,7 @@ public abstract class TaskManager implements Serializable {
 		
 		// Make the new task as the current task
 		currentTask = newTask;
-		
+
 		// Reset the task score
 		currentScore = null;
 		

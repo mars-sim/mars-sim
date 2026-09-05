@@ -25,10 +25,11 @@ import com.mars_sim.ui.swing.StyleManager;
 @SuppressWarnings("serial")
 public class CircleLabel extends JPanel {
 	
-	private String text;
+	private String text = "Sol 00";
 	
     public CircleLabel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
+        setMaximumSize(new Dimension(width, height));
     }
 
     public void setText(String text) {
@@ -89,6 +90,7 @@ public class CircleLabel extends JPanel {
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Circle Label");
+        frame.setSize(new Dimension(27, 27));
         frame.add(new CircleLabel(27, 27));
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
