@@ -9,10 +9,14 @@ package com.mars_sim.ui.swing.tool.settlement;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.mars_sim.core.data.collection.DataCollectionSite;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
 
 /**
  * A settlement map layer for displaying data collection sites.
@@ -41,7 +45,8 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
     }
 
     @Override
-    public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+        Collection<MapHotspot<?>> hotspots = new ArrayList<>();
 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
@@ -49,11 +54,12 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
         // Draw all construction sites.
         boolean labels = mapPanel.isOptionDisplayed(DisplayOption.DATA_COLLECTION_SITE_LABELS);
         for (DataCollectionSite c : settlement.getLocalDataCollectionSitesList()) {
-            drawSite(c, labels, viewpoint);
+            hotspots.add(drawSite(c, labels, viewpoint));
         }
 
 	    // Restore original graphic transforms.
 	    viewpoint.graphics().setTransform(saveTransform);
+        return hotspots;
     }
 
     /**
@@ -63,7 +69,7 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
      * @param showLabel
      * @param viewpoint
      */
-    private void drawSite(DataCollectionSite site, boolean showLabel, MapViewPoint viewpoint) {
+    private MapHotspot<DataCollectionSite> drawSite(DataCollectionSite site, boolean showLabel, MapViewPoint viewpoint) {
     	
      	// Check if it's drawing the mouse-picked building 
         Color selectedColor = (site.equals(mapPanel.getSelectedDataSite()) ? SITE_SELECTED_COLOR : null);
@@ -77,11 +83,23 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
                                     COLOR_CHOICE, 15, viewpoint);
         }
 
+        return new SiteHotspot(site);
+
     }
-    
-	@Override
-	public void destroy() {
-		super.destroy();
-		mapPanel = null;
-	}
+
+    private static final class SiteHotspot extends MapHotspot<DataCollectionSite> {
+        private SiteHotspot(DataCollectionSite target) {
+            super(target);
+        }
+
+        @Override
+        boolean isSelected(LocalPosition point) {
+            return isWithin(point, target);
+        }
+        
+        @Override
+		UnitSummary getSummary() {
+			return new UnitSummary(target.getType(), target.getPosition(), target.getDescription());
+		}
+    }
 }

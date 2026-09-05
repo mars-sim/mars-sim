@@ -14,16 +14,19 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.ui.swing.tool.LineBreakPanel;
 
 
 @SuppressWarnings("serial")
-public final class UnitInfoPanel extends JPanel {
+class UnitInfoPanel extends JPanel {
+
+	record UnitSummary(String type, LocalPosition pos, String description) {} 
 
 	public static final int MARGIN_WIDTH = 2;
 	public static final int MARGIN_HEIGHT = 2;
 		
-	public UnitInfoPanel(String unitName, String unitType, String unitDescription, String position) {
+	public UnitInfoPanel(String unitName, UnitSummary summary) {
 		super();
 
 		setOpaque(false);
@@ -32,23 +35,18 @@ public final class UnitInfoPanel extends JPanel {
 		setLayout(new BorderLayout(1, 1));
 		setSize(PopUpUnitMenu.WIDTH_1 - 10, PopUpUnitMenu.HEIGHT_1 - 10); 
 		
-		String name = "Name: ";
-		String type = "Type: ";
-		String description = "Descripion: ";
-		String localPos = "Local Position: ";
-		
     	List<String> list = new ArrayList<>();
-    	list.add(name);
+    	list.add("Name: ");
     	list.add(unitName);
     	list.add(" \n");
-    	list.add(type);
-    	list.add(unitType);
+    	list.add("Type: ");
+    	list.add(summary.type());
     	list.add(" \n");
-    	list.add(localPos);
-    	list.add(position);
+    	list.add("Local Position: ");
+    	list.add(summary.pos().getShortFormat());
     	list.add(" \n");
-    	list.add(description);
-    	list.add(unitDescription);
+    	list.add("Descripion: ");
+    	list.add(summary.description());
     	list.add(" \n");
     	
     	LineBreakPanel lineBreakPanel = new LineBreakPanel(list);

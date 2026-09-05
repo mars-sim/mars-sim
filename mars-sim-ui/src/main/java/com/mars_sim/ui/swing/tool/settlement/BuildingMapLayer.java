@@ -12,9 +12,15 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.JOptionPane;
 
 import org.apache.batik.gvt.GraphicsNode;
 
@@ -26,8 +32,12 @@ import com.mars_sim.core.building.connection.Hatch;
 import com.mars_sim.core.building.function.ActivitySpot;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.events.ScheduledEventHandler;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
@@ -54,7 +64,6 @@ public class BuildingMapLayer extends AbstractMapLayer {
 	private static final Color WHITE_OUTLINE = new Color(255, 255, 255, 190);
 	private static final Color GREY_OUTLINE = new Color(192, 192, 192, 190);
 	private static final Color DARK_GREEN = Color.GREEN.darker().darker();
-	private static final Color ULTRA_VIOLET = new Color (115, 102, 189);
 	private static final Color LIGHT_VIOLET = new Color (214, 180, 252);
  	private static final ColorChoice BUILDING_COLOR = new ColorChoice(Color.GRAY.darker(), WHITE_OUTLINE);
     private static final ColorChoice SPOT_COLOR = new ColorChoice(Color.BLACK, GREY_OUTLINE);
@@ -94,7 +103,8 @@ public class BuildingMapLayer extends AbstractMapLayer {
     }
 
     @Override
-    public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+        Collection<MapHotspot<?>> hotspots = new ArrayList<>();
 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
@@ -107,7 +117,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
             // Draw all buildings.
             var buildings = settlement.getBuildingManager().getBuildingSet();
             for (Building b: buildings) {
-                drawBuilding(b, bldgLabels, viewpoint);
+                hotspots.add(drawBuilding(b, bldgLabels, viewpoint));
             }
 
             // Draw all building connectors.
@@ -122,6 +132,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
         }
         // Restore original graphic transforms.
         viewpoint.graphics().setTransform(saveTransform);
+        return hotspots;
     }
 
     /**
@@ -129,7 +140,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
      * 
      * @param building the building.
      */
-    private void drawBuilding(Building building, boolean showLabel, MapViewPoint viewpoint) {
+    private MapHotspot<Building> drawBuilding(Building building, boolean showLabel, MapViewPoint viewpoint) {
 
     	// Check if it's drawing the mouse-picked building 
         Color selectedColor = (building.equals(mapPanel.getSelectedBuilding()) ? BLDG_SELECTED_COLOR : null);
@@ -154,7 +165,78 @@ public class BuildingMapLayer extends AbstractMapLayer {
             drawCenteredMultiLabel(words, LABEL_FONT, building.getPosition(),
                                     frontColor,  viewpoint);
         }
+
+        return new BuildingHotspot(building);
     }
+
+    private static final class BuildingHotspot extends MapHotspot<Building> {
+        private BuildingHotspot(Building target) {
+            super(target);
+        }
+
+        @Override
+        boolean isSelected(LocalPosition point) {
+            return isWithin(point, target);
+        }
+
+        
+		@Override
+		UnitSummary getSummary() {
+			return new UnitSummary(target.getBuildingType(), target.getPosition(), target.getDescription());
+		}
+
+		@Override
+		List<String> getActions() {
+			return List.of("demolish");
+		}
+
+		@Override
+		void applyAction(String action) {
+            if (action.equals("demolish") && (JOptionPane.showConfirmDialog(null,
+						"Confirm the demolition of " + target.getName(), "Confirm demolish",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION)) {
+                var fm = target.getAssociatedSettlement().getFutureManager();
+
+                var handler = new DemolishHandler(target);
+                fm.addEvent(1, handler);
+            }
+        }
+    }
+
+    /**
+	 * Demolishes an async to avoid the removal causing a problem with 
+	 * the active simulation logic.
+	 */
+	@SuppressWarnings("serial")
+	private final static  class DemolishHandler implements ScheduledEventHandler {
+		private Building b;
+
+		public DemolishHandler(Building b) {
+			this.b = b;
+		}
+
+		@Override
+		public String getEventDescription() {
+			return "Start demolishing of " + b.getName();
+		}
+
+		@Override
+		public int execute(MarsTime currentTime) {
+			b.getAssociatedSettlement().getConstructionManager().createNewSalvageConstructionSite(b);
+			return 0;
+		}
+	}
+
+	private void triggerDemolish(Building b) {
+		if (JOptionPane.showConfirmDialog(null,
+						"Confirm the demolition of " + b.getName(), "Confirm demolish",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
+			var fm = b.getAssociatedSettlement().getFutureManager();
+
+			var handler = new DemolishHandler(b);
+			fm.addEvent(1, handler);
+		}
+	}
 
     /**
      * Draws the activity spots of a building function.
@@ -232,17 +314,14 @@ public class BuildingMapLayer extends AbstractMapLayer {
      */
     private void drawHatch(Hatch hatch, MapViewPoint viewpoint) {
         if (!hatch.isBrick() && hatchSVG != null) {
-//        	GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG("hallway");
             // Draw hatch.
             drawStructure(hatch, hatchSVG, null, null, viewpoint);
         }
         else if (hatch.isBrick() && brickHatchSVG != null) {
-//        	GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG("brickway");
             // Draw brick hatch.
             drawStructure(hatch, brickHatchSVG, null, null, viewpoint);
         }
         else {
-//            drawStructure(hatch, hatchSVG, null, null, viewpoint);
             // Otherwise draw colored rectangle for hatch.
             drawRectangle(hatch, CONN_COLOR, null, viewpoint);
         }

@@ -32,8 +32,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
@@ -48,6 +46,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A panel for displaying the settlement map.
@@ -67,15 +66,6 @@ import com.mars_sim.ui.swing.UIContext;
  */
 @SuppressWarnings("serial")
 public class SettlementMapPanel extends JPanel {
-
-	/**
-	 * Run the given task on the Swing EDT (immediately if already on EDT).
-	 */
-	private static void onEdt(Runnable r) {
-		if (SwingUtilities.isEventDispatchThread()) 
-			r.run();
-		else SwingUtilities.invokeLater(r);
-	}
 
 	/**
 	 * Display options that can be selected
@@ -100,7 +90,6 @@ public class SettlementMapPanel extends JPanel {
 
 	// Static members.
 	public static final double DEFAULT_SCALE = 10D;
-	private static final double SELECTION_RANGE = 0.25; // Settlement coordinate frame, 25 cm
 
 	// Data members
 	private boolean exit = true;
@@ -133,6 +122,8 @@ public class SettlementMapPanel extends JPanel {
 	private Map<Settlement, Vehicle>  selectedVehicle;
 	private Map<Settlement, ConstructionSite>  selectedSite;
 	private Map<Settlement, DataCollectionSite>  selectedDataColSite;
+
+	private List<MapHotspot<?>> hotspots = new ArrayList<>();
 	
 	private static final Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
 
@@ -251,7 +242,7 @@ public class SettlementMapPanel extends JPanel {
 		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 
 		// Ensure all Swing mutations happen on EDT
-		onEdt(() -> {
+		SwingHelper.runInEDT(() -> {
 			settlementTransparentPanel.createAndShowGUI();
 			if (settlementTransparentPanel.getSettlementListBox() != null) {
 				settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
@@ -355,33 +346,15 @@ public class SettlementMapPanel extends JPanel {
 
 		LocalPosition settlementPosition = convertToSettlementLocation(x, y);
 
-		// Deconflict cases by the virtue of the if-else order below
-		// when one or more are detected
-		Entity selectedUnit = selectPersonAt(settlementPosition);
-		if (selectedUnit == null) {
-			selectedUnit = selectRobotAt(settlementPosition);
-			if (selectedUnit == null) {
-				selectedUnit = selectVehicleAt(settlementPosition);
-				if (selectedUnit == null) {
-					selectedUnit = selectBuildingAt(settlementPosition);
-					if (selectedUnit == null) {
-						selectedUnit = selectConstructionSiteAt(settlementPosition);
-						if (selectedUnit == null) {
-							selectedUnit = selectDataCollectionSiteAt(settlementPosition);
-						}
-					}
-				}
-			}
-		}
-		if (selectedUnit != null) {
-			setPopUp(evt, x, y, selectedUnit);
+		var selected = hotspots.stream()
+					.filter(h -> h.isSelected(settlementPosition))
+					.findFirst().orElse(null);
+
+		if (selected != null) {
+			var menu = new PopUpUnitMenu(selected, context);
+			menu.show(evt.getComponent(), x, y);
 		}
 		repaint();
-	}
-
-	private void setPopUp(final MouseEvent evt, int x, int y, Entity unit) {
-		var menu = new PopUpUnitMenu(unit, context);
-		menu.show(evt.getComponent(), x, y);
 	}
 
 	/**
@@ -391,14 +364,14 @@ public class SettlementMapPanel extends JPanel {
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 */
-	public void showBuildingCoord(int xPixel, int yPixel) {
+	private void showBuildingCoord(int xPixel, int yPixel) {
 
 		boolean showBlank = true;
 
 		LocalPosition mousePos = convertToSettlementLocation(xPixel, yPixel);
 
 		for (Building building : settlement.getBuildingManager().getBuildingSet()) {
-			if (!building.getInTransport() && isWithin(mousePos, building)) {
+			if (!building.getInTransport() && MapHotspot.isWithin(mousePos, building)) {
 				settlementWindow.setBuildingXYCoord(building.getPosition(), false);
 
 				LocalPosition pointerPos = convertToBuildingLoc(mousePos, building);
@@ -442,7 +415,7 @@ public class SettlementMapPanel extends JPanel {
 	public synchronized void setSettlement(Settlement newSettlement) {
 		if (!newSettlement.equals(settlement)) {
 			this.settlement = newSettlement;
-			onEdt(() -> {
+			SwingHelper.runInEDT(() -> {
 				if (getSettlementTransparentPanel() != null
 						&& getSettlementTransparentPanel().getSettlementListBox() != null) {
 					getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(settlement);
@@ -502,7 +475,7 @@ public class SettlementMapPanel extends JPanel {
 		yPos = 0D;
 		setRotation(0D);
 		scale = DEFAULT_SCALE; // set directly to avoid unnecessary coalescing delay here
-		onEdt(() -> {
+		SwingHelper.runInEDT(() -> {
 			if (settlementTransparentPanel != null) {
 				settlementTransparentPanel.setZoomValue((int) Math.round(scale));
 			}
@@ -581,30 +554,6 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Selects a person if any person is at the given x and y pixel position.
-	 *
-	 * @param settlementPosition Position to search for
-	 * @return selectedPerson;
-	 */
-	private Person selectPersonAt(LocalPosition settlementPosition) {
-
-		// Note 1: Not using settlement.getIndoorPeople() for now since it doesn't
-		// 		   include those who have stepped outside
-		// Note 2: This should include non-associated people from other settlements
-		//         in the vicinity of this settlement
-		// Note 3: Could create a list of people not being out there on a mission as well as
-		//         those visiting this settlement to shorten the execution time to find people
-		for (Person person : CollectionUtils.getPeopleInSettlementVicinity(settlement, false)) {
-			if (person.getPosition().getDistanceTo(settlementPosition) <= SELECTION_RANGE) {
-				selectPerson(person);
-				return person;
-
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Selects a person on the map.
 	 *
 	 * @param person the selected person.
@@ -644,23 +593,6 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Selects the robot if any robot is at the given x and y pixel position.
-	 *
-	 * @param settlementPosition Position to search for
-	 * @return selectedRobot;
-	 */
-	private Robot selectRobotAt(LocalPosition settlementPosition) {
-
-		for (Robot robot : CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement)) {
-			if (robot.getPosition().getDistanceTo(settlementPosition) <= SELECTION_RANGE) {
-				selectRobot(robot);
-				return robot;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Selects a robot on the map.
 	 *
 	 * @param robot the selected robot.
@@ -697,61 +629,6 @@ public class SettlementMapPanel extends JPanel {
 			result = selectedRobot.get(settlement);
 		}
 		return result;
-	}
-
-	/**
-	 * Is a position within the bounds of an Object ?
-	 * This should be in a common class.
-	 *
-	 * @param pos the mouse pointer position under settlement positioning system
-	 * @param obj
-	 * @return
-	 */
-	private static boolean isWithin(LocalPosition pos, LocalBoundedObject obj) {
-		double oW = obj.getWidth();
-		double oL = obj.getLength();
-		int facing = (int) obj.getFacing();
-		// The center position of the object
-		double oX = obj.getPosition().getX();
-		double oY = obj.getPosition().getY();
-		// Half the width and length
-		double hX = 0;
-		double hY = 0;
-
-		if (facing == 0) {
-			hX = oW / 2D;
-			hY = oL / 2D;
-		} else if (facing == 90) {
-			hY = oW / 2D;
-			hX = oL / 2D;
-		}
-		// Loading Dock Garage
-		if (facing == 180 || facing == -180) {
-			hX = oW / 2D;
-			hY = oL / 2D;
-		} else if (facing == 270 || facing == -90) {
-			hY = oW / 2D;
-			hX = oL / 2D;
-		}
-
-		// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
-		// Fortunately, they both have the same width and length
-		else if (facing == 45) {
-			hY = oW / 2D;
-			hX = oL / 2D;
-		} else if (facing == 135) {
-			hY = oW / 2D;
-			hX = oL / 2D;
-		}
-
-		// Mouse pointer position under the settlement positioning system
-		double mX = pos.getX();
-		double mY = pos.getY();
-
-		double rangeX = Math.round((mX - oX) * 100.0) / 100.0;
-		double rangeY = Math.round((mY - oY) * 100.0) / 100.0;
-
-		return Math.abs(rangeX) <= Math.abs(hX) && Math.abs(rangeY) <= Math.abs(hY);
 	}
 
 	/**
@@ -813,100 +690,7 @@ public class SettlementMapPanel extends JPanel {
 		else
 			return null;
 	}
-
-	/**
-	 * Selects a building.
-	 *
-	 * @param settlementPosition Position to search
-	 * @return selectedBuilding
-	 */
-	private Building selectBuildingAt(LocalPosition settlementPosition) {
-		for (Building building : settlement.getBuildingManager().getBuildingSet()) {
-			if (!building.getInTransport() && isWithin(settlementPosition, building)) {
-				selectBuilding(building);
-				return building;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Selects a construction site.
-	 *
-	 * @param settlementPosition Position to search
-	 * @return selected construction site
-	 */
-	private ConstructionSite selectConstructionSiteAt(LocalPosition settlementPosition) {
-		for (ConstructionSite site : settlement.getConstructionManager().getConstructionSites()) {
-			if (isWithin(settlementPosition, site)) {
-				selectSite(site);
-				return site;
-			}
-		}
-
-		return null;
-	}
-
-
-	/**
-	 * Selects a data collection site.
-	 *
-	 * @param settlementPosition Position to search
-	 * @return selected site
-	 */
-	private DataCollectionSite selectDataCollectionSiteAt(LocalPosition settlementPosition) {
-		for (DataCollectionSite site : settlement.getLocalDataCollectionSitesList()) {
-			if (isWithin(settlementPosition, site)) {
-				selectDataSite(site);
-				return site;
-			}
-		}
-
-		return null;
-	}
 	
-	/**
-	 * Selects a vehicle.
-	 *
-	 * @param settlementPosition Position to search
-	 * @return selectedVehicle
-	 */
-	private Vehicle selectVehicleAt(LocalPosition settlementPosition) {
-		for (Vehicle vehicle : settlement.getParkedNGaragedVehicles()) {
-			double width = vehicle.getWidth(); // width is on y-axis ?
-			double length = vehicle.getLength(); // length is on x-axis ?
-			double newRange;
-
-			// Select whichever longer
-			if (width > length)
-				newRange = width / 2.0;
-			else
-				newRange = length / 2.0;
-
-			if (vehicle.getPosition().getDistanceTo(settlementPosition) <= newRange) {
-				selectVehicle(vehicle);
-				return vehicle;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Selects a vehicle on the map.
-	 *
-	 * @param vehicle the selected vehicle.
-	 */
-	public void selectVehicle(Vehicle vehicle) {
-		if ((settlement != null) && (vehicle != null)) {
-			Vehicle currentlySelected = selectedVehicle.get(settlement);
-			if (vehicle.equals(currentlySelected)) {
-				selectedVehicle.put(settlement, null);
-			} else {
-				selectedVehicle.put(settlement, vehicle);
-			}
-		}
-	}
-
 	/**
 	 * Gets the selected vehicle for the current settlement.
 	 *
@@ -1108,11 +892,16 @@ public class SettlementMapPanel extends JPanel {
 			float scaleMod = 1f;
 			if (scale > 1) scaleMod = (float) Math.sqrt(scale);
 
-			// Display all map layers.
+			// Display all map layers and reset hotspots
+			var newHotspots = new ArrayList<MapHotspot<?>>();
 			MapViewPoint viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, scaleMod);
 			for (SettlementMapLayer layer : mapLayers) {
-				layer.displayLayer(settlement, viewpoint);
+				newHotspots.addAll(layer.displayLayer(settlement, viewpoint));
 			}
+
+			// Map layers are drawon bottom up but hotspots need to be top down
+			hotspots = newHotspots.reversed();
+
 		} finally {
 			g2d.dispose(); // ensure any child Graphics resources are freed
 		}
@@ -1130,7 +919,7 @@ public class SettlementMapPanel extends JPanel {
 	void update(ClockPulse pulse) {
 		// Clock pulses arrive on worker threads (MasterClock/ThreadPool). Swing must be updated on the EDT.
 		if (uiUpdateScheduled.compareAndSet(false, true)) {
-			SwingUtilities.invokeLater(() -> {
+			SwingHelper.runInEDT(() -> {
 				try {
 					if (settlementTransparentPanel != null) {
 						settlementTransparentPanel.update(pulse);

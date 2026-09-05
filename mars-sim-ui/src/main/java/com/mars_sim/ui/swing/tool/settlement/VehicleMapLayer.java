@@ -11,23 +11,63 @@ import java.awt.Font;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.batik.gvt.GraphicsNode;
 
 import com.mars_sim.core.map.location.LocalBoundedObject;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
  * A settlement map layer for displaying vehicles.
  */
 public class VehicleMapLayer extends AbstractMapLayer {
+
+	/**
+	 * Represents a hotspot for a vehicle on the settlement map.
+	 */
+	private static final class VehicleHotspot extends MapHotspot<Vehicle> {
+		private final double selectionRange;
+
+		private VehicleHotspot(Vehicle target, double selectionRange) {
+			super(target);
+			this.selectionRange = selectionRange;
+		}
+
+		@Override
+		boolean isSelected(LocalPosition point) {
+			return target.getPosition().getDistanceTo(point) <= selectionRange;
+		}
+
+		@Override
+		UnitSummary getSummary() {
+			return new UnitSummary(target.getModelName(), target.getPosition(), target.getDescription());
+		}
+
+		@Override
+		List<String> getActions() {
+			return List.of("relocate", "maintain");
+		}
+
+		@Override
+		void applyAction(String action) {
+			switch (action) {
+				case "relocate" -> target.relocateVehicle();
+				case "maintain" -> target.maintainVehicle();
+				default -> throw new IllegalArgumentException("Unknown action: " + action);
+			}
+		}
+	}
 
 	// Static members
 	private static final Color RECT_COLOR = new Color(208, 224, 242); // pale grey color
@@ -53,15 +93,16 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 
 	@Override
-	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+		Collection<MapHotspot<?>> hotspots = new ArrayList<>();
 
 		// Save original graphics transforms.
 		AffineTransform saveTransform = viewpoint.prepareGraphics();
 		boolean drawLabel = mapPanel.isOptionDisplayed(DisplayOption.VEHICLE_LABELS);
 
 		// Vehicles parked take a copy to avoid changes during iteration.
-		Collection<Vehicle> vehicles = settlement.getReadyToMapVehicles();
-		
+		Collection<Vehicle> vehicles = settlement.getParkedNGaragedVehicles();
+
 		// Draw all parked vehicles at this settlement location
 		for (Vehicle v : vehicles) {
 			drawVehicle(v, drawLabel, viewpoint);
@@ -69,6 +110,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		// Restore original graphic transforms.
 		viewpoint.graphics().setTransform(saveTransform);
+		return hotspots;
 	}
 
 
@@ -79,7 +121,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 * @param showLabel
 	 * @param viewpoint
 	 */
-	private void drawVehicle(Vehicle vehicle, boolean showLabel, MapViewPoint viewpoint) {
+	private MapHotspot<Vehicle> drawVehicle(Vehicle vehicle, boolean showLabel, MapViewPoint viewpoint) {
 
     	// Check if it's drawing the mouse-picked building 
         Color selectedColor = (vehicle.equals(mapPanel.getSelectedVehicle()) ? VEHICLE_SELECTED_COLOR : null);
@@ -115,6 +157,8 @@ public class VehicleMapLayer extends AbstractMapLayer {
 			drawCenteredLabel(vehicle.getName(), LABEL_FONT, vehicle.getPosition(),
 							VEHICLE_COLOR, 0, viewpoint);
 		}
+
+		return new VehicleHotspot(vehicle, Math.max(vehicle.getWidth(), vehicle.getLength()) / 2.0);
 	}
 
 	/**
@@ -239,11 +283,5 @@ public class VehicleMapLayer extends AbstractMapLayer {
 //		image.flush();
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		mapPanel = null;
 	}
 }

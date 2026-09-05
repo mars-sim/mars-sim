@@ -13,6 +13,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.lang.ref.SoftReference;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -97,7 +98,7 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 	}
 
 	@Override
-	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 		
 		// Save original graphics transforms.
 		var g2d = viewpoint.graphics();
@@ -134,12 +135,12 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 			if (imageName == null) {
 				// Restore original transform before exiting.
 				g2d.setTransform(saveTransform);
-				return;
+				return Collections.emptyList();
 			}
 			backgroundTileIcon = ImageLoader.getImage(imageName);
 			if (backgroundTileIcon == null) {
 				g2d.setTransform(saveTransform);
-				return;
+				return Collections.emptyList();
 			}
 
 			double imageScale = scale / SettlementMapPanel.DEFAULT_SCALE;
@@ -149,7 +150,7 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 			// Guard against invalid sizes.
 			if (tileWidth <= 0 || tileHeight <= 0) {
 				g2d.setTransform(saveTransform);
-				return;
+				return Collections.emptyList();
 			}
 
 			// Look up or create a scaled tile image from the bounded cache.
@@ -219,6 +220,7 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
+		return Collections.emptyList();
 	}
 
 	/**

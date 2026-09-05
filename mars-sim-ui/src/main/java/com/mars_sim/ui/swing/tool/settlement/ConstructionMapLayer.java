@@ -9,13 +9,19 @@ package com.mars_sim.ui.swing.tool.settlement;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.batik.gvt.GraphicsNode;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
@@ -23,6 +29,44 @@ import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
  */
 public class ConstructionMapLayer extends AbstractMapLayer {
     
+    /**
+     * ConstructionHotspot represents a clickable area on the map for a construction site.
+     */
+    private static final class ConstructionHotspot extends MapHotspot<ConstructionSite> {
+        private ConstructionHotspot(ConstructionSite target) {
+            super(target);
+        }
+
+        @Override
+        boolean isSelected(LocalPosition point) {
+            return isWithin(point, target);
+        }
+
+		@Override
+		UnitSummary getSummary() {
+            var stageInfo = target.getCurrentConstructionStage().getInfo();
+
+			return new UnitSummary(stageInfo.getType().getName(), target.getPosition(), stageInfo.getName());
+		}
+    
+		@Override
+		List<String> getActions() {
+            if (target.isProposed()) {
+                return List.of("relocate", "delete");
+            }
+            return Collections.emptyList();
+        }
+
+		@Override
+		void applyAction(String action) {
+			switch (action) {
+				case "relocate" -> target.relocateSite();
+				case "delete" -> target.getAssociatedSettlement().getConstructionManager().removeSite(target);
+				default -> throw new IllegalArgumentException("Unknown action: " + action);
+			}
+		}
+    }
+
     private static final Color CONST_COLOR = new Color(119, 59, 0); // dark orange
     private static final Color CONST_SELECTED_COLOR = Color.WHITE; // Color(119, 85, 0); // dark orange
 
@@ -44,7 +88,8 @@ public class ConstructionMapLayer extends AbstractMapLayer {
     }
 
     @Override
-    public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+        Collection<MapHotspot<?>> hotspots = new ArrayList<>();
 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
@@ -53,11 +98,12 @@ public class ConstructionMapLayer extends AbstractMapLayer {
         boolean constLabels = mapPanel.isOptionDisplayed(DisplayOption.CONSTRUCTION_LABELS);
         for(ConstructionSite c : settlement.getConstructionManager()
                                 .getConstructionSites()) {
-            drawConstructionSite(c, constLabels, viewpoint);
+            hotspots.add(drawConstructionSite(c, constLabels, viewpoint));
         }
 
 	    // Restore original graphic transforms.
 	    viewpoint.graphics().setTransform(saveTransform);
+        return hotspots;
     }
 
     /**
@@ -65,7 +111,7 @@ public class ConstructionMapLayer extends AbstractMapLayer {
      * 
      * @param site the construction site.
      */
-    private void drawConstructionSite(ConstructionSite site, boolean showLabel, MapViewPoint viewpoint) {
+    private MapHotspot<ConstructionSite> drawConstructionSite(ConstructionSite site, boolean showLabel, MapViewPoint viewpoint) {
     	
      	// Check if it's drawing the mouse-picked building 
         Color selectedColor = (site.equals(mapPanel.getSelectedSite()) ? CONST_SELECTED_COLOR : null);
@@ -97,11 +143,7 @@ public class ConstructionMapLayer extends AbstractMapLayer {
                                     CONSTRUCTION_COLOR, viewpoint);
         }
 
+        return new ConstructionHotspot(site);
+
     }
-    
-	@Override
-	public void destroy() {
-		super.destroy();
-		mapPanel = null;
-	}
 }
