@@ -359,7 +359,7 @@ public class ExamineBody extends MedicalAidTask {
 		// Add experience.
 		addExperience(time);
 
-		aid.removeFromBed();
+//		aid.removeFromBed();
 		
 		endTask();
 		
