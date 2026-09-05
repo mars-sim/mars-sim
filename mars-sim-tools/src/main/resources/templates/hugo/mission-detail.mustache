@@ -11,6 +11,11 @@
 |Sol Threshold:|{{mission.solThreshold}}|
 |Population Threshold:|{{mission.popThreshold}}|
 
+## Objectives
+{{#mission.objectives}}
+- {{getName}}
+{{/mission.objectives}}
+
 ## Preferred Leader Jobs
 {{#hasLeaderJobs}}
 {{#leaderJobs}}
@@ -50,5 +55,6 @@ None defined.
 {{^hasPreferredRobots}}
 None defined.
 {{/hasPreferredRobots}}
+
 
 {{>footer}}

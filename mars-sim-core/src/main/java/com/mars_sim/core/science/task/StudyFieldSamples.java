@@ -16,8 +16,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.task.ExploreSite;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.mission.Exploration;
-import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -127,7 +125,7 @@ public class StudyFieldSamples extends LabTask {
 	 * @param time the amount of time available (millisols).
 	 */
 	private void improveMineralConcentrationEstimates(double time) {
-		MineralSite site = determineExplorationSite();
+		MineralSite site = getSettlementExploredSite();
 		if (site != null) {
 			double probability = (time / 1000D) * getEffectiveSkillLevel() * ESTIMATE_IMPROVEMENT_FACTOR;
 			if ((site.getNumEstimationImprovement() == 0) || (RandomUtil.getRandomDouble(1.0D) <= probability)) {
@@ -139,45 +137,6 @@ public class StudyFieldSamples extends LabTask {
 						+ site.getNumEstimationImprovement());
 			}
 		}
-	}
-
-	/**
-	 * Determines an exploration site to improve mineral concentration estimates.
-	 * 
-	 * @return exploration site or null if none.
-	 */
-	private MineralSite determineExplorationSite() {
-
-		// Try to use an exploration mission site.
-		MineralSite result = getExplorationMissionSite();
-
-		// Try to use a site explored previously by the settlement.
-		if (result == null) {
-			result = getSettlementExploredSite();
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets an exploration site that's been explored by the person's current
-	 * exploration mission (if any).
-	 * 
-	 * @return exploration site or null if none.
-	 */
-	private MineralSite getExplorationMissionSite() {
-		MineralSite result = null;
-
-		Mission mission = person.getMind().getMission();
-		if (mission instanceof Exploration explorationMission) {
-			for(var location : explorationMission.getExploredSites()) {
-				if (location.isMinable() && !location.isReserved()) {
-					return location;
-				}
-			}
-		}
-
-		return result;
 	}
 
 	/**

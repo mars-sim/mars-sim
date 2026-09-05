@@ -20,6 +20,7 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -51,6 +52,7 @@ public abstract class AbstractMetaMission implements MetaMission {
 	private int solThreshold = 0;
 	private boolean automatic = true;
 	private String description;
+	private Set<ObjectiveType> objectives = Collections.emptySet();  // Optional so empty by default
 	
 	/**
 	 * Creates a new Mission meta instance.
@@ -228,6 +230,7 @@ public abstract class AbstractMetaMission implements MetaMission {
 		return minimum;
 	}
 
+	
 	/**
 	 * Once over the threshold how many further concurrent missions are allowed per number of citizens.
 	 * @param popRatio Number of citizens per additional mission.
@@ -331,5 +334,24 @@ public abstract class AbstractMetaMission implements MetaMission {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Gets the objectives that Missions of this type satisfy.
+	 * This will eventually replace the method on the Mission interface.
+	 * 
+	 * @return May be an empty set
+	 */
+	@Override
+	public Set<ObjectiveType> getObjectives() {
+		return objectives;
+	}
+
+	/**
+	 * Sets the objectives that Missions of this type satisfy.
+	 * @param objectives New objectives.
+	 */
+	protected void setObjectives(Set<ObjectiveType> objectives) {
+		this.objectives = objectives;
 	}
 }

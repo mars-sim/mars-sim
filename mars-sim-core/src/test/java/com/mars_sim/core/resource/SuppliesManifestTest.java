@@ -61,9 +61,9 @@ class SuppliesManifestTest {
         final int MAND = 4;
         var manifest = new SuppliesManifest();
 
-        manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BAG), MAND, true);
-        manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), MAND, true);
-        manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.EVA_SUIT), OPT, false);
+        manifest.setMinEquipment(EquipmentType.getResourceID(EquipmentType.BAG), MAND, true);
+        manifest.setMinEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), MAND, true);
+        manifest.setMinEquipment(EquipmentType.getResourceID(EquipmentType.EVA_SUIT), OPT, false);
 
         var mand = manifest.getEquipment(true);
         assertEquals(2, mand.size(), "Mandatory Equipment");

@@ -1,4 +1,4 @@
-package com.mars_sim.core.person.ai.mission.meta;
+package com.mars_sim.core.mission.predefined;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,14 +41,14 @@ class ExplorationMetaTest extends MarsSimUnitTest {
         assertNotNull(m, "Exploration mission instance should not be null");
         assertFalse(m.isDone(), "Exploration mission should not be done upon construction");
         var waypoints = m.getNavpoints();
-        assertEquals(sites.size() + 2, waypoints.size(), "Exploration mission should have waypoints for each site plus the settlement");
+        assertEquals(sites.size() + 1, waypoints.size(), "Exploration mission should have waypoints for each site plus the settlement");
    
-        assertEquals(s.getCoordinates(), waypoints.get(0).getCoordinates(), "First waypoint should be the settlement coordinates");
-        assertEquals(s.getCoordinates(), waypoints.get(waypoints.size() - 1).getCoordinates(), "Last waypoint should be the settlement coordinates");
-
-        for(var st = 0; st < sites.size(); st++) {
-            assertEquals(sites.get(st).getLocation(), waypoints.get(st + 1).getCoordinates(), "Waypoint should match the mineral site coordinates");
+        for(int idx = 0; idx < sites.size(); idx++) {
+            assertEquals(sites.get(idx).getLocation(), waypoints.get(idx).getCoordinates(), "Waypoint #" + idx + " should match the mineral site coordinates");
         }
+
+        // Back hone
+        assertEquals(s.getCoordinates(), waypoints.get(waypoints.size() - 1).getCoordinates(), "Last waypoint should be the settlement coordinates");
     }
 
     
@@ -67,13 +67,12 @@ class ExplorationMetaTest extends MarsSimUnitTest {
         assertNotNull(m, "Exploration mission instance should not be null");
         assertFalse(m.isDone(), "Exploration mission should not be done upon construction");
         var waypoints = m.getNavpoints();
-        assertEquals(mt.getExpectedSites(s) + 2, waypoints.size(), "Exploration mission should have waypoints for each site plus the settlement");
+        assertEquals(mt.getExpectedSites(s) + 1, waypoints.size(), "Exploration mission should have waypoints for each site plus the settlement");
    
-        assertEquals(s.getCoordinates(), waypoints.get(0).getCoordinates(), "First waypoint should be the settlement coordinates");
         assertEquals(s.getCoordinates(), waypoints.get(waypoints.size() - 1).getCoordinates(), "Last waypoint should be the settlement coordinates");
 
         var claimedLocns = sites.stream().map(MineralSite::getCoordinates).toList();
-        for(var st = 1; st < sites.size(); st++) {
+        for(var st = 0; st < mt.getExpectedSites(s); st++) {
             assertTrue(claimedLocns.contains(waypoints.get(st).getCoordinates()),
                             "Waypoint #" + st + " out of " + sites.size() + " should match the mineral site coordinates");
         }
@@ -127,7 +126,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
                 ResourceUtil.WATER_ID, 200D,
                 ResourceUtil.FOOD_ID, 200D,
                 ResourceUtil.METHANOL_ID, 200D);
-        loadSettlementAmounts(s, resources);
+        loadAmounts(s.getEquipmentInventory(), resources);
 
         for(int c = 0; c < containerCount; c++) {
             EquipmentFactory.createEquipment(containterType, s);

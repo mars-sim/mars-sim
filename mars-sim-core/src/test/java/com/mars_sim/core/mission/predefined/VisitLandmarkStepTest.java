@@ -16,6 +16,7 @@ import com.mars_sim.core.mission.MetaMission.Roster;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.mission.objectives.LandmarkObjective;
 import com.mars_sim.core.person.ai.mission.MissionType;
+import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
 class VisitLandmarkStepTest extends MarsSimUnitTest{
@@ -49,8 +50,6 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
         assertEquals(0D, times.get(l.getName()), "Leader no EVA");
         assertEquals(0D, times.get(w.getName()), "Worker no EVA");
 
-        assertTrue(st.execute(w), "Worker should be able to do work");
-
         var task = w.getTaskManager().getTask();
         assertTrue(task instanceof LandmarkEVA, "Worker should be doing the visit task");   
         
@@ -71,8 +70,14 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
         // Simulate end of visit time
         clock.setMarsTime(clock.getMarsTime().addTime(landObj.getMSolAtSite() + 1));
 
-        // Worker cannot execute because step is completed
-        assertFalse(st.execute(w), "Worker should have nothing to do after EVA complete");
+        // Leader cannot execute because out of time
+        assertFalse(project.execute(l), "Leader should have nothing to do after EVA complete");
+        assertFalse(st.isCompleted(), "Step need everyone back on board");
+        assertTrue(((EVAOperation)task).isRequestEndEVATrue(), "Worker recalled to rover after EVA");
+
+        w.transfer(r);
+        project.execute(l);
+
         assertTrue(st.isCompleted(), "Step should be complete after EVA");
     }
 }

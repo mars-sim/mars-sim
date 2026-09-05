@@ -14,9 +14,9 @@ import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mineral.MineralMap;
+import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -56,14 +56,15 @@ public class ExploreSite extends EVAOperation {
 	private int rockId = -1;
     
     private double totalCollected = 0;
+	private double exploredTime = 0;
 
 	private double averageRockCollected;
 	public double averageRockMass;
 	private double estImprovementFactor;
 	
-	private double rocksToBeCollected;// = averageRockCollected / averageRockMass;
+	private double rocksToBeCollected;
 	
-	private Exploration mission;
+	private ExplorationObjective objective;
 	private MineralSite site;
 	private Rover rover;
 
@@ -73,9 +74,9 @@ public class ExploreSite extends EVAOperation {
 	 * @param person the person performing the task.
 	 * @param site   the site to explore.
 	 * @param rover  the mission rover.
-	 * @throws exception if error creating task.
+	 * @param objective the exploration objective.
 	 */
-	public ExploreSite(Person person, MineralSite site, Rover rover, Exploration mission) {
+	public ExploreSite(Person person, MineralSite site, Rover rover, ExplorationObjective objective) {
 		// Use EVAOperation parent constructor.
 		super(NAME, person, null, LABOR_TIME + RandomUtil.getRandomDouble(-5D, 5D), EXPLORING);
 
@@ -84,7 +85,7 @@ public class ExploreSite extends EVAOperation {
 		// Initialize data members.
 		this.site = site;
 		this.rover = rover;
-		this.mission = mission;
+		this.objective = objective;
 
 		if (site == null) {
 			logger.severe(person, 5_000, "Site not available.");
@@ -172,15 +173,13 @@ public class ExploreSite extends EVAOperation {
 		if (checkReadiness(time) > 0) {
 			endEVA("Failing readiness.");
 			return time;
-		}	
-
-		// Add to the cumulative combined site time
-		mission.addSiteTime(time);
+		}
 		
 		if (totalCollected > averageRockCollected) {
 			endEVA("Rocks collected exceeded the set average.");
 			return time;
 		}
+		exploredTime += time;
 
 		int skill = getEffectiveSkillLevel();
 		int num = (int)(site.getNumEstimationImprovement()/5.0);
@@ -244,7 +243,7 @@ public class ExploreSite extends EVAOperation {
 				}
 				else if (mass <= remain) {
 					double excess = box.storeAmountResource(rockId, mass);
-					mission.recordResourceCollected(rockId, mass);
+					objective.recordResourceCollected(rockId, mass);
 					double collected = mass - excess;
 					totalCollected += collected;
 					logger.info(person, 10_000, "Collected " + Math.round(collected * 100.0)/100.0 
@@ -252,7 +251,7 @@ public class ExploreSite extends EVAOperation {
 				}
 				else {
 					double excess = box.storeAmountResource(rockId, remain);
-					mission.recordResourceCollected(rockId, remain);
+					objective.recordResourceCollected(rockId, remain);
 					double collected = remain - excess;
 					totalCollected += collected;
 					endEVA("Specimen box for " + ResourceUtil.findAmountResourceName(rockId) + " was full.");
@@ -280,7 +279,7 @@ public class ExploreSite extends EVAOperation {
 		
 		double onSiteBonus = 2D;
 		
-		double siteTime = ((Exploration)mission).getCurrentSiteTime();
+		double siteTime = objective.getSiteTime().getOrDefault(site.getName(), 0D);
 			
 		double probability = (time * siteTime / 100.0) 
 				* skill
@@ -373,7 +372,9 @@ public class ExploreSite extends EVAOperation {
 			// Task may end early before a Rover is selected
 			returnEquipmentToVehicle(rover);
 		}
-				
+			
+		objective.addOnSiteTime(site.getName(), exploredTime);
+
 		super.clearDown();
 	}
 	
