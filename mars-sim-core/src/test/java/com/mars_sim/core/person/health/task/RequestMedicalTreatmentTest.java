@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
-
+import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
 public class RequestMedicalTreatmentTest extends MarsSimUnitTest {
@@ -32,10 +32,8 @@ public class RequestMedicalTreatmentTest extends MarsSimUnitTest {
         System.out.println("1b. " + patient + " in " + s + " in " + sb + ". " + patient.getTaskManager().getTaskName() + " - " 
         		+ patient.getTaskDescription() + " - " + patient.getTaskManager().getPhase());
            
-//        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase(), "Task Phase: Waiting for treatment");
-        assertEquals(RequestMedicalTreatment.SHOWING_UP, task.getPhase(), "Task Phase: Waiting for treatment");
-//        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, patient.getTaskManager().getPhase(), "Patient's Task Phase: Waiting for treatment");
-//        assertEquals(RequestMedicalTreatment.SHOWING_UP, patient.getTaskManager().getPhase(), "Patient's Task Phase: Showing up for treatment");
+        assertEquals(RequestMedicalTreatment.SHOWING_UP, task.getPhase(), "Task Phase: Showing up for treatment");
+        assertEquals(null, patient.getTaskManager().getPhase(), "Patient's Task Phase: Showing up for treatment");
         
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(patient, task, 50);
@@ -55,14 +53,12 @@ public class RequestMedicalTreatmentTest extends MarsSimUnitTest {
         		+ patient.getTaskDescription() + " - " + patient.getTaskManager().getPhase());
         
         assertFalse(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
-        assertFalse(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
+        assertTrue(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem waiting at Medical care");
         
             // Note: need to figure out why the phase is not WAITING_FOR_TREATMENT
-//        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase(), "Task Phase: Waiting for treatment");
-//        assertEquals(RequestMedicalTreatment.SHOWING_UP, task.getPhase(), "Task Phase: Waiting for treatment");
-//        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, patient.getTaskManager().getPhase(), "Patient's Task Phase: Waiting for treatment");
-//        assertEquals(RequestMedicalTreatment.SHOWING_UP, patient.getTaskManager().getPhase(), "Patient's Task Phase: Showing up for treatment");
-        
+        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase(), "Task Phase: Waiting for treatment");
+        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, patient.getTaskManager().getPhase(), "Patient's Task Phase: Waiting for treatment");
+    
         // Simulate someone helping
         sb.getMedical().startTreatment(hp, recoveryTime);
         executeTask(patient, task, 100);
@@ -73,16 +69,14 @@ public class RequestMedicalTreatmentTest extends MarsSimUnitTest {
         System.out.println("4b. " + patient + " in " + s + " in " + sb + ". " + patient.getTaskManager().getTaskName() + " - " 
         		+ patient.getTaskDescription() + " - " + patient.getTaskManager().getPhase());
         
-//        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase(), "Task Phase: Waiting for treatment");
-//        assertEquals(RequestMedicalTreatment.SHOWING_UP, task.getPhase(), "Task Phase: Waiting for treatment");
-//        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, patient.getTaskManager().getPhase(), "Patient's Task Phase: Waiting for treatment");
-//        assertEquals(RequestMedicalTreatment.SHOWING_UP, patient.getTaskManager().getPhase(), "Patient's Task Phase: Showing up for treatment");
+        assertEquals(RequestMedicalTreatment.TREATMENT, task.getPhase(), "Task Phase: Receiving Medical Treatment");
+        assertEquals(RequestMedicalTreatment.TREATMENT, patient.getTaskManager().getPhase(), "Patient's Task Phase: Receiving Medical Treatment");
         
         // Note: need to figure out why getProblemsBeingTreated does not contain hq
-//        assertTrue(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
-//        assertFalse(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
+        assertTrue(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
+        assertFalse(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
         // Note: need to find out why the phase is null
-//        assertEquals(RequestMedicalTreatment.TREATMENT, task.getPhase(), "Started for treatment");
+        assertEquals(RequestMedicalTreatment.TREATMENT, task.getPhase(), "Started for treatment");
         
         // Treatment
         hp.timePassing(recoveryTime*1.1, patient.getPhysicalCondition());
@@ -95,14 +89,10 @@ public class RequestMedicalTreatmentTest extends MarsSimUnitTest {
         System.out.println("5b. " + patient + " in " + s + " in " + sb + ". " + patient.getTaskManager().getTaskName() + " - " 
         		+ patient.getTaskDescription() + " - " + patient.getTaskManager().getPhase());
         
-//      assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase(), "Task Phase: Waiting for treatment");
-//      assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, patient.getTaskManager().getPhase(), "Patient's Task Phase: Showing up for treatment");
-        
         assertTrue(task.isDone(), "Task completed");
         assertEquals(1, patient.getPhysicalCondition().getProblems().size(), "Complaints remaining");
 
-     // Note: need to figure out why the state is not RECOVERING
-//        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
+        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
         assertFalse(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem removed from Medical care");
     }
 
@@ -127,21 +117,17 @@ public class RequestMedicalTreatmentTest extends MarsSimUnitTest {
         executeTaskUntilSubTask(patient, task, 1000);
         executeTask(patient, task, 30);
         
-        // Note: Need to figure out why getProblemsBeingTreated is false
         assertFalse(sb.getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
-        assertFalse(sb.getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
-        // Note: Need to figure out why it's not at WAITING_FOR_TREATMENT phase
-//        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase(), "Waiting for treatment");
+        assertTrue(sb.getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
+        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase(), "Waiting for treatment");
         
         // Simulate someone helping
         sb.startTreatment(hp, recoveryTime);
         executeTask(patient, task, 1);
         
-        // Note: Need to figure out why getProblemsBeingTreated is false
-//        assertTrue(sb.getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
+        assertTrue(sb.getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
         assertFalse(sb.getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
-        // Note: need to figure out why the phase is not TREATMENT
-//        assertEquals(RequestMedicalTreatment.TREATMENT, task.getPhase(), "Started for treatment");
+        assertEquals(RequestMedicalTreatment.TREATMENT, task.getPhase(), "Started for treatment");
         
         // Treatment
         hp.timePassing(recoveryTime*1.1, patient.getPhysicalCondition());
@@ -150,8 +136,8 @@ public class RequestMedicalTreatmentTest extends MarsSimUnitTest {
 
         assertTrue(task.isDone(), "Task completed");
         assertEquals(1, patient.getPhysicalCondition().getProblems().size(), "Complaints remaining");
-     // Note: need to figure out why the state is not RECOVERING
-//        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
+
+        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
         assertFalse(sb.getProblemsBeingTreated().contains(hp), "Health problem removed from Medical care");
         assertTrue(patient.isInVehicle(), "Person stays in Vehicle");
     }
