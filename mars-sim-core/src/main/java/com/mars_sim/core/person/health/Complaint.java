@@ -38,7 +38,7 @@ public class Complaint implements Serializable {
 	private boolean bedRestRecovery; // Does complaint require bed rest during recovery?
 
 	/** The identifier (UPPERCASE_UNDERSCORE key) of this illness. */
-	private String name;
+	private String id;
 	/** The cached display name of this illness. */
 	private String displayName;
 	/** Treatment needed for recoveryNext phase of this illness. */
@@ -53,7 +53,7 @@ public class Complaint implements Serializable {
 	/**
 	 * Constructor: creates a Medical Complaint instance from medical.xml
 	 *
-	 * @param name              identifier key (UPPERCASE_UNDERSCORE format)
+	 * @param id                identifier key (UPPERCASE_UNDERSCORE format)
 	 * @param seriousness       seriousness of complaint
 	 * @param degrade           degrade time until next complaint
 	 * @param recovery          recovery time
@@ -65,11 +65,11 @@ public class Complaint implements Serializable {
 	 * @param environmental     Is this trigger by an environmental change
 	 * @param effort            Physical effort influence
 	 */
-	Complaint(String name, int seriousness, double degrade, Range recovery, double probability,
+	Complaint(String id, int seriousness, double degrade, Range recovery, double probability,
 			Treatment recoveryTreatment, Complaint degradeComplaint, double performance, boolean bedRestRecovery,
 				boolean environmental, PhysicalEffort effort) {
-		this.name = name;
-		this.displayName = Msg.getStringOptional("ComplaintType", name);
+		this.id = id;
+		this.displayName = Msg.getStringOptional("ComplaintType", id);
 		this.seriousness = seriousness;
 		this.degradePeriod = degrade;
 		this.recoveryPeriod = recovery;
@@ -106,7 +106,7 @@ public class Complaint implements Serializable {
 	 * @return complaint identifier
 	 */
 	public String getID() {
-		return name;
+		return id;
 	}
 
 	/**
