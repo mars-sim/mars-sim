@@ -31,7 +31,7 @@ import com.mars_sim.core.tool.RandomUtil;
 /**
  * A task in which a doctor prescribes (and provides) a medication to a patient.
  */
-public class PrescribeMedication extends Task {
+public class PrescribeMedication extends Task { //MedicalAidTask {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -65,6 +65,7 @@ public class PrescribeMedication extends Task {
 	 */
 	PrescribeMedication(Worker pharmacist) {
         // Use task constructor.
+//		super(NAME, pharmacist, aid, IMPACT, 0D);
         super(NAME, pharmacist, false, IMPACT, 20D);
 
        	if (worker instanceof Person person && person.isSuperUnfit()) {
@@ -220,7 +221,7 @@ public class PrescribeMedication extends Task {
         	
         	// Note: for now, allow remote prescription until the walking bug is fixed.
         	
-//            var patientLocn = patient.getBuildingLocation();
+            var patientLocn = patient.getBuildingLocation();
             
 //            if (patientLocn != null) {
                 PhysicalCondition condition = patient.getPhysicalCondition();
@@ -253,7 +254,7 @@ public class PrescribeMedication extends Task {
                 else {
                     des = des.append("Self-prescribing ").append(medication.getName()).append("."); 
                     
-                    // Note: never called addToBed(). Therefore, no need of calling removeFromBed()
+
 //                    MedicalCare care = null;
 //                    
 //                    if (patientLocn != null) {
@@ -279,8 +280,7 @@ public class PrescribeMedication extends Task {
     }
 
     /**
-     * Creates wastes.
-     * 
+     * Creates medical wastes.
      */
 	private void produceMedicalWaste() {
 		if (!worker.isOutside()) {

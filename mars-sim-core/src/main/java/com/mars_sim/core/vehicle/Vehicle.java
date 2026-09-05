@@ -1902,7 +1902,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		for (int x = oX; (x < 500) && !foundGoodLocation; x+=step) {
 			// Try random locations at each distance range.
 			for (int y = oY; (y < 500) && !foundGoodLocation; y++) {
-				double distance = Math.max(y, RandomUtil.getRandomDouble(-.5*x, .5*x) + .5*y);
+				double distance = Math.max(y, RandomUtil.getRandomRegressionInteger((int)(-.5*x), (int)(.5*x)) + .5*y);
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 				
 				newLoc = centerLoc.getPosition(distance, radianDirection);

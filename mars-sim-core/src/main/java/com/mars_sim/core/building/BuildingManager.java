@@ -920,13 +920,13 @@ public class BuildingManager implements Serializable {
 			
 			if (success) {
 				
-				success = building.getMedical().addToBed(); 
+//				success = building.getMedical().addToBed(); 
 	
 				if (success) {
 					logger.info(p, 10_000L, "Sent to a medical bed in " + building.getName() + ".");
 				}
 				else {	
-					building.getMedical().removeFromBed();				
+//					building.getMedical().removeFromBed();				
 					logger.info(p, 10_000L, "Unable to find a bed or an activity spot in " + building.getName() + ".");
 				}
 			}

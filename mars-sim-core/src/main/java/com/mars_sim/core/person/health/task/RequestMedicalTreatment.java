@@ -261,7 +261,7 @@ public class RequestMedicalTreatment extends MedicalAidTask {
         }
 
         // Clear the bed
-     	getMedicalAid().removeFromBed();
+//     	getMedicalAid().removeFromBed();
         
         return remainingTime;
     }
