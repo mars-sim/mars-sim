@@ -148,7 +148,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 					RatingScore score = new RatingScore(DEFAULT_SCORE);
 					int num = getNeedyNumPatients(settlement);
 					if (num > 0)
-						score.addBase("patients", num * 100);
+						score.addBase("patient", num * 100);
 					score.addBase("deceased", 
 							getMarsTime().getTimeDiff(info.getTimeOfDeath()) * MOD_SCORE);
 					tasks.add(new ExamineBodyJob(this, settlement, info, score));

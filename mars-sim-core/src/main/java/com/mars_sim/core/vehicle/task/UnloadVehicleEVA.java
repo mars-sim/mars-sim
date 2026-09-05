@@ -95,7 +95,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 		// Add the vehicle to a garage if possible
 		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
 		if (garage != null) {
-			
+			// No need of doing it by EVA
 			endTask();
 			return;
 		}

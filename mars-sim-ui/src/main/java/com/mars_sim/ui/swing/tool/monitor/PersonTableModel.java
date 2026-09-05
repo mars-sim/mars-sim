@@ -100,7 +100,7 @@ public class PersonTableModel extends BasePersonModel
 		if (!isLiveCB && !isDeceasedCB) {
 			return false;
 		}
-		if (p.isDeclaredDead()) {
+		if (p.isDeclaredDead() || p.isBuried() || p.getPhysicalCondition().isDead()) {
 			return isDeceasedCB;
 		}
 		return isLiveCB;

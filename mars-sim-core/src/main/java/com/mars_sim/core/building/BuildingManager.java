@@ -920,13 +920,13 @@ public class BuildingManager implements Serializable {
 			
 			if (success) {
 				
-				success = building.getMedical().addToBed(); 
+//				success = building.getMedical().addToBed(); 
 	
 				if (success) {
 					logger.info(p, 10_000L, "Sent to a medical bed in " + building.getName() + ".");
 				}
 				else {	
-					building.getMedical().removeFromBed();				
+//					building.getMedical().removeFromBed();				
 					logger.info(p, 10_000L, "Unable to find a bed or an activity spot in " + building.getName() + ".");
 				}
 			}
@@ -1035,8 +1035,13 @@ public class BuildingManager implements Serializable {
 		if (walkingTask != null) {
 
 			// Walk back home
-			worker.getTaskManager().directlyAssignTask(walkingTask, false);
-			return true;
+			if (worker.getTaskManager().directlyAssignTask(walkingTask, false)) {
+				return true;
+			}
+			else {
+				logger.log(worker, Level.INFO, 4_000, "Failed to be assigned to walk to " + interiorObject + ".");
+				return false;
+			}
 		} else {
 			if (!allowFail) {
 				logger.log(worker, Level.INFO, 4_000, "Failed to walk to " + interiorObject + ".");
@@ -1382,8 +1387,9 @@ public class BuildingManager implements Serializable {
 		if (garage == null) {
 			return false;
 		}
-
-		if (vehicle instanceof Rover rover && garage.getVehicleMaintenance().removeRover(rover, true)) {
+		
+		if (vehicle instanceof Rover rover 
+				&& garage.getVehicleMaintenance().removeRover(rover, true)) {
 			return true;
 		} else if (vehicle instanceof Flyer flyer && garage.getVehicleMaintenance().removeFlyer(flyer, true)) {
 			return true;

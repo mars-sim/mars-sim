@@ -511,6 +511,10 @@ public class Walk extends Task {
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
+		}
+		else if (worker instanceof Person p && !p.isOutside() && p.isSuperUnfit()) {
+			endTask();
+			return time;
 		} else if (WALKING_SETTLEMENT_INTERIOR.equals(getPhase())) {
 			return walkingSettlementInteriorPhase(time);
 		} else if (WALKING_ROVER_INTERIOR.equals(getPhase())) {
@@ -773,7 +777,7 @@ public class Walk extends Task {
 					
 				} else {
 					logger.log(person, Level.INFO, 4_000,
-							"Unable to physically exit the airlock of "
+							"Unable to physically exit "
 		      				+ airlock.getEntityName() + ".");
 					// Consume all of the time waiting to enter; prevents repeated tries
 					remainingTime = 0D;

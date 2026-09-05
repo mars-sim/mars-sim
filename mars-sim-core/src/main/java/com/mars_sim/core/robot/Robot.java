@@ -888,7 +888,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	public boolean transfer(UnitHolder destination) {
 		boolean transferred = false;
 		var cu = getContainerUnit();
-
+		Building building = getBuildingLocation();
+		
 		if (destination.equals(cu)) {
 			return true;
 		}
@@ -908,7 +909,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			// especially if it is still inside the garage of a settlement
 			transferred = s.removeRobotsWithin(this);
 			if (transferred)
-				BuildingManager.removeRobotFromBuilding(this, getBuildingLocation());
+				BuildingManager.removeRobotFromBuilding(this, building);
 		}
 		else {
 			logger.warning(this, 20_000, "Not possible to be retrieved from " + cu + ".");
@@ -946,8 +947,20 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			}
 
 			if (!transferred) {
-				logger.warning(this, 20_000, "Cannot be stored into " + destination + ".");
-				// NOTE: need to revert back the storage action
+				logger.warning(this, 20_000, "Could not be stored into " + destination + ".");
+				// Note: need to revert back to where the robot used to belong
+				if (transfer(cu)) {
+					logger.info(this, 20_000, "Successfully reverted back to " + cu + ".");
+					if (cu instanceof Settlement) {
+						// Need to put the robot back to the building where he used to be in
+						BuildingManager.transferToBldg(this, null, building);
+					}
+				}
+				else {
+					logger.warning(this, 20_000, "Unable to reverted back to " + cu + ".");
+				}
+				
+				return false;
 			}
 			else {
 				// Set the new container unit (which will internally set the container unit id)

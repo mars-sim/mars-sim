@@ -119,22 +119,32 @@ public class ExamineBody extends MedicalAidTask {
 		boolean success = walkToDoctorStation(false);  
 
 		if (!success) {
-			logger.info(worker, 10_000, "Tried to walk to Doctor's station unsuccessfully to examine " + deceasedPerson.getName() + ".");
+			logger.info(worker, 10_000, "Unsuccessfully tried to walk to Doctor's station to examine " + deceasedPerson.getName() + ".");
 			// Note: Avoid calling this to instantly send the doctor there.
 			// Check if the doctor is already at a medical activity spot	
 			success = MedicalCare.dispatchToMedical(worker);
 			
 			if (!success) {
-				logger.info(worker, 10_000, "Dispatched to Doctor's station unsuccessfully to examine " + deceasedPerson.getName() + ".");
+				logger.info(worker, 10_000, "Unsuccessfully dispatched to Doctor's station to examine " + deceasedPerson.getName() + ".");
 				// If no medical activity spot is available, end the task
-				endTask();
+				
+				// Note: for now, do NOT call endTask, or else this task may not be able to get done
+				
+//				endTask();
 				// Note: should be able to 'remotely' treat a patient
-				return ;
+//				return ;
+			}
+			else {
+				logger.info(worker, 10_000, "Successfully dispatched to Doctor's station to treat health problem.");
 			}
 		} 
 		else {
-			logger.info(worker, 10_000, "Arrived at Doctor's station successfully to examine " + deceasedPerson.getName() + ".");
+			logger.info(worker, 10_000, "Successfully arrived at Doctor's station to examine " + deceasedPerson.getName() + ".");
 		}
+		
+        String des = "Performing postmortem exam on " + deceasedPerson;
+        logger.log(examiner, Level.INFO, 10_000, des + ".");
+        setDescription(des);
 		
 		// Initialize phase.
 		setPhase(PREPARING);
@@ -169,6 +179,12 @@ public class ExamineBody extends MedicalAidTask {
 			return 0;
 		}
 		
+    	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+    	
 		if (!attemptTransfer) {
 			
 			attemptTransfer = true;
@@ -182,7 +198,9 @@ public class ExamineBody extends MedicalAidTask {
 				// Send the worker as a patient to a medical bed
 				boolean toSend = BuildingManager.addPatientToMedicalBed(deceasedPerson, worker.getSettlement());
 
-				if (toSend) {
+				// Note: For now, do not check if addPatientToMedicalBed is successful
+				
+//				if (toSend) {
 
 					String name = deathInfo.getDoctorRetrievingBody();
 					
@@ -191,7 +209,7 @@ public class ExamineBody extends MedicalAidTask {
 						deathInfo.setDoctorRetrievingBody(worker.getName());
 					}
 					
-					logger.info(worker, "Just retrieved and transferred the body of " + deceasedPerson.getName() + " to the medical facility.");
+					logger.info(worker, "Assumed having retrieved and transferred the body of " + deceasedPerson.getName() + " to the medical facility.");
 					
 					// The first physician gets to set the estimate exam time
 					
@@ -217,19 +235,19 @@ public class ExamineBody extends MedicalAidTask {
 					
 					// Initialize phase.
 					setPhase(EXAMINING);
-				}
+//				}
 				
-				else {
-					logger.info(worker, "Unable to retrieve and transfer the body of " + deceasedPerson.getName() + " to the medical facility.");
-					
-					String name = deathInfo.getDoctorRetrievingBody();
-					
-					if (name != null)
-						// Set it back to null
-						deathInfo.setDoctorRetrievingBody(null);
-					
-					endTask();
-				}
+//				else {
+//					logger.info(worker, "Unable to retrieve and transfer the body of " + deceasedPerson.getName() + " to the medical facility.");
+//					
+//					String name = deathInfo.getDoctorRetrievingBody();
+//					
+//					if (name != null)
+//						// Set it back to null
+//						deathInfo.setDoctorRetrievingBody(null);
+//					
+//					endTask();
+//				}
 			}
 		}
 
@@ -244,6 +262,12 @@ public class ExamineBody extends MedicalAidTask {
 	 */
 	private double examiningPhase(double time) {
 	
+	   	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+	   	
 		var mal = getMalfunctionable();
 
 		// If medical aid has malfunction, end task.
@@ -305,6 +329,12 @@ public class ExamineBody extends MedicalAidTask {
 	 */
 	private double recordingPhase(double time) {
 
+	   	if (worker instanceof Person person && person.isSuperUnfit()) {
+    		logger.info(worker, "Super Unfit.");
+    		endTask();
+    		return time;
+    	}
+	   	
 		double remainingTime = 0D;
 		
 		var mal = getMalfunctionable();
@@ -329,7 +359,7 @@ public class ExamineBody extends MedicalAidTask {
 		// Add experience.
 		addExperience(time);
 
-		aid.removeFromBed();
+//		aid.removeFromBed();
 		
 		endTask();
 		
