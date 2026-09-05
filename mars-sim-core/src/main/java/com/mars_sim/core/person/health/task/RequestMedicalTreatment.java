@@ -173,11 +173,11 @@ public class RequestMedicalTreatment extends MedicalAidTask {
      */
     private double waitingForTreatmentPhase(double time) {
 
-       	if (worker instanceof Person person && person.isSuperUnfit()) {
-    		logger.info(worker, "Super Unfit.");
-    		endTask();
-    		return time;
-    	}
+//       	if (worker instanceof Person person && person.isSuperUnfit()) {
+//    		logger.info(worker, "Super Unfit.");
+//    		endTask();
+//    		return time;
+//    	}
        	
         double remainingTime = 0D;
         var medicalAid = getMedicalAid();
@@ -232,11 +232,11 @@ public class RequestMedicalTreatment extends MedicalAidTask {
      */
     private double treatmentPhase(double time) {
 
-       	if (worker instanceof Person person && person.isSuperUnfit()) {
-    		logger.info(worker, "Super Unfit.");
-    		endTask();
-    		return time;
-    	}
+//       	if (worker instanceof Person person && person.isSuperUnfit()) {
+//    		logger.info(worker, "Super Unfit.");
+//    		endTask();
+//    		return time;
+//    	}
        	
         double remainingTime = 0D;
         var medicalAid = getMedicalAid();

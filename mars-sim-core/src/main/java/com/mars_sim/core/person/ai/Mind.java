@@ -106,8 +106,9 @@ public class Mind implements Serializable, Temporal {
 		if ((taskManager != null) && (time > 0)) {
 			moderateTime(time);
 		}
-		
-		checkRelationStressEmotion(pulse);
+		if (pulse.isNewIntMillisol()) {
+			checkRelationStressEmotion(pulse);
+		}
 		
 		checkJob(pulse);
 		
@@ -122,19 +123,17 @@ public class Mind implements Serializable, Temporal {
 	public void checkRelationStressEmotion(ClockPulse pulse) {
 		double time = pulse.getElapsed();
 		
-		if (pulse.isNewIntMillisol()) {
-			// Update stress based on personality.
-			mbti.updateStress(time);
-			
-			int msol = pulse.getMarsTime().getMillisolInt();
-			if (msol % RELATION_UPDATE_CYCLE == relationUpdate) {
-				// Update relationships.
-				RelationshipUtil.timePassing(person, time);
-			}
-			if (msol % EMOTION_UPDATE_CYCLE == emotionUpdate) {
-				// Update emotion with the personality vector
-				emotionMgr.updateEmotion(trait.getPersonalityVector());
-			}
+		// Update stress based on personality.
+		mbti.updateStress(time);
+		
+		int msol = pulse.getMarsTime().getMillisolInt();
+		if (msol % RELATION_UPDATE_CYCLE == relationUpdate) {
+			// Update relationships.
+			RelationshipUtil.timePassing(person, time);
+		}
+		if (msol % EMOTION_UPDATE_CYCLE == emotionUpdate) {
+			// Update emotion with the personality vector
+			emotionMgr.updateEmotion(trait.getPersonalityVector());
 		}
 	}
 	

@@ -23,7 +23,7 @@ public class EmotionManager implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final double FLATTENNING_FACTOR = 1.95;
+	private static final double FLATTENNING_FACTOR = 1.5;
 	private static final double RANGE = .5;
 	private static final double FACTOR = .05;
 	

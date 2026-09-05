@@ -68,11 +68,11 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
 //		super(NAME, pharmacist, aid, IMPACT, 0D);
         super(NAME, pharmacist, false, IMPACT, 20D);
 
-       	if (worker instanceof Person person && person.isSuperUnfit()) {
-    		logger.info(worker, "Super Unfit.");
-    		endTask();
-    		return;
-    	}
+//       	if (worker instanceof Person person && person.isSuperUnfit()) {
+//    		logger.info(worker, "Super Unfit.");
+//    		endTask();
+//    		return;
+//    	}
        	
         // Determine patient needing medication
         patient = determinePatient(pharmacist);
@@ -207,11 +207,11 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
      */
     private double medicatingPhase(double time) {
 
-       	if (worker instanceof Person person && person.isSuperUnfit()) {
-    		logger.info(worker, "Super Unfit.");
-    		endTask();
-    		return time;
-    	}
+//       	if (worker instanceof Person person && person.isSuperUnfit()) {
+//    		logger.info(worker, "Super Unfit.");
+//    		endTask();
+//    		return time;
+//    	}
        	
         // Add experience.
         addExperience(time);
