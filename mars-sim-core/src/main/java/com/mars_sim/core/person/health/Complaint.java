@@ -39,6 +39,8 @@ public class Complaint implements Serializable {
 
 	/** The identifier (UPPERCASE_UNDERSCORE key) of this illness. */
 	private String name;
+	/** The cached display name of this illness. */
+	private String displayName;
 	/** Treatment needed for recoveryNext phase of this illness. */
 	private Treatment recoveryTreatment;
 	/** Next phase of this illness. */
@@ -67,6 +69,7 @@ public class Complaint implements Serializable {
 			Treatment recoveryTreatment, Complaint degradeComplaint, double performance, boolean bedRestRecovery,
 				boolean environmental, PhysicalEffort effort) {
 		this.name = name;
+		this.displayName = Msg.getStringOptional("ComplaintType", name);
 		this.seriousness = seriousness;
 		this.degradePeriod = degrade;
 		this.recoveryPeriod = recovery;
@@ -94,7 +97,7 @@ public class Complaint implements Serializable {
 	 * @return human-readable complaint name
 	 */
 	public String getName() {
-		return Msg.getStringOptional("ComplaintType", name);
+		return displayName;
 	}
 
 	/**
