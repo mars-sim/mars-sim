@@ -35,6 +35,7 @@ public class MedicalManager implements Serializable {
 	public static final String DEHYDRATION = "DEHYDRATION";
 	public static final String STARVATION = "STARVATION";
 	public static final String PANIC_ATTACK = "PANIC_ATTACK";
+	public static final String DEPRESSION = "DEPRESSION";
 	public static final String SUFFOCATION = "SUFFOCATION";
 	public static final String FREEZING = "FREEZING";
 	public static final String HEAT_STROKE = "HEAT_STROKE";
