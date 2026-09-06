@@ -160,9 +160,6 @@ public class MissionControl implements ScheduledEventHandler {
 		Person p = mission.getStartingPerson();
 
 		logger.info(p, "Put together a mission plan for " + plan.getMission().getName() + ".");
-
-		// Add this mission only after the mission plan has been submitted for review.
-		addMission(mission);
 	}
 
 
