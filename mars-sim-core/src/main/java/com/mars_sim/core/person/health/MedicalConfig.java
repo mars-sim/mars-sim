@@ -122,10 +122,11 @@ public class MedicalConfig {
 			// Get name.
 			String treatmentName = medicalTreatment.getAttributeValue(NAME);
 			
-			int skill = getIntValue(medicalTreatment, SKILL, false, 0);
-			SkillType skillType = SkillType.MEDICINE;
 			Element skillElement = medicalTreatment.getChild(SKILL);
+			int skill = 0;
+			SkillType skillType = SkillType.MEDICINE;
 			if (skillElement != null) {
+				skill = Integer.parseInt(skillElement.getAttributeValue(VALUE));
 				String skillTypeName = skillElement.getAttributeValue(TYPE);
 				if (skillTypeName != null) {
 					skillType = ConfigHelper.getEnum(SkillType.class, skillTypeName);

@@ -59,7 +59,7 @@ class MedicalConfigTest {
     @Test
     void testAnxietyMedicationTreatmentSkillType() {
         var c = medConfig.getTreatmentsByLevel(1);
-        assertTrue(!c.isEmpty(), "Treatment list is not empty");
+        assertFalse(c.isEmpty(), "Treatment list is not empty");
 
         var matched = c.stream()
                     .filter(cp -> cp.getName().equals("Anxiety Medication"))
