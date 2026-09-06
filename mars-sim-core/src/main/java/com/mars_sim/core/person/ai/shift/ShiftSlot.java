@@ -116,8 +116,8 @@ public class ShiftSlot implements ScheduledEventHandler {
      * @return Previous OnCall.
      */
     public boolean setOnCall(boolean newOnCall) {
-    	if (isGuest)
-    		return onCall;
+//    	if (isGuest)
+//    		return onCall;
     	
         boolean origOnCall = onCall;
         onCall = newOnCall;

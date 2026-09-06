@@ -124,13 +124,18 @@ public class MissionBuilder {
 				// Determine the person's mission qualification.
 				double qualification = mission.getWorkerSuitability(w) * 100D;
 
+				double touristStatus = 0;
+				
 				double likability = 50D;
 				if (w instanceof Person p) {
 					// Determine how much the recruiter likes the person.
 					likability = RelationshipUtil.getOpinionOfPerson(startingMember, p);
+					
+					if (p.isGuest())
+						touristStatus = qualification * 2;
             	}
 
-				double recruitmentChance = (qualification + likability) / 2D;
+				double recruitmentChance = (qualification + likability + touristStatus) / 2D;
 				if (recruitmentChance > 0D) {
 					// Check if person is the best recruit.
 					qualified.add(new MemberScore(w, recruitmentChance));
