@@ -85,10 +85,10 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         	logger.info(pharmacist, 10_000, "Starting in-garaged-vehicle prescribing medication to " + patient.getName() + ".");
         }
         
-        else if (patient.isInSettlement() && patient.getBuildingLocation() != null) {
+        else if (pharmacist.isInSettlement() && patient.getBuildingLocation() != null) {
 
         	// First walk to a medical activity spot 
-    		boolean success = walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
+    		boolean success = walkToActivitySpotInBuilding(pharmacist.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
 
     		if (!success) {
     			logger.info(pharmacist, 10_000, "Unsuccessfully tried to walk to Doctor's station.");
