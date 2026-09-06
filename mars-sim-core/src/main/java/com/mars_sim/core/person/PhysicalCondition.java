@@ -752,25 +752,28 @@ public class PhysicalCondition implements Serializable {
 			.mapToDouble(p -> p.getPerformanceFactor()).min().orElse(1D);
 		double tempPerformance = maxPerformance;
 
+		// Note: always check with PhysicalConditionTest's testPerformanceBasedOnPrimary
+		//       prior to making changes
+		
 		// High thirst reduces performance.
-		if (thirst > dehydrationTrigger / 3) {
+//		if (thirst > dehydrationTrigger / 3) {
 			tempPerformance -= (thirst - dehydrationTrigger / 3) * THIRST_PERFORMANCE_MODIFIER / 2;
-		} 
+//		} 
 
 		// High hunger reduces performance.
-		if (hunger > starvationTrigger / 4) {
+//		if (hunger > starvationTrigger / 4) {
 			tempPerformance -= (hunger - starvationTrigger / 4) * HUNGER_PERFORMANCE_MODIFIER / 2;
-		} 
+//		} 
 
 		// High fatigue reduces performance.
-		if (fatigue > 1000D) {
+//		if (fatigue > 1000D) {
 			tempPerformance -= (fatigue - 1000D) * FATIGUE_PERFORMANCE_MODIFIER / 2;
-		}
+//		}
 
 		// High stress reduces performance.
-		if (stress > 75D) {
+//		if (stress > 75D) {
 			tempPerformance -= (stress - 75D) * STRESS_PERFORMANCE_MODIFIER / 2;
-		}
+//		}
 
 		// High kJoules improves performance and low kJoules hurts performance.
 		if (kJoules > 7500) {
