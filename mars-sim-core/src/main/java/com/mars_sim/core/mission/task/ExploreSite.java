@@ -246,8 +246,6 @@ public class ExploreSite extends EVAOperation {
 					objective.recordResourceCollected(rockId, mass);
 					double collected = mass - excess;
 					totalCollected += collected;
-					logger.info(person, 10_000, "Collected " + Math.round(collected * 100.0)/100.0 
-							+ " kg " + ResourceUtil.findAmountResourceName(rockId) + " into a specimen box.");
 				}
 				else {
 					double excess = box.storeAmountResource(rockId, remain);
