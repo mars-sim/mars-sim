@@ -27,12 +27,9 @@ import java.util.Map.Entry;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
@@ -52,9 +49,6 @@ import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.config.BuildingConfig;
-import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SunData;
 import com.mars_sim.core.environment.SurfaceFeatures;
@@ -69,8 +63,8 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
@@ -104,7 +98,6 @@ public class SettlementTransparentPanel extends JComponent {
     private static final String MAX_LIGHT         = "       Max Sunlight: ";
     private static final String CURRENT_LIGHT     = "   Current Sunlight: ";
     private static final String WM                = " W/m\u00B2 ";
-    private static final String MSOL              = " msol ";
     private static final String PENDING           = " ...  ";
 
     private static final String YESTERSOL_RESOURCE = "Yestersol's Resources (";
@@ -121,9 +114,9 @@ public class SettlementTransparentPanel extends JComponent {
     private String zaString;
     private String odString;
 
-    private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
-    private Font sunBoldFont = new Font(Font.MONOSPACED, Font.BOLD, 12);
-    private Font timeBoldFont = new Font(Font.DIALOG, Font.BOLD, 13);
+    private static final Font SUN_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 12);
+    private static final Font SUN_BOLD_FONT = new Font(Font.MONOSPACED, Font.BOLD, 12);
+    private static final Font TIME_BOLD_FONT = new Font(Font.DIALOG, Font.BOLD, 13);
     
     private String resourceCache = "";
 
@@ -160,7 +153,6 @@ public class SettlementTransparentPanel extends JComponent {
     private JLabel windIcon;
     private JLabel opticalIcon;
 
-    private JPopupMenu labelsMenu;
     /** Settlement Combo box */
     private JComboBox<Settlement> settlementListBox;
 
@@ -298,12 +290,11 @@ public class SettlementTransparentPanel extends JComponent {
 
         JPanel marsTimePane = new JPanel(new BorderLayout(0, 1));
         final String ts = updateMarsTime();
-		martianTimeLabel = new JLabel(ts, JLabel.CENTER);
+		martianTimeLabel = new JLabel(ts, SwingConstants.CENTER);
 		martianTimeLabel.setOpaque(false);
 		martianTimeLabel.setBackground(new Color(0, 0, 0, 128));
-//		marsTimePane.setSize(250, 30);
 		martianTimeLabel.setForeground(Color.LIGHT_GRAY);
-		martianTimeLabel.setFont(timeBoldFont);
+		martianTimeLabel.setFont(TIME_BOLD_FONT);
 		marsTimePane.add(martianTimeLabel, BorderLayout.CENTER);
 		
         sunPane.add(marsTimePane, BorderLayout.NORTH);
@@ -349,17 +340,17 @@ public class SettlementTransparentPanel extends JComponent {
 
         currentSunLabel = new JLabel(CURRENT_LIGHT + PENDING);
 
-        projectSunriseLabel.setFont(sunFont);
-        sunriseLabel.setFont(sunFont);
-        projectSunsetLabel.setFont(sunFont);
-        sunsetLabel.setFont(sunFont);
-        projectDaylightLabel.setFont(sunFont);
-        daylightLabel.setFont(sunFont);
+        projectSunriseLabel.setFont(SUN_FONT);
+        sunriseLabel.setFont(SUN_FONT);
+        projectSunsetLabel.setFont(SUN_FONT);
+        sunsetLabel.setFont(SUN_FONT);
+        projectDaylightLabel.setFont(SUN_FONT);
+        daylightLabel.setFont(SUN_FONT);
 
-        zenithLabel.setFont(sunFont);
+        zenithLabel.setFont(SUN_FONT);
 
-        currentSunLabel.setFont(sunBoldFont);
-        maxSunLabel.setFont(sunFont);
+        currentSunLabel.setFont(SUN_BOLD_FONT);
+        maxSunLabel.setFont(SUN_FONT);
 
         Color orange = Color.orange;
         Color brown = new Color(153, 102, 0).brighter();
@@ -874,9 +865,7 @@ public class SettlementTransparentPanel extends JComponent {
         labelsButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.labels")); //$NON-NLS-1$
         labelsButton.addActionListener(e -> {
             JButton button = (JButton) e.getSource();
-            if (labelsMenu == null) {
-                labelsMenu = createLabelsMenu();
-            }
+            var labelsMenu = createLabelsMenu();
             labelsMenu.show(button, 0, button.getHeight());
         });
 
@@ -888,20 +877,6 @@ public class SettlementTransparentPanel extends JComponent {
         return labelPane;
     }
 
-    /**
-     * Clears the labels menu.
-     */
-    private void clearLabelsMenu() {
-        labelsMenu = null;
-    }
-
-    private JCheckBoxMenuItem createDisplayToggle(String label, SettlementMapPanel.DisplayOption op) {
-        JCheckBoxMenuItem result = new JCheckBoxMenuItem(label, mapPanel.isOptionDisplayed(op));
-        result.setContentAreaFilled(false);
-        result.addActionListener(e -> mapPanel.toggleDisplayOption(op));
-        result.setSelected(mapPanel.isOptionDisplayed(op));
-        return result;
-    }
 
     /**
      * Creates the labels popup menu.
@@ -912,54 +887,15 @@ public class SettlementTransparentPanel extends JComponent {
         JPopupMenu popMenu = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
         popMenu.setBorderPainted(false);
 
-        // Activity spot menu
-        var spotLabelMenuItem = new JMenu("Activity Spots");
-        popMenu.add(spotLabelMenuItem);
-
-        BuildingConfig bc = getConfig();
-        List<FunctionType> sortedFT = new ArrayList<>(bc.getActivitySpotFunctions());
-        Collections.sort(sortedFT);
-
-        // Add an All
-        var allItem = new JMenuItem("All"); //$NON-NLS-1$
-        allItem.setContentAreaFilled(false);
-        allItem.addActionListener(e -> {
-                mapPanel.reverseSpotLabels(bc.getActivitySpotFunctions());
-                clearLabelsMenu(); // Clear the menu because all the values will change
-        });
-        spotLabelMenuItem.add(allItem);
-
-        // Add an None
-        var noneItem = new JMenuItem("None"); //$NON-NLS-1$
-        noneItem.setContentAreaFilled(false);
-        noneItem.addActionListener(e -> {
-                mapPanel.clearSpotLabels();
-                clearLabelsMenu(); // Clear the menu because all the values will change
-        });
-        spotLabelMenuItem.add(noneItem);
-
-        // Add one per function type
-        for (FunctionType ft : sortedFT) {
-            var ftItem = new JCheckBoxMenuItem(ft.getName(), mapPanel.isShowSpotLabels(ft)); //$NON-NLS-1$
-            ftItem.setContentAreaFilled(false);
-            ftItem.addActionListener(e ->
-                    mapPanel.setShowSpotLabels(ft, !mapPanel.isShowSpotLabels(ft)));
-            spotLabelMenuItem.add(ftItem);
-        }
-
         // Create display option items
-        for (DisplayOption op : DisplayOption.values()) {
-            popMenu.add(createDisplayToggle(Msg.getString("SettlementWindow.menu." + op.name().toLowerCase()),
-                op));
+        for (var layer : mapPanel.getMapLayers()) {
+            var items = layer.getFilterControls();
+            items.forEach(popMenu::add);
         }
 
         popMenu.pack();
 
         return popMenu;
-    }
-
-    private BuildingConfig getConfig() {
-        return BuildingManager.getBuildingConfig();
     }
 
     /**
@@ -1049,11 +985,7 @@ public class SettlementTransparentPanel extends JComponent {
      */
     private String updateMarsTime() {
 		int offset = mapPanel.getSettlement().getTimeZone().getMSolOffset();
-//		MarsTime mTime = masterClock.getMarsTimeWithOffset(offset);
-//		String ts = MarsTimeFormat.getSolOfWeekString(mTime.getSolOfWeek()) 
-//			+ " " + mTime.getDateTimeStamp()  
-//			+ " " + mapPanel.getSettlement().getTimeZone().getId();
-//		return ts;
+
 		String zoneID = mapPanel.getSettlement().getTimeZone().getId();
 		return masterClock.getMarsTimeWithOffset(offset).getZonedDateTimeStamp(zoneID);
     }
@@ -1159,13 +1091,12 @@ public class SettlementTransparentPanel extends JComponent {
             // Redo the resource string once a sol (off-EDT; only updates cache)
             prepBannerResourceString(pulse);
             // Update the sun data
-//            Settlement s0 = (settlementListBox != null) ? (Settlement) settlementListBox.getSelectedItem() : null;
             Settlement s0 = mapPanel.getSettlement();
             if (s0 != null)
                 displaySunData(s0.getCoordinates()); // EDT marshaled inside
         }
         
-        Settlement s = mapPanel.getSettlement(); //(Settlement) settlementListBox.getSelectedItem();
+        Settlement s = mapPanel.getSettlement(); 
         // When loading from a saved sim, s may be initially null
         if (s == null)
             return;
@@ -1178,14 +1109,14 @@ public class SettlementTransparentPanel extends JComponent {
         
         if (settlementListBox != null) {
             // Update icons on EDT
-            SwingUtilities.invokeLater(this::updateIcon);
+            SwingHelper.runInEDT(this::updateIcon);
 
             // Update the Mars Time label on EDT
-            final String ts = updateMarsTime();
-            SwingUtilities.invokeLater(() -> {
-            	if (martianTimeLabel != null) 
-        			martianTimeLabel.setText(ts);
-            });
+            if (martianTimeLabel != null) {
+                SwingHelper.runInEDT(() -> {
+                    martianTimeLabel.setText(updateMarsTime());
+                });
+            }
             
             // Update current sunlight on EDT
             updateCurrentSunlight(s);
@@ -1232,11 +1163,5 @@ public class SettlementTransparentPanel extends JComponent {
             return;
 
         resourceCache = text.toString();
-    }
-
-    /**
-     * Prepare class for deletion (idempotent, EDT-safe).
-     */
-    public void destroy() {
     }
 }

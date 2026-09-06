@@ -11,17 +11,22 @@ import java.awt.Font;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
+
+import javax.swing.JMenuItem;
 
 import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
 
 /**
  * A settlement map layer for displaying data collection sites.
  */
 public class DataCollectionSiteMapLayer extends AbstractMapLayer {
+    private static final String DATA_COLLECTION_SITE_LABELS_PROP = "DATA_COLLECTION_SITE_LABELS";
     
     private static final Color SITE_COLOR = Color.WHITE;
     private static final Color SITE_SELECTED_COLOR = Color.YELLOW.brighter();// new Color(152, 118, 84); // pale brown
@@ -30,18 +35,19 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
 
 	private static final ColorChoice COLOR_CHOICE = new ColorChoice(new Color(237, 114, 38), Color.WHITE);// Color(0, 0, 0, 150));
     
-	
     private SettlementMapPanel mapPanel;
+    private boolean showLabels;
     
     /**
      * Constructor 1.
      * 
      * @param mapPanel the settlement map panel.
      */
-    public DataCollectionSiteMapLayer(SettlementMapPanel mapPanel) {
+        public DataCollectionSiteMapLayer(SettlementMapPanel mapPanel, Properties userSettings) {
 
         // Initialize data members.
         this.mapPanel = mapPanel;
+		this.showLabels = UIConfig.extractBoolean(userSettings, DATA_COLLECTION_SITE_LABELS_PROP, false);
     }
 
     @Override
@@ -52,14 +58,28 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
         // Draw all construction sites.
-        boolean labels = mapPanel.isOptionDisplayed(DisplayOption.DATA_COLLECTION_SITE_LABELS);
         for (DataCollectionSite c : settlement.getLocalDataCollectionSitesList()) {
-            hotspots.add(drawSite(c, labels, viewpoint));
+            hotspots.add(drawSite(c, showLabels, viewpoint));
         }
 
 	    // Restore original graphic transforms.
 	    viewpoint.graphics().setTransform(saveTransform);
         return hotspots;
+    }
+
+    @Override
+    public List<JMenuItem> getFilterControls() {
+        return List.of(createDisplayToggle("data_collection_site_labels", showLabels,
+                selected -> {
+                    showLabels = selected;
+                    mapPanel.repaint();
+                    return null;
+                }));
+    }
+
+    @Override
+    public void saveUIProperties(Properties props) {
+        props.setProperty(DATA_COLLECTION_SITE_LABELS_PROP, Boolean.toString(showLabels));
     }
 
     /**

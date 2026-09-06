@@ -7,6 +7,11 @@
 package com.mars_sim.ui.swing.tool.settlement;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
+import javax.swing.JMenuItem;
 
 import com.mars_sim.core.structure.Settlement;
 
@@ -28,4 +33,22 @@ public interface SettlementMapLayer {
 	 * Destroy the map layer.
 	 */
 	public void destroy();
+
+	/**
+	 * Gets the filter controls for the map layer.
+	 * 
+	 * @return list of filter controls as JMenuItems.
+	 */
+	public default List<JMenuItem> getFilterControls() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Saves any layer-specific UI properties.
+	 *
+	 * @param props the target properties collection.
+	 */
+	public default void saveUIProperties(Properties props) {
+		// Default no-op.
+	}
 }

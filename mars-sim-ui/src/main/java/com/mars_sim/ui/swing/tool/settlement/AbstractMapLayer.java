@@ -25,11 +25,15 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+
+import javax.swing.JCheckBoxMenuItem;
 
 import org.apache.batik.gvt.GraphicsNode;
 
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.tool.Msg;
 
 /**
  * This class provides basic method to draw on the Settlement Map panel.
@@ -40,39 +44,32 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	
     // A data record to represent a structure key.
     private record StructureKey(GraphicsNode svg, double width, double length) {}
+ 
+	private static final BasicStroke THICK_DASH = new BasicStroke(10.0f,
+			  BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 50.0f, 
+			  new float[]{10.0f, 20.0f, 10.0f, 20.0f}, 0.0f);
 
-	private float[] DASHES = {10.0f, 20.0f, 10.0f, 20.0f};
-    
-//	private static final String H = "H ";
-//	private static final String T = "T ";
-//	private static final String B = "B ";
-//	private static final String B3 = "B3. ";
-//	private static final String B9 = "B9. ";
-//	private static final String W = "W ";
-//	private static final String C1 = "C1. ";
-//	private static final String C2 = "C2. ";
-//	private static final String C3 = "C3. ";
-	
-    // See https://docstore.mik.ua/orelly/java-ent/jfc/ch04_05.htm for instructions on BasicStroke
-//    private BasicStroke THIN_DASH = new BasicStroke(2.0f,
-//    	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, DASHES, 0.0f);
-	private BasicStroke THICK_DASH = new BasicStroke(10.0f,
-			  BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 50.0f, DASHES, 0.0f);
-
-	// Dash pattern: {on, off, on, off, ...}
-	private float[] dash = {5.0f, 2.0f};  // 10px dash, 5px gap
-
-	private BasicStroke dashed = new BasicStroke(
-	    .1f,                     // line width
+	private static final BasicStroke DASHED = new BasicStroke(
+	    .1f,                     
 	    BasicStroke.CAP_BUTT,     // end cap style
 	    BasicStroke.JOIN_MITER,   // corner join style
 	    6.0f,                    // miter limit
-	    dash,                     // dash pattern
+	    new float[]{5.0f, 2.0f},             // 10px dash, 5px gap
 	    0.0f                      // dash phase (offset)
 	);
 	
     private Map<String, BufferedImage> labelImageCache = new HashMap<>();
 	private Map<Double, Map<StructureKey, BufferedImage>> svgImageCache = new HashMap<>();
+
+	protected JCheckBoxMenuItem createDisplayToggle(String labelKey, boolean isSelected,
+									Function<Boolean, Void> actionListener) {
+		var label = Msg.getString("SettlementWindow.menu." + labelKey);
+        JCheckBoxMenuItem result = new JCheckBoxMenuItem(label, isSelected);
+        result.setContentAreaFilled(false);
+        result.addActionListener(e -> actionListener.apply(result.isSelected()));
+        result.setSelected(isSelected);
+        return result;
+    }
 
     /**
 	 * Draws an oval at a settlement.
@@ -109,10 +106,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Set circle color.
 		g2d.setColor(color.text());
 
-//		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		
 		// Draw circle outline
 		g2d.drawOval(0, 0, size, size);
 	
@@ -186,15 +179,11 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	        int y = heightOffset;
 	       	int w = (int)Math.round(centerX * 2.0);
 	       	int h = (int)Math.round(centerY * 2.0);
-	        	       	
-//	        int thickness = 2;
-	
+	        	       		
 	        // Draw a frame rect white background label
 	        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f));
 	        g2d.fill3DRect(x, y, w, h, true);
 	        g2d.draw3DRect(x, y, w, h, true);
-//	        for (int i = 1; i < thickness; i++)
-//	            g2d.draw3DRect(x - i, y - i, w + 2 * i - 1, h + 2 * i - 1, true);
 	        
 			// Draw a white background label
 	        g2d.setColor(labelColor.text());
@@ -279,15 +268,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
             s--;
         }
 
-//        String initial = words[0];
-//        
-        // Shrink the Hallway label further by removing the whitespace
-//        if (initial.contains(H) || initial.contains(B) || initial.contains(B3) || initial.contains(B9) 
-//        		|| initial.contains(W) || initial.contains(C1) || initial.contains(C2) || initial.contains(C3) 
-//        		|| initial.contains(T)) {
-//        	words[0] = words[0].replace(" ", "");
-//        }
-
         if (s == 1) {
         	drawCenteredLabel(words[0], labelFont, position, frontColor, 0, viewpoint);
         }
@@ -354,9 +334,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 							labelColor.outline(), hasOutline);
 			labelImageCache.put(labelId, labelImage);
 		}
-		
-//		labelImage.flush();
- 
+		 
 		return labelImage;
 	}
 
@@ -409,8 +387,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 		// Fill label
 		g2d.fill(labelShape);
 
-//		bufferedImage.flush();
-
 		// Dispose of image graphics context.
 		g2d.dispose();
 
@@ -436,7 +412,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
             imageCache = svgImageCache.get(scale);
         }
         else {
-            imageCache = new HashMap<>(100);
+            imageCache = new HashMap<>();
             svgImageCache.put(scale, imageCache);
         }
 
@@ -528,9 +504,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
                 patternTransform.translate(0D, x * bounds.getHeight() * -1D);
             }
         }
-
-        // Cleanup and return image
-//        bufferedImage.flush();
     
         g2d.dispose();
 
@@ -633,7 +606,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         
         double width = placement.getWidth() * .8;
         double length = placement.getLength() * .8;
-//        double facing = placement.getFacing();
         
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
@@ -641,7 +613,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         AffineTransform newTransform = new AffineTransform();
         
         // Determine bounds.
-//        Rectangle2D bounds = new Rectangle2D.Double(-width/2, -length/2, width, length);
         RoundRectangle2D bounds = new RoundRectangle2D.Double(-width/2, -length/2, width, length, width/6, length/6);
         
         // Determine transform information.
@@ -654,23 +625,12 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         double centerY = length * scale / 2;
         double translationX = (-1D * xLoc) - boundsPosX - centerX;
         double translationY = (-1D * yLoc) - boundsPosY- centerY;
-//        double facingRadian = facing / 180D * Math.PI;
         
 		// Draw filled rectangle.
 		newTransform.scale(scalingWidth, scalingLength);
 		// Apply graphic transforms for structure.		
 		newTransform.translate(translationX, translationY);
-//			newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);	
 		g2d.transform(newTransform);
-
-		
-		// Define the gradient
-//			GradientPaint gradient = new GradientPaint(
-//			    0, 0,                   		// start point (x, y)
-//			    Color.WHITE,             		// start color
-//			    (float) width, (float) length,  // end point (x, y)
-//			    Color.GRAY         				// end color
-//		);
 			
 		// Define the multi-stop gradient
 		float[] fractions = {0f, 0.5f, 1f};
@@ -688,7 +648,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			);
 		
 			g2d.setPaint(gradient);
-//			g2d.setColor(color);
 		}
 		else {
 			Color[] colors = {color, Color.GRAY, color};
@@ -707,7 +666,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			// Save original stroke
 	    	Stroke oldStroke = g2d.getStroke();
 			// Draw the dashed border over the selected 
-			g2d.setStroke(dashed);
+			g2d.setStroke(DASHED);
 			// Draw the svg
 			g2d.draw(bounds);
 			// Restore the stroke

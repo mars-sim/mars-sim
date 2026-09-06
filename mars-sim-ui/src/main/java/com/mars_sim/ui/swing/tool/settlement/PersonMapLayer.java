@@ -8,17 +8,22 @@ package com.mars_sim.ui.swing.tool.settlement;
 
 import java.awt.Color;
 import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
+
+import javax.swing.JMenuItem;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.ui.swing.UIConfig;
 
 /**
  * A settlement map layer for displaying people.
  */
 public class PersonMapLayer extends WorkerMapLayer<Person> {
+	private static final String PERSON_LABELS_PROP = "PERSON_LABELS";
 	
 	private static final ColorChoice MALE_UNSELECTED = new ColorChoice(new Color(0, 97, 198), Color.white); // lighter : 52, 152, 255
 	private static final ColorChoice FEMALE_UNSELECTED = new ColorChoice(new Color(165, 0, 49), Color.white); // lighter : 236, 0, 70
@@ -27,15 +32,17 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 
 	// Data members
 	private SettlementMapPanel mapPanel;
+	private boolean showLabels;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param mapPanel the settlement map panel.
 	 */
-	public PersonMapLayer(SettlementMapPanel mapPanel) {
+	public PersonMapLayer(SettlementMapPanel mapPanel, Properties userSettings) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
+		this.showLabels = UIConfig.extractBoolean(userSettings, PERSON_LABELS_PROP, false);
 	}
 	
 	@Override
@@ -43,7 +50,22 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement, false);		
 		Person selectedPerson = mapPanel.getSelectedPerson();
 
-		return drawWorkers(people, selectedPerson, mapPanel.isOptionDisplayed(DisplayOption.PERSON_LABELS), viewpoint);
+		return drawWorkers(people, selectedPerson, showLabels, viewpoint);
+	}
+
+	@Override
+	public List<JMenuItem> getFilterControls() {
+		return List.of(createDisplayToggle("person_labels", showLabels,
+				selected -> {
+					showLabels = selected;
+					mapPanel.repaint();
+					return null;
+				}));
+	}
+
+	@Override
+	public void saveUIProperties(Properties props) {
+		props.setProperty(PERSON_LABELS_PROP, Boolean.toString(showLabels));
 	}
 
 	/**

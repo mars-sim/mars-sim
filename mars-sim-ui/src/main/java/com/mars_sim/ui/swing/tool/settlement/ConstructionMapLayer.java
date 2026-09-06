@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
+
+import javax.swing.JMenuItem;
 
 import org.apache.batik.gvt.GraphicsNode;
 
@@ -20,7 +23,7 @@ import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
@@ -69,22 +72,25 @@ public class ConstructionMapLayer extends AbstractMapLayer {
 
     private static final Color CONST_COLOR = new Color(119, 59, 0); // dark orange
     private static final Color CONST_SELECTED_COLOR = Color.WHITE; // Color(119, 85, 0); // dark orange
+    private static final String CONSTRUCTION_LABELS_PROP = "CONSTRUCTION_LABELS";
 
     private static final Font LABEL_FONT = new Font(Font.SERIF, Font.PLAIN, 10); // Note size doesn;t matter
 
 	private static final ColorChoice CONSTRUCTION_COLOR = new ColorChoice(new Color(237, 114, 38), new Color(0, 0, 0, 150));
         
     private SettlementMapPanel mapPanel;
+    private boolean showConstructionLabels;
     
     /**
      * Constructor 1.
      * 
      * @param mapPanel the settlement map panel.
      */
-    public ConstructionMapLayer(SettlementMapPanel mapPanel) {
+        public ConstructionMapLayer(SettlementMapPanel mapPanel, Properties userSettings) {
 
         // Initialize data members.
         this.mapPanel = mapPanel;
+		this.showConstructionLabels = UIConfig.extractBoolean(userSettings, CONSTRUCTION_LABELS_PROP, false);
     }
 
     @Override
@@ -95,15 +101,29 @@ public class ConstructionMapLayer extends AbstractMapLayer {
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
         // Draw all construction sites.
-        boolean constLabels = mapPanel.isOptionDisplayed(DisplayOption.CONSTRUCTION_LABELS);
         for(ConstructionSite c : settlement.getConstructionManager()
                                 .getConstructionSites()) {
-            hotspots.add(drawConstructionSite(c, constLabels, viewpoint));
+            hotspots.add(drawConstructionSite(c, showConstructionLabels, viewpoint));
         }
 
 	    // Restore original graphic transforms.
 	    viewpoint.graphics().setTransform(saveTransform);
         return hotspots;
+    }
+
+    @Override
+    public List<JMenuItem> getFilterControls() {
+        return List.of(createDisplayToggle("construction_labels", showConstructionLabels,
+                selected -> {
+                    showConstructionLabels = selected;
+                    mapPanel.repaint();
+                    return null;
+                }));
+    }
+
+    @Override
+    public void saveUIProperties(Properties props) {
+        props.setProperty(CONSTRUCTION_LABELS_PROP, Boolean.toString(showConstructionLabels));
     }
 
     /**

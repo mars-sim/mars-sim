@@ -18,15 +18,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JPanel;
@@ -35,7 +31,6 @@ import javax.swing.SwingUtilities;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
-import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -67,21 +62,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 @SuppressWarnings("serial")
 public class SettlementMapPanel extends JPanel {
 
-	/**
-	 * Display options that can be selected
-	 */
-	public enum DisplayOption {
-		BUILDING_LABELS,
-		CONSTRUCTION_LABELS,
-		DATA_COLLECTION_SITE_LABELS,
-		PERSON_LABELS,
-		ROBOT_LABELS,
-		VEHICLE_LABELS,
-		DAYLIGHT_LAYER
-	}
-
 	// Property names for UI Config
-	private static final String SPOT_LBL_PROP   = "SPOT_LABELS_";
 	private static final String SETTLEMENT_PROP = "SETTLEMENT";
 	private static final String X_PROP          = "XPOS";
 	private static final String Y_PROP          = "YPOS";
@@ -112,8 +93,6 @@ public class SettlementMapPanel extends JPanel {
 
 	private DayNightMapLayer dayNightMapLayer;
 
-	private Set<FunctionType> showSpotLabels = new HashSet<>();
-
 	private List<SettlementMapLayer> mapLayers;
 
 	private Map<Settlement, Person>   selectedPerson;
@@ -126,8 +105,6 @@ public class SettlementMapPanel extends JPanel {
 	private List<MapHotspot<?>> hotspots = new ArrayList<>();
 	
 	private static final Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
-
-	private Set<DisplayOption> displayOptions = EnumSet.noneOf(DisplayOption.class);
 
 	// -------- Event coalescing for simulation tick -> UI --------
 	/** Coalesces simulation-tick UI updates so we don't flood the EDT. */
@@ -180,17 +157,8 @@ public class SettlementMapPanel extends JPanel {
 		rotation = UIConfig.extractDouble(userSettings, ROTATION_PROP, 0D);
 		// Always quantize stored scale
 		scale = UIConfig.extractDouble(userSettings, SCALE_PROP, DEFAULT_SCALE);
-		for (DisplayOption op : DisplayOption.values()) {
-			if (UIConfig.extractBoolean(userSettings, op.name(), false)) {
-				displayOptions.add(op);
-			}
-		}
 
-		for (FunctionType ft : FunctionType.values()) {
-			if (UIConfig.extractBoolean(userSettings, SPOT_LBL_PROP + ft.name(), false)) {
-				showSpotLabels.add(ft);
-			}
-		}
+
 		selectedVehicle = new HashMap<>();
 		selectedBuilding = new HashMap<>();
 		selectedPerson = new HashMap<>();
@@ -198,7 +166,7 @@ public class SettlementMapPanel extends JPanel {
 		selectedSite = new HashMap<>();
 		selectedDataColSite = new HashMap<>();
 		
-		initLayers(context);
+		initLayers(context, userSettings);
 
 		// Set foreground and background colors.
 		setOpaque(false);
@@ -220,24 +188,21 @@ public class SettlementMapPanel extends JPanel {
 	 *
 	 * @param desktop
 	 */
-	private void initLayers(UIContext desktop) {
+	private void initLayers(UIContext desktop, Properties userSettings) {
 
 		// Set up the dayNightMapLayer layers
-		dayNightMapLayer = new DayNightMapLayer(this, desktop.getSimulation().getSurfaceFeatures());
-
-		// Check the DayNightLayer at the start of the sim
-		displayOptions.remove(DisplayOption.DAYLIGHT_LAYER);
+		dayNightMapLayer = new DayNightMapLayer(this, desktop.getSimulation().getSurfaceFeatures(), userSettings);
 
 		// Create map layers.
 		mapLayers = new ArrayList<>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
 		mapLayers.add(dayNightMapLayer);
-		mapLayers.add(new BuildingMapLayer(this));
-		mapLayers.add(new ConstructionMapLayer(this));
-		mapLayers.add(new DataCollectionSiteMapLayer(this));
-		mapLayers.add(new VehicleMapLayer(this));
-		mapLayers.add(new PersonMapLayer(this));
-		mapLayers.add(new RobotMapLayer(this));
+		mapLayers.add(new BuildingMapLayer(this, userSettings));
+		mapLayers.add(new ConstructionMapLayer(this, userSettings));
+		mapLayers.add(new DataCollectionSiteMapLayer(this, userSettings));
+		mapLayers.add(new VehicleMapLayer(this, userSettings));
+		mapLayers.add(new PersonMapLayer(this, userSettings));
+		mapLayers.add(new RobotMapLayer(this, userSettings));
 
 		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 
@@ -791,82 +756,12 @@ public class SettlementMapPanel extends JPanel {
 		return result;
 	}
 	
-	/**
-	 * Is a display option enabled?
-	 *
-	 * @param op
-	 * @return
-	 */
-	public boolean isOptionDisplayed(DisplayOption op) {
-		return displayOptions.contains(op);
+	protected List<SettlementMapLayer> getMapLayers() {
+		return mapLayers;
 	}
 
-	/**
-	 * Toggle a display option, i.e if not set enable and vice versa.
-	 *
-	 * @param op Display option to toggle
-	 */
-	void toggleDisplayOption(DisplayOption op) {
-		if (!displayOptions.remove(op)) {
-			displayOptions.add(op);
-		}
-		repaint();
-	}
-
-	/**
-	 * Reverses the settings of the Spot label.
-	 *
-	 * @param possible The range of possible values
-	 */
-	void reverseSpotLabels(Collection<FunctionType> possible) {
-		if (!showSpotLabels.isEmpty()) {
-			showSpotLabels.clear();
-		} else {
-			showSpotLabels.addAll(possible);
-		}
-	}
-
-	/**
-	 * Clears the settings of the Spot label.
-	 */
-	void clearSpotLabels() {
-		showSpotLabels.clear();
-	}
-
-	/**
-	 * Checks if building spots should be displayed.
-	 *
-	 * @param ft
-	 * @return true if building activity spots should be displayed.
-	 */
-	boolean isShowSpotLabels(FunctionType ft) {
-		return showSpotLabels.contains(ft);
-	}
-
-	/**
-	 * Gets all active Function Activity Spots enabled.
-	 */
-	Set<FunctionType> getShowSpotLabels() {
-		return showSpotLabels;
-	}
-
-	/**
-	 * Sets if spot labels should be displayed.
-	 *
-	 * @param ft
-	 * @param showLabels true if spot labels should be displayed.
-	 */
-	void setShowSpotLabels(FunctionType ft, boolean showLabels) {
-		if (showLabels) {
-			this.showSpotLabels.add(ft);
-		} else {
-			this.showSpotLabels.remove(ft);
-		}
-		repaint();
-	}
-
-	public DayNightMapLayer getDayNightMapLayer() {
-		return dayNightMapLayer;
+	public boolean isDaylightLayerVisible() {
+		return (dayNightMapLayer != null) && dayNightMapLayer.isVisible();
 	}
 
 	/**
@@ -943,18 +838,15 @@ public class SettlementMapPanel extends JPanel {
 			props.setProperty(SETTLEMENT_PROP, settlement.getName());
 		}
 
-		for (DisplayOption op : DisplayOption.values()) {
-			props.setProperty(op.name(), Boolean.toString(displayOptions.contains(op)));
-		}
-
 		props.setProperty(X_PROP, Double.toString(xPos));
 		props.setProperty(Y_PROP, Double.toString(yPos));
 		props.setProperty(ROTATION_PROP, Double.toString(rotation));
 		props.setProperty(SCALE_PROP, Double.toString(scale));
 
-		for (FunctionType ft : showSpotLabels) {
-			props.setProperty(SPOT_LBL_PROP + ft.name(), "true");
+		for (var layer : mapLayers) {
+			layer.saveUIProperties(props);
 		}
+
 		return props;
 	}
 
@@ -971,11 +863,6 @@ public class SettlementMapPanel extends JPanel {
 		if (mapLayers != null) {
 			mapLayers.forEach(SettlementMapLayer::destroy);
 			mapLayers = null;
-		}
-
-		if (settlementTransparentPanel != null) {
-			settlementTransparentPanel.destroy();
-			settlementTransparentPanel = null;
 		}
 	}
 }
