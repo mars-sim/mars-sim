@@ -60,9 +60,15 @@ public class ItemResourceUtil {
 	public static final int GPR_ID					 = DAN_ID + 1;
 	public static final int GRAVITY_GRADIOMETER_ID 	 = GPR_ID + 1;
 	public static final int SEISMOELECTRIC_SENSOR_ID = GRAVITY_GRADIOMETER_ID + 1;
+
+	public static final int STEEL_INGOT_ID = SEISMOELECTRIC_SENSOR_ID + 1;
+	public static final int STEEL_SHEET_ID = STEEL_INGOT_ID + 1;
+	public static final int STEEL_POST_ID = STEEL_SHEET_ID + 1;
+	public static final int STEEL_TRUSS_ID = STEEL_POST_ID + 1;
+	public static final int STEEL_PIPE_ID = STEEL_TRUSS_ID + 1;	
 	
 	// Must be one after the last fixed resource
-	public static final int FIRST_FREE_ITEM_RESOURCE_ID = SEISMOELECTRIC_SENSOR_ID + 1;
+	public static final int FIRST_FREE_ITEM_RESOURCE_ID = STEEL_PIPE_ID + 1;
 	
 	// Light utility vehicle attachment parts for mining or construction.
 
@@ -90,6 +96,13 @@ public class ItemResourceUtil {
 		// Map the pre-defined resources to their names
 		// All must be in lowercase
 
+		// Related to construction
+		fixedItemResources.put("steel ingot", STEEL_INGOT_ID);
+		fixedItemResources.put("steel sheet", STEEL_SHEET_ID);
+		fixedItemResources.put("steel post", STEEL_POST_ID);
+		fixedItemResources.put("steel truss", STEEL_TRUSS_ID);
+		fixedItemResources.put("steel pipe", STEEL_PIPE_ID);
+		
 		// Related to water discovery
 		fixedItemResources.put("surface nuclear magnetic resonance sounder", SNMRS_ID);
 		fixedItemResources.put("time domain electromagnetic sounder", TDEM_SOUNDER_ID);

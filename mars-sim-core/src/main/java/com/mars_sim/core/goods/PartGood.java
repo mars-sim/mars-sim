@@ -425,15 +425,16 @@ public class PartGood extends Good {
 			* flattenDemand;
 		
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == INITIAL_PART_DEMAND) {
-			projectedCache = projected;
-		}
-		else {
-//			projectedCache = .005 * projected + .995 * projectedCache;
-			projectedCache = .02 * projected + .98 * projectedCache;
-		}
 		
-		owner.setProjectedDemandScore(this, projectedCache);
+//		if (projectedCache == INITIAL_PART_DEMAND) {
+//			projected = projectedCache;
+//		}
+//		else {
+//			projectedCache = .005 * projected + .995 * projectedCache;
+			projected = .02 * projected + .98 * projectedCache;
+//		}
+		
+		owner.setProjectedDemandScore(this, projected);
 		
 		// Add trade demand.
 		double tradeDemand = owner.determineTradeDemand(this) / 10;
@@ -453,7 +454,7 @@ public class PartGood extends Good {
 			// At the start of the sim
 			totalDemand = 
 					  .4 * repairDemand 
-					+ .4 * projectedCache 
+					+ .4 * projected 
 					+ .2 * tradeDemand;
 		}
 
@@ -471,16 +472,16 @@ public class PartGood extends Good {
 //						+ .0002 * repairDemand 
 //						+ .0002 * tradeDemand; 
 //		}
-		
+
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.003;
+			totalDemand *= 1.01;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.997;
+			totalDemand *= 0.99;
 		}
 		
 		// Save the goods demand

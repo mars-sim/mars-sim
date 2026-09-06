@@ -198,14 +198,14 @@ class VehicleGood extends Good {
 		double projected = newProjDemand * flattenDemand;
 		
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == INITIAL_VEHICLE_DEMAND) {
-			projectedCache = projected;
-		}
-		else {
-			projectedCache = .01 * projected + .99 * projectedCache;
-		}
+//		if (projectedCache == INITIAL_VEHICLE_DEMAND) {
+//			projected = projectedCache;
+//		}
+//		else {
+			projected = .02 * projected + .98 * projectedCache;
+//		}
 		
-		owner.setProjectedDemandScore(this, projectedCache);
+		owner.setProjectedDemandScore(this, projected);
 	
 		double average = computeVehiclePartsCost(owner);
 		
@@ -228,7 +228,7 @@ class VehicleGood extends Good {
 		if (previousDemand == INITIAL_VEHICLE_DEMAND) {
 			totalDemand = .5 * average 
 						+ .1 * repairDemand
-						+ .2 * projectedCache 
+						+ .2 * projected 
 						+ .2 * tradeDemand;
 		}
 
@@ -244,12 +244,12 @@ class VehicleGood extends Good {
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.003;
+			totalDemand *= 1.01;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.997;
+			totalDemand *= 0.99;
 		}		
 		
 		owner.setDemandScore(this, totalDemand);

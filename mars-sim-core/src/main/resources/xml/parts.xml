@@ -144,7 +144,7 @@
 
 	<part name="Aluminum ingot" type="metallic" mass="5.0" />
 
-	<part name="Steel sheet" type="metallic" mass="7.8" >
+	<part name="Steel sheet" type="construction" mass="7.8" >
 		<description>A density of 7.8 g/cm3. 1m x 1m x 1mm sheet of steel</description>
 	</part>
 
@@ -185,7 +185,7 @@
 	</part>
 
 	<!-- Composed of 20 electrical wires braided together -->
-	<part name="Steel cable" type="electrical" mass="1" />
+	<part name="Steel cable" type="construction" mass="1" />
 
 	<!-- Composed of 20 electrical wires braided together -->
 	<part name="Power cable" type="electrical" mass="1">
@@ -213,7 +213,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Steel pipe" type="metallic" mass="0.882">
+	<part name="Steel pipe" type="construction" mass="0.882">
 	<description>A density of 7.8 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
 		<maintenance-entity-list>
 			<entity name="farming" probability=".1" max-number="2" />

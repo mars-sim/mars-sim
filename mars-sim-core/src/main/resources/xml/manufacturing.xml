@@ -594,9 +594,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="aluminum" amount="0.88" />
 			<part name="aluminum ingot" number="2" />
+			<!-- on aluminum ingot is 5 kg -->
 		</inputs>
 		<outputs>
 			<part name="aluminum sheet" number="4" />
+			<!-- on aluminum sheet is 2.72 kg -->
 		</outputs>
 	</process>
 
@@ -609,6 +611,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<part name="steel ingot" number="5" />
+			<!-- one steel ingot is 5 kg -->
 		</outputs>
 	</process>
 
@@ -632,6 +635,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<part name="steel ingot" number="5" />
+			<!-- one steel ingot is 5 kg -->
 		</outputs>
 	</process>
 	
@@ -645,6 +649,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<part name="steel sheet" number="1" />
+			<!-- one steel sheet is 7.8 kg -->
 		</outputs>
 	</process>
 
@@ -654,26 +659,29 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="manganese" amount=".1" />		
 			<part name="steel ingot" number="8" />
+			<!-- one steel ingot is 5 kg -->
 		</inputs>
 		<outputs>
 			<resource name="iron powder" amount="1.0" />
 			<part name="steel sheet" number="5" />
+			<!-- one steel sheet is 7.8 kg -->
 		</outputs>
 	</process>
 
 	<!-- Produces 0.05 kg spool of thick steel wire from 5 kg steel ingot. -->
-	<process name="Draw steel wire" tech="0" skill="0" work-time="50" process-time="20" tooling="metalwork"
+	<process name="Draw steel wire" tech="0" skill="0" work-time="30" process-time="20" tooling="metalwork"
 			power-required=".2">
 		<inputs>
+			<resource name="iron powder" amount="0.2" />
 			<part name="steel ingot" number="1" />
 		</inputs>
 		<outputs>
-			<part name="steel wire" number="100" />
+			<part name="steel wire" number="10" />
 		</outputs>
 	</process>
 
 	<!-- Produces 1kg of steel cable from 5kg steel ingot. -->
-	<process name="Do steel cable winding" tech="0" skill="0" work-time="50" process-time="20" tooling="metalwork"
+	<process name="Do steel cable winding" tech="0" skill="0" work-time="40" process-time="20" tooling="metalwork"
 			power-required="0.1">
 		<inputs>
 			<part name="steel ingot" number="1" />
@@ -684,14 +692,17 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 8x 1m x 2mm x 20cm steel pipe. -->
-	<process name="Make steel pipe" tech="0" skill="0" work-time="50" process-time="20" tooling="metalwork"
+	<process name="Make steel pipe" tech="0" skill="0" work-time="20" process-time="10" tooling="metalwork"
 			power-required=".1">
 		<inputs>
+			<resource name="iron powder" amount="0.138" />
 			<part name="steel sheet" number="1" />
+			<!-- one steel sheet is 7.8 kg -->
 		</inputs>
 		<outputs>
-			<resource name="iron powder" amount="0.8" />
-			<part name="steel pipe" number="8" />
+
+			<part name="steel pipe" number="9" />
+			<!-- one steel pipe is 0.882 kg, 8 x 0.882 = 7.938 kg -->
 		</outputs>
 	</process>
 
@@ -699,11 +710,14 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make iron pipe" tech="0" skill="0" work-time="50" process-time="20" tooling="metalwork"
 			power-required=".1">
 		<inputs>
+			<resource name="iron powder" amount="0.142" />
 			<part name="iron sheet" number="1" />
+		<!-- one iron sheet is 7.85 kg -->
 		</inputs>
 		<outputs>
 			<resource name="iron powder" amount="0.8" />
 			<part name="iron pipe" number="8" />
+			<!-- one iron pipe is 0.888 kg, 8 x 0.888 = 7.992 kg -->
 		</outputs>
 	</process>
 

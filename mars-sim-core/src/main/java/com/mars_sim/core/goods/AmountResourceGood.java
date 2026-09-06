@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LivingAccommodation;
@@ -30,6 +31,7 @@ import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.AmountResource;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
@@ -210,7 +212,7 @@ class AmountResourceGood extends Good {
 	private static final double COOKED_MEAL_INPUT_FACTOR = 0.5;
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
-	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 400D;
+	private static final int CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 2;
 
 	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 500D; 
 	private static final double MAX_MANUFACTURING_DEMAND = 500D;
@@ -667,15 +669,15 @@ class AmountResourceGood extends Good {
 			// Adjust the demand on various waste products with the disposal cost.
 			* modifyWasteResource();
 
-		if (projectedCache == INITIAL_AMOUNT_DEMAND) {
-			projectedCache = projected;
-		}
-		else {
+//		if (projectedCache == INITIAL_AMOUNT_DEMAND) {
+//			projected = projectedCache;
+//		}
+//		else {
 //			projectedCache = .005 * projected + .995 * projectedCache;
-			projectedCache = .02 * projected + .98 * projectedCache;
-		}
+			projected = .02 * projected + .98 * projectedCache;
+//		}
 		
-		owner.setProjectedDemandScore(this, projectedCache);
+		owner.setProjectedDemandScore(this, projected);
 				
 		// Add trade value. Cache is always false if this method is called
 		double tradeDemand = owner.determineTradeDemand(this) / 20;
@@ -688,7 +690,7 @@ class AmountResourceGood extends Good {
 		
 		if (previousDemand == INITIAL_AMOUNT_DEMAND) {
 			// At the start of the simˇ
-			totalDemand = .8 * projectedCache 
+			totalDemand = .8 * projected 
 						+ .2 * tradeDemand;
 		}
 //		else if (totalSupply < 0.005 && previousDemand < projectedDemand) {
@@ -714,12 +716,12 @@ class AmountResourceGood extends Good {
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.003;
+			totalDemand *= 1.01;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.997;
+			totalDemand *= 0.99;
 		}
 		
 		// Save the goods demand
@@ -1078,37 +1080,66 @@ class AmountResourceGood extends Good {
 	private double getResourceConstructionDemand(Settlement settlement) {
 		double base = 0D;
 		int id = getID();
-		for(var s : settlement.getConstructionManager().getConstructionSites()) {
+		
+		for (ConstructionSite s : settlement.getConstructionManager().getConstructionSites()) {
+			
 			if (s.isConstruction()) {
-				double need = s.getCurrentConstructionStage().getResourceNeeded(id);
-				if (need > 0) {
-					base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR * 2;
-					// May add back logger.info("Now - " + ResourceUtil.findAmountResourceName(id) + " : " + base)
-				}
+				double amountResourceNeed = s.getCurrentConstructionStage().getResourceNeeded(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR * 4;	
+			
+				double itemResourceNeed = obtainIronPartNeed(id, s);
+				
+				base += amountResourceNeed + itemResourceNeed;
 			}
 			else {
 				// If construction has not started, should anticipate the need
-				double need = s.getCurrentConstructionStage().getResourceNeeded(id);
-				if (need > 0) {
-					base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
-					// May add back logger.info("Upcoming - " + ResourceUtil.findAmountResourceName(id) + " : " + base)
-				}
+				double amountResourceNeed = s.getCurrentConstructionStage().getResourceNeeded(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR * 2;	
+				
+				double itemResourceNeed = obtainIronPartNeed(id, s) / 2;
+				
+				base += amountResourceNeed + itemResourceNeed;
 			}
 			
 			// Anticipate the need for the next stage
 			ConstructionStageInfo info = s.getNextConstructionStageInfo();
+			
 			if (info != null) {
-				double need = info.getResourceRequired(id) / 2;
-				if (need > 0) {
-					base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR / 2;
-					// May add back logger.info("Next - " + ResourceUtil.findAmountResourceName(id) + " : " + base)
-				}
+				double amountResourceNeed = info.getResourceRequired(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;	
+				
+				double itemResourceNeed = obtainIronPartNeed(id, s) / 8;
+				
+				base += amountResourceNeed + itemResourceNeed;
 			}
 		}
 
 		return MathUtils.between(base, 0.0, GoodsManager.MAX_DEMAND);
 	}
 
+	/**
+	 * Obtains iron part need.
+	 * 
+	 * @param id
+	 * @param s
+	 * @return
+	 */
+	private double obtainIronPartNeed(int id, ConstructionSite s) {
+		double missing = 0;
+		
+		if (id == ResourceUtil.IRON_OXIDE_ID || id == ResourceUtil.IRON_POWDER_ID) {
+			double partNeed = s.getCurrentConstructionStage().getPartNeeded(ItemResourceUtil.STEEL_INGOT_ID);
+			missing += (int)partNeed * ItemResourceUtil.findItemResource(ItemResourceUtil.STEEL_INGOT_ID).getMassPerItem();
+			partNeed = s.getCurrentConstructionStage().getPartNeeded(ItemResourceUtil.STEEL_SHEET_ID);
+			missing += (int)partNeed * ItemResourceUtil.findItemResource(ItemResourceUtil.STEEL_SHEET_ID).getMassPerItem();
+			partNeed = s.getCurrentConstructionStage().getPartNeeded(ItemResourceUtil.STEEL_POST_ID);
+			missing += (int)partNeed * ItemResourceUtil.findItemResource(ItemResourceUtil.STEEL_POST_ID).getMassPerItem();
+			partNeed = s.getCurrentConstructionStage().getPartNeeded(ItemResourceUtil.STEEL_TRUSS_ID);
+			missing += (int)partNeed * ItemResourceUtil.findItemResource(ItemResourceUtil.STEEL_TRUSS_ID).getMassPerItem();
+			partNeed = s.getCurrentConstructionStage().getPartNeeded(ItemResourceUtil.STEEL_PIPE_ID);
+			missing += (int)partNeed * ItemResourceUtil.findItemResource(ItemResourceUtil.STEEL_PIPE_ID).getMassPerItem();
+		}
+		
+		return missing;
+	}
+	
 	/**
 	 * Gets the farming demand for the resource.
 	 *

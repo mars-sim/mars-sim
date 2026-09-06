@@ -161,14 +161,14 @@ class RobotGood extends Good {
 		double projected = newProjDemand * flattenDemand;
 			
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == INITIAL_ROBOT_DEMAND) {
-			projectedCache = projected;
-		}
-		else {
-			projectedCache = .01 * projected + .99 * projectedCache;
-		}
+//		if (projectedCache == INITIAL_ROBOT_DEMAND) {
+//			projected = projectedCache;
+//		}
+//		else {
+			projected = .01 * projected + .99 * projectedCache;
+//		}
 		
-		owner.setProjectedDemandScore(this, projectedCache);
+		owner.setProjectedDemandScore(this, projected);
 		
 		// This method is not using cache
 		double tradeDemand = owner.determineTradeDemand(this) / 10;
@@ -185,7 +185,7 @@ class RobotGood extends Good {
 		double totalDemand = previousDemand;
 		
 		if (previousDemand == INITIAL_ROBOT_DEMAND) {
-			totalDemand = .5 * projectedCache 
+			totalDemand = .5 * projected 
 						+ .1 * repairDemand
 						+ .4 * tradeDemand;
 		}
@@ -200,12 +200,12 @@ class RobotGood extends Good {
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.003;
+			totalDemand *= 1.01;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.997;
+			totalDemand *= 0.99;
 		}
 		
 		owner.setDemandScore(this, totalDemand);

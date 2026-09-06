@@ -223,14 +223,14 @@ public class EquipmentGood extends Good {
 		double projected = newProjDemand * flattenDemand;
 		
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == INITIAL_EQUIPMENT_DEMAND) {
-			projectedCache = projected;
-		}
-		else {
-			projectedCache = .01 * projected + .99 * projectedCache;
-		}
+//		if (projectedCache == INITIAL_EQUIPMENT_DEMAND) {
+//			projected = projectedCache;
+//		}
+//		else {
+			projected = .02 * projected + .98 * projectedCache;
+//		}
 		
-		owner.setProjectedDemandScore(this, projectedCache);
+		owner.setProjectedDemandScore(this, projected);
 		
 		double totalSupply = getAverageEquipmentSupply(settlement.getEquipmentInventory().findNumContainersOfType(equipmentType));
 				
@@ -254,7 +254,7 @@ public class EquipmentGood extends Good {
 		double totalDemand = previousDemand;
 		
 		if (previousDemand == INITIAL_EQUIPMENT_DEMAND) {
-			totalDemand = .5 * projectedCache 
+			totalDemand = .5 * projected 
 						+ .2 * repairDemand
 						+ .3 * tradeDemand;
 		}
@@ -269,12 +269,12 @@ public class EquipmentGood extends Good {
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.003;
+			totalDemand *= 1.01;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.997;
+			totalDemand *= 0.99;
 		}
 				
 		owner.setDemandScore(this, totalDemand);
