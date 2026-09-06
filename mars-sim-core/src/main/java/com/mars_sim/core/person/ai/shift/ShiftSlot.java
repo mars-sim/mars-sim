@@ -27,11 +27,12 @@ public class ShiftSlot implements ScheduledEventHandler {
      * The work status of this slot.
      */
     public enum WorkStatus {
-        ON_DUTY ("On-Duty"), 
-        OFF_DUTY ("Off-Duty"), 
-        ON_CALL ("On-Call"), 
-        ON_LEAVE ("On-Leave");
-
+        ON_DUTY 	("On-Duty"), 
+        OFF_DUTY 	("Off-Duty"), 
+        ON_CALL 	("On-Call"), 
+        ON_LEAVE 	("On-Leave"),
+        GUEST 		("Guest");
+        
     	private String name;
 
 		/** hidden constructor. */
@@ -69,6 +70,10 @@ public class ShiftSlot implements ScheduledEventHandler {
 
       	if (RoleType.GUEST == worker.getRole().getType()) {         
       		isGuest = true;
+      		// Q1: Should a person be set onCall to true (behind the scene)
+      		//    in order to be allow to go on mission or assigned with work tasks ?
+      		// Q2: What is the best way to handle the job, the role and the shift status for a guest ?
+      		// Note: See setGuest() below
       		onCall = true;
       	}
       	
@@ -94,6 +99,10 @@ public class ShiftSlot implements ScheduledEventHandler {
     public void setGuest(boolean value) {
     	if (value) {         
       		isGuest = true;
+      		// Q1: Should a person be set onCall to true (behind the scene)
+      		//    in order to be allow to go on mission or assigned with work tasks ?
+      		// Q2: What is the best way to handle the job, the role and the shift status for a guest ?
+      		// Note: See constructor above
       		onCall = true;
       	}
     	else
@@ -126,7 +135,6 @@ public class ShiftSlot implements ScheduledEventHandler {
         onLeave = true;
         worker.fireUnitUpdate(SHIFT_EVENT);
 
-
         // Scheduled end of leave
         worker.getAssociatedSettlement().getFutureManager().addEvent(duration, this);
     }
@@ -135,7 +143,11 @@ public class ShiftSlot implements ScheduledEventHandler {
      * Extracts the status of this slot in terms of active work.
      */
     public WorkStatus getStatus() {
-        if (onCall || isGuest) {
+
+        if (isGuest) {
+            return WorkStatus.GUEST;
+        }
+        else if (onCall) {
             return WorkStatus.ON_CALL;
         }
         else if (onLeave) {

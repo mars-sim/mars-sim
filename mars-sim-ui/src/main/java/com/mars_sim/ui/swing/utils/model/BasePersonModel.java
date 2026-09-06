@@ -12,6 +12,7 @@ import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
+import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.ui.swing.StyleManager;
@@ -152,7 +153,8 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
 				// If person is dead, disable it.
 				if (!isDead) {
 					ShiftSlot shift = entity.getShiftSlot();		
-					yield shift.getShift().isOnDuty();
+					yield shift.getShift().isOnDuty()
+						|| entity.isOnCall();
 				}
                 else {
                     yield null;
@@ -163,13 +165,16 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
 				// If person is dead, disable it.
 				if (!isDead) {
 					ShiftSlot shift = entity.getShiftSlot();	
-					yield shift.getShift().getName();
-//					if (shift.getStatus() == WorkStatus.ON_CALL) {
-//						yield WorkStatus.ON_CALL.getName();
-//					}
-//					else {
-//						yield shift.getShift().getName();//getStatusDescription();
-//					}
+//					yield shift.getShift().getName();
+					if (shift.getStatus() == WorkStatus.ON_CALL) {
+						yield WorkStatus.ON_CALL.getName();
+					}
+					else if (shift.getStatus() == WorkStatus.GUEST) {
+						yield WorkStatus.GUEST.getName();
+					}
+					else {
+						yield shift.getShift().getName();//getStatusDescription();
+					}
 				}
                 else {
                     yield null;

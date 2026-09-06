@@ -133,7 +133,8 @@ public class SleepMeta extends FactoryMetaTask {
             	result = result * 100;
 				MAX_NUM_SLEEP = 8;
 			}
-            else if (workStatus == WorkStatus.ON_DUTY) {
+            else if (workStatus == WorkStatus.ON_DUTY
+            	|| workStatus == WorkStatus.GUEST) {
          	   // Reduce the probability of sleep
                result = result / 100D;
             }

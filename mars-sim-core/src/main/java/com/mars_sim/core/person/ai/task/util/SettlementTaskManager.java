@@ -187,8 +187,9 @@ public class SettlementTaskManager implements Serializable {
      */
     public List<TaskJob> getTasks(Person p) {
         Set<TaskScope> acceptable = switch(p.getShiftSlot().getStatus()) {
-            case OFF_DUTY, ON_LEAVE -> OFF_DUTY_SCOPES;
+            case OFF_DUTY, ON_LEAVE, GUEST -> OFF_DUTY_SCOPES;
             case ON_CALL, ON_DUTY -> ON_DUTY_SCOPES;
+		default -> throw new IllegalArgumentException("Unexpected value: " + p.getShiftSlot().getStatus());
         };
 
         List<TaskJob> result = new ArrayList<>();

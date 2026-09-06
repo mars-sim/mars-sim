@@ -201,7 +201,7 @@ class ShiftManagerTest extends MarsSimUnitTest {
         // Shift on duty standard
         testWorkStatus(futures, slot, shiftEnd, "Standard worker", WorkStatus.ON_DUTY, WorkStatus.OFF_DUTY);
         assertEquals(2, listener.getEventsReceived(), "Events when person comes on/off shift");
-
+  
         // Check OnCall
         slot.setOnCall(true);
         assertEquals(3, listener.getEventsReceived(), "OnCall event fired");
@@ -217,6 +217,11 @@ class ShiftManagerTest extends MarsSimUnitTest {
         assertEquals(5, listener.getEventsReceived(), "Off OnCall event fired");
         testWorkStatus(futures, slot, shiftEnd, "On-Leave worker", WorkStatus.ON_LEAVE, WorkStatus.ON_LEAVE);
         assertEquals(5, listener.getEventsReceived(), "Still on leave so no events");
+        
+        // Check guest
+        slot.setGuest(true);
+        assertEquals(5, listener.getEventsReceived(), "guest event fired");
+        testWorkStatus(futures, slot, shiftEnd, "guest", WorkStatus.GUEST, WorkStatus.GUEST);
     }
 
     /**

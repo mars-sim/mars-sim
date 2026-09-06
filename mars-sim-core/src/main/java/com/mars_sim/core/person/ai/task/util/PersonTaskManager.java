@@ -108,6 +108,10 @@ public class PersonTaskManager extends TaskManager {
                 mtList = MetaTaskUtil.getDutyHourTasks();
                 yield "Shift: On-Duty";
             }
+            case GUEST -> {
+                mtList = MetaTaskUtil.getOnCallMetaTasks();
+                yield "Shift: Guest";
+            }
             default -> throw new IllegalStateException("Do not know status " + workStatus);
         };
 

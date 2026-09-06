@@ -172,7 +172,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 		int end = s.getEnd();
 
 		switch(status) {
-			case ON_CALL, ON_LEAVE:
+			case ON_CALL, ON_LEAVE, GUEST:
 				return status.getName();
 			case ON_DUTY:
 				return status.getName() + " ends @ " + end;
@@ -196,7 +196,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 		String shiftName = s.getName();
 		
 		switch(status) {
-			case ON_CALL:
+			case ON_CALL, GUEST:
 				return status.getName();
 			case ON_DUTY, OFF_DUTY, ON_LEAVE:
 				return shiftName;
@@ -223,7 +223,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 				return "From " + start + " to " + end + " millisols";
 			case ON_CALL:
 				return "Anytime";
-			case ON_LEAVE:
+			case ON_LEAVE, GUEST:
 				return "None";
 		}
 

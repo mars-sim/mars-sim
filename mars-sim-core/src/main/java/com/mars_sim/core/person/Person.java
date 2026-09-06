@@ -642,6 +642,13 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 	
 	/**
+	 * Is this Person a guest ?
+	 */
+	public boolean isGuest() {
+		return shiftSlot.getStatus() == WorkStatus.GUEST;
+	}
+	
+	/**
 	 * Creates a string representing the birth time of the person.
 	 * 
 	 * @param earthLocalTime

@@ -671,7 +671,8 @@ class AmountResourceGood extends Good {
 			projectedCache = projected;
 		}
 		else {
-			projectedCache = .005 * projected + .995 * projectedCache;
+//			projectedCache = .005 * projected + .995 * projectedCache;
+			projectedCache = .02 * projected + .98 * projectedCache;
 		}
 		
 		owner.setProjectedDemandScore(this, projectedCache);
