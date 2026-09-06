@@ -90,7 +90,7 @@ class ExplorationManagerTest extends MarsSimUnitTest {
         assertEquals(3, eMgr.getNearbyMineralLocations().size(), "Nearby locations");
         assertEquals(2, eMgr.getDeclaredROIs().size(), "Declared locations at settlement");
 
-        assertEquals(2, sf.getAllPossibleRegionOfInterestLocations().size(), "All locatinos");
+        assertEquals(2, sf.getAllPossibleRegionOfInterestLocations().size(), "All locations");
 
         var claimedStats = eMgr.getStatistics(ExplorationManager.CLAIMED_STAT);
         assertEquals(dist1, claimedStats.mean(), "Claimed mean");

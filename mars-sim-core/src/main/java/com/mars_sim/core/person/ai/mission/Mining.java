@@ -450,11 +450,11 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for(MineralSite site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
+			for(MineralSite site : surfaceFeatures.getSpecificSites()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 
-				if (site.isMinable() && !site.isReserved() && site.isExplored() && isMature
+				if (isMature
 					// Only mine from sites explored from home authority.
 					&& authority.equals(site.getOwner())
 					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {
@@ -493,10 +493,10 @@ public class Mining extends EVAMission
 			}
 
 			var authority = homeSettlement.getReportingAuthority();
-			for (MineralSite site : surfaceFeatures.getAllPossibleRegionOfInterestLocations()) {
+			for (MineralSite site : surfaceFeatures.getSpecificClaimedSites()) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
-				if (site.isMinable() && site.isClaimed() && !site.isReserved() && site.isExplored() && isMature
+				if (isMature
 					// Only mine from sites explored from home settlement.
 					&& (site.getOwner() == null || authority.equals(site.getOwner()))
 					&& homeSettlement.getCoordinates().getDistance(site.getLocation()) <= range) {

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -575,12 +576,13 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return Site or null if not found.
 	 */
 	public MineralSite getDeclaredROI(Coordinates coord) {
-		return regionOfInterestLocations.stream()
+		return Collections.unmodifiableCollection(regionOfInterestLocations).stream()
 				  .filter(e -> e.getCoordinates().equals(coord))
 				  .findFirst()
 				  .orElse(null);
 	}
 
+	
 	/**
 	 * Gets a set of all Regions of Interest (ROI) available in a simulation, regardless of its claimed status.
 	 *
@@ -590,6 +592,29 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		return regionOfInterestLocations;
 	}
 
+	/**
+	 * Gets a set of specific claimed sites.
+	 *
+	 * @return list of explored locations.
+	 */
+	public List<MineralSite> getSpecificClaimedSites() {
+		return Collections.unmodifiableCollection(regionOfInterestLocations).stream()
+		  .filter(s -> s.isMinable() && !s.isReserved() && s.isExplored() && s.isClaimed())
+		  .toList();
+	}
+	
+	/**
+	 * Gets a set of specific sites.
+	 *
+	 * @return list of explored locations.
+	 */
+	public List<MineralSite> getSpecificSites() {
+		return Collections.unmodifiableCollection(regionOfInterestLocations).stream()
+		  .filter(s -> s.isMinable() && !s.isReserved() && s.isExplored())
+		  .toList();
+	}
+
+	
 	/**
 	 * Gets the areothermal heat potential for a given location.
 	 *
