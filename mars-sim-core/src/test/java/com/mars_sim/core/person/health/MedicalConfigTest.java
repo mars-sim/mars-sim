@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 
 class MedicalConfigTest {
@@ -31,7 +32,8 @@ class MedicalConfigTest {
         var found = matched.get(0);
 
         assertFalse(found.getSelfAdminister(), "Self admin");
-        assertEquals(3, found.getSkill(), "Skill level");
+        assertEquals(3, found.getSkillLevel(), "Skill level");
+        assertEquals(SkillType.MEDICINE, found.getSkillType(), "Skill type");
         assertEquals(2, found.getFacilityLevel(), "Facility level");
         assertEquals(200D, found.getDuration(), "Treatment time");
     }
@@ -48,9 +50,28 @@ class MedicalConfigTest {
         var found = matched.get(0);
 
         assertTrue(found.getSelfAdminister(), "Self admin");
-        assertEquals(0, found.getSkill(), "Skill level");
+        assertEquals(0, found.getSkillLevel(), "Skill level");
+        assertEquals(SkillType.MEDICINE, found.getSkillType(), "Skill type");
         assertEquals(1, found.getFacilityLevel(), "Facility level");
         assertEquals(50D, found.getDuration(), "Treatment time");
+    }
+
+    @Test
+    void testAnxietyMedicationTreatmentSkillType() {
+        var c = medConfig.getTreatmentsByLevel(1);
+        assertFalse(c.isEmpty(), "Treatment list is not empty");
+
+        var matched = c.stream()
+                    .filter(cp -> cp.getName().equals("Anxiety Medication"))
+                    .toList();
+        assertEquals(1, matched.size(), "Found treatment");
+        var found = matched.get(0);
+
+        assertTrue(found.getSelfAdminister(), "Self admin");
+        assertEquals(0, found.getSkillLevel(), "Skill level");
+        assertEquals(SkillType.PSYCHOLOGY, found.getSkillType(), "Skill type");
+        assertEquals(1, found.getFacilityLevel(), "Facility level");
+        assertEquals(100D, found.getDuration(), "Treatment time");
     }
 
     @Test
