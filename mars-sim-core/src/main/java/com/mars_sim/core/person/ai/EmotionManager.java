@@ -28,9 +28,9 @@ public class EmotionManager implements Serializable {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(EmotionManager.class.getName());
 	
-	private static final double FLATTENNING_FACTOR = 0.95;
+	private static final double FLATTENNING_FACTOR = 2.05;
 	private static final double RANGE = 1.6;
-	private static final double PERSONALITY_FACTOR = 2.0;
+	private static final double PERSONALITY_FACTOR = 2.5;
 	
 	private Person person;
 
@@ -79,14 +79,12 @@ public class EmotionManager implements Serializable {
 	
 		// Create emotional state vectors using random values
 		// Note that .4 is the mid-point
-		eVector[0] = .4; // + RandomUtil.getRandomDouble(-.2, .2);
-		eVector[1] = .4; // + RandomUtil.getRandomDouble(-.2, .2);
+		eVector[0] = .43 + RandomUtil.getRandomDouble(-.1, .1);
+		eVector[1] = .43 + RandomUtil.getRandomDouble(-.1, .1);
 
-//		descriptionCache = computeDescription();
+		descriptionCache = computeDescription();
 				
 		oVectorList = new CopyOnWriteArrayList<>();
-		
-//		updateEmotion(person.getMind().getTraitManager().getPersonalityVector());
 		
 		// Save the emotional states
 		recordEmotion();
@@ -113,25 +111,17 @@ public class EmotionManager implements Serializable {
 		List<double[]> oVectorList = getOmegaVector(); 
 		// Get the new emotional stimulus/Influence vector
 		double[] iVector = getInfoVector(); 
-	
 		// Get Psi Function to incorporate new stimulus
 		double[] psi = callPsi(iVector, pVector);
 		// Get Omega Function to normalize internal changes such as decay of emotional states
 		double[] omega =  MathUtils.normalize(oVectorList);
-		
-//		int index = oVectorList.size() - 2;
-//		if (index < 0)
-//			index = 0;
-//			
-//		// Get the eVector value from the last's last if available
-//		double[] omega = oVectorList.get(index);
 		
 		int dim = getDimension();
 		// Construct a new emotional state function modified by psi and omega functions
 		double[] newE = new double[dim];
 
 		for (int i = 0; i < 2; i++) {
-			newE[i] = RandomUtil.getRandomDouble(-.05, .05) + (eVector[i] + psi[i] / 2.0 + omega[i] / 2.0) / FLATTENNING_FACTOR;
+			newE[i] = RandomUtil.getRandomDouble(-.05, .05) + (eVector[i] + psi[i] + omega[i]) / FLATTENNING_FACTOR;
 		}
 
 		// Find the new emotion vector
@@ -181,14 +171,25 @@ public class EmotionManager implements Serializable {
 		double stress = pc.getStress(); // 0 to 100%
 		double perf = pc.getPerformanceFactor(); // 0 to 1
 		double fatigue = pc.getFatigue();
+		double hunger = pc.getHunger();
+		double thirst = pc.getThirst();
 		double energy = pc.getEnergy();
-		
+
+		double leader = (person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.LEADERSHIP) - 50) / 250;
+		double stable = (person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY) - 50) / 250;
+
+			
 		// Add effect of my social expectation
 		double myOpinionOfThem = (RelationshipUtil.getMyAverageOpinionOfThem(person) - 50)/250;
 		
 		// Modify level of engagement
-		double av0 = (perf - 0.5)/2.5 
-				- (fatigue - 250)/2_500 
+		double av0 = .45
+				+ leader
+				+ stable
+				- (hunger - 400)/6_000
+				- (thirst - 300)/4_500
+				+ (perf - 0.5)/1.25 
+				- (fatigue - 500)/7_500 
 				+ myOpinionOfThem;
 
 		if (av0 > RANGE)
@@ -198,11 +199,31 @@ public class EmotionManager implements Serializable {
 
 		iVector[0] = av0;
 		
+		
+		double bodyMassDev = pc.getBodyMassDeviation();
+		double bonus = 0;
+		
+		if (bodyMassDev > 1.3)
+			bonus = - (bodyMassDev - 1) / 5;
+		else if (bodyMassDev < 0.8)	
+			bonus = - (1 - bodyMassDev) / 5;
+		else
+			bonus = bodyMassDev / 5;
+		
 		// Add effect of their social expectation
 		double theirOpinionOfMe = (RelationshipUtil.getAverageOpinionOfMe(person) - 50)/250;
+		double attractive = (person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50) / 250;
+		double resilent = (person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE) - 50) / 250;
 		
 		// Modify level of appeal
-		double av1 = (50 - stress)/250 
+		double av1 = .15
+				+ attractive
+				+ resilent
+				+ bonus
+				+ (person.getAge() - 35) / 100.0
+				+ (50 - stress)/250 
+				+ (perf - 0.5)/1.5 
+				- (fatigue - 500)/5_000 
 				+ (energy - 2 * PhysicalCondition.ENERGY_THRESHOLD)/25_000 
 				+ theirOpinionOfMe;
 
