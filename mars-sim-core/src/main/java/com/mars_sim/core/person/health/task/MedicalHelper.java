@@ -111,7 +111,7 @@ public final class MedicalHelper {
             if (problem.getState() == HealthProblemState.DEGRADING) {
             	Treatment treatment = problem.getComplaint().getRecoveryTreatment();
             	if ((treatment != null) && (treatment.getSelfAdminister() == selfHeal)) {
-                    int requiredSkill = treatment.getSkill();
+                    int requiredSkill = treatment.getSkillLevel();
                     int healerSkill = healer.getSkillManager()
                                     .getEffectiveSkillLevel(treatment.getSkillType());
                     if (healerSkill >= requiredSkill) {
