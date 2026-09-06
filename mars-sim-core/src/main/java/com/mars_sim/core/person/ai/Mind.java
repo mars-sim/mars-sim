@@ -127,11 +127,13 @@ public class Mind implements Serializable, Temporal {
 		mbti.updateStress(time);
 		
 		int msol = pulse.getMarsTime().getMillisolInt();
-		if (msol % RELATION_UPDATE_CYCLE == relationUpdate) {
+		if (msol % RELATION_UPDATE_CYCLE == relationUpdate
+				|| pulse.isNewHalfSol()) {
 			// Update relationships.
 			RelationshipUtil.timePassing(person, time);
 		}
-		if (msol % EMOTION_UPDATE_CYCLE == emotionUpdate) {
+		if (msol % EMOTION_UPDATE_CYCLE == emotionUpdate
+				|| pulse.isNewHalfSol()) {
 			// Update emotion with the personality vector
 			emotionMgr.updateEmotion(trait.getPersonalityVector());
 		}

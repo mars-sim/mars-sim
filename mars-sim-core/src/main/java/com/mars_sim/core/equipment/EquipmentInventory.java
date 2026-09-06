@@ -432,9 +432,21 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		return (int) containerSet.stream()
-					.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
-					.count();
+		
+		Set<Equipment> set = Collections.unmodifiableSet(containerSet).stream()
+				.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
+				.collect(Collectors.toUnmodifiableSet());
+		return set.size();
+		
+		// Note: trigger CME
+//		return containerSet.stream()
+//				.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
+//				.collect(Collectors.toSet()).size();
+		
+		// Note: that calling .count() below trigger CME
+//		return (int) containerSet.stream()
+//					.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
+//					.count();
 	}
 	
 	
@@ -448,6 +460,8 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int findNumContainersOfType(EquipmentType containerType) {
+		
+		
 		return (int) containerSet.stream().filter(e -> e.getEquipmentType() == containerType).count();
 	}
 	
