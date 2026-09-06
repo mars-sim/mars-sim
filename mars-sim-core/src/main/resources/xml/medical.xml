@@ -473,7 +473,7 @@
 		</treatment>
         
         <treatment name="Anxiety Medication">
-        	<skill value="0" type="Psychology" />
+        	<skill value="0" type="PSYCHOLOGY" />
         	<medical-tech-level value="1" />
         	<treatment-time value="100.0" />
         	<self-admin value="true" />
