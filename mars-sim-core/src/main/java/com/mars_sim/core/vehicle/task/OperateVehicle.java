@@ -998,7 +998,8 @@ public abstract class OperateVehicle extends Task {
     
     	if (mission instanceof VehicleMission vm) {
     		NavPoint np = vm.getCurrentDestination();
-    		return np.getDescription();
+    		if (np != null)	
+    			return np.getDescription();
     	}
     	
     	return "a navpoint";
