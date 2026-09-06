@@ -18,6 +18,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.data.Range;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 
 
@@ -45,8 +46,9 @@ public class MedicalConfig {
 	private static final String TREATMENT_LIST = "treatment-list";
     private static final String TREATMENT = "treatment";
 	private static final String SKILL = "skill";
-	private static final String MEDICAL_TECH_LEVEL = "medical-tech-level";
-	private static final String TREATMENT_TIME = "treatment-time";
+    private static final String TYPE = "type";
+    private static final String MEDICAL_TECH_LEVEL = "medical-tech-level";
+    private static final String TREATMENT_TIME = "treatment-time";
 	private static final String SELF_ADMIN = "self-admin";
 	private static final String ENVIRONMENTAL = "environmental";
 	private static final String EFFORT_INFLUENCE = "effort-influence";
@@ -121,11 +123,19 @@ public class MedicalConfig {
 			String treatmentName = medicalTreatment.getAttributeValue(NAME);
 			
 			int skill = getIntValue(medicalTreatment, SKILL, false, 0);
+			SkillType skillType = SkillType.MEDICINE;
+			Element skillElement = medicalTreatment.getChild(SKILL);
+			if (skillElement != null) {
+				String skillTypeName = skillElement.getAttributeValue(TYPE);
+				if (skillTypeName != null) {
+					skillType = ConfigHelper.getEnum(SkillType.class, skillTypeName);
+				}
+			}
 			int medicalTechLevel = getIntValue(medicalTreatment, MEDICAL_TECH_LEVEL, false, 0);
 			double treatmentTime = getDoubleValue(medicalTreatment, TREATMENT_TIME, false, -1D);
 			boolean selfAdmin = getBoolValue(medicalTreatment, SELF_ADMIN, false, false);
 
-			Treatment treatment = new Treatment(treatmentName, skill, 
+			Treatment treatment = new Treatment(treatmentName, skill, skillType,
 			                      treatmentTime, selfAdmin, medicalTechLevel);
 			highestLevel = Math.max(highestLevel, medicalTechLevel);
 			treatmentsByTechLevel.computeIfAbsent(medicalTechLevel, id -> new ArrayList<>()).add(treatment);

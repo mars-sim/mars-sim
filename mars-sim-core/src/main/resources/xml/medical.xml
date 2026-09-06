@@ -31,6 +31,7 @@
 	<!ATTLIST treatment name CDATA #REQUIRED>
 	<!ELEMENT skill EMPTY>
 	<!ATTLIST skill value CDATA #REQUIRED>
+	<!ATTLIST skill type CDATA "MEDICINE">
 	<!ELEMENT medical-tech-level EMPTY>
 	<!ATTLIST medical-tech-level value CDATA #REQUIRED>
 	<!ELEMENT treatment-time EMPTY>
@@ -405,8 +406,8 @@
 		<!-- Wrapping a broken limb in a cast to support it. -->
 		<treatment name="Plaster Cast">
 
-            <!-- Medical skill level required. (optional) -->
-            <!-- Values: 0+ medical skill level -->
+            <!-- Healer skill requirement. (optional) -->
+            <!-- Values: 0+ skill level; type defaults to MEDICINE -->
             <skill value="2" />
 
             <!-- Required medical tech level of facility. (optional) -->
@@ -472,7 +473,7 @@
 		</treatment>
         
         <treatment name="Anxiety Medication">
-        	<skill value="0" />
+        	<skill value="0" type="Psychology" />
         	<medical-tech-level value="1" />
         	<treatment-time value="100.0" />
         	<self-admin value="true" />

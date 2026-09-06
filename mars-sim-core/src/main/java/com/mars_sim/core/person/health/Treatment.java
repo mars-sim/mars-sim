@@ -8,6 +8,8 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.person.ai.SkillType;
+
 /**
  * This class represents a Medical treatment that can be applied to
  * a Person to cure a complaint.
@@ -19,8 +21,10 @@ implements Serializable, Comparable<Treatment> {
 	private static final long serialVersionUID = 1L;
 
 	private String name;
-	/** Optimal MEDICAL skill. */
+	/** Optimal healer skill level. */
 	private int requiredSkill;
+	/** Required healer skill type. */
+	private SkillType requiredSkillType;
 	/** Required MedicalAid level. */
 	private int facilityLevel;
 	/** Length of treatment. */
@@ -32,15 +36,17 @@ implements Serializable, Comparable<Treatment> {
 	 * Constructor.
 	 *
 	 * @param name The unique name.
-	 * @param skill Required Medical skill.
+	 * @param skill Required healer skill.
+	 * @param skillType Required healer skill type.
 	 * @param duration The duration of treatment in millisols.
 	 * @param selfAdmin Can the treatment be self-administered.
 	 * @param facilityLevel Required medical aid tech level.
 	 */
-	public Treatment(String name, int skill, double duration,
+	public Treatment(String name, int skill, SkillType skillType, double duration,
 			boolean selfAdmin, int facilityLevel) {
 		this.name = name;
 		this.requiredSkill = skill;
+		this.requiredSkillType = skillType;
 		this.selfAdmin = selfAdmin;
 		this.facilityLevel = facilityLevel;
 		if (duration < 0D) {
@@ -115,10 +121,17 @@ implements Serializable, Comparable<Treatment> {
 	}
 
 	/**
-	 * Returns the Medical skill required for this treatment.
+	 * Returns the healer skill level required for this treatment.
 	 */
 	public int getSkill() {
 		return requiredSkill;
+	}
+
+	/**
+	 * Returns the healer skill type required for this treatment.
+	 */
+	public SkillType getSkillType() {
+		return requiredSkillType;
 	}
 
 	/**

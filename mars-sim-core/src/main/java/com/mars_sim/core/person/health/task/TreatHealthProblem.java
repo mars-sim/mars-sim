@@ -55,7 +55,8 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
      * @param condition
      */
     protected TreatHealthProblem(String name, Worker doctor, MedicalAid hospital, HealthProblem condition) {
-        super(name, doctor, hospital, IMPACT, 0D);
+        // Determine medical treatment.
+        super(name, doctor, hospital, determineImpact(condition), 0D);
         
         healthProblem = condition;
 
@@ -64,13 +65,10 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
 //    		endTask();
 //    		return;
 //    	}
-       	
-        // Get the person's medical skill.
-        int skill = doctor.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-
-        // Determine medical treatment.
+        	
         Treatment treatment = healthProblem.getComplaint().getRecoveryTreatment();
         if (treatment != null) {
+            int skill = doctor.getSkillManager().getEffectiveSkillLevel(treatment.getSkillType());
             treatmentDuration = treatment.getAdjustedDuration(skill);
         }
         else {
@@ -115,6 +113,15 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
         	endTask();
         }
         
+    }
+
+    private static ExperienceImpact determineImpact(HealthProblem condition) {
+        Treatment treatment = condition.getComplaint().getRecoveryTreatment();
+        if (treatment == null) {
+            return IMPACT;
+        }
+        return new ExperienceImpact(25D, NaturalAttributeType.EXPERIENCE_APTITUDE,
+                        PhysicalEffort.NONE, 0.2D, treatment.getSkillType());
     }
 
     @Override
