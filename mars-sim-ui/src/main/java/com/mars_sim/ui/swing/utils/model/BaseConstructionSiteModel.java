@@ -17,6 +17,7 @@ import com.mars_sim.core.building.construction.ConstructionSite;
  * This is a model for ConstructionSite entities. It provides a number of predefined available columns.
  * The subclass defines which columns are to be rendered.
  */
+@SuppressWarnings("serial")
 public class BaseConstructionSiteModel extends AbstractEntityModel<ConstructionSite> {
 
     private static final int NAME_VAL = 0;

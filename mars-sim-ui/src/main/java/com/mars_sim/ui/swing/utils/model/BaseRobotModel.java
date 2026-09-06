@@ -21,6 +21,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  * The subclass defines which columns are to be rendered. This reuses the BaseWorkerModel for common columns.
  * The model automatically monitors the Robot for changes and updates the table as needed.
  */
+@SuppressWarnings("serial")
 public abstract class BaseRobotModel extends AbstractEntityModel<Robot> {
 
     private static final int TYPE_VAL = 101;

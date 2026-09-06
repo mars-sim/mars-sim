@@ -2322,7 +2322,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return Collection of vehicles
 	 */
 	public Collection<Vehicle> getReadyToMapVehicles() {
-		return parkedNGaragedVehicles.stream()
+		return getParkedNGaragedVehicles().stream()
 		.filter(v -> v.isReady())
 		.toList();
 	}

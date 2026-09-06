@@ -41,9 +41,9 @@ public class PersonTableModel extends BasePersonModel
 	 * people with a specified settlement.
 	 */
 	public PersonTableModel()  {
-		super (NAME, SETTLEMENT, TASK, MISSION, SHIFT, HEALTH, ENERGY, WATER, FATIGUE, STRESS,
+		super (NAME, SETTLEMENT, TASK, MISSION, DUTY, SHIFT, HEALTH, ENERGY, WATER, FATIGUE, STRESS,
 				PERFORMANCE, IN_SETTLEMENT, SETTLEMENT_VICINITY, IN_VEHICLE, VEHICLE_VICINITY, 
-				MOBILE_LOC, LOCALE, ROLE, JOB,  EMOTION);
+				MOBILE_LOC, LOCALE, ROLE, JOB, EMOTION);
 	}
 
 	@Override
