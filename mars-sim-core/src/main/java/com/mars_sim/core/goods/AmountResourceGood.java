@@ -214,9 +214,9 @@ class AmountResourceGood extends Good {
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
 	private static final int CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 2;
 
-	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 500D; 
-	private static final double MAX_MANUFACTURING_DEMAND = 500D;
-	private static final double MAX_FOOD_PRODUCTION_DEMAND = 500D;
+	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 400D; 
+	private static final double MAX_MANUFACTURING_DEMAND = 400D;
+	private static final double MAX_FOOD_PRODUCTION_DEMAND = 400D;
 	
 	private static final double REGOLITH_LOWEST_DEMAND = 0.05;
 	private static final double REGOLITH_BASE_DEMAND = 40;
@@ -626,8 +626,10 @@ class AmountResourceGood extends Good {
 			
 		// Calculate new projected demand
 		double newProjDemand = 
+			// The constant manufacturing demand of this resource
+			this.constantManufacturingDemand
 			// Tune ice demand.
-			computeIceProjectedDemand(owner)
+			+ computeIceProjectedDemand(owner)
 			// Tune regolith projected demand.
 			+ computeRegolithProjectedDemand(owner)
 			// Tune life support demand if applicable.
@@ -644,8 +646,6 @@ class AmountResourceGood extends Good {
 			+ computeTissueDemandDueToCrop(owner)
 			// Tune resource processing demand.
 			+ getResourceProcessingDemand(owner, settlement)
-			// The constant manufacturing demand of this resource
-			+ constantManufacturingDemand
 			// The current ongoing manufacturing demand.
 			+ getManufacturingProcessInput(settlement)
 			// Tune food production related demand.
@@ -964,11 +964,11 @@ class AmountResourceGood extends Good {
 		for (int i = 0; i <= techLevel; i++) {
 			for (ManufactureProcessInfo info : ManufactureUtil.getManufactureProcessesForTechLevel(i)) {
 				double manufacturingDemand = getConstantManufacturingProcessDemand(owner, settlement, info);
-				demand += manufacturingDemand * MANUFACTURING_DEMAND_MULTIPLIER;
+				demand += manufacturingDemand * MANUFACTURING_DEMAND_MULTIPLIER * (.5 + i * 1.25);
 			}
 		}
 		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
-		return MathUtils.between(2 * Math.sqrt(demand + 0.1), 0.0, MAX_MANUFACTURING_DEMAND);
+		return MathUtils.between(1.2 * Math.sqrt(demand + 0.1), 0.0, MAX_MANUFACTURING_DEMAND);
 	}
 
 	/**

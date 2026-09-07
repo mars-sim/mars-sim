@@ -384,14 +384,27 @@
 		Acetylene is a colorless gas that has a strong garlic-like odor. When 
 		combined with oxygen, it becomes very hot and is classified as the 
 		hottest fuel gas. 
+		
 	 	It is also the only fuel gas that can weld and cut steel, making it 
 	 	the preferred choice for welders. The welding process that uses 
 	 	acetylene is known as oxy-fuel cutting or gas cutting. 
-	 	Acetylene is probably the hottest burning fuel gas available to us. 
-	 	Acetylene releases almost 40% of its heat in the inner flame cone. 
+	 	
+	 	Acetylene is probably the hottest burning fuel gas available to us. It 
+	 	releases almost 40% of its heat in the inner flame cone. 
+	 	
 	 	Acetylene is also commonly used for the production of other chemicals used 
 	 	in perfumes, vitamins, polymers, solvents and other materials due to its 
 	 	versatility and ease of reactive control in comparison to other gases. 
+	 	
+	 	Acetylene is used in the production of a wide range of pharmaceuticals. 
+	 	It is a key ingredient in the manufacture of aspirin, acetaminophen, and 
+	 	other pain relievers. It is also used to produce some antibiotics, 
+	 	such as penicillin and ampicillin. 
+	 	
+	 	Acetylene is also used in the manufacture of some cancer drugs, such as 
+	 	doxorubicin and vincristine. In addition, acetylene is used to produce 
+	 	some hormones, such as estrogen and testosterone.
+	 	
 	 	It combines nicely with a variety of elements and compounds, making it 
 	 	the most important of starting materials for 
 	 	organic synthesis.</resource>
@@ -492,7 +505,7 @@
 
 	<resource name="Polyethylene" type="chemical" phase="solid" demand="1.5">
 		Polyethylene pellets or flakes. It has two different types (HDPE vs LDPE). </resource>
-	
+		
 	<resource name="Polypropylene" type="chemical" phase="solid" demand="1.5">
 		A thermoplastic polymer stiffer than polyethylene. Characterized by a more 
 		transparent appearance and higher tensile strength, polypropylene bags 

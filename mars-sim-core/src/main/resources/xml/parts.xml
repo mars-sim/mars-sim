@@ -80,7 +80,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Plastic tubing" type="utility" mass=".05">
+	<part name="Gas tubing" type="utility" mass=".05">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="2" />
 			<entity name="farming" probability="5" max-number="5" />
@@ -264,8 +264,28 @@
 	<!-- 1m x 1m square of woven fiberglass cloth -->
 	<part name="Fiberglass cloth" type="utility" mass=".1" />
 
-	<!-- 1m x 1m square of thick rigid acrylic (Perspex) plastic sheet. 1.5 mm  -->
-	<part name="Plastic sheet" type="utility" mass=".165" />
+	<part name="Polyethylene UHMW board" type="construction" mass="23.3"  >
+		<description>Ultra-High-Molecular-Weight Polyethylene (UHMW-PE) is a thermoplastic with extremely 
+			long molecular chains (2–6 million daltons, vs. ~10,000 for standard HDPE).
+			It has wear resistance: 10× better than carbon steel.
+			a 25 mm thick 1m x 1m with density of 0.93 g/cm3 is 23.3 kg
+			
+			https://en.wikipedia.org/wiki/Ultra-high-molecular-weight_polyethylene
+		</description>
+	</part>
+
+	<part name="Polyethylene HDPE sheet" type="utility" mass="4.78"  >
+		<description>
+		A 1m x 1m sheet with 5 mm (3/8 inch) thick is 4.78 kg each.
+		
+		High-Density Polyethylene (HDPE) is good for rigidity and tear resistance, versus
+		Linear Low-Density Polyethylene (LLDPE) for enhanced puncture strength. 
+		
+		Good for flexible sheets, liners, geomembranes
+		
+		</description>
+	</part>
+
 
 	<!-- 1m x 1m x .5cm square of glass  -->
 	<part name="Glass sheet" type="utility" mass="27.56" />
@@ -1324,7 +1344,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="work glove" type="utility" mass="0.05">
+	<part name="Work glove" type="utility" mass="0.05">
 		<description>a pair of utility work glove for medium to heavy use.</description>
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="10" max-number="1" />
@@ -1359,14 +1379,31 @@
 	</part>
 
 	<part name="Aerogel tile" type="construction" mass="0.3">
-		<description>Assume each tile is about 1m x 1m. Excellent for transparent insulation, 
+		<description>Assume each tile is about 1m x 1m. 
+		
+		Excellent for transparent insulation, 
 		a silica aerogel tile contain nanoscale networks of interconnecting silica clusters, 
 		contain over 97% air by volume and have some of the lowest measured thermal conductivities of 
 		any known material (of 0.02 W/m/K at 1 bar pressure or 0.01 W/m/K at Martian atmospheric 
-		pressure). Routinely employed in many engineering applications, including 
+		pressure). 
+		
+		Routinely employed in many engineering applications, including 
 		NASA’s Mars Exploration Rovers where thin aerogel layers provided night-time thermal 
-		insulation. A 3 cm layer of silica aerogel can increase the temperature of the underlying 
-		surface by 45 K when it receives a flux of 150 W/m2. </description>
+		insulation. 
+		
+		A 3 cm layer of silica aerogel can increase the temperature of the underlying 
+		surface by 45 K when it receives a flux of 150 W/m2. 
+		
+		Application : Micrometeorite / Whipple Shield Component
+
+		NASA studied composite aerogel multifoil (aerogel layers between metal foils) as a 
+		multi-shock Whipple shield Aerogel converts hypervelocity particle kinetic energy 
+		to thermal/mechanical energy, stopping fragments Used as the inner capture layer 
+		in a layered shield on habitat outer walls 
+		
+		https://ntrs.nasa.gov/citations/20130012682
+		
+		</description>
 		<maintenance-entity-list>
 			<entity name="life support" probability=".1" max-number="1" />
 			<entity name="living accommodation" probability=".1" max-number="4" />
@@ -1483,9 +1520,9 @@
 		</maintenance-entity-list>
 	</part>
 
-	<!-- For cleaning other parts, vehicles, buildings, etc. -->
-	
-	<part name="Flexible hose" type="utility" mass=".1"/>
+	<part name="Liquid tubing" type="utility" mass=".1">
+		<description>For channeling liquid content.</description>
+	</part>
 
 	<part name="Water heater 5kW" type="utility" mass="12.0" >
 		<description>A tankless water heater rated 5kW.</description>
@@ -1512,7 +1549,9 @@
 		<description>A electric pressure washer provides 2.5 GPM. consumes 1.5 kW</description>
 	</part>
 	
-	<part name="Water hose" type="utility" mass="2.0" />
+	<part name="Flexible water hose" type="utility" mass="2.0" >
+		<description>Flexible water hose for channeling water to clean parts, vehicles, buildings, etc.</description>
+	</part>
 	
 	<part name="Vacuum cleaner" type="utility" mass="2.0" />				
 	

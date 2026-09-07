@@ -23,6 +23,7 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 
 /*
  * This class is the representation of a Part instance as a Good that is tradable.
@@ -74,6 +75,7 @@ public class PartGood extends Good {
 	private static final String PLASTIC_PIPE = "plastic pipe";
 	private static final String WIRE_CONNECTOR = "wire connector";
 
+	private static final int MAX_MANUFACTURING_DEMAND = 300;
 	private static final int VEHICLE_PART_COST = 3;
 	private static final int CIRCUIT_COMPONENT_DEMAND = 4;
 	
@@ -145,6 +147,10 @@ public class PartGood extends Good {
 																		"backhoe", "bulldozer blade",
 																		"crane boom", DRILLING_RIG,
 																		"pneumatic drill", "soil compactor"});
+
+	/** The manufacturing demand of each refresh cycle. */
+	private double constantManufacturingDemand = -1D;
+	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The repair demand for this resource of each refresh cycle. */
@@ -391,6 +397,15 @@ public class PartGood extends Good {
 		Settlement settlement = owner.getSettlement();
 		var eo = settlement.getEquipmentInventory();
 		
+		if (constantManufacturingDemand == -1D) {
+        	// At startup, compute manufacturingDemand
+        	calculateConstantManufacturingDemand(owner, settlement);	
+        	
+            // Note: whenever a building with a higher tech level is added, 
+        	// will need to figure out how to to flag and call this method 
+        	// again in order to obtain a new demand value for each amount resource
+        }
+	       
 		// Calculate total supply
 		double totalSupply = getAverageItemSupply(eo.getItemResourceStored(id));
 		// Save the average supply
@@ -400,7 +415,7 @@ public class PartGood extends Good {
 		// NOTE: the following estimates are for each orbit (Martian year) :
 		double newProjDemand = 
 			// Add manufacturing demand.					
-			getPartManufacturingDemand(owner, settlement, part)
+			this.constantManufacturingDemand
 			// Add food production demand.
 			+ getPartFoodProductionDemand(owner, settlement, part)
 			// Add construction site demand.
@@ -476,12 +491,12 @@ public class PartGood extends Good {
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.01;
+			totalDemand *= 1.005;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.99;
+			totalDemand *= 0.995;
 		}
 		
 		// Save the goods demand
@@ -716,37 +731,53 @@ public class PartGood extends Good {
 	}
 	
     /**
+     * Calculates the constant manufacturing demand.
+     * @Note: if a new building is being put in place, must call this method again
+     * to update constantManufacturingDemand
+     * 
+     * @param owner
+     * @param settlement
+     */
+    private void calculateConstantManufacturingDemand(GoodsManager owner, Settlement settlement) {
+    	constantManufacturingDemand = getConstantManufacturingDemand(owner, settlement);	
+    }
+    
+    
+    /**
 	 * Gets the manufacturing demand for a part.
 	 *
 	 * @param part the part.
 	 * @return demand (# of parts)
 	 */
-	private double getPartManufacturingDemand(GoodsManager owner, Settlement settlement, Part part) {
+	private double getConstantManufacturingDemand(GoodsManager owner, Settlement settlement) {
 		double base = 0D;
 
 		// Get highest manufacturing tech level in settlement.
 		int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
-		if (techLevel >= 0) {
+		for (int i = 0; i <= techLevel; i++) {
 			for (ManufactureProcessInfo found : ManufactureUtil.getManufactureProcessesForTechLevel(techLevel)) {
-				double manufacturingDemand = getPartManufacturingProcessDemand(owner, settlement, part, found);
-				base += manufacturingDemand * (1 + techLevel);
+				double manufacturingDemand = getPartManufacturingProcessDemand(owner, settlement, found);
+				base += manufacturingDemand * (.5 + i * 1.25);
 			}
 		}
-
-		return Math.min(GoodsManager.MAX_DEMAND, base / 300);
+		
+		
+		return MathUtils.between(Math.sqrt(base + 0.1), 0.0, MAX_MANUFACTURING_DEMAND);
 	}
 
 	/**
 	 * Gets the demand of an input part in a manufacturing process.
 	 * @note: if a part serves as an input resource for a manu process, it will show up having
 	 * a demand here. In case of 'Airleak patch', it will have zero demand.
-	 *       
-	 * @param part    the input part.
-	 * @param process the manufacturing process.
-	 * @return demand (# of parts)
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @param process
+	 * @return
 	 */
 	private double getPartManufacturingProcessDemand(GoodsManager owner, Settlement settlement,
-													Part part, ManufactureProcessInfo process) {
+													ManufactureProcessInfo process) {
+		Part part = getPart();
 		double demand = 0D;
 		double totalInputNum = 0D;
 
