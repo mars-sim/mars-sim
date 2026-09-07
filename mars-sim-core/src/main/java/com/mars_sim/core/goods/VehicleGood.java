@@ -218,7 +218,7 @@ class VehicleGood extends Good {
 		// to derive the repair value. 
 		// Look at each part in vehicleType
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
-				* owner.getDemandScore(this);
+				* owner.getDemandScore(this) / 20;
 		
 		// Note: the ceiling uses projected, not projectedCache
 		double ceiling = projected + tradeDemand + repairDemand;

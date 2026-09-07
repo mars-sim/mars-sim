@@ -227,7 +227,13 @@ class AmountResourceGood extends Good {
 	private static final double BASE_METAL_DEMAND = 5;
 
 	// Multipliers
-	private static final double MANUFACTURING_DEMAND_MULTIPLIER = 0.01;
+	private static final double MANUFACTURING_DEMAND_MULTIPLIER = 0.5;
+	
+	private static final String DIMETHYL_TER = "Dimethyl terephthalate";
+	private static final String SILICONE_E  = "Silicone elastomer";
+	private static final String THERMOPLASTIC_EL = "Thermoplastic elastomer";
+	
+	private static final String ETHYLENE_GLYCOL = "Ethylene glycol";
 	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
@@ -278,14 +284,13 @@ class AmountResourceGood extends Good {
 		case CHEMICAL:
 			mod = CHEMICAL_FLATTENING_FACTOR;	
 			
-			
-			if (name.equalsIgnoreCase("Dimethyl terephthalate")
-				|| name.equalsIgnoreCase("Silicone elastomer")
-				|| name.equalsIgnoreCase("Thermoplastic elastomer")	
+			if (name.equalsIgnoreCase(DIMETHYL_TER)
+				|| name.equalsIgnoreCase(SILICONE_E)
+				|| name.equalsIgnoreCase(THERMOPLASTIC_EL)	
 					) {
 				mod *= PLASTIC_RELATED_FLATTENING_FACTOR;
 			}
-			else if (name.equalsIgnoreCase("Ethylene glycol")
+			else if (name.equalsIgnoreCase(ETHYLENE_GLYCOL)
 				) {
 				mod *= 0.5;
 				}

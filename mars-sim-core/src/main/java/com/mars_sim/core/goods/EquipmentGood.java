@@ -245,7 +245,12 @@ public class EquipmentGood extends Good {
 		// Note: need to look into parts and equipment reliability in MalfunctionManager 
 		// to derive the repair value 
 		if (equipmentType == EquipmentType.EVA_SUIT) {
-			repairDemand = owner.getEVASuitLevel() * owner.getDemandScore(this);
+			
+			repairDemand = owner.getEVASuitLevel() * owner.getDemandScore(this) / 20;
+		}
+		else {
+			repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel()) / 2.0 
+					* owner.getDemandScore(this) / 20;
 		}
 		
 		// Note: the ceiling uses projected, not projectedCache

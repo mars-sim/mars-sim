@@ -1141,7 +1141,7 @@
 			<resource type="polyethylene" amount="10.0" />
 			<part type="aerogel tile" number="114" />
 			<part type="window" number="6" />	
-			<part type="polycarbonate roofing" number="12" />
+			<part type="polycarbonate panel" number="14" />
 			<part type="aluminum sheet" number="3" />
 			<part type="plastic sheet" number="10" />
 			<part type="fiberglass" number="5" />
@@ -1270,7 +1270,7 @@
 			<resource type="polyethylene" amount="30.0" />
 			<part type="aerogel tile" number="336" />
 			<part type="window" number="8" />	
-			<part type="polycarbonate roofing" number="54" />						
+			<part type="polycarbonate panel" number="54" />						
 			<part type="aluminum sheet" number="9" />
 			<part type="plastic sheet" number="30" />
 			<part type="fiberglass" number="15" />

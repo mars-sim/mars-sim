@@ -434,16 +434,16 @@ public class PartGood extends Good {
 			projected = .02 * projected + .98 * projectedCache;
 //		}
 		
-		owner.setProjectedDemandScore(this, projected);
-		
+		owner.setProjectedDemandScore(this, projected);		
 		// Add trade demand.
 		double tradeDemand = owner.determineTradeDemand(this) / 10;
-
+		
 		owner.setTradeDemandScore(this, tradeDemand);
 		
 		// Gets the repair part demand
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
-		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 * owner.getDemandScore(this);
+		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
+				* owner.getDemandScore(this) / 20;
 		
 		// Note: the ceiling uses projected, not projectedCache
 		double ceiling = projected + tradeDemand + repairDemand;

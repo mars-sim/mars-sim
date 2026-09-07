@@ -264,8 +264,8 @@
 	<!-- 1m x 1m square of woven fiberglass cloth -->
 	<part name="Fiberglass cloth" type="utility" mass=".1" />
 
-	<!-- 1m x 1m square of thin plastic sheet -->
-	<part name="Plastic sheet" type="utility" mass=".1" />
+	<!-- 1m x 1m square of thick rigid acrylic (Perspex) plastic sheet. 1.5 mm  -->
+	<part name="Plastic sheet" type="utility" mass=".165" />
 
 	<!-- 1m x 1m x .5cm square of glass  -->
 	<part name="Glass sheet" type="utility" mass="27.56" />
@@ -976,9 +976,9 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Polycarbonate roofing" type="construction" mass="1">
-		<description>Assume 2m x 2m, highly transparent, "bullet-resistant" plastic cladding
-			roofing for greenhouses</description>
+	<part name="Polycarbonate panel" type="construction" mass="11">
+		<description>Assume 2m x 2m, 16 mm thick,  highly transparent, multiwall, "bullet-resistant" plastic cladding
+			roofing panel for greenhouses</description>
 		<maintenance-entity-list>
 			<entity name="farming" probability="2" max-number="2" />
 		</maintenance-entity-list>			
@@ -1374,12 +1374,16 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="Insulation board" type="construction" mass="1">
-		<description>Assume each tile is about 1m x 1m. Each board comprises extruded polystyrene (XPS) 
-		and expanded polystyrene insulation (EPS) that contain millions of air pockets trapped 
-		within the foam. Because the polystyrene itself is also highly resistant to heat, 
-		the result is a great thermal insulator which can give excellent R-ratings. 
-		XPS is often lined with aluminium foil. </description>
+	<part name="Insulation board" type="construction" mass="5.25">
+		<description>Assume each tile is about 1m x 1m. 150 mm (6 inch) with density of 35 kg/m3. 
+			Each board comprises extruded polystyrene (XPS) and expanded polystyrene insulation (EPS) 
+			that contain millions of air pockets trapped within the foam. 
+			
+			Because the polystyrene itself is also highly resistant to heat, 
+			the result is a great thermal insulator which can give excellent R-ratings. 
+			
+			XPS is often lined with aluminium foil. 
+		</description>
 		<maintenance-entity-list>
 			<entity name="life support" probability=".1" max-number="2" />
 		</maintenance-entity-list>

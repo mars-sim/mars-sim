@@ -131,7 +131,7 @@
 			<part name="airleak patch" number="3" repair-probability="75" />
 			<part name="work glove" number="1" repair-probability="15" />
 			<part name="fiberglass cloth" number="1" repair-probability="5" />
-			<part name="polycarbonate roofing" number="1" repair-probability="10" />
+			<part name="Polycarbonate panel" number="1" repair-probability="10" />
 		</repair-parts-list>
 
 	</malfunction>
@@ -1274,7 +1274,7 @@
 		<repair-parts-list>
 			<part name="fire extinguisher" number="1" repair-probability="10" />
 			<part name="airleak patch" number="5" repair-probability="10" />
-			<part name="polycarbonate roofing" number="1" repair-probability="5" />
+			<part name="Polycarbonate panel" number="1" repair-probability="5" />
 			<part name="plastic tubing" number="1" repair-probability="10" />
 			<part name="fiberglass" number="2" repair-probability="5" />
 			<part name="plastic pipe" number="2" repair-probability="5" />

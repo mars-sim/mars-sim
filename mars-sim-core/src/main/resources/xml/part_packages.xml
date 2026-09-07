@@ -154,7 +154,7 @@
 		<part type="methane fuel cell stack" number="4"/>
 		<part type="methanol fuel cell" number="200"/>
 		<part type="methanol fuel cell stack" number="4"/>		
-		<part type="polycarbonate roofing" number="10"/>
+		<part type="polycarbonate panel" number="10"/>
 
 		<part type="pathogen filter" number="3"/>
 		<part type="charcoal filter" number="5"/>

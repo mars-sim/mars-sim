@@ -1191,6 +1191,15 @@ Note: 1 kg of H2 is 14.13 liter
 	<!-- Produces 1m x 1m thin sheet of plastic. -->
 	<process name="Do plastic sheet extrusion" tech="1" skill="1" work-time="20" process-time="200"
 			power-required=".2">
+		<description> 
+		
+		The general chain is: 
+		fossil feedstock → cracking → monomers → polymerization → resin pellets → extrusion/casting → sheet.
+		
+		The resin is melted and pushed through a flat die (calender or extrusion line), then cooled and cut to size
+
+		</description>
+			
 		<inputs>
 			<resource name="Polyester resin" amount="10.0" />
 		</inputs>
@@ -1199,27 +1208,46 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Creating 10 bags sewn together with fiberglass cloth and plastic sheet liner. -->
-	<process name="Manufacture bag" tech="1" skill="1" work-time="10" process-time="5"
-			power-required="0.0">
+	<process name="Manufacture bag" tech="1" skill="1" work-time="10" process-time="50"
+			power-required="0.2">
+		<description> 
+			Use blown film extrusion with the following steps:
+
+			1. Extrusion: Polyethylene resin pellets are melted and forced through a 
+			   circular die to form a continuous tube. 
+			2. Inflation: Air is pumped into the molten plastic, inflating it into a 
+			   thin, balloon-like film bubble to stretch it to the desired thickness. 
+			3. Cooling and Flattening: The film is cooled, flattened using nip rollers, 
+			   and wound into large rolls. 
+			4. Conversion: The film is cut, heat-sealed, and printed to create the final
+			   bag shape. 
+
+			To further enhance durability, manufacturers may add plasticizers, stabilizers, 
+			UV inhibitors, and mineral fillers (like calcium carbonate) to the resin 
+			before extrusion.
+		</description>
+
 		<inputs>
-			<part name="fiberglass cloth" number="5" />
-			<part name="plastic sheet" number="5" />
+			<resource name="Polyethylene" amount="1.0" >
+				<alternative name="Polyester resin" amount="1.0"/>
+			</resource>
 		</inputs>
 		<outputs>
 			<equipment name="bag" number="10" />
+			<!-- a bag is 0.1 kg each -->
 		</outputs>
 	</process>
 
-	<!-- Creating a large bag sewn together with a fiberglass cloth and a plastic sheet liner. -->
-	<process name="Manufacture large bag" tech="1" skill="1" work-time="20" process-time="5"
-			power-required="0.0">
+	<process name="Manufacture large bag" tech="1" skill="1" work-time="15" process-time="50"
+			power-required="0.2">
 		<inputs>
-			<part name="fiberglass cloth" number="2" />
-			<part name="plastic sheet" number="2" />
+			<resource name="Polyethylene" amount="1.0" >
+				<alternative name="Polyester resin" amount="1.0"/>
+			</resource>
 		</inputs>
 		<outputs>
-			<equipment name="large bag" number="2" />
+			<equipment name="large bag" number="5" />
+			<!-- a large bag is 0.2 kg each -->
 		</outputs>
 	</process>
 
@@ -1712,6 +1740,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<part name="window" number="2" />
+			<!-- Each window weights 25 kg -->
 		</outputs>
 	</process>
 	
@@ -1838,7 +1867,6 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="magnesium" amount=".6" />		
 			<part name="iron ingot" number="1" />
-			<part name="plastic sheet" number="1" />
 			<part name="copper wire" number="12" />
 			<part name="electrical wire" number="12" />
 			<part name="wire connector" number="12" />
@@ -1871,7 +1899,6 @@ Note: 1 kg of H2 is 14.13 liter
 			tooling="Soldering" power-required=".2">
 		<inputs>
 			<part name="iron ingot" number="1" />
-			<part name="plastic sheet" number="1" />
 			<part name="copper wire" number="12" />
 			<part name="electrical wire" number="12" />
 			<part name="wire connector" number="12" />
@@ -1887,7 +1914,6 @@ Note: 1 kg of H2 is 14.13 liter
 			tooling="Soldering" power-required=".2">
 		<inputs>
 			<part name="iron ingot" number="1" />
-			<part name="plastic sheet" number="1" />
 			<part name="copper wire" number="8" />
 			<part name="electrical wire" number="8" />
 			<part name="wire connector" number="8" />
@@ -3187,7 +3213,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
 			<part name="light emitting diode bulb" number="10" />
-			<part name="plastic sheet" number="1" />
 		</inputs>
 		<outputs>
 			<part name="navigation circuit board" number="1" />
@@ -3204,7 +3229,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
 			<part name="light emitting diode bulb" number="10" />
-			<part name="plastic sheet" number="1" />
 		</inputs>
 		<outputs>
 			<part name="communications circuit board" number="1" />
@@ -3316,7 +3340,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="light emitting diode kit" number="5" />
 			<part name="glass sheet" number="1" />
 			<part name="optical lens" number="10" />
-			<part name="plastic sheet" number="1" />
 			<part name="diode" number="15" />
 		</inputs>
 		<outputs>
@@ -3358,7 +3381,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="light emitting diode kit" number="5" />
 			<part name="optical lens" number="10" />
 			<part name="optical prism" number="10" />
-			<part name="plastic sheet" number="1" />
 			<part name="diode" number="20" />
 		</inputs>
 		<outputs>
@@ -3374,7 +3396,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel sheet" number="5" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="10" />
-			<part name="plastic sheet" number="2" />
 			<part name="water pump small" number="2" />
 			<part name="heating element" number="2" />
 			<part name="heat pipe" number="2" />
@@ -3558,21 +3579,30 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Produces polycarbonate roofing. -->
-	<process name="Manufacture polycarbonate roofing" tech="3" skill="2" work-time="50" process-time="100"
+	<!-- Produces polycarbonate roofing panel. -->
+	<process name="Manufacture polycarbonate roofing panel" tech="3" skill="2" work-time="50" process-time="100"
 			power-required="1.0">
-		<description> Assume each roofing tile is 2m x 2m
-			Asahi/Chi Mei produces DPC (polycarbonate) from DMC which is produced via
+		<description> The process runs in two major phases: 
+			1. resin synthesis (making the polymer) 
+			2. sheet extrusion (forming the panel). 
+		
+			Assume each roofing tile is 2m x 2m, 16 mm thick, 11 kg each
+		
+			e.g. Asahi/Chi Mei produces DPC (polycarbonate) from DMC which is produced via
 			methanolysis of ethylene carbonate. Ethylene carbonate is produced by the
 			reaction between ethylene oxide and carbon dioxide. Sandwiched inside are 
 			double stacks of aerogel tiles.
 		</description>
 		<inputs>
-			<resource name="Polycarbonate resin" amount="3.5" />
-			<part name="Aerogel tile" number="8" />
+			<resource name="Polycarbonate resin" amount="23.4"  >
+				<alternative name="Bisphenol-a" amount="23.4" />
+			</resource>	
+			<part name="Aerogel tile" number="12" />
+			<!-- Each aerogel tile 1m x 1m is 0.8 kg each -->
 		</inputs>
 		<outputs>
-			<part name="polycarbonate roofing" number="3" />
+			<part name="Polycarbonate panel" number="3" />
+			<!-- polycarbonate roofing panel 2m x 2m, 16 mm thick, 11 kg each -->
 		</outputs>
 	</process>
 
@@ -3726,7 +3756,7 @@ Note: 1 kg of H2 is 14.13 liter
 			tooling="Soldering" power-required="1">
 		<inputs>
 			<part name="steel sheet" number="1" />
-			<part name="plastic sheet" number="1" />
+			<part name="plastic pipe" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="3" />
 			<part name="steel pipe" number="3" />
@@ -3809,10 +3839,11 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="copper" amount="0.2" />
 			<resource name="iron powder" amount="0.2" />
 			<resource name="magnesium" amount="0.4" />
+			<resource name="epoxy resin" amount="0.5"/>
 			<resource name="Aluminum" amount="0.1"  >
 				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>
-			<part name="plastic sheet" number="1" />
+			<part name="fiberglass cloth" number="2" />
 			<part name="resistor" number="40" />
 			<part name="capacitor" number="20" />
 			<part name="diode" number="10" />
@@ -3902,14 +3933,48 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="Manufacture insulation board" tech="2" skill="1" work-time="20" process-time="60"
 			power-required=".5">
+		<description> For a 1m × 1m board XPS (Extruded Polystyrene). Density 35 kg/m³. Each 5.25 kg
+		  It is extremely lightweight compared to the other materials. For reference, a 100 mm 
+		  polycarbonate sheet of the same area would weigh ~25 kg (55 lbs), roughly 8–16× more.
+		  
+		  XPS is made from polystyrene (PS), which is produced by free-radical addition 
+		  polymerization of the monomer styrene (vinylbenzene, C₈H₈):
+		  
+		  XPS is made in a continuous extrusion line with these stages:
+
+			1. Raw material feeding – Polystyrene (PS) resin pellets (crystalline form) are blended 
+			   with additives: flame retardant, nucleating agent, pigment, and combustion aid in a 
+			   high-intensity mixer. 
+			2. Primary extrusion (plasticizing) – The blend is fed into a twin-screw extruder 
+			   where heat (electrical + shear) melts the PS crystals into a homogeneous viscous 
+			   melt at ~200–230 °C. 
+			3. Blowing agent injection – CO₂ (most common today) or HFC gas is injected under high 
+			   pressure into the molten PS in a secondary extruder.  The gas is held dissolved in 
+			   the melt by pressure. 
+			4. Extrusion through slot die – The pressurized, gas-loaded melt is forced through a 
+			   wide slot die.  As it exits, pressure drops sharply → the dissolved gas expands 
+			   rapidly, nucleating thousands of tiny closed cells per mm³. 
+			5. Calibration and cooling – The expanding foam is drawn through a calibrating frame 
+			   (mandrel) that sets the exact thickness and width, while chilled water solidifies 
+			   the cell walls.
+			6. Haul-off, trimming, and cutting – The continuous board is pulled at constant speed, 
+			   edges are trimmed (ship-lap profile), and the board is cross-cut to length 
+			   (typically 2.4 m). 
+			7. Stacking and packaging. The result is a uniform closed-cell foam — this is what 
+			   makes XPS more moisture-resistant and stronger than EPS (which has fused-bead 
+			   interstitial voids).
+		</description>		 
 		<inputs>
-			<resource name="polystyrene" amount="9" />
-			<resource name="Aluminum" amount=".5" >
-				<alternative name="Aluminum oxide" amount="0.943"/>
+			<resource name="Polystyrene" amount="50" >
+				<alternative name="Styrene" amount="50" />
+			</resource>
+			<resource name="Aluminum" amount="2.5" >
+				<alternative name="Aluminum oxide" amount="4.715"/>
 			</resource>
 		</inputs>
 		<outputs>
-			<part name="insulation board" number="10" />
+			<part name="Insulation board" number="10" />
+			<!-- Each insulation board is 5.25 kg -->
 		</outputs>
 	</process>
 
@@ -4229,11 +4294,5 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="valve" number="2" />
 		<part-salvage name="gasket" number="4" />
 	</salvage>
-
-	<!-- Salvage process for a large bag. -->
-	<salvage item-name="large bag" type="equipment" tech="1" skill="0" work-time="2">
-		<part-salvage name="fiberglass cloth" number="2" />
-		<part-salvage name="plastic sheet" number="2" />
-	</salvage>	
 
 </manufacturing-processes>
