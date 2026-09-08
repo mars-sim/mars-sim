@@ -108,9 +108,9 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		gridPanel.add(levelPanel);
 		
-		JLabel levelLabel = new JLabel("Effort Lvl:");
+		JLabel levelLabel = new JLabel("All Effort Level:");
 		levelLabel.setAlignmentY(Component.TOP_ALIGNMENT);
-		levelLabel.setToolTipText("How much effort devoted to producing output resources");
+		levelLabel.setToolTipText("How much effort (Level 1 to 5 [highest]) devoted to producing output resources. Apply to all processes");
 		levelPanel.add(levelLabel);
 			
 		// Prepare level combo box
@@ -125,7 +125,7 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		JPanel dutyCyclePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		gridPanel.add(dutyCyclePanel);
 		
-		dutyCycleLabel = new JLabel("Overall Duty Cycle: " + Math.round(averagePercentDuty*10.0)/10.0 + "%");
+		dutyCycleLabel = new JLabel("Average Duty Cycle: " + Math.round(averagePercentDuty * 10.0)/10.0 + "%");
 		dutyCycleLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		dutyCyclePanel.add(dutyCycleLabel);
 		
@@ -160,7 +160,7 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 				level = newLevel;
 				processPanel.setLevelOfEffort(newLevel);
 				processPanel.update();
-				logger.info(getEntity(), "Manually changed to level " + newLevel + " as the overall output effort in resource processing.");
+				logger.info(getEntity(), "Manually changed to level " + newLevel + " as the overall output effort in all resource processes.");
 			}
 		}
 	}	

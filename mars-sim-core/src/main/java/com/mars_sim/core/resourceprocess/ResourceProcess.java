@@ -35,12 +35,13 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * Represents the internal state of the process.
 	 */
 	public enum ProcessState {
-			RUNNING, IDLE, INPUTS_UNAVAILABLE
+			RUNNING, IDLE, INPUTS_UNAVAILABLE, LOCK_ON
 	}
 
 	private boolean canToggle = false;
 	private boolean workerAssigned = false;
 	private boolean isRunning;
+	private boolean isLockOn;
 	
 	private int levelOfEffort = 3;
 	
@@ -76,7 +77,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 		this.assessment = DEFAULT_ASSESSMENT;
 
 		// Add some randomness, today is sol 1
-		resetToggleWait(100 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
+		resetToggleWait(20 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
 	}
 
 	/**
@@ -223,7 +224,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 //					+ "' for '" + processSpec.getName() + "'. Required: "
 //					+ Math.round(required * 1000.0)/1000.0 + " kg. Available: "
 //					+ Math.round(available * 1000.0)/1000.0 + " kg.");
-		setProcessRunning(false);
+		setProcessState(ProcessState.INPUTS_UNAVAILABLE);
 	}
 
 	/**
@@ -296,7 +297,14 @@ public class ResourceProcess implements ScheduledEventHandler {
 			toggleRunningWorkTime = 0D;
 			canToggle = false;
 			
-			setProcessRunning(!isRunning);
+			if (isRunning) {
+				// Turn the running state into idle state
+				setProcessState(ProcessState.IDLE);
+			}
+			else {
+				// Turn the idle state into running state
+				setProcessState(ProcessState.RUNNING);
+			}
 			
 			return true;
 		}
@@ -484,13 +492,25 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	/**
+	 * Checks if the process is locked-on.
+	 *
+	 * @return true if process is locked-on
+	 */
+	public boolean isProcessLockOn() {
+		return isLockOn;
+	}
+	
+	/**
 	 * Checks if the process has required inputs.
 	 * This is not a live instantaneous check, but a check of the last time the process was run.
 	 *
 	 * @return true if process has inputs
 	 */
 	public ProcessState getState() {
-		if (isRunning) {
+		if (isLockOn) {
+			return ProcessState.LOCK_ON;
+		}
+		else if (isRunning) {
 			return ProcessState.RUNNING;
 		}
 		else if (assessment.inputsAvailable()) {
@@ -502,12 +522,30 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	/**
-	 * Sets if the process is running or not.
+	 * Sets the process state.
 	 *
-	 * @param newRunning true if process is running.
+	 * @param selected the process state
 	 */
-	public void setProcessRunning(boolean newRunning) {
-		// Record completion
+	public void setProcessState(ProcessState selected) {
+		boolean newRunning = false;
+		
+		if (selected == ProcessState.RUNNING) {
+			newRunning = true;
+    	}
+    	else if (selected == ProcessState.LOCK_ON) {
+    		newRunning = true;
+    		isLockOn = true;
+    	}
+    	else if (selected == ProcessState.IDLE) {
+    		newRunning = false;
+    		isLockOn = false;
+    	}
+    	else if (selected == ProcessState.INPUTS_UNAVAILABLE) {
+    		newRunning = false;
+    		isLockOn = false;
+    	}
+			
+		// If it used to be running and now it has stopped
 		if (isRunning && !newRunning) {
 			// Record the completion
 			building.getAssociatedSettlement().recordProcess(processSpec.getName(), "Resource", building);

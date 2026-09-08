@@ -128,6 +128,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
+	private static final String TOGGLE_TIME = "toggleTime";
+	
 	private static final double MIN_SCORE = 1;
 	private static final double MAX_SCORE = 150;
 	
@@ -238,7 +240,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					}
 					// Note: Allow a running process to stop once in a while in order to reduce wear and tear
 					// Reduce the likelihood of having to submit ToggleOffJob all the time
-					else if (count == 0) {
+					else if (count == 0 && !process.isProcessLockOn()) {
 						
 						count++;
 					
@@ -247,7 +249,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 						var elapsed = getMarsTime().getTimeDiff(process.getToggleDue());
 
-						score.addModifier("toggleTime", elapsed / 15);
+						score.addModifier(TOGGLE_TIME, elapsed / 15);
 					
 						if (score.getScore() >= 10 * process.getLevel()) { 
 							toggleOffTasks.add(new ToggleOffJob(this, settlement, building, process, score));
