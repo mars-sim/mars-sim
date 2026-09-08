@@ -229,9 +229,9 @@ public class Settlement extends Unit implements Temporal,
 	/** The recommended regolith prob value. */
 	private double recommendedRegolithDigValue;
 	/** A factor due to the population. */
-	private double popFactor0 = 1;
-	/** A factor due to the population. */
-	private double popFactor = 1;
+	private double sqrtPopFactor = 1;
+	/** A factor due to the population. The minimum is 1. */
+	private double logPopFactor = 1;
 	/** The average areothermal potential at this location. */
 	private double areothermalPotential = 0;
 	/** The average regolith collection rate at this location. */
@@ -1729,8 +1729,8 @@ public class Settlement extends Unit implements Temporal,
 	 * 
 	 * @return
 	 */
-	public double getPopulationFactor0() {
-		return popFactor0;
+	public double getSqrtPopFactor() {
+		return sqrtPopFactor;
 	}
 	
 	/**
@@ -1738,8 +1738,8 @@ public class Settlement extends Unit implements Temporal,
 	 * 
 	 * @return
 	 */
-	public double getPopulationFactor() {
-		return popFactor;
+	public double getLogPopFactor() {
+		return logPopFactor;
 	}
 
 	/**
@@ -1900,6 +1900,10 @@ public class Settlement extends Unit implements Temporal,
 		if (citizens.add(p)) {
 			// Update the numCtizens
 			numCitizens = citizens.size();
+			// Update the sqrt pop factor
+			sqrtPopFactor = Math.sqrt(numCitizens);
+			// Update the log pop factor
+			logPopFactor = Math.max(1, Math.log(sqrtPopFactor));
 			// Add this person indoor map of the settlement
 			addToIndoor(p);	
 			
@@ -1927,10 +1931,6 @@ public class Settlement extends Unit implements Temporal,
 			}
 			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
-			// Update the population factor
-			popFactor0 = Math.sqrt(numCitizens);
-			
-			popFactor = Math.max(1, Math.log(popFactor0));
 
 			missionControl.populationChanged();
 			// EVA capacity
@@ -1958,8 +1958,10 @@ public class Settlement extends Unit implements Temporal,
 			removePeopleWithin(p);
 			// Update the numCtizens
 			numCitizens = citizens.size();
-			// Update the population factor
-			popFactor = Math.max(1, Math.log(Math.sqrt(numCitizens)));
+			// Update the sqrt pop factor
+			sqrtPopFactor = Math.sqrt(numCitizens);
+			// Update the log pop factor
+			logPopFactor = Math.max(1, Math.log(sqrtPopFactor));
 			// Fire unit update
 			fireUnitUpdate(EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 			

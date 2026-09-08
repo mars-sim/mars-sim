@@ -36,8 +36,8 @@ public class ResourceProcessSpec implements Serializable{
 	private Set<Integer> ambientResources;
 	private Set<Integer> wasteResources;
 
-	/** How long does it take to complete the process*/
-	private int processTime = 100;
+	/** How long does it take to complete the process */
+	private int processTime = 333;
 
 	/** The work time required to toggle this process on or off. */
 	private int workTime = 10;
@@ -80,7 +80,7 @@ public class ResourceProcessSpec implements Serializable{
 		}
 		else {
 			double minAmount = rate * (processTime/1000D) * MIN_PERC;
-			minAmount = Precision.round(minAmount, 3);
+			minAmount = Precision.round(minAmount, 4);
 			minimumInputs.put(resource, minAmount);
 		}
 

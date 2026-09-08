@@ -169,7 +169,7 @@ public class EquipmentGood extends Good {
 
 		// Get the number of equipment that will be produced by ongoing manufacturing
 		// processes.
-		number += getManufacturingProcessOutput(settlement);
+		number += getManufacturingProcessOngoingOutput(settlement);
 
 		return number;
     }
@@ -331,7 +331,7 @@ public class EquipmentGood extends Good {
 			}
 		}
 
-		baseDemand += totalPhaseOverfill * containerCapacity / settlement.getPopulationFactor();
+		baseDemand += totalPhaseOverfill * containerCapacity / settlement.getLogPopFactor();
 
 		double ratio = computeUsageFactor(settlement);
 

@@ -186,7 +186,7 @@ public class Communication extends Function {
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
 
-        double demand = 4 * settlement.getPopulationFactor0();
+        double demand = 4 * settlement.getSqrtPopFactor();
 
         // Supply based on wear condition of buildings.
         double supply = 0D;
@@ -219,7 +219,7 @@ public class Communication extends Function {
      */
     public double getFunctionValue() {
 
-        double demand = 4 * getBuilding().getSettlement().getPopulationFactor0();
+        double demand = 4 * getBuilding().getSettlement().getSqrtPopFactor();
 
         double supply = 0;
         

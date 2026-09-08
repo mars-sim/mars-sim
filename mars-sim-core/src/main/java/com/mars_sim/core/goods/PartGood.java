@@ -362,7 +362,7 @@ public class PartGood extends Good {
 
 		// Get the number of resources that will be produced by ongoing manufacturing
 		// processes.
-		number += getManufacturingProcessOutput(settlement);
+		number += getManufacturingProcessOngoingOutput(settlement);
 
 		return number;
     }

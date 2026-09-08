@@ -433,9 +433,9 @@ public class EquipmentInventory
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
 		
-		Set<Equipment> set = Collections.unmodifiableSet(containerSet).stream()
+		Set<Equipment> set = new HashSet<>(containerSet).stream()
 				.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
-				.collect(Collectors.toUnmodifiableSet());
+				.collect(Collectors.toSet());
 		return set.size();
 		
 		// Note: trigger CME

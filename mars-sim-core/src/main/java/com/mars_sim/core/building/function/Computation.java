@@ -130,7 +130,7 @@ public class Computation extends Function {
 	 */
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
-		double demand = settlement.getPopulationFactor0();
+		double demand = settlement.getSqrtPopFactor();
 
 		double supply = settlement.getAllAssociatedPeople().stream()
 				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.COMPUTING))
@@ -165,7 +165,7 @@ public class Computation extends Function {
 	 */
 	public double getFunctionValue() {
 
-		double demand = getBuilding().getSettlement().getPopulationFactor0();
+		double demand = getBuilding().getSettlement().getSqrtPopFactor();
 
 		double supply = getBuilding().getSettlement().getAllAssociatedPeople().stream()
 				.mapToDouble(p -> p.getSkillManager().getSkillLevel(SkillType.COMPUTING))

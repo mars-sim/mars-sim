@@ -297,7 +297,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @return amount [kg] for amount resources, number for parts, equipment, and
 	 *         vehicles.
 	 */
-	protected double getManufacturingProcessOutput(Settlement settlement) {
+	protected double getManufacturingProcessOngoingOutput(Settlement settlement) {
 
 		double result = 0D;
 
@@ -321,7 +321,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @return amount [kg] for amount resources, number for parts, equipment, and
 	 *         vehicles.
 	 */
-	protected double getManufacturingProcessInput(Settlement settlement) {
+	protected double getManufacturingOngoingProcessInput(Settlement settlement) {
 
 		double result = 0D;
 

@@ -103,8 +103,9 @@ public class SettlementTaskManager implements Serializable {
     /**
      * This is the main method to calculate the current list of SettlementTasks for a particular MetaTask.
      * It will add new tasks, update existing tasks and remove any that are no longer needed.
-     * The changes trigger the correspnding entity event.
+     * The changes trigger the corresponding entity event.
      * The existing tasks list is updated in place.
+     * 
      * @param mt MetaTask to calculate the SettlementTasks for
      * @param existingTasks The current list of SettlementTasks for this MetaTask
      */

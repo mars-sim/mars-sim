@@ -112,7 +112,7 @@ public abstract class GatherDataMeta extends MetaTask
                             double collectionProbability) {
     	
         var rh = settlement.getEquipmentInventory();
-        double popfactor = settlement.getPopulationFactor0();
+        double popfactor = settlement.getLogPopFactor();
         
         Map<Integer, Integer> instrumentAvailability = new HashMap<>();
         

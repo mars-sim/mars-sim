@@ -155,7 +155,7 @@ class VehicleGood extends Good {
  
 		// Get the number of vehicles that will be produced by ongoing manufacturing
 		// processes.
-		number += getManufacturingProcessOutput(settlement);
+		number += getManufacturingProcessOngoingOutput(settlement);
 
 		return number;
     }
@@ -370,7 +370,7 @@ class VehicleGood extends Good {
 		if (supply < 1)
 			supply = 1;
 		
-		return settlement.getPopulationFactor() / demand / supply * DRONE_FACTOR;
+		return settlement.getLogPopFactor() / demand / supply * DRONE_FACTOR;
 	}
 
 	/**
@@ -399,7 +399,7 @@ class VehicleGood extends Good {
 		if (supply < 1)
 			supply = 1;
 	
-		return settlement.getPopulationFactor() / demand / supply * LUV_FACTOR;
+		return settlement.getLogPopFactor() / demand / supply * LUV_FACTOR;
 	}
 
 	/**
@@ -456,7 +456,7 @@ class VehicleGood extends Good {
 	 */
 	private double determineMissionJob(GoodsManager owner, Settlement settlement, MissionType missionType) {
 		
-		double demand = settlement.getPopulationFactor();
+		double demand = settlement.getLogPopFactor();
 		
 		switch(missionType) {
 		case CONSTRUCTION ->

@@ -3577,7 +3577,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<process name="Produce polyurethane" tech="3" skill="2" work-time="10" process-time="60"
-			tooling="chemical" power-required="0.5">
+			tooling="chemical" power-required="0.15">
 		<description> 
 			The defining feature of all polyurethanes is the urethane linkage (carbamate group).  
 			The general formula for the repeating unit in the polymer chain is:
@@ -3612,7 +3612,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Carbon dioxide" amount="0.5" />
 		</inputs>
 		<outputs>
-			<resource name="Polyurethane" amount="2.0" />
+			<resource name="Polyurethane" amount="2.5" />
 		</outputs>
 	</process>
 

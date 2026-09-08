@@ -219,7 +219,7 @@ class RobotGood extends Good {
 	 */
 	private double determineRobotDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = BASE_DEMAND * getWholeBotDemand(owner)
-				 + owner.getBotMod() * settlement.getPopulationFactor();
+				 + owner.getBotMod() * settlement.getLogPopFactor();
 				
 		if (robotType == RobotType.MAKERBOT) {
 			
