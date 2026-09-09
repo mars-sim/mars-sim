@@ -277,6 +277,19 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
+	 * Gets the average supply from the stored.
+	 *
+	 * @param resource`
+	 * @param supplyStored
+	 * @param solElapsed
+	 * @return
+	 */
+	public double getAverageSupply(double supplyStored) {
+		return Math.log(1 + supplyStored);
+	}
+	
+    
+	/**
 	 * Gets a list of item to be excluded in a buying negotiation.
 	 *
 	 * @return
@@ -973,7 +986,7 @@ public class GoodsManager implements Serializable {
 		int reserve = reservePerPop;
 		double demand = getDemandScoreWithID(resourceID);	
 	
-		double stored = rh.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
+		double stored = rh.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * (pop + 2));
 		double surplus = 0;
 		double lacking = 0;
 		double delta = 0;

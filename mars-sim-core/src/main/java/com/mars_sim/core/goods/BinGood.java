@@ -126,7 +126,7 @@ public class BinGood extends Good {
 		// Determine average demand.
 		double average = determineBinDemand(owner, settlement);
 
-		double totalSupply = getAverageBinSupply(settlement.getEquipmentInventory().findNumBinsOfType(binType));
+		double totalSupply = owner.getAverageSupply(settlement.getEquipmentInventory().findNumBinsOfType(binType));
 		
 		owner.setSupplyScore(this, totalSupply);
 		
@@ -244,17 +244,6 @@ public class BinGood extends Good {
 		return totalAmount / (1 + total);
 	}
 
-	/**
-	 * Gets the total supply for the bin.
-	 *
-	 * @param resource`
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageBinSupply(double supplyStored) {
-		return Math.sqrt(1 + supplyStored);
-	}
 	
 	public void destroy() {
 		binType = null;

@@ -27,6 +27,7 @@ import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementParameters;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -59,7 +60,7 @@ public abstract class DigLocalMeta extends MetaTask
         }
     }
 
-	private static final int MAX_BASE = 20_000;
+	private static final int MAX_BASE = 500;
 	private static final int DEFAULT_EVA_NUM = 5;
 	
     private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger digging
@@ -99,7 +100,7 @@ public abstract class DigLocalMeta extends MetaTask
     		return Collections.emptyList();
         }
 
-        double base = RandomUtil.getRandomDouble(collectionProbability / 3, collectionProbability);
+        double base = RandomUtil.getRandomDouble(collectionProbability / 3, collectionProbability / 2);
         if (base <= 0) {
             return Collections.emptyList();
         }
@@ -133,7 +134,7 @@ public abstract class DigLocalMeta extends MetaTask
         if (capacity <= MIN_CAPACITY) {
             return Collections.emptyList();
         }
-        result.addModifier("capacity", 1 + (capacity - MIN_CAPACITY));
+        result.addModifier("capacity", 1 + MathUtils.between(0, 1, capacity - MIN_CAPACITY));
 
         List<SettlementTask> resultList = new ArrayList<>();
         resultList.add(new DigLocalTaskJob(this, settlement, result, maxEVA));

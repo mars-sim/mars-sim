@@ -407,7 +407,7 @@ public class PartGood extends Good {
         }
 	       
 		// Calculate total supply
-		double totalSupply = getAverageItemSupply(eo.getItemResourceStored(id));
+		double totalSupply = owner.getAverageSupply(eo.getItemResourceStored(id));
 		// Save the average supply
 		owner.setSupplyScore(this, totalSupply);
     
@@ -502,18 +502,6 @@ public class PartGood extends Good {
 		// Save the goods demand
 		owner.setDemandScore(this, totalDemand);
     }
-
-    /**
-	 * Gets the total supply for the item resource.
-	 *
-	 * @param resource
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageItemSupply(double supplyStored) {
-		return Math.sqrt(0.1 + supplyStored);
-	}
 
 	/**
 	 * Limits the demand for a particular raw material part.

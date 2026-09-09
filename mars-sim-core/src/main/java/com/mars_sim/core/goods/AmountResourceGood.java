@@ -756,7 +756,7 @@ class AmountResourceGood extends Good {
 //        }
         
 		// Calculate total supply
-		double totalSupply = getAverageAmountSupply(rh.getSpecificAmountResourceStored(id));
+		double totalSupply = owner.getAverageSupply(rh.getSpecificAmountResourceStored(id));
 
 		// Store the average supply
 		owner.setSupplyScore(this, totalSupply);
@@ -869,20 +869,6 @@ class AmountResourceGood extends Good {
 		// Save the goods demand
 		owner.setDemandScore(this, totalDemand);
     }
-
-    
-    /**
-	 * Gets the total supply for the amount resource.
-	 *
-	 * @param resource`
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageAmountSupply(double supplyStored) {
-		return Math.sqrt(0.1 + supplyStored);
-	}
-
 
 	/**
 	 * Gets the constant input and output for a resource from all automated resource processes at a

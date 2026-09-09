@@ -130,24 +130,11 @@ class RobotGood extends Good {
         return INITIAL_ROBOT_SUPPLY;
     }
 
-
-	/**
-	 * Gets the total supply for the robot.
-	 *
-	 * @param resource`
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageRobotSupply(double supplyStored) {
-		return Math.sqrt(0.1 + supplyStored);
-	}
-	
     @Override
     void refreshSupplyDemandScore(GoodsManager owner) {
 		Settlement settlement = owner.getSettlement();
 	
-		double totalSupply = getAverageRobotSupply(getNumberForSettlement(settlement));
+		double totalSupply = owner.getAverageSupply(getNumberForSettlement(settlement));
 				
 		owner.setSupplyScore(this, totalSupply);
 		

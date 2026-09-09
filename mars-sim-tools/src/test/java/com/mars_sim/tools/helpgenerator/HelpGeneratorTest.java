@@ -109,7 +109,7 @@ class HelpGeneratorTest {
         var context = createGenerator();
         var config = context.getConfig().getResourceProcessConfiguration();
 
-        var spec = config.getProcessSpec("Atmospheric Processing");
+        var spec = config.getProcessSpec("Microwave Plasma Conversion of Air");
         var vg = new ResourceProcessGenerator(context);
         var content = createDoc(vg, spec);
 

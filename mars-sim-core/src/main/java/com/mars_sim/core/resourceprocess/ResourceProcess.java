@@ -45,8 +45,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 	
 	private int levelOfEffort = 3;
 	
-	/** The time accumulated [in millisols]. */
-	private double accumulatedTime;
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
 	private double dutyTime;
@@ -103,21 +101,13 @@ public class ResourceProcess implements ScheduledEventHandler {
 			double newProdLevel = productionLevel;
 			// Set the current production level.
 			currentProductionLevel = newProdLevel * levelOfEffort / 5;
-			
-			accumulatedTime += time;
 
-			double newCheckPeriod = PROCESS_CHECK_FREQUENCY * time;
-			
-			if (accumulatedTime >= newCheckPeriod) {
-				// Compute the remaining accumulatedTime
-				accumulatedTime -= newCheckPeriod;	
-				// Increment the duty time here
-				dutyTime += time;
+			// Increment the duty time here
+			dutyTime += time;
 
-				processInputResources(host);
+			processInputResources(host);
 
-				processOutputResources(host);
-			}
+			processOutputResources(host);
 		}
 	}
 
@@ -134,7 +124,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 				
 				double fullRate = getBaseFullInputRate(resource);
 				double resourceRate = fullRate * currentProductionLevel;
-				double required = resourceRate * accumulatedTime;
+				double required = resourceRate;
 				if (required == 0D)
 					continue;
 
@@ -174,11 +164,11 @@ public class ResourceProcess implements ScheduledEventHandler {
 		// Output resources to inventory.
 		for (Integer resource : processSpec.getOutputResources()) {
 			
-			if (!isWasteOutputResource(resource)) {		
+			if (!isWasteOutputResource(resource)) {	
 				
 				double maxRate = getBaseFullOutputRate(resource);
 				double resourceRate = maxRate * currentProductionLevel;
-				double required = resourceRate * accumulatedTime;
+				double required = resourceRate;
 				double remainingCap = host.getRemainingCombinedCapacity(resource);
 							
 				// Store the right amount

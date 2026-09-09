@@ -35,6 +35,7 @@ public class ResourceProcessSpec implements Serializable{
 	// Cache some aggregate values
 	private Set<Integer> ambientResources;
 	private Set<Integer> wasteResources;
+	private Set<Integer> coreResources;
 
 	/** How long does it take to complete the process */
 	private int processTime = 333;
@@ -60,6 +61,8 @@ public class ResourceProcessSpec implements Serializable{
 
 		this.wasteResources = new HashSet<>();
 		this.ambientResources = new HashSet<>();
+		this.coreResources = new HashSet<>();
+		
 		this.kWRequired = kWRequired;
 		this.processTime = processTime;
 		this.workTime = workTime;
@@ -93,17 +96,23 @@ public class ResourceProcessSpec implements Serializable{
 	 * @param resource the amount resource.
 	 * @param rate     base output resource rate (kg/millisol)
 	 * @param waste    is resource waste material not to be stored?
+	 * @param core	   is this a core output resource ?
 	 * 
 	 * @apiNote Already converted the RATE from kg/sol to rate to kg/millisol
 	 */
-	void addBaseOutputResourceRate(Integer resource, double rate, boolean waste) {
+	void addBaseOutputResourceRate(Integer resource, double rate, boolean waste, boolean core) {
 		if (waste) {
 			wasteResources.add(resource);
+		}
+		if (core) {
+			coreResources.add(resource);
 		}
 
 		baseOutputRates.put(resource, rate);
 	}
 
+	
+	
 	public String getName() {
 		return name;
 	}
@@ -177,6 +186,16 @@ public class ResourceProcessSpec implements Serializable{
 		return wasteResources.contains(resource);
 	}
 
+	/**
+	 * Checks if resource is a core output.
+	 *
+	 * @param resource the resource to check.
+	 * @return true if core output.
+	 */
+	public boolean isCoreOutputResource(Integer resource) {
+		return coreResources.contains(resource);
+	}
+	
 	/**
 	 * Gets the kW required for this process.
 	 * 

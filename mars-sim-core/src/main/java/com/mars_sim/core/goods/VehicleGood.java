@@ -187,7 +187,7 @@ class VehicleGood extends Good {
         Settlement settlement = owner.getSettlement();
 		
 		// Calculate total supply
-		double totalSupply = getAverageVehicleSupply(getNumberForSettlement(settlement));
+		double totalSupply = owner.getAverageSupply(getNumberForSettlement(settlement));
 		
 		owner.setSupplyScore(this, totalSupply);
 			
@@ -277,18 +277,6 @@ class VehicleGood extends Good {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the total supply for the vehicle.
-	 *
-	 * @param resource`
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageVehicleSupply(double supplyStored) {
-		return Math.sqrt(0.1 + supplyStored);
 	}
 
 	/**

@@ -394,15 +394,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<!-- "Lander Hab" -->
 			<resource-processing low-power-level="0.25">
+				<process-engine name="Microwave Plasma Conversion of Air" number-modules="10"/>
+
 				<!--For producing Methane and Water -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="6"/>
 				<process-engine name="CO Methanation" number-modules="4"/>
 	
 				<!--For producing Oxygen -->
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="16"/>
 						
 				<!--For producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>	
@@ -418,12 +420,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!--For producing Methanol -->
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="6"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
-								
-				<process-engine name="Atmospheric processing" number-modules="10"/>
 
 				<!--For producing Water -->
-				<process-engine name="Melt Ice" number-modules="16" />
-				<process-engine name="Filter Brine Water" number-modules="16" />
+				<process-engine name="Melt Ice" number-modules="12" />
+				<process-engine name="Filter Brine Water" number-modules="12" />
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>		
 				<process-engine name="CO Hydrogenation" number-modules="2"/>
 				<process-engine name="Catalytic Recombination into Water" number-modules="8"/>	
@@ -848,17 +848,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<!-- "Central Hub A" -->
-			<resource-processing low-power-level="0.25">	
+			<resource-processing low-power-level="0.25">
+				<process-engine name="Microwave Plasma Conversion of Air" number-modules="20"/>
+				
 				<!--For producing Methane and Water -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="18"/>			
 				<process-engine name="CO Methanation" number-modules="12"/>
 				
 				<!--For producing Oxygen -->
-				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="32"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="32"/>
-				
+				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="16"/>	
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="12"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="48"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="32"/>
 				
 				<!--For producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="16"/>	
@@ -873,8 +874,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!--For producing Methanol -->
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="24"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="12"/>					
-			
-				<process-engine name="Atmospheric processing" number-modules="20"/>
 
 				<!--For producing Water -->
 				<process-engine name="Melt Ice" number-modules="48" />
@@ -1590,7 +1589,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<!-- Inflatable Greenhouse -->
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Atmospheric processing" number-modules="10"/>
+				<process-engine name="Microwave Plasma Conversion of Air" number-modules="10"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="6"/>		
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="6"/>
@@ -1771,7 +1770,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Atmospheric processing" number-modules="20"/>
+				<process-engine name="Microwave Plasma Conversion of Air" number-modules="20"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="12"/>
@@ -2425,11 +2424,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<!-- "Atmospheric Processor" -->
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Atmospheric processing" number-modules="50"/>
-				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="52"/>
+				<process-engine name="Microwave Plasma Conversion of Air" number-modules="50"/>
+				<!--For producing Oxygen -->
+				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="32"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="24"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="72"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="64"/>
 			</resource-processing> 
 
 			<storage stock-capacity="100000">
@@ -3508,9 +3508,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.3"/>
 			
 			<resource-processing low-power-level="0.2">
-				<process-engine name="Excavate Ice" number-modules="4" />
-				<process-engine name="Melt Ice" number-modules="60" />
-				<process-engine name="Filter Brine Water" number-modules="60" />
+				<process-engine name="Excavate Ice" number-modules="3" />
+				<process-engine name="Melt Ice" number-modules="30" />
+				<process-engine name="Filter Brine Water" number-modules="30" />
 				
 			</resource-processing>
 			
@@ -4402,16 +4402,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<!-- "Outpost Hub" -->
 			<resource-processing low-power-level="0.25">
+							
+				<process-engine name="Microwave Plasma Conversion of Air" number-modules="10"/>
+				
 				<!--For producing Methane and Water -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="6"/>
 				<process-engine name="CO Methanation" number-modules="4"/>
 				
 				<!--For producing Oxygen -->
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>		
-				
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>		
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="16"/>
 								
 				<!--For producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>	
@@ -4426,12 +4428,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!--For producing Methanol -->
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="6"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
-				
-				<process-engine name="Atmospheric processing" number-modules="10"/>
+
 				
 				<!--For producing Water -->
-				<process-engine name="Melt Ice" number-modules="16" />
-				<process-engine name="Filter Brine Water" number-modules="16" />
+				<process-engine name="Melt Ice" number-modules="12" />
+				<process-engine name="Filter Brine Water" number-modules="12" />
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>	
 				<process-engine name="CO Hydrogenation" number-modules="2"/>	
 				<process-engine name="Catalytic Recombination into Water" number-modules="8"/>	
@@ -4883,7 +4884,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<!-- "Inground Greenhouse" -->
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Atmospheric processing" number-modules="10"/>
+				<process-engine name="Microwave Plasma Conversion of Air" number-modules="10"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="6"/>
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="3"/>

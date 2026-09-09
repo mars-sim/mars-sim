@@ -232,7 +232,7 @@ public class EquipmentGood extends Good {
 		
 		owner.setProjectedDemandScore(this, projected);
 		
-		double totalSupply = getAverageEquipmentSupply(settlement.getEquipmentInventory().findNumContainersOfType(equipmentType));
+		double totalSupply = owner.getAverageSupply(settlement.getEquipmentInventory().findNumContainersOfType(equipmentType));
 				
 		owner.setSupplyScore(this, totalSupply);
 		
@@ -429,17 +429,6 @@ public class EquipmentGood extends Good {
 //			}
 //		}
 		return demand / num;
-	}
-	/**
-	 * Gets the total supply for the equipment.
-	 *
-	 * @param resource`
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageEquipmentSupply(double supplyStored) {
-		return Math.sqrt(0.1 + supplyStored);
 	}
 	
 	/**
