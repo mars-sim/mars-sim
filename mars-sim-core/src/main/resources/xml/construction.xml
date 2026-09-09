@@ -404,10 +404,10 @@
 			<part type="steel sheet" number="30" />	
 			<!-- Circumference = 3.14 * 9m ~ 28.27m (or 30m); 3 boards tall-->
 			<part type="Polyethylene UHMW board" number="90" />					
-			<part type="plastic pipe" number="50" />
+			<part type="plastic pipe" number="40" />
 			<part type="steel pipe" number="40" />
-			<part type="gasket" number="40" />
-			<part type="valve" number="10" />
+			<part type="gasket" number="9" />
+			<part type="valve" number="9" />
 			<part type="solar panel" number="4" />
 		</frame>
 
@@ -417,15 +417,17 @@
 		 	<resource type="concrete" amount="54.0" />
 			<resource type="acetylene" amount="1.25" />		 	
 			<part type="aluminum sheet" number="30" />		
-			<part type="steel truss" number="20" />
-			<part type="steel post" number="4" />			
+			<!-- Assuming standard 3m truss spacing; 9m / 3m = 3 bays → 3 + 1; 4 trusses (span is 6m spart) -->
+			<part type="steel truss" number="4" />
+			<!-- posts or columns = 4 trusses * 2 sides	= 8 posts-->
+			<part type="steel post" number="8" />			
 			<part type="steel sheet" number="30" />	
-			<!-- rectangular wall = (6 + 9) * 2 = 30m; 2 boards tall-->
+			<!-- rectangular wall = (6 * 9) * 2 = 30m; 2 boards tall-->
 			<part type="Polyethylene UHMW board" number="60" />
-			<part type="plastic pipe" number="50" />
-			<part type="steel pipe" number="40" />
-			<part type="gasket" number="30" />
-			<part type="valve" number="30" />
+			<part type="plastic pipe" number="27" />
+			<part type="steel pipe" number="27" />
+			<part type="gasket" number="6" />
+			<part type="valve" number="6" />
 		</frame>
 
 		<frame name="Atmospheric Processor Frame" width="8.0" length="11.0"
@@ -666,12 +668,12 @@
 		<building name="Wind Turbine" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Steel Frame Tower" >
-			<part type="aerogel tile" number="10" />		 
-			<part type="wind turbine blade" number="4" />
-			<part type="turbine generator" number="1" />
-			<part type="power cable" number="6" />
-			<part type="electrical wire" number="20" />
-			<part type="wire connector" number="20" />
+			<part type="Aerogel tile" number="10" />		 
+			<part type="Turbine blade" number="3" />
+			<part type="Turbine generator" number="1" />
+			<part type="Power cable" number="6" />
+			<part type="Electrical wire" number="20" />
+			<part type="Wire connector" number="20" />
 			<vehicle type="LUV" >
 				<attachment-part type="crane boom" />
 			</vehicle>

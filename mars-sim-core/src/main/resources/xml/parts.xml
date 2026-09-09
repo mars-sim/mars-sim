@@ -22,7 +22,7 @@
 	
 	<part name="Fire extinguisher" type="utility" mass="3" />
 
-	<part name="Gasket" type="utility" mass=".1">
+	<part name="Gasket" type="utility" mass=".3">
 		<description>Gasket is a sealing component, typically made from high-quality rubber, 
 			designed to ensure a secure and leak-proof connection.</description>
 		<!-- 'entity' denotes the system name or the malfunction/maintenance scope. -->
@@ -246,7 +246,13 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Plastic pipe" type="utility" mass="1.0">
+	<part name="Plastic pipe" type="utility" mass="0.4">
+		<description>For a 1 m long pipe with 5 cm outer diameter and 2 mm wall thickness. 
+		Material	Density(g/cm³)	Mass	Mass (lbs)
+		PVC			1.40			422 g	0.93
+		HDPE		0.95			287 g	0.63
+		PP			0.90			271 g	0.60
+		</description>
 		<maintenance-entity-list>
 			<entity name="building" probability=".05" max-number="4" />
 			<entity name="living accommodation" probability=".05" max-number="2" />
@@ -673,7 +679,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Water tank" type="utility" mass="2.0" >
+	<part name="Water tank" type="utility" mass="2.5" >
 	 	<maintenance-entity-list>
 			<entity name="rover" probability=".5" max-number="1" />
 			<entity name="life support" probability=".1" max-number="1" />
@@ -743,8 +749,16 @@
 		<description>A small, light steel bar used for construction.</description>
 	</part>
 
-	<part name="Wind turbine blade" type="electrical" mass="2.0" >
-		<description>Blade for a wind turbine.</description>
+	<part name="Turbine blade" type="electrical" mass="66.0" >
+		<description>Blade for a wind turbine. 
+			Rule of thumb: roughly 8–13 kg of blade material per kW of rated power for modern turbines.
+			
+			Currently, each Wind Turbine generates up to 18 kW in buildings.xml 
+			
+			For a 3-blade setup, each blade generates 6 kW.
+			
+			Thus, each blade would weigh 11 kg per kW * 6 kW = 66 kg
+			</description>
 		<maintenance-entity-list>
 			<entity name="wind power source" probability=".5" max-number="1" />
 		</maintenance-entity-list>
