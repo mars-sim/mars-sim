@@ -736,7 +736,7 @@ public class Weather implements Serializable, Temporal {
 			}			
 		}
 
-		if (pulse.isNewHalfSol()) {
+		if (pulse.isNewOneThirdSol()) {
 
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(-.01, .01);
 			if (dailyVariationAirPressure > .05)

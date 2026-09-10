@@ -57,7 +57,7 @@ public class MaintainGarageVehicleTest extends MarsSimUnitTest {
 
         // Create a massive pulse to trigger maintenance
         var master = getSim().getMasterClock();
-        var pulse = new ClockPulse(1, mm.getStandardInspectionWindow(), master.getMarsTime(), master, false, false, true, false);
+        var pulse = new ClockPulse(1, mm.getStandardInspectionWindow(), master.getMarsTime(), master, false, false, false, true, false);
         mm.activeTimePassing(pulse);
         assertGreaterThan("Vehicle maintenance time", 0D, mm.getEffectiveTimeSinceLastMaintenance());
 

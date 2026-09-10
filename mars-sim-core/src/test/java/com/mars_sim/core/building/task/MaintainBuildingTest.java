@@ -23,7 +23,7 @@ public class MaintainBuildingTest extends MarsSimUnitTest {
         MalfunctionManager manager = b.getMalfunctionManager();
         double time = manager.getStandardInspectionWindow() * MaintenanceUtil.INSPECTION_PERCENTAGE * 220;
         var mTime = context.getSim().getMasterClock().getMarsTime().addTime(time);
-        manager.activeTimePassing(context.createPulse(mTime, false, false));
+        manager.activeTimePassing(context.createPulse(mTime, false, false, false));
     }
     
     @Test

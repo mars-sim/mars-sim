@@ -992,7 +992,7 @@ public class Settlement extends Unit implements Temporal,
 		// Update robots
 		timePassing(pulse, ownedRobots);
 	
-		if (pulse.isNewHalfSol()) {
+		if (pulse.isNewOneThirdSol()) {
 			// Reset water rationing review due
 			rationing.setReviewDue(true);
 			// Reset ice review due			

@@ -377,8 +377,8 @@ public abstract class MarsSimUnitTest {
      * @param newHalfSol Has half a sol just passed ?
      * @return
      */
-    protected ClockPulse createPulse(int missionSol, int mSol, boolean newSol, boolean newHalfSol) {
-        return context.createPulse(missionSol, mSol, newSol, newHalfSol);
+    protected ClockPulse createPulse(int missionSol, int mSol, boolean newSol, boolean newHalfSol, boolean isNewOneThirdSol) {
+        return context.createPulse(missionSol, mSol, newSol, newHalfSol, isNewOneThirdSol);
 	}
 
 	/**
@@ -389,8 +389,8 @@ public abstract class MarsSimUnitTest {
      * @param newHalfSol Has half a sol just passed ? 
      * @return
      */
-	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
-		return context.createPulse(marsTime, newSol, newHalfSol);
+	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol, boolean isNewOneThirdSol) {
+		return context.createPulse(marsTime, newSol, newHalfSol, isNewOneThirdSol);
 	}
 
 	/**

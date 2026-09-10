@@ -33,7 +33,7 @@ public class PeerReviewStudyPaperTest extends MarsSimUnitTest {
         assertTrue(t.isDone(), "Review task completed");
 
         double elasped = study.getTotalPeerReviewTimeRequired() * 1.1;
-        study.timePassing(createPulse(getSim().getMasterClock().getMarsTime().addTime(elasped), false, false));
+        study.timePassing(createPulse(getSim().getMasterClock().getMarsTime().addTime(elasped), false, false, false));
         assertTrue(study.isCompleted(), "Study complete");
     }
 
@@ -45,7 +45,7 @@ public class PeerReviewStudyPaperTest extends MarsSimUnitTest {
         var elapsed = study.getTotalPrimaryPaperWorkTimeRequired();
         study.addPrimaryPaperWorkTime(elapsed);
         var now = getSim().getMasterClock().getMarsTime().addTime(elapsed);
-        study.timePassing(createPulse(now, false, false));
+        study.timePassing(createPulse(now, false, false, false));
         assertEquals(StudyStatus.PEER_REVIEW_PHASE, study.getPhase(), "Study advanced to review phase");
         return study;
     }

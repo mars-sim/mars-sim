@@ -30,7 +30,7 @@ public class CompileScientificStudyResultsTest extends MarsSimUnitTest {
         var elapsed = study.getTotalPrimaryResearchWorkTimeRequired();
         study.addPrimaryResearchWorkTime(elapsed);
         var now = context.getSim().getMasterClock().getMarsTime().addTime(elapsed);
-        study.timePassing(context.createPulse(now, false, false));
+        study.timePassing(context.createPulse(now, false, false, false));
         assertEquals(StudyStatus.PAPER_PHASE, study.getPhase(), "Study advanced to paper phase");
         return study;
     }

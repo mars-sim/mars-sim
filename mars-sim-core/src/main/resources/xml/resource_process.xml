@@ -133,7 +133,7 @@
 		<input resource="Carbon dioxide" rate="88.0" ambient="true" />
 		<input resource="hydrogen" rate="4.0" />
 		
-		<output resource="ethylene" rate="28.0" />
+		<output resource="ethylene" rate="28.0" core="true" />
 		<output resource="oxygen" rate="64.0" />
 	</process> <!--"Photosynthetic Conversion of CO2 to Ethylene"-->
 	
@@ -161,7 +161,7 @@
 
 		<output resource="Acetic acid" rate="120.0" />
 		<output resource="Carbon dioxide" rate="88.0" waste="false" />
-		<output resource="Hydrogen" rate="8.0" />
+		<output resource="Hydrogen" rate="8.0" core="true" />
 	</process> <!--"Glucose Fermentation"-->
 
 	<process name="Photo Fermentation by Chlorella" kW-required="0.0" >
@@ -179,7 +179,7 @@
 		<input resource="water" rate="108.0" />	
 
 		<output resource="Carbon dioxide" rate="264.0" waste="false" />
-		<output resource="Hydrogen" rate="24.0" />
+		<output resource="Hydrogen" rate="24.0" core="true" />
 	</process>
 
 	<process name="Cellulolysis of Fiber into Glucose" kW-required="0.0" >
@@ -396,7 +396,7 @@
 		<input resource="hydrogen" rate="60" />
 		
 		<output resource="methane" rate="80" core="true" />
-		<output resource="Carbon monoxide" rate="280" waste="false" />
+		<output resource="Carbon monoxide" rate="280" />
 		<output resource="water" rate="360" core="true" />
 	</process> <!-- "Sabatier RWGS Reactor" -->
 
@@ -413,11 +413,11 @@
 		H2O : 18 g/mol
 
 	</description>
-		<input resource="Carbon monoxide" rate="560" ambient="false" />
-		<input resource="hydrogen" rate="120" />
+		<input resource="Carbon monoxide" rate="140" />
+		<input resource="hydrogen" rate="30" />
 		
-		<output resource="methane" rate="320" core="true" />
-		<output resource="water" rate="360" core="true" />
+		<output resource="methane" rate="80" core="true" />
+		<output resource="water" rate="90" />
 	</process> <!-- "CO Methanation" -->
 
 		
@@ -494,10 +494,10 @@
 		make the process energy-intensive in practice.
 		
 		</description> 
-		<input resource="Carbon monoxide" rate="140.0" ambient="true" />
+		<input resource="Carbon monoxide" rate="140.0" />
 		<input resource="hydrogen" rate="10.0"  />
 		
-		<output resource="water" rate="90.0" core="true" />
+		<output resource="water" rate="90.0" />
 		<output resource="carbon" rate="60.0" core="true" />
 		
 	</process> <!-- "CO Hydrogenation" -->
@@ -528,7 +528,7 @@
 		<input resource="methane" rate="32.0" />
 		<input resource="ethylene" rate="84.0" />
 		
-		<output resource="hydrogen" rate="6.0" />
+		<output resource="hydrogen" rate="6.0" core="true" />
 		<output resource="acetylene" rate="26.0" />
 		<output resource="propylene" rate="84.0" />
 	</process> <!-- "Plasma Pyrolysis Assembly (PPA) Reactor" -->
@@ -605,7 +605,7 @@
 		<input resource="Water" rate="18.0"  />
 				
 		<output resource="Acetylene" rate="26.0"  />
-		<output resource="Oxygen" rate="80.0"  />
+		<output resource="Oxygen" rate="80.0"  core="true" />
 		<output resource="Rock salt" rate="11.1" />
 		<output resource="lime" rate="5.6" />
 	</process> <!--"Produce Oxygen and Acetylene with Chloride and Carbides"-->
@@ -743,7 +743,7 @@
 		<input resource="Water" rate="360.0" />
 		
 		<output resource="Carbon dioxide" rate="440.0" waste="false" />
-		<output resource="Hydrogen" rate="60.0" core="true" />
+		<output resource="Hydrogen" rate="60.0" />
 	</process> <!-- "Steam Methane Reforming (SMR)" -->
 
 	<process name="Dry Methane Reforming (DMR)" kW-required="0.01" >
@@ -764,8 +764,8 @@
 		<input resource="Methane" rate="160.0" />
 		<input resource="Carbon dioxide" rate="440.0" ambient="true" />
 		
-		<output resource="Carbon monoxide" rate="560.0" waste="false" />
-		<output resource="Hydrogen" rate="40.0"  />
+		<output resource="Carbon monoxide" rate="560.0" />
+		<output resource="Hydrogen" rate="40.0" core="true" />
 	</process> <!-- "Dry Methane Reforming (DMR)" -->
 
 
@@ -787,11 +787,11 @@
 		
 	</description>
 
-		<input resource="Carbon monoxide" rate="280.0" ambient="false" />
+		<input resource="Carbon monoxide" rate="280.0" />
 		<input resource="water" rate="180.0" />
 		
 		<output resource="Carbon dioxide" rate="440.0" waste="true" />
-		<output resource="hydrogen" rate="20.0" core="true" />
+		<output resource="hydrogen" rate="20.0" />
 	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
 
 
@@ -884,7 +884,7 @@
 	</description> 
 		<input resource="water" rate="288" />
 		
-		<output resource="hydrogen" rate="32" />
+		<output resource="hydrogen" rate="32" core="true" />
 		<output resource="oxygen" rate="256" />
 	</process> <!-- Oxygen Generator System (OGS) -->
 	
@@ -902,12 +902,16 @@
 		<input resource="hydrogen" rate="32" />
 		<input resource="oxygen" rate="256" />
 		
-		<output resource="water" rate="288" core="true" />
+		<output resource="water" rate="288" />
 
 	</process> <!-- Catalytic Recombination into Water -->
 		
-	<process name="Low Temperature Plasma CO2 Decomposition" kW-required="0.01" defaultOn="false">
+	<process name="Low Temperature Plasma CO2 Decomposition" kW-required="0.02" defaultOn="false">
 		<description> 
+			CO₂ (reactant): 12.01 + 2(16.00) = 44.01 g/mol
+			CO: 12.01 + 16.00 = 28.01 g/mol
+			O₂: 2(16.00) = 32.00 g/mol
+			
 			The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 			be ignited in ambient Martian atmosphere. 
 			
@@ -921,10 +925,10 @@
 			
 			See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
 		</description>
-		<input resource="Carbon dioxide" rate="70.4" ambient="true" />
+		<input resource="Carbon dioxide" rate="220.0" ambient="true" />
 		
-		<output resource="Carbon monoxide" rate="22.4" waste="false" />
-		<output resource="oxygen" rate="25.6" core="true" />
+		<output resource="Carbon monoxide" rate="140.0" core="true" />
+		<output resource="oxygen" rate="80.0" core="true" />
 	</process> <!-- "Low Temperature Plasma CO2 Decomposition" -->
 	
 	     
@@ -1076,60 +1080,58 @@
 		</description>
 		<input resource="brine water" rate="390.0"  />
 		
-		<!-- 400 below -->
-		<output resource="water" rate="344.0" core="true" />
+		<output resource="water" rate="350.0" core="true" />
 		
-		<!-- 56 below  -->
-		<output resource="sand" rate="40.0" core="true" />
+		<output resource="sand" rate="4.0" core="true" />
 		
-		<!-- 26 below  --> 			
+		<output resource="regolith" rate="20.0" core="true" />
+			
 		<output resource="gypsum" rate="5.0" core="true" />			
 
 		<output resource="lime" rate="1.0" core="true" />	
 		
-		<output resource="perchlorate" rate="2.0"  />	
+		<output resource="perchlorate" rate="2.0" core="true" />	
 		
-		<output resource="iron oxide" rate="1.5"  />	
-		<output resource="nickel" rate="0.5"  />	
+		<output resource="iron oxide" rate="1.5" core="true" />	
+		<output resource="nickel" rate="0.5" core="true" />	
 		
-		<output resource="silica" rate="0.8"  />	
-		<output resource="sulfur" rate="0.2" />	
+		<output resource="silica" rate="0.8" core="true" />	
+		<output resource="sulfur" rate="0.2" core="true" />	
 		
 		<output resource="calcium" rate="0.5" core="true" />			
 		<output resource="Calcium carbonate" rate="1.5" core="true" />
 				
 		<output resource="iron chloride" rate="0.1" />
-		<output resource="magnesium" rate="0.9"  />	
+		<output resource="magnesium" rate="0.9" core="true" />	
 		
-		<output resource="manganese" rate="0.1"  />	
-		<output resource="copper" rate="0.1" />	
-		<output resource="gold" rate="0.1" />	
-		<output resource="platinum" rate="0.1" />	
-		<output resource="chromium" rate="0.1" />	
+		<output resource="manganese" rate="0.1" core="true" />	
+		<output resource="copper" rate="0.1" core="true"/>	
+		<output resource="gold" rate="0.1" core="true" />	
+		<output resource="platinum" rate="0.1" core="true"/>	
+		<output resource="chromium" rate="0.1" core="true"/>	
 		
-		<output resource="scandium" rate="0.1" />	
-		<output resource="aluminum" rate="0.1" />	
-		<output resource="silver" rate="0.1" />	
-		<output resource="tin" rate="0.1" />	
-		<output resource="titanium" rate="0.1" />	
+		<output resource="scandium" rate="0.1" core="true" />	
+		<output resource="aluminum" rate="0.1" core="true"/>	
+		<output resource="silver" rate="0.1" core="true"/>	
+		<output resource="tin" rate="0.1" core="true"/>	
+		<output resource="titanium" rate="0.1" core="true"/>	
 		
-		<output resource="vanadium" rate="0.1" />	
-		<output resource="zinc" rate="0.1" />
-		
+		<output resource="vanadium" rate="0.1" core="true"/>	
+		<output resource="zinc" rate="0.1" core="true"/>
 		<output resource="aluminum oxide" rate="0.8" core="true"/>	
 
-		<output resource="Chalcopyrite" rate="1.0"  />
-		<output resource="Goethite" rate="1.0"  />
-		<output resource="Hematite" rate="1.0"  />	
-		<output resource="Kamacite" rate="1.0"  />	
+		<output resource="Chalcopyrite" rate="1.0" core="true" />
+		<output resource="Goethite" rate="1.0" core="true" />
+		<output resource="Hematite" rate="1.0" core="true" />	
+		<output resource="Kamacite" rate="1.0" core="true" />	
 		
-		<output resource="Magnesite" rate="1.0"  />
-		<output resource="Magnetite" rate="1.0"  />	
-		<output resource="Malachite" rate="1.0"  />	
-		<output resource="Olivine" rate="1.0"  />
+		<output resource="Magnesite" rate="1.0" core="true" />
+		<output resource="Magnetite" rate="1.0" core="true" />	
+		<output resource="Malachite" rate="1.0" core="true" />	
+		<output resource="Olivine" rate="1.0" core="true" />
 		
-		<output resource="Taenite" rate="1.0"  />	
-		<output resource="Sylvite" rate="1.0"  />	
+		<output resource="Taenite" rate="1.0" core="true" />	
+		<output resource="Sylvite" rate="1.0" core="true" />	
 
 								
 	</process>
@@ -1731,8 +1733,8 @@
 		<input resource="Potash lye" rate="0.01" />
 		<input resource="copper" rate="0.01" />
 		
-		<output resource="ethylene" rate="28.0"  core="true" />
-		<output resource="water" rate="72.0" core="true" />
+		<output resource="ethylene" rate="28.0" />
+		<output resource="water" rate="72.0" />
 	</process> <!-- "CO2 Electroreduction from H2 to Ethylene and H2O" -->
 	
 	<process name="CO2 Electroreduction from H2O to Ethylene and O2" kW-required="0.005" >
@@ -1765,8 +1767,8 @@
 		<input resource="Potash lye" rate="0.01" />
 		<input resource="copper" rate="0.01" />
 		
-		<output resource="ethylene" rate="28.0" />
-		<output resource="oxygen" rate="96.0"/>
+		<output resource="ethylene" rate="28.0" core="true" />
+		<output resource="oxygen" rate="96.0" />
 	</process> <!-- "CO2 Electroreduction from H2O to Ethylene and O2" -->
 
 	<process name="Produce Polyethylene from Ethylene" kW-required="0.01" >
@@ -1777,7 +1779,7 @@
 		</description>
 		<input resource="ethylene" rate="50" />
 		
-		<output resource="polyethylene" rate="45" />
+		<output resource="polyethylene" rate="45" core="true" />
 	</process>
 
 	<process name="Produce Styrene from Ethylene" kW-required=".05" >
@@ -1793,8 +1795,8 @@
 		<input resource="water" rate="16.05" />
 		<input resource="ethylene" rate="8.34" />
 		
-		<output resource="Carbon monoxide" rate="24.97" />
-		<output resource="styrene" rate="30.95" />
+		<output resource="Carbon monoxide" rate="24.97" core="true"/>
+		<output resource="styrene" rate="30.95" core="true" />
 	</process>
 
 	<process name="Produce Polystyrene from Styrene" kW-required=".01" >

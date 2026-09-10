@@ -48,7 +48,7 @@ public class EVAOperationTest extends MarsSimUnitTest{
 
             // Due to a mis-design in the Airlock code; the operator is elected via a pulse instead of
             // proactively in the pre-breathe phase
-            var pulse = context.createPulse(now, false, false);
+            var pulse = context.createPulse(now, false, false, false);
             eva.timePassing(pulse);
 
 			callsUsed++;

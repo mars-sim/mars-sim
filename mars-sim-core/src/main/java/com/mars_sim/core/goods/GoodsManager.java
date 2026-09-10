@@ -98,7 +98,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private class ResourcesReset implements ScheduledEventHandler {
 		// Duration to between reviewing essential resources
-		private static final int REVIEW_PERIOD = 100; // in millisols
+		private static final int REVIEW_PERIOD = 80; // in millisols
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -918,49 +918,58 @@ public class GoodsManager implements Serializable {
     	for (int resourceID: unreviewed) {
     		var limits = resLimits.get(resourceID);
     		int reservePerPop = limits.reserve();
-    		int pop = settlement.getNumCitizens();
+//    		int pop = settlement.getNumCitizens();
+    		double popFactor = settlement.getLogPopFactor() * 5;
     		
     		int reserve = reservePerPop;
-    		double vp = getGoodValuePoint(resourceID);
+//    		double vp = getGoodValuePoint(resourceID);
     		
-	    	double stored = rh.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
+	    	double stored = rh.getAllAmountResourceStored(resourceID) / popFactor;
  		
-    		double value = 0;
-    		if (stored > 2 * reserve) {
-    			value = 2 * (stored - 2 * reserve) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored > 1.5 * reserve) {
-    			value = 4 * (stored - 1.5 * reserve) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored > reserve) {
-    			value = 6 * (stored - reserve) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored > .5 * reserve) {
-    			value = 8 * (stored - .5 * reserve) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored <= .125 * reserve) {
-    			value = 40 * (1.25 * reserve - stored) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored <= .25 * reserve) {
-    			value = 20 * (.25 * reserve - stored) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored <= .5 * reserve) {
-    			value = 12 * (.5 * reserve - stored) / Math.sqrt(1 + stored);
-    		}
+    		double value = 0; 
+    		double diff = 3 * reserve - stored; 
     		
-    		if (value < 1)
-    			value = 1;
+    		if (diff > 0)
+    			value = 100.0 / Math.sqrt(diff);
     		
-    		double amount = 100 * value * value * vp;
+//    		if (stored > 2 * reserve) {
+//    			value = 2 * (stored - 2 * reserve) / Math.sqrt(1 + stored);
+//    		}
+//    		else if (stored > 1.5 * reserve) {
+//    			value = 4 * (stored - 1.5 * reserve) / Math.sqrt(1 + stored);
+//    		}
+//    		else if (stored > reserve) {
+//    			value = 6 * (stored - reserve) / Math.sqrt(1 + stored);
+//    		}
+//    		else if (stored > .5 * reserve) {
+//    			value = 8 * (stored - .5 * reserve) / Math.sqrt(1 + stored);
+//    		}
+//    		else if (stored <= .125 * reserve) {
+//    			value = 40 * (1.25 * reserve - stored) / Math.sqrt(1 + stored);
+//    		}
+//    		else if (stored <= .25 * reserve) {
+//    			value = 20 * (.25 * reserve - stored) / Math.sqrt(1 + stored);
+//    		}
+//    		else if (stored <= .5 * reserve) {
+//    			value = 12 * (.5 * reserve - stored) / Math.sqrt(1 + stored);
+//    		}
     		
-    		map.put(resourceID, amount);
+    		if (value < 0.1)
+    			value = 0.1;
+    		
+    		double prob = value;
+    		
+//			System.out.println("prob: " + prob);
+			if (value > 0.1)
+				map.put(resourceID, prob);
     	}
 		
     	if (!map.isEmpty())
     		selectID = RandomUtil.getWeightedRandomObject(map);
     	
-    	if (selectID != -1)
+    	if (selectID != -1) {
     		reviewedEssentials.add(selectID);
+    	}
     	
 		return selectID;
     }

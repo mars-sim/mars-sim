@@ -45,7 +45,7 @@ class HealthProblemTest extends MarsSimUnitTest {
         hp.setCured();
         
         var curedOn = startedOn.addTime(1500);
-        var pulse = createPulse(curedOn, false, false);
+        var pulse = createPulse(curedOn, false, false, false);
         pc.timePassing(pulse, s);
 
         assertEquals(0, pc.getProblems().size(), "Health problem cured");

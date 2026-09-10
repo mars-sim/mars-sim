@@ -432,18 +432,33 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		
-		Set<Equipment> set = new HashSet<>(containerSet).stream()
-				.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
-				.collect(Collectors.toSet());
-		return set.size();
-		
-		// Note: trigger CME
-//		return containerSet.stream()
+		// Note: trigger CME at new HashSet<>(containerSet)
+//		Set<Equipment> set = new HashSet<>(containerSet).stream()
 //				.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
-//				.collect(Collectors.toSet()).size();
+//				.collect(Collectors.toSet());
+//		return set.size();
 		
-		// Note: that calling .count() below trigger CME
+		return (int) Collections.synchronizedSet(containerSet)
+					.stream()
+					.filter(e -> e.isEmpty(brandNew) 
+						&& (e.getEquipmentType() == containerType))
+					.count();
+		
+		// May try out
+//		return Collections.synchronizedSet(containerSet).stream()
+//				.filter(e -> e.isEmpty(brandNew) 
+//						&& (e.getEquipmentType() == containerType))
+//				.collect(Collectors.toSet())
+//				.size();
+		
+		// Note: trigger CME at .collect(Collectors.toSet())
+//		return containerSet.stream()
+//				.filter(e -> e.isEmpty(brandNew) 
+//						&& (e.getEquipmentType() == containerType))
+//				.collect(Collectors.toSet())
+//				.size();
+		
+		// Note: the line .count() below trigger CME
 //		return (int) containerSet.stream()
 //					.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
 //					.count();

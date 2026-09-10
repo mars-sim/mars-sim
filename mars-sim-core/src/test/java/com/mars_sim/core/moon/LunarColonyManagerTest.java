@@ -31,7 +31,7 @@ class LunarColonyManagerTest extends MarsSimUnitTest{
         // Emulate the future events firing
         for(var e : events) {
             var expected = e.getWhen();
-            p = createPulse(expected, false, false);
+            p = createPulse(expected, false, false, false);
             futures.timePassing(p);
         }
 

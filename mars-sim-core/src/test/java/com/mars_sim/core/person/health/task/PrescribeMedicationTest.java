@@ -64,7 +64,7 @@ public class PrescribeMedicationTest extends MarsSimUnitTest {
 
         // Simulate a mass radiation dose
         e.addDose(RadiationType.SEP, BodyRegionType.SKIN, 2000D);
-        var pulse = createPulse(1, 0, true, true);
+        var pulse = createPulse(1, 0, true, true, false);
         pc.timePassing(pulse, s);
         assertTrue(e.isSick(), "Patient is radiation sick");
         assertTrue(pc.isRadiationPoisoned(), "Patient is radiation poisoned");

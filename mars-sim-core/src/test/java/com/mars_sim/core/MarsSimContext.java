@@ -27,7 +27,7 @@ public interface MarsSimContext {
     
     Simulation getSim();
 
-    ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol);
+    ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol, boolean isNewOneThirdSol);
 
     Building buildFunction(BuildingManager buildingManager, String string, BuildingCategory medical,
             FunctionType medicalCare, LocalPosition defaultPosition, double d, boolean b);

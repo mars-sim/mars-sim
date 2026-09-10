@@ -455,8 +455,7 @@ public class PhysicalCondition implements Serializable {
 				}
 			}
 			
-			// Check once a day only
-			if (pulse.isNewHalfSol()) {	
+			if (pulse.isNewOneThirdSol()) {	
 				// Update the personal appetite
 				updateAppetite();
 				// Update personal max energy

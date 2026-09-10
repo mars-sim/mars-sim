@@ -26,7 +26,7 @@ class LabTaskTest extends MarsSimUnitTest {
         var study = InviteStudyCollaboratorTest.buildStudyToInvitePhase(s, context, science, researchJob);
 
         // No collaborators so advance further
-        study.timePassing(context.createPulse(context.getSim().getMasterClock().getMarsTime(), false, false));
+        study.timePassing(context.createPulse(context.getSim().getMasterClock().getMarsTime(), false, false, false));
         assertEquals(StudyStatus.RESEARCH_PHASE, study.getPhase(), "Study start phase");
         return study;
     }

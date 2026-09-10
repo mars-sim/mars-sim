@@ -360,11 +360,9 @@ public class ResourceProcessPanel extends JPanel {
             button.addActionListener(e -> {
             	
             	if (selected == ProcessState.RUNNING) {
-//            		System.out.println("running -> lock on");
             		selected = ProcessState.LOCK_ON;
             	}
             	else if (selected == ProcessState.LOCK_ON) {
-            		System.out.println("lock on -> idle");
             		selected = ProcessState.IDLE;
             	}
 //            	else if (selected == ProcessState.INPUTS_UNAVAILABLE) {

@@ -479,7 +479,7 @@ public class Computation extends Function {
 				dumpExcessHeat(instantHeatGen);
 			}
 			
-			if (pulse.isNewHalfSol()) {
+			if (pulse.isNewOneThirdSol()) {
 				// Auto optimization
 				reduceEntropy(entropy/5);
 			}

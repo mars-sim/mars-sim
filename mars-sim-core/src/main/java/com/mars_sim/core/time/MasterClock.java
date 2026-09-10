@@ -655,15 +655,19 @@ public class MasterClock implements Serializable {
 		
 		// Note : variable = (condition) ? expressionTrue : expressionFalse
 		boolean isNewHalfSol = false;
+		boolean isNewOneThirdSol = false;
 		
 		// Updates lastSol
 		if (isNewSol) {
 			this.lastSol = currentSol;
 			isNewHalfSol = true;
+			isNewOneThirdSol = true;
 		}
 		else {
 			// Identify if it just passes half a sol
 			isNewHalfSol = lastMillisol < 500 && currentMillisol >= 500;
+			isNewOneThirdSol = (lastMillisol < 333.3 && currentMillisol >= 333.3)
+							|| (lastMillisol < 666.6 && currentMillisol >= 666.6);
 		}
 
 		// Part 2: Update isNewIntMillisol and isNewHalfMillisol
@@ -671,11 +675,13 @@ public class MasterClock implements Serializable {
 		// Checks if this pulse starts a new integer millisol
 		final boolean isNewIntMillisol = (lastIntMillisol != currentIntMillisol);
 		boolean isNewHalfMillisol = false;
+
 		
 		// Updates lastSol
 		if (isNewIntMillisol) {
 			this.lastIntMillisol = currentIntMillisol;
 			isNewHalfMillisol = true;
+
 		}
 		else {
 			// Find the decimal part of the past millisol and current millisol
@@ -702,7 +708,7 @@ public class MasterClock implements Serializable {
 		
 		// Part 6: Create a clock pulse
 		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, 
-				isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
+				isNewSol, isNewHalfSol, isNewOneThirdSol, isNewIntMillisol, isNewHalfMillisol);
 		
 		// Note: for-loop may handle checked exceptions better than forEach()
 		// See https://stackoverflow.com/questions/16635398/java-8-iterable-foreach-vs-foreach-loop?rq=1
