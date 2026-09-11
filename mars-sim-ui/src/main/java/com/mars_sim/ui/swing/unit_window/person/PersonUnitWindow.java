@@ -55,7 +55,8 @@ public class PersonUnitWindow extends EntityContentPanel<Person>
 
 		// Add death tab panel if person is dead.
 		if (person.isDeclaredDead()
-			|| person.getPhysicalCondition().isDead()) {			
+			|| person.getPhysicalCondition().isDead()
+			|| person.isBuried()) {			
 			tabPanelDeath = new TabPanelDeath(person, context);
 			addTabPanel(tabPanelDeath);
 		}
