@@ -451,7 +451,7 @@ public class PartGood extends Good {
 		
 		owner.setProjectedDemandScore(this, projected);		
 		// Add trade demand.
-		double tradeDemand = owner.determineTradeDemand(this) / 10;
+		double tradeDemand = owner.determineTradeDemand(this);
 		
 		owner.setTradeDemandScore(this, tradeDemand);
 		
@@ -616,7 +616,11 @@ public class PartGood extends Good {
 //					logger.info(settlement, 10_000L, "Case 1 for " + part);
 					if (part != null) {
 						// Inject demand need immediately here
-						base += injectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR);
+						double newDemand = calculateInjectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR);
+						
+						base += newDemand;
+						// Update the demand now
+//						settlement.getGoodsManager().setDemandScore(this, newDemand);
 					}
 				}
 			}
@@ -628,11 +632,15 @@ public class PartGood extends Good {
 //					logger.info(settlement, 10_000L, "Case 2 for " + part);
 					if (part != null) {
 						// Inject demand need immediately here
-						base += injectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 5.0);
+						double newDemand = calculateInjectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 5.0);
+						
+						base += newDemand;
+						// Update the demand now
+//						settlement.getGoodsManager().setDemandScore(this, newDemand);
 					}
 				}
 			}
-			
+
 			// Anticipate the need for the next stage
 			ConstructionStageInfo info = s.getNextConstructionStageInfo();
 			if (info != null) {
@@ -642,7 +650,7 @@ public class PartGood extends Good {
 //					logger.info(settlement, 10_000L, "Case 3 for " + part);
 					if (part != null) {
 						// Inject demand need immediately here
-						base += injectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 10.0);
+						base += calculateInjectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 10.0);
 					}
 				}
 			}
@@ -651,39 +659,38 @@ public class PartGood extends Good {
 		return Math.min(GoodsManager.MAX_DEMAND, base);
 	}
 
-	
 	/**
-	 * Injects an individual part demand immediately without waiting for goods manager to update it.
+	 * Calculates inject part demand.
+	 * Note: will need to call separately to update immediately without waiting.
 	 * 
 	 * @param part
 	 * @param owner
 	 * @param missing
 	 * @return
 	 */
-	public double injectPartDemand(Part part, GoodsManager owner, int missing, double factor) {
+	public double calculateInjectPartDemand(Part part, GoodsManager owner, int missing, double factor) {
 		double previousDemand = owner.getDemandScore(this);
 		
 		int storedNum = owner.getSettlement().getEquipmentInventory().getItemResourceStored(getID());
 
-		double constructionDemand = computeNewDemand(storedNum, missing, factor, previousDemand);
+		double constructionDemand = computeNewConstructionDemand(storedNum, missing, factor, previousDemand);
 		
 		double maintDemand = getMaintenancePartsDemand(storedNum, owner.getSettlement(), part, previousDemand);
 	
-		double finalDemand = maintDemand + constructionDemand;
-		
-		// Note: for now, it's good enough to use GoodManager's to gradually increase the projected demand 
-		// instead of directly setting the new demand score
-//		owner.setDemandScore(this, finalDemand);
+		double finalDemand = maintDemand + constructionDemand - previousDemand;
 		
 		// Output a detailed message	
 		logger.info(owner.getSettlement(), 1_000L,
-				"Injecting Part Demand for "
+				"Calculated new Part inject demand for "
 				+ part.getName() + ": "
 				+ Math.round(previousDemand * 1000.0)/1000.0 
 				+ " -> " 
-				+ Math.round(constructionDemand * 1000.0)/1000.0 
-				+ " + " + Math.round(maintDemand * 1000.0)/1000.0 
-				+ "  Quantity: " + missing
+				+ Math.round(finalDemand * 1000.0)/1000.0 
+				+ " (Construction: " + Math.round(constructionDemand * 1000.0)/1000.0 
+				+ " + Maint: " + Math.round(maintDemand * 1000.0)/1000.0 
+				+ " - Previous: "
+				+ Math.round(previousDemand * 1000.0)/1000.0 
+				+ "). Quantity: " + missing
 				+ "/" + storedNum + " (missing/stored).");	
 		
 		return finalDemand;
@@ -708,14 +715,27 @@ public class PartGood extends Good {
 	/**
 	 * Computes the new demand.
 	 * 
-	 * @param previousNum
+	 * @param storedNum
+	 * @param requestNum
+	 * @param value
+	 * @param previousDemand
+	 * @return
+	 */
+	double computeNewDemand(int storedNum, int requestNum, double value, double previousDemand) {
+		return Math.max(100, Math.max(previousDemand * 3, 1 + previousDemand * (value * Math.sqrt(requestNum / (1.0 + storedNum)))));
+	}
+	
+	/**
+	 * Computes the new construction demand.
+	 * 
+	 * @param storedNum
 	 * @param request
 	 * @param value
 	 * @param previousDemand
 	 * @return
 	 */
-	double computeNewDemand(int previousNum, int request, double value, double previousDemand) {
-		return previousDemand * (1 + request * value / Math.sqrt(1.0 + previousNum)) / 2;
+	double computeNewConstructionDemand(int storedNum, int request, double value, double previousDemand) {
+		return computeNewDemand(storedNum, request, value, previousDemand);
 	}
 	
     /**

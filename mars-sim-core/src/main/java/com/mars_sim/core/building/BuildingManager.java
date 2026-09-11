@@ -2395,7 +2395,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public static void injectPartDemand(Part part, Settlement settlement, int num, double factor) {
 		Good good = GoodsUtil.getGood(part.getID());
-		((PartGood) good).injectPartDemand(part, settlement.getGoodsManager(), num, factor);
+		double newDemand = ((PartGood) good).calculateInjectPartDemand(part, settlement.getGoodsManager(), num, factor);
+		settlement.getGoodsManager().setDemandScore(good, newDemand);
 	}
 
 	/**
@@ -2408,7 +2409,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public static void injectEquipmentDemand(EquipmentType type, Settlement settlement, int stored, int needNum) {
 		Good good = GoodsUtil.getGood(EquipmentType.getResourceID(type));
-		((EquipmentGood) good).injectEquipmentDemand(type, settlement.getGoodsManager(), stored, needNum);
+		double newDemand = ((EquipmentGood) good).calculateInjectEquipmentDemand(type, settlement.getGoodsManager(), stored, needNum);
+		settlement.getGoodsManager().setDemandScore(good, newDemand);
 	}
 
 	/**

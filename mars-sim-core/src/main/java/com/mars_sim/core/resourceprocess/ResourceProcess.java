@@ -28,8 +28,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 	// May add back: private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName())
 
 	private static final double SMALL_AMOUNT = 0.000001;
-	// How often should the process be checked? 
-	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
 	
 	/**
 	 * Represents the internal state of the process.

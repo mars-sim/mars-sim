@@ -154,7 +154,7 @@ public class EmotionManager implements Serializable {
 		String newDes = computeDescription();
 		
 		if (!oldDes.equalsIgnoreCase(newDes)) {
-			logger.info(person, 0, oldDes + " -> " + newDes);
+//			logger.info(person, 0, oldDes + " -> " + newDes);
 			person.fireUnitUpdate(EntityEventType.EMOTION_EVENT);
 		}
 	}

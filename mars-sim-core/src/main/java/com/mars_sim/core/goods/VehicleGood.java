@@ -344,13 +344,13 @@ class VehicleGood extends Good {
 	 */
 	private double determineDroneValue(Settlement settlement, boolean buy) {
 
-		double demand = 1D;
+		double numJobs = 1D;
 
 		// Add demand for construction missions by architects.
-		demand += MathUtils.between(JobUtil.numJobs(JobType.PILOT, settlement) * 1.1, 1, 100);
+		numJobs += MathUtils.between(JobUtil.numJobs(JobType.PILOT, settlement) * 1.1, 1, 100);
 
 		// Add demand for mining missions by engineers.
-		demand += MathUtils.between(JobUtil.numJobs(JobType.TRADER, settlement) * 1.2, 1, 100);
+		numJobs += MathUtils.between(JobUtil.numJobs(JobType.TRADER, settlement) * 1.2, 1, 100);
 
 		double supply = getNumberForSettlement(settlement);
 		if (!buy)
@@ -358,7 +358,7 @@ class VehicleGood extends Good {
 		if (supply < 1)
 			supply = 1;
 		
-		return settlement.getLogPopFactor() / demand / supply * DRONE_FACTOR;
+		return settlement.getNumCitizens() / numJobs / supply * DRONE_FACTOR;
 	}
 
 	/**
@@ -370,16 +370,16 @@ class VehicleGood extends Good {
 	 */
 	private double determineLUVValue(Settlement settlement, boolean buy) {
 
-		double demand = 1;
+		double numJobs = 1;
 
 		// Add demand for mining missions by areologists.
-		demand +=  MathUtils.between(JobUtil.numJobs(JobType.AREOLOGIST, settlement) * 1.3, 1, 100);
+		numJobs +=  MathUtils.between(JobUtil.numJobs(JobType.AREOLOGIST, settlement) * 1.3, 1, 100);
 
 		// Add demand for construction missions by architects.
-		demand +=  MathUtils.between(JobUtil.numJobs(JobType.ARCHITECT, settlement) * 1.2, 1, 100);
+		numJobs +=  MathUtils.between(JobUtil.numJobs(JobType.ARCHITECT, settlement) * 1.2, 1, 100);
 
 		// Add demand for mining missions by engineers.
-		demand +=  MathUtils.between(JobUtil.numJobs(JobType.ENGINEER, settlement) * 1.1, 1, 100);
+		numJobs +=  MathUtils.between(JobUtil.numJobs(JobType.ENGINEER, settlement) * 1.1, 1, 100);
 
 		double supply = getNumberForSettlement(settlement);
 		if (!buy)
@@ -387,7 +387,7 @@ class VehicleGood extends Good {
 		if (supply < 1)
 			supply = 1;
 	
-		return settlement.getLogPopFactor() / demand / supply * LUV_FACTOR;
+		return settlement.getNumCitizens() / numJobs / supply * LUV_FACTOR;
 	}
 
 	/**

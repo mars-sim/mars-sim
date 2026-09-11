@@ -219,7 +219,7 @@ public class Communication extends Function {
      */
     public double getFunctionValue() {
 
-        double demand = 4 * getBuilding().getSettlement().getSqrtPopFactor();
+        double demand = 4 * getBuilding().getSettlement().getLogPopFactor();
 
         double supply = 0;
         

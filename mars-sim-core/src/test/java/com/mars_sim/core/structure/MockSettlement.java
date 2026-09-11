@@ -43,7 +43,7 @@ public class MockSettlement extends Settlement {
 	public Authority getReportingAuthority() {
 		return owner;
 	}
-
+	
 	@Override
 	public String getTemplate() {
 		return SETTLEMENT_TEMPLATE;

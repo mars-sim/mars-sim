@@ -576,9 +576,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return Site or null if not found.
 	 */
 	public MineralSite getDeclaredROI(Coordinates coord) {
+		// Note: The line findFirst() below triggers CME. Switch to findAny()
 		return Collections.unmodifiableCollection(regionOfInterestLocations).stream()
 				  .filter(e -> e.getCoordinates().equals(coord))
-				  .findFirst()
+//				  .findFirst()
+				  .findAny()
 				  .orElse(null);
 	}
 

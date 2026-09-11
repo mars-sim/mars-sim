@@ -976,7 +976,9 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Semiconductor wafer" type="electronic" mass="1"/>
+	<part name="Silicon ingot" type="electronic" mass="4"/>
+			
+	<part name="Semiconductor wafer" type="electronic" mass=".2"/>
 
 	<part name="SLS 3D Printer" type="electronic" mass="50.0">
 		<maintenance-entity-list>

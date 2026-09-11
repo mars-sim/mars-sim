@@ -20,7 +20,7 @@ class GoodsManagerTest extends MarsSimUnitTest {
     
 	@BeforeEach
     void setUp() {
-        s = buildSettlement("mock");
+        s = buildSettlement("mock", true);
         gm = new GoodsManager(s);
 	}
 	
@@ -49,23 +49,27 @@ class GoodsManagerTest extends MarsSimUnitTest {
         
         double previousDemand = 10;
 
-        double constructionDemand = pg.computeNewDemand(previousNum, needNum, 5, previousDemand);
+        double constructionDemand = pg.computeNewConstructionDemand(previousNum, needNum, 5, previousDemand);
 		
 		double maintDemand = pg.getMaintenancePartsDemand(previousNum, s, sheet, previousDemand); // newDemand is 1xxx
 
-		double newDemand = maintDemand + constructionDemand;
-		 
+		double newDemand = maintDemand + constructionDemand - previousDemand;
+	
         assertTrue(newDemand > previousDemand); // Demand has increased;
 
-        double tempDemand = pg.injectPartDemand(sheet, gm, needNum, 5); 
-        
+        double injectedDemand = pg.calculateInjectPartDemand(sheet, gm, needNum, 5); 
+
         int storedNum = s.getEquipmentInventory().getItemResourceStored(sheet.getID());
-        
-//        double demandScore = gm.getDemandScore(pg);
-        
+ 
         assertEquals(previousNum, storedNum, "Stored number matches previous number");
-        // Note: For now, injectPartDemand will not set the demand score directly
-        assertEquals(newDemand, tempDemand, "Demand score matches new demand");
+
+        assertEquals(newDemand, injectedDemand, "Injected demand matches new demand");
+        
+        gm.setDemandScore(pg, injectedDemand);
+        
+        double submittedDemand = gm.getDemandScore(pg);
+  
+        assertEquals(newDemand, submittedDemand, "Submitted demand score matches new demand");
     }
     
     @Test

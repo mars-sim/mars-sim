@@ -1176,13 +1176,13 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Draw optical fiber glass" tech="3" skill="1" work-time="50" process-time="100"
 			power-required=".1">
 		<inputs>
-			<resource name="sand" amount="2.0" />
+			<resource name="Sand" amount="2.0" />
 		</inputs>
 		<outputs>
-			<resource name="sodium oxide" amount="0.5" />
-			<resource name="silicon" amount="0.5" />
+			<resource name="Sodium oxide" amount="0.5" />
+			<resource name="Silica" amount="0.5" />
 			<!-- 1 fiberglass is 1 kg -->
-			<part name="fiberglass" number="1" />
+			<part name="Fiberglass" number="1" />
 		</outputs>
 	</process>
 
@@ -3327,17 +3327,66 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
+	<process name="Convert to high purity silicon" tech="3" skill="2" work-time="50" process-time="500"
+			power-required="0.9">
+			<description> Silica is silicon's most common natural form — silicon is so reactive 
+			that it's virtually always bound to oxygen in the Earth's crust. To get usable
+			silicon, you have to reduce silica (strip the oxygen off):
+			
+			SiO₂ + 2C → Si + 2CO (at ~1,800 °C in an electric arc furnace) 
+			 
+			A typical industrial submerged arc furnace draws 10–45 MW of electrical power (DC).  
+			
+			If a 20 MW furnace runs a ~2-hour tap cycle, it produces roughly ~3–4 tons of silicon 
+			per tap, which works out to:
+			
+			20,000 kW × 2 h ÷ 3,500 kg ≈ ~11.4 kWh/kg 
+			
+			11.4 kWh/kg * 1000 millisols / 12h = 0.95 kW sol per kg
+			
+			</description>
+		<inputs>
+			<resource name="Silica" amount="69.09" />
+			<resource name="Carbon" amount="12.01" />
+		</inputs>
+		<outputs>
+			<resource name="Carbon monoxide" amount="28.01" />
+			<resource name="Silicon" amount="28.09" />
+		</outputs>
+	</process>
+		
+	<process name="Source high purity quartz" tech="3" skill="2" work-time="50" process-time="1000"
+			power-required="0.5">
+		<inputs>
+			<resource name="Silicon" amount="20.0" />
+		</inputs>
+		<outputs>
+			<resource name="Silicon" amount="16.0" />
+			<resource name="Quartz" amount="4.0" />
+		</outputs>
+	</process>
+
+	<process name="Grow silicon ingot" tech="3" skill="2" work-time="50" process-time="1000"
+			power-required="0.5">
+		<inputs>
+			<resource name="Quartz" amount="4.0" />
+		</inputs>
+		<outputs>
+			<part name="Silicon ingot" number="1" />
+		</outputs>
+	</process>
+			
 	<!-- 2015-05-19 Added manufacturing semiconductor wafer. -->
 	<process name="Fabricate semiconductor wafer" tech="3" skill="4" work-time="200" process-time="800"
 			power-required="1.0">
 		<inputs>
-			<resource name="silicon" amount="1.2" />
+			<part name="Silicon ingot" number="1" />
 		</inputs>
 		<outputs>
-			<part name="semiconductor wafer" number="1" />
+			<part name="semiconductor wafer" number="20" />
 		</outputs>
 	</process>
-
+	
 	<!-- 2015-05-19 Added manufacturing led bulb. -->
 	<process name="Manufacture light emitting diode bulb" tech="3" skill="2" work-time="150" process-time="300"
 			tooling="Fabrication" power-required="0.2">

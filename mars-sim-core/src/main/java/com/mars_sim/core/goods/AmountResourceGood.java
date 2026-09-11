@@ -175,10 +175,10 @@ class AmountResourceGood extends Good {
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = 3.5;
-	private static final double METHANE_VALUE_MODIFIER = 2.5;
-	private static final double HYDROGEN_VALUE_MODIFIER = 1.4;
-	private static final double METHANOL_VALUE_MODIFIER = 0.9;
+	private static final double OXYGEN_VALUE_MODIFIER = 1.15;
+	private static final double METHANE_VALUE_MODIFIER = 1.25;
+	private static final double HYDROGEN_VALUE_MODIFIER = 1.25;
+	private static final double METHANOL_VALUE_MODIFIER = 1.25;
 	
 	// Chemicals
 	private static final int CLEANING_AGENT_MODIFIER = 1;
@@ -822,7 +822,7 @@ class AmountResourceGood extends Good {
 		owner.setProjectedDemandScore(this, projected);
 				
 		// Add trade value. Cache is always false if this method is called
-		double tradeDemand = owner.determineTradeDemand(this) / 20;
+		double tradeDemand = owner.determineTradeDemand(this);
 
 		owner.setTradeDemandScore(this, tradeDemand);
 		
@@ -1660,7 +1660,7 @@ class AmountResourceGood extends Good {
 	private double getVehicleFuelDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
 		double transFactor = owner.getCommerceFactor(CommerceType.TRANSPORT) * VEHICLE_FUEL_FACTOR;
-		int pop = settlement.getNumCitizens();
+		double popFactor = settlement.getLogPopFactor();
 
 		switch(getID()) {
 			case ResourceUtil.METHANOL_ID: {
@@ -1668,7 +1668,7 @@ class AmountResourceGood extends Good {
 					double fuelDemand = v.getEquipmentInventory().getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
-				demand = demand * transFactor * METHANOL_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;
+				demand = transFactor * METHANOL_VALUE_MODIFIER * popFactor;
 			} break;
 		
 			case ResourceUtil.METHANE_ID: {
@@ -1676,11 +1676,11 @@ class AmountResourceGood extends Good {
 					double fuelDemand = v.getEquipmentInventory().getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
-				demand = demand * transFactor * METHANE_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;
+				demand = transFactor * METHANE_VALUE_MODIFIER * popFactor;
 			} break;
 
 			case ResourceUtil.HYDROGEN_ID: {
-				demand =  transFactor * HYDROGEN_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;
+				demand =  transFactor * HYDROGEN_VALUE_MODIFIER * popFactor;
 			} break;
 		}
 

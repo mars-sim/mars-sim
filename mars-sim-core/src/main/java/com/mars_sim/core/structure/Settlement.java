@@ -232,6 +232,8 @@ public class Settlement extends Unit implements Temporal,
 	private double sqrtPopFactor = 1;
 	/** A factor due to the population. The minimum is 1. */
 	private double logPopFactor = 1;
+	/** A factor due to the population. The minimum is 1. */
+	private double logEPopFactor = 1;
 	/** The average areothermal potential at this location. */
 	private double areothermalPotential = 0;
 	/** The average regolith collection rate at this location. */
@@ -1743,6 +1745,15 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
+	 * Gets a factor due to the size of the of population.
+	 * 
+	 * @return
+	 */
+	public double getLogEPopFactor() {
+		return logEPopFactor;
+	}
+	
+	/**
 	 * Gets all people associated with this settlement, even if they are out on
 	 * missions. But it won't include anyone who have been both dead and buried.
 	 *
@@ -1902,8 +1913,10 @@ public class Settlement extends Unit implements Temporal,
 			numCitizens = citizens.size();
 			// Update the sqrt pop factor
 			sqrtPopFactor = Math.sqrt(numCitizens);
-			// Update the log pop factor
-			logPopFactor = Math.max(1, Math.log(sqrtPopFactor));
+			// Update the log10 pop factor
+			logPopFactor = Math.max(1, Math.log10(numCitizens));
+			// Update the logE pop factor
+			logEPopFactor = Math.max(1, Math.log(numCitizens));
 			// Add this person indoor map of the settlement
 			addToIndoor(p);	
 			
@@ -1960,8 +1973,10 @@ public class Settlement extends Unit implements Temporal,
 			numCitizens = citizens.size();
 			// Update the sqrt pop factor
 			sqrtPopFactor = Math.sqrt(numCitizens);
-			// Update the log pop factor
-			logPopFactor = Math.max(1, Math.log(sqrtPopFactor));
+			// Update the log10 pop factor
+			logPopFactor = Math.max(1, Math.log10(numCitizens));
+			// Update the logE pop factor
+			logEPopFactor = Math.max(1, Math.log(numCitizens));
 			// Fire unit update
 			fireUnitUpdate(EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 			
@@ -3135,6 +3150,7 @@ public class Settlement extends Unit implements Temporal,
                 .map(e -> (GroupActivity)e.getHandler())
                 .filter(e -> (!justActive || e.isActive()))
                 .toList();
+       // Note: the line .toList() above can cause ConcurrentModificationException
     }
     
 	/**

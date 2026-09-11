@@ -237,7 +237,7 @@ public class EquipmentGood extends Good {
 		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
-		double tradeDemand = owner.determineTradeDemand(this) / 10;
+		double tradeDemand = owner.determineTradeDemand(this);
 
 		owner.setTradeDemandScore(this, tradeDemand);
 		
@@ -318,6 +318,9 @@ public class EquipmentGood extends Good {
 		double totalPhaseOverfill = 0D;
 
 		// Scan resources that can be held in this Container
+		
+		// Future: create a map at startup, instead of having to scan it every time
+		
 		for (AmountResource resource : ResourceUtil.getAmountResources()) {
 			if (ContainerUtil.getEquipmentTypeForContainer(resource.getID()) == equipmentType) {
 				double settlementCapacity = rh.getSpecificCapacity(resource.getID());
@@ -432,14 +435,16 @@ public class EquipmentGood extends Good {
 	}
 	
 	/**
-	 * Injects equipment demand immediately without waiting for goods manager to update it.
+	 * Calculates inject equipment demand.
+	 * Note: will need to separately call setDemand to immediately update it without waiting.
 	 * 
 	 * @param type
 	 * @param owner
 	 * @param stored
 	 * @param needNum
+	 * @return
 	 */
-	public void injectEquipmentDemand(EquipmentType type, GoodsManager owner, int stored, int needNum) {
+	public double calculateInjectEquipmentDemand(EquipmentType type, GoodsManager owner, int stored, int needNum) {
 		double previousDemand = owner.getDemandScore(this);
 		
 		int storedNum = stored;
@@ -459,6 +464,8 @@ public class EquipmentGood extends Good {
 				+ " -> " + Math.round(newDemand * 1000.0)/1000.0 
 				+ "  Quantity: " + needNum
 				+ "/" + storedNum + " (needed/stored).");	
+		
+		return newDemand;
 	}
 	
 	public void destroy() {

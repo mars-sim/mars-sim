@@ -158,7 +158,7 @@ class RobotGood extends Good {
 		owner.setProjectedDemandScore(this, projected);
 		
 		// This method is not using cache
-		double tradeDemand = owner.determineTradeDemand(this) / 10;
+		double tradeDemand = owner.determineTradeDemand(this);
 		
 		owner.setTradeDemandScore(this, tradeDemand);
 		

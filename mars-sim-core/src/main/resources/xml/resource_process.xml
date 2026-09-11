@@ -795,7 +795,7 @@
 	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
 
 
-	<process name="Oxygen Generation System (OGS)" kW-required="0.15625" defaultOn="false">
+	<process name="Oxygen Generation System (OGS)" kW-required="0.15625" defaultOn="false" >
 	<description> 
 	
 		Oxygen Generation System can split water into H2 and O2.
@@ -888,7 +888,7 @@
 		<output resource="oxygen" rate="256" />
 	</process> <!-- Oxygen Generator System (OGS) -->
 	
-	<process name="Catalytic Recombination into Water" kW-required="0.00" defaultOn="false">
+	<process name="Catalytic Recombination into Water" kW-required="0.00" defaultOn="false" >
 		<description> 
 			Catalytic Recombination (Safer/Lower Temp): 
 			
@@ -906,7 +906,7 @@
 
 	</process> <!-- Catalytic Recombination into Water -->
 		
-	<process name="Low Temperature Plasma CO2 Decomposition" kW-required="0.02" defaultOn="false">
+	<process name="Low Temperature Plasma CO2 Decomposition" kW-required="0.02" defaultOn="true" >
 		<description> 
 			CO₂ (reactant): 12.01 + 2(16.00) = 44.01 g/mol
 			CO: 12.01 + 16.00 = 28.01 g/mol
@@ -932,7 +932,7 @@
 	</process> <!-- "Low Temperature Plasma CO2 Decomposition" -->
 	
 	     
-	<process name="Microwave Plasma Conversion of Air" kW-required="0.005" defaultOn="true">
+	<process name="Microwave Plasma Conversion of Air" kW-required="0.005" defaultOn="true" >
 		<description> 	 
 		 Microwave (MW)-plasma-based conversion of Martian air involves using 
 		 high-frequency electromagnetic waves to ionize atmospheric gases, 
@@ -979,7 +979,7 @@
 		<output resource="Carbon dioxide" rate="20.0" waste="false" />
 	</process> <!-- "Microwave Plasma Conversion of Air" -->
 	
-	<process name="Methanol Synthesis with Syngas" kW-required="0.1" >
+	<process name="Methanol Synthesis with Syngas" kW-required="0.1" defaultOn="true" >
 	<description>
 		Synthesis gas (or Syngas) is used to produce methanol as in the following reaction :
 				CO2 + 3 H2 -> H2O + CH3OH	
@@ -1006,7 +1006,7 @@
 		<output resource="methanol" rate="32.0" core="true" />
 	</process> <!-- "Methanol Synthesis with Syngas" -->
 
-	<process name="Excavate Ice" kW-required="0.5" defaultOn="true">
+	<process name="Excavate Ice" kW-required="0.5" defaultOn="true" >
 	<description>
 		This process works hand in hand with theresource process of melting the ice.
 		
@@ -1027,7 +1027,7 @@
 		<output resource="ice" rate="4000.0" core="true" />		
 	</process> <!-- "Excavate Ice" -->
 	
-	<process name="Melt Ice" kW-required="0.18" >
+	<process name="Melt Ice" kW-required="0.18" defaultOn="true" >
 		<description> This process melts permafrost ice into brine water.
 		
 		a.	Specific heat capacity of ice is 2.09 (or 2.108) J/g/C			
@@ -1095,10 +1095,9 @@
 		<output resource="iron oxide" rate="1.5" core="true" />	
 		<output resource="nickel" rate="0.5" core="true" />	
 		
-		<output resource="silica" rate="0.8" core="true" />	
-		<output resource="sulfur" rate="0.2" core="true" />	
+		<output resource="sulfur" rate="0.8" core="true" />	
 		
-		<output resource="calcium" rate="0.5" core="true" />			
+		<output resource="calcium" rate="0.7" core="true" />			
 		<output resource="Calcium carbonate" rate="1.5" core="true" />
 				
 		<output resource="iron chloride" rate="0.1" />
@@ -1137,7 +1136,7 @@
 	</process>
 
 
-	<process name="Process Ores from Regolith" kW-required="0.02" defaultOn="true">
+	<process name="Process Ores from Regolith" kW-required="0.02" defaultOn="true" >
 		<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 		analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 		Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
@@ -1157,7 +1156,7 @@
 	</process>
 
 
-	<process name="Process Nitrogen Compounds from Regolith" kW-required="0.005" >
+	<process name="Process Nitrogen Compounds from Regolith" kW-required="0.005" defaultOn="true" >
 		<description> 
 			According to https://newatlas.com/nitrates-nitrogen-mars-curiosity-nasa/36700/, 
 			Nitrates are widespread on Mars with concentrations of 1,100 parts per million at the drill sites.
@@ -1180,8 +1179,7 @@
 	</process>
 
 
-	<process name="Process Poly-Hydrated Sulfate from Regolith-B"
-		kW-required="0.03" >
+	<process name="Process Poly-Hydrated Sulfate from Regolith-B" kW-required="0.03" defaultOn="true" >
 		<description>
 			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
 
@@ -1200,7 +1198,7 @@
 			<output resource="sand" rate="20.0"  />
 	</process>
 
-	<process name="Process Phyllo-Silicate from Regolith-C" kW-required="0.03" >
+	<process name="Process Phyllo-Silicate from Regolith-C" kW-required="0.03" defaultOn="true" >
 		<description>
 			This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
 					40% smectite;
@@ -1218,7 +1216,7 @@
 	</process>
 
 
-	<process name="Process Basaltic from Regolith-D" kW-required="0.03" >
+	<process name="Process Basaltic from Regolith-D" kW-required="0.03" defaultOn="true" >
 		<description>
 			This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
 					23.5% basaltic;
@@ -1284,7 +1282,7 @@
 			
 			<output resource="magnesium" rate="11.6" />
 			<output resource="iron powder" rate="11.6" />
-			<output resource="silicon" rate="8.1" />
+			<output resource="Silica" rate="8.1" />
 			<output resource="Carbon dioxide" rate="51.2" waste="false" />
 	</process>
 
@@ -1294,7 +1292,7 @@
 			
 			<output resource="magnesium" rate="14.4" />
 			<output resource="Carbon dioxide" rate="52.2" waste="false" />
-			<output resource="silica" rate="5" />
+			<output resource="Silica" rate="5" />
 	</process>
 
 	<process name="Do Kamacite smelting" kW-required="0.1" >
@@ -1344,7 +1342,7 @@
 			<output resource="vanadium" rate="2" />	
 			
 			<output resource="aluminum" rate="2" />		
-			<output resource="silicon" rate="4" />				
+			<output resource="Silica" rate="4" />				
 			
 			<output resource="oxygen" rate="22" />
 	</process>
@@ -1434,7 +1432,7 @@
 		<output resource="brine water" rate="2.0" />
 	</process>
 		
-	<process name="Make glass from sand" kW-required="0.1" >
+	<process name="Make Silica from Sand" kW-required="0.1" defaultOn="true" >
 		<description> Assume Mars sand has most (if not all) ingredients for making glass.
 			Typically, manufactured glass contains around 15% sodium oxide, 70% silica
 			(silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate (soda) or sodium oxide
@@ -1442,18 +1440,30 @@
 			https://en.wikipedia.org/wiki/Sodium_oxide
 			https://www.nasa.gov/sites/default/files/atoms/files/isru-isfr-mrs-nr.pdf
 		</description>
-		<input resource="sand" rate="84" />					
-		<input resource="sodium oxide" rate="4.0" />
-		<input resource="lime" rate="2.0" />
+		<input resource="Sand" rate="84" />					
+		<input resource="Sodium oxide" rate="4.0" />
+		<input resource="Lime" rate="2.0" />
 
 		<output resource="Carbon dioxide" rate="1.5" waste="false" />
-		<output resource="aluminum oxide" rate="3.5" />
-		<output resource="iron powder" rate="2.0" />	
-		<output resource="iron oxide" rate="3.0" />			
-		<output resource="sulfur" rate="10.0" />					
-		<output resource="silica" rate="20.0" />
-		<output resource="silicon" rate="20.0" />
-		<output resource="glass" rate="30.0" />	
+		<output resource="Aluminum oxide" rate="3.5" />
+		<output resource="Iron powder" rate="2.0" />	
+		<output resource="Iron oxide" rate="3.0" />			
+		<output resource="Sulfur" rate="10.0" />					
+		<output resource="Silica" rate="70.0" />
+	</process>
+
+					
+	<process name="Make Glass from Silica" kW-required="0.5" >
+		<description> When heated above ~1,100 °C (~2,000 °F), the result is an amorphous 
+			(non-crystalline) glass — a disordered SiO₂ network with Na₂O and CaO 
+			dissolved in it. This soda-lime glass (windows, bottles, jars, etc.) comprises
+			 ~90% of all manufactured glass
+		</description>
+		<input resource="Silica" rate="45.0" />
+		<input resource="Calcium carbonate" rate="1.0" />
+		<input resource="Sodium carbonate" rate="1.0" />
+		
+		<output resource="Glass" rate="40.0" />
 	</process>
 
 	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
@@ -1529,15 +1539,6 @@
 		<output resource="gypsum plaster" rate="3.0" />
 		<output resource="brine water" rate="1.0" />
 	</process>
-					
-	<process name="Make quartz from silica" kW-required="0.05" >
-		<input resource="silica" rate="45.0" />
-		<input resource="Calcium carbonate" rate="1.0" />
-		<input resource="sodium carbonate" rate="1.0" />
-		
-		<output resource="quartz" rate="40.0" />
-	</process>
-
 
 	<process name="Make soda from sodium oxide" kW-required=".03" >
 		<description>

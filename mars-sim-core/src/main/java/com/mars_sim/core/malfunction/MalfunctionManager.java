@@ -1529,7 +1529,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 					// Inject the demand onto this part
 	                if (entity.getAssociatedSettlement().getGoodsManager() != null)	 {
 	                	// Note: in MaintainGarageVehicleTest, good manager is null 
-	                	((PartGood)good).injectPartDemand(part, entity.getAssociatedSettlement().getGoodsManager(), number, MAINTENANCE_REQUIRED_PART_FACTOR);
+	                	double newDemand = ((PartGood)good).calculateInjectPartDemand(part, entity.getAssociatedSettlement().getGoodsManager(), number, MAINTENANCE_REQUIRED_PART_FACTOR);
+	                	entity.getAssociatedSettlement().getGoodsManager().setDemandScore(good, newDemand);
 	                }
 	                return false;
 				}

@@ -2053,7 +2053,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial type="oxygen" amount="8040.0" />
 				<resource-initial type="methane" amount="4200.0" />
 				<resource-initial type="methanol" amount="4200.0" />
-				<resource-initial type="hydrogen" amount="3150.0" />
+				<resource-initial type="hydrogen" amount="4200.0" />
 				<resource-initial type="water" amount="9450.0" />
 			</storage>
 		</functions>
@@ -2098,9 +2098,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Do Taenite Smelting" number-modules="15"/>
 				<process-engine name="Do Sylvite Smelting" number-modules="15"/>
 								
-				<!-- 9 processes for extracting ore deposits -->
-				<process-engine name="Make glass from sand" number-modules="40"/>
-				
+				<!-- 9 processes for extracting ore deposits -->			
 				<process-engine name="Process Basaltic deposits" number-modules="15"/>
 				<process-engine name="Process Smectite deposits" number-modules="15"/>
 				<process-engine name="Process Allophane deposits" number-modules="15"/>
@@ -2140,9 +2138,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="iron oxide" amount="1000.0" />
 				<resource-capacity type="sodium oxide" amount="500.0" />									
 				<resource-capacity type="aluminum oxide" amount="1000.0" />
-				<resource-capacity type="silica" amount="500.0" />									
-				<resource-capacity type="silicon" amount="1000.0" />
-																
+							
+				<resource-capacity type="silica" amount="500.0" />
+													
 				<resource-capacity type="regolith" amount="7500.0" />
 				<resource-capacity type="sand" amount="5000.0" />
 				<resource-capacity type="brine water" amount="5000.0" />				
@@ -2171,8 +2169,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 					
 				<!-- 3 silicon/chemical processes -->
-				<process-engine name="Make Quartz from Silica" number-modules="12"/>
-				<process-engine name="Make soda from sodium oxide" number-modules="12"/>
+				<process-engine name="Make Glass from Silica" number-modules="12"/>
+				<process-engine name="Make Silica from Sand" number-modules="12"/>
+				<process-engine name="Make Soda from Sodium Oxide" number-modules="12"/>
 				<process-engine name="Bake Calcium Carbonate to Lime" number-modules="12"/> 	
 					
 				<!-- 4 types of cement/concrete -->			
@@ -2277,15 +2276,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="rock salt" amount="500.0" />
 				
 				<!-- Payload imported from Earth -->
-				<resource-initial type="nitrogen" amount="1000.0" />
+				<resource-initial type="nitrogen" amount="100.0" />
 
 				<!-- Extracted on Mars -->
-				<resource-initial type="carbon dioxide" amount="100.0" />
+				<resource-initial type="carbon dioxide" amount="1000.0" />
 
 				<!-- Produced on Mars -->
-				<resource-initial type="oxygen" amount="8000.0" />
-				<resource-initial type="hydrogen" amount="3000.0" />
-				<resource-initial type="water" amount="9500.0" />
+				<resource-initial type="hydrogen" amount="5000.0" />
 			</storage>
 
 			<waste-processing low-power-level="0.25">

@@ -229,6 +229,13 @@ public abstract class MarsSimUnitTest {
 		return buildSettlement(name, false, initialPopulation);
 	}
 
+	/**
+	 * Builds a settlement with needed goods.
+	 * 
+	 * @param name
+	 * @param needGoods
+	 * @return
+	 */
 	protected Settlement buildSettlement(String name, boolean needGoods) {
 		return buildSettlement(name, needGoods, MockSettlement.DEFAULT_COORDINATES);
 	}

@@ -920,8 +920,8 @@
 
 
 <!-- Misc. -->
-	<resource name="Glass" type="gemstone" phase="solid" demand="2" >For making vessels</resource>
-	<resource name="Quartz" type="gemstone" phase="solid" demand="5" >For making electronic components</resource>
+	<resource name="Glass" type="gemstone" phase="solid" demand="0.5" >For making vessels</resource>
+	<resource name="Quartz" type="gemstone" phase="solid" demand="5" >Quartz is crystalline silica (SiO2). For making electronic components</resource>
 
 
 </resource-list>

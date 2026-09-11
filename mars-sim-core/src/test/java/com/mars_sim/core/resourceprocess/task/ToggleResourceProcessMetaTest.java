@@ -17,7 +17,7 @@ import com.mars_sim.core.resourceprocess.ResourceProcess;
 class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
 
     static Building buildProcessing(MarsSimContext context, BuildingManager buildingManager, LocalPosition pos, double facing) {
-        // ERV-1 only has 2 processes so simpler
+        // Note: "ERV-I" only has 2 processes so simpler
 		return context.buildFunction(buildingManager, "ERV-I", BuildingCategory.PROCESSING,
 							FunctionType.RESOURCE_PROCESSING,  pos, facing, true);
 	}
@@ -47,6 +47,9 @@ class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
         // Pick a process and add resources to the specific storage
         var rh = s.getEquipmentInventory();
         var p = r.getProcesses().get(0);
+        System.out.println("# of Resource process: " + r.getProcesses().size());
+        System.out.println("Resource proess: " + p);
+        
         for (var i : p.getInputResources()) {
             double excess = rh.storeAmountResource(i, 100D);
             assertEquals(0, excess, "excess mass0");

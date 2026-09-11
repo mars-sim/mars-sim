@@ -139,6 +139,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private static final double OMNI_BIAS = 1792;
 	private static final double HOVERING = 1536;
 	private static final double SIGNIFICANT = 1024;	
+	private static final double OVERWHELMING = 768;
 	private static final double EXCEEDING = 512;	
 	private static final double SUPREME = 256;	
 	private static final double TRENDY = 192;	
@@ -246,13 +247,16 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 						count++;
 					
 						// Note: Pick only the first process
-						var score = new RatingScore(0);
-
-						var elapsed = getMarsTime().getTimeDiff(process.getToggleDue());
-
-						score.addModifier(TOGGLE_TIME, elapsed / 30);
-					
-						if (score.getScore() >= 20 * process.getLevel()) { 
+						var score = new RatingScore(1);
+						// diff is 333 at max
+						double diff = getMarsTime().getTimeDiff(process.getToggleDue());
+						// maxTime is 333
+						double maxTime = process.getSpec().getProcessTime();
+						// modTime is 100 at max
+						double modTime = (maxTime - diff) / 5;
+						score.addModifier(TOGGLE_TIME, modTime);
+						// score.getScore() is 20 at max
+						if (score.getScore() >= 3 * process.getLevel()) { 
 							toggleOffTasks.add(new ToggleOffJob(this, settlement, building, process, score));
 						}
 					}
@@ -457,7 +461,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// (2) when input has zero supply and output has large supply
 				
 				double mrate = rate * vp;
-				
+				score += mrate;
 				// Note: mass rate * VP -> demand
 				
 				// if this resource is ambient
@@ -471,16 +475,16 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isRawMaterial(resource)   			// all ores, all minerals, sand)
 					|| ResourceUtil.isChemical(resource)) {					// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 
 					score += mrate / MEGA;
-				} else if (ResourceUtil.isCO2(resource)) { 					// CO2	
-					score += mrate * SUPER;
+//				} else if (ResourceUtil.isCO2(resource)) { 					// CO2	
+//					score += mrate * SUPER;
 				} else if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
-					score += mrate * HOVERING;
+					score += mrate * SUPREME;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
-					score += mrate * TRENDY;
+					score += mrate * MEGA;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
-					score += mrate * TRENDY;
+					score += mrate * MEGA;
 				} else if (ResourceUtil.isOxygen(resource)) {  				// oxygen
-					score += mrate * SUPER;
+					score += mrate / SUPER;
 				} else if (ResourceUtil.isDerivedResource(resource)) { 		// glucose, leaves, soil 
 					score += mrate / MEGA;
 				} else if (ResourceUtil.isTier1Resource(resource) 			// ice, brine water, rock salt
@@ -488,7 +492,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					|| ResourceUtil.isWasteProduct(resource)) { 			// grey water, black water, * waste
 					score += mrate / SUPER;
 				} else if (ResourceUtil.isWater(resource)) { 		// water
-					score += mrate;
+					score += mrate; 
 				} else if (ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick	
 					score += mrate / MID;
 				} else {
@@ -528,10 +532,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				double rate = processSpec.getBaseOutputRate(resource);
 				
 				double mrate = rate * vp4;
+				score += mrate;
 				
 				if (processSpec.isCoreOutputResource(resource)) {
-					// Note: 'core' is being used in producing methane and for melting ice
-					score += mrate * GOD_BIAS;
+					score += mrate * EXCEEDING;
 				}
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),
@@ -540,21 +544,21 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isWasteOutputResource(resource)) {
 				// Note: 'waste' is used for N2, CO and CO2 
 					score += mrate * SUPER;
-				} else if (ResourceUtil.isHydrogen(resource)) { 		// hydrogen
-					score += mrate * OMNI_BIAS;
-				} else if (ResourceUtil.isMethane(resource)) { 			// methane
-					score += mrate * SIGNIFICANT;
-				} else if (ResourceUtil.isMethanol(resource)) { 		// methanol
-					score += mrate * SUPREME;
-				} else if (ResourceUtil.isOxygen(resource)) {			// oxygen
-					score += mrate;
+//				} else if (ResourceUtil.isHydrogen(resource)) { 		// hydrogen
+//					score += mrate * EXCEEDING;
+//				} else if (ResourceUtil.isMethane(resource)) { 			// methane
+//					score += mrate * SIGNIFICANT;
+//				} else if (ResourceUtil.isMethanol(resource)) { 		// methanol
+//					score += mrate * SUPREME;
+//				} else if (ResourceUtil.isOxygen(resource)) {			// oxygen
+//					score += mrate;
 				} else if (ResourceUtil.isRawElement(resource)      	// carbon, iron powder, iron oxide
 					|| ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick, gypsum plaster			
 					score += mrate * MEGA;					
 				} else if (ResourceUtil.isTier1Resource(resource)) { 	// ice, brine water, rock salt	
 					score += mrate * GOD_BIAS ;	
 				} else if (ResourceUtil.isInSitu(resource)) {			// all regolith types
-					score += mrate * EXCEEDING;	
+					score += mrate * SIGNIFICANT;	
 				} else if (ResourceUtil.isWasteProduct(resource)) {		// Nitrogen, CO, grey/black water, compost, all waste, carbon monoxide			
 					score += mrate * SUPER;
 				} else if (ResourceUtil.isChemical(resource)) {			// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 				
@@ -562,8 +566,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil
 					|| ResourceUtil.isCriticalResource(resource)) {		// glass
 					score += mrate * SUPREME;
-				} else if (ResourceUtil.isWater(resource)) { 			// water
-					score += mrate * EXTREME;
+//				} else if (ResourceUtil.isWater(resource)) { 			// water
+//					score += mrate * MEGA;
 				} else if (ResourceUtil.isRawMaterial(resource)) { 		// all ores, all minerals, sand
 					score += mrate * GOD_BIAS;
 				} else

@@ -226,4 +226,8 @@ public class ResourceProcessSpec implements Serializable{
 	public boolean getDefaultOn() {
 		return defaultOn;
 	}
+	
+	public void setDefault(boolean value) {
+		defaultOn = value;
+	}
 }
