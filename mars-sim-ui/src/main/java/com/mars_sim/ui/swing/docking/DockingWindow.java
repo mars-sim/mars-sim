@@ -177,9 +177,15 @@ public class DockingWindow extends ContentManager
      */
     void closeContentPanel(DockingAdapter panel) {
         logger.info("Closing content panel: " + panel.getPersistentID());
+        var content = panel.getContent();
+        if (!(content instanceof EntityContentPanel)
+                && (content instanceof ConfigurableWindow cw)) {
+            getConfig().addWindowSpec(new WindowSpec(content.getName(), null, null, 0,
+                                                    UIConfig.TOOL, cw.getUIProps()));
+        }
         Docking.deregisterDockable(panel);
         windows.remove(panel);
-        panel.getContent().destroy();
+        content.destroy();
     }
 
     /**
@@ -292,7 +298,7 @@ public class DockingWindow extends ContentManager
 		}
 
         // Not found so make a new window
-        Properties props = new Properties();
+        Properties props = getConfig().getInternalWindowProps(name);
         var toolContent = ToolRegistry.getTool(name, this, props);
         addContentPanel(toolContent);
 
