@@ -27,6 +27,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.MockSettlement;
@@ -306,13 +307,13 @@ public abstract class MarsSimUnitTest {
 	 * Executes a Task for a number of steps or until it completes.
 	 * Note: for maven testing.
 	 * 
-	 * @param person
+	 * @param w
 	 * @param task
 	 * @param maxCalls
 	 * @return The number of calls taken
 	 */
-	protected int executeTask(Person person, Task task, int maxCalls) {
-		PersonTaskManager tm = person.getMind().getTaskManager();
+	protected int executeTask(Worker w, Task task, int maxCalls) {
+		var tm = w.getTaskManager();
 		tm.checkReplaceTask(task);
 		
 		int callsLeft = maxCalls;
