@@ -62,7 +62,7 @@ public class BuildingConnection extends Function {
 
 		double supply = numAdjBuildings * 2;
 
-		demand = settlement.getPopulationFactor0() + Math.sqrt(demand);
+		demand = settlement.getSqrtPopFactor() + Math.sqrt(demand);
 		
 		return demand / (supply + 1D);
 	}
@@ -91,7 +91,7 @@ public class BuildingConnection extends Function {
 		
 		double supply = numAdjBuildings * 2;
 
-		double demand = getBuilding().getSettlement().getPopulationFactor0() + Math.sqrt(numBuildings);
+		double demand = getBuilding().getSettlement().getSqrtPopFactor() + Math.sqrt(numBuildings);
 
 		return demand / (supply + 1D);
 	}

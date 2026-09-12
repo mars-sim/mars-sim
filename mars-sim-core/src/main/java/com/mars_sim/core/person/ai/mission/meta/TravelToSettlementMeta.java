@@ -317,6 +317,10 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 			if (person.getMind().getJobType() == JobType.POLITICIAN) {
 				result += 10D;
 			}
+			
+			if (person.getMind().getJobType() == JobType.TOURIST) {
+				result += 50D;
+			}
         }
 
 		return result;

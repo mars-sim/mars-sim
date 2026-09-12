@@ -99,7 +99,7 @@ public abstract class Medication implements Serializable, Temporal, Comparable<M
 		return (timeElapsed < duration);
 	}
 
-	public abstract ComplaintType getComplaintType();
+	public abstract String getComplaintType();
 	
 	@Override
 	public boolean equals(Object object) {

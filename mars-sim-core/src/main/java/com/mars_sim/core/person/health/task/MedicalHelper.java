@@ -13,9 +13,7 @@ import java.util.Set;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.MedicalCare;
-import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.MedicalAid;
@@ -108,26 +106,17 @@ public final class MedicalHelper {
     static Set<HealthProblem> getTreatableHealthProblems(Worker healer, Collection<HealthProblem> problems,
                                                         boolean selfHeal) {
         Set<HealthProblem> result = new HashSet<>();
-        int skillMed = healer.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-        int skillPsych = healer.getSkillManager().getEffectiveSkillLevel(SkillType.PSYCHOLOGY);
     
         for(HealthProblem problem  : problems) {
             if (problem.getState() == HealthProblemState.DEGRADING) {
-            	ComplaintType complaintType = problem.getComplaint().getType();
             	Treatment treatment = problem.getComplaint().getRecoveryTreatment();
             	if ((treatment != null) && (treatment.getSelfAdminister() == selfHeal)) {
-                    int requiredSkill = treatment.getSkill();
-                	if (ComplaintType.PANIC_ATTACK == complaintType
-                		|| ComplaintType.DEPRESSION == complaintType) {
-                        if (skillPsych >= requiredSkill) {
-                            result.add(problem);
-                        }
-                	}
-                	else {
-                        if (skillMed >= requiredSkill) {
-                            result.add(problem);
-                        }
-                	}
+                    int requiredSkill = treatment.getSkillLevel();
+                    int healerSkill = healer.getSkillManager()
+                                    .getEffectiveSkillLevel(treatment.getSkillType());
+                    if (healerSkill >= requiredSkill) {
+                        result.add(problem);
+                    }
             	}
             }
         }

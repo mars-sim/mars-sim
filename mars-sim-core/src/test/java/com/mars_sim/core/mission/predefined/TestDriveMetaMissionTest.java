@@ -91,7 +91,7 @@ class TestDriveMetaMissionTest extends MarsSimUnitTest {
         mp.performMission(leader);
 
         int count = 0;
-        ClockPulse pulse = createPulse(1, 1, false, false);
+        ClockPulse pulse = createPulse(1, 1, false, false, false);
         while(starting.equals(mp.getPhaseDescription()) && (count < maxSteps)) {
             pulse = pulse.addElapsed(0.1D); // Must use a big pulse
             

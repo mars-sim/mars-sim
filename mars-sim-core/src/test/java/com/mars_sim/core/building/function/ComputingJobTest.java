@@ -87,7 +87,7 @@ public class ComputingJobTest extends MarsSimUnitTest {
             assertTrue(center != null, "Job found compute function #" + i);
             executeTask(p, task, 5);       
             
-            var pulse = createPulse(clock, false, false);
+            var pulse = createPulse(clock, false, false, false);
             center.timePassing(pulse);
             
             newNeed = job.getRemainingNeed();

@@ -45,7 +45,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 	private static final String SCH_ICON = "schedule";
 	private static final String NOTE = "Note";
 	private static final String ENTRIES = "Max Entries:";
-	private static final String MILLISOLS = " millisols";
+	private static final String _MILLISOLS = " millisols";
 	
 	private int entriesCache;
 	
@@ -58,7 +58,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 	private JTextField entriesTF;
 	
 	private JLabel shiftLabel;
-	private JLabel timeLabel;
+	private JLabel periodLabel;
 	private JLabel statusLabel;
 	private JLabel noteLabel;
 	
@@ -114,7 +114,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 			
 			timePeriodCache = getWorkPeriod(shiftSlot);
 			
-			timeLabel = attrPanel.addRow(Msg.getString("TabPanelSchedule.shift.period.label"), //$NON-NLS-1$
+			periodLabel = attrPanel.addRow(Msg.getString("TabPanelSchedule.shift.period.label"), //$NON-NLS-1$
 					timePeriodCache);
 
 			statusCache = shiftSlot.getStatus().getName();
@@ -125,7 +125,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 			noteCache = getShiftNote(shiftSlot);	
 			
 			noteLabel = attrPanel.addRow(NOTE, 
-					noteCache + MILLISOLS);
+					noteCache);
 		}
 
 		entryPane.add(new JLabel(" "));
@@ -149,7 +149,6 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 		activityPanel = new ActivityPanel(getEntity().getTaskManager().getAllActivities());
 		activityPanel.setPreferredSize(new Dimension(225, 100));
 
-
 		content.add(activityPanel, BorderLayout.CENTER);
 
 		if (shiftSlot != null) {
@@ -172,12 +171,12 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 		int end = s.getEnd();
 
 		switch(status) {
-			case ON_CALL, ON_LEAVE:
+			case ON_CALL, ON_LEAVE, GUEST:
 				return status.getName();
 			case ON_DUTY:
-				return status.getName() + " ends @ " + end;
+				return status.getName() + " ends @ " + end + _MILLISOLS;
 			case OFF_DUTY:
-				return status.getName() + " ends @ " + start;
+				return status.getName() + " ends @ " + start + _MILLISOLS;
 		}
 		
 		return "";
@@ -198,7 +197,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 		switch(status) {
 			case ON_CALL:
 				return status.getName();
-			case ON_DUTY, OFF_DUTY, ON_LEAVE:
+			case ON_DUTY, OFF_DUTY, ON_LEAVE, GUEST:
 				return shiftName;
 		}
 
@@ -219,8 +218,8 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 		int end = s.getEnd();
 		
 		switch(status) {
-			case ON_DUTY, OFF_DUTY:
-				return "From " + start + " to " + end + " millisols";
+			case ON_DUTY, OFF_DUTY, GUEST:
+				return "From " + start + " to " + end + _MILLISOLS;
 			case ON_CALL:
 				return "Anytime";
 			case ON_LEAVE:
@@ -241,11 +240,11 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 			shiftCache = shift;
 			shiftLabel.setText(shift);
 		}
-				
+			
 		String shiftDesc = getShiftNote(shiftSlot);
 		if (!noteCache.equalsIgnoreCase(shiftDesc)) {
 			noteCache = shiftDesc;
-			noteLabel.setText(shiftDesc + MILLISOLS);
+			noteLabel.setText(shiftDesc);
 		}
 		
 		int entries = taskMgr.getEntries();
@@ -265,7 +264,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 		String timePeriod = getWorkPeriod(shiftSlot);
 		if (!timePeriodCache.equalsIgnoreCase(timePeriod)) {
 			timePeriodCache = timePeriod;
-			timeLabel.setText(timePeriod);
+			periodLabel.setText(timePeriod);
 		}	
 		String status = shiftSlot.getStatus().getName();		
 		if (!statusCache.equalsIgnoreCase(status)) {

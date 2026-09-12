@@ -8,6 +8,8 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.person.ai.SkillType;
+
 /**
  * This class represents a Medical treatment that can be applied to
  * a Person to cure a complaint.
@@ -19,8 +21,10 @@ implements Serializable, Comparable<Treatment> {
 	private static final long serialVersionUID = 1L;
 
 	private String name;
-	/** Optimal MEDICAL skill. */
-	private int requiredSkill;
+	/** Optimal healer skill level. */
+	private int requiredSkillLevel;
+	/** Required healer skill type. */
+	private SkillType requiredSkillType;
 	/** Required MedicalAid level. */
 	private int facilityLevel;
 	/** Length of treatment. */
@@ -32,15 +36,17 @@ implements Serializable, Comparable<Treatment> {
 	 * Constructor.
 	 *
 	 * @param name The unique name.
-	 * @param skill Required Medical skill.
+	 * @param skillLevel Required healer skill level.
+	 * @param skillType Required healer skill type.
 	 * @param duration The duration of treatment in millisols.
 	 * @param selfAdmin Can the treatment be self-administered.
 	 * @param facilityLevel Required medical aid tech level.
 	 */
-	public Treatment(String name, int skill, double duration,
+	public Treatment(String name, int skillLevel, SkillType skillType, double duration,
 			boolean selfAdmin, int facilityLevel) {
 		this.name = name;
-		this.requiredSkill = skill;
+		this.requiredSkillLevel = skillLevel;
+		this.requiredSkillType = skillType;
 		this.selfAdmin = selfAdmin;
 		this.facilityLevel = facilityLevel;
 		if (duration < 0D) {
@@ -79,14 +85,14 @@ implements Serializable, Comparable<Treatment> {
 	 * Gets the time required to perform this treatment by a Person with
 	 * the appropriate skill rating.
 	 *
-	 * @param skill The skill rating that will apply the treatment.
+	 * @param skillLevel The skill rating that will apply the treatment.
 	 * @return Adjusted treatment time according to skill.
 	 */
-	public double getAdjustedDuration(int skill) {
+	public double getAdjustedDuration(int skillLevel) {
 		double result = duration;
-		if ((result > 0D) && (skill < requiredSkill)) {
+		if ((result > 0D) && (skillLevel < requiredSkillLevel)) {
 			// Increase the time by the percentage skill lacking
-			result = duration * (1 + (1.0 * requiredSkill - skill)/requiredSkill);
+			result = duration * (1 + (1.0 * requiredSkillLevel - skillLevel)/requiredSkillLevel);
 		}
 		return result;
 	}
@@ -115,10 +121,17 @@ implements Serializable, Comparable<Treatment> {
 	}
 
 	/**
-	 * Returns the Medical skill required for this treatment.
+	 * Returns the healer skill level required for this treatment.
 	 */
-	public int getSkill() {
-		return requiredSkill;
+	public int getSkillLevel() {
+		return requiredSkillLevel;
+	}
+
+	/**
+	 * Returns the healer skill type required for this treatment.
+	 */
+	public SkillType getSkillType() {
+		return requiredSkillType;
 	}
 
 	/**

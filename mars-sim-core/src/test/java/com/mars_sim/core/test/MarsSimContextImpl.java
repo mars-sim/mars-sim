@@ -126,8 +126,8 @@ public class MarsSimContextImpl implements MarsSimContext {
     }
 
     @Override
-    public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
-        return createPulse(marsTime, 1D, newSol, newHalfSol);
+    public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol, boolean isNewOneThirdSol) {
+        return createPulse(marsTime, 1D, newSol, newHalfSol, isNewOneThirdSol);
     }
 
     /**
@@ -140,7 +140,7 @@ public class MarsSimContextImpl implements MarsSimContext {
         var currentTime = sim.getMasterClock().getMarsTime();
         var newTime = currentTime.addTime(elapsed);
         var newSol = !currentTime.getDate().equals(newTime.getDate());
-        return createPulse(newTime, elapsed, newSol, false);
+        return createPulse(newTime, elapsed, newSol, false, false);
     }
 
     /**
@@ -152,10 +152,10 @@ public class MarsSimContextImpl implements MarsSimContext {
      * @param newHalfSol Has half a sol just passed ? 
      * @return
      */
-    private ClockPulse createPulse(MarsTime marsTime, double elapsed, boolean newSol, boolean newHalfSol) {
+    private ClockPulse createPulse(MarsTime marsTime, double elapsed, boolean newSol, boolean newHalfSol, boolean isNewOneThirdSol) {
         var master = sim.getMasterClock();
         master.setMarsTime(marsTime);
-        return new ClockPulse(pulseID++, elapsed, marsTime, master, newSol, newHalfSol, (elapsed >= 1D), false);
+        return new ClockPulse(pulseID++, elapsed, marsTime, master, newSol, newHalfSol, isNewOneThirdSol, (elapsed >= 1D), false);
     }
 
     @Override
@@ -238,10 +238,10 @@ public class MarsSimContextImpl implements MarsSimContext {
      * @param newHalfSol Has half a sol just passed
      * @return
      */
-    public ClockPulse createPulse(int missionSol, int mSol, boolean newSol, boolean newHalfSol) {	
+    public ClockPulse createPulse(int missionSol, int mSol, boolean newSol, boolean newHalfSol, boolean isNewOneThirdSol) {	
 //    	int newSolOfWeek = MarsTimeFormat.getSolOfWeek(solOfMonth);
         MarsTime marsTime = new MarsTime(1, 1, 0, missionSol, mSol, missionSol);
-        return createPulse(marsTime, newSol, newHalfSol);
+        return createPulse(marsTime, newSol, newHalfSol, isNewOneThirdSol);
     }
 
     public MarsSurface getSurface() {

@@ -65,30 +65,31 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	 */
 	@Override
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
+		
 		OperateVehicle result = null;
 		
-
-		if (member instanceof Person person
-			&& person.isSuperUnfit()) {
+		if (member instanceof Person person) {
+			
+			if (person.isSuperUnfit()) {
 	
-        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
-        	
-    		boolean areAllOthersUnfit = areAllOthersUnfit(member);	
-
-        	if (areAllOthersUnfit) {
-				logger.warning(person, 10_000L, "As everyone is unfit to operate " + getDrone() + ", " 
-					+ person + " decided to continue/step up to be the pilot.");	
-			} 
-        	
-        	else {
-	        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
-        		
 	        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
 	        	
-	        	if (checkNeeds(person)) {
-	        		// Unable to operate the vehicle
-	        		return result;
-	        	}
+	    		boolean areAllOthersUnfit = areAllOthersUnfit(member);	
+	
+	        	if (areAllOthersUnfit) {
+					logger.warning(person, 4_000L, "However, as everyone was unfit to operate " + getDrone() + ", " 
+						+ person + " decided to continue/step up to be the pilot.");	
+				} 
+	        	
+	        	else {
+		        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
+	        		
+		        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
+				}
+			}
+			else if (!checkNeeds(person)) {
+	    		// Unable to operate the vehicle
+	    		return result;	
 			}
 		}
         

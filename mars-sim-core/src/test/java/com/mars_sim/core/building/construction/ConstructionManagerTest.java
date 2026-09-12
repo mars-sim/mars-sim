@@ -98,7 +98,7 @@ public class ConstructionManagerTest extends MarsSimUnitTest {
         assertFalse(first.isReady(), "Build not ready");
 
         // Advance time
-        var newPulse = createPulse(futureTime, false, false);
+        var newPulse = createPulse(futureTime, false, false, false);
         s.getFutureManager().timePassing(newPulse);
 
         // Schedule should be now

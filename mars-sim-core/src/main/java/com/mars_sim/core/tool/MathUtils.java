@@ -7,6 +7,7 @@
 package com.mars_sim.core.tool;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class MathUtils {
 
@@ -67,20 +68,37 @@ public class MathUtils {
 	 * Normalizes the values of the array.
 	 * 
 	 * @param w
-	 * @return
 	 */
-	public static double[] normalize(double[] w) {
-		double[] vector = w;
-		for (int i = 0; i < w.length; i++) {
-			// .4 is the mid-point
-			if (w[i] > 0.4)
-				vector[i] -= .005;
-			else if (w[i] < 0.4)
-				vector[i] += .005;
-			else
-				vector[i] = 0.4;
+	public static double[] normalize(List<double[]> list) {
+		double[] newV = new double[2];
+		int size = list.size();
+
+		if (size > 10) {
+			list.remove(0);
 		}
-		return vector;
+		
+		int count = list.size();
+		for (double[] v: list) {
+			for (int i = 0; i < v.length; i++) {
+				// .4 is the mid-point
+				if (v[i] > 0.4) {
+					v[i] -= .0025;
+					
+				}
+				else if (v[i] < 0.4) {
+					v[i] += .0025;
+				}
+				
+				newV[i] += v[i];
+			}
+		}
+		
+		for (int i = 0; i < newV.length; i++) {
+			double average = Math.round(newV[i] / count);
+			newV[i] = average;
+		}
+		
+		return newV;
 	}
 	
 	public static void sortStringBubble(String[] x){

@@ -28,7 +28,6 @@ import com.mars_sim.core.building.utility.heating.HeatSourceType;
 import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.malfunction.MalfunctionMeta.EffortSpec;
-import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -198,7 +197,7 @@ public class MalfunctionConfig {
 			}
 
 			// Get medical complaints.
-			Map<ComplaintType, Double> medicalComplaints = buildMedicalComplaints(malfunctionElement);
+			Map<String, Double> medicalComplaints = buildMedicalComplaints(malfunctionElement);
 			
 
 			// Convert resourceEffects
@@ -283,10 +282,10 @@ public class MalfunctionConfig {
 	 * @param malfunctionElement
 	 * @return
 	 */
-	private Map<ComplaintType, Double> buildMedicalComplaints(Element malfunctionElement) {
+	private Map<String, Double> buildMedicalComplaints(Element malfunctionElement) {
 
 		// Get medical complaints.
-		Map<ComplaintType, Double> medicalComplaints = new HashMap<>();
+		Map<String, Double> medicalComplaints = new HashMap<>();
 
 		Element medicalComplaintListElement = malfunctionElement.getChild(MEDICAL_COMPLAINT_LIST);
 
@@ -298,7 +297,7 @@ public class MalfunctionConfig {
 				String complaintName = medicalComplaintElement.getAttributeValue(NAME_ATTR);
 				double complaintProbability = Double.parseDouble(
 						medicalComplaintElement.getAttributeValue(MEDICAL_PROBABILITY));
-				medicalComplaints.put(ComplaintType.valueOf(ConfigHelper.convertToEnumName(complaintName)),
+				medicalComplaints.put(ConfigHelper.convertToEnumName(complaintName),
 										complaintProbability);
 			}
 		}

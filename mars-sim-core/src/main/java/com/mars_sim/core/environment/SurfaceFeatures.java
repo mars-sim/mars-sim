@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,10 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	public static final SimLogger logger = SimLogger.getLogger(SurfaceFeatures.class.getName());
 
 	public static final int OPTICAL_DEPTH_REFRESH = 3;
+	public static final int SUNLIGHT_THRESHOLD = 20;
+	public static final int MEAN_SOLAR_IRRADIANCE = 586; // in flux or [W/m2] = 1371 / (1.52*1.52)
+	public static final int MAX_SOLAR_IRRADIANCE = 717;
+	public static final int MIN_SOLAR_IRRADIANCE = 493;
 
 	/** Maximum mineral estimation */
 	private static final double MINERAL_ESTIMATION_MAX = 100D;
@@ -52,20 +57,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	// http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm
 
 	private static final double COSZ_THRESHOLD = 0.04;
-	
-	public static final int SUNLIGHT_THRESHOLD = 20;
-	
-	public static final int MEAN_SOLAR_IRRADIANCE = 586; // in flux or [W/m2] = 1371 / (1.52*1.52)
-	
-	public static final int MAX_SOLAR_IRRADIANCE = 717;
-	
-	public static final int MIN_SOLAR_IRRADIANCE = 493;
-
 	private static final double HALF_PI = Math.PI / 2;
-
 	private static final double THREE_HALF_PI = 1.5 * Math.PI;
-
 	private static final double OPTICAL_DEPTH_STARTING = 0.2342;
+	
+	private static final String MINERAL_SITE_ = "Mineral Site ";
 
 	/** The most recent value of optical depth by Coordinate. */
 	private transient Map<Coordinates, Double> opticalDepthMap = new HashMap<>();
@@ -564,7 +560,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		if (totalConc > 0) {
 				
-			String name = "Site-" + (regionOfInterestLocations.size() + 1);
+			String name = MINERAL_SITE_ + (regionOfInterestLocations.size() + 1);
 			result = new MineralSite(name, location, skill, initialMineralEstimations);
 			
 			regionOfInterestLocations.add(result);
@@ -580,12 +576,15 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 * @return Site or null if not found.
 	 */
 	public MineralSite getDeclaredROI(Coordinates coord) {
-		return regionOfInterestLocations.stream()
+		// Note: The line findFirst() below triggers CME. Switch to findAny()
+		return Collections.unmodifiableCollection(regionOfInterestLocations).stream()
 				  .filter(e -> e.getCoordinates().equals(coord))
-				  .findFirst()
+//				  .findFirst()
+				  .findAny()
 				  .orElse(null);
 	}
 
+	
 	/**
 	 * Gets a set of all Regions of Interest (ROI) available in a simulation, regardless of its claimed status.
 	 *
@@ -595,6 +594,29 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		return regionOfInterestLocations;
 	}
 
+	/**
+	 * Gets a set of specific claimed sites.
+	 *
+	 * @return list of explored locations.
+	 */
+	public List<MineralSite> getSpecificClaimedSites() {
+		return Collections.unmodifiableCollection(regionOfInterestLocations).stream()
+		  .filter(s -> s.isMinable() && !s.isReserved() && s.isExplored() && s.isClaimed())
+		  .toList();
+	}
+	
+	/**
+	 * Gets a set of specific sites.
+	 *
+	 * @return list of explored locations.
+	 */
+	public List<MineralSite> getSpecificSites() {
+		return Collections.unmodifiableCollection(regionOfInterestLocations).stream()
+		  .filter(s -> s.isMinable() && !s.isReserved() && s.isExplored())
+		  .toList();
+	}
+
+	
 	/**
 	 * Gets the areothermal heat potential for a given location.
 	 *

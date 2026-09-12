@@ -611,8 +611,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			if (person != null) {
 				// If task is effort-driven and person is incapacitated, end task.
-				if (effortDriven && (person.getPerformanceRating() < 0.1D
-						|| person.getPhysicalCondition().computeFitnessLevel() <= 1)) {
+				if (effortDriven && (person.getPerformanceRating() == 0D)) {
+//						|| person.getPhysicalCondition().computeFitnessLevel() == 0)) {
 					// "Resurrect" him a little to give him a chance to make amend
 					endTask();
 				} else {
@@ -663,12 +663,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				double remainingTime = timeLeft;
 				timeLeft = performMappedPhase(timeLeft);
 				timeCompleted += remainingTime;
-				
-				if (timeCompleted > DEFAULT_TIMEOUT_MILLISOLS) {
-					endTask();
-				}
 			}
 
+			if (timeCompleted > DEFAULT_TIMEOUT_MILLISOLS) {
+				endTask();
+			}
+			
 			// Some Task return a percentage of the time which can produce a very small number
 			if (timeLeft < 0.000001) {
 				timeLeft = 0D;

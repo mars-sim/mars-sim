@@ -10,10 +10,7 @@ import java.io.Serializable;
 
 /**
  * This centralises the process of having a reference to a Complaint but storing the serialised
- * representation as a ComplaintType.
- * 
- * This will be remvoved when issue #1341 is implemented
- * 
+ * representation as a complaint name String.
  */
 class ComplaintReference implements Serializable {
 	
@@ -21,28 +18,32 @@ class ComplaintReference implements Serializable {
 
 	private static MedicalManager medicalManager;
 
-    private ComplaintType type;
+    private String name;
     private transient Complaint complaint;
 
-    ComplaintReference(ComplaintType type) {
-        this.type = type;
-        complaint = medicalManager.getComplaintByName(type);
+    ComplaintReference(Complaint complaint) {
+        this.name = complaint.getID();
+        this.complaint = complaint;
     }
 
     /**
-	 * Returns the complaint. THis implements a lazy loadng pattern.
+	 * Returns the complaint. This implements a lazy loading pattern.
 	 *
 	 * @return Complaint.
 	 */
 	public Complaint getComplaint() {
 		if (complaint == null) {
-			complaint = medicalManager.getComplaintByName(type);
+			complaint = medicalManager.getComplaintByID(name);
 		}
 		return complaint;
 	}
 
-    public ComplaintType getType() {
-        return type;
+    /**
+     * Returns the complaint identifier name.
+     * @return complaint type name
+     */
+    public String getID() {
+        return name;
     }
 
     /**

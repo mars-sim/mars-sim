@@ -14,12 +14,12 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.predefined.ExplorationMeta;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.mission.CollectIce;
 import com.mars_sim.core.person.ai.mission.CollectRegolith;
-import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
@@ -169,7 +169,7 @@ public class EquipmentGood extends Good {
 
 		// Get the number of equipment that will be produced by ongoing manufacturing
 		// processes.
-		number += getManufacturingProcessOutput(settlement);
+		number += getManufacturingProcessOngoingOutput(settlement);
 
 		return number;
     }
@@ -183,7 +183,6 @@ public class EquipmentGood extends Good {
 		double supply = settlement.getGoodsManager().getSupplyScore(getID());
         if (equipmentType == EquipmentType.EVA_SUIT) {
     		mass = EquipmentFactory.getEquipmentMass(equipmentType);
-//    		quantity = settlement.getNumEVASuit();
     		
             // Need to increase the value for EVA
     		factor = 2.4 * Math.log(mass/80.0 + 1) / supply;
@@ -191,7 +190,6 @@ public class EquipmentGood extends Good {
     	else {
     		// For containers
     		mass = EquipmentFactory.getEquipmentMass(equipmentType);
-//    		quantity = settlement.findNumContainersOfType(equipmentType);
     		factor = 2.0 * Math.log(mass/5 + 1) / supply;
     	}
         
@@ -225,21 +223,21 @@ public class EquipmentGood extends Good {
 		double projected = newProjDemand * flattenDemand;
 		
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == INITIAL_EQUIPMENT_DEMAND) {
-			projectedCache = projected;
-		}
-		else {
-			projectedCache = .01 * projected + .99 * projectedCache;
-		}
+//		if (projectedCache == INITIAL_EQUIPMENT_DEMAND) {
+//			projected = projectedCache;
+//		}
+//		else {
+			projected = .02 * projected + .98 * projectedCache;
+//		}
 		
-		owner.setProjectedDemandScore(this, projectedCache);
+		owner.setProjectedDemandScore(this, projected);
 		
-		double totalSupply = getAverageEquipmentSupply(settlement.getEquipmentInventory().findNumContainersOfType(equipmentType));
+		double totalSupply = owner.getAverageSupply(settlement.getEquipmentInventory().findNumContainersOfType(equipmentType));
 				
 		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
-		double tradeDemand = owner.determineTradeDemand(this) / 10;
+		double tradeDemand = owner.determineTradeDemand(this);
 
 		owner.setTradeDemandScore(this, tradeDemand);
 		
@@ -247,7 +245,12 @@ public class EquipmentGood extends Good {
 		// Note: need to look into parts and equipment reliability in MalfunctionManager 
 		// to derive the repair value 
 		if (equipmentType == EquipmentType.EVA_SUIT) {
-			repairDemand = owner.getEVASuitLevel() * owner.getDemandScore(this);
+			
+			repairDemand = owner.getEVASuitLevel() * owner.getDemandScore(this) / 20;
+		}
+		else {
+			repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel()) / 2.0 
+					* owner.getDemandScore(this) / 20;
 		}
 		
 		// Note: the ceiling uses projected, not projectedCache
@@ -256,7 +259,7 @@ public class EquipmentGood extends Good {
 		double totalDemand = previousDemand;
 		
 		if (previousDemand == INITIAL_EQUIPMENT_DEMAND) {
-			totalDemand = .5 * projectedCache 
+			totalDemand = .5 * projected 
 						+ .2 * repairDemand
 						+ .3 * tradeDemand;
 		}
@@ -271,12 +274,12 @@ public class EquipmentGood extends Good {
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.003;
+			totalDemand *= 1.01;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.997;
+			totalDemand *= 0.99;
 		}
 				
 		owner.setDemandScore(this, totalDemand);
@@ -315,6 +318,9 @@ public class EquipmentGood extends Good {
 		double totalPhaseOverfill = 0D;
 
 		// Scan resources that can be held in this Container
+		
+		// Future: create a map at startup, instead of having to scan it every time
+		
 		for (AmountResource resource : ResourceUtil.getAmountResources()) {
 			if (ContainerUtil.getEquipmentTypeForContainer(resource.getID()) == equipmentType) {
 				double settlementCapacity = rh.getSpecificCapacity(resource.getID());
@@ -328,7 +334,7 @@ public class EquipmentGood extends Good {
 			}
 		}
 
-		baseDemand += totalPhaseOverfill * containerCapacity / settlement.getPopulationFactor();
+		baseDemand += totalPhaseOverfill * containerCapacity / settlement.getLogPopFactor();
 
 		double ratio = computeUsageFactor(settlement);
 
@@ -343,7 +349,7 @@ public class EquipmentGood extends Good {
 				return Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 10) * (0.1 + areologistFactor) * BARREL_DEMAND;
 
 			case SPECIMEN_BOX:
-				return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 10) * (1 + areologistFactor) * SPECIMEN_BOX_DEMAND;
+				return Math.max(baseDemand * ratio * ExplorationMeta.REQUIRED_SPECIMEN_CONTAINERS, 10) * (1 + areologistFactor) * SPECIMEN_BOX_DEMAND;
 
 			case GAS_CANISTER:
 				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 10) * GAS_CANISTER_DEMAND;
@@ -427,27 +433,18 @@ public class EquipmentGood extends Good {
 //		}
 		return demand / num;
 	}
-	/**
-	 * Gets the total supply for the equipment.
-	 *
-	 * @param resource`
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageEquipmentSupply(double supplyStored) {
-		return Math.sqrt(0.1 + supplyStored);
-	}
 	
 	/**
-	 * Injects equipment demand immediately without waiting for goods manager to update it.
+	 * Calculates inject equipment demand.
+	 * Note: will need to separately call setDemand to immediately update it without waiting.
 	 * 
 	 * @param type
 	 * @param owner
 	 * @param stored
 	 * @param needNum
+	 * @return
 	 */
-	public void injectEquipmentDemand(EquipmentType type, GoodsManager owner, int stored, int needNum) {
+	public double calculateInjectEquipmentDemand(EquipmentType type, GoodsManager owner, int stored, int needNum) {
 		double previousDemand = owner.getDemandScore(this);
 		
 		int storedNum = stored;
@@ -467,6 +464,8 @@ public class EquipmentGood extends Good {
 				+ " -> " + Math.round(newDemand * 1000.0)/1000.0 
 				+ "  Quantity: " + needNum
 				+ "/" + storedNum + " (needed/stored).");	
+		
+		return newDemand;
 	}
 	
 	public void destroy() {

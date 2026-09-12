@@ -28,24 +28,21 @@ public class ResourceProcess implements ScheduledEventHandler {
 	// May add back: private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName())
 
 	private static final double SMALL_AMOUNT = 0.000001;
-	// How often should the process be checked? 
-	private static final double PROCESS_CHECK_FREQUENCY = 5D; // 200 times per sol
 	
 	/**
 	 * Represents the internal state of the process.
 	 */
 	public enum ProcessState {
-			RUNNING, IDLE, INPUTS_UNAVAILABLE
+			RUNNING, IDLE, INPUTS_UNAVAILABLE, LOCK_ON
 	}
 
 	private boolean canToggle = false;
 	private boolean workerAssigned = false;
 	private boolean isRunning;
+	private boolean isLockOn;
 	
 	private int levelOfEffort = 3;
 	
-	/** The time accumulated [in millisols]. */
-	private double accumulatedTime;
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
 	private double dutyTime;
@@ -76,7 +73,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 		this.assessment = DEFAULT_ASSESSMENT;
 
 		// Add some randomness, today is sol 1
-		resetToggleWait(100 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
+		resetToggleWait(20 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
 	}
 
 	/**
@@ -102,21 +99,13 @@ public class ResourceProcess implements ScheduledEventHandler {
 			double newProdLevel = productionLevel;
 			// Set the current production level.
 			currentProductionLevel = newProdLevel * levelOfEffort / 5;
-			
-			accumulatedTime += time;
 
-			double newCheckPeriod = PROCESS_CHECK_FREQUENCY * time;
-			
-			if (accumulatedTime >= newCheckPeriod) {
-				// Compute the remaining accumulatedTime
-				accumulatedTime -= newCheckPeriod;	
-				// Increment the duty time here
-				dutyTime += time;
+			// Increment the duty time here
+			dutyTime += time;
 
-				processInputResources(host);
+			processInputResources(host);
 
-				processOutputResources(host);
-			}
+			processOutputResources(host);
 		}
 	}
 
@@ -133,7 +122,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 				
 				double fullRate = getBaseFullInputRate(resource);
 				double resourceRate = fullRate * currentProductionLevel;
-				double required = resourceRate * accumulatedTime;
+				double required = resourceRate;
 				if (required == 0D)
 					continue;
 
@@ -173,11 +162,11 @@ public class ResourceProcess implements ScheduledEventHandler {
 		// Output resources to inventory.
 		for (Integer resource : processSpec.getOutputResources()) {
 			
-			if (!isWasteOutputResource(resource)) {		
+			if (!isWasteOutputResource(resource)) {	
 				
 				double maxRate = getBaseFullOutputRate(resource);
 				double resourceRate = maxRate * currentProductionLevel;
-				double required = resourceRate * accumulatedTime;
+				double required = resourceRate;
 				double remainingCap = host.getRemainingCombinedCapacity(resource);
 							
 				// Store the right amount
@@ -223,7 +212,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 //					+ "' for '" + processSpec.getName() + "'. Required: "
 //					+ Math.round(required * 1000.0)/1000.0 + " kg. Available: "
 //					+ Math.round(available * 1000.0)/1000.0 + " kg.");
-		setProcessRunning(false);
+		setProcessState(ProcessState.INPUTS_UNAVAILABLE);
 	}
 
 	/**
@@ -296,7 +285,14 @@ public class ResourceProcess implements ScheduledEventHandler {
 			toggleRunningWorkTime = 0D;
 			canToggle = false;
 			
-			setProcessRunning(!isRunning);
+			if (isRunning) {
+				// Turn the running state into idle state
+				setProcessState(ProcessState.IDLE);
+			}
+			else {
+				// Turn the idle state into running state
+				setProcessState(ProcessState.RUNNING);
+			}
 			
 			return true;
 		}
@@ -484,13 +480,25 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	/**
+	 * Checks if the process is locked-on.
+	 *
+	 * @return true if process is locked-on
+	 */
+	public boolean isProcessLockOn() {
+		return isLockOn;
+	}
+	
+	/**
 	 * Checks if the process has required inputs.
 	 * This is not a live instantaneous check, but a check of the last time the process was run.
 	 *
 	 * @return true if process has inputs
 	 */
 	public ProcessState getState() {
-		if (isRunning) {
+		if (isLockOn) {
+			return ProcessState.LOCK_ON;
+		}
+		else if (isRunning) {
 			return ProcessState.RUNNING;
 		}
 		else if (assessment.inputsAvailable()) {
@@ -502,12 +510,30 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	/**
-	 * Sets if the process is running or not.
+	 * Sets the process state.
 	 *
-	 * @param newRunning true if process is running.
+	 * @param selected the process state
 	 */
-	public void setProcessRunning(boolean newRunning) {
-		// Record completion
+	public void setProcessState(ProcessState selected) {
+		boolean newRunning = false;
+		
+		if (selected == ProcessState.RUNNING) {
+			newRunning = true;
+    	}
+    	else if (selected == ProcessState.LOCK_ON) {
+    		newRunning = true;
+    		isLockOn = true;
+    	}
+    	else if (selected == ProcessState.IDLE) {
+    		newRunning = false;
+    		isLockOn = false;
+    	}
+    	else if (selected == ProcessState.INPUTS_UNAVAILABLE) {
+    		newRunning = false;
+    		isLockOn = false;
+    	}
+			
+		// If it used to be running and now it has stopped
 		if (isRunning && !newRunning) {
 			// Record the completion
 			building.getAssociatedSettlement().recordProcess(processSpec.getName(), "Resource", building);

@@ -14,8 +14,8 @@ import java.util.List;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.equipment.ResourceHolder;
+import com.mars_sim.core.mission.predefined.ExplorationMeta;
 import com.mars_sim.core.person.ai.mission.CollectIce;
-import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -79,7 +79,7 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 				cols =  new ArrayList<>(BASE_COLS);
 				cols.add(new ColumnSpec(9, "Specimen Boxes", Integer.class, ColumnSpec.STYLE_DEFAULT));
 				eType = EquipmentType.SPECIMEN_BOX;
-				eMin = Exploration.REQUIRED_SPECIMEN_CONTAINERS;
+				eMin = ExplorationMeta.REQUIRED_SPECIMEN_CONTAINERS;
 			}
 			case COLLECT_ICE, COLLECT_REGOLITH -> {
 				cols = new ArrayList<>(BASE_COLS);

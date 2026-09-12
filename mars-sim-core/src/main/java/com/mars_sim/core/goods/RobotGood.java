@@ -130,24 +130,11 @@ class RobotGood extends Good {
         return INITIAL_ROBOT_SUPPLY;
     }
 
-
-	/**
-	 * Gets the total supply for the robot.
-	 *
-	 * @param resource`
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageRobotSupply(double supplyStored) {
-		return Math.sqrt(0.1 + supplyStored);
-	}
-	
     @Override
     void refreshSupplyDemandScore(GoodsManager owner) {
 		Settlement settlement = owner.getSettlement();
 	
-		double totalSupply = getAverageRobotSupply(getNumberForSettlement(settlement));
+		double totalSupply = owner.getAverageSupply(getNumberForSettlement(settlement));
 				
 		owner.setSupplyScore(this, totalSupply);
 		
@@ -161,17 +148,17 @@ class RobotGood extends Good {
 		double projected = newProjDemand * flattenDemand;
 			
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == INITIAL_ROBOT_DEMAND) {
-			projectedCache = projected;
-		}
-		else {
-			projectedCache = .01 * projected + .99 * projectedCache;
-		}
+//		if (projectedCache == INITIAL_ROBOT_DEMAND) {
+//			projected = projectedCache;
+//		}
+//		else {
+			projected = .01 * projected + .99 * projectedCache;
+//		}
 		
-		owner.setProjectedDemandScore(this, projectedCache);
+		owner.setProjectedDemandScore(this, projected);
 		
 		// This method is not using cache
-		double tradeDemand = owner.determineTradeDemand(this) / 10;
+		double tradeDemand = owner.determineTradeDemand(this);
 		
 		owner.setTradeDemandScore(this, tradeDemand);
 		
@@ -185,7 +172,7 @@ class RobotGood extends Good {
 		double totalDemand = previousDemand;
 		
 		if (previousDemand == INITIAL_ROBOT_DEMAND) {
-			totalDemand = .5 * projectedCache 
+			totalDemand = .5 * projected 
 						+ .1 * repairDemand
 						+ .4 * tradeDemand;
 		}
@@ -200,12 +187,12 @@ class RobotGood extends Good {
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.003;
+			totalDemand *= 1.01;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.997;
+			totalDemand *= 0.99;
 		}
 		
 		owner.setDemandScore(this, totalDemand);
@@ -219,7 +206,7 @@ class RobotGood extends Good {
 	 */
 	private double determineRobotDemand(GoodsManager owner, Settlement settlement) {
 		double baseDemand = BASE_DEMAND * getWholeBotDemand(owner)
-				 + owner.getBotMod() * settlement.getPopulationFactor();
+				 + owner.getBotMod() * settlement.getLogPopFactor();
 				
 		if (robotType == RobotType.MAKERBOT) {
 			

@@ -18,7 +18,8 @@ import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ThirstLevel;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.health.ComplaintType;
+import com.mars_sim.core.person.health.MedicalManager;
+
 
 class ExamineBodyTest extends MarsSimUnitTest {
 
@@ -35,7 +36,7 @@ class ExamineBodyTest extends MarsSimUnitTest {
         assertEquals(sb, patient.getBuildingLocation(), "Patient is at ");
         
         // Laceration is self heal
-        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.DEHYDRATION);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, MedicalManager.DEHYDRATION);
         patient.getPhysicalCondition().recordDead(hp, true, ThirstLevel.DEATH_QUOTE);
         var death = patient.getPhysicalCondition().getDeathDetails();
 
@@ -101,7 +102,7 @@ class ExamineBodyTest extends MarsSimUnitTest {
         assertTrue(tasks.isEmpty(), "No bodies to examine");
 
         // Make person dead
-        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.STARVATION);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, MedicalManager.STARVATION);
         patient.getPhysicalCondition().recordDead(hp, true, HungerLevel.DEATH_QUOTE);
 
         tasks = mt.getSettlementTasks(s);

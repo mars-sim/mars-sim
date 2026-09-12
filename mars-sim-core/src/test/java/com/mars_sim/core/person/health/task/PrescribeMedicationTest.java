@@ -15,7 +15,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.BodyRegionType;
-import com.mars_sim.core.person.health.ComplaintType;
+import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.person.health.RadiationType;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
@@ -64,7 +64,7 @@ public class PrescribeMedicationTest extends MarsSimUnitTest {
 
         // Simulate a mass radiation dose
         e.addDose(RadiationType.SEP, BodyRegionType.SKIN, 2000D);
-        var pulse = createPulse(1, 0, true, true);
+        var pulse = createPulse(1, 0, true, true, false);
         pc.timePassing(pulse, s);
         assertTrue(e.isSick(), "Patient is radiation sick");
         assertTrue(pc.isRadiationPoisoned(), "Patient is radiation poisoned");
@@ -106,7 +106,7 @@ public class PrescribeMedicationTest extends MarsSimUnitTest {
         
         // Check has radiation medication
         var radMeds = meds.get(0);
-        assertEquals(ComplaintType.RADIATION_SICKNESS, radMeds.getComplaintType(), "Radiation meds");
+        assertEquals(MedicalManager.RADIATION_SICKNESS, radMeds.getComplaintType(), "Radiation meds");
     }
 
     @Test

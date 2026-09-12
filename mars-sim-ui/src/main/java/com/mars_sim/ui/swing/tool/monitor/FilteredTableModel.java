@@ -18,13 +18,15 @@ interface FilteredTableModel {
     record Filter(String id, String name, boolean isActive) {}
 
     /**
-     * Get a list of the supported filters and their active state.
+     * Gets a list of the supported filters and their active state.
+     * 
      * @return
      */
     List<Filter> getActiveFilters();
 
     /**
-     * Enable/disable a filter.
+     * Enables/disables a filter.
+     * 
      * @param id The filter id being changed
      * @param selected
      */

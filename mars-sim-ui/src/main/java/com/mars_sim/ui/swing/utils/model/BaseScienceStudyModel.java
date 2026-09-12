@@ -17,6 +17,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  * Subclasses can define new columns to be rendered.
  * The model automatically monitors the ScientificStudy for changes and updates the table as needed.
  */
+@SuppressWarnings("serial")
 public class BaseScienceStudyModel extends AbstractEntityModel<ScientificStudy> {
 
     private static final int NAME_VAL = 0;

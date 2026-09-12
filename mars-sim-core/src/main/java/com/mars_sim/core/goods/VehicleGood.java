@@ -155,7 +155,7 @@ class VehicleGood extends Good {
  
 		// Get the number of vehicles that will be produced by ongoing manufacturing
 		// processes.
-		number += getManufacturingProcessOutput(settlement);
+		number += getManufacturingProcessOngoingOutput(settlement);
 
 		return number;
     }
@@ -187,7 +187,7 @@ class VehicleGood extends Good {
         Settlement settlement = owner.getSettlement();
 		
 		// Calculate total supply
-		double totalSupply = getAverageVehicleSupply(getNumberForSettlement(settlement));
+		double totalSupply = owner.getAverageSupply(getNumberForSettlement(settlement));
 		
 		owner.setSupplyScore(this, totalSupply);
 			
@@ -198,14 +198,14 @@ class VehicleGood extends Good {
 		double projected = newProjDemand * flattenDemand;
 		
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == INITIAL_VEHICLE_DEMAND) {
-			projectedCache = projected;
-		}
-		else {
-			projectedCache = .01 * projected + .99 * projectedCache;
-		}
+//		if (projectedCache == INITIAL_VEHICLE_DEMAND) {
+//			projected = projectedCache;
+//		}
+//		else {
+			projected = .02 * projected + .98 * projectedCache;
+//		}
 		
-		owner.setProjectedDemandScore(this, projectedCache);
+		owner.setProjectedDemandScore(this, projected);
 	
 		double average = computeVehiclePartsCost(owner);
 		
@@ -218,7 +218,7 @@ class VehicleGood extends Good {
 		// to derive the repair value. 
 		// Look at each part in vehicleType
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
-				* owner.getDemandScore(this);
+				* owner.getDemandScore(this) / 20;
 		
 		// Note: the ceiling uses projected, not projectedCache
 		double ceiling = projected + tradeDemand + repairDemand;
@@ -228,7 +228,7 @@ class VehicleGood extends Good {
 		if (previousDemand == INITIAL_VEHICLE_DEMAND) {
 			totalDemand = .5 * average 
 						+ .1 * repairDemand
-						+ .2 * projectedCache 
+						+ .2 * projected 
 						+ .2 * tradeDemand;
 		}
 
@@ -244,12 +244,12 @@ class VehicleGood extends Good {
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.003;
+			totalDemand *= 1.01;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.997;
+			totalDemand *= 0.99;
 		}		
 		
 		owner.setDemandScore(this, totalDemand);
@@ -277,18 +277,6 @@ class VehicleGood extends Good {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Gets the total supply for the vehicle.
-	 *
-	 * @param resource`
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageVehicleSupply(double supplyStored) {
-		return Math.sqrt(0.1 + supplyStored);
 	}
 
 	/**
@@ -356,13 +344,13 @@ class VehicleGood extends Good {
 	 */
 	private double determineDroneValue(Settlement settlement, boolean buy) {
 
-		double demand = 1D;
+		double numJobs = 1D;
 
 		// Add demand for construction missions by architects.
-		demand += MathUtils.between(JobUtil.numJobs(JobType.PILOT, settlement) * 1.1, 1, 100);
+		numJobs += MathUtils.between(JobUtil.numJobs(JobType.PILOT, settlement) * 1.1, 1, 100);
 
 		// Add demand for mining missions by engineers.
-		demand += MathUtils.between(JobUtil.numJobs(JobType.TRADER, settlement) * 1.2, 1, 100);
+		numJobs += MathUtils.between(JobUtil.numJobs(JobType.TRADER, settlement) * 1.2, 1, 100);
 
 		double supply = getNumberForSettlement(settlement);
 		if (!buy)
@@ -370,7 +358,7 @@ class VehicleGood extends Good {
 		if (supply < 1)
 			supply = 1;
 		
-		return settlement.getPopulationFactor() / demand / supply * DRONE_FACTOR;
+		return settlement.getNumCitizens() / numJobs / supply * DRONE_FACTOR;
 	}
 
 	/**
@@ -382,16 +370,16 @@ class VehicleGood extends Good {
 	 */
 	private double determineLUVValue(Settlement settlement, boolean buy) {
 
-		double demand = 1;
+		double numJobs = 1;
 
 		// Add demand for mining missions by areologists.
-		demand +=  MathUtils.between(JobUtil.numJobs(JobType.AREOLOGIST, settlement) * 1.3, 1, 100);
+		numJobs +=  MathUtils.between(JobUtil.numJobs(JobType.AREOLOGIST, settlement) * 1.3, 1, 100);
 
 		// Add demand for construction missions by architects.
-		demand +=  MathUtils.between(JobUtil.numJobs(JobType.ARCHITECT, settlement) * 1.2, 1, 100);
+		numJobs +=  MathUtils.between(JobUtil.numJobs(JobType.ARCHITECT, settlement) * 1.2, 1, 100);
 
 		// Add demand for mining missions by engineers.
-		demand +=  MathUtils.between(JobUtil.numJobs(JobType.ENGINEER, settlement) * 1.1, 1, 100);
+		numJobs +=  MathUtils.between(JobUtil.numJobs(JobType.ENGINEER, settlement) * 1.1, 1, 100);
 
 		double supply = getNumberForSettlement(settlement);
 		if (!buy)
@@ -399,7 +387,7 @@ class VehicleGood extends Good {
 		if (supply < 1)
 			supply = 1;
 	
-		return settlement.getPopulationFactor() / demand / supply * LUV_FACTOR;
+		return settlement.getNumCitizens() / numJobs / supply * LUV_FACTOR;
 	}
 
 	/**
@@ -456,7 +444,7 @@ class VehicleGood extends Good {
 	 */
 	private double determineMissionJob(GoodsManager owner, Settlement settlement, MissionType missionType) {
 		
-		double demand = settlement.getPopulationFactor();
+		double demand = settlement.getLogPopFactor();
 		
 		switch(missionType) {
 		case CONSTRUCTION ->

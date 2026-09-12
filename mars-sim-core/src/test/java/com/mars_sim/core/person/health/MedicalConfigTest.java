@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 
 class MedicalConfigTest {
@@ -31,7 +32,8 @@ class MedicalConfigTest {
         var found = matched.get(0);
 
         assertFalse(found.getSelfAdminister(), "Self admin");
-        assertEquals(3, found.getSkill(), "Skill level");
+        assertEquals(3, found.getSkillLevel(), "Skill level");
+        assertEquals(SkillType.MEDICINE, found.getSkillType(), "Skill type");
         assertEquals(2, found.getFacilityLevel(), "Facility level");
         assertEquals(200D, found.getDuration(), "Treatment time");
     }
@@ -48,9 +50,28 @@ class MedicalConfigTest {
         var found = matched.get(0);
 
         assertTrue(found.getSelfAdminister(), "Self admin");
-        assertEquals(0, found.getSkill(), "Skill level");
+        assertEquals(0, found.getSkillLevel(), "Skill level");
+        assertEquals(SkillType.MEDICINE, found.getSkillType(), "Skill type");
         assertEquals(1, found.getFacilityLevel(), "Facility level");
         assertEquals(50D, found.getDuration(), "Treatment time");
+    }
+
+    @Test
+    void testAnxietyMedicationTreatmentSkillType() {
+        var c = medConfig.getTreatmentsByLevel(1);
+        assertFalse(c.isEmpty(), "Treatment list is not empty");
+
+        var matched = c.stream()
+                    .filter(cp -> cp.getName().equals("Anxiety Medication"))
+                    .toList();
+        assertEquals(1, matched.size(), "Found treatment");
+        var found = matched.get(0);
+
+        assertTrue(found.getSelfAdminister(), "Self admin");
+        assertEquals(0, found.getSkillLevel(), "Skill level");
+        assertEquals(SkillType.PSYCHOLOGY, found.getSkillType(), "Skill type");
+        assertEquals(1, found.getFacilityLevel(), "Facility level");
+        assertEquals(100D, found.getDuration(), "Treatment time");
     }
 
     @Test
@@ -77,7 +98,7 @@ class MedicalConfigTest {
         var c = medConfig.getComplaintList();
         assertTrue(!c.isEmpty(), "Complaint list is not empty");
 
-        var found = medConfig.getComplaintByName(ComplaintType.DEHYDRATION);
+        var found = medConfig.getComplaintByID("DEHYDRATION");
         assertNotNull(found, "Found dehydration complaint");
 
         assertTrue(found.isEnvironmental(), "Is environmental");
@@ -98,7 +119,7 @@ class MedicalConfigTest {
         var c = medConfig.getComplaintList();
         assertTrue(!c.isEmpty(), "Complaint list is not empty");
 
-        var found = medConfig.getComplaintByName(ComplaintType.APPENDICITIS);
+        var found = medConfig.getComplaintByID("APPENDICITIS");
         assertNotNull(found, "Found appendictics complaint");
 
         assertFalse(found.isEnvironmental(), "Is environmental");
@@ -111,7 +132,7 @@ class MedicalConfigTest {
         assertEquals(PhysicalEffort.NONE, found.getEffortInfluence(), "Effort influence");
 
         assertEquals("Minor Operation", found.getRecoveryTreatment().getName(), "Treatment");
-        assertEquals(ComplaintType.RUPTURED_APPENDIX, found.getNextPhase().getType(), "Next complaint");
+        assertEquals("RUPTURED_APPENDIX", found.getNextPhase().getID(), "Next complaint");
     }
 
 		
@@ -120,7 +141,7 @@ class MedicalConfigTest {
         var c = medConfig.getComplaintList();
         assertTrue(!c.isEmpty(), "Complaint list is not empty");
 
-        var found = medConfig.getComplaintByName(ComplaintType.BURNS);
+        var found = medConfig.getComplaintByID("BURNS");
         assertNotNull(found, "Found burns complaint");
 
         assertFalse(found.isEnvironmental(), "Is environmental");

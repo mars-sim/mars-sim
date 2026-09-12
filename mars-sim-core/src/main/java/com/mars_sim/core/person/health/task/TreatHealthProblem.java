@@ -10,7 +10,6 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -56,22 +55,20 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
      * @param condition
      */
     protected TreatHealthProblem(String name, Worker doctor, MedicalAid hospital, HealthProblem condition) {
-        super(name, doctor, hospital, IMPACT, 0D);
+        // Determine medical treatment.
+        super(name, doctor, hospital, determineImpact(condition), 0D);
         
         healthProblem = condition;
 
-       	if (doctor instanceof Person person && person.isSuperUnfit()) {
-    		logger.info(doctor, "Super Unfit.");
-    		endTask();
-    		return;
-    	}
-       	
-        // Get the person's medical skill.
-        int skill = doctor.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-
-        // Determine medical treatment.
+//       	if (doctor instanceof Person person && person.isSuperUnfit()) {
+//    		logger.info(doctor, "Super Unfit.");
+//    		endTask();
+//    		return;
+//    	}
+        	
         Treatment treatment = healthProblem.getComplaint().getRecoveryTreatment();
         if (treatment != null) {
+            int skill = doctor.getSkillManager().getEffectiveSkillLevel(treatment.getSkillType());
             treatmentDuration = treatment.getAdjustedDuration(skill);
         }
         else {
@@ -118,6 +115,15 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
         
     }
 
+    private static ExperienceImpact determineImpact(HealthProblem condition) {
+        Treatment treatment = condition.getComplaint().getRecoveryTreatment();
+        if (treatment == null) {
+            return IMPACT;
+        }
+        return new ExperienceImpact(25D, NaturalAttributeType.EXPERIENCE_APTITUDE,
+                        PhysicalEffort.NONE, 0.2D, treatment.getSkillType());
+    }
+
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -142,11 +148,11 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
      */
     private double dispatchingPhase(double time) {
 
-    	if (worker instanceof Person person && person.isSuperUnfit()) {
-    		logger.info(worker, "Super Unfit.");
-    		endTask();
-    		return time;
-    	}
+//    	if (worker instanceof Person person && person.isSuperUnfit()) {
+//    		logger.info(worker, "Super Unfit.");
+//    		endTask();
+//    		return time;
+//    	}
     	
     	double timeLeft = 0D;
     	
@@ -192,11 +198,11 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
      */
     private double treatmentPhase(double time) {
 
-    	if (worker instanceof Person person && person.isSuperUnfit()) {
-    		logger.info(worker, "Super Unfit.");
-    		endTask();
-    		return time;
-    	}
+//    	if (worker instanceof Person person && person.isSuperUnfit()) {
+//    		logger.info(worker, "Super Unfit.");
+//    		endTask();
+//    		return time;
+//    	}
     	
         var mal = getMalfunctionable();
 
@@ -214,12 +220,12 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
             aid.startTreatment(healthProblem, treatmentDuration);
             String des = "";
             if (worker.getName().equals(healthProblem.getSufferer().getName())) {
-            	des = "Self-treating for " + healthProblem.getComplaint().getType().getName();
+            	des = "Self-treating for " + healthProblem.getComplaint().getName();
             	logger.log(worker, Level.INFO, 0, des + ".");
             }
             else {
             	des = "Treating " + healthProblem.getSufferer().getName()
-            			+ " for " + healthProblem.getComplaint().getType().getName();
+            			+ " for " + healthProblem.getComplaint().getName();
             	logger.log(worker, Level.INFO, 0, des + ".");
             	
             }

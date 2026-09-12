@@ -62,7 +62,6 @@ import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.training.CertificationType;
 import com.mars_sim.core.person.ai.training.TrainingType;
 import com.mars_sim.core.person.health.BodyRegionType;
-import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.robot.BotMode;
@@ -143,7 +142,6 @@ public class BundleCheck {
         enumMissing += compareEnum(BotMode.class, localeMessages, output);
         enumMissing += compareEnum(BuildingCategory.class, localeMessages, output);
         enumMissing += compareEnum(CertificationType.class, localeMessages, output);
-        enumMissing += compareEnum(ComplaintType.class, localeMessages, output);
         enumMissing += compareEnum(ComputingLoadType.class, localeMessages, output);
         enumMissing += compareEnum(DishCategory.class, localeMessages, output);
         enumMissing += compareEnum(DustStormType.class, localeMessages, output);

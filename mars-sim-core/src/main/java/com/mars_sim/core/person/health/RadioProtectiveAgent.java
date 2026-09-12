@@ -35,7 +35,7 @@ public class RadioProtectiveAgent extends Medication {
     
     private RadiationExposure exposure;
     
-    private ComplaintType complaintType = ComplaintType.RADIATION_SICKNESS;
+    private String complaintType = MedicalManager.RADIATION_SICKNESS;
     
     /**
      * Constructor.
@@ -92,7 +92,7 @@ public class RadioProtectiveAgent extends Medication {
 		return null;
 	}
 	
-	public ComplaintType getComplaintType() {
+	public String getComplaintType() {
 		return complaintType;
 	}
 }

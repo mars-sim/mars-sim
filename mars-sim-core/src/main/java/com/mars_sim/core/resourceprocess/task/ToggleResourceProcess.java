@@ -161,7 +161,6 @@ public class ToggleResourceProcess extends Task {
 			clearTask("Process already completed toggled.");
 			return;
 		}
-
 		if (process.isProcessRunning()) {
 			setName(TOGGLE_OFF);
 			setDescription(TOGGLE_OFF);

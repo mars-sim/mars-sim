@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.TestEntityListener;
-import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblemState;
+import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
@@ -96,7 +96,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         // Set stress to a high value and check performance
         var originalPerformance = physicalCondition.getPerformanceFactor();
 
-        var c = getConfig().getMedicalConfiguration().getComplaintByName(ComplaintType.BROKEN_BONE);
+        var c = getConfig().getMedicalConfiguration().getComplaintByID("BROKEN_BONE");
         var hp = physicalCondition.addMedicalComplaint(c);
         physicalCondition.timePassing(createPulse(10), s);
         var newPerformance = physicalCondition.getPerformanceFactor();
@@ -149,7 +149,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         assertEquals(1, problems.size(), "Problems should be present after stress increase");
 
         var panic = problems.get(0);
-        assertEquals(ComplaintType.PANIC_ATTACK, panic.getComplaint().getType(), "Panic attack should be present");
+        assertEquals(MedicalManager.PANIC_ATTACK, panic.getComplaint().getID(), "Panic attack should be present");
         assertEquals(HealthProblemState.DEGRADING, panic.getState(), "Panic attack active");
 
         // Stay paniced
@@ -178,7 +178,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         
         var cured = physicalCondition.getHealthHistory();
         assertFalse(cured.isEmpty(), "Cured history should not be empty");
-        assertEquals(ComplaintType.PANIC_ATTACK, cured.get(0).complaint().getType(), "Cured history should contain the panic attack");
+        assertEquals(MedicalManager.PANIC_ATTACK, cured.get(0).complaint().getID(), "Cured history should contain the panic attack");
     }
 
     @Test
@@ -223,7 +223,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         var problems = physicalCondition.getProblems();
         assertEquals(1, problems.size(), "Problems should be present after thirst increase");
         var dehydration = problems.get(0);
-        assertEquals(ComplaintType.DEHYDRATION, dehydration.getType(), "Dehydration should be present");
+        assertEquals(MedicalManager.DEHYDRATION, dehydration.getID(), "Dehydration should be present");
         assertEquals(HealthProblemState.DEGRADING, dehydration.getState(), "Dehydration getting worse");
 
         // Start recovery by changing thirst level
@@ -253,7 +253,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         physicalCondition.timePassing(createPulse(physicalCondition.getDehydrationTrigger()), s);
         assertTrue(physicalCondition.isDead(), "Person should be dead from dehydration");
         var death = physicalCondition.getDeathDetails();
-        assertEquals(ComplaintType.DEHYDRATION, death.getIllness(), "Death should be from dehydration");
+        assertEquals(MedicalManager.DEHYDRATION, death.getIllness(), "Death should be from dehydration");
     }  
 
     @Test
@@ -265,11 +265,11 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         var medicConfig = getConfig().getMedicalConfiguration();
 
         // Add a less serious problem
-        var minorProblem = physicalCondition.addMedicalComplaint(medicConfig.getComplaintByName(ComplaintType.FLU));
+        var minorProblem = physicalCondition.addMedicalComplaint(medicConfig.getComplaintByID("FLU"));
         assertEquals(minorProblem, physicalCondition.getMostSerious(), "Most serious problem should be flu");
 
         // Add a more serious problem
-        var majorProblem = physicalCondition.addMedicalComplaint(medicConfig.getComplaintByName(ComplaintType.HEART_ATTACK));
+        var majorProblem = physicalCondition.addMedicalComplaint(medicConfig.getComplaintByID("HEART_ATTACK"));
         assertEquals(majorProblem, physicalCondition.getMostSerious(), "Most serious problem should be heart attack");
 
         // Cure the more serious problem
@@ -326,7 +326,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         var problems = physicalCondition.getProblems();
         assertEquals(1, problems.size(), "Problems should be present after hunger increase");
         var starvation = problems.get(0);
-        assertEquals(ComplaintType.STARVATION, starvation.getType(), "Starvation should be present");
+        assertEquals(MedicalManager.STARVATION, starvation.getID(), "Starvation should be present");
         assertEquals(HealthProblemState.DEGRADING, starvation.getState(), "Starvation getting worse");
 
         // Start recovery by changing hunger level
@@ -356,7 +356,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         physicalCondition.timePassing(createPulse(10), s);
         assertTrue(physicalCondition.isDead(), "Person should be dead from starvation");
         var death = physicalCondition.getDeathDetails();
-        assertEquals(ComplaintType.STARVATION, death.getIllness(), "Death should be from starvation");
+        assertEquals(MedicalManager.STARVATION, death.getIllness(), "Death should be from starvation");
     }  
 
 }

@@ -23,6 +23,7 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 
 /*
  * This class is the representation of a Part instance as a Good that is tradable.
@@ -74,6 +75,7 @@ public class PartGood extends Good {
 	private static final String PLASTIC_PIPE = "plastic pipe";
 	private static final String WIRE_CONNECTOR = "wire connector";
 
+	private static final int MAX_MANUFACTURING_DEMAND = 300;
 	private static final int VEHICLE_PART_COST = 3;
 	private static final int CIRCUIT_COMPONENT_DEMAND = 4;
 	
@@ -145,6 +147,10 @@ public class PartGood extends Good {
 																		"backhoe", "bulldozer blade",
 																		"crane boom", DRILLING_RIG,
 																		"pneumatic drill", "soil compactor"});
+
+	/** The manufacturing demand of each refresh cycle. */
+	private double constantManufacturingDemand = -1D;
+	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The repair demand for this resource of each refresh cycle. */
@@ -356,7 +362,7 @@ public class PartGood extends Good {
 
 		// Get the number of resources that will be produced by ongoing manufacturing
 		// processes.
-		number += getManufacturingProcessOutput(settlement);
+		number += getManufacturingProcessOngoingOutput(settlement);
 
 		return number;
     }
@@ -391,8 +397,17 @@ public class PartGood extends Good {
 		Settlement settlement = owner.getSettlement();
 		var eo = settlement.getEquipmentInventory();
 		
+		if (constantManufacturingDemand == -1D) {
+        	// At startup, compute manufacturingDemand
+        	calculateConstantManufacturingDemand(owner, settlement);	
+        	
+            // Note: whenever a building with a higher tech level is added, 
+        	// will need to figure out how to to flag and call this method 
+        	// again in order to obtain a new demand value for each amount resource
+        }
+	       
 		// Calculate total supply
-		double totalSupply = getAverageItemSupply(eo.getItemResourceStored(id));
+		double totalSupply = owner.getAverageSupply(eo.getItemResourceStored(id));
 		// Save the average supply
 		owner.setSupplyScore(this, totalSupply);
     
@@ -400,7 +415,7 @@ public class PartGood extends Good {
 		// NOTE: the following estimates are for each orbit (Martian year) :
 		double newProjDemand = 
 			// Add manufacturing demand.					
-			getPartManufacturingDemand(owner, settlement, part)
+			this.constantManufacturingDemand
 			// Add food production demand.
 			+ getPartFoodProductionDemand(owner, settlement, part)
 			// Add construction site demand.
@@ -425,23 +440,25 @@ public class PartGood extends Good {
 			* flattenDemand;
 		
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == INITIAL_PART_DEMAND) {
-			projectedCache = projected;
-		}
-		else {
-			projectedCache = .005 * projected + .995 * projectedCache;
-		}
 		
-		owner.setProjectedDemandScore(this, projectedCache);
+//		if (projectedCache == INITIAL_PART_DEMAND) {
+//			projected = projectedCache;
+//		}
+//		else {
+//			projectedCache = .005 * projected + .995 * projectedCache;
+			projected = .02 * projected + .98 * projectedCache;
+//		}
 		
+		owner.setProjectedDemandScore(this, projected);		
 		// Add trade demand.
-		double tradeDemand = owner.determineTradeDemand(this) / 10;
-
+		double tradeDemand = owner.determineTradeDemand(this);
+		
 		owner.setTradeDemandScore(this, tradeDemand);
 		
 		// Gets the repair part demand
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
-		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 * owner.getDemandScore(this);
+		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
+				* owner.getDemandScore(this) / 20;
 		
 		// Note: the ceiling uses projected, not projectedCache
 		double ceiling = projected + tradeDemand + repairDemand;
@@ -452,7 +469,7 @@ public class PartGood extends Good {
 			// At the start of the sim
 			totalDemand = 
 					  .4 * repairDemand 
-					+ .4 * projectedCache 
+					+ .4 * projected 
 					+ .2 * tradeDemand;
 		}
 
@@ -470,33 +487,21 @@ public class PartGood extends Good {
 //						+ .0002 * repairDemand 
 //						+ .0002 * tradeDemand; 
 //		}
-		
+
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.003;
+			totalDemand *= 1.005;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.997;
+			totalDemand *= 0.995;
 		}
 		
 		// Save the goods demand
 		owner.setDemandScore(this, totalDemand);
     }
-
-    /**
-	 * Gets the total supply for the item resource.
-	 *
-	 * @param resource
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageItemSupply(double supplyStored) {
-		return Math.sqrt(0.1 + supplyStored);
-	}
 
 	/**
 	 * Limits the demand for a particular raw material part.
@@ -611,7 +616,11 @@ public class PartGood extends Good {
 //					logger.info(settlement, 10_000L, "Case 1 for " + part);
 					if (part != null) {
 						// Inject demand need immediately here
-						base += injectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR);
+						double newDemand = calculateInjectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR);
+						
+						base += newDemand;
+						// Update the demand now
+//						settlement.getGoodsManager().setDemandScore(this, newDemand);
 					}
 				}
 			}
@@ -623,11 +632,15 @@ public class PartGood extends Good {
 //					logger.info(settlement, 10_000L, "Case 2 for " + part);
 					if (part != null) {
 						// Inject demand need immediately here
-						base += injectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 5.0);
+						double newDemand = calculateInjectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 5.0);
+						
+						base += newDemand;
+						// Update the demand now
+//						settlement.getGoodsManager().setDemandScore(this, newDemand);
 					}
 				}
 			}
-			
+
 			// Anticipate the need for the next stage
 			ConstructionStageInfo info = s.getNextConstructionStageInfo();
 			if (info != null) {
@@ -637,7 +650,7 @@ public class PartGood extends Good {
 //					logger.info(settlement, 10_000L, "Case 3 for " + part);
 					if (part != null) {
 						// Inject demand need immediately here
-						base += injectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 10.0);
+						base += calculateInjectPartDemand(part, owner, missing, CONSTRUCTION_SITE_REQUIRED_PART_FACTOR / 10.0);
 					}
 				}
 			}
@@ -646,39 +659,38 @@ public class PartGood extends Good {
 		return Math.min(GoodsManager.MAX_DEMAND, base);
 	}
 
-	
 	/**
-	 * Injects an individual part demand immediately without waiting for goods manager to update it.
+	 * Calculates inject part demand.
+	 * Note: will need to call separately to update immediately without waiting.
 	 * 
 	 * @param part
 	 * @param owner
 	 * @param missing
 	 * @return
 	 */
-	public double injectPartDemand(Part part, GoodsManager owner, int missing, double factor) {
+	public double calculateInjectPartDemand(Part part, GoodsManager owner, int missing, double factor) {
 		double previousDemand = owner.getDemandScore(this);
 		
 		int storedNum = owner.getSettlement().getEquipmentInventory().getItemResourceStored(getID());
 
-		double constructionDemand = computeNewDemand(storedNum, missing, factor, previousDemand);
+		double constructionDemand = computeNewConstructionDemand(storedNum, missing, factor, previousDemand);
 		
 		double maintDemand = getMaintenancePartsDemand(storedNum, owner.getSettlement(), part, previousDemand);
 	
-		double finalDemand = maintDemand + constructionDemand;
-		
-		// Note: for now, it's good enough to use GoodManager's to gradually increase the projected demand 
-		// instead of directly setting the new demand score
-//		owner.setDemandScore(this, finalDemand);
+		double finalDemand = maintDemand + constructionDemand - previousDemand;
 		
 		// Output a detailed message	
 		logger.info(owner.getSettlement(), 1_000L,
-				"Injecting Part Demand for "
+				"Calculated new Part inject demand for "
 				+ part.getName() + ": "
 				+ Math.round(previousDemand * 1000.0)/1000.0 
 				+ " -> " 
-				+ Math.round(constructionDemand * 1000.0)/1000.0 
-				+ " + " + Math.round(maintDemand * 1000.0)/1000.0 
-				+ "  Quantity: " + missing
+				+ Math.round(finalDemand * 1000.0)/1000.0 
+				+ " (Construction: " + Math.round(constructionDemand * 1000.0)/1000.0 
+				+ " + Maint: " + Math.round(maintDemand * 1000.0)/1000.0 
+				+ " - Previous: "
+				+ Math.round(previousDemand * 1000.0)/1000.0 
+				+ "). Quantity: " + missing
 				+ "/" + storedNum + " (missing/stored).");	
 		
 		return finalDemand;
@@ -703,48 +715,77 @@ public class PartGood extends Good {
 	/**
 	 * Computes the new demand.
 	 * 
-	 * @param previousNum
+	 * @param storedNum
+	 * @param requestNum
+	 * @param value
+	 * @param previousDemand
+	 * @return
+	 */
+	double computeNewDemand(int storedNum, int requestNum, double value, double previousDemand) {
+		return Math.max(100, Math.max(previousDemand * 3, 1 + previousDemand * (value * Math.sqrt(requestNum / (1.0 + storedNum)))));
+	}
+	
+	/**
+	 * Computes the new construction demand.
+	 * 
+	 * @param storedNum
 	 * @param request
 	 * @param value
 	 * @param previousDemand
 	 * @return
 	 */
-	double computeNewDemand(int previousNum, int request, double value, double previousDemand) {
-		return previousDemand * (1 + request * value / Math.sqrt(1.0 + previousNum)) / 2;
+	double computeNewConstructionDemand(int storedNum, int request, double value, double previousDemand) {
+		return computeNewDemand(storedNum, request, value, previousDemand);
 	}
 	
+    /**
+     * Calculates the constant manufacturing demand.
+     * @Note: if a new building is being put in place, must call this method again
+     * to update constantManufacturingDemand
+     * 
+     * @param owner
+     * @param settlement
+     */
+    private void calculateConstantManufacturingDemand(GoodsManager owner, Settlement settlement) {
+    	constantManufacturingDemand = getConstantManufacturingDemand(owner, settlement);	
+    }
+    
+    
     /**
 	 * Gets the manufacturing demand for a part.
 	 *
 	 * @param part the part.
 	 * @return demand (# of parts)
 	 */
-	private double getPartManufacturingDemand(GoodsManager owner, Settlement settlement, Part part) {
+	private double getConstantManufacturingDemand(GoodsManager owner, Settlement settlement) {
 		double base = 0D;
 
 		// Get highest manufacturing tech level in settlement.
 		int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
-		if (techLevel >= 0) {
+		for (int i = 0; i <= techLevel; i++) {
 			for (ManufactureProcessInfo found : ManufactureUtil.getManufactureProcessesForTechLevel(techLevel)) {
-				double manufacturingDemand = getPartManufacturingProcessDemand(owner, settlement, part, found);
-				base += manufacturingDemand * (1 + techLevel);
+				double manufacturingDemand = getPartManufacturingProcessDemand(owner, settlement, found);
+				base += manufacturingDemand * (.5 + i * 1.25);
 			}
 		}
-
-		return Math.min(GoodsManager.MAX_DEMAND, base / 300);
+		
+		
+		return MathUtils.between(Math.sqrt(base + 0.1), 0.0, MAX_MANUFACTURING_DEMAND);
 	}
 
 	/**
 	 * Gets the demand of an input part in a manufacturing process.
 	 * @note: if a part serves as an input resource for a manu process, it will show up having
 	 * a demand here. In case of 'Airleak patch', it will have zero demand.
-	 *       
-	 * @param part    the input part.
-	 * @param process the manufacturing process.
-	 * @return demand (# of parts)
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @param process
+	 * @return
 	 */
 	private double getPartManufacturingProcessDemand(GoodsManager owner, Settlement settlement,
-													Part part, ManufactureProcessInfo process) {
+													ManufactureProcessInfo process) {
+		Part part = getPart();
 		double demand = 0D;
 		double totalInputNum = 0D;
 

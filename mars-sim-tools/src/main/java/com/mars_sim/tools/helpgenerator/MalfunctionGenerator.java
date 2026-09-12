@@ -58,7 +58,7 @@ public class MalfunctionGenerator extends TypeGenerator<MalfunctionMeta> {
         scope.put("efforts", efforts);
 
         var complaints = m.getMedicalComplaints().entrySet().stream()
-                .map(p -> new NamedValues(p.getKey().getName(),
+                .map(p -> new NamedValues(p.getKey(),
                     1, p.getValue()))
                 .sorted(Comparator.comparing(NamedValues::name))
                 .toList();

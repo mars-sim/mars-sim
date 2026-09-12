@@ -44,7 +44,7 @@ public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
 
         // Complete Proposal
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired() + 10D);
-        study.timePassing(context.createPulse(context.getSim().getMasterClock().getMarsTime(), false, false));
+        study.timePassing(context.createPulse(context.getSim().getMasterClock().getMarsTime(), false, false, false));
         assertEquals(StudyStatus.INVITATION_PHASE, study.getPhase(), "Study start phase");
 
         return study;
@@ -94,7 +94,7 @@ public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
 
         // Advance Study and retest
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired());
-        study.timePassing(createPulse(1, 0, false, false));
+        study.timePassing(createPulse(1, 0, false, false, false));
         assertEquals(StudyStatus.INVITATION_PHASE, study.getPhase(), "Study advanced to invitation phase");
         
         // Create invite task

@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.structure.task;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.Administration;
@@ -49,7 +50,30 @@ public class BudgetResources extends Task {
 
 	public static final double REVIEW_PERC = .9;
 
-	public enum ReviewGoal {LIFE_RESOURCE, WATER_RATIONING, ICE_RESOURCE, REGOLITH_RESOURCE}
+	public enum ReviewGoal implements Named {
+		LIFE_RESOURCE, 
+		WATER_RATIONING, 
+		ICE_RESOURCE, 
+		REGOLITH_RESOURCE;
+		
+		private String name;
+
+		/** Hidden constructor. */
+		private ReviewGoal() {
+	        this.name = Msg.getStringOptional("ReviewGoal", name());
+		}
+
+		/**
+		 * Gives an internationalized string for display in user interface.
+		 * 
+		 * @return {@link String}
+		 */
+		@Override
+		public String getName() {
+			return this.name;
+		}
+	
+	}
 	
 	// Experience modifier is based on a mixture of abilities
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(25D, NaturalAttributeType.EXPERIENCE_APTITUDE,
@@ -67,7 +91,7 @@ public class BudgetResources extends Task {
 		};
 		
 	// Data members		
-	private int settlementResource;
+	private int lifeResource;
 	
 	private int diff = 0;
 	/** The administration building the person is using. */
@@ -91,6 +115,8 @@ public class BudgetResources extends Task {
 				endTask();
 				return;
 			}
+			
+			setDescription(goal.toString());
 			
 			int effectiveSkillLevel = getEffectiveSkillLevel();
 			// Duration is skill-dependent	
@@ -159,12 +185,12 @@ public class BudgetResources extends Task {
 			case REGOLITH_RESOURCE:
 				return budgetRegolithResource();
 			case LIFE_RESOURCE:
-				return budgetSettlementResource();
+				return budgetLifeResource();
 			case WATER_RATIONING:
 				return budgetSettlementWater();
 			default:
 				// Evaluate all 3 one by one
-				return (budgetSettlementResource()
+				return (budgetLifeResource()
 				|| budgetSettlementWater()
 				|| budgetIceResource()
 				|| budgetRegolithResource());
@@ -172,13 +198,13 @@ public class BudgetResources extends Task {
 	}
 	
 	/**
-	 * Budgets a settlement resource.
+	 * Budgets a settlement life resource.
 	 * 
 	 * @return
 	 */
-	private boolean budgetSettlementResource() {
-		settlementResource = person.getAssociatedSettlement().getGoodsManager().selectResourceForReview();
-		if (settlementResource != -1) {
+	private boolean budgetLifeResource() {
+		lifeResource = person.getAssociatedSettlement().getGoodsManager().selectResourceForReview();
+		if (lifeResource != -1) {
 			goal = ReviewGoal.LIFE_RESOURCE;
 			return true;
 		}
@@ -250,7 +276,7 @@ public class BudgetResources extends Task {
 				} break;
 				
 				case LIFE_RESOURCE: {				
-					diff = (int) person.getAssociatedSettlement().getGoodsManager().moderateLifeResourceDemand(settlementResource);					
+					diff = (int) person.getAssociatedSettlement().getGoodsManager().moderateLifeResourceDemand(lifeResource);					
 				} break;
 				
 				case WATER_RATIONING: {			
@@ -310,13 +336,13 @@ public class BudgetResources extends Task {
 				
 				if (diff > 0) {
 					
-					Good good = GoodsUtil.getGood(settlementResource);
+					Good good = GoodsUtil.getGood(lifeResource);
 					
-					double demand = person.getAssociatedSettlement().getGoodsManager().getDemandScoreWithID(settlementResource);
+					double demand = person.getAssociatedSettlement().getGoodsManager().getDemandScoreWithID(lifeResource);
 					
-					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(settlementResource, diff + demand);
+					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(lifeResource, diff + demand);
 					
-					person.getAssociatedSettlement().getGoodsManager().updateOneGood(good);
+//					person.getAssociatedSettlement().getGoodsManager().updateOneGood(good);
 			
 					logger.info(person, 5_000, "Injected demand for " + good.getName() + ": "
 							+ Math.round(demand * 100.0)/100.0 

@@ -1024,12 +1024,12 @@ public class SettlementTransparentPanel extends JComponent {
         
         double adj0 = getAdjustedTime(time[0], offset);
         double adj1 = getAdjustedTime(time[1], offset);
-        double adj2 = getAdjustedTime(time[2], offset);
+//        double adj2 = getAdjustedTime(time[2], offset);
         
         // Prepare values
         final String projRise = PROJECTED_SUNRISE  + StyleManager.DECIMAL1_MSOL.format(adj0);
         final String projSet  = PROJECTED_SUNSET   + StyleManager.DECIMAL1_MSOL.format(adj1);
-        final String projDay  = PROJECTED_DAYLIGHT + StyleManager.DECIMAL1_MSOL.format(adj2);
+        final String projDay  = PROJECTED_DAYLIGHT + StyleManager.DECIMAL1_MSOL.format(time[2]);
 
         // Update Mars Time
         final String ts = updateMarsTime();

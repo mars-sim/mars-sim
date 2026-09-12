@@ -45,7 +45,7 @@ import com.mars_sim.ui.swing.utils.JProcessButton;
  */
 @SuppressWarnings("serial")
 public class ResourceProcessPanel extends JPanel {
-    private static final Icon INPUTS_DOT = ImageLoader.getIconByName("dot/yellow");
+    public static final Icon IDLE_DOT = ImageLoader.getIconByName("dot/yellow");
 
     private static final String KG_SOL = " kg/sol";
 	private static final String BR = "<br>";
@@ -78,10 +78,9 @@ public class ResourceProcessPanel extends JPanel {
         private static final int OUTPUT_SCORE = 5;
         private static final int SCORE = 6;
 
-
         private static final String BUILDING = Msg.getString("building.singular");
         private static final String BUILDING_TOOLTIP = Msg.getString("entity.doubleClick");
-        
+         
         private Building mainBuilding;
     
         private List<ResourceProcess> processes = new ArrayList<>();
@@ -153,7 +152,7 @@ public class ResourceProcessPanel extends JPanel {
                 case RUNNING_STATE: return "S";
                 case BUILDING_NAME: return BUILDING;
                 case PROCESS_NAME: return "Process";
-                case DUTY_PERCENT: return "Duty %";
+                case DUTY_PERCENT: return "% Duty";
                 case INPUT_SCORE: return "In";
                 case OUTPUT_SCORE: return "Out";
                 case SCORE: return "Score";
@@ -166,7 +165,7 @@ public class ResourceProcessPanel extends JPanel {
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             ResourceProcess p = processes.get(rowIndex);
             ProcessState s = (ProcessState) aValue;
-            p.setProcessRunning(s == ProcessState.RUNNING);
+            p.setProcessState(s);
         }
 
         @Override
@@ -237,8 +236,9 @@ public class ResourceProcessPanel extends JPanel {
             if (col == RUNNING_STATE) {
                 return switch(getProcess(row).getState()) {
                     case RUNNING -> "Running";
+                    case LOCK_ON -> "Lock-On (Always) Running";
                     case IDLE -> "Idle";
-                    case INPUTS_UNAVAILABLE -> "No inputs";
+                    case INPUTS_UNAVAILABLE -> "Input Resource Unavailable";
                 };
             }
 
@@ -250,7 +250,6 @@ public class ResourceProcessPanel extends JPanel {
                 return BUILDING_TOOLTIP;
             }
 
-            
             return null;
         }
 
@@ -323,9 +322,10 @@ public class ResourceProcessPanel extends JPanel {
             setText(null);
             if (value instanceof ResourceProcess.ProcessState state) {
                 var icon = switch(state) {
-                    case RUNNING -> JProcessButton.RUNNING_DOT;
-                    case IDLE -> JProcessButton.STOPPED_DOT;
-                    case INPUTS_UNAVAILABLE -> INPUTS_DOT;
+                    case RUNNING 			-> JProcessButton.RUNNING_DOT;
+                    case IDLE 				-> IDLE_DOT;
+                    case INPUTS_UNAVAILABLE -> JProcessButton.STOPPED_DOT;
+                    case LOCK_ON 			-> JProcessButton.LOCK_ON_DOT;
                 };
                 setIcon(icon);
             }
@@ -343,20 +343,35 @@ public class ResourceProcessPanel extends JPanel {
         }
 
         private JProcessButton button;
+        
         private ProcessState selected;
         
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                 boolean isSelected,
                                 int row, int column) {
-            selected = (ResourceProcess.ProcessState) value;
+        	
+        	selected = (ResourceProcess.ProcessState) value;
 
             button = new JProcessButton();
-            button.setRunning(selected == ProcessState.RUNNING);
+            
+            button.setIcon(selected);
+            
             button.addActionListener(e -> {
-                selected = (selected == ProcessState.RUNNING) ? ProcessState.IDLE : ProcessState.RUNNING;
-                button.setRunning(selected == ProcessState.RUNNING);
-
+            	
+            	if (selected == ProcessState.RUNNING) {
+            		selected = ProcessState.LOCK_ON;
+            	}
+            	else if (selected == ProcessState.LOCK_ON) {
+            		selected = ProcessState.IDLE;
+            	}
+//            	else if (selected == ProcessState.INPUTS_UNAVAILABLE) {
+//            		selected = ProcessState.INPUTS_UNAVAILABLE;
+//            	}
+            	else if (selected == ProcessState.IDLE) {
+            		selected = ProcessState.RUNNING;
+            	}
+                
                 // Stop after one click
                 stopCellEditing();
             });

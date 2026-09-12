@@ -106,8 +106,9 @@ public class Mind implements Serializable, Temporal {
 		if ((taskManager != null) && (time > 0)) {
 			moderateTime(time);
 		}
-		
-		checkRelationStressEmotion(pulse);
+		if (pulse.isNewIntMillisol()) {
+			checkRelationStressEmotion(pulse);
+		}
 		
 		checkJob(pulse);
 		
@@ -122,19 +123,19 @@ public class Mind implements Serializable, Temporal {
 	public void checkRelationStressEmotion(ClockPulse pulse) {
 		double time = pulse.getElapsed();
 		
-		if (pulse.isNewIntMillisol()) {
-			// Update stress based on personality.
-			mbti.updateStress(time);
-			
-			int msol = pulse.getMarsTime().getMillisolInt();
-			if (msol % RELATION_UPDATE_CYCLE == relationUpdate) {
-				// Update relationships.
-				RelationshipUtil.timePassing(person, time);
-			}
-			if (msol % EMOTION_UPDATE_CYCLE == emotionUpdate) {
-				// Update emotion with the personality vector
-				emotionMgr.updateEmotion(trait.getPersonalityVector());
-			}
+		// Update stress based on personality.
+		mbti.updateStress(time);
+		
+		int msol = pulse.getMarsTime().getMillisolInt();
+		if (msol % RELATION_UPDATE_CYCLE == relationUpdate
+				|| pulse.isNewHalfSol()) {
+			// Update relationships.
+			RelationshipUtil.timePassing(person, time);
+		}
+		if (msol % EMOTION_UPDATE_CYCLE == emotionUpdate
+				|| pulse.isNewHalfSol()) {
+			// Update emotion with the personality vector
+			emotionMgr.updateEmotion(trait.getPersonalityVector());
 		}
 	}
 	
@@ -307,8 +308,7 @@ public class Mind implements Serializable, Temporal {
 		int priority = mission.getPriority();
 		int rand = RandomUtil.getRandomInt(5);
 		if (rand - (fitness)/1.5D <= priority + modifier) {
-			mission.performMission(person);
-			return true;
+			return mission.performMission(person);
 		}
 		
 		return false;

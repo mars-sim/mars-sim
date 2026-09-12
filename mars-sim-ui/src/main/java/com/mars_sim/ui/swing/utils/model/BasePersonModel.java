@@ -42,7 +42,8 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
     private static final int LOCALE_VAL = 109;
     private static final int ROLE_VAL = 110;
     private static final int JOB_VAL = 111;
-    private static final int SHIFT_VAL = 112;
+    private static final int DUTY_VAL = 112;
+    private static final int SHIFT_VAL = 113;
 
 
     // Columns based on Worker
@@ -85,9 +86,12 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
 	protected static final EntityColumnSpec ROLE = new EntityColumnSpec(new ColumnSpec(ROLE_VAL, Msg.getString("person.role"), String.class), null);
 	protected static final EntityColumnSpec JOB = new EntityColumnSpec(new ColumnSpec(JOB_VAL, Msg.getString("person.job"), String.class),
                                                 Set.of(EntityEventType.JOB_EVENT));
+	protected static final EntityColumnSpec DUTY = new EntityColumnSpec(new ColumnSpec(DUTY_VAL, Msg.getString("person.duty"), Boolean.class),
+            									Set.of(ShiftSlot.SHIFT_EVENT));
 	protected static final EntityColumnSpec SHIFT = new EntityColumnSpec(new ColumnSpec(SHIFT_VAL, Msg.getString("person.shift"), String.class),
                                                 Set.of(ShiftSlot.SHIFT_EVENT));
       
+	
     /**
      * Create a generic person model with the specified columns.
      * @param columns Columns to show.
@@ -145,15 +149,31 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
                 }
 			}
 
-			case SHIFT_VAL -> {
+			case DUTY_VAL -> {
 				// If person is dead, disable it.
 				if (!isDead) {
 					ShiftSlot shift = entity.getShiftSlot();		
+					yield shift.getShift().isOnDuty()
+						|| entity.isOnCall();
+				}
+                else {
+                    yield null;
+                }
+            }
+			
+			case SHIFT_VAL -> {
+				// If person is dead, disable it.
+				if (!isDead) {
+					ShiftSlot shift = entity.getShiftSlot();	
+//					yield shift.getShift().getName();
 					if (shift.getStatus() == WorkStatus.ON_CALL) {
 						yield WorkStatus.ON_CALL.getName();
 					}
+					else if (shift.getStatus() == WorkStatus.GUEST) {
+						yield WorkStatus.GUEST.getName();
+					}
 					else {
-						yield shift.getStatusDescription();
+						yield shift.getShift().getName();//getStatusDescription();
 					}
 				}
                 else {

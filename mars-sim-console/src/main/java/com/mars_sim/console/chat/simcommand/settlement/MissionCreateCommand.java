@@ -63,7 +63,6 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 			}
 			else {
 				context.println("Create Mission " + newMission.getName());
-				settlement.getMissionControl().addMission(newMission);
 
 				if (doReview) {
 					var plan = newMission.getPlan();

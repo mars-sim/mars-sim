@@ -12,6 +12,7 @@ import com.mars_sim.core.goods.GoodType;
 
 public class TestItemResource {
 
+	private static final double MASS = 7.8;
     @BeforeEach
     void setUp() {
         SimulationConfig.loadConfig();
@@ -23,9 +24,9 @@ public class TestItemResource {
         var sheet = ItemResourceUtil.findItemResource(sheetName);
 
         assertNotNull(sheet);
-        assertEquals(7.8D, sheet.getMassPerItem(), 0D);
+        assertEquals(MASS, sheet.getMassPerItem(), 0D);
         assertEquals(sheetName, sheet.getName());
-        assertEquals(GoodType.METALLIC, sheet.getGoodType());
+        assertEquals(GoodType.CONSTRUCTION, sheet.getGoodType());
     }
     
     @Test

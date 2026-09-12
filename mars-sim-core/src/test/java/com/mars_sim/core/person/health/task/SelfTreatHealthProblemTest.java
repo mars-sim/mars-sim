@@ -13,7 +13,7 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.health.ComplaintType;
+
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.structure.Settlement;
@@ -29,8 +29,8 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
         return context.buildFunction(s.getBuildingManager(), "Infirmary", BuildingCategory.MEDICAL, FunctionType.MEDICAL_CARE, LocalPosition.DEFAULT_POSITION, 0D, true);
     }
 
-    public static HealthProblem addComplaint(MarsSimContext context, Person p, ComplaintType ct) {
-        var c = context.getSim().getMedicalManager().getComplaintByName(ct);
+    public static HealthProblem addComplaint(MarsSimContext context, Person p, String ct) {
+        var c = context.getSim().getMedicalManager().getComplaintByID(ct);
         var pc = p.getPhysicalCondition();
         return pc.addMedicalComplaint(c);
     }
@@ -42,7 +42,7 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
         var p = buildPerson("Mr. Physician 0", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         // Laceration is self heal
-        var hp = addComplaint(getContext(), p, ComplaintType.LACERATION);
+        var hp = addComplaint(getContext(), p, "LACERATION");
 
         var pc = p.getPhysicalCondition();
         assertEquals(1, pc.getProblems().size(), "Single health problem");
@@ -51,19 +51,16 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
 
         var task = SelfTreatHealthProblem.createTask(p);
         
-        assertTrue(task.isDone(), "Task created");
-        // Note: need to find out why getProblemsAwaitingTreatment() is false below
-        assertFalse(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem waiting at Medical care");
+        assertFalse(task.isDone(), "Task created");
+        assertTrue(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem waiting at Medical care");
         assertFalse(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem not treated at Medical care");
 
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(p, task, 50);
         executeTask(p, task, 1);
         
-        // Note: need to find out why getProblemsBeingTreated() is false below
         assertFalse(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem still not being treated at Medical care yet");
-        // Note: need to find out why getProblemsAwaitingTreatment() is false below
-        assertFalse(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem waiting at Medical care");
+        assertTrue(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem waiting at Medical care");
 
         // Complete treatment
         executeTask(p, task, 1000);
@@ -71,10 +68,9 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
         assertTrue(task.isDone(), "Task completed");
         assertEquals(1, pc.getProblems().size(), "Complaints remaining");
 
-        // Note: need to find out why the state is still degrading below
-//        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
+        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
         // Note: need to find out why getProblemsBeingTreated is false below
-//        assertTrue(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem removed from Medical care");
+        assertFalse(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem removed from Medical care");
 
     }
 
@@ -89,7 +85,7 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
         assertTrue(p.isInVehicle(), "Person starts in Vehicle");
 
         // Laceration is self heal
-        var hp = addComplaint(getContext(), p, ComplaintType.LACERATION);
+        var hp = addComplaint(getContext(), p, "LACERATION");
 
         var sb = r.getSickBay();
         var pc = p.getPhysicalCondition();
@@ -99,17 +95,15 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
 
         var task = SelfTreatHealthProblem.createTask(p);
         
-        assertTrue(task.isDone(), "Task created");
-        // Note: need to find out why getProblemsAwaitingTreatment() is false below
-//        assertTrue(sb.getProblemsAwaitingTreatment().contains(hp), "Health problem waiting at Medical care");
+        assertFalse(task.isDone(), "Task created");
+        assertTrue(sb.getProblemsAwaitingTreatment().contains(hp), "Health problem waiting at Medical care");
         assertFalse(sb.getProblemsBeingTreated().contains(hp), "Health problem not treated at Medical care");
 
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(p, task, 1000);
         executeTask(p, task, 1);
         
-        // Note: need to find out why getProblemsBeingTreated() is false below
-//        assertTrue(sb.getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
+        assertTrue(sb.getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
         assertFalse(sb.getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
 
         // Complete treatment
@@ -119,7 +113,7 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
         assertEquals(1, pc.getProblems().size(), "Complaints remaining");
 
         // Note: need to find out why the state is still degrading below
-//        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
+        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
         // Note: need to find out why getProblemsBeingTreated is false below
         assertFalse(sb.getProblemsBeingTreated().contains(hp), "Health problem removed from Medical care");
 
@@ -135,12 +129,12 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
         var mt = new SelfTreatHealthProblemMeta();
 
         // Broken bone is not self heal
-        addComplaint(getContext(), p, ComplaintType.BROKEN_BONE);
+        addComplaint(getContext(), p, "BROKEN_BONE");
         var tasks = mt.getTaskJobs(p);
         assertTrue(tasks.isEmpty(), "No self heal tasks");
 
         // Laceration is self heal
-        addComplaint(getContext(), p, ComplaintType.LACERATION);
+        addComplaint(getContext(), p, "LACERATION");
         tasks = mt.getTaskJobs(p);
         assertFalse(tasks.isEmpty(), "Self heal tasks");
     }

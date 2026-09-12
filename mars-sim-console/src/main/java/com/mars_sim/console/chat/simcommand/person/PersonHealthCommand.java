@@ -23,7 +23,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.health.BodyRegionType;
 import com.mars_sim.core.person.health.Complaint;
-import com.mars_sim.core.person.health.ComplaintType;
+import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadiationType;
 import com.mars_sim.core.tool.RandomUtil;
@@ -82,7 +82,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 			responseText.appendLabeledString("Surplus Leptin", String.format(CommandHelper.MILLISOL_FORMAT,
 											 person.getCircadianClock().getSurplusLeptin()));
 			
-			List<String> probs = pc.getProblems().stream().map(hp -> hp.getComplaint().getType().getName())
+			List<String> probs = pc.getProblems().stream().map(hp -> hp.getComplaint().getName())
 												 .toList();
 			responseText.appendNumberedList("Problems", probs);
 			
@@ -158,19 +158,19 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 	
 		// Choose one
 		List<Complaint> complaints = new ArrayList<>(SimulationConfig.instance().getMedicalConfiguration().getComplaintList());
-		Collections.sort(complaints, Comparator.comparing(Complaint::getType));
-		List<String> problems = complaints.stream().map(c -> c.getType().getName()).toList();
+		Collections.sort(complaints, Comparator.comparing(Complaint::getName));
+		List<String> problems = complaints.stream().map(c -> c.getName()).toList();
 		int choice = CommandHelper.getOptionInput(context, problems, "Choose a new Complaint");
 		if (choice <= 0) {
 			return;
 		}
 	
 		Complaint choosen = complaints.get(choice);
-		context.println("Adding new Complaint " + choosen.getType().getName());
+		context.println("Adding new Complaint " + choosen.getName());
 		var problem = pc.addMedicalComplaint(choosen);
 
 		// Radition has extra values
-		if (choosen.getType() == ComplaintType.RADIATION_SICKNESS) {			
+		if (MedicalManager.RADIATION_SICKNESS.equals(choosen.getID())) {			
 			RadiationExposure exposure = person.getPhysicalCondition().getRadiationExposure();
 					
 			int region = RandomUtil.getRandomInt(2);

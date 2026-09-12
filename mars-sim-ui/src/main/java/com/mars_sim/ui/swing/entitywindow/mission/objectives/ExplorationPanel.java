@@ -20,10 +20,9 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
-import com.mars_sim.core.person.ai.mission.Exploration;
+import com.mars_sim.core.mission.predefined.ExplorationMeta;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -73,16 +72,14 @@ public class ExplorationPanel extends JPanel
 		// Load the panels with current state
 		updateCollectionValueLabel();
 		
-		objective.getCompletion().keySet().forEach(this::updateSitePanel);
+		objective.getSiteTime().keySet().forEach(this::updateSitePanel);
 	}
 
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
-			updateCollectionValueLabel();
-		}
-		else if (Exploration.SITE_EXPLORATION_EVENT.equals(event.getType())) {
+		if (ExplorationMeta.SITE_EXPLORATION_EVENT.equals(event.getType())) {
 			updateSitePanel((String) event.getTarget());
+			updateCollectionValueLabel();
 		}
 	}
 
@@ -95,7 +92,7 @@ public class ExplorationPanel extends JPanel
 			sitePanes.put(siteName, result);
 		}
 		
-		double completion = objective.getCompletion().getOrDefault(siteName, 0D);
+		double completion = objective.getSiteTime().getOrDefault(siteName, 0D);
 		result.updateCompletion(completion);
 	}
 
@@ -159,7 +156,8 @@ public class ExplorationPanel extends JPanel
 		 * @param completion the site completion level.
 		 */
 		void updateCompletion(double completion) {
-			completionBar.setValue((int) (completion * 100D));
+			completionBar.setValue((int)((completion * 100D)/objective.getTargetExploreTime()));
+			completionBar.setToolTipText(StyleManager.DECIMAL3_SOLS.format(completion));
 		}
 	}
 }

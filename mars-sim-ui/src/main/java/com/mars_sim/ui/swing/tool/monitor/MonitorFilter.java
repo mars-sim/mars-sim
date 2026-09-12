@@ -61,7 +61,7 @@ implements ActionListener {
 		mainPane.add(categoryPane, BorderLayout.CENTER);
 
 		// Create filter checkboxes
-		for(var f : filters) {
+		for (var f : filters) {
 			addFilterCheckBox(categoryPane, f);
 		}
 

@@ -28,7 +28,7 @@ class CompressedClockListenerTest {
         var compressed = new CompressedClockListener(listener, MIN_DURATION);
 
         int id = 0;
-        var pulse = new ClockPulse(id, PULSE_ELAPSED, null, null, false, false, false, false);
+        var pulse = new ClockPulse(id, PULSE_ELAPSED, null, null, false, false, false, false, false);
 
         // First pulse should always be passed
         long startTime = System.currentTimeMillis();
@@ -40,7 +40,7 @@ class CompressedClockListenerTest {
         // or a fallback time has past to make the test does not get stuck
         while ((listener.pulseId == 0) && (System.currentTimeMillis() - startTime < (1.5*MIN_DURATION))) {
             id++;
-            pulse = new ClockPulse(id, PULSE_ELAPSED, null, null, false, false, false, false);
+            pulse = new ClockPulse(id, PULSE_ELAPSED, null, null, false, false, false, false, false);
             compressed.clockPulse(pulse);
         }
 

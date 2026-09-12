@@ -31,6 +31,7 @@ public class ResourceProcessConfig {
 	private static final String PROCESS_TIME = "process-time";
 	private static final String RATE = "rate";
 	private static final String AMBIENT = "ambient";
+	private static final String CORE = "core";
 	private static final String WASTE = "waste";
 	private static final String RESOURCE = "resource";
 
@@ -91,8 +92,9 @@ public class ResourceProcessConfig {
 			// Convert RATE in kg/sol to rate in kg/millisol
 			double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000.0;
 			boolean waste = ConfigHelper.getOptionalAttributeBool(outputElement, WASTE, false);
-
-			process.addBaseOutputResourceRate(id, rate, waste);
+			boolean core = ConfigHelper.getOptionalAttributeBool(outputElement, CORE, false);	
+			
+			process.addBaseOutputResourceRate(id, rate, waste, core);
 		}
 
 		return process;

@@ -112,7 +112,7 @@ public abstract class GatherDataMeta extends MetaTask
                             double collectionProbability) {
     	
         var rh = settlement.getEquipmentInventory();
-        double popfactor = settlement.getPopulationFactor0();
+        double popfactor = settlement.getLogPopFactor();
         
         Map<Integer, Integer> instrumentAvailability = new HashMap<>();
         
@@ -127,11 +127,11 @@ public abstract class GatherDataMeta extends MetaTask
         
         int availableSize = instrumentAvailability.size();
         for (int id: instrumentAvailability.keySet()) {
-        	instrumentAverageScore += instrumentAvailability.get(id) / popfactor * BASE;
+        	instrumentAverageScore += instrumentAvailability.get(id);
         }
         
         // If one of the instrument is not available, the score would be lower.
-        instrumentAverageScore = instrumentAverageScore * availableSize / size;
+        instrumentAverageScore = instrumentAverageScore * (availableSize / size) / popfactor * BASE;
         
         // Check preconditions
         // - an airlock is available for egress

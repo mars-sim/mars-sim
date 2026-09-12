@@ -95,25 +95,21 @@ public class SystemCondition implements Serializable {
             performanceLevel = newLevel;
         }
 		
-        // Avoid running this at half sol to relieve thread work load
-    	if (!pulse.isNewHalfSol()) {
-    		
-    		int msol = pulse.getMarsTime().getMillisolInt();
+		int msol = pulse.getMarsTime().getMillisolInt();
 
-    		// Note: Avoid checking at < 10 or 1000 millisols
-    		//       due to high cpu util during the change of a sol
-    		if (pulse.isNewIntMillisol() && msol >= 10 && msol < 995 && battery.getkWhStored() > 0) {
+        // No need of checking this at half sol and at < 10 or 1000 millisols 
+		// to avoid high cpu util during the change of a sol
+    	if (!pulse.isNewHalfSol() && pulse.isNewIntMillisol() && msol >= 10 && msol < 995 && battery.getkWhStored() > 0) {
  
-    	        // Consume a minute amount of energy even if a robot does not perform any tasks
-    	    	if (onPowerSave) {
-    	    		battery.consumeEnergy(POWER_SAVE_CONSUMPTION * standbyPower, 
-    	    				time * MarsTime.HOURS_PER_MILLISOL);
-    	    	}
-    	    	else if (!battery.isCharging() && !robot.getTaskManager().hasTask()) {
-    	    		battery.consumeEnergy(standbyPower, 
-    	    				time * MarsTime.HOURS_PER_MILLISOL);	
-    			}
-    		}
+    	    // Consume a minute amount of energy even if a robot does not perform any tasks
+	    	if (onPowerSave) {
+	    		battery.consumeEnergy(POWER_SAVE_CONSUMPTION * standbyPower, 
+	    				time * MarsTime.HOURS_PER_MILLISOL);
+	    	}
+	    	else if (!battery.isCharging() && !robot.getTaskManager().hasTask()) {
+	    		battery.consumeEnergy(standbyPower, 
+	    				time * MarsTime.HOURS_PER_MILLISOL);	
+			}
 		}
     	
         return true;

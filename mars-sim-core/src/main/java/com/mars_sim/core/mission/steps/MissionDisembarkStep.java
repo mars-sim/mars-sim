@@ -72,8 +72,14 @@ public class MissionDisembarkStep extends MissionStep {
             // leave Vehicle
             boolean inGarage = v.isInGarage();
             if (!inGarage) {
-                // Not in garage so walking to airlock
-                workOn = walkToAirLock(worker, v.getSettlement());
+                var settlement = v.getSettlement();
+                if (settlement != null) {
+                    // Not in garage so walking to airlock
+                    workOn = walkToAirLock(worker, v.getSettlement());
+                }
+                else {
+                    logger.warning(worker, "Vehicle is not in a settlement so cannot disembark.");
+                }
             }
 
             // No on the way out of vehicle yet
@@ -158,13 +164,6 @@ public class MissionDisembarkStep extends MissionStep {
 			logger.info(person, 10_000, ""
 					+ "Currently at "
 					+ person.getLocationTag().getExtendedLocation()); 
-
-			// Initiate an rescue operation
-			// Note: Gets a lead person to perform it and give him a rescue badge
-			// rescueOperation((Rover)getVehicle(), person, disembarkSettlement);
-
-//			logger.info(person, 10_000, "" + "Transported to "
-//					+ person.getLocationTag().getExtendedLocation()); 
 			
 			// Note: how to force the person to receive some form of medical treatment ?
 	

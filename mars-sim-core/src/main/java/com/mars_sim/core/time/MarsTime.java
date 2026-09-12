@@ -111,7 +111,7 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 	private transient String marsTimeString = null;
 	private transient String marsTruncatedTimeString = null;
 	
-	private transient Map<String, String> zoneTimestamp = new HashMap<>();
+	private Map<String, String> zoneTimestamp = new HashMap<>();
 	
 	/**
 	 * Constructor 1. Creates a MarsTime object with a given time.

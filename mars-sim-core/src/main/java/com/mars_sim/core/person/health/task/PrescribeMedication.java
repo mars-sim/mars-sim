@@ -68,11 +68,11 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
 //		super(NAME, pharmacist, aid, IMPACT, 0D);
         super(NAME, pharmacist, false, IMPACT, 20D);
 
-       	if (worker instanceof Person person && person.isSuperUnfit()) {
-    		logger.info(worker, "Super Unfit.");
-    		endTask();
-    		return;
-    	}
+//       	if (worker instanceof Person person && person.isSuperUnfit()) {
+//    		logger.info(worker, "Super Unfit.");
+//    		endTask();
+//    		return;
+//    	}
        	
         // Determine patient needing medication
         patient = determinePatient(pharmacist);
@@ -85,10 +85,10 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         	logger.info(pharmacist, 10_000, "Starting in-garaged-vehicle prescribing medication to " + patient.getName() + ".");
         }
         
-        else if (patient.isInSettlement() && patient.getBuildingLocation() != null) {
+        else if (pharmacist.isInSettlement() && patient.getBuildingLocation() != null) {
 
         	// First walk to a medical activity spot 
-    		boolean success = walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
+    		boolean success = walkToActivitySpotInBuilding(pharmacist.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
 
     		if (!success) {
     			logger.info(pharmacist, 10_000, "Unsuccessfully tried to walk to Doctor's station.");
@@ -207,11 +207,11 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
      */
     private double medicatingPhase(double time) {
 
-       	if (worker instanceof Person person && person.isSuperUnfit()) {
-    		logger.info(worker, "Super Unfit.");
-    		endTask();
-    		return time;
-    	}
+//       	if (worker instanceof Person person && person.isSuperUnfit()) {
+//    		logger.info(worker, "Super Unfit.");
+//    		endTask();
+//    		return time;
+//    	}
        	
         // Add experience.
         addExperience(time);

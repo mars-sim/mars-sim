@@ -102,14 +102,16 @@ public class SuppliesManifest {
     }
 
     /**
-     * Set the number of an equipment to load. This is an absolute value and if it is already defined
-     * then it will take the mximum
+     * Set the minimum number of equipment to load. This is an absolute value and if it is already defined
+     * then it will take the maximum of the two.
      * @param equipmentId ID of the item added
-     * @param count Number of items to load
+     * @param count Number of equipment to load
      * @param mandatory Is it mandatory
      */
-    public void addEquipment(int equipmentId, int count, boolean mandatory) {
+    public void setMinEquipment(int equipmentId, int count, boolean mandatory) {
         Map<Integer, Integer> selected = (mandatory ? mandatoryEqm : optionalEqm);
+
+        // Get the biggest of the existing or new so the minimum is always loaded
         selected.merge(equipmentId, count, (v1,v2) -> Math.max(v1.intValue(), v2.intValue()));
     }
 

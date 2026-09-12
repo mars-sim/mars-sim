@@ -410,7 +410,8 @@ public class Sleep extends Task {
 
 		if (person != null) {
 			ShiftSlot ss = person.getShiftSlot();
-			if (ss.getStatus() == WorkStatus.ON_CALL) {
+			if (ss.getStatus() == WorkStatus.ON_CALL
+					|| ss.getStatus() == WorkStatus.GUEST) {
 				// if a person is on a mission outside, assume the day begins with
 				// the sun rises at ~250 milisols at 0 longitude
 				double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));

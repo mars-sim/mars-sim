@@ -154,13 +154,14 @@
 		<part type="methane fuel cell stack" number="4"/>
 		<part type="methanol fuel cell" number="200"/>
 		<part type="methanol fuel cell stack" number="4"/>		
-		<part type="polycarbonate roofing" number="10"/>
+		<part type="polycarbonate panel" number="10"/>
 
 		<part type="pathogen filter" number="3"/>
 		<part type="charcoal filter" number="5"/>
 		<part type="electrostatic precipitator" number="5"/>
 		<part type="air duct" number="10"/>
-		<part type="flexible hose" number="10"/>
+		<part type="gas tubing" number="10"/>
+		<part type="liquid tubing" number="10"/>
 
 		<part type="SLS 3D Printer" number="4"/>
 		<part type="heat pump" number="2"/>
@@ -188,7 +189,8 @@
 		<part type="refrigerator" number="3" />
 		<part type="stove" number="3" />
 		<part type="ventilation fan" number="3" />
-
+		<part type="flexible water hose" number="3" />
+		
 		<part type="airleak patch" number="160" />
 		<part type="fire extinguisher" number="26" />
 		<part type="rover wheel" number="12" />
@@ -201,7 +203,6 @@
 		<part type="electrical wire" number="330" />
 		<part type="power cable" number="16" />
 		<part type="wire connector" number="216" />
-		<part type="plastic tubing" number="60" />
 		<part type="lubricant bottle" number="22" />
 		<part type="battery module" number="4" />
 		<part type="radio antenna" number="8" />

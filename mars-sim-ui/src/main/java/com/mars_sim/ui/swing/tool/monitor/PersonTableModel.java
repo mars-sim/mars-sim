@@ -29,11 +29,13 @@ public class PersonTableModel extends BasePersonModel
 		implements FilteredTableModel, MonitorModel {
 
 	private static final String PEOPLE = Msg.getString("person.plural");
-	private static final String LIVE = "Show Alive";
+	private static final String ALIVE = "Show Alive";
 	private static final String DECEASED = "Show Deceased";
+//	private static final String BURIED = "Show Buried";
 	
-	private boolean isLiveCB = true;
+	private boolean isAliveCB = true;
 	private boolean isDeceasedCB = false;
+//	private boolean isBuriedCB = false;
 	private Set<Settlement> settlements = new HashSet<>();
 
 	/**
@@ -41,9 +43,9 @@ public class PersonTableModel extends BasePersonModel
 	 * people with a specified settlement.
 	 */
 	public PersonTableModel()  {
-		super (NAME, SETTLEMENT, TASK, MISSION, SHIFT, HEALTH, ENERGY, WATER, FATIGUE, STRESS,
+		super (NAME, SETTLEMENT, TASK, MISSION, DUTY, SHIFT, HEALTH, ENERGY, WATER, FATIGUE, STRESS,
 				PERFORMANCE, IN_SETTLEMENT, SETTLEMENT_VICINITY, IN_VEHICLE, VEHICLE_VICINITY, 
-				MOBILE_LOC, LOCALE, ROLE, JOB,  EMOTION);
+				MOBILE_LOC, LOCALE, ROLE, JOB, EMOTION);
 	}
 
 	@Override
@@ -97,13 +99,17 @@ public class PersonTableModel extends BasePersonModel
 	 * @return
 	 */
 	private boolean isPersonDisplayable(Person p) {
-		if (!isLiveCB && !isDeceasedCB) {
+		if (!isAliveCB && !isDeceasedCB) {// && !isBuriedCB) {
 			return false;
 		}
-		if (p.isDeclaredDead() || p.isBuried() || p.getPhysicalCondition().isDead()) {
+//		if (p.isBuried()) {
+//			return isBuriedCB;
+//		}
+		if (p.isDeclaredDead()) {
 			return isDeceasedCB;
 		}
-		return isLiveCB;
+
+		return isAliveCB;
 	}
 
 	/**
@@ -114,8 +120,9 @@ public class PersonTableModel extends BasePersonModel
 	@Override
 	public List<FilteredTableModel.Filter> getActiveFilters() {
 		var filters = new ArrayList<FilteredTableModel.Filter>();
-		filters.add(new Filter(LIVE, LIVE, isLiveCB));
+		filters.add(new Filter(ALIVE, ALIVE, isAliveCB));
 		filters.add(new Filter(DECEASED, DECEASED, isDeceasedCB));
+//		filters.add(new Filter(BURIED, BURIED, isBuriedCB));
 
 		return filters;
 	}
@@ -129,8 +136,9 @@ public class PersonTableModel extends BasePersonModel
 	@Override
 	public void setFilter(String name, boolean isDisplayed) {
 		switch (name) {
-			case LIVE -> isLiveCB = isDisplayed;
+			case ALIVE -> isAliveCB = isDisplayed;
 			case DECEASED -> isDeceasedCB = isDisplayed;
+//			case BURIED -> isBuriedCB = isDisplayed;
 			default -> {
 				// Do nothing as only LIVE or DECEASED filters supported
 			}

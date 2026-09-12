@@ -319,7 +319,7 @@ public class Fishery extends Function {
 			
 			weedAge += time;
 			
-			if (pulse.isNewHalfSol()) {
+			if (pulse.isNewOneThirdSol()) {
 				// As the fish grow, increase eating
 				updateEatingRate();			
 			 	// Update the chance of fish seeing the weed

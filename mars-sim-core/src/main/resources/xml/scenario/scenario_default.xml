@@ -66,7 +66,7 @@
       		<!-- AP-9 site (Elev -3.9 km) in Arcadia Planitia, the 3rd prime landing -->
 			<location coordinates="40.02 203.35" />        		
      		<!-- EM-16 site (Elev -3.9 km) in Erebus Montes, the 4th prime landing -->
-			<location coordinates="39.89 192.03" />
+			<!-- location coordinates="39.89 192.03" / -->
 		</settlement>
 
 		<settlement name="Von-Braun" template="Phase 1-DE" persons="8" robots="8" sponsor="DLR">
@@ -99,7 +99,8 @@
 	
 		<arriving-settlement name="New Madinah" template="Phase 1-SA" 
 			persons="4" robots="4" sponsor="SSA" arrival-in-sols="5">
-			<location coordinates="45.4157 -141.3300" />
+			<!-- location coordinates="45.4157 -141.3300" / -->
+			<location coordinates="39.07 250.97" />
 		</arriving-settlement>
 			
 		<arriving-settlement name="New Dubai" template="Phase 0-AE" 

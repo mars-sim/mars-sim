@@ -145,8 +145,7 @@ public abstract class JHistoryPanel<T> extends JPanel {
 		TableColumnModel columnModel = table.getColumnModel();
 		columnModel.getColumn(0).setMinWidth(TIME_WIDTH);
 		columnModel.getColumn(0).setPreferredWidth(TIME_WIDTH);
-		columnModel.getColumn(1).setPreferredWidth(150);
-		columnModel.getColumn(2).setPreferredWidth(150);
+		columnModel.getColumn(1).setPreferredWidth(110);
 		
 		table.setRowSelectionAllowed(true);
 

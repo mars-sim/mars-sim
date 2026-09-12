@@ -98,7 +98,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private class ResourcesReset implements ScheduledEventHandler {
 		// Duration to between reviewing essential resources
-		private static final int REVIEW_PERIOD = 100; // in millisols
+		private static final int REVIEW_PERIOD = 80; // in millisols
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -114,6 +114,8 @@ public class GoodsManager implements Serializable {
 		@Override
 		public int execute(MarsTime now) {
 			resetEssentialsReview();
+			// Review 2 resources 
+			selectResourceForReview();
 			selectResourceForReview();
 			return REVIEW_PERIOD;
 		}	
@@ -276,6 +278,19 @@ public class GoodsManager implements Serializable {
 		return good.getRepairDemand();
 	}
 
+	/**
+	 * Gets the average supply from the stored.
+	 *
+	 * @param resource`
+	 * @param supplyStored
+	 * @param solElapsed
+	 * @return
+	 */
+	public double getAverageSupply(double supplyStored) {
+		return Math.log(1 + supplyStored);
+	}
+	
+    
 	/**
 	 * Gets a list of item to be excluded in a buying negotiation.
 	 *
@@ -554,14 +569,16 @@ public class GoodsManager implements Serializable {
 	double determineTradeDemand(Good good) {
 
 		double selectedTradeValue = 0D;
-
+		int num = 0;
+		
 		for (Settlement tempSettlement : unitManager.getSettlements()) {
 			if (tempSettlement != settlement) {
 				double baseValue = tempSettlement.getGoodsManager().getDemandScore(good);
 				double distance = settlement.getCoordinates().getDistance(
 												tempSettlement.getCoordinates());
-				if (distance < 1500) {
-					double tradeValue = baseValue / (1D + (distance / 1500D));
+				if (distance < 2000) {
+					num++;
+					double tradeValue = baseValue / (1D + (distance / 2000D));
 					if (tradeValue > selectedTradeValue)
 						// Gets the largest trade value
 						selectedTradeValue = tradeValue;
@@ -569,9 +586,12 @@ public class GoodsManager implements Serializable {
 			}
 		}
 		
+		if (num > 1)
+			selectedTradeValue = selectedTradeValue / (num - 0.5);
+		
 		double previousValue = getTradeDemandScore(good);
 				
-		double newValue = (.8 * previousValue + .2 * selectedTradeValue) / 1.1; 
+		double newValue = (.8 * previousValue + .2 * selectedTradeValue) / 0.999; 
 		
 		return newValue;
 	}
@@ -905,49 +925,47 @@ public class GoodsManager implements Serializable {
     	for (int resourceID: unreviewed) {
     		var limits = resLimits.get(resourceID);
     		int reservePerPop = limits.reserve();
-    		int pop = settlement.getNumCitizens();
+
+    		double popFactor = settlement.getLogPopFactor();
     		
-    		int reserve = reservePerPop;
-    		double vp = getGoodValuePoint(resourceID);
+    		double reserve = reservePerPop / popFactor;
     		
-	    	double stored = rh.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
+	    	double stored = rh.getAllAmountResourceStored(resourceID) / settlement.getNumCitizens();
  		
-    		double value = 0;
-    		if (stored > 2 * reserve) {
-    			value = 2 * (stored - 2 * reserve) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored > 1.5 * reserve) {
-    			value = 4 * (stored - 1.5 * reserve) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored > reserve) {
-    			value = 6 * (stored - reserve) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored > .5 * reserve) {
-    			value = 8 * (stored - .5 * reserve) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored <= .125 * reserve) {
-    			value = 40 * (1.25 * reserve - stored) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored <= .25 * reserve) {
-    			value = 20 * (.25 * reserve - stored) / Math.sqrt(1 + stored);
-    		}
-    		else if (stored <= .5 * reserve) {
-    			value = 12 * (.5 * reserve - stored) / Math.sqrt(1 + stored);
-    		}
-    		
-    		if (value < 1)
-    			value = 1;
-    		
-    		double amount = 100 * value * value * vp;
-    		
-    		map.put(resourceID, amount);
+	    	double riskRatio = 2 * reserve/stored;
+	    	
+	    	double prob = riskRatio;
+	       	if (riskRatio > 2) {
+	    		// In very high demand
+	    		prob = 2 * riskRatio;
+	    	}
+	    	if (riskRatio > 1.25) {
+	    		// In high demand
+	    		prob = 1.25 * riskRatio;
+	    	}
+	    	else if (riskRatio > 1) {
+	    		// In high demand
+	    		prob = riskRatio;
+	    	}
+	    	else if (riskRatio < .75) {
+	    		// Not in demand
+	    		prob = .25 * riskRatio;
+	    	}
+	    	else {
+	    		// demand somewhat met
+	    		prob = .5 * riskRatio;
+	    	}
+
+			if (prob > 0.2)
+				map.put(resourceID, prob);
     	}
 		
     	if (!map.isEmpty())
     		selectID = RandomUtil.getWeightedRandomObject(map);
     	
-    	if (selectID != -1)
+    	if (selectID != -1) {
     		reviewedEssentials.add(selectID);
+    	}
     	
 		return selectID;
     }
@@ -960,73 +978,82 @@ public class GoodsManager implements Serializable {
 	 */
 	public double moderateLifeResourceDemand(int resourceID) {
 		var rh = settlement.getEquipmentInventory();
+
+		String resourceName = ResourceUtil.findAmountResourceName(resourceID);
 		
 		var limits = resLimits.get(resourceID);
 		if (limits == null) {
 			throw new IllegalArgumentException("Resource is not essential " + resourceID);
 		}
+		
 		int reservePerPop = limits.reserve();
 		int optimalPerPop = limits.optimal();
-		int pop = settlement.getNumCitizens();
 		
-		int optimal = optimalPerPop;
-		int reserve = reservePerPop;
-		double demand = getDemandScoreWithID(resourceID);	
-	
-		double stored = rh.getAllAmountResourceStored(resourceID) / Math.sqrt(5 * pop + .5);
-		double surplus = 0;
-		double lacking = 0;
-		double delta = 0;
-
-		String resourceName = ResourceUtil.findAmountResourceName(resourceID);
+		double popFactor = settlement.getLogPopFactor();
+  		
+		double reserve = reservePerPop / popFactor;
+//		double optimal = optimalPerPop / popFactor;
 		
-		if (stored >= optimal) {
-			return 0;
-		}
-//		else if (stored >= 3 * reserve) {
-//			surplus = stored - 3 * reserve;
-//			delta = Math.sqrt(surplus + 2);
+    	double stored = rh.getAllAmountResourceStored(resourceID) / settlement.getNumCitizens();
+		
+//		if (stored >= optimal) {
+//			return 0;
 //		}
-		else if (stored >= 2 * reserve) {
-			surplus = stored - 2 * reserve;
-			delta = .2 * Math.sqrt(.2 * surplus);
-		}
-		else if (stored >= 1.5 * reserve) {
-			surplus = stored - 1.5 * reserve;
-			delta = .4 * Math.sqrt(.6 * surplus);
-		}
-		else if (stored >= reserve) {
-			surplus = stored - reserve;
-			delta = .6 * Math.sqrt(surplus);
-		}
-		else if (stored < .5 * reserve) {
-			lacking = .5 * reserve - stored;
-			delta = 2 * Math.sqrt(2 * lacking);
-		}
-		else if (stored < .25 * reserve) {
-			lacking = .25 * reserve - stored;
-			delta = 8 * Math.sqrt(8 * lacking);
-		}
-		else if (stored < reserve) {
-			lacking = reserve - stored;
-			delta = 4 * Math.sqrt(4 * lacking);
-		}
 		
+    	double riskRatio = 2 * reserve/stored;
+    	
+    	double prob = 0;
+
+    	double demand = getDemandScoreWithID(resourceID);
+		double lacking = 2 * reserve - stored;
+    	double surplus = -lacking;
+    	double delta = 0;
+	
+    	if (riskRatio > 2) {
+    		// In very high demand
+    		prob = 2 * riskRatio;
+    		delta = Math.min(demand * prob, Math.sqrt(1.5 * lacking));
+    	}
+    	if (riskRatio > 1.25) {
+    		// In high demand
+    		prob = 1.25 * riskRatio;
+    		delta = Math.min(demand * prob, Math.sqrt(1.25 * lacking));
+    	}
+    	else if (riskRatio > 1) {
+    		// In high demand
+    		prob = riskRatio;
+    		delta = Math.min(demand * prob, Math.sqrt(lacking));
+    	}
+    	else if (riskRatio < .75) {
+    		// Not in demand
+    		prob = .25 * riskRatio;
+    		delta = Math.min(demand * prob, Math.sqrt(.25 * surplus));
+    	}
+    	else {
+    		// demand somewhat met
+    		prob = .5 * riskRatio;
+    		if (lacking > 0) {
+    			delta = Math.min(demand * prob, Math.sqrt(.5 * lacking));
+    		}
+    		else if (lacking < 0) {
+    			delta = Math.min(demand * prob, Math.sqrt(.5 * surplus));
+    		}
+    	}
+
 		double fraction = delta / demand;
 
-//		if (fraction > 1)
-//			delta = delta * fraction;
-
 		logger.info(settlement, 0,  
-				"Ready to inject Demand for " + resourceName + ": " + Math.round(demand * 100.0)/100.0 
+				"Calculated new Amount inject demand for " + resourceName + ": " + Math.round(demand * 100.0)/100.0 
 				+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
 				+ "  delta: " + Math.round(delta * 100.0)/100.0
 				+ "  fraction: " + Math.round(fraction *  10000.0)/10000.0
 				+ "  stored: " + Math.round(stored * 100.0)/100.0
 				+ "  reserve: " + Math.round(reserve * 100.0)/100.0
-				+ "  optimal: " + Math.round(optimal * 100.0)/100.0 
-				+ "  lacking: " + Math.round(lacking * 100.0)/100.0
-				+ "  surplus: " + Math.round(surplus * 100.0)/100.0
+				+ "  popFactor: " + Math.round(popFactor * 100.0)/100.0
+//				+ "  optimal: " + Math.round(optimal * 100.0)/100.0 
+				+ "  surplus/lacking: " + Math.round(surplus * 100.0)/100.0
+				+ "  riskRatio: " + Math.round(riskRatio * 100.0)/100.0
+				+ "  prob: " + Math.round(prob * 100.0)/100.0
 				+ ".");
 		
 		return delta;

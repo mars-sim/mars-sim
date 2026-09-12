@@ -103,8 +103,9 @@ public class SettlementTaskManager implements Serializable {
     /**
      * This is the main method to calculate the current list of SettlementTasks for a particular MetaTask.
      * It will add new tasks, update existing tasks and remove any that are no longer needed.
-     * The changes trigger the correspnding entity event.
+     * The changes trigger the corresponding entity event.
      * The existing tasks list is updated in place.
+     * 
      * @param mt MetaTask to calculate the SettlementTasks for
      * @param existingTasks The current list of SettlementTasks for this MetaTask
      */
@@ -187,8 +188,9 @@ public class SettlementTaskManager implements Serializable {
      */
     public List<TaskJob> getTasks(Person p) {
         Set<TaskScope> acceptable = switch(p.getShiftSlot().getStatus()) {
-            case OFF_DUTY, ON_LEAVE -> OFF_DUTY_SCOPES;
+            case OFF_DUTY, ON_LEAVE, GUEST -> OFF_DUTY_SCOPES;
             case ON_CALL, ON_DUTY -> ON_DUTY_SCOPES;
+		default -> throw new IllegalArgumentException("Unexpected value: " + p.getShiftSlot().getStatus());
         };
 
         List<TaskJob> result = new ArrayList<>();

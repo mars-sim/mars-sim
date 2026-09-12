@@ -12,6 +12,8 @@ public class ClockPulse {
 	private boolean isNewSol = false;
 	// is it a new half sol ?
 	private boolean isNewHalfSol = false;
+	// is it a new one third sol ?
+	private boolean isNewOneThirdSol = false;
 	// is it a new half msol ?	
 	private boolean isNewHalfMillisol = false;
 	// is it a new integer msol ?
@@ -42,7 +44,7 @@ public class ClockPulse {
 	 * @param newMSol      Does this pulse start a new msol (an integer millisol) ?
 	 */
 	public ClockPulse(long id, double elapsed, MarsTime marsTime, MasterClock master, boolean newSol,
-			boolean newHalfSol, boolean newIntMillisol, boolean newHalfMillisol) {
+			boolean newHalfSol, boolean isNewOneThirdSol, boolean newIntMillisol, boolean newHalfMillisol) {
 		super();
 
 		if ((elapsed <= 0) || !Double.isFinite(elapsed)) {
@@ -56,6 +58,7 @@ public class ClockPulse {
 		
 		this.isNewSol = newSol;
 		this.isNewHalfSol = newHalfSol;
+		this.isNewOneThirdSol = isNewOneThirdSol;
 		this.isNewIntMillisol = newIntMillisol;
 		this.isNewHalfMillisol = newHalfMillisol;
 	}
@@ -110,7 +113,17 @@ public class ClockPulse {
 	public boolean isNewHalfSol() {
 		return isNewHalfSol;
 	}
-
+	
+	/**
+	 * Is this a new one third sol ?
+	 * @Note do NOT use it for updating UI element
+	 * 
+	 * @return
+	 */
+	public boolean isNewOneThirdSol() {
+		return isNewOneThirdSol;
+	}
+	
 	/**
 	 * Is this a new half integer millisol ?
 	 * @Note do NOT use it for updating UI element
@@ -145,7 +158,7 @@ public class ClockPulse {
 		double actualElapsed = msolsSkipped + elapsed;
 
 		return new ClockPulse(id, actualElapsed, marsTime, master, 
-				isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
+				isNewSol, isNewHalfSol, isNewOneThirdSol, isNewIntMillisol, isNewHalfMillisol);
 	}
 	
 	/**
@@ -178,15 +191,19 @@ public class ClockPulse {
 		// Identify if this pulse crosses a sol
 		boolean isNewSol = (lastSol != currentSol);
 		boolean isNewHalfSol = false;
+		boolean isNewOneThirdSol = false;
 		
 		// Updates lastSol
 		if (isNewSol) {
 			this.lastSol = currentSol;
 			isNewHalfSol = true;
+			isNewOneThirdSol = true;
 		}
 		else {
 			// Identify if it just passes half a sol
 			isNewHalfSol = lastMillisol < 500 && currentMillisol >= 500;
+			isNewOneThirdSol = (lastMillisol < 333.3 && currentMillisol >= 333.3)
+							|| (lastMillisol < 666.6 && currentMillisol >= 666.6);
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////
@@ -194,7 +211,7 @@ public class ClockPulse {
 		////////////////////////////////////////////////////////////////////////////////////
 
 		// Checks if this pulse starts a new integer millisol
-		boolean isNewIntMillisol = (lastIntMillisol != currentIntMillisol);
+		final boolean isNewIntMillisol = (lastIntMillisol != currentIntMillisol);
 		boolean isNewHalfMillisol = false;
 		
 		// Updates lastSol
@@ -234,7 +251,7 @@ public class ClockPulse {
 		////////////////////////////////////////////////////////////////////////////////////
 		
 		return new ClockPulse(id, actualElapsed, marsTime, master, 
-				isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
+				isNewSol, isNewHalfSol, isNewOneThirdSol, isNewIntMillisol, isNewHalfMillisol);
 	}
 
 	public void destroy() {

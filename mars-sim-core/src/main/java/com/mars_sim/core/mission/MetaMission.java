@@ -16,6 +16,7 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
@@ -151,4 +152,12 @@ public interface MetaMission {
 	 * @return Preferred robot types
 	 */
 	Set<RobotType> getPreferredRobots();
+
+	/**
+	 * Gets the objectives that Missions of this type satisfy.
+	 * This will eventually replace the method on the Mission interface.
+	 * 
+	 * @return May be an empty set
+	 */
+    Set<ObjectiveType> getObjectives();
 }

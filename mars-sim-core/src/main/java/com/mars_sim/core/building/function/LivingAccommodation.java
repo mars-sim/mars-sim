@@ -309,7 +309,7 @@ public class LivingAccommodation extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		if (valid) {
-			if (pulse.isNewHalfSol()) {
+			if (pulse.isNewOneThirdSol()) {
 				// Reset the water ratio flag to allow for next review
 				unlockWaterRatioReview();
 			}

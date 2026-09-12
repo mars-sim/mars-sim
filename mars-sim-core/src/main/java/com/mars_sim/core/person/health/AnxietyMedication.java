@@ -29,7 +29,7 @@ public class AnxietyMedication extends Medication {
     
     private PhysicalCondition condition;
     
-    private ComplaintType complaintType = ComplaintType.PANIC_ATTACK;
+    private String complaintType = MedicalManager.PANIC_ATTACK;
     
     /**
      * Constructor.
@@ -53,7 +53,7 @@ public class AnxietyMedication extends Medication {
         return true;
     }
     
-	public ComplaintType getComplaintType() {
+	public String getComplaintType() {
 		return complaintType;
 	}
 }

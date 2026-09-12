@@ -736,7 +736,7 @@ public class Weather implements Serializable, Temporal {
 			}			
 		}
 
-		if (pulse.isNewHalfSol()) {
+		if (pulse.isNewOneThirdSol()) {
 
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(-.01, .01);
 			if (dailyVariationAirPressure > .05)
@@ -851,20 +851,10 @@ public class Weather implements Serializable, Temporal {
 		}
 		
 		if (sunrise > sunset)
-			daylight = sunset + 1000 - sunrise;
+			daylight = 1000 - (sunrise - sunset);
 		else
 			daylight = sunset - sunrise ;
-		
-//		if (sunrise > 1000)
-//			sunrise = sunrise - 1000;
-//		if (sunrise < 0)
-//			sunrise = sunrise + 1000;
-//		
-//		if (sunset > 1000)
-//			sunset = sunset - 1000;
-//		if (sunset < 0)
-//			sunset = sunset + 1000;
-		
+
 		if (maxIndex1 < maxIndex0)
 			maxIndex1 += 1000;
 			

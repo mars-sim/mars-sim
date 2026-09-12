@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LivingAccommodation;
@@ -30,6 +31,7 @@ import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.AmountResource;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
@@ -57,7 +59,7 @@ class AmountResourceGood extends Good {
 	private static final double USEFUL_WASTE_VALUE_MODIFIER = 1.05D;
 
 	// Cost modifiers
-	private static final double CH4_COST = 0.3;
+	private static final double METHANE_COST = 0.3;
 	private static final double METHANOL_COST = 0.4;
 	private static final double H2_COST = 1;
 	private static final double CO_COST = 0.05;
@@ -82,8 +84,8 @@ class AmountResourceGood extends Good {
 	private static final double LIFE_SUPPORT_COST = 0.5;
 	
 	// Water related flattening factors
-	private static final double ICE_FLATTENING_FACTOR = 0.5;
-	private static final double WATER_FLATTENING_FACTOR = 0.7;
+	private static final double ICE_FLATTENING_FACTOR = 1.25;
+	private static final double WATER_FLATTENING_FACTOR = 1.5;
 	
 	// Gases flattening factors
 	private static final double METHANOL_FLATTENING_FACTOR = 1.1;
@@ -145,16 +147,16 @@ class AmountResourceGood extends Good {
 	private static final double TISSUE_FLATTENING_FACTOR = 0.95;
 
 	private static final int PLASTIC_RELATED_FLATTENING_FACTOR = 3;
-
+	private static final double ETHYLENE_GLYCOL_FLATTENING_FACTOR = 1.5;
+	
 	private static final double LEAVES_VALUE_MODIFIER = 1.5;
 	
 	// Future: Need to avoid making all regolith types max out at 10k proj demand.
 	private static final double REGOLITH_VALUE_MODIFIER = 0.02;
 	
-	
 	// Demand Modifiers
-    private static final double ICE_VALUE_MODIFIER = 0.75;
-	private static final double WATER_VALUE_MODIFIER = 0.2;
+    private static final double ICE_VALUE_MODIFIER = 1.05;
+	private static final double WATER_VALUE_MODIFIER = 1.25;
 	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
@@ -173,10 +175,10 @@ class AmountResourceGood extends Good {
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = 3.5;
-	private static final double METHANE_VALUE_MODIFIER = 0.55;
-	private static final double HYDROGEN_VALUE_MODIFIER = 1.2;
-	private static final double METHANOL_VALUE_MODIFIER = 0.7;
+	private static final double OXYGEN_VALUE_MODIFIER = 1.15;
+	private static final double METHANE_VALUE_MODIFIER = 1.25;
+	private static final double HYDROGEN_VALUE_MODIFIER = 1.25;
+	private static final double METHANOL_VALUE_MODIFIER = 1.25;
 	
 	// Chemicals
 	private static final int CLEANING_AGENT_MODIFIER = 1;
@@ -197,8 +199,8 @@ class AmountResourceGood extends Good {
 	private static final double CO2_VALUE_MODIFIER = 0.8;
 
 	// metal
-	private static final int IRON_OXIDE_MODIFIER = 10;
-	private static final double IRON_POWDER_MODIFIER = 1.0;
+	private static final int IRON_OXIDE_MODIFIER = 8;
+	private static final double IRON_POWDER_MODIFIER = 1.2;
 
 	// Future: Need to avoid making all tissue culture max out at 10k proj demand.
 	private static final double TISSUE_CULTURE_VALUE = 0.05;
@@ -210,11 +212,11 @@ class AmountResourceGood extends Good {
 	private static final double COOKED_MEAL_INPUT_FACTOR = 0.5;
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
-	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 400D;
+	private static final int CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 2;
 
-	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 500D; 
-	private static final double MAX_MANUFACTURING_DEMAND = 500D;
-	private static final double MAX_FOOD_PRODUCTION_DEMAND = 500D;
+	private static final int MAX_RESOURCE_PROCESSING_DEMAND = 500; 
+	private static final int MAX_MANUFACTURING_DEMAND = 500;
+	private static final int MAX_FOOD_PRODUCTION_DEMAND = 500;
 	
 	private static final double REGOLITH_LOWEST_DEMAND = 0.05;
 	private static final double REGOLITH_BASE_DEMAND = 40;
@@ -225,14 +227,32 @@ class AmountResourceGood extends Good {
 	private static final double BASE_METAL_DEMAND = 5;
 
 	// Multipliers
-	private static final double MANUFACTURING_DEMAND_MULTIPLIER = 0.01;
+	private static final double MANUFACTURING_DEMAND_MULTIPLIER = 0.5;
+	
+	private static final String DIMETHYL_TER = "Dimethyl terephthalate";
+	private static final String SILICONE_E  = "Silicone elastomer";
+	private static final String THERMOPLASTIC_EL = "Thermoplastic elastomer";
+	
+//	private static final String ETHYLENE_GLYCOL = "Ethylene glycol";
 	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The ingredient demand of each refresh cycle. */
 	private double ingredientDemand;
-	/** The manufacturing demand of each refresh cycle. */
-	private double constantManufacturingDemand = -1D;
+	/** The constant manufacturing demand for each refresh cycle. */
+	private double constantManufacturingInputNeed = -1D;
+	/** The constant food production demand for each refresh cycle. */
+	private double constantFoodProductionInputNeed = -1D;
+	/** The constant resource process demand for each refresh cycle. */
+	private double constantResourceProcessInputNeed = -1D;
+	/** The constant life support demand for each refresh cycle. */
+	private double constantLifeSupportNeed = -1D;
+	/** The constant meal ingredient demand for each refresh cycle. */
+	private double constantMealIngredientNeed = -1D;
+//	/** The constant crop tissue need for each refresh cycle. */
+//	private double constantCropTissueNeed = -1D;
+	/** The constant farming need for each refresh cycle. */
+	private double constantFarmingNeed = -1D;
 	
 	private double costModifier = -1D;
 	
@@ -276,17 +296,15 @@ class AmountResourceGood extends Good {
 		case CHEMICAL:
 			mod = CHEMICAL_FLATTENING_FACTOR;	
 			
-			
-			if (name.equalsIgnoreCase("Dimethyl terephthalate")
-				|| name.equalsIgnoreCase("Silicone elastomer")
-				|| name.equalsIgnoreCase("Thermoplastic elastomer")	
+			if (name.equalsIgnoreCase(DIMETHYL_TER)
+				|| name.equalsIgnoreCase(SILICONE_E)
+				|| name.equalsIgnoreCase(THERMOPLASTIC_EL)	
 					) {
 				mod *= PLASTIC_RELATED_FLATTENING_FACTOR;
 			}
-			else if (name.equalsIgnoreCase("Ethylene glycol")
-				) {
-				mod *= 0.5;
-				}
+			else if (id == ResourceUtil.ETHYLENE_GLYCOL_ID) {
+				mod *= ETHYLENE_GLYCOL_FLATTENING_FACTOR;
+			}
 			
 			mod *= switch(id) {
 				case ResourceUtil.ETHYLENE_ID ->  ETHYLENE_FLATTENING_FACTOR;
@@ -490,7 +508,7 @@ class AmountResourceGood extends Good {
 					case GoodType.ELEMENT -> ELEMENT_COST;
 					case GoodType.CHEMICAL -> CHEMICAL_COST;
 					default -> switch(ar.getID()) {
-								case ResourceUtil.METHANE_ID -> CH4_COST;
+								case ResourceUtil.METHANE_ID -> METHANE_COST;
 								case ResourceUtil.METHANOL_ID -> METHANOL_COST;
 								case ResourceUtil.HYDROGEN_ID -> H2_COST;
 								case ResourceUtil.CHLORINE_ID -> CL_COST;
@@ -506,22 +524,22 @@ class AmountResourceGood extends Good {
     }
 
     /**
-	 * Gets the amount of the good being produced at the settlement by ongoing food
+	 * Gets the ongoing amount of the good being produced at the settlement by food
 	 * production.
 	 *
 	 * @param settlement the good.
 	 * @return amount (kg for amount resources, number for parts, equipment, and
 	 *         vehicles).
 	 */
-	private double getFoodProductionOutput(Settlement settlement) {
+	private double getFoodProductionOngoingOutput(Settlement settlement) {
 		double result = 0D;
 
 		// Get the amount of the resource that will be produced by ongoing food
 		// production processes.
 		for (Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION)) {
 			// Go through each ongoing food production process.
-			for(FoodProductionProcess process : b.getFoodProduction().getProcesses()) {
-				for(ProcessItem item : process.getInfo().getOutputList()) {
+			for (FoodProductionProcess process : b.getFoodProduction().getProcesses()) {
+				for (ProcessItem item : process.getInfo().getOutputList()) {
 					if (item.getName().equalsIgnoreCase(getName())) {
 						result += item.getAmount();
 					}
@@ -553,11 +571,11 @@ class AmountResourceGood extends Good {
 
 		// Get the amount of the resource that will be produced by ongoing manufacturing
 		// processes.
-		amount += getManufacturingProcessOutput(settlement);
+		amount += getManufacturingProcessOngoingOutput(settlement);
 
 		// Get the amount of the resource that will be produced by ongoing food
 		// production processes.
-		amount += getFoodProductionOutput(settlement);
+		amount += getFoodProductionOngoingOutput(settlement);
 
 		return amount;
     }
@@ -582,17 +600,89 @@ class AmountResourceGood extends Good {
     }
 
     /**
-     * Calculates the constant manufacturing demand.
+     * Calculates the constant manufacturing need.
      * @Note: if a new building is being put in place, must call this method again
-     * to update constantManufacturingDemand
+     * to update constantManufacturingInputNeed
      * 
      * @param owner
      * @param settlement
      */
     private void calculateConstantManufacturingDemand(GoodsManager owner, Settlement settlement) {
-    	constantManufacturingDemand = getConstantManufacturingDemand(owner, settlement);	
+    	constantManufacturingInputNeed = getConstantManufacturingDemand(owner, settlement);	
     }
     
+    /**
+     * Calculates the constant food production need.
+     * @Note: if a new building is being put in place, must call this method again
+     * to update constantFoodProductionInputNeed
+     * 
+     * @param owner
+     * @param settlement
+     */
+    private void calculateFoodProductionInputNeed(GoodsManager owner, Settlement settlement) {
+    	constantFoodProductionInputNeed = getConstantFoodProductionInputNeed(owner, settlement);	
+    }
+    
+    /**
+     * Calculates the constant resource process need.
+     * @Note: if a new building is being put in place, must call this method again
+     * to update constantResourceProcessInputNeed
+     * 
+     * @param owner
+     * @param settlement
+     */
+    private void calculateResourceProcessInputNeed(GoodsManager owner, Settlement settlement) {
+    	constantResourceProcessInputNeed = getConstantResourceProcessInputOutputNeed(owner, settlement);	
+    }
+    
+    /**
+     * Calculates the constant life support need.
+     * @Note: if a new building is being put in place, must call this method again
+     * to update constantLifeSupportNeed
+     * 
+     * @param owner
+     * @param settlement
+     */
+    private void calculateLifeSupportNeed(GoodsManager owner, Settlement settlement) {
+    	constantLifeSupportNeed = getConstantLifeSupportNeed(owner, settlement);	
+    }
+    
+    /**
+     * Calculates the constant meal ingredient need.
+     * @Note: if a new building is being put in place, must call this method again
+     * to update constantMealIngredientNeed
+     * 
+     * @param owner
+     * @param settlement
+     */
+    private void calculateMealIngredientNeed(Settlement settlement) {
+    	constantMealIngredientNeed = getConstantMealIngredientNeed(settlement);	
+    }
+    
+    /**
+     * Calculates the constant farming need.
+     * @Note: if a new building is being put in place, must call this method again
+     * to update constantFarmingNeed
+     * 
+     * @param owner
+     * @param settlement
+     */
+    private void calculateFarmingNeed(GoodsManager owner, Settlement settlement) {
+    	constantFarmingNeed = getConstantFarmingDemand(owner, settlement);	
+    }
+
+//    /**
+//     * Calculates the constant crop tissue need.
+//     * @Note: if a new building is being put in place, must call this method again
+//     * to update constantCropTissueNeed
+//     * 
+//     * @param owner
+//     * @param settlement
+//     */
+//    private void calculateCropTissueNeed(GoodsManager owner, Settlement settlement) {
+//    	constantCropTissueNeed = getConstantCropTissueNeed(owner, settlement);	
+//    }
+
     @Override
     void refreshSupplyDemandScore(GoodsManager owner) {
         int id = getID();
@@ -602,8 +692,8 @@ class AmountResourceGood extends Good {
         Settlement settlement = owner.getSettlement();
 		var rh = settlement.getEquipmentInventory();
  
-        if (constantManufacturingDemand == -1D) {
-        	// At startup, compute manufacturingDemand
+        if (constantManufacturingInputNeed == -1D) {
+        	// At startup only
         	calculateConstantManufacturingDemand(owner, settlement);	
         	
             // Note: whenever a building with a higher tech level is added, 
@@ -611,42 +701,96 @@ class AmountResourceGood extends Good {
         	// again in order to obtain a new demand value for each amount resource
         }
         
+        if (constantFoodProductionInputNeed == -1D) {
+        	// At startup only
+        	calculateFoodProductionInputNeed(owner, settlement);	
+        	
+            // Note: whenever a building with a higher tech level is added, 
+        	// will need to figure out how to to flag and call this method 
+        	// again in order to obtain a new demand value for each amount resource
+        }
+
+        if (constantResourceProcessInputNeed == -1D) {
+        	// At startup only
+        	calculateResourceProcessInputNeed(owner, settlement);	
+        	
+            // Note: whenever a building with a higher tech level is added, 
+        	// will need to figure out how to to flag and call this method 
+        	// again in order to obtain a new demand value for each amount resource
+        }
+        
+        if (constantLifeSupportNeed == -1D) {
+        	// At startup only
+        	calculateLifeSupportNeed(owner, settlement);	
+        	
+            // Note: whenever a building with a higher tech level is added, 
+        	// will need to figure out how to to flag and call this method 
+        	// again in order to obtain a new demand value for each amount resource
+        }
+        
+        if (constantMealIngredientNeed == -1D) {
+        	// At startup only
+        	calculateMealIngredientNeed(settlement);	
+        	
+            // Note: whenever a building with a higher tech level is added, 
+        	// will need to figure out how to to flag and call this method 
+        	// again in order to obtain a new demand value for each amount resource
+        }
+        
+        if (constantFarmingNeed == -1D) {
+        	// At startup only
+        	calculateFarmingNeed(owner, settlement);	
+        	
+            // Note: whenever a building with a higher tech level is added, 
+        	// will need to figure out how to to flag and call this method 
+        	// again in order to obtain a new demand value for each amount resource
+        }
+        
+//        if (constantCropTissueNeed == -1D) {
+//        	// At startup only
+//        	calculateCropTissueNeed(owner, settlement);	
+//        	
+//            // Note: whenever a building with a higher tech level is added, 
+//        	// will need to figure out how to to flag and call this method 
+//        	// again in order to obtain a new demand value for each amount resource
+//        }
+        
 		// Calculate total supply
-		double totalSupply = getAverageAmountSupply(rh.getSpecificAmountResourceStored(id));
+		double totalSupply = owner.getAverageSupply(rh.getSpecificAmountResourceStored(id));
 
 		// Store the average supply
 		owner.setSupplyScore(this, totalSupply);
 			
 		// Calculate new projected demand
 		double newProjDemand = 
+			// The constant manufacturing need of this resource
+			this.constantManufacturingInputNeed
+			// The constant food production need of this resource
+			+ this.constantFoodProductionInputNeed
+			// The constant resource processing need of this resource
+			+ this.constantResourceProcessInputNeed
+			// The constant life support need of this resource
+			+ this.constantLifeSupportNeed * settlement.getLogPopFactor()
+			// The constant meal ingredient need of this resource
+			+ this.constantMealIngredientNeed * settlement.getLogPopFactor()
+			// The constant farming need of this resource
+			+ this.constantFarmingNeed
 			// Tune ice demand.
-			computeIceProjectedDemand(owner)
+			+ computeIceProjectedDemand(owner)
 			// Tune regolith projected demand.
 			+ computeRegolithProjectedDemand(owner)
-			// Tune life support demand if applicable.
-			+ getLifeSupportDemand(owner, settlement)
 			// Tune potable water usage demand if applicable.
 			+ getPotableWaterUsageDemand(owner, settlement)
 			// Tune toiletry usage demand if applicable.
 			+ getToiletryUsageDemand(settlement)
 			// Tune vehicle demand if applicable.
 			+ getVehicleFuelDemand(owner, settlement)
-			// Tune farming demand.
-			+ getFarmingDemand(owner, settlement)
 			// Tune the tissue demand due to its crop
 			+ computeTissueDemandDueToCrop(owner)
-			// Tune resource processing demand.
-			+ getResourceProcessingDemand(owner, settlement)
-			// The constant manufacturing demand of this resource
-			+ constantManufacturingDemand
 			// The current ongoing manufacturing demand.
-			+ getManufacturingProcessInput(settlement)
-			// Tune food production related demand.
-			+ getResourceFoodProductionDemand(owner, settlement)
-			// Tune demand for the ingredients in all meals.
-			+ getAvailableMealDemand(settlement)
+			+ getManufacturingOngoingProcessInput(settlement)
 			// Tune construction demand.
-			+ getResourceConstructionDemand(settlement)
+			+ getConstructionOngoingNeed(settlement)
 			// Adjust the demand on minerals and ores.
 			+ getMineralOreDemand(owner, settlement)
 			// Get the metal demand.
@@ -667,17 +811,18 @@ class AmountResourceGood extends Good {
 			// Adjust the demand on various waste products with the disposal cost.
 			* modifyWasteResource();
 
-		if (projectedCache == INITIAL_AMOUNT_DEMAND) {
-			projectedCache = projected;
-		}
-		else {
-			projectedCache = .005 * projected + .995 * projectedCache;
-		}
+//		if (projectedCache == INITIAL_AMOUNT_DEMAND) {
+//			projected = projectedCache;
+//		}
+//		else {
+//			projectedCache = .005 * projected + .995 * projectedCache;
+			projected = .02 * projected + .98 * projectedCache;
+//		}
 		
-		owner.setProjectedDemandScore(this, projectedCache);
+		owner.setProjectedDemandScore(this, projected);
 				
 		// Add trade value. Cache is always false if this method is called
-		double tradeDemand = owner.determineTradeDemand(this) / 20;
+		double tradeDemand = owner.determineTradeDemand(this);
 
 		owner.setTradeDemandScore(this, tradeDemand);
 		
@@ -687,7 +832,7 @@ class AmountResourceGood extends Good {
 		
 		if (previousDemand == INITIAL_AMOUNT_DEMAND) {
 			// At the start of the simˇ
-			totalDemand = .8 * projectedCache 
+			totalDemand = .8 * projected 
 						+ .2 * tradeDemand;
 		}
 //		else if (totalSupply < 0.005 && previousDemand < projectedDemand) {
@@ -710,48 +855,34 @@ class AmountResourceGood extends Good {
 //						+ .0005 * tradeDemand; 
 //		}
 		
-		// If less than 1, graduating reach toward one 
+		// If less than 1, increase a small percent to gradually reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.003;
+			totalDemand *= 1.01;
 		}
-		// If less than 1, graduating reach toward one 
+		// If less than 1, decrease a small percent to gradually reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.997;
+			totalDemand *= 0.99;
 		}
 		
 		// Save the goods demand
 		owner.setDemandScore(this, totalDemand);
     }
 
-    
-    /**
-	 * Gets the total supply for the amount resource.
-	 *
-	 * @param resource`
-	 * @param supplyStored
-	 * @param solElapsed
-	 * @return
-	 */
-	private static double getAverageAmountSupply(double supplyStored) {
-		return Math.sqrt(0.1 + supplyStored);
-	}
-
-
 	/**
-	 * Gets the demand for a resource from all automated resource processes at a
+	 * Gets the constant input and output for a resource from all automated resource processes at a
 	 * settlement.
 	 *
 	 * @param resource the amount resource.
 	 * @return demand
 	 */
-	private double getResourceProcessingDemand(GoodsManager owner, Settlement settlement) {
+	private double getConstantResourceProcessInputOutputNeed(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
 
 		// Get all resource processes at settlement.
 		for(ResourceProcess i : getResourceProcesses(settlement)) {
-			double processDemand = getResourceProcessDemand(owner, i);
+			double processDemand = getResourceProcessInputOutputNeed(owner, i);
 			demand += processDemand;
 		}
 		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
@@ -759,13 +890,13 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the demand for a resource from an automated resource process.
+	 * Gets the input and output need for a resource from an automated resource process.
 	 *
 	 * @param process  the resource process.
 	 * @param resource the amount resource.
 	 * @return demand
 	 */
-	private double getResourceProcessDemand(GoodsManager owner, ResourceProcess process) {
+	private double getResourceProcessInputOutputNeed(GoodsManager owner, ResourceProcess process) {
 
 		int resourceID = getID();
 
@@ -777,8 +908,7 @@ class AmountResourceGood extends Good {
 			for (Integer output : outputResources) {
 				double singleOutputRate = process.getBaseSingleOutputRate(output);
 				if (!process.isWasteOutputResource(resourceID)) {
-					outputValue += (owner.getDemandScore(GoodsUtil.getGood(output)) 
-							* singleOutputRate);
+					outputValue += singleOutputRate;
 				}
 			}
 
@@ -804,20 +934,22 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the demand for an amount resource as an input in the settlement's Food
+	 * Gets the need for an amount resource as an input in the settlement's Food
 	 * Production processes.
 	 *
 	 * @return demand
 	 */
-	private double getResourceFoodProductionDemand(GoodsManager owner, Settlement settlement) {
+	private double getConstantFoodProductionInputNeed(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
 
 		// Get highest Food Production tech level in settlement.
 		if (FoodProductionUtil.doesSettlementHaveFoodProduction(settlement)) {
 			int techLevel = FoodProductionUtil.getHighestFoodProductionTechLevel(settlement);
-			for(FoodProductionProcessInfo i : FoodProductionUtil.getProcessesForTechSkillLevel(techLevel)) {
-				double foodProductionDemand = getResourceFoodProductionProcessDemand(owner, settlement, i);
-				demand += foodProductionDemand;
+			for (int i = 0; i <= techLevel; i++) {
+				for (FoodProductionProcessInfo j : FoodProductionUtil.getProcessesForTechSkillLevel(techLevel)) {
+					double foodProductionDemand = getFoodProductionProcessInputNeed(owner, settlement, j);
+					demand += foodProductionDemand * (0.5 * i * 1.25);
+				}
 			}
 		}
 		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
@@ -825,15 +957,15 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the demand for an input amount resource in a Food Production process.
+	 * Gets the need for an input amount resource in a Food Production process.
 	 * 
 	 * @param owner
 	 * @param settlement
 	 * @param process the Food Production process.
 	 * @return demand
 	 */
-	private double getResourceFoodProductionProcessDemand(GoodsManager owner, Settlement settlement, FoodProductionProcessInfo process) {
-		double demand = 0D;
+	private double getFoodProductionProcessInputNeed(GoodsManager owner, Settlement settlement, FoodProductionProcessInfo process) {
+		double need = 0D;
 		String name = resource.getName();
 
 		ProcessItem resourceInput = null;
@@ -847,12 +979,12 @@ class AmountResourceGood extends Good {
 
 		if (resourceInput != null) {
 			double outputsValue = 0D;
-			for(ProcessItem j : process.getOutputList()) {
+			for (ProcessItem j : process.getOutputList()) {
 				outputsValue += FoodProductionUtil.getProcessItemValue(j, settlement, true);
 			}
 
 			double totalItems = 0D;
-			for(ProcessItem k : process.getInputList()) {
+			for (ProcessItem k : process.getInputList()) {
 				totalItems += k.getAmount();
 			}
 
@@ -865,20 +997,20 @@ class AmountResourceGood extends Good {
 											* FOOD_PRODUCTION_INPUT_FACTOR;
 
 			if (totalItems > 0D) {
-				demand = (1D / totalItems) * totalInputsValue;
+				need = (1D / totalItems) * totalInputsValue;
 			}
 		}
 
-		return demand;
+		return need;
 	}
 
 	/**
-	 * Gets the resource demand for all available meals.
+	 * Gets the constant meal ingredient need.
 	 *
 	 * @param settlement
 	 * @return demand
 	 */
-	private double getAvailableMealDemand(Settlement settlement) {
+	private double getConstantMealIngredientNeed(Settlement settlement) {
 
 		if (!resource.isEdible())
 			return 0;
@@ -905,7 +1037,7 @@ class AmountResourceGood extends Good {
 			// Determine total demand for cooked meal mass for the settlement.
 			double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
 			double cookedMealDemandOrbit = cookedMealDemandSol * MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
-			double cookedMealDemand = settlement.getPopulationFactor() * cookedMealDemandOrbit;
+			double cookedMealDemand = cookedMealDemandOrbit;
 			var meals = simulationConfig.getMealConfiguration().getDishList();
 			int numMeals = meals.size();
 			double factor = cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
@@ -949,27 +1081,27 @@ class AmountResourceGood extends Good {
 	 * @return demand
 	 */
 	private double getConstantManufacturingDemand(GoodsManager owner, Settlement settlement) {
-		double demand = 0D;
+		double need = 0D;
 
 		// Get highest manufacturing tech level in settlement.
 		int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
 		for (int i = 0; i <= techLevel; i++) {
 			for (ManufactureProcessInfo info : ManufactureUtil.getManufactureProcessesForTechLevel(i)) {
-				double manufacturingDemand = getConstantManufacturingProcessDemand(owner, settlement, info);
-				demand += manufacturingDemand * MANUFACTURING_DEMAND_MULTIPLIER;
+				double manufacturingInputNeed = getConstantManufacturingProcessInputNeed(owner, settlement, info);
+				need += manufacturingInputNeed * MANUFACTURING_DEMAND_MULTIPLIER * (.5 + i * 1.25);
 			}
 		}
 		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
-		return MathUtils.between(2 * Math.sqrt(demand + 0.1), 0.0, MAX_MANUFACTURING_DEMAND);
+		return MathUtils.between(1.2 * Math.sqrt(need + 0.1), 0.0, MAX_MANUFACTURING_DEMAND);
 	}
 
 	/**
-	 * Gets the constant demand for an input amount resource in a manufacturing process.
+	 * Gets the constant need for an input amount resource in a manufacturing process.
 	 *
 	 * @param process  the manufacturing process.
 	 * @return demand
 	 */
-	private double getConstantManufacturingProcessDemand(GoodsManager owner, Settlement settlement, ManufactureProcessInfo process) {
+	private double getConstantManufacturingProcessInputNeed(GoodsManager owner, Settlement settlement, ManufactureProcessInfo process) {
 		double demand = 0D;
 		String r = resource.getName().toLowerCase();
 
@@ -1074,34 +1206,37 @@ class AmountResourceGood extends Good {
 	 * @param settlement
 	 * @return
 	 */
-	private double getResourceConstructionDemand(Settlement settlement) {
+	private double getConstructionOngoingNeed(Settlement settlement) {
 		double base = 0D;
 		int id = getID();
-		for(var s : settlement.getConstructionManager().getConstructionSites()) {
+		
+		for (ConstructionSite s : settlement.getConstructionManager().getConstructionSites()) {
+			
 			if (s.isConstruction()) {
-				double need = s.getCurrentConstructionStage().getResourceNeeded(id);
-				if (need > 0) {
-					base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR * 2;
-					// May add back logger.info("Now - " + ResourceUtil.findAmountResourceName(id) + " : " + base)
-				}
+				double amountResourceNeed = s.getCurrentConstructionStage().getResourceNeeded(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR * 4;	
+			
+				double itemResourceNeed = obtainIronPartNeed(id, s);
+				
+				base += amountResourceNeed + itemResourceNeed;
 			}
 			else {
 				// If construction has not started, should anticipate the need
-				double need = s.getCurrentConstructionStage().getResourceNeeded(id);
-				if (need > 0) {
-					base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
-					// May add back logger.info("Upcoming - " + ResourceUtil.findAmountResourceName(id) + " : " + base)
-				}
+				double amountResourceNeed = s.getCurrentConstructionStage().getResourceNeeded(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR * 2;	
+				
+				double itemResourceNeed = obtainIronPartNeed(id, s) / 2;
+				
+				base += amountResourceNeed + itemResourceNeed;
 			}
 			
 			// Anticipate the need for the next stage
 			ConstructionStageInfo info = s.getNextConstructionStageInfo();
+			
 			if (info != null) {
-				double need = info.getResourceRequired(id) / 2;
-				if (need > 0) {
-					base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR / 2;
-					// May add back logger.info("Next - " + ResourceUtil.findAmountResourceName(id) + " : " + base)
-				}
+				double amountResourceNeed = info.getResourceRequired(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;	
+				
+				double itemResourceNeed = obtainIronPartNeed(id, s) / 8;
+				
+				base += amountResourceNeed + itemResourceNeed;
 			}
 		}
 
@@ -1109,13 +1244,39 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the farming demand for the resource.
+	 * Obtains iron part need.
+	 * 
+	 * @param id
+	 * @param s
+	 * @return
+	 */
+	private double obtainIronPartNeed(int id, ConstructionSite s) {
+		double missing = 0;
+		
+		if (id == ResourceUtil.IRON_OXIDE_ID || id == ResourceUtil.IRON_POWDER_ID) {
+			double partNeed = s.getCurrentConstructionStage().getPartNeeded(ItemResourceUtil.STEEL_INGOT_ID);
+			missing += (int)partNeed * ItemResourceUtil.findItemResource(ItemResourceUtil.STEEL_INGOT_ID).getMassPerItem();
+			partNeed = s.getCurrentConstructionStage().getPartNeeded(ItemResourceUtil.STEEL_SHEET_ID);
+			missing += (int)partNeed * ItemResourceUtil.findItemResource(ItemResourceUtil.STEEL_SHEET_ID).getMassPerItem();
+			partNeed = s.getCurrentConstructionStage().getPartNeeded(ItemResourceUtil.STEEL_POST_ID);
+			missing += (int)partNeed * ItemResourceUtil.findItemResource(ItemResourceUtil.STEEL_POST_ID).getMassPerItem();
+			partNeed = s.getCurrentConstructionStage().getPartNeeded(ItemResourceUtil.STEEL_TRUSS_ID);
+			missing += (int)partNeed * ItemResourceUtil.findItemResource(ItemResourceUtil.STEEL_TRUSS_ID).getMassPerItem();
+			partNeed = s.getCurrentConstructionStage().getPartNeeded(ItemResourceUtil.STEEL_PIPE_ID);
+			missing += (int)partNeed * ItemResourceUtil.findItemResource(ItemResourceUtil.STEEL_PIPE_ID).getMassPerItem();
+		}
+		
+		return missing;
+	}
+	
+	/**
+	 * Gets the constant farming need for the resource.
 	 *
 	 * @param owner
 	 * @param settlement
 	 * @return demand for the resource.
 	 */
-	private double getFarmingDemand(GoodsManager owner, Settlement settlement) {
+	private double getConstantFarmingDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
 
 		// Determine demand for resource at each farming building at settlement.
@@ -1181,13 +1342,13 @@ class AmountResourceGood extends Good {
 	}
 	
 	/**
-	 * Gets the life support demand for an amount resource.
+	 * Gets the constant life support demand for an amount resource.
 	 * 
 	 * @param owner
 	 * @param settlement
 	 * @return demand
-	 */
-	private double getLifeSupportDemand(GoodsManager owner, Settlement settlement) {
+?	 */
+	private double getConstantLifeSupportNeed(GoodsManager owner, Settlement settlement) {
 		int resourceID = resource.getID();
 		if (resource.isLifeSupport()) {
 			double amountNeededSol = switch(resourceID) {
@@ -1200,7 +1361,7 @@ class AmountResourceGood extends Good {
 				default -> 0D;
 			};
 			
-			return settlement.getPopulationFactor() * amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  
+			return amountNeededSol * owner.getCommerceFactor(CommerceType.TRADE)  
 					* LIFE_SUPPORT_FACTOR;
 		}
 		else
@@ -1499,7 +1660,7 @@ class AmountResourceGood extends Good {
 	private double getVehicleFuelDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
 		double transFactor = owner.getCommerceFactor(CommerceType.TRANSPORT) * VEHICLE_FUEL_FACTOR;
-		int pop = settlement.getNumCitizens();
+		double popFactor = settlement.getLogPopFactor();
 
 		switch(getID()) {
 			case ResourceUtil.METHANOL_ID: {
@@ -1507,7 +1668,7 @@ class AmountResourceGood extends Good {
 					double fuelDemand = v.getEquipmentInventory().getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
-				demand = demand * transFactor * METHANOL_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;
+				demand = transFactor * METHANOL_VALUE_MODIFIER * popFactor;
 			} break;
 		
 			case ResourceUtil.METHANE_ID: {
@@ -1515,11 +1676,11 @@ class AmountResourceGood extends Good {
 					double fuelDemand = v.getEquipmentInventory().getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
-				demand = demand * transFactor * METHANE_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;
+				demand = transFactor * METHANE_VALUE_MODIFIER * popFactor;
 			} break;
 
 			case ResourceUtil.HYDROGEN_ID: {
-				demand =  transFactor * HYDROGEN_VALUE_MODIFIER / Math.sqrt(1 + 2 * pop) * 2;
+				demand =  transFactor * HYDROGEN_VALUE_MODIFIER * popFactor;
 			} break;
 		}
 

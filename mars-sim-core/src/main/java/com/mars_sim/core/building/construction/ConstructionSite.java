@@ -196,6 +196,8 @@ public class ConstructionSite extends FixedUnit {
      * @return next construction stage info .
      */
     public ConstructionStageInfo getNextConstructionStageInfo() {
+    	if (phases.isEmpty())
+    		return null;
     	ConstructionPhase nextPhase = phases.get(0);
     	if (nextPhase != null) {
     		return nextPhase.stageInfo();

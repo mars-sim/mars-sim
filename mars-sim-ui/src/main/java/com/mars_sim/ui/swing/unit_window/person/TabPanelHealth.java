@@ -728,7 +728,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 			HealthProblem problem = problemsCache.get(row);
 
 			if (column == 0) {
-				return problem.getComplaint().getType().getName();
+				return problem.getComplaint().getName();
 			}
 			else if (column == 1) {
 				String conditionStr = problem.getState().getName();

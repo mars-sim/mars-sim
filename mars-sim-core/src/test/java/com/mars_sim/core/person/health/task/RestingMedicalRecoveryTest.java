@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.health.ComplaintType;
+
 import com.mars_sim.core.person.health.HealthProblemState;
 
 public class RestingMedicalRecoveryTest extends MarsSimUnitTest {
@@ -22,7 +22,7 @@ public class RestingMedicalRecoveryTest extends MarsSimUnitTest {
         var p = buildPerson("Ill", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         // Laceration is self heal
-        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), p, ComplaintType.APPENDICITIS);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), p, "APPENDICITIS");
         hp.startRecovery();
 
         assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovering");
@@ -59,7 +59,7 @@ public class RestingMedicalRecoveryTest extends MarsSimUnitTest {
         assertTrue(tasks.isEmpty(), "No resting needed");
 
         // Make person need bed rest
-        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.APPENDICITIS);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, "APPENDICITIS");
         hp.startRecovery();
 
         tasks = mt.getTaskJobs(patient);

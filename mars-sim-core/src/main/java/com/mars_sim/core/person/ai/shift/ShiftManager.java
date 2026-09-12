@@ -161,10 +161,12 @@ public class ShiftManager implements Serializable {
         // Get anyone who is not dead and is not returning from holiday
         // and not onCall
         List<Person> potentials = settlement.getAllAssociatedPeople().stream()
-                    .filter(p -> !p.isDeclaredDead())
-                    .filter(p -> !p.isBuried())
-                    .filter(o -> (o.getShiftSlot().getStatus() != WorkStatus.ON_LEAVE))
-                    .filter(o -> (o.getShiftSlot().getStatus() != WorkStatus.ON_CALL))
+                    .filter(p -> !p.isDeclaredDead()
+                    && !p.isBuried()
+                    && (p.getShiftSlot().getStatus() != WorkStatus.ON_LEAVE)
+                    && (p.getShiftSlot().getStatus() != WorkStatus.ON_CALL)
+//                    && (p.getShiftSlot().getStatus() != WorkStatus.GUEST)
+                    )
                     .collect(Collectors.toList());
 
         // Select someone to change Shift

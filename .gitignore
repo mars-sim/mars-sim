@@ -10,3 +10,6 @@
 .DS_Store
 lib/
 **/*.db
+
+# ProcessCheck output
+process-check-details.txt

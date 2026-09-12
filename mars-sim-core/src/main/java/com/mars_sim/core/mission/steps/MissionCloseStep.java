@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core.mission.steps;
 
+import java.util.ArrayList;
+
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.MissionProject;
 import com.mars_sim.core.mission.MissionStep;
@@ -32,19 +34,13 @@ public class MissionCloseStep extends MissionStep {
     protected boolean execute(Worker worker) {
         MissionProject m = getMission();
         if (getLeader().equals(worker)) {
-            // Leader is last to leave and closes the mission
-            if (m.getMembers().size() == 1) {
+            // Leader releases everyone
+            logger.info(worker, "Leader closing mission");
 
-                logger.info(worker, "Leader closing mission");
-            	// Log what time and why in mission log
-                getMission().addMissionLog("Leader closing mission", worker.getName());
-                
-                worker.setMission(null);
+            var oldMembers = new ArrayList<>(m.getMembers());
+            oldMembers.forEach(w -> w.setMission(null)); 
 
-                complete(); // Will call the cleardown method to release anything
-
-                // Should the leader write a report ?
-            }
+            complete(); // Will call the cleardown method to release anything
         }
         else {
             worker.setMission(null);
