@@ -10,7 +10,6 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.EVA;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.equipment.EVASuit;
-import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.Coordinates;
@@ -65,7 +64,8 @@ public class EVAOperationTest extends MarsSimUnitTest{
         var s = p.getAssociatedSettlement();
         var b = context.buildEVA(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         BuildingManager.addToActivitySpot(p, b, FunctionType.EVA);
-        Equipment e = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
+        var suit = (EVASuit) EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
+        var e = suit.getResourcesInventory();
         e.storeAmountResource(ResourceUtil.OXYGEN_ID, EVASuit.OXYGEN_CAPACITY);
         e.storeAmountResource(ResourceUtil.WATER_ID, EVASuit.WATER_CAPACITY);
 
@@ -83,7 +83,7 @@ public class EVAOperationTest extends MarsSimUnitTest{
      * @throws CoordinatesException 
      */
     @Test
-    public void testIsSunlightAroundGlobal() throws CoordinatesException {
+    void testIsSunlightAroundGlobal() throws CoordinatesException {
         var locn = CoordinatesFormat.fromString("0.0 0.0");
         
         assertLightLevel("zero time, center locn", locn, false, false);

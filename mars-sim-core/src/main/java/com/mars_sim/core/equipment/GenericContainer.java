@@ -41,7 +41,7 @@ class GenericContainer extends Equipment implements Container {
 	 * @param reusable Is the container reusable by a different resource when empty
 	 * @throws Exception if error creating bag.
 	 */
-	GenericContainer(String name, EquipmentType type, boolean reusable, Settlement base) {
+	protected GenericContainer(String name, EquipmentType type, boolean reusable, Settlement base) {
 		// Use Equipment constructor
 		super(name, type, type.name(), base);
 		setDescription(createDescription(type));
@@ -122,7 +122,6 @@ class GenericContainer extends Equipment implements Container {
 		return amountStored;
 	}
 
-	
 	/**
 	 * Retrieves the resource.
 	 *
@@ -130,6 +129,7 @@ class GenericContainer extends Equipment implements Container {
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
 	 */
+	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
 		if (resourceHeld == resource) {
 			if (quantity < amountStored) {
@@ -295,6 +295,7 @@ class GenericContainer extends Equipment implements Container {
 	 * @param brandNew true if it needs to be brand new
 	 * @return
 	 */
+	@Override
 	public boolean isEmpty(boolean brandNew) {
 		if (brandNew) {
 			return (getRegisteredOwnerID() == -1);

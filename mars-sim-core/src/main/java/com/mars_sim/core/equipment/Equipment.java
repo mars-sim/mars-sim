@@ -6,8 +6,8 @@
  */
 package com.mars_sim.core.equipment;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
@@ -77,9 +77,6 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	 */
 	protected Equipment(String name, EquipmentType eType, String type, Settlement settlement) {
 		super(name, settlement);
-
-		// Call Equipment's setContainerUnit to set up coordinates and related states
-//		setContainerUnit(getContainerUnit());
 		
 		// Initialize data members.
 		this.equipmentType = eType;
@@ -103,7 +100,9 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	 *
 	 * @return
 	 */
-	public abstract double getStoredMass();
+	protected double getStoredMass() {
+		return 0;
+	}
 
 	/**
      * Gets the total capacity of resource that this container can hold.
@@ -113,42 +112,6 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	public double getCargoCapacity() {
 		return ContainerUtil.getContainerCapacity(equipmentType);
 	}
-
-	/**
-	 * Stores the resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	public abstract double storeAmountResource(int resource, double quantity);
-		// Question: if a bag was filled with regolith and later was emptied out
-		// should it be tagged for only regolith and NOT for another resource ?
-
-	/**
-	 * Retrieves the resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	public abstract double retrieveAmountResource(int resource, double quantity);
-
-	/**
-	 * Gets the capacity of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return capacity
-	 */
-	public abstract double getSpecificCapacity(int resource);
-
-	/**
-	 * Gets all the specific amount resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	public abstract double getSpecificAmountResourceStored(int resource);
 
 	/**
 	 * Is this equipment empty ?
@@ -164,31 +127,26 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	 * @return person collection
 	 */
 	public Collection<Person> getAffectedPeople() {
-		Collection<Person> people = new ArrayList<>();
+		Collection<Person> people = new HashSet<>();
 
 		if (registeredOwner != -1) {
 			people.add(unitManager.getPersonByID(registeredOwner));
 		}
 
 		// Check all people.
-		for (Person person : unitManager.getPeople()) {
-			Task task = person.getMind().getTaskManager().getTask();
+		for (Person person : getAssociatedSettlement().getCitizens()) {
+			Task task = person.getTaskManager().getTask();
 
 			// Add all people maintaining this equipment.
-			if (task instanceof MaintainBuilding maintain) {
-				if (maintain.getEntity() == this) {
-					if (!people.contains(person))
-						people.add(person);
-				}
+			if (task instanceof MaintainBuilding maintain && maintain.getEntity().equals(this)) {
+				people.add(person);
 			}
+			
 
 			// Add all people repairing this equipment.
-			if (task instanceof Repair repair) {
-				if (repair.getEntity() == this) {
-					if (!people.contains(person))
-						people.add(person);
-				}
-			}
+			if (task instanceof Repair repair && repair.getEntity().equals(this)) {
+				people.add(person);
+			}			
 		}
 
 		return people;

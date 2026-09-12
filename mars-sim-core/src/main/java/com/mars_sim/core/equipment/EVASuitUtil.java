@@ -206,15 +206,17 @@ public final class EVASuitUtil {
 	 */
 	private static boolean hasEnoughResourcesForSuit(EquipmentOwner resourceStore, EVASuit suit, int otherPeopleNum) {
 
+		var inv = suit.getResourcesInventory();
+		
 		// Check if enough oxygen.
-		double neededOxygen = suit.getRemainingCombinedCapacity(ResourceUtil.OXYGEN_ID);
+		double neededOxygen = inv.getRemainingCombinedCapacity(ResourceUtil.OXYGEN_ID);
 		double availableOxygen = resourceStore.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		// Make sure there is enough extra oxygen for everyone else.
 		availableOxygen -= (neededOxygen * otherPeopleNum);
 		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
 		// Check if enough water.
-		double neededWater = suit.getRemainingCombinedCapacity(ResourceUtil.WATER_ID);
+		double neededWater = inv.getRemainingCombinedCapacity(ResourceUtil.WATER_ID);
 		double availableWater = resourceStore.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		// Make sure there is enough extra water for everyone else.
 		availableWater -= (neededWater * otherPeopleNum);
