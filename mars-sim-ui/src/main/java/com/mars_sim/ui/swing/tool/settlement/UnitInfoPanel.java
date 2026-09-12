@@ -45,7 +45,7 @@ class UnitInfoPanel extends JPanel {
     	list.add("Local Position: ");
     	list.add(summary.pos().getShortFormat());
     	list.add(" \n");
-    	list.add("Descripion: ");
+    	list.add("Description: ");
     	list.add(summary.description());
     	list.add(" \n");
     	

@@ -37,7 +37,7 @@ public class StyleManager {
 
     private static final Logger logger = Logger.getLogger(StyleManager.class.getName());
 
-    // Cuirrency
+    // Currency
     public static final DecimalFormat CURRENCY_PLACES1 = new DecimalFormat("$ #,###,##0.0");
     
     // Decimals

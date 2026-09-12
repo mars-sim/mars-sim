@@ -94,7 +94,7 @@ abstract class MapHotspot<T extends Entity> {
 
     /**
      * Get the list of actions available for the target.
-     * @return List of actino keys available for the target. By default this is an empty list.
+     * @return List of action keys available for the target. By default this is an empty list.
      */
     List<String> getActions() {
         return Collections.emptyList();
