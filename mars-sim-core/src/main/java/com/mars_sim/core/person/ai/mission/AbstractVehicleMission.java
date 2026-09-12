@@ -2076,7 +2076,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * Check needs.
 	 * 
 	 * @param person
-	 * @return
+	 * @return false if needs are not met
 	 */
 	public boolean checkNeeds(Person person) {
 		

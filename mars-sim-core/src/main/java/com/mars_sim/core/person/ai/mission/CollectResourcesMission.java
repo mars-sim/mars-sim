@@ -314,9 +314,10 @@ public abstract class CollectResourcesMission extends EVAMission
 			// Question: Is the person inside or outside the vehicle ?
 			
 			// Note: How to take care of the person if he does not have high fatigue but other health issues ?
-			
-    		// If there are needs, unable to perform EVA
-        	return !checkNeeds(person);
+		}
+		else if (!checkNeeds(person)) {
+			// If there are needs, unable to perform EVA
+			logger.info(person, 4_000, "Needs were not met.");
 		}
 		
 		// If person can collect resources, start him/her on that task.

@@ -157,13 +157,11 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 			tasks.add(new BudgetResourcesJob(this, settlement, score, 1, ReviewGoal.REGOLITH_RESOURCE));
 		}
 		
-		for (int i=0; i<2; i++) {
-			int numResource = settlement.getGoodsManager().getResourceReviewDue();
-			if (numResource > 0) { 
-				RatingScore score = new RatingScore("resource.lifeSupport", BASE_SCORE * numResource * chance);
-				if (score.getScore() > 0)
-					tasks.add(new BudgetResourcesJob(this, settlement, score, numResource, ReviewGoal.LIFE_RESOURCE));
-			}
+		int numResource = settlement.getGoodsManager().getResourceReviewDue();
+		if (numResource > 0) { 
+			RatingScore score = new RatingScore("resource.lifeSupport", BASE_SCORE * numResource * chance);
+			if (score.getScore() > 0)
+				tasks.add(new BudgetResourcesJob(this, settlement, score, numResource, ReviewGoal.LIFE_RESOURCE));
 		}
 		
 		return tasks;

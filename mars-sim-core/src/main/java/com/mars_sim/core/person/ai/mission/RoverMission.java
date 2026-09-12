@@ -1350,29 +1350,30 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	@Override
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
+		
 		OperateVehicle result = null;
 		
-		boolean areAllOthersUnfit = areAllOthersUnfit(member);
-
 		if (member instanceof Person person) {
 			// Check for fitness
 			if (person.isSuperUnfit()) {
 				
+	        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
+	        	
+	    		boolean areAllOthersUnfit = areAllOthersUnfit(member);
+
 				if (areAllOthersUnfit) {
-					logger.warning(person, 10_000L, "As everyone is unfit to operate " + getRover() + ", " 
+					logger.warning(person, 4_000, "However, as everyone was unfit to operate " + getRover() + ", " 
 						+ person + " decided to step up to be the pilot.");
 					
 				} else {
 		        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
-					
-			       	// For humans
+
 		        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
-		        	
-		        	if (checkNeeds(person)) {
-		        		// Unable to operate the vehicle
-		        		return result;
-		        	}
 				}
+			}
+			else if (!checkNeeds(person)) {
+        		// Unable to operate the vehicle
+        		return result;	
 			}
 			
 			Vehicle v = getRover();

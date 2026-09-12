@@ -130,7 +130,7 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
         var tasks = mt.getSettlementTasks(s);
 
         // Expect one per review goal
-        assertEquals(3, tasks.size(), "Expect settlement tasks");
+        assertEquals(2, tasks.size(), "Expect settlement tasks");
 
         // Check each task
         Set<ReviewGoal> found = new HashSet<>();
