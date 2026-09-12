@@ -1100,10 +1100,6 @@ public class BuildingManager implements Serializable {
 			}
 		}
 
-		if (!found) {
-			logger.warning(person, "No habitable buildings with empty activity spot available in zone 0.");
-		}
-		
 		return found;
 	}
 

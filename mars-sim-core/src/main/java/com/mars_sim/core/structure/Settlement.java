@@ -1939,9 +1939,8 @@ public class Settlement extends Unit implements Temporal,
 			// Set x and y coordinates first prior to adding the person 
 			p.setCoordinates(getCoordinates());							
 			// Add to a random building
-			if (!BuildingManager.addPersonToBuildingSpotByJobType(p, this)) {
-				logger.warning(this, "Not successful in finding an activity spot for " + p + ".");
-			}
+			BuildingManager.addPersonToBuildingSpotByJobType(p, this);
+			
 			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
 
