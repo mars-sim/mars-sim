@@ -10,6 +10,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -48,7 +49,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
 
         // Create bottle and assign to person
-        var b = EquipmentFactory.createEquipment(EquipmentType.THERMAL_BOTTLE, s);
+        var b = (Container)EquipmentFactory.createEquipment(EquipmentType.THERMAL_BOTTLE, s);
         b.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
         p.dressForInside(s.getEquipmentInventory());
 

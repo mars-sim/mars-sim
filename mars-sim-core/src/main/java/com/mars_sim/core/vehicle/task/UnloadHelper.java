@@ -202,7 +202,7 @@ public final class UnloadHelper {
     	// Unload the surplus
     	for(var extra : surplus) {
     		// Unload inventories of equipment (if possible)
-    		unloadResourcesHolder(extra, dest);
+    		unloadResourcesHolder(extra.getResourcesInventory(), dest);
     		extra.transfer(dest);		
     		amountUnloading -= extra.getMass();
     	}

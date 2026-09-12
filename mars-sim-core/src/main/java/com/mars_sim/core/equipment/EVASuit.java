@@ -268,6 +268,13 @@ public class EVASuit extends Equipment
     }
 
 	/**
+	 * Get access to the resource held within the equipment.
+	 */
+	public ResourceHolder getResourcesInventory() {
+		return microInventory;
+	}
+
+	/**
 	 * Is this resource supported ?
 	 *
 	 * @param resource
@@ -288,7 +295,7 @@ public class EVASuit extends Equipment
 	public double storeAmountResource(int resource, double quantity) {
 		// Note: this method is different from
 		// Equipment's storeAmountResource
-		if (isResourceSupported(resource)) {
+		if (microInventory.isResourceSupported(resource)) {
 			return microInventory.storeAmountResource(resource, quantity);
 		}
 		else {
@@ -333,7 +340,7 @@ public class EVASuit extends Equipment
 	public boolean lifeSupportCheck() {
 		try {
 
-			if (getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
+			if (microInventory.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 				logger.log(this, Level.WARNING, 30_000,
 						"Ran out of water.");
 			}
@@ -393,7 +400,7 @@ public class EVASuit extends Equipment
 		// 17    kPa -> 0.2552 kg (target O2 pressure)
 		// 11.94 kPa -> 0.1792 kg (min O2 pressure)
 
-		double oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+		double oxygenLeft = microInventory.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		
 		double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
@@ -415,16 +422,6 @@ public class EVASuit extends Equipment
 		return pp;
 	}
 
-	/**
-	 * Gets oxygen partial pressure.
-	 * 
-	 * @return
-	 */
-	private double getCurrentOxygenPartialPressure() {
-		double oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
-		return AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
-	}
-	
 	/**
 	 * Gets the number of people the life support can provide for.
 	 *
@@ -451,10 +448,10 @@ public class EVASuit extends Equipment
 		// May pressurize the suit to 1/3 of atmospheric pressure, per NASA aboard on
 		// the ISS
 
-		oxygenLacking = retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
+		oxygenLacking = microInventory.retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
 
 		double carbonDioxideProvided = gasRatio * (oxygenTaken - oxygenLacking);
-		storeAmountResource(ResourceUtil.CO2_ID, carbonDioxideProvided);
+		microInventory.storeAmountResource(ResourceUtil.CO2_ID, carbonDioxideProvided);
 
 		return oxygenTaken - oxygenLacking;
 	}
@@ -468,7 +465,7 @@ public class EVASuit extends Equipment
 	 */
 	@Override
 	public double provideWater(double waterTaken) {
-		double lacking = retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
+		double lacking = microInventory.retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
 
 		return waterTaken - lacking;
 	}
@@ -584,12 +581,12 @@ public class EVASuit extends Equipment
 	 * @return Suit is fully loaded with resource
 	 */
 	private boolean loadResource(ResourceHolder source, int resourceId) {
-		double needed = getRemainingSpecificCapacity(resourceId);
+		double needed = microInventory.getRemainingSpecificCapacity(resourceId);
 		if (needed > 0D) {
 			double shortfall = source.retrieveAmountResource(resourceId, needed);
 			double taken = needed - shortfall;
 			if (taken > 0) {
-				storeAmountResource(resourceId, taken);
+				microInventory.storeAmountResource(resourceId, taken);
 			}
 		}
 		return needed <= 0D;
@@ -601,9 +598,9 @@ public class EVASuit extends Equipment
 	 * @param newSuitOwner
 	 */
 	public void unloadWaste(EquipmentOwner holder) {
-		double co2 = getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
+		double co2 = microInventory.getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
 		if (co2 > 0) {
-			retrieveAmountResource(ResourceUtil.CO2_ID, co2);
+			microInventory.retrieveAmountResource(ResourceUtil.CO2_ID, co2);
 			holder.storeAmountResource(ResourceUtil.CO2_ID, co2);
 		}
 	}
@@ -614,8 +611,8 @@ public class EVASuit extends Equipment
 	 * @return Percentage of lowest resource
 	 */
 	public double getFullness() {
-		double o2Loaded = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)/OXYGEN_CAPACITY;
-		double waterLoaded = getSpecificAmountResourceStored(ResourceUtil.WATER_ID)/WATER_CAPACITY;
+		double o2Loaded = microInventory.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)/OXYGEN_CAPACITY;
+		double waterLoaded = microInventory.getSpecificAmountResourceStored(ResourceUtil.WATER_ID)/WATER_CAPACITY;
 
 		return Math.min(o2Loaded, waterLoaded);
 	}
@@ -668,7 +665,7 @@ public class EVASuit extends Equipment
 	 */
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
-		if (isResourceSupported(resource)) {
+		if (microInventory.isResourceSupported(resource)) {
 			return microInventory.retrieveAmountResource(resource, quantity);
 		}
 

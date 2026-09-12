@@ -452,8 +452,6 @@ public abstract class EVAOperation extends Task {
 		}
 
 		else { // if a person is already inside, end the task gracefully here
-//			logger.log(person, Level.WARNING, 10_000, 
-//					"Case 6: Just went inside successfully. Current location: " + person.getContainerUnit());
 			endTask();
 		}
 
@@ -482,12 +480,6 @@ public abstract class EVAOperation extends Task {
 			logger.info(person, "Too hungry at meal time.");
 			return true;
 		}
-
-//        // Checks if the person is physically drained
-//		if (isExhausted(person)) {
-//			logger.info(person, "Exhausted.");
-//			return true;
-//		}
 		
 		if (isInEmergency(person)) {
 			logger.info(person, "Medical Emergency.");
@@ -631,8 +623,9 @@ public abstract class EVAOperation extends Task {
 
 		try {
 			// Check if EVA suit is at 15% of its oxygen capacity.
-			double oxygenCap = suit.getSpecificCapacity(ResourceUtil.OXYGEN_ID);
-			double oxygen = suit.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+			var suitInv = suit.getResourcesInventory();
+			double oxygenCap = suitInv.getSpecificCapacity(ResourceUtil.OXYGEN_ID);
+			double oxygen = suitInv.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 			if (oxygen <= (oxygenCap * .1D)) {
 				logger.log(person, Level.WARNING, 30_000,
 						suit.getName() + " reported less than 10% O2 left when "
@@ -641,8 +634,8 @@ public abstract class EVAOperation extends Task {
 			}
 
 			// Check if EVA suit is at 15% of its water capacity.
-			double waterCap = suit.getSpecificCapacity(ResourceUtil.WATER_ID);
-			double water = suit.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+			double waterCap = suitInv.getSpecificCapacity(ResourceUtil.WATER_ID);
+			double water = suitInv.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 			if (water <= (waterCap * .1D)) {
 				logger.log(person, Level.WARNING, 30_000,
 						suit.getName() + " reported less than 10% water left when "
@@ -818,7 +811,6 @@ public abstract class EVAOperation extends Task {
 		}
 		else {
             endEVA("No good random outside location found.");
-			logger.warning(worker, "No good random outside location found.");
 		}
 		return goodLocation;
 	}

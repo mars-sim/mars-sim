@@ -391,9 +391,10 @@ public class Mining extends EVAMission
 
 		EVASuit suit = EVASuitUtil.findRegisteredOrGoodEVASuit(member);
 		if (suit != null) {
+			var inv = suit.getResourcesInventory();
 			carryMass += suit.getMass();
-			carryMass += suit.getRemainingCombinedCapacity(ResourceUtil.OXYGEN_ID);
-			carryMass += suit.getRemainingCombinedCapacity(ResourceUtil.WATER_ID);
+			carryMass += inv.getRemainingCombinedCapacity(ResourceUtil.OXYGEN_ID);
+			carryMass += inv.getRemainingCombinedCapacity(ResourceUtil.WATER_ID);
 		}
 		double carryCapacity = member.getCarryingCapacity();
 		boolean canCarryEquipment = (carryCapacity >= carryMass);

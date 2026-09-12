@@ -13,24 +13,25 @@ import com.mars_sim.core.unit.UnitHolder;
  */
 public interface Container extends ResourceHolder {
 
-	public EquipmentType getEquipmentType();
+	EquipmentType getEquipmentType();
 
 	/**
 	 * Containers only support a single resource.
 	 * 
 	 * @return Resource ID assigned to the container.
 	 */
-	public int getResource();
+	int getResource();
 	
-	public double getBaseMass();
+	double getBaseMass();
 
-	public boolean transfer(UnitHolder newOwner);
+	boolean transfer(UnitHolder newOwner);
 
-	public double getStoredMass();
+	double getStoredMass();
 
 	/**
 	 * Cleans the container if empty. This will reset the assigned Resource.
 	 */
-    public void clean();
+    void clean();
 	
+	boolean isEmpty(boolean brandNew);
 }
