@@ -1115,10 +1115,10 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make clear glass bottle" tech="2" skill="1" work-time="20" process-time="100"
 			tooling="furnace" power-required=".2">
 		<inputs>
-			<resource name="sand" amount="3.0" />
+			<resource name="Glass" amount="10.0" />
 		</inputs>
 		<outputs>
-			<part name="Glass Bottle" number="11" />
+			<part name="Glass bottle" number="4" />
 		</outputs>
 	</process>
 	
@@ -1300,13 +1300,14 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 	
 	<!-- Produces 1m x 1m x 1cm (26kg) sheet of glass. -->
-	<process name="Make sheet glass" tech="2" skill="1" work-time="10" process-time="300"
+	<process name="Make glass sheet" tech="2" skill="1" work-time="10" process-time="300"
 			tooling="furnace" power-required=".2">
 		<inputs>
-			<resource name="sand" amount="26.0" />
+			<resource name="Glass" amount="12.5" />
 		</inputs>
 		<outputs>
-			<part name="glass sheet" number="1" />
+			<part name="Glass sheet" number="1" />
+			<!-- 1m x 1m x .5cm square of standard glass is 12.5 kg  -->
 		</outputs>
 	</process>
 	
@@ -1527,7 +1528,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 
-	<process name="Assemble a RepairBot" tech="4" skill="4" work-time="2000"
+	<process name="Assemble repairBot" tech="4" skill="4" work-time="2000"
 			tooling="Fabrication" power-required="1.0">
 		<description>The parts list for assembling the hardware of a repair bot. </description>
 		<inputs>
@@ -1744,7 +1745,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="polystyrene" amount="3" />
 			<resource name="styrene" amount="3.0" />
 			<resource name="titanium" amount=".3" />
-			<part name="fiberglass" number="3" />
+			<part name="fiberglass" number="3.7" />
 		</inputs>
 		<outputs>
 			<part name="drone chassis panel" number="1" />
@@ -1758,10 +1759,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<part name="Aerogel tile" number="8" />	
 			<part name="steel ingot" number="1" />			
-			<part name="glass sheet" number="2" />		
+			<part name="Glass sheet" number="2" />		
 		</inputs>
 		<outputs>
-			<part name="rover windshield" number="2" />
+			<part name="rover windshield" number="3" />
+			<!-- 20.84 kg each windshield --> 
 		</outputs>
 	</process>
 
@@ -1772,11 +1774,11 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<part name="Aerogel tile" number="8" />
 			<part name="steel ingot" number="1" />			
-			<part name="glass sheet" number="1" />		
+			<part name="Glass sheet" number="1" />		
 		</inputs>
 		<outputs>
 			<part name="window" number="2" />
-			<!-- Each window weights 25 kg -->
+			<!-- Each window weights 9.95 kg -->
 		</outputs>
 	</process>
 	
@@ -2219,7 +2221,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="acetylene" amount="2.0" />			
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
-			<part name="optical lens" number="2" />
+			<part name="Optical lens" number="2" />
 			<part name="vehicle frame small" number="1" />
 			<part name="aluminum sheet" number="3" />
 			<part name="drone chassis panel" number="3" />
@@ -2250,7 +2252,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="acetylene" amount="2.0" />			
 			<part name="navigation circuit board" number="1" />
 			<part name="communications circuit board" number="1" />
-			<part name="optical lens" number="2" />
+			<part name="Optical lens" number="2" />
 			<part name="vehicle frame small" number="1" />
 			<part name="aluminum sheet" number="2" />
 			<part name="drone chassis panel" number="2" />
@@ -2760,7 +2762,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Fabricate solar panel" tech="3" skill="4" work-time="300" process-time="150"
 			tooling="Fabrication" power-required="1.0">
 		<inputs>
-			<resource name="glass" amount="5.0" />
+			<resource name="Glass" amount="5.0" />
 			<resource name="silicon" amount="5.0" />
 			<resource name="magnesium" amount=".75" />
 			<part name="aluminum sheet" number="3" />
@@ -2779,10 +2781,10 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Fabricate solar parabolic mirror" tech="2" skill="3" work-time="200" process-time="100"
 			tooling="Fabrication" power-required="1.0">
 		<inputs>
-			<resource name="glass" amount="5.0" />
+			<resource name="Glass" amount="5.0" />
 			<part name="Steel sheet" number="1" />
 			<part name="aluminum sheet" number="2" />
-			<part name="glass sheet" number="1" />
+			<part name="Glass sheet" number="1" />
 		</inputs>
 		<outputs>
 			<!-- solar parabolic mirror: 50 kg -->
@@ -2931,8 +2933,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="nickel" amount="0.25" />
 			<resource name="lithium" amount=".05" />		
 			<resource name="potash lye" amount="0.5" />
-			<resource name="Polyethylene" amount="5.0" >
-				<alternative name="Polypropylene" amount="5.0" />
+			<resource name="Polyethylene" amount="5.63" >
+				<alternative name="Polypropylene" amount="5.63" />
 			</resource>
 			<part name="iron sheet" number="1" /> 
 			<!-- one iron sheet is 7.85 kg -->
@@ -2956,8 +2958,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="nickel" amount="0.05" />
 			<resource name="lithium" amount=".01" />	
 			<resource name="potash lye" amount="0.1" />
-			<resource name="Polyethylene" amount="0.75">
-				<alternative name="Polypropylene" amount="0.75" />
+			<resource name="Polyethylene" amount="0.5">
+				<alternative name="Polypropylene" amount="0.5" />
 			</resource>
 			<part name="logic board" number="2" />
 			<part name="wire connector" number="4" />
@@ -2965,7 +2967,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<part name="EVA battery" number="2" />
-			<!-- EVA battery module is 1.2 kg -->
+			<!-- EVA battery module is 1.28 kg -->
 		</outputs>
 	</process>
 
@@ -3394,7 +3396,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="semiconductor wafer" number="1" />
 		</inputs>
 		<outputs>
-			<part name="light emitting diode bulb" number="120" />
+			<part name="light emitting diode bulb" number="25" />
 		</outputs>
 	</process>
 
@@ -3405,7 +3407,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="semiconductor wafer" number="1" />
 		</inputs>
 		<outputs>
-			<part name="microcontroller" number="40" />
+			<part name="microcontroller" number="2" />
 		</outputs>
 	</process>
 
@@ -3417,7 +3419,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="1" />
 			<part name="light emitting diode bulb" number="20" />
-			<part name="glass sheet" number="1" />
+			<part name="Glass sheet" number="1" />
 			<part name="logic board" number="1" />
 		</inputs>
 		<outputs>
@@ -3450,8 +3452,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
 			<part name="light emitting diode kit" number="5" />
-			<part name="glass sheet" number="1" />
-			<part name="optical lens" number="10" />
+			<part name="Glass sheet" number="1" />
+			<part name="Optical lens" number="10" />
 			<part name="diode" number="15" />
 		</inputs>
 		<outputs>
@@ -3463,10 +3465,20 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture optical lens" tech="2" skill="2" work-time="90" process-time="300"
 			power-required="0.5">
 		<inputs>
-			<part name="glass sheet" number="1" />
+			<resource name="Glass" amount="1" />
 		</inputs>
 		<outputs>
-			<part name="optical lens" number="5" />
+			<part name="Optical lens" number="5" />
+		</outputs>
+	</process>
+
+	<process name="Manufacture optical prism" tech="2" skill="2" work-time="90" process-time="300"
+			power-required="0.5">
+		<inputs>
+			<resource name="Glass" amount=".9" />
+		</inputs>
+		<outputs>
+			<part name="Optical prism" number="3" />
 		</outputs>
 	</process>
 
@@ -3474,7 +3486,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture optical cable" tech="2" skill="2" work-time="60" process-time="200"
 			power-required="0.5">
 		<inputs>
-			<resource name="glass" amount="1" />
+			<resource name="Glass" amount="1" />
 		</inputs>
 		<outputs>
 			<part name="optical cable" number="20" />
@@ -3485,13 +3497,13 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture helium neon laser" tech="3" skill="4" work-time="200" process-time="600"
 			tooling="Fabrication" power-required="2.0">
 		<inputs>
-			<resource name="glass" amount="1" />
+			<resource name="Glass" amount="1" />
 			<part name="semiconductor wafer" number="1" />
 			<part name="Steel sheet" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
 			<part name="light emitting diode kit" number="5" />
-			<part name="optical lens" number="10" />
+			<part name="Optical lens" number="10" />
 			<part name="optical prism" number="10" />
 			<part name="diode" number="20" />
 		</inputs>
@@ -3516,7 +3528,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="ventilation fan" number="1" />
 			<part name="carbon dioxide laser" number="2" />
 			<part name="fiberglass" number="2" />
-			<part name="glass sheet" number="1" />
+			<part name="Glass sheet" number="1" />
 			<part name="Stepper Motor" number="3" />
 			<part name="timing belt" number="3" />
 			<part name="optical prism" number="3" />
@@ -3756,7 +3768,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Aluminum" amount=".1" >
 				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>					
-			<resource name="glass" amount="4.2" />	
+			<resource name="Glass" amount="4.2" />	
 			<resource name="oxygen" amount=".5" />				
 		</inputs>
 		<outputs>
@@ -3778,7 +3790,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="nickel" amount=".025" />
 			<resource name="lithium" amount=".025" />
 			<resource name="iron powder" amount=".5" />
-			<resource name="glass" amount=".1" />
+			<resource name="Glass" amount=".1" />
 			<resource name="ceramic electrolyte" amount=".6" />			
 		</inputs>
 		<outputs>
@@ -3800,7 +3812,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="nickel" amount=".025" />
 			<resource name="lithium" amount=".025" />
 			<resource name="iron powder" amount=".5" />
-			<resource name="glass" amount=".1" />
+			<resource name="Glass" amount=".1" />
 			<resource name="ceramic electrolyte" amount=".6" />
 		</inputs>
 		<outputs>
@@ -4143,9 +4155,9 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make Power Panel" tech="2" skill="2" work-time="200" process-time="50"
+	<process name="Make Power panel" tech="2" skill="2" work-time="200" process-time="50"
 			tooling="Soldering" power-required="0.1">
-		<description> A power panel safely distributes electricity throughout a building. It divides 
+		<description> A Power panel safely distributes electricity throughout a building. It divides 
 			an electrical power feed into branch circuits, while providing a protective circuit 
 			breaker or fuse for each circuit, in a common enclosure. A panelboard services to protect 
 			branch circuits from overloads and short circuits. 
@@ -4161,7 +4173,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="Surge Protector" number="3" />
 		</inputs>
 		<outputs>
-			<part name="Power Panel" number="3" />
+			<part name="Power panel" number="3" />
+			<!-- 4.8 kg each  -->
 		</outputs>
 	</process>
 
@@ -4244,7 +4257,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<salvage item-name="Cargo Drone" type="vehicle" tech="2" skill="1" work-time="400">			
 		<part-salvage name="navigation circuit board" number="1" />
 		<part-salvage name="communications circuit board" number="1" />
-		<part-salvage name="optical lens" number="2" />
+		<part-salvage name="Optical lens" number="2" />
 		<part-salvage name="vehicle frame small" number="1" />
 		<part-salvage name="aluminum sheet" number="3" />
 		<part-salvage name="vehicle chassis panel" number="3" />
@@ -4269,7 +4282,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="1" work-time="300">			
 		<part-salvage name="navigation circuit board" number="1" />
 		<part-salvage name="communications circuit board" number="1" />
-		<part-salvage name="optical lens" number="2" />
+		<part-salvage name="Optical lens" number="2" />
 		<part-salvage name="vehicle frame small" number="1" />
 		<part-salvage name="aluminum sheet" number="1" />
 		<part-salvage name="vehicle chassis panel" number="2" />

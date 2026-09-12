@@ -921,8 +921,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param building  the destination building.
 	 * @param allowFail true if walking is allowed to fail.
+	 * @return
 	 */
-	protected void walkToResearchSpotInBuilding(Building building, boolean allowFail) {
+	protected boolean walkToResearchSpotInBuilding(Building building, boolean allowFail) {
 		
 		boolean success = walkToActivitySpotInBuilding(building, FunctionType.RESEARCH, allowFail);
 		
@@ -940,8 +941,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		} 
 		if (!success) {
 			// If no available activity spot, go to an empty location in building
-			walkToEmptyActivitySpotInBuilding(building, allowFail);
+			success = walkToEmptyActivitySpotInBuilding(building, allowFail);
 		}
+		
+		return success;
 	}
 
 	/**

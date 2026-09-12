@@ -71,7 +71,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	/** The base carrying capacity (kg) of a robot. */
 	private static final double BASE_CAPACITY = 60D;
 	/** The estimate base mass in kg. */
-	public static final double EMPTY_MASS = 80D;
+	public static final double EMPTY_MASS = 61.36;
 	/** life time in number of sols. */
 	private static final double WEAR_LIFETIME = 334_000D;
 	/** 100 millisols. */

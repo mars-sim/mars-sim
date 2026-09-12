@@ -78,7 +78,7 @@ public class ItemResourceUtil {
 	/** 
 	 * The String name of the manufacturing process of producing a repair bot.
 	  */	
-	public static final String ASSEMBLE_A_REPARTBOT = "Assemble a RepairBot";
+	public static final String ASSEMBLE_REPARTBOT = "Assemble repairBot";
 	
 	private static Map<String, Part> itemResourceByName;
 	private static Map<Integer, Part> itemResourceByID;
@@ -248,7 +248,7 @@ public class ItemResourceUtil {
 			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 			
 			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
-				if (info.getName().equalsIgnoreCase(ASSEMBLE_A_REPARTBOT)) {
+				if (info.getName().equalsIgnoreCase(ASSEMBLE_REPARTBOT)) {
 		        	manufactureProcessInfo = info;
 		        	botPartIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
 		        	break;

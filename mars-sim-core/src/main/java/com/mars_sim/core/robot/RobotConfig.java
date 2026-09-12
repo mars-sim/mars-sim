@@ -95,7 +95,6 @@ public class RobotConfig {
 		maxT = ConfigHelper.getAttributeDouble(globalRoot, MAX_TEMPERATURE);
 		ft = ConfigHelper.getAttributeDouble(globalRoot, FREEZING_TIME);
 		
-		
 		Element rlElement = root.getChild(ROBOT_LIST);
 		List<Element> listNodes = rlElement.getChildren(ROBOT);
 		
@@ -109,10 +108,9 @@ public class RobotConfig {
 			double lowPower = ConfigHelper.getOptionalAttributeDouble(listElement, LOW_POWER_MODE, 20D);
 			double maxCapacity = ConfigHelper.getOptionalAttributeDouble(listElement, MAX_CAPACITY, 15D);
 			int height = ConfigHelper.getOptionalAttributeInt(listElement, HEIGHT, 150);
-			int mass = ConfigHelper.getOptionalAttributeInt(listElement, MASS, 100);
+			double mass = ConfigHelper.getOptionalAttributeDouble(listElement, MASS, 61.36);
 
 			// Description
-			
 			Element descriptionListElement = listElement.getChild(DESCRIPTION);
 			String description = descriptionListElement.getText();
 			
@@ -237,7 +235,8 @@ public class RobotConfig {
 	}
 
 	/**
-	 * The known RobotSpecs.
+	 * Gets the known RobotSpecs.
+	 * 
 	 * @return
 	 */
     public Collection<RobotSpec> getRobotSpecs() {

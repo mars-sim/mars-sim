@@ -32,13 +32,13 @@ public class RobotSpec implements Serializable {
 	private double maxCapacity;
 
 	private int height;
-	private int mass;
+	private double mass;
 	
 	private String description;
 
 	RobotSpec(RobotType robotType, String makeModel, String description,
 			double standbyPower, double rate, double lowPowerMode, double maxCapacity,
-			int height, int mass,
+			int height, double mass,
 			Map<NaturalAttributeType, Integer> attributeMap, Map<SkillType, Integer> skillMap) {
 		this.robotType = robotType;
 		this.makeModel = makeModel;
@@ -129,11 +129,21 @@ public class RobotSpec implements Serializable {
     public double getMaxCapacity() {
         return maxCapacity;
     }
-
-	public int getMass() {
+    
+	/**
+	 * Gets the default mass of this robot.
+	 * 
+	 * @return
+	 */
+	public double getMass() {
 		return mass;
 	}
-
+	
+	/**
+	 * Gets the default height of this robot.
+	 * 
+	 * @return
+	 */
     public int getHeight() {
         return height;
     }

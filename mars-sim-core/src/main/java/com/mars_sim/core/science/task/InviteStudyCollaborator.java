@@ -95,22 +95,17 @@ public class InviteStudyCollaborator extends Task {
             Building b = BuildingManager.getAvailableBuilding(study.getScience(), person);
             if (b != null) {
                 // Walk to that building.
-                walkToResearchSpotInBuilding(b, false);
-                adminWalk = true;
+                adminWalk = walkToResearchSpotInBuilding(b, true);
+            }
+            if (!adminWalk) {
+            	// Walk to random location.
+            	walkToRandomLocation(true);
             }
         }
-
-        if (!adminWalk) {
-
-            if (person.isInVehicle()) {
-                // If person is in rover, walk to passenger activity spot.
-                if (person.getVehicle() instanceof Rover r) {
-                    walkToPassengerActivitySpotInRover(r , false);
-                }
-            }
-            else {
-                // Walk to random location.
-                walkToRandomLocation(true);
+        else if (person.isInVehicle()) {
+            // If person is in rover, walk to passenger activity spot.
+            if (person.getVehicle() instanceof Rover r) {
+                walkToPassengerActivitySpotInRover(r , true);
             }
         }
 

@@ -293,8 +293,8 @@
 	</part>
 
 
-	<!-- 1m x 1m x .5cm square of glass  -->
-	<part name="Glass sheet" type="utility" mass="27.56" />
+	<!-- 1m x 1m x .5cm square of standard glass is 12.5 kg  -->
+	<part name="Glass sheet" type="utility" mass="12.5" />
 
 	<part name="Garment" type="utility" mass="0.5" >
 		<description>a standard set of clothing for indoor use.</description>
@@ -495,13 +495,13 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Rover windshield" type="vehicle" mass="50.0" >
+	<part name="Rover windshield" type="vehicle" mass="20.84" >
 		<maintenance-entity-list>
 			<entity name="rover" probability=".5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Window" type="construction" mass="25.0" >
+	<part name="Window" type="construction" mass="9.95" >
 		<maintenance-entity-list>
 			<entity name="rover" probability=".5" max-number="1" />
 			<entity name="life support" probability=".5" max-number="1" />				
@@ -713,19 +713,19 @@
 		<description>Attachment part for LUV. A pneumatic rock drill is used for breaking, drilling, or cutting through hard ground.</description>
 	</part>
 
-	<part name="Backhoe" type="attachment" mass="35.0" >
+	<part name="Backhoe" type="attachment" mass="13.43" >
 		<description>Attachment part for LUV. An excavating equipment with a digging bucket on the end of a two-part articulated arm.</description>
 	</part>
 
-	<part name="Bulldozer blade" type="attachment" mass="40.0">
+	<part name="Bulldozer blade" type="attachment" mass="25.6">
 		<description>Attachment part for LUV. A bulldozer blade (possible use for new structures).</description>
 	</part>
 
-	<part name="Soil compactor" type="attachment" mass="100.0">
+	<part name="Soil compactor" type="attachment" mass="85.60">
 		<description>Attachment part for LUV. A drum roller that applied stress to a soil.</description>
 	</part>
 
-	<part name="Crane boom" type="attachment" mass="75.0">
+	<part name="Crane boom" type="attachment" mass="38.91">
 		<description>Attachment part for LUV. A long, telescopic or fixed arm for moving objects.</description>
 	</part>
 
@@ -823,7 +823,7 @@
 		<description>A steel drill bit for drilling bore holes.</description>
 	</part>
 
-	<part name="Bore drill pipe" type="tool" mass="50.0">
+	<part name="Bore drill pipe" type="tool" mass="24.4">
 		<description>A steel pipe for drilling and lining bore holes.</description>
 	</part>
 
@@ -873,7 +873,7 @@
 
 
 	<!-- 2014-11-19 Added a microcontroller. -->
-	<part name="Microcontroller" type="electronic" mass="0.1" >
+	<part name="Microcontroller" type="electronic" mass="0.01" >
 		<maintenance-entity-list>
 		<entity name="robot" probability="1" max-number="2" />
 		<entity name="farming" probability="1" max-number="1" />
@@ -957,7 +957,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Light emitting diode bulb" type="electronic" mass="0.1">
+	<part name="Light emitting diode bulb" type="electronic" mass="0.0075">
 		<description>Solid State Light bulb</description>
 	</part>
 
@@ -998,14 +998,14 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="Optical lens" type="electronic" mass=".1" >
+	<part name="Optical lens" type="electronic" mass=".2" >
 			<maintenance-entity-list>
 			<entity name="communication" probability="2" max-number="2" />
 			<entity name="manufacture" probability="3" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Optical prism" type="electronic" mass=".1">
+	<part name="Optical prism" type="electronic" mass=".3">
 			<maintenance-entity-list>
 			<entity name="communication" probability="2" max-number="2" />
 			<entity name="manufacture" probability="3" max-number="1" />			
@@ -1223,7 +1223,7 @@
 	</part>
 
 
-	<part name="Turbopump" type="utility" mass="50.0">
+	<part name="Turbopump" type="utility" mass="10.911">
 		<description>This turbopump is compatible with delivering liquid methane. The purpose of a turbopump is
 		to produce a high pressure fluid for feeding a combustion chamber. </description>
 	</part>
@@ -1464,7 +1464,7 @@
 		</maintenance-entity-list>
 	</part>	
 		
-	<part name="Power panel" type="electrical" mass="5">
+	<part name="Power panel" type="electrical" mass="4.8">
 		<maintenance-entity-list>
 			<entity name="power generation" probability=".5" max-number="1" />
 			<entity name="power storage" probability=".5" max-number="1" />

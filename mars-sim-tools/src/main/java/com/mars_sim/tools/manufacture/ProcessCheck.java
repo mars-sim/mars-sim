@@ -262,12 +262,12 @@ public final class ProcessCheck {
 				lines.add(String.format(Locale.ROOT, "%s | amount=%.3f | mass=unknown",
 						buildItemLabel(item), item.getAmount()));
 			}
-
+			
 			if (massValue.warning != null) {
 				warnings.add(massValue.warning);
 			}
 		}
-
+		
 		return new MassBreakdown(totalMass, lines, warnings);
 	}
 
