@@ -29,8 +29,6 @@ import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.building.Building;
-import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -63,6 +61,8 @@ public class SettlementMapPanel extends JPanel {
 	private static final String Y_PROP          = "YPOS";
 	private static final String SCALE_PROP      = "SCALE";
 	private static final String ROTATION_PROP   = "ROTATION";
+	private static final String WEATHER_PROP    = "WEATHER";
+	private static final String BANNER_PROP     = "BANNER";
 
 	// Static members.
 	public static final double DEFAULT_SCALE = 10D;
@@ -186,8 +186,10 @@ public class SettlementMapPanel extends JPanel {
 		mapLayers.add(new VehicleMapLayer(this, userSettings));
 		mapLayers.add(new PersonMapLayer(this, userSettings));
 		mapLayers.add(new RobotMapLayer(this, userSettings));
-
-		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
+		
+		var bannerVisible = Boolean.parseBoolean(userSettings.getProperty(BANNER_PROP, "true"));
+		var weatherVisible = Boolean.parseBoolean(userSettings.getProperty(WEATHER_PROP, "true"));
+		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this, bannerVisible, weatherVisible);
 
 		// Ensure all Swing mutations happen on EDT
 		SwingHelper.runInEDT(() -> {
@@ -222,12 +224,6 @@ public class SettlementMapPanel extends JPanel {
 			public void mouseMoved(MouseEvent evt) {
 				int x = evt.getX();
 				int y = evt.getY();
-
-				if (getSettlement() != null) {
-					settlementWindow.setPop(getSettlement().getNumCitizens());
-				}
-				// Call to determine if it should display or remove the building coordinate within a building
-				showBuildingCoord(x, y);
 
 				// Display the settlement map coordinate of the hovering mouse pointer
 				settlementWindow.setMapXYCoord(convertToSettlementLocation(x, y));
@@ -306,53 +302,12 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Displays the specific x y coordinates within a building
-	 * (based upon where the mouse is pointing at).
-	 *
-	 * @param xPixel the x pixel position on the displayed map.
-	 * @param yPixel the y pixel position on the displayed map.
-	 */
-	private void showBuildingCoord(int xPixel, int yPixel) {
-
-		boolean showBlank = true;
-
-		LocalPosition mousePos = convertToSettlementLocation(xPixel, yPixel);
-
-		for (Building building : settlement.getBuildingManager().getBuildingSet()) {
-			if (!building.getInTransport() && MapHotspot.isWithin(mousePos, building)) {
-				settlementWindow.setBuildingXYCoord(building.getPosition(), false);
-
-				LocalPosition pointerPos = convertToBuildingLoc(mousePos, building);
-				settlementWindow.setBuildingPointerXYCoord(pointerPos, false);
-
-				showBlank = false;
-				break;
-			}
-		}
-
-		if (showBlank) {
-			// Remove the building coordinate
-			settlementWindow.setBuildingXYCoord(LocalPosition.DEFAULT_POSITION, true);
-			settlementWindow.setBuildingPointerXYCoord(LocalPosition.DEFAULT_POSITION, true);
-		}
-	}
-
-	/**
 	 * Gets the settlement currently displayed.
 	 *
 	 * @return settlement or null if none.
 	 */
-	public synchronized Settlement getSettlement() {
+	synchronized Settlement getSettlement() {
 		return settlement;
-	}
-
-	/**
-	 * Gets the SettlementWindow class.
-	 *
-	 * @return settlementWindow or null if none.
-	 */
-	public SettlementWindow getSettlementWindow() {
-		return settlementWindow;
 	}
 
 	/**
@@ -360,7 +315,7 @@ public class SettlementMapPanel extends JPanel {
 	 *
 	 * @param newSettlement the settlement.
 	 */
-	public synchronized void setSettlement(Settlement newSettlement) {
+	synchronized void setSettlement(Settlement newSettlement) {
 		if (!newSettlement.equals(settlement)) {
 			this.settlement = newSettlement;
 			SwingHelper.runInEDT(() -> {
@@ -370,6 +325,9 @@ public class SettlementMapPanel extends JPanel {
 				}
 				repaint();
 			});
+
+			// Set the population label in the status bar
+        	settlementWindow.setPop(settlement.getNumCitizens());
 		}
 	}
 
@@ -378,7 +336,7 @@ public class SettlementMapPanel extends JPanel {
 	 *
 	 * @return scale (pixels per meter).
 	 */
-	public double getScale() {
+	double getScale() {
 		return scale;
 	}
 
@@ -390,7 +348,7 @@ public class SettlementMapPanel extends JPanel {
 	 *
 	 * @param newScale (pixels per meter).
 	 */
-	public void setScale(double newScale) {
+	void setScale(double newScale) {
 		this.scale = newScale;
 		repaint();
 	}
@@ -400,7 +358,7 @@ public class SettlementMapPanel extends JPanel {
 	 *
 	 * @return rotation (radians).
 	 */
-	public double getRotation() {
+	double getRotation() {
 		return rotation;
 	}
 
@@ -409,7 +367,7 @@ public class SettlementMapPanel extends JPanel {
 	 *
 	 * @param rotation (radians).
 	 */
-	public void setRotation(double rotation) {
+	void setRotation(double rotation) {
 		this.rotation = rotation;
 		repaint();
 	}
@@ -418,7 +376,7 @@ public class SettlementMapPanel extends JPanel {
 	 * Resets the position, scale and rotation of the map. Separate function that
 	 * only uses one repaint.
 	 */
-	public void reCenter() {
+	void reCenter() {
 		center = new LocalPosition(0D, 0D);
 		setRotation(0D);
 		scale = DEFAULT_SCALE; // set directly to avoid unnecessary coalescing delay here
@@ -436,7 +394,7 @@ public class SettlementMapPanel extends JPanel {
 	 * @param xd the X axis pixels.
 	 * @param yd the Y axis pixels.
 	 */
-	public void moveCenter(double xd, double yd) {
+	void moveCenter(double xd, double yd) {
 		setCursor(new Cursor(Cursor.MOVE_CURSOR));
 		double xDiff = xd / scale;
 		double yDiff = yd / scale;
@@ -491,67 +449,6 @@ public class SettlementMapPanel extends JPanel {
 		}
 	}
 
-
-	/**
-	 * Is a position within the bounds of an Object ?
-	 * This should be in a common class.
-	 *
-	 * @param pos the mouse pointer position under settlement coordinate system
-	 * @param obj
-	 * @return
-	 */
-	private static LocalPosition convertToBuildingLoc(LocalPosition pos, LocalBoundedObject obj) {
-		double oW = obj.getWidth();
-		double oL = obj.getLength();
-		int facing = (int) obj.getFacing();
-		// The center position of the object
-		double oX = obj.getPosition().getX();
-		double oY = obj.getPosition().getY();
-		// Half the width and length
-		double hX = 0;
-		double hY = 0;
-
-		if (facing == 0) {
-			hX = oW / 2D;
-			hY = oL / 2D;
-		} else if (facing == 90) {
-			hY = oW / 2D;
-			hX = oL / 2D;
-		}
-		// Loading Dock Garage
-		if (facing == 180 || facing == -180) {
-			hX = oW / 2D;
-			hY = oL / 2D;
-		} else if (facing == 270 || facing == -90) {
-			hY = oW / 2D;
-			hX = oL / 2D;
-		}
-
-		// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
-		// Fortunately, they both have the same width and length
-		else if (facing == 45) {
-			hY = oW / 2D;
-			hX = oL / 2D;
-		} else if (facing == 135) {
-			hY = oW / 2D;
-			hX = oL / 2D;
-		}
-
-		// Mouse pointer position under the settlement positioning system
-		double mX = pos.getX();
-		double mY = pos.getY();
-
-		double rangeX = Math.round((mX - oX) * 100.0) / 100.0;
-		double rangeY = Math.round((mY - oY) * 100.0) / 100.0;
-
-		boolean isWithin = Math.abs(rangeX) <= Math.abs(hX) && Math.abs(rangeY) <= Math.abs(hY);
-
-		if (isWithin)
-			return new LocalPosition(rangeX, rangeY);
-		else
-			return null;
-	}
-
 	protected List<SettlementMapLayer> getMapLayers() {
 		return mapLayers;
 	}
@@ -581,7 +478,7 @@ public class SettlementMapPanel extends JPanel {
 			g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
 			// Calculate the visible map radius from center to the farthest corner of the panel, plus a small buffer (10%).
-			double mapRadius = (Math.sqrt(Math.pow(getWidth() / 2.0, 2) + Math.pow(getHeight() / 2.0, 2)) * 1.1D) / scale;
+			double mapRadius = (Math.sqrt(Math.pow(getWidth() / 2.0, 2) + Math.pow(getHeight() / 2.0, 2)) * 1.2D) / scale;
 
 			// Display all map layers and reset hotspots
 			var newHotspots = new ArrayList<MapHotspot<?>>();
@@ -594,7 +491,7 @@ public class SettlementMapPanel extends JPanel {
 
 			// Map layers are drawon bottom up but hotspots need to be top down
 			hotspots = newHotspots.reversed();
-			//System.out.println("center = " + center + ", hotspots = " + hotspots.size() + ", radius = " + mapRadius);
+			settlementWindow.setHotspot(hotspots.size());
 
 		} finally {
 			g2d.dispose(); // ensure any child Graphics resources are freed
@@ -642,6 +539,9 @@ public class SettlementMapPanel extends JPanel {
 		props.setProperty(ROTATION_PROP, Double.toString(rotation));
 		props.setProperty(SCALE_PROP, Double.toString(scale));
 
+		props.setProperty(WEATHER_PROP, Boolean.toString(settlementTransparentPanel.isWeatherPanelVisible()));
+		props.setProperty(BANNER_PROP, Boolean.toString(settlementTransparentPanel.isBannerBarVisible()));
+		
 		for (var layer : mapLayers) {
 			layer.saveUIProperties(props);
 		}

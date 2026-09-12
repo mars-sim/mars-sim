@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
@@ -27,20 +26,17 @@ import java.util.Map.Entry;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeListener;
-
-import org.jdesktop.swingx.JXTaskPane;
-import org.jdesktop.swingx.JXTaskPaneContainer;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityManagerListener;
@@ -50,10 +46,8 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.OrbitInfo;
-import com.mars_sim.core.environment.SunData;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -64,7 +58,6 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
-import com.mars_sim.ui.swing.utils.SwingHelper;
 
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
@@ -72,9 +65,6 @@ import eu.hansolo.steelseries.tools.LcdColor;
 @SuppressWarnings({ "serial" })
 
 public class SettlementTransparentPanel extends JComponent {
-
-    /** default logger. */
-    private static SimLogger logger = SimLogger.getLogger(SettlementTransparentPanel.class.getName());
 
     /** Rotation change (radians per rotation button press). */
     private static final double ROTATION_CHANGE = Math.PI / 20D;
@@ -87,18 +77,6 @@ public class SettlementTransparentPanel extends JComponent {
     private static final String WINDSPEED       = "   Windspeed: ";
     private static final String ZENITH_ANGLE    = "   Zenith Angle: ";
     private static final String OPTICAL_DEPTH   = "   Optical Depth: ";
-
-    private static final String PROJECTED_SUNRISE = "  Projected Sunrise: ";
-    private static final String PROJECTED_SUNSET  = "   Projected Sunset: ";
-    private static final String PROJECTED_DAYLIGHT= " Projected Daylight: ";
-    private static final String SUNRISE           = "  Yestersol Sunrise: ";
-    private static final String SUNSET            = "   Yestersol Sunset: ";
-    private static final String DAYLIGHT          = " Yestersol Daylight: ";
-    private static final String ZENITH            = "        Zenith Time: ";
-    private static final String MAX_LIGHT         = "       Max Sunlight: ";
-    private static final String CURRENT_LIGHT     = "   Current Sunlight: ";
-    private static final String WM                = " W/m\u00B2 ";
-    private static final String PENDING           = " ...  ";
 
     private static final String YESTERSOL_RESOURCE = "Yestersol's Resources (";
 
@@ -114,10 +92,6 @@ public class SettlementTransparentPanel extends JComponent {
     private String zaString;
     private String odString;
 
-    private static final Font SUN_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 12);
-    private static final Font SUN_BOLD_FONT = new Font(Font.MONOSPACED, Font.BOLD, 12);
-    private static final Font TIME_BOLD_FONT = new Font(Font.DIALOG, Font.BOLD, 13);
-    
     private String resourceCache = "";
 
     private GameMode mode;
@@ -125,38 +99,15 @@ public class SettlementTransparentPanel extends JComponent {
     private DisplaySingle bannerBar;
     private JSlider zoomSlider;
     
-    /** label for the settlement's Mars time. */
-    private JLabel martianTimeLabel;
-    
     private JLabel emptyLabel;
-    /** label for projected sunrise time. */
-    private JLabel projectSunriseLabel;
-    /** label for projected sunset time. */
-    private JLabel projectSunsetLabel;
-    /** label for projected daylight. */
-    private JLabel projectDaylightLabel;
-    /** label for sunrise time. */
-    private JLabel sunriseLabel;
-    /** label for sunset time. */
-    private JLabel sunsetLabel;
-    /** label for zenith time. */
-    private JLabel zenithLabel;
-    /** label for highest solar irradiance. */
-    private JLabel maxSunLabel;
-    /** label for the daylight period. */
-    private JLabel daylightLabel;
-    /** label for the daylight period. */
-    private JLabel currentSunLabel;
 
     private JButton infoButton;
-    private JLabel temperatureIcon;
-    private JLabel windIcon;
-    private JLabel opticalIcon;
 
     /** Settlement Combo box */
     private JComboBox<Settlement> settlementListBox;
 
     private SettlementMapPanel mapPanel;
+    private WeatherPanel weatherPanel;
     private UIContext context;
 
     private Weather weather;
@@ -164,14 +115,19 @@ public class SettlementTransparentPanel extends JComponent {
     private OrbitInfo orbitInfo;
     private UnitManager unitManager;
     private MasterClock masterClock;
+    private boolean weatherVisible;
+    private boolean bannerVisible;
 
     /**
      * The panel with elements that are on top of the settlement map.
      *
      * @param desktop
      * @param mapPanel
+     * @param weatherVisible whether the weather panel should be visible.
+     * @param bannerVisible whether the banner bar should be visible.
      */
-    public SettlementTransparentPanel(UIContext context, SettlementMapPanel mapPanel) {
+    public SettlementTransparentPanel(UIContext context, SettlementMapPanel mapPanel, 
+        boolean bannerVisible, boolean weatherVisible) {
         this.mapPanel = mapPanel;
         this.context = context;
 
@@ -182,6 +138,8 @@ public class SettlementTransparentPanel extends JComponent {
         this.weather = sim.getWeather();
         this.surfaceFeatures = sim.getSurfaceFeatures();
         this.orbitInfo = sim.getOrbitInfo();
+        this.bannerVisible = bannerVisible;
+        this.weatherVisible = weatherVisible;
 
         mode = GameManager.getGameMode();
     }
@@ -205,8 +163,9 @@ public class SettlementTransparentPanel extends JComponent {
         buildSettlementNameComboBox();
         buildZoomSlider();
         buildBanner();
-        buildWeatherPanel();
-        JPanel sunPane = buildSunPane();
+        bannerBar.setVisible(bannerVisible);
+        weatherPanel = new WeatherPanel(mapPanel, weather, surfaceFeatures, orbitInfo, masterClock);
+        weatherPanel.setVisible(weatherVisible);
         
         JPanel topPane = new JPanel(new BorderLayout(20, 20));
         topPane.setBackground(new Color(0,0,0,128));
@@ -219,32 +178,11 @@ public class SettlementTransparentPanel extends JComponent {
 
         mapPanel.add(topPane, BorderLayout.NORTH);
 
-        JPanel weatherPane = new JPanel(new GridLayout(1, 3, 5, 5));
-        weatherPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        weatherPane.setBackground(new Color(0,0,0,128));
-        weatherPane.setOpaque(false);
-
-        weatherPane.add(temperatureIcon);
-        weatherPane.add(windIcon);
-        weatherPane.add(opticalIcon);
-
-        JPanel sunlightPanel = new JPanel(new BorderLayout(5, 5));
-        sunlightPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
-        sunlightPanel.setBackground(new Color(0,0,0,128));
-        sunlightPanel.setOpaque(false);
-        sunlightPanel.add(sunPane, BorderLayout.NORTH);
-
         JPanel centerPanel = new JPanel(new BorderLayout(2, 2));
         centerPanel.setBackground(new Color(0,0,0,128));
         centerPanel.setOpaque(false);
 
-        JPanel westPanel = new JPanel(new BorderLayout());
-        westPanel.setBackground(new Color(0,0,0,128));
-        westPanel.setOpaque(false);
-        westPanel.add(weatherPane, BorderLayout.NORTH);
-        westPanel.add(sunlightPanel, BorderLayout.CENTER);
-
-        centerPanel.add(westPanel, BorderLayout.WEST);
+        centerPanel.add(weatherPanel, BorderLayout.WEST);
         centerPanel.add(settlementPanel, BorderLayout.NORTH);
 
         topPane.add(centerPanel, BorderLayout.CENTER);
@@ -279,128 +217,6 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     /**
-     * Creates the sun data panel.
-     *
-     * @return panel
-     */
-    private JPanel buildSunPane() {
-        JPanel sunPane = new JPanel(new BorderLayout(0, 1));
-        sunPane.setBackground(new Color(0, 0, 0, 128));
-        sunPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.ORANGE, new Color(210, 105, 30)));
-
-        JPanel marsTimePane = new JPanel(new BorderLayout(0, 1));
-        final String ts = updateMarsTime();
-		martianTimeLabel = new JLabel(ts, SwingConstants.CENTER);
-		martianTimeLabel.setOpaque(false);
-		martianTimeLabel.setBackground(new Color(0, 0, 0, 128));
-		martianTimeLabel.setForeground(Color.LIGHT_GRAY);
-		martianTimeLabel.setFont(TIME_BOLD_FONT);
-		marsTimePane.add(martianTimeLabel, BorderLayout.CENTER);
-		
-        sunPane.add(marsTimePane, BorderLayout.NORTH);
-        
-        JPanel roundPane = new JPanel(new GridLayout(9, 1, 0, 0));
-        roundPane.setBackground(new Color(0, 0, 0, 128));
-        roundPane.setOpaque(false);
-        roundPane.setPreferredSize(new Dimension(230, 185));
-
-        JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
-        taskPaneContainer.setBackground(new Color(0, 0, 0, 128));
-        taskPaneContainer.setOpaque(false);
-        JXTaskPane actionPane = new JXTaskPane();
-        actionPane.setBackground(new Color(0, 0, 0, 128));
-        actionPane.setOpaque(false);
-        actionPane.getContentPane().setBackground(new Color(0, 0, 0, 128));
-        actionPane.setTitle("Solar Data");
-        actionPane.add(roundPane, BorderLayout.CENTER);
-        taskPaneContainer.add(actionPane);
-        sunPane.add(taskPaneContainer, BorderLayout.CENTER);
-
-        double []projectSunTime = {0, 0, 0};
-        if (mapPanel.getSettlement() != null) {
-            projectSunTime = orbitInfo.getSunTimes(mapPanel.getSettlement());
-        }
-
-        projectSunriseLabel = new JLabel(PROJECTED_SUNRISE
-                + StyleManager.DECIMAL1_MSOL.format(projectSunTime[0]));
-
-        projectSunsetLabel = new JLabel(PROJECTED_SUNSET
-                + StyleManager.DECIMAL1_MSOL.format(projectSunTime[1]));
-
-        projectDaylightLabel  = new JLabel(PROJECTED_DAYLIGHT
-                + StyleManager.DECIMAL1_MSOL.format(projectSunTime[2]));
-
-          
-        sunriseLabel = new JLabel(SUNRISE + PENDING);
-        sunsetLabel = new JLabel(SUNSET + PENDING);
-        daylightLabel = new JLabel(DAYLIGHT + PENDING);
-
-        zenithLabel = new JLabel(ZENITH + PENDING);
-        maxSunLabel = new JLabel(MAX_LIGHT + PENDING);
-
-        currentSunLabel = new JLabel(CURRENT_LIGHT + PENDING);
-
-        projectSunriseLabel.setFont(SUN_FONT);
-        sunriseLabel.setFont(SUN_FONT);
-        projectSunsetLabel.setFont(SUN_FONT);
-        sunsetLabel.setFont(SUN_FONT);
-        projectDaylightLabel.setFont(SUN_FONT);
-        daylightLabel.setFont(SUN_FONT);
-
-        zenithLabel.setFont(SUN_FONT);
-
-        currentSunLabel.setFont(SUN_BOLD_FONT);
-        maxSunLabel.setFont(SUN_FONT);
-
-        Color orange = Color.orange;
-        Color brown = new Color(153, 102, 0).brighter();
-        Color yellow = Color.yellow.brighter().brighter();
-        Color white = Color.white;
-        Color red = Color.pink;
-        Color lightBlue = new Color(189, 240, 255);
-
-        projectSunriseLabel.setForeground(red);
-        sunriseLabel.setForeground(red);
-
-        projectSunsetLabel.setForeground(brown);
-        sunsetLabel.setForeground(brown);
-
-        projectDaylightLabel.setForeground(yellow);
-        daylightLabel.setForeground(yellow);
-
-        zenithLabel.setForeground(white);
-        maxSunLabel.setForeground(lightBlue);
-        currentSunLabel.setForeground(orange);
-
-        projectSunriseLabel.setToolTipText("The projected time of sunrise");
-        sunriseLabel.setToolTipText("The time of yestersol sunrise");
-        projectSunsetLabel.setToolTipText("The projected time of sunset");
-        sunsetLabel.setToolTipText("The time of yestersol sunset");
-        projectDaylightLabel.setToolTipText("The projected duration of time in a sol having sunlight");
-        daylightLabel.setToolTipText("The duration of time in a sol having sunlight");
-        zenithLabel.setToolTipText("The time at which the solar irradiance is at max");
-        maxSunLabel.setToolTipText("The max solar irradiance of yestersol as recorded");
-        currentSunLabel.setToolTipText("The current solar irradiance as recorded");
-       
-        roundPane.add(currentSunLabel);
-        roundPane.add(maxSunLabel);
-        
-        roundPane.add(projectSunriseLabel);
-        roundPane.add(sunriseLabel);
-        
-        roundPane.add(zenithLabel);
-        
-        roundPane.add(projectSunsetLabel);
-        roundPane.add(sunsetLabel);
-        
-        roundPane.add(projectDaylightLabel);
-        roundPane.add(daylightLabel);
-
-
-        return sunPane;
-    }
-
-    /**
      * Gets the length of the most lengthy settlement name.
      */
     private int getNameLength() {
@@ -431,8 +247,10 @@ public class SettlementTransparentPanel extends JComponent {
                 if (s != null) {
                     // Change to the selected settlement in SettlementMapPanel
                     changeSettlement(s);
-                    // Update the sun data (UI writes queued to EDT internally)
-                    displaySunData(s.getCoordinates());
+                    // Update weather/sunlight pane
+                    if (weatherPanel != null) {
+                        weatherPanel.update(s);
+                    }
                     // Update the display banner (UI write queued to EDT)
                     displayBanner(s);
                 }
@@ -468,8 +286,6 @@ public class SettlementTransparentPanel extends JComponent {
 
         // Set the selected settlement in SettlementMapPanel
         mapPanel.setSettlement(s);
-        // Set the population label in the status bar
-        mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
     }
 
     /**
@@ -593,108 +409,6 @@ public class SettlementTransparentPanel extends JComponent {
         return StyleManager.DECIMAL_PLACES0.format(value * RADIANS_TO_DEGREES);
     }
 
-    private double getSolarIrradiance(Coordinates c) {
-        return surfaceFeatures.getSolarIrradiance(c);
-    }
-
-    /**
-     * Builds the weather panel
-     */
-    private void buildWeatherPanel() {
-
-        temperatureIcon = new JLabel();
-        windIcon = new JLabel();
-        opticalIcon = new JLabel();
-
-        updateIcon(); // safe at init
-    }
-
-    /**
-     * Updates the weather icon. (Call on EDT)
-     */
-    private void updateIcon() {
-        if (temperatureIcon == null || windIcon == null || opticalIcon == null) return;
-
-        Icon updatedIcon;
-        String tooltip = "";
-        if (temperatureCache < -40) {
-            updatedIcon = ImageLoader.getIconByName("weather/ice");
-            tooltip = "Frigid";
-        }
-        else if (temperatureCache < 0) {
-            updatedIcon = ImageLoader.getIconByName("weather/snowflake");
-            tooltip = "Freezing";
-        }
-        else if (temperatureCache < 10) {
-            updatedIcon = ImageLoader.getIconByName("weather/cloudy");
-            tooltip = "Cool";
-        }
-        else if (temperatureCache < 22) {
-            updatedIcon = ImageLoader.getIconByName("weather/spinningSun");
-            tooltip = "Balmy";
-        }
-        else {
-            updatedIcon = ImageLoader.getIconByName("weather/desert_sun");
-            tooltip = "Sunny";
-        }
-
-        temperatureIcon.setIcon(updatedIcon);
-        temperatureIcon.setToolTipText(tooltip);
-
-        if (windSpeedCache > 120) {
-            if (opticalDepthCache > 0.7) {
-                updatedIcon = ImageLoader.getIconByName("weather/sandstorm");
-                tooltip = "Sandstorm";
-            }
-            else {
-                updatedIcon = ImageLoader.getIconByName("weather/highWind");
-                tooltip = "High Wind";
-            }
-
-        }
-        else if (windSpeedCache > 80) {
-            updatedIcon = ImageLoader.getIconByName("weather/dust_devil");
-            tooltip = "Low Wind";
-        }
-        else if (windSpeedCache > 40) {
-            if (temperatureCache < 0) {
-                updatedIcon = ImageLoader.getIconByName("weather/frost_wind");
-                tooltip = "Frosty Wind";
-            }
-            else {
-                updatedIcon = ImageLoader.getIconByName("weather/cold_wind");
-                tooltip = "Cool Wind";
-            }
-        }
-        else {
-            updatedIcon = ImageLoader.getIconByName("weather/lowWind");
-            tooltip = "Low Wind";
-        }
-
-        windIcon.setIcon(updatedIcon);
-        windIcon.setToolTipText(tooltip);
-
-        if (opticalDepthCache > 1.0) {
-            updatedIcon = ImageLoader.getIconByName("weather/sand");
-            tooltip = "Sandy";
-        }
-        else if (opticalDepthCache > 0.6) {
-            updatedIcon = ImageLoader.getIconByName("weather/hazy");
-            tooltip = "Hazy";
-        }
-        else if (opticalDepthCache > 0.3) {
-            updatedIcon = ImageLoader.getIconByName("weather/dry");
-            tooltip = "Dry";
-        }
-        else {
-            updatedIcon = ImageLoader.getIconByName("weather/line_of_sight");
-            tooltip = "Clear Line of Sight";
-        }
-
-        opticalIcon.setIcon(updatedIcon);
-        opticalIcon.setToolTipText(tooltip);
-    }
-
     /**
      * Builds the zoom slider with debounced change handling and safe wheel bounds.
      */
@@ -750,6 +464,14 @@ public class SettlementTransparentPanel extends JComponent {
         };
 
         mapPanel.addMouseWheelListener(mouseWheelListener);
+    }
+
+    boolean isBannerBarVisible() {
+        return bannerBar.isVisible();
+    }
+
+    boolean isWeatherPanelVisible() {
+        return weatherPanel.isVisible();
     }
 
     /**
@@ -886,6 +608,24 @@ public class SettlementTransparentPanel extends JComponent {
     private JPopupMenu createLabelsMenu() {
         JPopupMenu popMenu = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
         popMenu.setBorderPainted(false);
+        
+        var bannerItem = new JCheckBoxMenuItem("Display Banner", bannerBar.isVisible());
+        bannerItem.setContentAreaFilled(false);
+        bannerItem.addActionListener(e -> {
+            bannerVisible = bannerItem.isSelected();
+            bannerBar.setVisible(bannerVisible);
+        });
+        popMenu.add(bannerItem);
+
+        var weatherItem = new JCheckBoxMenuItem("Display Weather", weatherPanel.isVisible());
+        weatherItem.setContentAreaFilled(false);
+        weatherItem.addActionListener(e -> {
+            weatherVisible = weatherItem.isSelected();
+            weatherPanel.setVisible(weatherVisible);
+        });
+        popMenu.add(weatherItem);
+
+        popMenu.addSeparator();
 
         // Create display option items
         for (var layer : mapPanel.getMapLayers()) {
@@ -979,91 +719,6 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     /**
-     * Gets Mars Time with offset included.
-     * 
-     * @return
-     */
-    private String updateMarsTime() {
-		int offset = mapPanel.getSettlement().getTimeZone().getMSolOffset();
-
-		String zoneID = mapPanel.getSettlement().getTimeZone().getId();
-		return masterClock.getMarsTimeWithOffset(offset).getZonedDateTimeStamp(zoneID);
-    }
-    
-    /**
-     * Gets the adjusted time.
-     * 
-     * @param time
-     * @param offset
-     * @return
-     */
-    private double getAdjustedTime(double time, int offset) {
-    	double adjTime = time + offset;
-    	if (adjTime > 999)
-    		adjTime -= 1000;
-    	else if (adjTime < 0){
-    		adjTime += 1000;
-    	}
-    	return adjTime;
-    }
-    
-    /**
-     * Gets the sunlight data and display it on the top left panel of the settlement map.
-     * (UI label updates are marshaled to EDT).
-     * 
-     * @param location
-     */
-    private void displaySunData(Coordinates location) {
-        double [] time = orbitInfo.getSunTimes(mapPanel.getSettlement());
-
-        // Heavy-ish compute first
-        weather.calculateSunRecord(location);
-        SunData data = weather.getSunRecord(location);
-        
-        final int offset = mapPanel.getSettlement().getTimeZone().getMSolOffset();
-        
-        double adj0 = getAdjustedTime(time[0], offset);
-        double adj1 = getAdjustedTime(time[1], offset);
-//        double adj2 = getAdjustedTime(time[2], offset);
-        
-        // Prepare values
-        final String projRise = PROJECTED_SUNRISE  + StyleManager.DECIMAL1_MSOL.format(adj0);
-        final String projSet  = PROJECTED_SUNSET   + StyleManager.DECIMAL1_MSOL.format(adj1);
-        final String projDay  = PROJECTED_DAYLIGHT + StyleManager.DECIMAL1_MSOL.format(time[2]);
-
-        // Update Mars Time
-        final String ts = updateMarsTime();
-
-        // Push UI writes to EDT
-        SwingUtilities.invokeLater(() -> {
-    		if (martianTimeLabel != null) 
-    			martianTimeLabel.setText(ts);
-    		
-            if (projectSunriseLabel != null) projectSunriseLabel.setText(projRise);
-            if (projectSunsetLabel  != null) projectSunsetLabel.setText(projSet);
-            if (projectDaylightLabel!= null) projectDaylightLabel.setText(projDay);
-
-            if (data == null) {
-                logger.warning(0, "Yestersol sunlight data unavailable at " + location + ".");
-                return;
-            }
-
-            double adj3 = getAdjustedTime(data.getSunrise(), offset);
-            double adj4 = getAdjustedTime(data.getSunset(), offset);
-            double adj5 = getAdjustedTime(data.getZenith(), offset);
-            
-            if (sunriseLabel != null) sunriseLabel.setText(SUNRISE   + StyleManager.DECIMAL1_MSOL.format(adj3));
-            if (sunsetLabel  != null) sunsetLabel.setText(SUNSET     + StyleManager.DECIMAL1_MSOL.format(adj4));
-            
-            if (daylightLabel!= null) daylightLabel.setText(DAYLIGHT + StyleManager.DECIMAL1_MSOL.format(data.getDaylight()));
-            
-            if (zenithLabel  != null) zenithLabel.setText(ZENITH     + StyleManager.DECIMAL1_MSOL.format(adj5));
-            
-            if (maxSunLabel  != null) maxSunLabel.setText(MAX_LIGHT + data.getMaxSun() + WM);
-        });
-    }
-
-    /**
      * Prepares the resource data string for the new sol.
      */
     private void prepBannerResourceString(ClockPulse pulse) {
@@ -1082,7 +737,7 @@ public class SettlementTransparentPanel extends JComponent {
      * 
      * @param pulse
      */
-    public void update(ClockPulse pulse) {
+    void update(ClockPulse pulse) {
         int sol = pulse.getMarsTime().getMissionSol();
 
         if (pulse.isNewHalfSol()
@@ -1090,10 +745,6 @@ public class SettlementTransparentPanel extends JComponent {
             solCache = sol;
             // Redo the resource string once a sol (off-EDT; only updates cache)
             prepBannerResourceString(pulse);
-            // Update the sun data
-            Settlement s0 = mapPanel.getSettlement();
-            if (s0 != null)
-                displaySunData(s0.getCoordinates()); // EDT marshaled inside
         }
         
         Settlement s = mapPanel.getSettlement(); 
@@ -1107,35 +758,10 @@ public class SettlementTransparentPanel extends JComponent {
             displayBanner(s);
         }
         
-        if (settlementListBox != null) {
-            // Update icons on EDT
-            SwingHelper.runInEDT(this::updateIcon);
-
-            // Update the Mars Time label on EDT
-            if (martianTimeLabel != null) {
-                SwingHelper.runInEDT(() -> {
-                    martianTimeLabel.setText(updateMarsTime());
-                });
-            }
-            
-            // Update current sunlight on EDT
-            updateCurrentSunlight(s);
+        if (weatherPanel.isVisible()) {
+            // Update weather/sunlight pane
+            weatherPanel.update(s);
         }
-    }
-
-    /**
-     * Updates the current sunlight label safely on EDT.
-     */
-    private void updateCurrentSunlight(Settlement s) {
-    	
-        if (currentSunLabel == null) return;
-
-        int irr = (int) getSolarIrradiance(s.getCoordinates());
-        SwingUtilities.invokeLater(() -> {
-            if (currentSunLabel != null) {
-                currentSunLabel.setText(CURRENT_LIGHT + irr + WM);
-            }
-        });
     }
 
     /**
