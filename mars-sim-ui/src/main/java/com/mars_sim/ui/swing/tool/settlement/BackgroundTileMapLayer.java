@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.ImageLoader;
 
@@ -97,8 +98,16 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 		settlementBackgroundMap = new LinkedHashMap<>();		
 	}
 
+	/**	(non-Javadoc)
+	 * Draw the background tile image for the settlement, scaled and rotated as needed.
+	 * @param settlement the settlement to draw.
+	 * @param viewpoint the map view point.
+	 * @param selectedEntity the currently selected entity (not used in this layer).
+	 * @see com.mars_sim.ui.swing.tool.settlement.SettlementMapLayer#displayLayer(com.mars_sim.core.structure.Settlement, com.mars_sim.ui.swing.tool.settlement.MapViewPoint, com.mars_sim.core.Entity)
+	 */
 	@Override
-	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+			Entity selectedEntity) {
 		
 		// Save original graphics transforms.
 		var g2d = viewpoint.graphics();
@@ -127,35 +136,9 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 
 		double diagonal = Math.hypot(mapWidth, mapHeight);
 
-		Image backgroundTileIcon = null;
-
+		// If no image already loaded; then load it
 		if (backgroundTileImage == null) {
-			// Resolve the background image and compute the scaled tile size.
-			String imageName = getBackgroundImageName(settlement);
-			if (imageName == null) {
-				// Restore original transform before exiting.
-				g2d.setTransform(saveTransform);
-				return Collections.emptyList();
-			}
-			backgroundTileIcon = ImageLoader.getImage(imageName);
-			if (backgroundTileIcon == null) {
-				g2d.setTransform(saveTransform);
-				return Collections.emptyList();
-			}
-
-			double imageScale = scale / SettlementMapPanel.DEFAULT_SCALE;
-			int tileWidth = (int) Math.round(backgroundTileIcon.getWidth(mapPanel) * imageScale);
-			int tileHeight = (int) Math.round(backgroundTileIcon.getHeight(mapPanel) * imageScale);
-
-			// Guard against invalid sizes.
-			if (tileWidth <= 0 || tileHeight <= 0) {
-				g2d.setTransform(saveTransform);
-				return Collections.emptyList();
-			}
-
-			// Look up or create a scaled tile image from the bounded cache.
-			CacheKey key = new CacheKey(imageName, tileWidth, tileHeight);
-			backgroundTileImage = getOrCreateScaledTile(key, backgroundTileIcon, mapPanel, tileWidth, tileHeight);
+			backgroundTileImage = loadSettlementImage(settlement, scale);
 		}
 
 		if (backgroundTileImage != null) {
@@ -221,6 +204,33 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 		return Collections.emptyList();
+	}
+
+	private Image loadSettlementImage(Settlement settlement, double scale) {
+
+			// Resolve the background image and compute the scaled tile size.
+			String imageName = getBackgroundImageName(settlement);
+			if (imageName == null) {
+				// Restore original transform before exiting.
+				return null;
+			}
+			var backgroundTileIcon = ImageLoader.getImage(imageName);
+			if (backgroundTileIcon == null) {
+				return null;
+			}
+
+			double imageScale = scale / SettlementMapPanel.DEFAULT_SCALE;
+			int tileWidth = (int) Math.round(backgroundTileIcon.getWidth(mapPanel) * imageScale);
+			int tileHeight = (int) Math.round(backgroundTileIcon.getHeight(mapPanel) * imageScale);
+
+			// Guard against invalid sizes.
+			if (tileWidth <= 0 || tileHeight <= 0) {
+				return null;
+			}
+
+			// Look up or create a scaled tile image from the bounded cache.
+			CacheKey key = new CacheKey(imageName, tileWidth, tileHeight);
+			return getOrCreateScaledTile(key, backgroundTileIcon, mapPanel, tileWidth, tileHeight);
 	}
 
 	/**

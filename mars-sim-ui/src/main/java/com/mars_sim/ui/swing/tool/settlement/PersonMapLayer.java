@@ -14,6 +14,7 @@ import java.util.Properties;
 import javax.swing.JMenuItem;
 
 import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
@@ -46,9 +47,10 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 	}
 	
 	@Override
-	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+			Entity selectedEntity) {
 		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement, false);		
-		Person selectedPerson = mapPanel.getSelectedPerson();
+		Person selectedPerson = (selectedEntity instanceof Person p) ? p : null;
 
 		return drawWorkers(people, selectedPerson, showLabels, viewpoint);
 	}

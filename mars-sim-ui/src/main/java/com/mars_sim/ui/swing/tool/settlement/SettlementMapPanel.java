@@ -12,7 +12,6 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,17 +27,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.construction.ConstructionSite;
-import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.Person;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -95,12 +90,7 @@ public class SettlementMapPanel extends JPanel {
 
 	private List<SettlementMapLayer> mapLayers;
 
-	private Map<Settlement, Person>   selectedPerson;
-	private Map<Settlement, Robot>    selectedRobot;
-	private Map<Settlement, Building> selectedBuilding;
-	private Map<Settlement, Vehicle>  selectedVehicle;
-	private Map<Settlement, ConstructionSite>  selectedSite;
-	private Map<Settlement, DataCollectionSite>  selectedDataColSite;
+	private Map<Settlement, Entity>   selectedEntity   = new HashMap<>();
 
 	private List<MapHotspot<?>> hotspots = new ArrayList<>();
 	
@@ -157,14 +147,6 @@ public class SettlementMapPanel extends JPanel {
 		rotation = UIConfig.extractDouble(userSettings, ROTATION_PROP, 0D);
 		// Always quantize stored scale
 		scale = UIConfig.extractDouble(userSettings, SCALE_PROP, DEFAULT_SCALE);
-
-
-		selectedVehicle = new HashMap<>();
-		selectedBuilding = new HashMap<>();
-		selectedPerson = new HashMap<>();
-		selectedRobot = new HashMap<>();
-		selectedSite = new HashMap<>();
-		selectedDataColSite = new HashMap<>();
 		
 		initLayers(context, userSettings);
 
@@ -312,7 +294,7 @@ public class SettlementMapPanel extends JPanel {
 		LocalPosition settlementPosition = convertToSettlementLocation(x, y);
 
 		var selected = hotspots.stream()
-					.filter(h -> h.isSelected(settlementPosition))
+					.filter(h -> h.isWithinRange(settlementPosition))
 					.findFirst().orElse(null);
 
 		if (selected != null) {
@@ -499,102 +481,17 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Converts a local position from settlement positioning system to screen pixel x and y.
-	 *
-	 * @param pos
-	 * @return
-	 */
-	Point convertToPixelPos(LocalPosition pos) {
-		double x = pos.getX();
-		double y = pos.getY();
-		double xDiff3 = x - xPos;
-		double yDiff3 = y - yPos;
-		double xDiff2 = (Math.cos(rotation) * xDiff3) + (Math.sin(rotation) * yDiff3);
-		double yDiff2 = (Math.cos(rotation) * yDiff3) - (Math.sin(rotation) * xDiff3);
-		double xDiff1 = xDiff2 * scale;
-		double yDiff1 = yDiff2 * scale;
-		int xPixel = (int) Math.round(getWidth() / 2.0 - xDiff1);
-		int yPixel = (int) Math.round(getHeight() / 2.0 - yDiff1);
-		return new Point(xPixel, yPixel);
-	}
-
-	/**
-	 * Selects a person on the map.
-	 *
-	 * @param person the selected person.
-	 */
-	public void selectPerson(Person person) {
-		if ((settlement != null) && (person != null)) {
-			Person currentlySelected = selectedPerson.get(settlement);
-			if (person.equals(currentlySelected)) {
-				selectedPerson.put(settlement, null);
-			} else {
-				selectedPerson.put(settlement, person);
-			}
-		}
-	}
-
-	/**
-	 * Displays the person on the map
-	 *
-	 * @param person
-	 */
-	public void displayPerson(Person person) {
-		if (settlement != null && person != null)
-			selectedPerson.put(settlement, person);
-	}
-
-	/**
-	 * Gets the selected person for the current settlement.
-	 *
-	 * @return the selected person.
-	 */
-	public Person getSelectedPerson() {
-		Person result = null;
-		if (settlement != null) {
-			result = selectedPerson.get(settlement);
-		}
-		return result;
-	}
-
-	/**
-	 * Selects a robot on the map.
-	 *
-	 * @param robot the selected robot.
-	 */
-	public void selectRobot(Robot robot) {
-		if ((settlement != null) && (robot != null)) {
-			Robot currentlySelected = selectedRobot.get(settlement);
-			if (robot.equals(currentlySelected)) {
-				selectedRobot.put(settlement, null);
-			} else {
-				selectedRobot.put(settlement, robot);
-			}
-		}
-	}
-
-	/**
 	 * Displays the robot on the map.
 	 *
 	 * @param robot
 	 */
-	public void displayRobot(Robot robot) {
-		if (settlement != null && robot != null)
-			selectedRobot.put(settlement, robot);
+	void displayEntity(Entity e) {
+		if (settlement != null && e != null) {
+			selectedEntity.put(settlement, e);
+			repaint();
+		}
 	}
 
-	/**
-	 * Gets the selected Robot for the current settlement.
-	 *
-	 * @return the selected Robot.
-	 */
-	public Robot getSelectedRobot() {
-		Robot result = null;
-		if (settlement != null) {
-			result = selectedRobot.get(settlement);
-		}
-		return result;
-	}
 
 	/**
 	 * Is a position within the bounds of an Object ?
@@ -655,107 +552,7 @@ public class SettlementMapPanel extends JPanel {
 		else
 			return null;
 	}
-	
-	/**
-	 * Gets the selected vehicle for the current settlement.
-	 *
-	 * @return the selected vehicle.
-	 */
-	public Vehicle getSelectedVehicle() {
-		Vehicle result = null;
-		if (settlement != null) {
-			result = selectedVehicle.get(settlement);
-		}
-		return result;
-	}
 
-	/**
-	 * Selects a building on the map.
-	 *
-	 * @param building the selected building.
-	 */
-	public void selectBuilding(Building building) {
-		if ((settlement != null) && (building != null)) {
-			Building currentlySelected = selectedBuilding.get(settlement);
-			if (building.equals(currentlySelected)) {
-				selectedBuilding.put(settlement, null);
-			} else {
-				selectedBuilding.put(settlement, building);
-			}
-		}
-	}
-	
-	/**
-	 * Gets the selected building for the current settlement.
-	 *
-	 * @return the selected building.
-	 */
-	public Building getSelectedBuilding() {
-		Building result = null;
-		if (settlement != null) {
-			result = selectedBuilding.get(settlement);
-		}
-		return result;
-	}
-
-	/**
-	 * Selects a site on the map.
-	 *
-	 * @param site the selected sites.
-	 */
-	public void selectSite(ConstructionSite site) {
-		if ((settlement != null) && (site != null)) {
-			ConstructionSite currentlySelected = selectedSite.get(settlement);
-			if (site.equals(currentlySelected)) {
-				selectedSite.put(settlement, null);
-			} else {
-				selectedSite.put(settlement, site);
-			}
-		}
-	}
-	
-	/**
-	 * Gets the selected site for the current settlement.
-	 *
-	 * @return the selected site.
-	 */
-	public ConstructionSite getSelectedSite() {
-		ConstructionSite result = null;
-		if (settlement != null) {
-			result = selectedSite.get(settlement);
-		}
-		return result;
-	}
-	
-	/**
-	 * Selects a data site on the map.
-	 *
-	 * @param site the selected site.
-	 */
-	public void selectDataSite(DataCollectionSite site) {
-		if ((settlement != null) && (site != null)) {
-			DataCollectionSite currentlySelected = selectedDataColSite.get(settlement);
-			if (site.equals(currentlySelected)) {
-				selectedDataColSite.put(settlement, null);
-			} else {
-				selectedDataColSite.put(settlement, site);
-			}
-		}
-	}
-	
-	/**
-	 * Gets the selected data collection site for the current settlement.
-	 *
-	 * @return the selected site.
-	 */
-	public DataCollectionSite getSelectedDataSite() {
-		DataCollectionSite result = null;
-		if (settlement != null) {
-			result = selectedDataColSite.get(settlement);
-		}
-		return result;
-	}
-	
 	protected List<SettlementMapLayer> getMapLayers() {
 		return mapLayers;
 	}
@@ -790,8 +587,9 @@ public class SettlementMapPanel extends JPanel {
 			// Display all map layers and reset hotspots
 			var newHotspots = new ArrayList<MapHotspot<?>>();
 			MapViewPoint viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, scaleMod);
+			var currentSelection = selectedEntity.get(settlement);
 			for (SettlementMapLayer layer : mapLayers) {
-				newHotspots.addAll(layer.displayLayer(settlement, viewpoint));
+				newHotspots.addAll(layer.displayLayer(settlement, viewpoint, currentSelection));
 			}
 
 			// Map layers are drawon bottom up but hotspots need to be top down

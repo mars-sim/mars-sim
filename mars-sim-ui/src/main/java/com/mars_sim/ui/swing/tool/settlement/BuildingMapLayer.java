@@ -30,6 +30,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.batik.gvt.GraphicsNode;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
@@ -124,7 +125,8 @@ public class BuildingMapLayer extends AbstractMapLayer {
     }
 
     @Override
-    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+            Entity selectedEntity) {
         Collection<MapHotspot<?>> hotspots = new ArrayList<>();
 
         // Save original graphics transforms.
@@ -132,11 +134,13 @@ public class BuildingMapLayer extends AbstractMapLayer {
 
         if (settlement != null) {  
 
+            Building selectedBuilding = (selectedEntity instanceof Building b) ? b : null;
+
             // Display svg images of all buildings in the entire settlement
             // Draw all buildings.
             var buildings = settlement.getBuildingManager().getBuildingSet();
             for (Building b: buildings) {
-                hotspots.add(drawBuilding(b, showLabels, viewpoint));
+				hotspots.add(drawBuilding(b, selectedBuilding, showLabels, viewpoint));
             }
 
             // Draw all building connectors.
@@ -228,10 +232,11 @@ public class BuildingMapLayer extends AbstractMapLayer {
      * 
      * @param building the building.
      */
-    private MapHotspot<Building> drawBuilding(Building building, boolean showLabel, MapViewPoint viewpoint) {
+    private MapHotspot<Building> drawBuilding(Building building, Building selectedBuilding, boolean showLabel,
+            MapViewPoint viewpoint) {
 
     	// Check if it's drawing the mouse-picked building 
-        Color selectedColor = (building.equals(mapPanel.getSelectedBuilding()) ? BLDG_SELECTED_COLOR : null);
+        Color selectedColor = (building.equals(selectedBuilding) ? BLDG_SELECTED_COLOR : null);
     	
         // Use SVG image for building if available  		
         GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
@@ -263,7 +268,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
         }
 
         @Override
-        boolean isSelected(LocalPosition point) {
+        boolean isWithinRange(LocalPosition point) {
             return isWithin(point, target);
         }
 

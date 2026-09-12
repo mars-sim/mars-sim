@@ -31,8 +31,8 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
     private static final int LABEL_XOFFSET = 1;
     private static final int LABEL_YOFFSET = -1;
 
-    private static final double width = .45;
-    private static final double length = .4;
+    private static final double WIDTH = .45;
+    private static final double LENGTH = .4;
  
     private static final BasicStroke STROKE = new BasicStroke(1.5f);
  
@@ -58,14 +58,12 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
 
 		// Draw all workers except selected person.
 		for (T w : workers) {
-			if (selected == null || !w.equals(selected)) {
+			if (!w.equals(selected)) {
 				hotspots.add(drawUnselectedWorker(w, showLabels, viewpoint));
 			}
-		}
-
-		// Draw selected person.
-		if (selected != null && workers.contains(selected)) {
-            hotspots.add(drawSelectedWorker(selected, viewpoint));
+            else {
+                hotspots.add(drawSelectedWorker(selected, viewpoint));
+            }
 		}
 
         // Restore original graphic transforms.
@@ -81,7 +79,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
        	GraphicsNode svg = SVGMapUtil.getUnitSVG(w.getStringType());
        	if (svg != null) {
        		// Draw base SVG image for vehicle.
-       		drawUnit(pos, color, false, svg, viewpoint);
+       		drawWorker(pos, color, false, svg, viewpoint);
        	}
        	else    	
        		drawOval(pos, color, viewpoint);
@@ -110,7 +108,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
      	GraphicsNode svg = SVGMapUtil.getUnitSVG(w.getStringType());
      	if (svg != null) {
      		// Draw base SVG image for vehicle.
-     		drawUnit(pos, color, true, svg, viewpoint);
+     		drawWorker(pos, color, true, svg, viewpoint);
      	}
      	else    	
        		drawOval(pos, color, viewpoint);
@@ -164,13 +162,13 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
         }
 
         @Override
-        boolean isSelected(LocalPosition point) {
+        boolean isWithinRange(LocalPosition point) {
             return pos.getDistanceTo(point) <= SELECTION_RANGE;
         }
     }
 
 	/**
-     * Draws a unit using SVG on the map.
+     * Draws a Worker using SVG on the map.
      * 
      * @param pos LocalPosition
      * @param color ColorChoice
@@ -179,7 +177,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
      * @param patternSVG the pattern SVG graphics node (null if no pattern).
 	 * @param viewpoint MapViewPoint
      */
-    protected void drawUnit(LocalPosition pos, ColorChoice color, boolean isSelected, GraphicsNode svg,
+    protected void drawWorker(LocalPosition pos, ColorChoice color, boolean isSelected, GraphicsNode svg,
 								MapViewPoint viewpoint) {
 		
 		var g2d = viewpoint.graphics();
@@ -192,19 +190,19 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
         Rectangle2D bounds = svg.getBounds();
         
         // Determine transform information.
-        double scalingWidth = width / bounds.getWidth() * scale;
-        double scalingLength = length / bounds.getHeight() * scale;
+        double scalingWidth = WIDTH / bounds.getWidth() * scale;
+        double scalingLength = LENGTH / bounds.getHeight() * scale;
         double boundsPosX = bounds.getX() * scalingWidth;
         double boundsPosY = bounds.getY() * scalingLength;
-        double centerX = width * scale / 2D;
-        double centerY = length * scale / 2D;
+        double centerX = WIDTH * scale / 2D;
+        double centerY = LENGTH * scale / 2D;
         double translationX = (-1D * pos.getX() * scale) - centerX - boundsPosX;
         double translationY = (-1D * pos.getY() * scale) - centerY - boundsPosY;
 
         AffineTransform newTransform = new AffineTransform();
         
 		// Draw buffered image of structure.
-		BufferedImage image = getBufferedImage(svg, width, length, null, scale);
+		BufferedImage image = getBufferedImage(svg, WIDTH, LENGTH, null, scale);
 		
 		if (image != null) {
 			// Apply graphic transforms.		
@@ -213,6 +211,8 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
 			g2d.transform(newTransform);
 			
 			g2d.drawImage(image, 0, 0, null);
+
+            image.flush();
 		}	
 	
 		if (isSelected) {  
@@ -227,9 +227,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
 			// Restore the stroke
 			g2d.setStroke(oldStroke);
 		}
-		
-		image.flush();
-		
+				
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);    
     }

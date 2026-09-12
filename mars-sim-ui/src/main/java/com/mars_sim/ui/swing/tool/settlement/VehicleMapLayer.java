@@ -20,6 +20,7 @@ import javax.swing.JMenuItem;
 
 import org.apache.batik.gvt.GraphicsNode;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.Part;
@@ -48,7 +49,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		}
 
 		@Override
-		boolean isSelected(LocalPosition point) {
+		boolean isWithinRange(LocalPosition point) {
 			return target.getPosition().getDistanceTo(point) <= selectionRange;
 		}
 
@@ -96,7 +97,8 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 
 	@Override
-	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+			Entity selectedEntity) {
 		Collection<MapHotspot<?>> hotspots = new ArrayList<>();
 
 		// Save original graphics transforms.
@@ -105,9 +107,11 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		// Vehicles parked take a copy to avoid changes during iteration.
 		Collection<Vehicle> vehicles = settlement.getParkedNGaragedVehicles();
 
+		Vehicle selectedVehicle = (selectedEntity instanceof Vehicle v) ? v : null;
+
 		// Draw all parked vehicles at this settlement location
 		for (Vehicle v : vehicles) {
-			hotspots.add(drawVehicle(v, showLabel, viewpoint));
+			hotspots.add(drawVehicle(v, selectedVehicle, showLabel, viewpoint));
 		}
 
 		// Restore original graphic transforms.
@@ -138,10 +142,11 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 * @param showLabel
 	 * @param viewpoint
 	 */
-	private MapHotspot<Vehicle> drawVehicle(Vehicle vehicle, boolean showLabel, MapViewPoint viewpoint) {
+	private MapHotspot<Vehicle> drawVehicle(Vehicle vehicle, Vehicle selectedVehicle, boolean showLabel,
+			MapViewPoint viewpoint) {
 
     	// Check if it's drawing the mouse-picked building 
-        Color selectedColor = (vehicle.equals(mapPanel.getSelectedVehicle()) ? VEHICLE_SELECTED_COLOR : null);
+		Color selectedColor = (vehicle.equals(selectedVehicle) ? VEHICLE_SELECTED_COLOR : null);
         
 		// Use SVG image for vehicle if available.
 		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());

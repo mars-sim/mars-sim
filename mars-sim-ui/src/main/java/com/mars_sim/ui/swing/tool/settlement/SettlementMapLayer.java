@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import javax.swing.JMenuItem;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -25,9 +26,11 @@ public interface SettlementMapLayer {
 	 * 
 	 * @param settlement the settlement to display.
 	 * @param viewpoint  the viewpoint of the Map.
-	 * @return 
+	 * @param selectedEntity the selected entity in the active settlement.
+	 * @return List of clickable hotspots
 	 */
-	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint);
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+			Entity selectedEntity);
 
 	/**
 	 * Destroy the map layer.

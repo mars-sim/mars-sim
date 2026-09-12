@@ -275,7 +275,7 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 	 */
     public void displayRobot(Robot r) {
 		if (displayWorker(r)) {
-			mapPanel.selectRobot(r);
+			mapPanel.displayEntity(r);
 		}
     }
 
@@ -287,7 +287,7 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 	 */
     public void displayPerson(Person p) {
 		if (displayWorker(p)) {
-			mapPanel.selectPerson(p);
+			mapPanel.displayEntity(p);
 		}
     }
 

@@ -26,7 +26,7 @@ abstract class MapHotspot<T extends Entity> {
         this.target = target;
     }
 
-    abstract boolean isSelected(LocalPosition point);
+    abstract boolean isWithinRange(LocalPosition point);
 
     /**
 	 * Is a position within the bounds of an Object ?

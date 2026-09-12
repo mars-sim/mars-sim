@@ -16,6 +16,7 @@ import java.util.Properties;
 
 import javax.swing.JMenuItem;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
@@ -42,8 +43,9 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
      * Constructor 1.
      * 
      * @param mapPanel the settlement map panel.
+     * @param userSettings the user settings properties.
      */
-        public DataCollectionSiteMapLayer(SettlementMapPanel mapPanel, Properties userSettings) {
+    public DataCollectionSiteMapLayer(SettlementMapPanel mapPanel, Properties userSettings) {
 
         // Initialize data members.
         this.mapPanel = mapPanel;
@@ -51,15 +53,18 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
     }
 
     @Override
-    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+            Entity selectedEntity) {
         Collection<MapHotspot<?>> hotspots = new ArrayList<>();
 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
+		DataCollectionSite selectedSite = (selectedEntity instanceof DataCollectionSite dcs) ? dcs : null;
+
         // Draw all construction sites.
         for (DataCollectionSite c : settlement.getLocalDataCollectionSitesList()) {
-            hotspots.add(drawSite(c, showLabels, viewpoint));
+			hotspots.add(drawSite(c, selectedSite, showLabels, viewpoint));
         }
 
 	    // Restore original graphic transforms.
@@ -89,10 +94,11 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
      * @param showLabel
      * @param viewpoint
      */
-    private MapHotspot<DataCollectionSite> drawSite(DataCollectionSite site, boolean showLabel, MapViewPoint viewpoint) {
+    private MapHotspot<DataCollectionSite> drawSite(DataCollectionSite site, DataCollectionSite selectedSite,
+            boolean showLabel, MapViewPoint viewpoint) {
     	
      	// Check if it's drawing the mouse-picked building 
-        Color selectedColor = (site.equals(mapPanel.getSelectedDataSite()) ? SITE_SELECTED_COLOR : null);
+        Color selectedColor = (site.equals(selectedSite) ? SITE_SELECTED_COLOR : null);
     	
         drawRectangle(site, SITE_COLOR, selectedColor, viewpoint);
         
@@ -113,7 +119,7 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
         }
 
         @Override
-        boolean isSelected(LocalPosition point) {
+        boolean isWithinRange(LocalPosition point) {
             return isWithin(point, target);
         }
         

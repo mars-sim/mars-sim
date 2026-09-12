@@ -14,6 +14,7 @@ import java.util.Properties;
 import javax.swing.JMenuItem;
 
 import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.UIConfig;
@@ -44,10 +45,11 @@ public class RobotMapLayer extends WorkerMapLayer<Robot> {
 
 
 	@Override
-	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+			Entity selectedEntity) {
 
 		Collection<Robot> robots = CollectionUtils.getAssociatedRobotsInSettlementVicinity(settlement);
-		Robot selectedRobot = mapPanel.getSelectedRobot();
+		Robot selectedRobot = (selectedEntity instanceof Robot r) ? r : null;
 
 		return drawWorkers(robots, selectedRobot, showLabel, viewpoint);
 	}

@@ -19,6 +19,7 @@ import javax.swing.JMenuItem;
 
 import org.apache.batik.gvt.GraphicsNode;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -41,7 +42,7 @@ public class ConstructionMapLayer extends AbstractMapLayer {
         }
 
         @Override
-        boolean isSelected(LocalPosition point) {
+        boolean isWithinRange(LocalPosition point) {
             return isWithin(point, target);
         }
 
@@ -86,7 +87,7 @@ public class ConstructionMapLayer extends AbstractMapLayer {
      * 
      * @param mapPanel the settlement map panel.
      */
-        public ConstructionMapLayer(SettlementMapPanel mapPanel, Properties userSettings) {
+    public ConstructionMapLayer(SettlementMapPanel mapPanel, Properties userSettings) {
 
         // Initialize data members.
         this.mapPanel = mapPanel;
@@ -94,16 +95,19 @@ public class ConstructionMapLayer extends AbstractMapLayer {
     }
 
     @Override
-    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+            Entity selectedEntity) {
         Collection<MapHotspot<?>> hotspots = new ArrayList<>();
 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
+		ConstructionSite selectedSite = (selectedEntity instanceof ConstructionSite cs) ? cs : null;
+
         // Draw all construction sites.
         for(ConstructionSite c : settlement.getConstructionManager()
                                 .getConstructionSites()) {
-            hotspots.add(drawConstructionSite(c, showConstructionLabels, viewpoint));
+			hotspots.add(drawConstructionSite(c, selectedSite, showConstructionLabels, viewpoint));
         }
 
 	    // Restore original graphic transforms.
@@ -131,10 +135,11 @@ public class ConstructionMapLayer extends AbstractMapLayer {
      * 
      * @param site the construction site.
      */
-    private MapHotspot<ConstructionSite> drawConstructionSite(ConstructionSite site, boolean showLabel, MapViewPoint viewpoint) {
+    private MapHotspot<ConstructionSite> drawConstructionSite(ConstructionSite site, ConstructionSite selectedSite,
+            boolean showLabel, MapViewPoint viewpoint) {
     	
      	// Check if it's drawing the mouse-picked building 
-        Color selectedColor = (site.equals(mapPanel.getSelectedSite()) ? CONST_SELECTED_COLOR : null);
+        Color selectedColor = (site.equals(selectedSite) ? CONST_SELECTED_COLOR : null);
     	
         // Use SVG image for construction site if available.
         GraphicsNode svg = null;
