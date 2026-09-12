@@ -37,67 +37,77 @@ public class StyleManager {
 
     private static final Logger logger = Logger.getLogger(StyleManager.class.getName());
 
-    // Shared generic formatters 
+    // Currency
     public static final DecimalFormat CURRENCY_PLACES1 = new DecimalFormat("$ #,###,##0.0");
     
+    // Decimals
     public static final DecimalFormat DECIMAL_PLACES0 = new DecimalFormat("#,###,###,###");
     public static final DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("#,###,##0.0");
     public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     public static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("#,###,##0.000");
     public static final DecimalFormat DECIMAL_PLACES4 = new DecimalFormat("#,###,##0.0000");
     
-    // Unit specific formatters
-    public static final DecimalFormat DECIMAL_AH = new DecimalFormat("#,##0.0 Ah");
+    // Liquids
     public static final DecimalFormat DECIMAL_LITER = new DecimalFormat("#,##0.0 Liter");
     
+    // Energy and Power consumption
     public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.00 km/kg");
     public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.00 Wh/km");
     public static final DecimalFormat DECIMAL_KWH_KM = new DecimalFormat("#,##0.000 kWh/km");
-    
     public static final DecimalFormat DECIMAL_KWH_KG = new DecimalFormat("#,##0.00 kWh/kg");
     public static final DecimalFormat DECIMAL_WH_KG = new DecimalFormat("#,##0.00 Wh/kg");
-    
+
+    // Area
     public static final DecimalFormat DECIMAL_M2 = new DecimalFormat("#,##0.00 m\u00B2");
-    public static final DecimalFormat DECIMAL_M_S2 = new DecimalFormat("#,##0.00 "
-									+ Msg.getString("unit.meterperssecsquared")); //-NLS-1$   
-    public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("unit.meterpersec")); //-NLS-1$
     
+    // Electrical                                
     public static final DecimalFormat DECIMAL_KJ = new DecimalFormat("#,##0.0 kJ");
-    
-    public static final DecimalFormat DECIMAL2_KM = new DecimalFormat("#,##0.00 km");
-    public static final DecimalFormat DECIMAL3_KM = new DecimalFormat("#,##0.000 km");
-    
-    public static final DecimalFormat DECIMAL_M = new DecimalFormat("#,##0.00 m");
-    
-    public static final DecimalFormat DECIMAL_KPH = new DecimalFormat("##0.00 kph");
-    
-    public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
-    public static final DecimalFormat DECIMAL2_KG = new DecimalFormat("#,##0.00 kg");
-
-    public static final DecimalFormat DECIMAL1_KG_SOL = new DecimalFormat("#,##0.0 kg/sol");
-    public static final DecimalFormat DECIMAL2_KG_SOL = new DecimalFormat("#,##0.00 kg/sol");
-    public static final DecimalFormat DECIMAL2_G_LITER = new DecimalFormat("#,##0.00 g/L");
-
+    public static final DecimalFormat DECIMAL_V = new DecimalFormat("#,##0.0 V");
     public static final DecimalFormat DECIMAL_KW = new DecimalFormat("#,##0.0 kW");
     public static final DecimalFormat DECIMAL2_KW = new DecimalFormat("#,##0.00 kW");
     public static final DecimalFormat DECIMAL_KWH = new DecimalFormat("#,##0.0 kWh");
     public static final DecimalFormat DECIMAL2_KWH = new DecimalFormat("#,##0.00 kWh");
-    public static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");
+    public static final DecimalFormat DECIMAL_AH = new DecimalFormat("#,##0.0 Ah");
+
+    // Temperature
+    public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
+    public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
     
+    // Distance
+    public static final DecimalFormat DECIMAL2_KM = new DecimalFormat("#,##0.00 km");
+    public static final DecimalFormat DECIMAL3_KM = new DecimalFormat("#,##0.000 km");
+    public static final DecimalFormat DECIMAL_M = new DecimalFormat("#,##0.00 m");
+    
+    // Velocity
+    public static final DecimalFormat DECIMAL_KPH = new DecimalFormat("##0.00 kph");
+    public static final DecimalFormat DECIMAL_M_S2 = new DecimalFormat("#,##0.00 "
+									+ Msg.getString("unit.meterperssecsquared")); //-NLS-1$   
+    public static final DecimalFormat DECIMAL_M_S = new DecimalFormat("#,##0.00 " 
+    								+ Msg.getString("unit.meterpersec")); //-NLS-1$
+
+    // Mass
+    public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
+    public static final DecimalFormat DECIMAL2_KG = new DecimalFormat("#,##0.00 kg");
+
+    // Mass rate
+    public static final DecimalFormat DECIMAL1_KG_SOL = new DecimalFormat("#,##0.0 kg/sol");
+    public static final DecimalFormat DECIMAL2_KG_SOL = new DecimalFormat("#,##0.00 kg/sol");
+    public static final DecimalFormat DECIMAL2_G_LITER = new DecimalFormat("#,##0.00 g/L");
+    
+    // Percentage
     public static final DecimalFormat DECIMAL_PERC = new DecimalFormat("0 '%'");
     public static final DecimalFormat DECIMAL1_PERC = new DecimalFormat("0.0 '%'");
     public static final DecimalFormat DECIMAL2_PERC = new DecimalFormat("0.00 '%'");
+
+    // Time
     public static final DecimalFormat DECIMAL_SOLS = new DecimalFormat("#,##0 sols");
     public static final DecimalFormat DECIMAL1_SOLS = new DecimalFormat("#,##0.0 sols");
     public static final DecimalFormat DECIMAL2_SOLS = new DecimalFormat("#,##0.00 sols");
     public static final DecimalFormat DECIMAL3_SOLS = new DecimalFormat("#,##0.000 sols");
-    public static final DecimalFormat DECIMAL_DEG = new DecimalFormat("0.# \u00B0");
-    public static final DecimalFormat DECIMAL_CELCIUS = new DecimalFormat("0.0 \u00B0C");
-    public static final DecimalFormat DECIMAL_V = new DecimalFormat("#,##0.0 V");
     public static final DecimalFormat DECIMAL_MSOL = new DecimalFormat("#,##0 msol");
     public static final DecimalFormat DECIMAL1_MSOL = new DecimalFormat("#,##0.0 msol");
     public static final DecimalFormat DECIMAL2_MSOL = new DecimalFormat("#,##0.00 msol");
+
     public static final DecimalFormat DECIMAL_NG_ML = new DecimalFormat("#,##0.0 ng/mL");
     public static final DecimalFormat DECIMAL_PG_ML = new DecimalFormat("#,##0.0 pg/mL");
     
@@ -107,7 +117,7 @@ public class StyleManager {
     // For air density
     public static final DecimalFormat DECIMAL_G_M3 = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.grampercubicmeter"));
-    // For air pressure
+    // Air pressure
     public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 kPa");
     public static final DecimalFormat DECIMAL_ATM = new DecimalFormat("0.000 atm");
     public static final DecimalFormat DECIMAL_MB = new DecimalFormat("0.00 mb");
@@ -388,7 +398,7 @@ public class StyleManager {
                     size = base.getSize() + size;
                 }
             }
-            catch (NumberFormatException n) {
+            catch (NumberFormatException _) {
                 logger.warning("Font size not correctly formatted " + sizeText);
             }
         }

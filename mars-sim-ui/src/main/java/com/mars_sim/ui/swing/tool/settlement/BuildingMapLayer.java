@@ -12,22 +12,41 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
+
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.apache.batik.gvt.GraphicsNode;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.LocalAreaUtil;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.connection.BuildingConnector;
 import com.mars_sim.core.building.connection.Hatch;
 import com.mars_sim.core.building.function.ActivitySpot;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.events.ScheduledEventHandler;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.ui.swing.UIConfig;
+import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 
 /**
@@ -38,6 +57,8 @@ public class BuildingMapLayer extends AbstractMapLayer {
 	private static final String HATCH = "hatch";
 	private static final String BRICK_HATCH = "brick_hatch";
 	private static final String ONE_WHITESPACE = " ";
+    private static final String BUILDING_LABELS_PROP = "BUILDING_LABELS";
+    private static final String SPOT_LBL_PROP   = "SPOT_LABELS_";
 	
     // Static members
     private static final Font SPOT_FONT = new Font(Font.SERIF, Font.ITALIC, 3); 
@@ -54,7 +75,6 @@ public class BuildingMapLayer extends AbstractMapLayer {
 	private static final Color WHITE_OUTLINE = new Color(255, 255, 255, 190);
 	private static final Color GREY_OUTLINE = new Color(192, 192, 192, 190);
 	private static final Color DARK_GREEN = Color.GREEN.darker().darker();
-	private static final Color ULTRA_VIOLET = new Color (115, 102, 189);
 	private static final Color LIGHT_VIOLET = new Color (214, 180, 252);
  	private static final ColorChoice BUILDING_COLOR = new ColorChoice(Color.GRAY.darker(), WHITE_OUTLINE);
     private static final ColorChoice SPOT_COLOR = new ColorChoice(Color.BLACK, GREY_OUTLINE);
@@ -77,6 +97,10 @@ public class BuildingMapLayer extends AbstractMapLayer {
 	}
         
     private SettlementMapPanel mapPanel;
+    private boolean showLabels;
+    private Set<FunctionType> spotLabels = new HashSet<>();
+    private BuildingConfig bc;
+
     
     // Use SVG image for hatch if available.
     private GraphicsNode hatchSVG = SVGMapUtil.getBuildingConnectorSVG(HATCH);
@@ -87,41 +111,118 @@ public class BuildingMapLayer extends AbstractMapLayer {
      * 
      * @param mapPanel the settlement map panel.
      */
-    public BuildingMapLayer(SettlementMapPanel mapPanel) {
+    public BuildingMapLayer(SettlementMapPanel mapPanel, Properties userSettings) {
 
         // Initialize data members.
         this.mapPanel = mapPanel;
+		this.showLabels = UIConfig.extractBoolean(userSettings, BUILDING_LABELS_PROP, false);
+        this.bc = SimulationConfig.instance().getBuildingConfiguration();
+        for (FunctionType ft : FunctionType.values()) {
+            if (UIConfig.extractBoolean(userSettings, SPOT_LBL_PROP + ft.name(), false)) {
+                spotLabels.add(ft);
+            }
+        }
     }
 
     @Override
-    public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
-
+    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+            Entity selectedEntity) {
+                
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
-        if (settlement != null) {  
-            boolean bldgLabels = mapPanel.isOptionDisplayed(DisplayOption.BUILDING_LABELS);
-            Set<FunctionType> spotLabels = mapPanel.getShowSpotLabels();
+        Building selectedBuilding = (selectedEntity instanceof Building b) ? b : null;
 
-            // Display svg images of all buildings in the entire settlement
-            // Draw all buildings.
-            var buildings = settlement.getBuildingManager().getBuildingSet();
+        // Display svg images of all buildings in the entire settlement
+        // Draw all buildings.
+        var buildings = settlement.getBuildingManager().getBuildingSet();
+        var hotspots = buildings.stream()
+                .filter(b -> viewpoint.isVisible(b.getPosition()))
+                .map(b -> drawBuilding(b, selectedBuilding, showLabels, viewpoint))
+                .toList();
+
+        // Draw all building connectors.
+        drawBuildingConnectors(settlement, viewpoint);
+
+        // Must draw spots last so they are on top of hatches
+        if (!spotLabels.isEmpty()) {
             for (Building b: buildings) {
-                drawBuilding(b, bldgLabels, viewpoint);
-            }
-
-            // Draw all building connectors.
-            drawBuildingConnectors(settlement, viewpoint);
-
-            // Must draw spots last so they are on top of hatches
-            if (!spotLabels.isEmpty()) {
-                for (Building b: buildings) {
-                    drawSpots(b, spotLabels, viewpoint);
-                }
+                drawSpots(b, spotLabels, viewpoint);
             }
         }
+
         // Restore original graphic transforms.
         viewpoint.graphics().setTransform(saveTransform);
+        return hotspots;
+    }
+
+    @Override
+    public List<JMenuItem> getFilterControls() {
+        var labelItem = createDisplayToggle("building_labels", showLabels,
+                selected -> {
+                    showLabels = selected;
+                    mapPanel.repaint();
+                    return null;
+                });
+
+                        // Activity spot menu
+        var spotLabelMenuItem = new JMenu("Activity Spots");
+
+        List<FunctionType> sortedFT = new ArrayList<>(bc.getActivitySpotFunctions());
+        Collections.sort(sortedFT);
+
+        // Add an All
+        var allItem = new JMenuItem("All"); //$NON-NLS-1$
+        allItem.setContentAreaFilled(false);
+        allItem.addActionListener(e -> allSpotLabel());
+        spotLabelMenuItem.add(allItem);
+
+        // Add an None
+        var noneItem = new JMenuItem("None"); //$NON-NLS-1$
+        noneItem.setContentAreaFilled(false);
+        noneItem.addActionListener(e -> spotLabels.clear());
+        spotLabelMenuItem.add(noneItem);
+
+        // Add one per function type
+        for (FunctionType ft : sortedFT) {
+            var ftItem = new JCheckBoxMenuItem(ft.getName(), spotLabels.contains(ft)); //$NON-NLS-1$
+            ftItem.setContentAreaFilled(false);
+            ftItem.addActionListener(e -> toggleSpotLabel(ft));
+            spotLabelMenuItem.add(ftItem);
+        }
+
+        return List.of(labelItem, spotLabelMenuItem);
+    }
+
+    /**
+	 * Reverses the settings of the Spot label.
+	 */
+	private void allSpotLabel() {
+        bc.getActivitySpotFunctions().forEach(ft -> spotLabels.add(ft));
+        mapPanel.repaint();
+	}
+
+    /**
+	 * Sets if spot labels should be displayed.
+	 *
+	 * @param ft FunctionType of the label to toggle.
+	 */
+	private void toggleSpotLabel(FunctionType ft) {
+		if (spotLabels.contains(ft)) {
+			spotLabels.remove(ft);
+		} else {
+			spotLabels.add(ft);
+		}
+		mapPanel.repaint();
+	}
+
+    @Override
+    public void saveUIProperties(Properties props) {
+        props.setProperty(BUILDING_LABELS_PROP, Boolean.toString(showLabels));
+        
+		for (FunctionType ft : spotLabels) {
+			props.setProperty(SPOT_LBL_PROP + ft.name(), "true");
+		}
     }
 
     /**
@@ -129,10 +230,11 @@ public class BuildingMapLayer extends AbstractMapLayer {
      * 
      * @param building the building.
      */
-    private void drawBuilding(Building building, boolean showLabel, MapViewPoint viewpoint) {
+    private MapHotspot<Building> drawBuilding(Building building, Building selectedBuilding, boolean showLabel,
+            MapViewPoint viewpoint) {
 
     	// Check if it's drawing the mouse-picked building 
-        Color selectedColor = (building.equals(mapPanel.getSelectedBuilding()) ? BLDG_SELECTED_COLOR : null);
+        Color selectedColor = (building.equals(selectedBuilding) ? BLDG_SELECTED_COLOR : null);
     	
         // Use SVG image for building if available  		
         GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
@@ -154,7 +256,77 @@ public class BuildingMapLayer extends AbstractMapLayer {
             drawCenteredMultiLabel(words, LABEL_FONT, building.getPosition(),
                                     frontColor,  viewpoint);
         }
+
+        return new BuildingHotspot(building);
     }
+
+    private static final class BuildingHotspot extends MapHotspot<Building> {
+        private BuildingHotspot(Building target) {
+            super(target);
+        }
+
+        @Override
+        boolean isWithinRange(LocalPosition point) {
+            return isWithin(point, target);
+        }
+
+        
+		@Override
+		UnitSummary getSummary() {
+			return new UnitSummary(target.getBuildingType(), target.getPosition(), target.getDescription());
+		}
+
+		@Override
+		List<String> getActions() {
+			return List.of("demolish");
+		}
+
+		@Override
+		void applyAction(String action) {
+            if (action.equals("demolish")) {
+                triggerDemolish(target);
+            }
+        }
+
+        /**
+         * Triggers the demolition of a building.
+         * @param b Building to demolish
+         */        
+        private void triggerDemolish(Building b) {
+            if (JOptionPane.showConfirmDialog(null,
+                            "Confirm the demolition of " + b.getName(), "Confirm demolish",
+                            JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
+                var fm = b.getAssociatedSettlement().getFutureManager();
+
+                var handler = new DemolishHandler(b);
+                fm.addEvent(1, handler);
+            }
+        }
+    }
+
+    /**
+	 * Demolishes an async to avoid the removal causing a problem with 
+	 * the active simulation logic.
+	 */
+	@SuppressWarnings("serial")
+	private static final class DemolishHandler implements ScheduledEventHandler {
+		private Building b;
+
+		public DemolishHandler(Building b) {
+			this.b = b;
+		}
+
+		@Override
+		public String getEventDescription() {
+			return "Start demolishing of " + b.getName();
+		}
+
+		@Override
+		public int execute(MarsTime currentTime) {
+			b.getAssociatedSettlement().getConstructionManager().createNewSalvageConstructionSite(b);
+			return 0;
+		}
+	}
 
     /**
      * Draws the activity spots of a building function.
@@ -232,17 +404,14 @@ public class BuildingMapLayer extends AbstractMapLayer {
      */
     private void drawHatch(Hatch hatch, MapViewPoint viewpoint) {
         if (!hatch.isBrick() && hatchSVG != null) {
-//        	GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG("hallway");
             // Draw hatch.
             drawStructure(hatch, hatchSVG, null, null, viewpoint);
         }
         else if (hatch.isBrick() && brickHatchSVG != null) {
-//        	GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG("brickway");
             // Draw brick hatch.
             drawStructure(hatch, brickHatchSVG, null, null, viewpoint);
         }
         else {
-//            drawStructure(hatch, hatchSVG, null, null, viewpoint);
             // Otherwise draw colored rectangle for hatch.
             drawRectangle(hatch, CONN_COLOR, null, viewpoint);
         }

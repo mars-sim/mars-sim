@@ -9,15 +9,24 @@ package com.mars_sim.ui.swing.tool.settlement;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.AffineTransform;
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
 
+import javax.swing.JMenuItem;
+
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.data.collection.DataCollectionSite;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.ui.swing.UIConfig;
+import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
 
 /**
  * A settlement map layer for displaying data collection sites.
  */
 public class DataCollectionSiteMapLayer extends AbstractMapLayer {
+    private static final String DATA_COLLECTION_SITE_LABELS_PROP = "DATA_COLLECTION_SITE_LABELS";
     
     private static final Color SITE_COLOR = Color.WHITE;
     private static final Color SITE_SELECTED_COLOR = Color.YELLOW.brighter();// new Color(152, 118, 84); // pale brown
@@ -26,34 +35,55 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
 
 	private static final ColorChoice COLOR_CHOICE = new ColorChoice(new Color(237, 114, 38), Color.WHITE);// Color(0, 0, 0, 150));
     
-	
     private SettlementMapPanel mapPanel;
+    private boolean showLabels;
     
     /**
      * Constructor 1.
      * 
      * @param mapPanel the settlement map panel.
+     * @param userSettings the user settings properties.
      */
-    public DataCollectionSiteMapLayer(SettlementMapPanel mapPanel) {
+    public DataCollectionSiteMapLayer(SettlementMapPanel mapPanel, Properties userSettings) {
 
         // Initialize data members.
         this.mapPanel = mapPanel;
+		this.showLabels = UIConfig.extractBoolean(userSettings, DATA_COLLECTION_SITE_LABELS_PROP, false);
     }
 
     @Override
-    public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
+    public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+            Entity selectedEntity) {
 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
+		DataCollectionSite selectedSite = (selectedEntity instanceof DataCollectionSite dcs) ? dcs : null;
+
         // Draw all construction sites.
-        boolean labels = mapPanel.isOptionDisplayed(DisplayOption.DATA_COLLECTION_SITE_LABELS);
-        for (DataCollectionSite c : settlement.getLocalDataCollectionSitesList()) {
-            drawSite(c, labels, viewpoint);
-        }
+        var hotspots = settlement.getLocalDataCollectionSitesList().stream()
+                .filter(site -> viewpoint.isVisible(site.getPosition()))
+                .map(c -> drawSite(c, selectedSite, showLabels, viewpoint))
+                .toList();
 
 	    // Restore original graphic transforms.
 	    viewpoint.graphics().setTransform(saveTransform);
+        return hotspots;
+    }
+
+    @Override
+    public List<JMenuItem> getFilterControls() {
+        return List.of(createDisplayToggle("data_collection_site_labels", showLabels,
+                selected -> {
+                    showLabels = selected;
+                    mapPanel.repaint();
+                    return null;
+                }));
+    }
+
+    @Override
+    public void saveUIProperties(Properties props) {
+        props.setProperty(DATA_COLLECTION_SITE_LABELS_PROP, Boolean.toString(showLabels));
     }
 
     /**
@@ -63,10 +93,11 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
      * @param showLabel
      * @param viewpoint
      */
-    private void drawSite(DataCollectionSite site, boolean showLabel, MapViewPoint viewpoint) {
+    private MapHotspot<DataCollectionSite> drawSite(DataCollectionSite site, DataCollectionSite selectedSite,
+            boolean showLabel, MapViewPoint viewpoint) {
     	
      	// Check if it's drawing the mouse-picked building 
-        Color selectedColor = (site.equals(mapPanel.getSelectedDataSite()) ? SITE_SELECTED_COLOR : null);
+        Color selectedColor = (site.equals(selectedSite) ? SITE_SELECTED_COLOR : null);
     	
         drawRectangle(site, SITE_COLOR, selectedColor, viewpoint);
         
@@ -77,11 +108,23 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
                                     COLOR_CHOICE, 15, viewpoint);
         }
 
+        return new SiteHotspot(site);
+
     }
-    
-	@Override
-	public void destroy() {
-		super.destroy();
-		mapPanel = null;
-	}
+
+    private static final class SiteHotspot extends MapHotspot<DataCollectionSite> {
+        private SiteHotspot(DataCollectionSite target) {
+            super(target);
+        }
+
+        @Override
+        boolean isWithinRange(LocalPosition point) {
+            return isWithin(point, target);
+        }
+        
+        @Override
+		UnitSummary getSummary() {
+			return new UnitSummary(target.getType(), target.getPosition(), target.getDescription());
+		}
+    }
 }

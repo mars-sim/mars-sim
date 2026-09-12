@@ -53,15 +53,11 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 
 	private static final String POPULATION = " Pop: ";
 	private static final String WHITESPACES_2 = " ";
-	private static final String BLDG_CENTER = "Building Center: ";
-	private static final String BLDG_SPOT = " Building Spot: ";
 	private static final String SETTLEMENT_MAP = " Map: ";
 
-	
-	private JLabel buildingSpotLabel;
-	private JLabel buildingXYLabel;
 	private JLabel mapXYLabel;
 	private JLabel popLabel;
+	private JLabel hotspotLabel;
 	private JPanel subPanel;
 
 	/** Map panel. */
@@ -111,17 +107,13 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
         popLabel.setVerticalAlignment(SwingConstants.CENTER);
         popLabel.setHorizontalAlignment(SwingConstants.LEFT);
         popLabel.setFont(font);
-          
-	    buildingXYLabel = new JLabel();
-	    buildingXYLabel.setVerticalAlignment(SwingConstants.CENTER);
-	    buildingXYLabel.setHorizontalAlignment(SwingConstants.LEFT);
-	    buildingXYLabel.setFont(font);
-  		
-	    buildingSpotLabel = new JLabel();
-	    buildingSpotLabel.setVerticalAlignment(SwingConstants.CENTER);
-	    buildingSpotLabel.setHorizontalAlignment(SwingConstants.LEFT);
-	    buildingSpotLabel.setFont(font);
-    
+
+	    hotspotLabel = new JLabel();
+	    hotspotLabel.setVerticalAlignment(SwingConstants.CENTER);
+	    hotspotLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+	    hotspotLabel.setFont(font);
+	    statusBar.addRightComponent(hotspotLabel, false);
+		
 	    mapXYLabel = new JLabel();
 	    mapXYLabel.setVerticalAlignment(SwingConstants.CENTER);
 	    mapXYLabel.setHorizontalAlignment(SwingConstants.LEFT);
@@ -136,46 +128,10 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 	    centerPanel.setAlignmentX(CENTER_ALIGNMENT);
 	    
 	    centerPanel.add(mapXYLabel);
-	    centerPanel.add(buildingXYLabel);
-	    centerPanel.add(buildingSpotLabel);
 	    
 	    statusBar.addCenterComponent(centerPanel, false);
 
 	    return statusBar;
-	}
-	
-	/**
-	 * Sets the label of the center position of a building.
-	 *
-	 * @param pos
-	 * @param blank
-	 */
-	void setBuildingXYCoord(LocalPosition pos, boolean blank) {
-		if (blank) {
-			buildingXYLabel.setText("");
-		}
-		else {
-			StringBuilder sb = new StringBuilder();
-			sb.append(BLDG_CENTER).append(pos.getShortFormat());
-			buildingXYLabel.setText(sb.toString());
-		}
-	}
-
-	/**
-	 * Sets the pointer position within a building.
-	 *
-	 * @param pos
-	 * @param blank
-	 */
-	void setBuildingPointerXYCoord(LocalPosition pos, boolean blank) {
-		if (blank) {
-			buildingSpotLabel.setText("");
-		}
-		else {
-			StringBuilder sb = new StringBuilder();
-			sb.append(BLDG_SPOT).append(pos.getShortFormat());
-			buildingSpotLabel.setText(sb.toString());
-		}
 	}
 
 	/**
@@ -192,8 +148,16 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 	 *
 	 * @param pop
 	 */
-	public void setPop(int pop) {
+	void setPop(int pop) {
         popLabel.setText(POPULATION + pop + WHITESPACES_2);
+	}
+
+	/**
+	 * Show how many hotspots are currently active.
+	 * @param hotspots
+	 */
+	void setHotspot(int hotspots) {
+        hotspotLabel.setText("Hotspots: " + hotspots + WHITESPACES_2);
 	}
 
 	/**
@@ -275,7 +239,7 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 	 */
     public void displayRobot(Robot r) {
 		if (displayWorker(r)) {
-			mapPanel.selectRobot(r);
+			mapPanel.displayEntity(r);
 		}
     }
 
@@ -287,7 +251,7 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 	 */
     public void displayPerson(Person p) {
 		if (displayWorker(p)) {
-			mapPanel.selectPerson(p);
+			mapPanel.displayEntity(p);
 		}
     }
 

@@ -12,6 +12,7 @@ import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.batik.gvt.GraphicsNode;
@@ -30,8 +31,8 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
     private static final int LABEL_XOFFSET = 1;
     private static final int LABEL_YOFFSET = -1;
 
-    private static final double width = .45;
-    private static final double length = .4;
+    private static final double WIDTH = .45;
+    private static final double LENGTH = .4;
  
     private static final BasicStroke STROKE = new BasicStroke(1.5f);
  
@@ -45,31 +46,35 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
      * @param selected The selected Worker
      * @param showLabels Show the labels
 	 * @param viewpoint Map viewpoint for rendering
+     * @return List of clickable hotspots
 	 */
-	protected void drawWorkers(Collection<T> workers, T selected, boolean showLabels,
+	protected Collection<? extends MapHotspot<?>> drawWorkers(Collection<T> workers, T selected, boolean showLabels,
                                 MapViewPoint viewpoint) {
                                 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
+        Collection<MapHotspot<T>> hotspots = new ArrayList<>();
 
 		// Draw all workers except selected person.
 		for (T w : workers) {
-			if (selected == null || !w.equals(selected)) {
-				drawUnselectedWorker(w, showLabels, viewpoint);
+            if (!viewpoint.isVisible(w.getPosition())) {
+                continue;
+            }
+			if (!w.equals(selected)) {
+				hotspots.add(drawUnselectedWorker(w, showLabels, viewpoint));
 			}
-		}
-
-		// Draw selected person.
-		if (selected != null && workers.contains(selected)) {
-            drawSelectedWorker(selected, viewpoint);
+            else {
+                hotspots.add(drawSelectedWorker(selected, viewpoint));
+            }
 		}
 
         // Restore original graphic transforms.
         viewpoint.graphics().setTransform(saveTransform);
+        return hotspots;
 	}
 
-    private void drawUnselectedWorker(T w, boolean showLabels, MapViewPoint viewpoint) {
+    private MapHotspot<T> drawUnselectedWorker(T w, boolean showLabels, MapViewPoint viewpoint) {
         ColorChoice color = getColor(w, false);
         LocalPosition pos = w.getPosition();
 
@@ -77,7 +82,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
        	GraphicsNode svg = SVGMapUtil.getUnitSVG(w.getStringType());
        	if (svg != null) {
        		// Draw base SVG image for vehicle.
-       		drawUnit(pos, color, false, svg, viewpoint);
+       		drawWorker(pos, color, false, svg, viewpoint);
        	}
        	else    	
        		drawOval(pos, color, viewpoint);
@@ -87,6 +92,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
             drawRightLabel(false, w.getName(), pos, color,
                         NAME_FONT, LABEL_XOFFSET, LABEL_YOFFSET, viewpoint);
         }
+        return new WorkerHotspot<T>(w, pos);
     }
 
     /**
@@ -94,8 +100,9 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
      * 
      * @param g2d
      * @param w
+     * @return 
      */
-    private void drawSelectedWorker(T w, MapViewPoint viewpoint) {
+    private MapHotspot<T> drawSelectedWorker(T w, MapViewPoint viewpoint) {
         ColorChoice color = getColor(w, true);
 
         LocalPosition pos = w.getPosition();
@@ -104,7 +111,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
      	GraphicsNode svg = SVGMapUtil.getUnitSVG(w.getStringType());
      	if (svg != null) {
      		// Draw base SVG image for vehicle.
-     		drawUnit(pos, color, true, svg, viewpoint);
+     		drawWorker(pos, color, true, svg, viewpoint);
      	}
      	else    	
        		drawOval(pos, color, viewpoint);
@@ -139,11 +146,32 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
         		drawRightLabel(true, w.getName(), pos, color,
                         NAME_FONT, LABEL_XOFFSET, 1.9f * LABEL_YOFFSET, viewpoint);
         	}
-       	} 
+       	}
+
+        return new WorkerHotspot<T>(w, pos);
+    }
+
+    /**
+     * This represents a clickable hotspot for a Worker on the Map.
+     * @param <T> The Worker subtype being rendered
+     */
+    private static final class WorkerHotspot<T extends Worker> extends MapHotspot<T> {
+        private final LocalPosition pos;
+	    private static final double SELECTION_RANGE = 0.25; // Settlement coordinate frame, 25 cm
+
+        private WorkerHotspot(T target, LocalPosition pos) {
+            super(target);
+            this.pos = pos;
+        }
+
+        @Override
+        boolean isWithinRange(LocalPosition point) {
+            return pos.getDistanceTo(point) <= SELECTION_RANGE;
+        }
     }
 
 	/**
-     * Draws a unit using SVG on the map.
+     * Draws a Worker using SVG on the map.
      * 
      * @param pos LocalPosition
      * @param color ColorChoice
@@ -152,7 +180,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
      * @param patternSVG the pattern SVG graphics node (null if no pattern).
 	 * @param viewpoint MapViewPoint
      */
-    protected void drawUnit(LocalPosition pos, ColorChoice color, boolean isSelected, GraphicsNode svg,
+    protected void drawWorker(LocalPosition pos, ColorChoice color, boolean isSelected, GraphicsNode svg,
 								MapViewPoint viewpoint) {
 		
 		var g2d = viewpoint.graphics();
@@ -165,19 +193,19 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
         Rectangle2D bounds = svg.getBounds();
         
         // Determine transform information.
-        double scalingWidth = width / bounds.getWidth() * scale;
-        double scalingLength = length / bounds.getHeight() * scale;
+        double scalingWidth = WIDTH / bounds.getWidth() * scale;
+        double scalingLength = LENGTH / bounds.getHeight() * scale;
         double boundsPosX = bounds.getX() * scalingWidth;
         double boundsPosY = bounds.getY() * scalingLength;
-        double centerX = width * scale / 2D;
-        double centerY = length * scale / 2D;
+        double centerX = WIDTH * scale / 2D;
+        double centerY = LENGTH * scale / 2D;
         double translationX = (-1D * pos.getX() * scale) - centerX - boundsPosX;
         double translationY = (-1D * pos.getY() * scale) - centerY - boundsPosY;
 
         AffineTransform newTransform = new AffineTransform();
         
 		// Draw buffered image of structure.
-		BufferedImage image = getBufferedImage(svg, width, length, null, scale);
+		BufferedImage image = getBufferedImage(svg, WIDTH, LENGTH, null, scale);
 		
 		if (image != null) {
 			// Apply graphic transforms.		
@@ -186,6 +214,8 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
 			g2d.transform(newTransform);
 			
 			g2d.drawImage(image, 0, 0, null);
+
+            image.flush();
 		}	
 	
 		if (isSelected) {  
@@ -200,9 +230,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
 			// Restore the stroke
 			g2d.setStroke(oldStroke);
 		}
-		
-		image.flush();
-		
+				
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);    
     }

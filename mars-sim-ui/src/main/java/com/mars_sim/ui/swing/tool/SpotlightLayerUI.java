@@ -24,7 +24,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.plaf.LayerUI;
 
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel;
-import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 
 @SuppressWarnings("serial")
 public class SpotlightLayerUI extends LayerUI<JPanel> {
@@ -64,7 +63,7 @@ public class SpotlightLayerUI extends LayerUI<JPanel> {
 	    // Paint the view.
 	    super.paint(g2, c);
 
-	    if (mActive && settlementMapPanel.isOptionDisplayed(DisplayOption.DAYLIGHT_LAYER)) {
+	    if (mActive && settlementMapPanel.isDaylightLayerVisible()) {
 			// Create a radial gradient, transparent in the middle.
 			java.awt.geom.Point2D center = new java.awt.geom.Point2D.Float(mX, mY);
 			float radius = 60;

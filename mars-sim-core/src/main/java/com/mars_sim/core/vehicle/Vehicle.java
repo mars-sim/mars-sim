@@ -135,8 +135,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private boolean isSalvaged;
 	/** True if vehicle is charging. */
 	private boolean isCharging;
-	/** True if vehicle is ready to be drawn on the map. */
-	private boolean isReady = false;
 	
 	/** Current elevation in km. */
 	private double elevation;
@@ -298,27 +296,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 
 		// Initialize passenger activity spots.
 		passengerActivitySpots = spec.getPassengerActivitySpots();
-		
-		isReady = true;
-	
+			
 		// Add all the vehicle spec system scopes to the part scopes
 		SimulationConfig.instance().getPartConfiguration().addScopes(spec.getSystemScopes());
-	}
-
-	/**
-	 * Is the vehicle ready to be drawn on the settlement map ?
-	 */
-	public boolean isReady() {
-		return isReady;
-	}
-	
-	/**
-	 * Sets the vehicle ready to be drawn on the map.
-	 * 	
-	 * @param value
-	 */
-	public void setReady(boolean value) {
-		this.isReady = value;
 	}
 	
 	/**
@@ -528,7 +508,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 
 		// Record current object-relative crew positions if vehicle is crewable.
 		if (this instanceof Crewable crewable) {
-			result = new HashMap<>(crewable.getCrewNum());
+			result = new HashMap<>();
             for (Person crewmember : crewable.getCrew()) {
                 LocalPosition crewPos = LocalAreaUtil.convert2LocalPos(crewmember.getPosition(), this);
                 result.put(crewmember, crewPos);
@@ -537,7 +517,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		else if (this instanceof LightUtilityVehicle luv) {
 			Worker occupant = luv.getOccupant();
 			if (occupant != null && occupant instanceof Person p) {
-				result = new HashMap<>(luv.getCrewNum());
+				result = new HashMap<>();
 				LocalPosition crewPos = LocalAreaUtil.convert2LocalPos(occupant.getPosition(), this);
 				result.put(p, crewPos);
 			}
@@ -557,7 +537,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 
 		// Record current object-relative crew positions if vehicle is crewable.
 		if (this instanceof Crewable crewable) {
-			result = new HashMap<>(crewable.getRobotCrewNum());
+			result = new HashMap<>();
             for (Robot robotCrewmember : crewable.getRobotCrew()) {
                 LocalPosition crewPos = LocalAreaUtil.convert2LocalPos(robotCrewmember.getPosition(), this);
                 result.put(robotCrewmember, crewPos);
@@ -566,7 +546,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		else if (this instanceof LightUtilityVehicle luv) {
 			Worker occupant = luv.getOccupant();
 			if (occupant != null && occupant instanceof Robot r) {
-				result = new HashMap<>(luv.getCrewNum());
+				result = new HashMap<>();
 				LocalPosition crewPos = LocalAreaUtil.convert2LocalPos(occupant.getPosition(), this);
 				result.put(r, crewPos);
 			}
