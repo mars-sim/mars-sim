@@ -10,12 +10,16 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.function.Consumer;
 
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
@@ -33,7 +37,9 @@ class PopUpUnitMenu extends JPopupMenu {
 		var entity = selected.target;
     	String unitType = EntityDisplayInfoFactory.getDisplayInfo(entity).getSingularLabel();
 
-		add(unitType + ": " + entity.getName());
+		var label = new JLabel(unitType + ": " + entity.getName());
+		label.setBorder(BorderFactory.createEmptyBorder(1, 10, 1, 0));
+		add(label);
 		addSeparator();
 
 		// Add summary details for Entity

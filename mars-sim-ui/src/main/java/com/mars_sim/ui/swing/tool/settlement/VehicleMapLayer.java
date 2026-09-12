@@ -11,7 +11,6 @@ import java.awt.Font;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -99,7 +98,6 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	@Override
 	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
 			Entity selectedEntity) {
-		Collection<MapHotspot<?>> hotspots = new ArrayList<>();
 
 		// Save original graphics transforms.
 		AffineTransform saveTransform = viewpoint.prepareGraphics();
@@ -109,10 +107,10 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		Vehicle selectedVehicle = (selectedEntity instanceof Vehicle v) ? v : null;
 
-		// Draw all parked vehicles at this settlement location
-		for (Vehicle v : vehicles) {
-			hotspots.add(drawVehicle(v, selectedVehicle, showLabel, viewpoint));
-		}
+		var hotspots = vehicles.stream()
+				.filter(v -> viewpoint.isVisible(v.getPosition()))
+				.map(v -> drawVehicle(v, selectedVehicle, showLabel, viewpoint))
+				.toList();
 
 		// Restore original graphic transforms.
 		viewpoint.graphics().setTransform(saveTransform);

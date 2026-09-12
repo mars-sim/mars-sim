@@ -58,6 +58,9 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
 
 		// Draw all workers except selected person.
 		for (T w : workers) {
+            if (!viewpoint.isVisible(w.getPosition())) {
+                continue;
+            }
 			if (!w.equals(selected)) {
 				hotspots.add(drawUnselectedWorker(w, showLabels, viewpoint));
 			}

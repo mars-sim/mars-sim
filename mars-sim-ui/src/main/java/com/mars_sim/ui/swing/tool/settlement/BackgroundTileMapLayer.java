@@ -106,17 +106,10 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 	 * @see com.mars_sim.ui.swing.tool.settlement.SettlementMapLayer#displayLayer(com.mars_sim.core.structure.Settlement, com.mars_sim.ui.swing.tool.settlement.MapViewPoint, com.mars_sim.core.Entity)
 	 */
 	@Override
-	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
+	public Collection<MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
 			Entity selectedEntity) {
-		
-		// Save original graphics transforms.
-		var g2d = viewpoint.graphics();
-		AffineTransform saveTransform = g2d.getTransform();
 
 		double scale = viewpoint.scale();
-		int mapHeight = viewpoint.mapHeight();
-		int mapWidth = viewpoint.mapWidth();
-		double rotation = viewpoint.rotation();
 
 		// Clear background tile image if settlement has changed.
 		if (settlement != null && !settlement.equals(currentSettlement)) {
@@ -130,82 +123,104 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 			backgroundTileImage = null;
 			scaleCache = scale;
 		}
-
-		// Rotate graphics context.
-		g2d.rotate(rotation, mapWidth / 2D, mapHeight / 2D);
-
-		double diagonal = Math.hypot(mapWidth, mapHeight);
-
+				
 		// If no image already loaded; then load it
 		if (backgroundTileImage == null) {
 			backgroundTileImage = loadSettlementImage(settlement, scale);
 		}
 
 		if (backgroundTileImage != null) {
-
-			int offsetX = (int) Math.round(viewpoint.xPos() * scale);
-			int tileWidth = backgroundTileImage.getWidth(mapPanel);
-			int bufferX = (int) Math.round(diagonal - mapWidth);
-			int tileCenterOffsetX = (int) Math.round((mapWidth / 2D) % tileWidth - 1.5F * tileWidth);
-
-			// Calculate starting X position for drawing tile.
-			int startX = tileCenterOffsetX;
-			while ((startX + offsetX) > (-bufferX)) {
-				startX -= tileWidth;
-			}
-			while ((startX + offsetX) < (-tileWidth - bufferX)) {
-				startX += tileWidth;
-			}
-
-			// Calculate ending X position for drawing tile.
-			int endX = mapWidth;
-			while ((endX + offsetX) < (mapWidth + bufferX)) {
-				endX += tileWidth;
-			}
-			while ((endX + offsetX) > (mapWidth + tileWidth + bufferX)) {
-				endX -= tileWidth;
-			}
-
-			for (int x = startX; x < endX; x += tileWidth) {
-
-				int offsetY = (int) Math.round(viewpoint.yPos() * scale);
-				int tileHeight = backgroundTileImage.getHeight(mapPanel);
-				int bufferY = (int) Math.round(diagonal - mapHeight);
-				int tileCenterOffsetY = (int) Math.round((mapHeight / 2D) % tileHeight - 1.5F * tileHeight);
-
-				// Calculate starting Y position for drawing tile.
-				int startY = tileCenterOffsetY;
-				while ((startY + offsetY) > (-bufferY)) {
-					startY -= tileHeight;
-				}
-				while ((startY + offsetY) < (-tileHeight - bufferY)) {
-					startY += tileHeight;
-				}
-
-				// Calculate ending Y position for drawing tile.
-				int endY = mapHeight;
-				while ((endY + offsetY) < (mapHeight + bufferY)) {
-					endY += tileHeight;
-				}
-				while ((endY + offsetY) > (mapHeight + tileHeight + bufferY)) {
-					endY -= tileHeight;
-				}
-
-				for (int y = startY; y < endY; y += tileHeight) {
-					// Draw tile image.
-					g2d.drawImage(backgroundTileImage,
-							(x + offsetX),
-							(y + offsetY),
-							mapPanel);
-				}
-			}
+			drawImage(backgroundTileImage, viewpoint, scale);
 		}
 
 		// Restore original graphic transforms.
-		g2d.setTransform(saveTransform);
 		return Collections.emptyList();
 	}
 
+	/**
+	 * Draws the background tile image, scaled and rotated as needed.
+	 * @param background The background tile image to draw.
+	 * @param viewpoint The map view point.
+	 * @param scale The scale factor for the map.
+	 */
+	private void drawImage(Image background, MapViewPoint viewpoint, double scale) {
+
+		int mapHeight = viewpoint.mapHeight();
+		int mapWidth = viewpoint.mapWidth();
+		double rotation = viewpoint.rotation();
+
+		// Save original graphics transforms.
+		var g2d = viewpoint.graphics();
+		AffineTransform saveTransform = g2d.getTransform();
+		g2d.rotate(rotation, mapWidth / 2D, mapHeight / 2D);
+
+		double diagonal = Math.hypot(mapWidth, mapHeight);
+
+		int offsetX = (int) Math.round(viewpoint.center().getX() * scale);
+		int tileWidth = background.getWidth(mapPanel);
+		int bufferX = (int) Math.round(diagonal - mapWidth);
+		int tileCenterOffsetX = (int) Math.round((mapWidth / 2D) % tileWidth - 1.5F * tileWidth);
+
+		// Calculate starting X position for drawing tile.
+		int startX = tileCenterOffsetX;
+		while ((startX + offsetX) > (-bufferX)) {
+			startX -= tileWidth;
+		}
+		while ((startX + offsetX) < (-tileWidth - bufferX)) {
+			startX += tileWidth;
+		}
+
+		// Calculate ending X position for drawing tile.
+		int endX = mapWidth;
+		while ((endX + offsetX) < (mapWidth + bufferX)) {
+			endX += tileWidth;
+		}
+		while ((endX + offsetX) > (mapWidth + tileWidth + bufferX)) {
+			endX -= tileWidth;
+		}
+
+		for (int x = startX; x < endX; x += tileWidth) {
+
+			int offsetY = (int) Math.round(viewpoint.center().getY() * scale);
+			int tileHeight = background.getHeight(mapPanel);
+			int bufferY = (int) Math.round(diagonal - mapHeight);
+			int tileCenterOffsetY = (int) Math.round((mapHeight / 2D) % tileHeight - 1.5F * tileHeight);
+
+			// Calculate starting Y position for drawing tile.
+			int startY = tileCenterOffsetY;
+			while ((startY + offsetY) > (-bufferY)) {
+				startY -= tileHeight;
+			}
+			while ((startY + offsetY) < (-tileHeight - bufferY)) {
+				startY += tileHeight;
+			}
+
+			// Calculate ending Y position for drawing tile.
+			int endY = mapHeight;
+			while ((endY + offsetY) < (mapHeight + bufferY)) {
+				endY += tileHeight;
+			}
+			while ((endY + offsetY) > (mapHeight + tileHeight + bufferY)) {
+				endY -= tileHeight;
+			}
+
+			for (int y = startY; y < endY; y += tileHeight) {
+				// Draw tile image.
+				g2d.drawImage(background,
+						(x + offsetX),
+						(y + offsetY),
+						mapPanel);
+			}
+		}
+		g2d.setTransform(saveTransform);
+	}
+
+	/**
+	 * Load the background image associated with the settlement and scale it to the current map scale.
+	 * @param settlement Target settlement.
+	 * @param scale Scale factor for the map.
+	 * @return Image loaded
+	 */
 	private Image loadSettlementImage(Settlement settlement, double scale) {
 
 			// Resolve the background image and compute the scaled tile size.

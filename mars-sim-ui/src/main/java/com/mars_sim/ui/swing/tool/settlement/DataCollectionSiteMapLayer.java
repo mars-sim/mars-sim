@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.tool.settlement;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -55,7 +54,6 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
     @Override
     public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
             Entity selectedEntity) {
-        Collection<MapHotspot<?>> hotspots = new ArrayList<>();
 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
@@ -63,9 +61,10 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
 		DataCollectionSite selectedSite = (selectedEntity instanceof DataCollectionSite dcs) ? dcs : null;
 
         // Draw all construction sites.
-        for (DataCollectionSite c : settlement.getLocalDataCollectionSitesList()) {
-			hotspots.add(drawSite(c, selectedSite, showLabels, viewpoint));
-        }
+        var hotspots = settlement.getLocalDataCollectionSitesList().stream()
+                .filter(site -> viewpoint.isVisible(site.getPosition()))
+                .map(c -> drawSite(c, selectedSite, showLabels, viewpoint))
+                .toList();
 
 	    // Restore original graphic transforms.
 	    viewpoint.graphics().setTransform(saveTransform);

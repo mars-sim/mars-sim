@@ -127,32 +127,30 @@ public class BuildingMapLayer extends AbstractMapLayer {
     @Override
     public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
             Entity selectedEntity) {
-        Collection<MapHotspot<?>> hotspots = new ArrayList<>();
-
+                
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
 
-        if (settlement != null) {  
+        Building selectedBuilding = (selectedEntity instanceof Building b) ? b : null;
 
-            Building selectedBuilding = (selectedEntity instanceof Building b) ? b : null;
+        // Display svg images of all buildings in the entire settlement
+        // Draw all buildings.
+        var buildings = settlement.getBuildingManager().getBuildingSet();
+        var hotspots = buildings.stream()
+                .filter(b -> viewpoint.isVisible(b.getPosition()))
+                .map(b -> drawBuilding(b, selectedBuilding, showLabels, viewpoint))
+                .toList();
 
-            // Display svg images of all buildings in the entire settlement
-            // Draw all buildings.
-            var buildings = settlement.getBuildingManager().getBuildingSet();
+        // Draw all building connectors.
+        drawBuildingConnectors(settlement, viewpoint);
+
+        // Must draw spots last so they are on top of hatches
+        if (!spotLabels.isEmpty()) {
             for (Building b: buildings) {
-				hotspots.add(drawBuilding(b, selectedBuilding, showLabels, viewpoint));
-            }
-
-            // Draw all building connectors.
-            drawBuildingConnectors(settlement, viewpoint);
-
-            // Must draw spots last so they are on top of hatches
-            if (!spotLabels.isEmpty()) {
-                for (Building b: buildings) {
-                    drawSpots(b, spotLabels, viewpoint);
-                }
+                drawSpots(b, spotLabels, viewpoint);
             }
         }
+
         // Restore original graphic transforms.
         viewpoint.graphics().setTransform(saveTransform);
         return hotspots;
@@ -285,12 +283,22 @@ public class BuildingMapLayer extends AbstractMapLayer {
 
 		@Override
 		void applyAction(String action) {
-            if (action.equals("demolish") && (JOptionPane.showConfirmDialog(null,
-						"Confirm the demolition of " + target.getName(), "Confirm demolish",
-						JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION)) {
-                var fm = target.getAssociatedSettlement().getFutureManager();
+            if (action.equals("demolish")) {
+                triggerDemolish(target);
+            }
+        }
 
-                var handler = new DemolishHandler(target);
+        /**
+         * Triggers the demolition of a building.
+         * @param b Building to demolish
+         */        
+        private void triggerDemolish(Building b) {
+            if (JOptionPane.showConfirmDialog(null,
+                            "Confirm the demolition of " + b.getName(), "Confirm demolish",
+                            JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
+                var fm = b.getAssociatedSettlement().getFutureManager();
+
+                var handler = new DemolishHandler(b);
                 fm.addEvent(1, handler);
             }
         }
@@ -317,17 +325,6 @@ public class BuildingMapLayer extends AbstractMapLayer {
 		public int execute(MarsTime currentTime) {
 			b.getAssociatedSettlement().getConstructionManager().createNewSalvageConstructionSite(b);
 			return 0;
-		}
-	}
-
-	private void triggerDemolish(Building b) {
-		if (JOptionPane.showConfirmDialog(null,
-						"Confirm the demolition of " + b.getName(), "Confirm demolish",
-						JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
-			var fm = b.getAssociatedSettlement().getFutureManager();
-
-			var handler = new DemolishHandler(b);
-			fm.addEvent(1, handler);
 		}
 	}
 

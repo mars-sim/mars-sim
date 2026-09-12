@@ -2084,9 +2084,6 @@ public class Settlement extends Unit implements Temporal,
 			else
 				fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
-			// Mark the vehicle is not ready to be drawn to the map
-			vehicle.setReady(true);
-			
 			return true;
 		}
 
@@ -2106,8 +2103,6 @@ public class Settlement extends Unit implements Temporal,
 		if (parkedNGaragedVehicles.remove(vehicle)) {
 			
 			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
-			// Mark the vehicle is not ready to be drawn to the map
-			vehicle.setReady(false);
 			
 			return true;
 		}
@@ -2314,18 +2309,6 @@ public class Settlement extends Unit implements Temporal,
 		return Collections.unmodifiableSet(parkedNGaragedVehicles);
 	}
 
-	/**
-	 * Gets a collection of ready vehicles (parked in vicinity and garaged at the settlement) for displaying
-	 * in the map.
-	 *
-	 * @return Collection of vehicles
-	 */
-	public Collection<Vehicle> getReadyToMapVehicles() {
-		return parkedNGaragedVehicles.stream()
-		.filter(v -> v.isReady())
-		.toList();
-	}
-	
 	/**
 	 * Gets the number of vehicles (rovers, LUVs, and drones) parked in vicinity and garaged at the settlement.
 	 *

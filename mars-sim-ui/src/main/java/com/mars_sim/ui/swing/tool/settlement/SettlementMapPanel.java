@@ -70,8 +70,7 @@ public class SettlementMapPanel extends JPanel {
 	// Data members
 	private boolean exit = true;
 
-	private double xPos;
-	private double yPos;
+	private LocalPosition center;
 	private double rotation;
 	private double scale; // always stored quantized
 
@@ -142,8 +141,10 @@ public class SettlementMapPanel extends JPanel {
 		setDoubleBuffered(true);
 
 		// Initialize data members.
-		xPos = UIConfig.extractDouble(userSettings, X_PROP, 0D);
-		yPos = UIConfig.extractDouble(userSettings, Y_PROP, 0D);
+		var xPos = UIConfig.extractDouble(userSettings, X_PROP, 0D);
+		var yPos = UIConfig.extractDouble(userSettings, Y_PROP, 0D);
+		center = new LocalPosition(xPos, yPos);
+		
 		rotation = UIConfig.extractDouble(userSettings, ROTATION_PROP, 0D);
 		// Always quantize stored scale
 		scale = UIConfig.extractDouble(userSettings, SCALE_PROP, DEFAULT_SCALE);
@@ -418,8 +419,7 @@ public class SettlementMapPanel extends JPanel {
 	 * only uses one repaint.
 	 */
 	public void reCenter() {
-		xPos = 0D;
-		yPos = 0D;
+		center = new LocalPosition(0D, 0D);
 		setRotation(0D);
 		scale = DEFAULT_SCALE; // set directly to avoid unnecessary coalescing delay here
 		SwingHelper.runInEDT(() -> {
@@ -448,8 +448,7 @@ public class SettlementMapPanel extends JPanel {
 		double realXDiff = c * xDiff + s * yDiff;
 		double realYDiff = c * yDiff - s * xDiff;
 
-		xPos += realXDiff;
-		yPos += realYDiff;
+		center = new LocalPosition(center.getX() + realXDiff, center.getY() + realYDiff);
 
 		repaint();
 	}
@@ -474,8 +473,8 @@ public class SettlementMapPanel extends JPanel {
 		double xDiff3 = (Math.cos(rotation) * xDiff2) + (Math.sin(rotation) * yDiff2);
 		double yDiff3 = (Math.cos(rotation) * yDiff2) - (Math.sin(rotation) * xDiff2);
 
-		double newXPos = xPos + xDiff3;
-		double newYPos = yPos + yDiff3;
+		double newXPos = center.getX() + xDiff3;
+		double newYPos = center.getY() + yDiff3;
 
 		return new LocalPosition(newXPos, newYPos);
 	}
@@ -581,12 +580,13 @@ public class SettlementMapPanel extends JPanel {
 			g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 			g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-			float scaleMod = 1f;
-			if (scale > 1) scaleMod = (float) Math.sqrt(scale);
+			// Calculate the visible map radius from center to the farthest corner of the panel, plus a small buffer (10%).
+			double mapRadius = (Math.sqrt(Math.pow(getWidth() / 2.0, 2) + Math.pow(getHeight() / 2.0, 2)) * 1.1D) / scale;
 
 			// Display all map layers and reset hotspots
 			var newHotspots = new ArrayList<MapHotspot<?>>();
-			MapViewPoint viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, scaleMod);
+			MapViewPoint viewpoint = new MapViewPoint(g2d, center, getWidth(), getHeight(), rotation,
+													(float) scale, mapRadius);
 			var currentSelection = selectedEntity.get(settlement);
 			for (SettlementMapLayer layer : mapLayers) {
 				newHotspots.addAll(layer.displayLayer(settlement, viewpoint, currentSelection));
@@ -594,6 +594,7 @@ public class SettlementMapPanel extends JPanel {
 
 			// Map layers are drawon bottom up but hotspots need to be top down
 			hotspots = newHotspots.reversed();
+			//System.out.println("center = " + center + ", hotspots = " + hotspots.size() + ", radius = " + mapRadius);
 
 		} finally {
 			g2d.dispose(); // ensure any child Graphics resources are freed
@@ -636,8 +637,8 @@ public class SettlementMapPanel extends JPanel {
 			props.setProperty(SETTLEMENT_PROP, settlement.getName());
 		}
 
-		props.setProperty(X_PROP, Double.toString(xPos));
-		props.setProperty(Y_PROP, Double.toString(yPos));
+		props.setProperty(X_PROP, Double.toString(center.getX()));
+		props.setProperty(Y_PROP, Double.toString(center.getY()));
 		props.setProperty(ROTATION_PROP, Double.toString(rotation));
 		props.setProperty(SCALE_PROP, Double.toString(scale));
 
