@@ -39,7 +39,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 	private static final SimLogger logger = SimLogger.getLogger(MissionBoardVehicleStep.class.getName());
 
 	/* How long do Worker have to complete departure */
-	private static final int DEPARTURE_DURATION = 150;
+	protected static final int DEPARTURE_DURATION = 150;
 	private static final int DEPARTURE_PREPARATION = 15;
 
     private boolean notifiedMembers = false;
@@ -139,7 +139,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 				&& ((members.size() - ejectedMembers.size()) >= 2)) {
 			for(Person ej : ejectedMembers) {
 				logger.info(ej, "Ejected from mission " + m.getName() + " missed Departure");
-				m.removeMember(ej);
+				ej.setMission(null);
 				m.addMissionLog(ej.getName() + " ejected", leader.getName());
 			}
 			canDepart = true;

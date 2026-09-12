@@ -4,15 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.map.location.CoordinatesException;
 import com.mars_sim.core.map.location.CoordinatesFormat;
-import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.mission.MetaMission;
-import com.mars_sim.core.mission.MetaMission.Roster;
+import com.mars_sim.core.mission.MissionTestHelper;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.mission.objectives.LandmarkObjective;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -23,23 +19,21 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
     @Test
     void testStart() throws CoordinatesException {
         var s = buildSettlement("Test");
-        var r = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
-        
-        var l = buildPerson("Leader", s);
-        l.transfer(r);
-        var w = buildPerson("Worker", s);
-        w.transfer(r);
+
 
         var landmarks = getConfig().getLandmarkConfiguration().getLandmarks()
                     .getFeatures(CoordinatesFormat.fromString("0N 0E"), 1);
         assertFalse(landmarks.isEmpty(), "No landmarks found in test config");
         var landmark = landmarks.get(0);
 
-        Roster roster = new MetaMission.Roster(l, List.of(w), r);
+        var roster = MissionTestHelper.buildRoster(getContext(), s, 1, CARGO_ROVER, true);
         
 		var project = new MissionVehicleProject(null, MissionType.VISIT_LANDMARK, 10, roster);
         var st = new VisitLandmarkStep(project, landmark);
         project.addStep(st);
+
+        var w = roster.members().get(0);
+        var l = roster.leader();
         project.execute(w);
         
         var obj = st.getObjective();
@@ -75,7 +69,7 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
         assertFalse(st.isCompleted(), "Step need everyone back on board");
         assertTrue(((EVAOperation)task).isRequestEndEVATrue(), "Worker recalled to rover after EVA");
 
-        w.transfer(r);
+        w.transfer(roster.vehicle());
         project.execute(l);
 
         assertTrue(st.isCompleted(), "Step should be complete after EVA");

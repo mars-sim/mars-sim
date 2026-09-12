@@ -7,21 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.environment.MineralSite;
-import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mineral.RandomMineralFactory;
-import com.mars_sim.core.mission.MetaMission;
-import com.mars_sim.core.mission.MetaMission.Roster;
 import com.mars_sim.core.mission.MissionCreationException;
+import com.mars_sim.core.mission.MissionTestHelper;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
@@ -33,7 +27,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
 
         var s = buildSettlement("Test");
 
-        var crew = buildEVACrew(getContext(), s, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
+        var crew = MissionTestHelper.buildEVACrew(getContext(), s, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
 
         List<MineralSite> sites = buildSites(s, 2);
         var m = (VehicleMission) mt.constructInstance(crew, false, sites);
@@ -58,7 +52,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
 
         var s = buildSettlement("Test");
 
-        var crew = buildEVACrew(getContext(), s, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
+        var crew = MissionTestHelper.buildEVACrew(getContext(), s, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
 
         var sites = buildSites(s, mt.getExpectedSites(s) + 1);
 
@@ -95,43 +89,5 @@ class ExplorationMetaTest extends MarsSimUnitTest {
         }
         
         return sites;
-    }
-
-
-    /**
-     * This builds a Roster crew for an EVA mission needing an optional set of Containers.
-     * @param context The test context to build the crew.
-     * @param s The settlement to build the crew in.
-     * @param containterType The type of container to build for the mission; optional if containerCount is 0.
-     * @param containerCount The number of containers to build for the mission.
-     * @param roverType The type of rover to build for the mission.
-     * @return A Roster of crew members for the EVA mission.
-     */
-    public static MetaMission.Roster buildEVACrew(MarsSimContext context, Settlement s, EquipmentType containterType,
-        int containerCount, String roverType) {
-  
-        var l = context.buildPerson("Leader", s);
-        var rover = context.buildRover(s, "Test", LocalPosition.DEFAULT_POSITION, roverType);
-
-        var w = context.buildPerson("Worker1", s);
-        var members = List.of(w);
-        Roster crew = new Roster(l, members, rover);
-
-        // Build EVA suite to support mission
-        for(int i = 0; i < members.size() + 1; i++) {
-            EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
-        }
-
-        var resources = Map.of(ResourceUtil.OXYGEN_ID, 200D,
-                ResourceUtil.WATER_ID, 200D,
-                ResourceUtil.FOOD_ID, 200D,
-                ResourceUtil.METHANOL_ID, 200D);
-        loadAmounts(s.getEquipmentInventory(), resources);
-
-        for(int c = 0; c < containerCount; c++) {
-            EquipmentFactory.createEquipment(containterType, s);
-        }
-
-        return crew;
     }
 }
