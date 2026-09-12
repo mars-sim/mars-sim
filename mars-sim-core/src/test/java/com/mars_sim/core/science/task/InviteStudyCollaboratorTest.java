@@ -11,12 +11,13 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 
-public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
+class InviteStudyCollaboratorTest extends MarsSimUnitTest {
     /**
      * Build a study to the Proposal phase
      */
@@ -51,7 +52,7 @@ public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testMetaTask() {
+    void testMetaTask() {
         var s = buildSettlement("Study", true);
 
         var c = buildPerson("Collab1", s);
@@ -74,7 +75,7 @@ public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
 
 
     @Test
-    public void testCreateTask() {
+    void testCreateTask() {
         var s = buildSettlement("Study", true);
         var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = buildPerson("Researcher", s);
@@ -84,6 +85,11 @@ public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
         BuildingManager.addToActivitySpot(p, l, FunctionType.RESEARCH);
         BuildingManager.addToActivitySpot(c1, l, FunctionType.RESEARCH);
         BuildingManager.addToActivitySpot(c2, l, FunctionType.RESEARCH);
+
+        // Make primary like others
+        RelationshipUtil.changeOpinion(p, c1, 100);
+        RelationshipUtil.changeOpinion(p, c2, 100);
+        
 
         var jobType = JobType.BOTANIST;
         p.setJob(jobType, "Boss");
@@ -100,6 +106,7 @@ public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
         // Create invite task
         var task = new InviteStudyCollaborator(p);
         assertFalse(task.isDone(), "Invite task created");
+        assertEquals(2, task.getInvitees().size(), "Two invitees expected");
 
         executeTask(p, task, 20);
         assertTrue(task.isDone(), "Invite task done");

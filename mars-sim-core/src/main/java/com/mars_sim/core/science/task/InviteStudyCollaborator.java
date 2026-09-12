@@ -7,6 +7,7 @@
 package com.mars_sim.core.science.task;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
@@ -202,6 +203,15 @@ public class InviteStudyCollaborator extends Task {
         }
 
         return 0D;
+    }
+
+    /**
+     * Gets the list of invitees for this task.
+     * 
+     * @return the list of invitees.
+     */
+    List<Person> getInvitees() {
+        return Collections.unmodifiableList(invitees);
     }
 
     @Override
