@@ -15,11 +15,10 @@ import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.mission.MetaMission;
-import com.mars_sim.core.mission.MetaMission.Roster;
 import com.mars_sim.core.mission.MissionCreationException;
+import com.mars_sim.core.mission.steps.MissionBoardVehicleStepTest;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -110,15 +109,10 @@ class ExplorationMetaTest extends MarsSimUnitTest {
     public static MetaMission.Roster buildEVACrew(MarsSimContext context, Settlement s, EquipmentType containterType,
         int containerCount, String roverType) {
   
-        var l = context.buildPerson("Leader", s);
-        var rover = context.buildRover(s, "Test", LocalPosition.DEFAULT_POSITION, roverType);
-
-        var w = context.buildPerson("Worker1", s);
-        var members = List.of(w);
-        Roster crew = new Roster(l, members, rover);
+        var crew = MissionBoardVehicleStepTest.buildRoster(context, s, 1, roverType, true);
 
         // Build EVA suite to support mission
-        for(int i = 0; i < members.size() + 1; i++) {
+        for(int i = 0; i < crew.members().size() + 1; i++) {
             EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
         }
 
