@@ -172,51 +172,13 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		return malfunctionManager;
 	}
 
-
 	@Override
 	public UnitType getUnitType() {
 		return UnitType.DATA_RECORDER;
 	}
 
-
-	@Override
-	public double getStoredMass() {
-		return 0;
-	}
-
-
-	@Override
-	public double storeAmountResource(int resource, double quantity) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public double retrieveAmountResource(int resource, double quantity) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public double getSpecificCapacity(int resource) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public double getSpecificAmountResourceStored(int resource) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
 	@Override
 	public boolean isEmpty(boolean brandNew) {
-		// TODO Auto-generated method stub
 		return false;
 	}
-
 }

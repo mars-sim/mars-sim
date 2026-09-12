@@ -8,7 +8,6 @@
 package com.mars_sim.core.equipment;
 
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.structure.Settlement;
@@ -76,38 +75,8 @@ public class Kit extends Equipment
 	}
 
 	@Override
-	public Building getBuildingLocation() {
-		return null;
-	}
-
-	@Override
-	public double storeAmountResource(int resource, double quantity) {
-		return 0;
-	}
-
-	@Override
-	public double retrieveAmountResource(int resource, double quantity) {
-		return 0;
-	}
-
-	@Override
-	public double getSpecificCapacity(int resource) {
-		return 0;
-	}
-
-	@Override
-	public double getSpecificAmountResourceStored(int resource) {
-		return 0;
-	}
-
-	@Override
 	public boolean isEmpty(boolean brandNew) {
 		return false;
-	}
-
-	@Override
-	public double getStoredMass() {
-		return 0;
 	}
 
 	@Override
