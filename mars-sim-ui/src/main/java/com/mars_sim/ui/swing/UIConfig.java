@@ -16,10 +16,13 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +35,6 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.ConfigHelper;
 
 /**
@@ -85,7 +87,9 @@ public class UIConfig {
 	private static final String Z_ORDER = "z-order";
 	private static final String PROP_SETS = "prop-sets";
 	private static final String PROP_SET = "prop-set";
+	private static final String TOOL_PROPS_PREFIX = "tool-window:";
 
+	private final String storageDir;
 	private Map<String,WindowSpec> loadedSpecs = new HashMap<>();
 	private Map<String,Properties> propSets = new HashMap<>();
 
@@ -97,17 +101,26 @@ public class UIConfig {
 	private boolean useDockingUI = false;
 
 	/**
+	 * Creates a UI config backed by the provided storage directory.
+	 * 
+	 * @param storageDir Directory containing the UI settings file.
+	 */
+	public UIConfig(String storageDir) {
+		this.storageDir = Objects.requireNonNull(storageDir, "storageDir");
+	}
+
+	/**
 	 * Loads and parses the XML save file.
 	 */
 	public void parseFile() {
-		File configFile = new File(SimulationRuntime.getSaveDir(), FILE_NAME);
+		File configFile = getConfigFile();
 		if (configFile.exists()) {
 
 		    SAXBuilder builder = new SAXBuilder();
 		    builder.setProperty(ACCESS_EXTERNAL_DTD, "");
 		    builder.setProperty(ACCESS_EXTERNAL_SCHEMA, "");
 		    try  {
-		    	Document configDoc = builder.build(new File(SimulationRuntime.getSaveDir(), FILE_NAME));
+		    	Document configDoc = builder.build(configFile);
 		    	Element root = configDoc.getRootElement();
 
 				// Main properties
@@ -200,7 +213,7 @@ public class UIConfig {
 	 */
 	public void saveFile(ContentManager mainWindow) {
 		
-		File configFile = new File(SimulationRuntime.getSaveDir(), FILE_NAME);
+		File configFile = getConfigFile();
 
 		// Create save directory if it doesn't exist.
 		configFile.getParentFile().mkdirs();
@@ -223,14 +236,17 @@ public class UIConfig {
 		Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
 		uiElement.addContent(internalWindowsElement);
 
+		var contentSpecs = mainWindow.getContentSpecs();
+
 		// Add all internal windows.
-		for (var window1 : mainWindow.getContentSpecs()) {
+		for (var window1 : contentSpecs) {
 			internalWindowsElement.addContent(outputWindowSpec(WINDOW, window1));
 		}
 
 		// Output the extra properties
 		Map<String, Properties> extraProps = new HashMap<>();
 		extraProps.putAll(mainWindow.getUIProps());
+		extraProps.putAll(getClosedToolProps(contentSpecs));
 
 		Element propsElement = new Element(PROP_SETS);
 		uiElement.addContent(propsElement);
@@ -238,7 +254,7 @@ public class UIConfig {
 			outputProperties(propsElement, entry.getKey(), entry.getValue());
 		}
 
-		saveDocumentToXMLFile(outputDoc, new File(SimulationRuntime.getSaveDir(), FILE_NAME));
+		saveDocumentToXMLFile(outputDoc, configFile);
 	}
 
 	private Element outputWindowSpec(String elemName, WindowSpec window1) {
@@ -370,7 +386,7 @@ public class UIConfig {
 		if (spec != null) {
 			return spec.props;
 		}
-		return new Properties();
+		return getPropSet(getToolPropsName(windowName));
 	}
 
 	/**
@@ -448,5 +464,31 @@ public class UIConfig {
 	 */
 	public void addWindowSpec(WindowSpec windowSpec) {
 		loadedSpecs.put(windowSpec.name(), windowSpec);
+	}
+
+	private Map<String, Properties> getClosedToolProps(List<WindowSpec> openWindows) {
+		Set<String> openToolNames = new HashSet<>();
+		for (var window : openWindows) {
+			if (TOOL.equals(window.type())) {
+				openToolNames.add(window.name());
+			}
+		}
+
+		Map<String, Properties> result = new HashMap<>();
+		for (var entry : loadedSpecs.entrySet()) {
+			var spec = entry.getValue();
+			if (TOOL.equals(spec.type()) && !openToolNames.contains(spec.name())) {
+				result.put(getToolPropsName(spec.name()), spec.props());
+			}
+		}
+		return result;
+	}
+
+	private static String getToolPropsName(String windowName) {
+		return TOOL_PROPS_PREFIX + windowName;
+	}
+
+	private File getConfigFile() {
+		return new File(storageDir, FILE_NAME);
 	}
 }
