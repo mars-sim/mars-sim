@@ -385,8 +385,7 @@ public class TimeTool extends ContentPanel {
 			float cpu = ((SpinnerNumberModel)(cpuSpinner.getModel())).getNumber().floatValue();
 			// Change the pulse load
 			masterClock.setCPUUtil(cpu);
-		});
-		
+		});		
 		JPanel cpuPane = createPane("cpuUtil");
 		cpuPane.add(cpuSpinner);
 		
@@ -550,12 +549,11 @@ public class TimeTool extends ContentPanel {
 		JFormattedTextField jftf = ((JSpinner.DefaultEditor) spinnerEditor).getTextField();
 		// 3. Set a default size to the text field:
 		jftf.setColumns(3);
-	
+		// 4. Set the horizontal alignment
 		jftf.setHorizontalAlignment(SwingConstants.RIGHT);
 		
 		return spinner;
 	}
-	
 	
 	/**
 	 * Updates various time labels.

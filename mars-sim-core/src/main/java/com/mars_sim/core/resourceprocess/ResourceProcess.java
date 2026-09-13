@@ -42,6 +42,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private boolean isLockOn;
 	
 	private int levelOfEffort = 3;
+	private int modules;
 	
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
@@ -71,6 +72,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 		this.engine = engine;
 		this.building = building;
 		this.assessment = DEFAULT_ASSESSMENT;
+		this.modules = engine.getMaxModules();
 
 		// Add some randomness, today is sol 1
 		resetToggleWait(20 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
@@ -378,15 +380,32 @@ public class ResourceProcess implements ScheduledEventHandler {
 		return processSpec.getInputResources();
 	}
 
+
+	/**
+	 * Gets the max number of modules.
+	 * 
+	 * @return
+	 */
+	public final int getMaxModules() {
+		return engine.getMaxModules();
+	}
+	
 	/**
 	 * Gets the number of modules.
 	 * 
 	 * @return
 	 */
 	public int getNumModules() {
-		return engine.getModules();
+		return modules;
 	}
 	
+    /**
+     * Sets the number of modules for this resource process engine.
+     */
+    public void setModules(int value) {
+    	modules = value;
+    }
+    
 	/**
 	 * Gets the base single input resource rate for a given resource.
 	 *

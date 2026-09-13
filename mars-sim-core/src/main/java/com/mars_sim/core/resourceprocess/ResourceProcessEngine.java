@@ -18,11 +18,11 @@ public class ResourceProcessEngine implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-    private int modules;
+    private final int maxModules;
     private ResourceProcessSpec processSpec;
 
     public ResourceProcessEngine(ResourceProcessSpec processSpec, int modules) {
-        this.modules = modules;
+        this.maxModules = modules;
         this.processSpec = processSpec;
     }
 
@@ -35,17 +35,17 @@ public class ResourceProcessEngine implements Serializable {
     }
 
     public double getBaseFullInputRate(Integer resource) {
-        return processSpec.getBaseInputRate(resource) * modules;
+        return processSpec.getBaseInputRate(resource) * maxModules;
     }
 
     public double getBaseFullOutputRate(Integer resource) {
-        return processSpec.getBaseOutputRate(resource) * modules;
+        return processSpec.getBaseOutputRate(resource) * maxModules;
     }
     
     /**
-     * How many modules does this resource process engine have ?
+     * Gets the max number of modules for this resource process engine.
      */
-    public int getModules() {
-        return modules;
+    public final int getMaxModules() {
+        return maxModules;
     }
 }
