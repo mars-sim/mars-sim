@@ -28,6 +28,7 @@ import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
@@ -430,9 +431,8 @@ class WeatherPanel extends JPanel {
             return "";
         }
 
-        int offset = mapPanel.getSettlement().getTimeZone().getMSolOffset();
-        String zoneID = mapPanel.getSettlement().getTimeZone().getId();
-        return masterClock.getMarsTimeWithOffset(offset).getZonedDateTimeStamp(zoneID);
+        var zone = mapPanel.getSettlement().getTimeZone();
+        return MarsTimeFormat.getZonedDateTimeStamp(masterClock.getMarsTime(), zone);
     }
 
     private double getAdjustedTime(double time, int offset) {

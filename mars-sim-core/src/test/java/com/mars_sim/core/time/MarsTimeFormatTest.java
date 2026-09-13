@@ -4,7 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class MarsTimeFormatTest {
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
+
+class MarsTimeFormatTest {
 
     @Test
     void testFromDate1() {
@@ -31,5 +34,15 @@ public class MarsTimeFormatTest {
         String text = MarsTimeFormat.getDateTimeStamp(start);
         MarsTime result = MarsTimeFormat.fromDateString(text);
         assertEquals(start, result, "Converted to String and back");
+    }
+
+    @Test
+    void testGetZonedDateTimeStamp() throws CoordinatesException {
+        int mSol = 123;
+        MarsTime time = new MarsTime(1, 1, 0, 4, mSol, 1);
+
+        var zone = MarsZone.getMarsZone(CoordinatesFormat.fromString("0N 90E"));
+        String text = MarsTimeFormat.getZonedDateTimeStamp(time, zone);
+        assertEquals("01-Adir-04:" + Integer.toString(mSol + zone.getMSolOffset()) + " " + zone.getId(), text);
     }
 }

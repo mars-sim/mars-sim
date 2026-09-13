@@ -445,16 +445,6 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Returns the current Martian time.
-	 *
-	 * @param offset
-	 * @return Martian time
-	 */
-	public MarsTime getMarsTimeWithOffset(int offset) {
-		return marsTime.addTime(offset);
-	}
-	
-	/**
 	 * Overrides the mars time. This must be used with caution.
 	 * 
 	 * @param newTime New Mars time

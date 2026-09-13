@@ -16,6 +16,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
@@ -60,7 +61,7 @@ class TabPanelDeath extends EntityTabPanel<Person> {
 		if (settlement == null)
 			settlement = person.getBuriedSettlement();
 		
-		String timeZoneID = settlement.getTimeZone().getId();
+		var timeZone = settlement.getTimeZone();
 
 		JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
 		content.add(mainPanel, BorderLayout.NORTH);
@@ -75,7 +76,7 @@ class TabPanelDeath extends EntityTabPanel<Person> {
 		String illnessId = death.getIllness();
 		String causeDisplay = (illnessId != null) ? Msg.getStringOptional("ComplaintType", illnessId) : "";
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.cause"), causeDisplay);
-		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.time"), death.getTimeOfDeath().getZonedDateTimeStamp(timeZoneID));
+		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.time"), MarsTimeFormat.getZonedDateTimeStamp(death.getTimeOfDeath(), timeZone));
  		doctorRetrievingBodyLabel = deathLabelPanel.addRow(Msg.getString("TabPanelDeath.retrievingBody"), death.getDoctorRetrievingBody());
 		examinerLabel = deathLabelPanel.addRow(Msg.getString("TabPanelDeath.examiner"), death.getDoctorSigningCertificate());
 		deathLabelPanel.addRow(Msg.getString("TabPanelDeath.malfunctionIfAny"), death.getMalfunction());
