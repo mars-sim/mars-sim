@@ -192,7 +192,7 @@ public class SimulationConfigEditor {
 		crewConfig = crew;
 
 		// Preload the config to set up the preferred LAF
-		UIConfig configs = new UIConfig(new File(SimulationRuntime.getSaveDir()));
+		UIConfig configs = new UIConfig(SimulationRuntime.getSaveDir());
 		configs.parseFile();
 		StyleManager.setUIProps(configs.getPropSet("style"));
 
@@ -752,7 +752,7 @@ public class SimulationConfigEditor {
 		while (!completed ) {
             try {
                 wait();
-            } catch (InterruptedException e)  {
+            } catch (InterruptedException _)  {
                 Thread.currentThread().interrupt();
             }
         }

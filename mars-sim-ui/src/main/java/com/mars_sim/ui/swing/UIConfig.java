@@ -89,7 +89,7 @@ public class UIConfig {
 	private static final String PROP_SET = "prop-set";
 	private static final String TOOL_PROPS_PREFIX = "tool-window:";
 
-	private final File storageDir;
+	private final String storageDir;
 	private Map<String,WindowSpec> loadedSpecs = new HashMap<>();
 	private Map<String,Properties> propSets = new HashMap<>();
 
@@ -105,7 +105,7 @@ public class UIConfig {
 	 * 
 	 * @param storageDir Directory containing the UI settings file.
 	 */
-	public UIConfig(File storageDir) {
+	public UIConfig(String storageDir) {
 		this.storageDir = Objects.requireNonNull(storageDir, "storageDir");
 	}
 

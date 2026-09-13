@@ -117,7 +117,7 @@ public class MarsProject {
 			sim = builder.start(splashWindow::setStatusMessage);
 
 			// Open global UI configs
-			UIConfig config = new UIConfig(new File(SimulationRuntime.getSaveDir()));
+			UIConfig config = new UIConfig(SimulationRuntime.getSaveDir());
 			if (!useCleanUI || askScreenConfig()) {
 				config.parseFile();
 			}
@@ -334,7 +334,7 @@ public class MarsProject {
         final String footer = "";
         try {
             fmt.printHelp("mars-sim-ui", header, options, footer, true);
-        } catch (IOException ioe) {
+        } catch (IOException _) {
             // Fallback if printing help fails
             logger.severe(message);
             logger.severe("usage: mars-sim-ui [options]");

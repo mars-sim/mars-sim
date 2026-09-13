@@ -23,8 +23,8 @@ import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 class UIConfigTest {
 
 	@Test
-	void saveFilePreservesClosedToolWindowPropsWithoutReopeningWindow(@TempDir Path tempDir) {
-		File storageDir = tempDir.toFile();
+	void saveFilePreservesClosedToolWindowPropsWithoutReopeningWindow(@TempDir File tempDir) {
+		var storageDir = tempDir.getAbsolutePath();
 		UIConfig config = new UIConfig(storageDir);
 
 		Properties closedToolProps = new Properties();
