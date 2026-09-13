@@ -124,7 +124,7 @@ public class ResourceProcessPanel extends JPanel {
 		pTable.setAutoCreateRowSorter(true);
 		
 		scrollPanel.setViewportView(pTable);
-
+		
         TableColumnModel columnModel = pTable.getColumnModel();
         columnModel.getColumn(0).setCellRenderer(new RunningCellRenderer());
         columnModel.getColumn(0).setCellEditor(new RunningCellEditor());
@@ -142,6 +142,10 @@ public class ResourceProcessPanel extends JPanel {
         });
         
         topSpinner.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
+
+		int spinnerHeight = topSpinner.getPreferredSize().height + 2;  // +2 for cell border/margin
+        pTable.setRowHeight(spinnerHeight);
+        
 		// 1. Get the editor component of your spinner:
 		Component spinnerEditor = topSpinner.getEditor();
 		// 2. Get the text field of your spinner's editor:
@@ -150,13 +154,28 @@ public class ResourceProcessPanel extends JPanel {
 //		jftf.setColumns(1);
 		// 4. Set the horizontal alignment
 		jftf.setHorizontalAlignment(SwingConstants.CENTER);
-		jftf.setAlignmentY(CENTER_ALIGNMENT);
+		jftf.setAlignmentY(TOP_ALIGNMENT);
 		
-		int spinnerHeight = topSpinner.getPreferredSize().height + 2;  // +2 for cell border/margin
-        pTable.setRowHeight(spinnerHeight);
-        
 		columnModel.getColumn(2).setCellRenderer(new SpinnerRenderer(topSpinner));
         columnModel.getColumn(2).setCellEditor(new SpinnerEditor());
+        
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+
+                setHorizontalAlignment(SwingConstants.CENTER);
+                setVerticalAlignment(SwingConstants.CENTER);
+                
+                // Call super to set the text/value
+                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            }
+        };
+
+        // Apply renderer to the spinner column
+        pTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+	
+
         columnModel.getColumn(2).setPreferredWidth(50);
         		
         columnModel.getColumn(3).setPreferredWidth(150);
@@ -472,6 +491,9 @@ public class ResourceProcessPanel extends JPanel {
 	    	this.spinner = spinner;
 	        add(spinner);
 	        
+	        JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
+	        editor.getTextField().setHorizontalAlignment(JTextField.CENTER);
+	        
 	        // This is what makes the arrows interactive
 	        spinner.addChangeListener(e -> {
 	            if (currentRow >= 0 && !pTable.isEditing()) {
@@ -483,11 +505,11 @@ public class ResourceProcessPanel extends JPanel {
 	            }
 	        });
 	    }
-
+	    
 	    @Override
 	    public Component getTableCellRendererComponent(JTable table, Object value,
 	            boolean isSelected, boolean hasFocus, int row, int column) {
-	    	
+	
 	    	currentRow = row;
 	        currentCol = column;
 	        spinner.setValue(value);
