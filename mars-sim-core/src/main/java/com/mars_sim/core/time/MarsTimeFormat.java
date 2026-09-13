@@ -22,7 +22,6 @@ public class MarsTimeFormat {
 	private static final String FULL_DATE_TIME_FORMAT = DATE_FORMAT + COLON + FULL_TIME_FORMAT;
 	private static final String TRUNCATED_DATE_TIME_FORMAT = DATE_FORMAT + COLON + TRUNCATED_TIME_FORMAT;
 	private static final String ZONED_DATE_TIME_FORMAT = DATE_FORMAT + COLON + ZONED_TIME_FORMAT;
-	private static final String MCT0 = "MCT+0";
 	
 	// Martian calendar static strings
 	private static final String[] MONTH_NAMES = { 
@@ -116,14 +115,18 @@ public class MarsTimeFormat {
 
 	/**
 	 * Returns a time zone labeled martian time stamp string in the format of "03-Adir-05:056 MCT+4".
+	 * This will advance the time according to the sol offset of the target zone.
 	 *
-	 * @param time {@link MarsTime} instance
-	 * @param zoneOffset
+	 * @param time {@link MarsTime} instance in universal time (MCT0)
+	 * @param zone Target zone
 	 * @return formatted String
 	 */
-	public static String getZonedDateTimeStamp(MarsTime time, String zoneOffset) {
-		return String.format(ZONED_DATE_TIME_FORMAT, time.getOrbit(), getMonthName(time.getMonth()),
-	            time.getSolOfMonth(), time.getMillisolInt(), zoneOffset);
+	public static String getZonedDateTimeStamp(MarsTime time, MarsZone zone) {
+		MarsTime zonedTime = time.addTime(zone.getMSolOffset());
+		return String.format(ZONED_DATE_TIME_FORMAT, zonedTime.getOrbit(),
+							getMonthName(zonedTime.getMonth()),
+	            			zonedTime.getSolOfMonth(), zonedTime.getMillisolInt(),
+							zone.getId());
 	}
 
 	/**
@@ -133,9 +136,8 @@ public class MarsTimeFormat {
 	 * @return formatted String
 	 */
 	public static String getTruncatedDateTimeStamp(MarsTime time) {
-		return getZonedDateTimeStamp(time, MCT0);
-//		return String.format(TRUNCATED_DATE_TIME_FORMAT, time.getOrbit(), getMonthName(time.getMonth()),
-//	            time.getSolOfMonth(), time.getMillisolInt());
+		return String.format(TRUNCATED_DATE_TIME_FORMAT, time.getOrbit(), getMonthName(time.getMonth()),
+	            time.getSolOfMonth(), time.getMillisolInt());
 	}
 
 	
@@ -154,7 +156,7 @@ public class MarsTimeFormat {
 	}
 
 
-	/*
+	/**
 	 * Returns the sol name of the week.
 	 *
 	 * @param clock
@@ -176,7 +178,7 @@ public class MarsTimeFormat {
 		return solOfMonth - (weekOfMonth * 7) - 1;
 	}
 	
-	/*
+	/**
 	 * Returns the sol name of the week.
 	 *
 	 * @param solOfWeek
