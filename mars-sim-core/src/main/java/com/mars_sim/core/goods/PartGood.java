@@ -120,7 +120,7 @@ public class PartGood extends Good {
 	private static final double FUEL_CELL_STACK_DEMAND = 8;
 	
 	private static final int PARTS_MAINTENANCE_VALUE = 2;
-	public static final int CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 25;
+	public static final int CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 10;
 	
 	// Cost modifiers
 	private static final double ITEM_COST = 1.1D;
@@ -491,12 +491,12 @@ public class PartGood extends Good {
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.005;
+			totalDemand *= 1.0005;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.995;
+			totalDemand *= 0.9995;
 		}
 		
 		// Save the goods demand

@@ -890,7 +890,12 @@ public class GoodsManager implements Serializable {
 		return resLimits.size() - reviewedEssentials.size();
 	}
 	
-	
+	/*
+	 * Gets the life resources.*
+	 */
+	public Set<Integer> getLifeResources() {
+		return resLimits.keySet();
+	}
 	/**
 	 * Gets the resources for review.
 	 * 

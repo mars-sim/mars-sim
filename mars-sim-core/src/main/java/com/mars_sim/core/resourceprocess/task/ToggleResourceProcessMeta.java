@@ -523,8 +523,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// Note: divided by (supply + 0.001) make sense in two scenarios : 
 				// (1) when input has large supply and output has zero supply
 				// (2) when input has zero supply and output has large supply
-				if (vp < 1)
-					vp = 1;
+				if (vp < .75)
+					vp = .75;
 				
 				double vp2 = vp * vp;
 				double vp4 = vp2 * vp2;
@@ -535,7 +535,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				score += mrate;
 				
 				if (processSpec.isCoreOutputResource(resource)) {
-					score += mrate * EXCEEDING;
+					score += mrate * SIGNIFICANT;
 				}
 				// if this resource is ambient or a waste product
 				// that the settlement won't keep (e.g. carbon dioxide),

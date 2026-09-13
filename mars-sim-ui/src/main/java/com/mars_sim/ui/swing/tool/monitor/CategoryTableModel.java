@@ -63,18 +63,10 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
 		super.release();
 	}
 
-	/**
-	 * Sets the Settlement filter.
-	 * 
-	 * @param filter Settlement
-	 */
-	@Override
-    public boolean applySettlementFilter(Set<Settlement> filter) {
-		getSelectedSettlements().forEach(s ->s.removeEntityListener(this));
-
+	private void applyCategoryFilter(Set<Settlement> filter) {
         // Create a new row key for each combination of Settlement and Catogory
 		Collection<CategoryKey<T>> newRows = new ArrayList<>();
-        for(var s : filter) {
+        for (var s : filter) {
             newRows.addAll(categories.stream()
             		.map(c -> new CategoryKey<>(s, c))
             		.sorted(Comparator.comparing(CategoryKey::getName))
@@ -87,7 +79,19 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
 		// Add table as listener to each settlement.
 		if (monitorSettlement) {
 			filter.forEach(s ->s.addEntityListener(this));
-		}
+		}		
+	}
+	
+	/**
+	 * Sets the Settlement filter.
+	 * 
+	 * @param filter Settlement
+	 */
+	@Override
+    public boolean applySettlementFilter(Set<Settlement> filter) {
+		getSelectedSettlements().forEach(s ->s.removeEntityListener(this));
+
+		applyCategoryFilter(filter);
 
 		return true;
     }

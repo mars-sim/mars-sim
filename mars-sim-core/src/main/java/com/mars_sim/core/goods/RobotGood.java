@@ -187,12 +187,12 @@ class RobotGood extends Good {
 		// If less than 1, graduating reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.01;
+			totalDemand *= 1.005;
 		}
 		// If less than 1, graduating reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.99;
+			totalDemand *= 0.995;
 		}
 		
 		owner.setDemandScore(this, totalDemand);

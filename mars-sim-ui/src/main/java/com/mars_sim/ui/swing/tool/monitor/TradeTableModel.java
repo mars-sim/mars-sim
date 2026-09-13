@@ -6,10 +6,16 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentFactory;
@@ -28,7 +34,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
 
 
 @SuppressWarnings("serial")
-class TradeTableModel extends CategoryTableModel<Good> {
+class TradeTableModel extends CategoryTableModel<Good> implements FilteredTableModel{
 
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
@@ -80,12 +86,19 @@ class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[REPAIR_COL] = new ColumnSpec ("Repair", Double.class, ColumnSpec.STYLE_DIGIT2);
 
 	}
+	private static final String ALL = "All";
+	private static final String LIFE_RESOURCES = "Life Resources";
+	
+	private boolean allCB = true;
+	private boolean lifeResourcesCB = false;
 
 	/** The market manager instance. */
 	private static MarketManager marketManager = Simulation.instance().getMarketManager();
 	
+	private static Set<Good> lifeResources = new HashSet<>();
+
 	/**
-	 * Constructor 2.
+	 * Constructor 1.
 	 */
 	public TradeTableModel() {
 		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting", COLUMNS,
@@ -93,8 +106,89 @@ class TradeTableModel extends CategoryTableModel<Good> {
 		// Cache the data columns
 		setCachedColumns(NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 		setSettlementColumn(SETTLEMENT_COL);
+		
+		Set<Integer> resources = SimulationConfig.instance().getSettlementConfiguration().getEssentialResources().keySet();
+		for (int resource: resources) {
+			Good g = GoodsUtil.getGood(resource);
+			lifeResources.add(g);
+		}
 	}
 	
+	/**
+	 * Finds the relevant Person by apply filters.
+	 */
+	protected void reapplyFilter() {
+//		Collection<Good> entities = settlements.stream()
+//					.map(Settlement::getAllAssociatedPeople)
+//					.flatMap(Collection::stream)
+//					.filter(this::isGoodDisplayable)
+//					.toList();
+//		
+//		setEntities(entities);
+	}
+
+	/**
+	 * Applies the settlement filter to the model. 
+	 * 
+	 * @param selectedSettlement Settlements to filter by.
+	 * @return true if the filter was applied.
+	 */
+	@Override
+	public boolean applySettlementFilter(Set<Settlement> selectedSettlement) {
+        return super.applySettlementFilter(selectedSettlement);
+	}
+	
+	/**
+	 * Is the good displayable based on filters ?
+	 * 
+	 * @param p
+	 * @return
+	 */
+	private boolean isGoodDisplayable(Good g) {
+		if (!allCB && !lifeResourcesCB) {
+			return false;
+		}
+
+		if (lifeResources.contains(g)) {
+			return lifeResourcesCB;
+		}
+
+		return allCB;
+	}
+
+	/**
+	 * Gets a list of the supported filters and their active state based on the alive state of persons.
+	 * 
+	 * @return
+	 */	
+	@Override
+	public List<FilteredTableModel.Filter> getActiveFilters() {
+		var filters = new ArrayList<FilteredTableModel.Filter>();
+		filters.add(new Filter(ALL, ALL, allCB));
+		filters.add(new Filter(LIFE_RESOURCES, LIFE_RESOURCES, lifeResourcesCB));
+
+		return filters;
+	}
+
+	/**
+	 * Enables/disables display of a filter.
+	 * 
+	 * @param name Name of the filter
+	 * @param selected true to display, false to block
+	 */
+	@Override
+	public void setFilter(String name, boolean isDisplayed) {
+		switch (name) {
+			case ALL -> allCB = isDisplayed;
+			case LIFE_RESOURCES -> lifeResourcesCB = isDisplayed;
+			default -> {
+				// Do nothing
+			}
+		}
+
+		// Reload
+		reapplyFilter();
+	}
 	
 	/**
 	 * Catches unit update event.

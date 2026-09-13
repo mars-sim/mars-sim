@@ -833,7 +833,7 @@ class AmountResourceGood extends Good {
 		if (previousDemand == INITIAL_AMOUNT_DEMAND) {
 			// At the start of the simˇ
 			totalDemand = .8 * projected 
-						+ .2 * tradeDemand;
+					+ .2 * tradeDemand;
 		}
 //		else if (totalSupply < 0.005 && previousDemand < projectedDemand) {
 //			// Quickly ramp up the totalDemand
@@ -858,12 +858,16 @@ class AmountResourceGood extends Good {
 		// If less than 1, increase a small percent to gradually reach toward one 
 		if (totalDemand < ceiling || totalDemand < 1) {
 			// Increment projectedDemand
-			totalDemand *= 1.01;
+			totalDemand *= 1.005;
 		}
 		// If less than 1, decrease a small percent to gradually reach toward one 
 		else if (totalDemand > ceiling) {
 			// Decrement projectedDemand
-			totalDemand *= 0.99;
+			totalDemand *= 0.995;
+		}
+		
+		if (owner.getLifeResources().contains(id) && totalDemand < 1) {
+			totalDemand = 1.0;
 		}
 		
 		// Save the goods demand
@@ -1213,7 +1217,7 @@ class AmountResourceGood extends Good {
 		for (ConstructionSite s : settlement.getConstructionManager().getConstructionSites()) {
 			
 			if (s.isConstruction()) {
-				double amountResourceNeed = s.getCurrentConstructionStage().getResourceNeeded(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR * 4;	
+				double amountResourceNeed = s.getCurrentConstructionStage().getResourceNeeded(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;	
 			
 				double itemResourceNeed = obtainIronPartNeed(id, s);
 				
@@ -1221,7 +1225,7 @@ class AmountResourceGood extends Good {
 			}
 			else {
 				// If construction has not started, should anticipate the need
-				double amountResourceNeed = s.getCurrentConstructionStage().getResourceNeeded(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR * 2;	
+				double amountResourceNeed = s.getCurrentConstructionStage().getResourceNeeded(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR / 2;	
 				
 				double itemResourceNeed = obtainIronPartNeed(id, s) / 2;
 				
@@ -1232,7 +1236,7 @@ class AmountResourceGood extends Good {
 			ConstructionStageInfo info = s.getNextConstructionStageInfo();
 			
 			if (info != null) {
-				double amountResourceNeed = info.getResourceRequired(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;	
+				double amountResourceNeed = info.getResourceRequired(id) * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR / 4;	
 				
 				double itemResourceNeed = obtainIronPartNeed(id, s) / 8;
 				
@@ -1356,6 +1360,7 @@ class AmountResourceGood extends Good {
 				case ResourceUtil.WATER_ID -> personConfig.getWaterConsumptionRate() *  WATER_VALUE_MODIFIER;
 				case ResourceUtil.FOOD_ID -> personConfig.getFoodConsumptionRate() * FOOD_VALUE_MODIFIER;
 				case ResourceUtil.METHANE_ID -> personConfig.getWaterConsumptionRate() * METHANE_VALUE_MODIFIER;
+				case ResourceUtil.METHANOL_ID -> personConfig.getWaterConsumptionRate() * METHANE_VALUE_MODIFIER;
 				case ResourceUtil.CO2_ID -> CO2_VALUE_MODIFIER;
 				case ResourceUtil.HYDROGEN_ID -> personConfig.getWaterConsumptionRate() * HYDROGEN_VALUE_MODIFIER;
 				default -> 0D;
