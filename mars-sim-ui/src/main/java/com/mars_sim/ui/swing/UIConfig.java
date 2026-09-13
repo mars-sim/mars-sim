@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -34,7 +35,6 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.ConfigHelper;
 
 /**
@@ -89,6 +89,7 @@ public class UIConfig {
 	private static final String PROP_SET = "prop-set";
 	private static final String TOOL_PROPS_PREFIX = "tool-window:";
 
+	private final File storageDir;
 	private Map<String,WindowSpec> loadedSpecs = new HashMap<>();
 	private Map<String,Properties> propSets = new HashMap<>();
 
@@ -100,17 +101,26 @@ public class UIConfig {
 	private boolean useDockingUI = false;
 
 	/**
+	 * Creates a UI config backed by the provided storage directory.
+	 * 
+	 * @param storageDir Directory containing the UI settings file.
+	 */
+	public UIConfig(File storageDir) {
+		this.storageDir = Objects.requireNonNull(storageDir, "storageDir");
+	}
+
+	/**
 	 * Loads and parses the XML save file.
 	 */
 	public void parseFile() {
-		File configFile = new File(SimulationRuntime.getSaveDir(), FILE_NAME);
+		File configFile = getConfigFile();
 		if (configFile.exists()) {
 
 		    SAXBuilder builder = new SAXBuilder();
 		    builder.setProperty(ACCESS_EXTERNAL_DTD, "");
 		    builder.setProperty(ACCESS_EXTERNAL_SCHEMA, "");
 		    try  {
-		    	Document configDoc = builder.build(new File(SimulationRuntime.getSaveDir(), FILE_NAME));
+		    	Document configDoc = builder.build(configFile);
 		    	Element root = configDoc.getRootElement();
 
 				// Main properties
@@ -203,7 +213,7 @@ public class UIConfig {
 	 */
 	public void saveFile(ContentManager mainWindow) {
 		
-		File configFile = new File(SimulationRuntime.getSaveDir(), FILE_NAME);
+		File configFile = getConfigFile();
 
 		// Create save directory if it doesn't exist.
 		configFile.getParentFile().mkdirs();
@@ -244,7 +254,7 @@ public class UIConfig {
 			outputProperties(propsElement, entry.getKey(), entry.getValue());
 		}
 
-		saveDocumentToXMLFile(outputDoc, new File(SimulationRuntime.getSaveDir(), FILE_NAME));
+		saveDocumentToXMLFile(outputDoc, configFile);
 	}
 
 	private Element outputWindowSpec(String elemName, WindowSpec window1) {
@@ -476,5 +486,9 @@ public class UIConfig {
 
 	private static String getToolPropsName(String windowName) {
 		return TOOL_PROPS_PREFIX + windowName;
+	}
+
+	private File getConfigFile() {
+		return new File(storageDir, FILE_NAME);
 	}
 }

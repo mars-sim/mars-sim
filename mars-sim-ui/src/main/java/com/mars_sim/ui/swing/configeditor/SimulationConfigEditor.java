@@ -69,6 +69,7 @@ import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIConfig;
@@ -191,7 +192,7 @@ public class SimulationConfigEditor {
 		crewConfig = crew;
 
 		// Preload the config to set up the preferred LAF
-		UIConfig configs = new UIConfig();
+		UIConfig configs = new UIConfig(new File(SimulationRuntime.getSaveDir()));
 		configs.parseFile();
 		StyleManager.setUIProps(configs.getPropSet("style"));
 

@@ -117,7 +117,7 @@ public class MarsProject {
 			sim = builder.start(splashWindow::setStatusMessage);
 
 			// Open global UI configs
-			UIConfig config = new UIConfig();
+			UIConfig config = new UIConfig(new File(SimulationRuntime.getSaveDir()));
 			if (!useCleanUI || askScreenConfig()) {
 				config.parseFile();
 			}
