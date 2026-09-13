@@ -27,6 +27,7 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
 
 	private boolean monitorSettlement = false;
     private List<T> categories;
+	private boolean categoriesChanging = false;
 
     protected CategoryTableModel(String name, String countingMsgKey, ColumnSpec[] names, List<T> cats) {
         super(name, names);
@@ -95,4 +96,27 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
 
 		return true;
     }
+
+	/**
+	 * Change the categories for the model. This will force a refresh of the table rows.
+	 * @param cats New set of categories for the model.
+	 */
+	protected void changeCategories(List<T> cats) {
+		this.categories = cats;
+
+		categoriesChanging = true;
+		applyCategoryFilter(getSelectedSettlements());
+		categoriesChanging = false;
+	}
+
+		
+    /**
+     * The category table can ignore updates if gthere is a category reset taking place.
+     * 
+     */
+	protected void entityValueUpdated(CategoryKey<T> entity, int firstCol, int lastCol) {
+		if (!categoriesChanging) {
+			super.entityValueUpdated(entity, firstCol, lastCol);
+		}
+	}
 }
