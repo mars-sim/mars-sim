@@ -31,6 +31,7 @@ class EquipmentInventoryTest extends MarsSimUnitTest {
 
 	private Settlement settlement = null;
 
+	@Override 
     @BeforeEach
     public void init() {
 		super.init();
@@ -53,9 +54,8 @@ class EquipmentInventoryTest extends MarsSimUnitTest {
 		// Store some CO2 directly and then a Bag containing rocks
 		inv.storeAmountResource(co2, co2Mass);
 		
-		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
-		
-		double excess = ((Container)bag).storeAmountResource(rock, rockMass);
+		GenericContainer bag = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
+		double excess = bag.storeAmountResource(rock, rockMass);
 		
 		assertEquals(0D, excess, "Bag cannot store the rock.");
 				
@@ -86,17 +86,14 @@ class EquipmentInventoryTest extends MarsSimUnitTest {
 		int resource = ResourceUtil.CO2_ID;
 
 		double excess = inv.storeAmountResource(resource, CAPACITY_AMOUNT/2);
-//		System.out.println("excess: " + excess);
 		
 		assertEquals(0D, excess, "No excess on 1st load");
 		
 		double stored = inv.getSpecificAmountResourceStored(resource);
-//		System.out.println("stored: " + stored);
 		
 		assertEquals(CAPACITY_AMOUNT/2, stored, "Stored capacity after 1st load");
 		
 		double cap = inv.getRemainingSpecificCapacity(resource);
-//		System.out.println("cap: " + cap);
 				
 		assertEquals(CAPACITY_AMOUNT/2, cap, "Remaining after 1st load capacity");
 		assertEquals(CAPACITY_AMOUNT/2, inv.getStoredMass(), "Total mass after 1st load");

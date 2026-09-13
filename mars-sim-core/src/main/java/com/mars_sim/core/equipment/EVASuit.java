@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.equipment;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -72,14 +73,14 @@ import com.mars_sim.core.unit.UnitHolder;
  * `Extravehicular Activity Suit Systems Design How to Walk, Talk, and Breathe on Mars` 
  */
 public class EVASuit extends Equipment
-	implements LifeSupportInterface, Malfunctionable, ResourceHolder, ItemHolder,
-				Temporal {
+	implements LifeSupportInterface, Malfunctionable, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/* default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(EVASuit.class.getName());
+    private static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 kPa");
 
 	// Static members
 	public static final String EVA = "EVA";
@@ -268,48 +269,10 @@ public class EVASuit extends Equipment
     }
 
 	/**
-	 * Is this resource supported ?
-	 *
-	 * @param resource
-	 * @return true if this resource is supported
+	 * Get access to the resource held within the equipment.
 	 */
-	public boolean isResourceSupported(int resource) {
-		return microInventory.isResourceSupported(resource);
-	}
-
-	/**
-	 * Stores the resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public double storeAmountResource(int resource, double quantity) {
-		// Note: this method is different from
-		// Equipment's storeAmountResource
-		if (isResourceSupported(resource)) {
-			return microInventory.storeAmountResource(resource, quantity);
-		}
-		else {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, name + "Not allowed to be stored in "
-					+ this + ".");
-			return quantity;
-		}
-	}
-
-
-	/**
-	 * Gets the specific capacity of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return capacity
-	 */
-	@Override
-	public double getSpecificCapacity(int resource) {
-		// Note: this method is different from Equipment's getAmountResourceCapacity
-		return microInventory.getSpecificCapacity(resource);
+	public ResourceHolder getResourcesInventory() {
+		return microInventory;
 	}
 
 	/**
@@ -333,7 +296,7 @@ public class EVASuit extends Equipment
 	public boolean lifeSupportCheck() {
 		try {
 
-			if (getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
+			if (microInventory.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) <= 0D) {
 				logger.log(this, Level.WARNING, 30_000,
 						"Ran out of water.");
 			}
@@ -346,19 +309,19 @@ public class EVASuit extends Equipment
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE) {
 				logger.log(this, Level.WARNING, 30_000,
-						"Detected improper oxygen partial pressure at " + Math.round(p * 100.0D) / 100.0D + " kPa.");
+						"Detected improper oxygen partial pressure at " + DECIMAL_KPA.format(p) + ".");
 				return false;
 			}
 			else if (p <= minO2Pressure) {
 				logger.log(this, Level.WARNING, 30_000,
-						"Dwindling amount of oxygen at " + Math.round(p * 100.0D) / 100.0D
-						+ " kPa, already below the minimum safety partial pressure of " + minO2Pressure + " kPa.");
+						"Dwindling amount of oxygen at " + DECIMAL_KPA.format(p)
+						+ ", already below the minimum safety partial pressure of " + DECIMAL_KPA.format(minO2Pressure) + ".");
 			return false;
 			}
 			else if (p <= (minO2Pressure + TARGET_O2_PRESSURE) / 2) {
 				logger.log(this, Level.WARNING, 30_000,
-						"Dwindling amount of oxygen at " + Math.round(p * 100.0D) / 100.0D 
-						+ " kPa, already below the target partial pressure of " + TARGET_O2_PRESSURE + " kPa.");
+						"Dwindling amount of oxygen at " + DECIMAL_KPA.format(p)
+						+ ", already below the target partial pressure of " + DECIMAL_KPA.format(TARGET_O2_PRESSURE) + ".");
 				return false;
 			}
 			
@@ -393,7 +356,7 @@ public class EVASuit extends Equipment
 		// 17    kPa -> 0.2552 kg (target O2 pressure)
 		// 11.94 kPa -> 0.1792 kg (min O2 pressure)
 
-		double oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+		double oxygenLeft = microInventory.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 		
 		double pp = AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit
@@ -415,16 +378,6 @@ public class EVASuit extends Equipment
 		return pp;
 	}
 
-	/**
-	 * Gets oxygen partial pressure.
-	 * 
-	 * @return
-	 */
-	private double getCurrentOxygenPartialPressure() {
-		double oxygenLeft = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
-		return AirComposition.getOxygenPressure(oxygenLeft, TOTAL_VOLUME);
-	}
-	
 	/**
 	 * Gets the number of people the life support can provide for.
 	 *
@@ -451,10 +404,10 @@ public class EVASuit extends Equipment
 		// May pressurize the suit to 1/3 of atmospheric pressure, per NASA aboard on
 		// the ISS
 
-		oxygenLacking = retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
+		oxygenLacking = microInventory.retrieveAmountResource(ResourceUtil.OXYGEN_ID, oxygenTaken);
 
 		double carbonDioxideProvided = gasRatio * (oxygenTaken - oxygenLacking);
-		storeAmountResource(ResourceUtil.CO2_ID, carbonDioxideProvided);
+		microInventory.storeAmountResource(ResourceUtil.CO2_ID, carbonDioxideProvided);
 
 		return oxygenTaken - oxygenLacking;
 	}
@@ -468,7 +421,7 @@ public class EVASuit extends Equipment
 	 */
 	@Override
 	public double provideWater(double waterTaken) {
-		double lacking = retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
+		double lacking = microInventory.retrieveAmountResource(ResourceUtil.WATER_ID, waterTaken);
 
 		return waterTaken - lacking;
 	}
@@ -584,12 +537,12 @@ public class EVASuit extends Equipment
 	 * @return Suit is fully loaded with resource
 	 */
 	private boolean loadResource(ResourceHolder source, int resourceId) {
-		double needed = getRemainingSpecificCapacity(resourceId);
+		double needed = microInventory.getRemainingSpecificCapacity(resourceId);
 		if (needed > 0D) {
 			double shortfall = source.retrieveAmountResource(resourceId, needed);
 			double taken = needed - shortfall;
 			if (taken > 0) {
-				storeAmountResource(resourceId, taken);
+				microInventory.storeAmountResource(resourceId, taken);
 			}
 		}
 		return needed <= 0D;
@@ -601,9 +554,9 @@ public class EVASuit extends Equipment
 	 * @param newSuitOwner
 	 */
 	public void unloadWaste(EquipmentOwner holder) {
-		double co2 = getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
+		double co2 = microInventory.getSpecificAmountResourceStored(ResourceUtil.CO2_ID);
 		if (co2 > 0) {
-			retrieveAmountResource(ResourceUtil.CO2_ID, co2);
+			microInventory.retrieveAmountResource(ResourceUtil.CO2_ID, co2);
 			holder.storeAmountResource(ResourceUtil.CO2_ID, co2);
 		}
 	}
@@ -614,123 +567,10 @@ public class EVASuit extends Equipment
 	 * @return Percentage of lowest resource
 	 */
 	public double getFullness() {
-		double o2Loaded = getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)/OXYGEN_CAPACITY;
-		double waterLoaded = getSpecificAmountResourceStored(ResourceUtil.WATER_ID)/WATER_CAPACITY;
+		double o2Loaded = microInventory.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)/OXYGEN_CAPACITY;
+		double waterLoaded = microInventory.getSpecificAmountResourceStored(ResourceUtil.WATER_ID)/WATER_CAPACITY;
 
 		return Math.min(o2Loaded, waterLoaded);
-	}
-
-
-	@Override
-	public int getItemResourceStored(int resource) {
-		return microInventory.getItemResourceStored(resource);
-	}
-
-	/**
-	 * NOTE: EVASuit doesn't have any items/parts yet.
-	 */
-	@Override
-	public int getItemResourceRemainingQuantity(int resource) {
-		return microInventory.getItemResourceRemainingQuantity(resource);
-	}
-
-	@Override
-	public int storeItemResource(int resource, int quantity) {
-		return microInventory.storeItemResource(resource, quantity);
-	}
-
-	@Override
-	public int retrieveItemResource(int resource, int quantity) {
-		return microInventory.retrieveItemResource(resource, quantity);
-	}
-
-	/**
-	 * Gets a list of all stored item resources.
-	 *
-	 * @return a list of resource ids
-	 */
-	@Override
-	public Set<Integer> getItemResourceIDs() {
-		return microInventory.getItemResourceIDs();
-	}
-
-	@Override
-	public double getSpecificAmountResourceStored(int resource) {
-		return microInventory.getSpecificAmountResourceStored(resource);
-	}
-
-	/**
-	 * Retrieves the resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public double retrieveAmountResource(int resource, double quantity) {
-		if (isResourceSupported(resource)) {
-			return microInventory.retrieveAmountResource(resource, quantity);
-		}
-
-		else {
-			String name = ResourceUtil.findAmountResourceName(resource);
-			logger.warning(this, "No such resource. Cannot retrieve "
-					+ Math.round(quantity* 1_000.0)/1_000.0 + " kg "+ name + ".");
-			return quantity;
-		}
-	}
-
-	/**
-	 * Obtains the remaining combined capacity of storage space of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingCombinedCapacity(int resource) {
-		return microInventory.getRemainingCombinedCapacity(resource);
-	}
-
-	/**
-	 * Obtains the remaining specific capacity of storage space of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingSpecificCapacity(int resource) {
-		return microInventory.getRemainingSpecificCapacity(resource);
-	}
-	
-	/**
-	 * Gets the quantity of all stock and specific amount resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAllAmountResourceStored(int resource) {
-		return microInventory.getAllAmountResourceStored(resource);
-	}
-	
-	/**
-	 * Gets a list of all stored specific amount resources.
-	 *
-	 * @return a list of resource ids
-	 */
-	@Override
-	public Set<Integer> getSpecificResourceStoredIDs() {
-		return microInventory.getSpecificResourceStoredIDs();
-	}
-	
-	/**
-	 * Gets all stored amount resources in eqmInventory, including inside equipment.
-	 *
-	 * @return all stored amount resources.
-	 */
-	@Override
-	public Set<Integer> getAllAmountResourceStoredIDs() {
-		return getSpecificResourceStoredIDs();
 	}
 	
 	/**
@@ -739,6 +579,7 @@ public class EVASuit extends Equipment
 	 * @param brandNew true if it needs to be brand new
 	 * @return
 	 */
+	@Override 
 	public boolean isEmpty(boolean brandNew) {
 		if (brandNew) {
 			return (getRegisteredOwnerID() == -1);
@@ -752,22 +593,12 @@ public class EVASuit extends Equipment
 	 *
 	 * @return
 	 */
-	public double getStoredMass() {
+	@Override
+	protected double getStoredMass() {
 		if (microInventory == null)
 			// Note: needed when starting up
 			return 0;
 		return microInventory.getStoredMass();
-	}
-
-	/**
-	 * Does it have unused space or capacity for a particular resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return microInventory.hasAmountResourceRemainingCapacity(resource);
 	}
 	
 	@Override

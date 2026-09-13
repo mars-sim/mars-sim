@@ -108,10 +108,10 @@ public interface ResourceHolder {
 	 * @return May be null
 	 */
 	static ResourceHolder getAttached(Object obj) {
-		if (obj instanceof ResourceHolder rh) {
-			return rh;
-		}
-
-		return EquipmentOwner.getAttached(obj);
+		return switch(obj) {
+			case EVASuit eva -> eva.getResourcesInventory();
+			case ResourceHolder rh -> rh;
+			default -> EquipmentOwner.getAttached(obj);
+		};
 	}
 }

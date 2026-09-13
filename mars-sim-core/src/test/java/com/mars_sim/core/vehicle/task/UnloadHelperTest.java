@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 
 import com.mars_sim.core.test.MarsSimUnitTest;
+import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -56,8 +57,8 @@ class UnloadHelperTest extends MarsSimUnitTest{
         var v = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         int suits = 3;
         for(int i = 0; i < suits; i++) {
-            var e = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
-            e.storeAmountResource(ResourceUtil.OXYGEN_ID, 10);
+            var e = (EVASuit)EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
+            e.getResourcesInventory().storeAmountResource(ResourceUtil.OXYGEN_ID, 10);
             e.transfer(v);
         }
 

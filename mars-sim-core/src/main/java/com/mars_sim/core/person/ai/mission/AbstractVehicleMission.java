@@ -24,6 +24,7 @@ import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.data.collection.DataCollectionSite;
+import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -1120,7 +1121,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 						}
 						// Check vehicle's equipment
 						for (Equipment equipment: vehAH.getContainerSet()) {
-							amountStored += equipment.getSpecificAmountResourceStored(id);
+							amountStored += ((Container)equipment).getSpecificAmountResourceStored(id);
 						}
 					}
 					

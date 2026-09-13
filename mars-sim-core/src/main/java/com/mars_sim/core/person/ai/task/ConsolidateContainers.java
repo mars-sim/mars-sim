@@ -180,7 +180,7 @@ extends Task {
         	int resourceID = c.getResource();
             if (resourceID != -1) {
             	// resourceID = -1 means the container has not been initialized
-                double sourceAmount = source.getSpecificAmountResourceStored(resourceID);
+                double sourceAmount = c.getSpecificAmountResourceStored(resourceID);
                 if (sourceAmount > 0D) {
 	                // Move resource in container to top inventory if possible.
 	                double topRemainingCapacity = parent.getRemainingCombinedCapacity(resourceID);

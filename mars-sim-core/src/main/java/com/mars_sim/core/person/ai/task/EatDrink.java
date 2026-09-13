@@ -794,18 +794,18 @@ public class EatDrink extends Task {
 		if (localStores == null) {
 			// No local stores so get water from one's EVA suit
 			EVASuit suit = person.getSuit();
-
-			double available = suit.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+			var suitInv = suit.getResourcesInventory();
+			double available = suitInv.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 			
 			// Test to see if there's enough water
 			if (available >= amount) {
 				logger.fine(person, 4_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from " + suit.getName() + ".");
-				consumeWater(suit, amount, waterOnly);
+				consumeWater(suitInv, amount, waterOnly);
 			}
 			else if (available > 0) {
 				amount = available;
 				logger.info(person, 10_000L, "Drinking " + Math.round(amount * 100.0)/100.0 + " kg of water from " + suit.getName() + ".");
-				consumeWater(suit, amount, waterOnly);
+				consumeWater(suitInv, amount, waterOnly);
 			}
 		}
 		else {
