@@ -26,7 +26,9 @@ public class Areologist extends JobSpec {
 	 */
 	public Areologist() {
 		// Use Job constructor
-		super(JobType.AREOLOGIST,  JobSpec.buildRoleMap(5.0, 10.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
+		super(JobType.AREOLOGIST,  JobSpec.buildRoleMap(
+				2.0, 8.0, 5.0, 15.0, 
+				20.0, 10.0, 10.0, 30.0));
 	}
 
 	/**

@@ -31,11 +31,14 @@ extends JobSpec {
 	 */
 	public Botanist() {
 		// Use Job constructor
-		super(JobType.BOTANIST, JobSpec.buildRoleMap(25.0, 5.0, 5.0, 5.0, 5.0, 20.0, 5.0, 35.0));
+		super(JobType.BOTANIST, JobSpec.buildRoleMap(
+				30.0, 5.0, 5.0, 5.0, 
+				5.0, 10.0, 15.0, 25.0));
 	}
 
 	/**
 	 * Gets a person's capability to perform this job.
+	 * 
 	 * @param person the person to check.
 	 * @return capability (min 0.0).
 	 */

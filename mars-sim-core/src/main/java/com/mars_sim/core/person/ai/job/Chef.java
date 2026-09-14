@@ -26,7 +26,9 @@ public class Chef extends JobSpec {
 	/** constructor. */
 	public Chef() {
 		// Use Job constructor
-		super(JobType.CHEF, JobSpec.buildRoleMap(35.0, 5.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0));
+		super(JobType.CHEF, JobSpec.buildRoleMap(
+				35.0, 2.0, 3.0, 5.0, 
+				5.0, 20.0, 15.0, 15.0));
 	}
 
 	/**

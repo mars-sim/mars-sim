@@ -23,7 +23,9 @@ public class Meteorologist extends JobSpec {
 	/** Constructor. */
 	public Meteorologist() {
 		// Use Job constructor
-		super(JobType.METEOROLOGIST, JobSpec.buildRoleMap(5.0, 10.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0));
+		super(JobType.METEOROLOGIST, JobSpec.buildRoleMap(
+				6.0, 15.0, 7.0, 10.0, 
+				13.0, 11.0, 13.0, 25.0));
 	}
 
 	@Override

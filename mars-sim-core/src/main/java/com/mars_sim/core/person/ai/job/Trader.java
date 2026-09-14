@@ -26,7 +26,9 @@ public class Trader extends JobSpec {
 	 */
 	public Trader() {
 		// Use Job constructor.
-		super(JobType.TRADER, JobSpec.buildRoleMap(5.0, 5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
+		super(JobType.TRADER, JobSpec.buildRoleMap(
+				5.0, 2.0, 3.0, 30.0, 
+				25.0, 25.0, 5.0, 5.0));
 	}
 
 	/**

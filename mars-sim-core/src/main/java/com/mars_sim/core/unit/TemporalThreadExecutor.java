@@ -52,7 +52,7 @@ public class TemporalThreadExecutor implements TemporalExecutor {
 					// Application is shutting down, no need to log this exception
 					return;
 				}
-				logger.severe(target + ": Problem waitng for pulse", e);
+				logger.severe(target + ": Problem waiting for pulse", e);
 				Thread.currentThread().interrupt();
 			}
 		}

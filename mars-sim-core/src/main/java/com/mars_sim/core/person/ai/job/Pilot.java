@@ -27,7 +27,9 @@ public class Pilot extends JobSpec {
 	 */
 	public Pilot() {
 		// Use Job constructor
-		super(JobType.PILOT, JobSpec.buildRoleMap(5.0, 5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
+		super(JobType.PILOT, JobSpec.buildRoleMap(
+				2.0, 5.0, 20.0, 20.0, 
+				25.0, 5.0, 15.0, 8.0));
 	}
 
 	/**

@@ -23,7 +23,9 @@ public class Physicist extends JobSpec {
 	/** Constructor. */
 	public Physicist() {
 		// Use Job constructor
-		super(JobType.PHYSICIST, JobSpec.buildRoleMap(5.0, 25.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0));
+		super(JobType.PHYSICIST, JobSpec.buildRoleMap(
+				2.0, 25.0, 25.0, 3.0, 
+				3.0, 7.0, 5.0, 30.0));
 	}
 
 	@Override

@@ -25,7 +25,9 @@ public class ComputerScientist extends JobSpec {
 	/** Constructor. */
 	public ComputerScientist() {
 		// Use Job constructor
-		super(JobType.COMPUTER_SCIENTIST, JobSpec.buildRoleMap(0.0, 30.0, 10.0, 10.0, 15.0, 10.0, 5.0, 20.0));
+		super(JobType.COMPUTER_SCIENTIST, JobSpec.buildRoleMap(
+				0.0, 50.0, 10.0, 10.0, 
+				5.0, 10.0, 5.0, 10.0));
 	}
 
 	/**

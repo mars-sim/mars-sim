@@ -28,7 +28,9 @@ public class Astronomer extends JobSpec  {
 	/** Constructor. */
 	public Astronomer() {
 		// Use Job constructor
-		super(JobType.ASTRONOMER, JobSpec.buildRoleMap(5.0, 20.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
+		super(JobType.ASTRONOMER, JobSpec.buildRoleMap(
+				1.0, 25.0, 20.0, 4.0, 
+				10.0, 5.0, 2.0, 33.0));
 	}
 
 	@Override

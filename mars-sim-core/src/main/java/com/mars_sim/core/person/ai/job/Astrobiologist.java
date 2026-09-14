@@ -25,7 +25,9 @@ extends JobSpec {
 	 */
 	public Astrobiologist() {
 		// Use Job constructor
-		super(JobType.ASTROBIOLOGIST, JobSpec.buildRoleMap(20.0, 0.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
+		super(JobType.ASTROBIOLOGIST, JobSpec.buildRoleMap(
+				20.0, 5.0, 5.0, 5.0, 
+				5.0, 15.0, 15.0, 30.0));
 	}
 
 	@Override
