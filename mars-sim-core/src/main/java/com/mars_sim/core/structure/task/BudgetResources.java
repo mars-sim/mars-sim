@@ -313,7 +313,7 @@ public class BudgetResources extends Task {
 					
 					double currentValue = person.getAssociatedSettlement().getIceDigValue();
 					
-					if (diff + currentValue >= 0) {
+//					if (diff + currentValue >= 0) {
 						person.getAssociatedSettlement().setIceReviewDue(false);
 						
 						person.getAssociatedSettlement().setIceApprovalDue(true);
@@ -321,7 +321,7 @@ public class BudgetResources extends Task {
 						logger.info(person, 5_000, "Submitted new ice dig value: "
 								+ Math.round(currentValue * 10.0)/10.0 
 								+ " -> " + Math.round((diff + currentValue) * 10.0)/10.0);
-					}
+//					}
 				}
 				break;
 				
@@ -331,7 +331,7 @@ public class BudgetResources extends Task {
 					
 					double currentValue = person.getAssociatedSettlement().getRegolithDigValue();
 					
-					if (diff + currentValue >= 0) {
+//					if (diff + currentValue >= 0) {
 						person.getAssociatedSettlement().setRegolithReviewDue(false);
 						
 						person.getAssociatedSettlement().setRegolithApprovalDue(true);					
@@ -339,7 +339,7 @@ public class BudgetResources extends Task {
 						logger.info(person, 5_000, "Submitted new regolith dig value: "
 								+ Math.round(currentValue * 10.0)/10.0 
 								+ " -> " + Math.round((diff + currentValue) * 10.0)/10.0);
-					}
+//					}
 
 				}
 				break;
