@@ -54,7 +54,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		@Override
 		UnitSummary getSummary() {
-			return new UnitSummary(target.getModelName(), target.getPosition(), target.getDescription());
+			return new UnitSummary(target.getVehicleType().getName(), target.getPosition(), target.getDescription());
 		}
 
 		@Override
@@ -107,6 +107,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		Vehicle selectedVehicle = (selectedEntity instanceof Vehicle v) ? v : null;
 
+		// Note: the line .toList() below create CME
 		var hotspots = vehicles.stream()
 				.filter(v -> viewpoint.isVisible(v.getPosition()))
 				.map(v -> drawVehicle(v, selectedVehicle, showLabel, viewpoint))

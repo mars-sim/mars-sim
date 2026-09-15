@@ -114,8 +114,8 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		List<SettlementTask> tasks = new ArrayList<>();
 
 		Vehicle worstVehicle = null;
-		double highestScore = 0;
-		RatingScore score = new RatingScore(0);
+		double highestScore = 0D;
+		RatingScore score = new RatingScore(0D);
 		var eo = settlement.getEquipmentInventory();
 				
 		for (Vehicle vehicle : getAllDownVehicleCandidates(settlement, false)) {
@@ -141,7 +141,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		}
 		
 		// Vehicle in need of maintenance
-		if (highestScore > 0) {
+		if (highestScore > 0D) {
 			
 			boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
 					worstVehicle.getAssociatedSettlement(), worstVehicle);
@@ -151,7 +151,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
 		// Reset them
 		worstVehicle = null;
-		highestScore = 0;
+		highestScore = 0D;
 			
 		for (Vehicle vehicle : getAllGoodVehicleCandidates(settlement, false)) {
 				
@@ -176,7 +176,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		}
 		
 		// Vehicle in need of maintenance
-		if (highestScore > 0) {
+		if (highestScore > 0D) {
 			
 			boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
 					worstVehicle.getAssociatedSettlement(), worstVehicle);

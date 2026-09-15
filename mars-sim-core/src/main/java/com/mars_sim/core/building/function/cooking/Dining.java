@@ -23,7 +23,7 @@ public class Dining extends Function {
     private static final long serialVersionUID = 1L;
 
     // Data members
-    private int capacity;
+    private final int capacity;
     
     /**
      * Constructor.

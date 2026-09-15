@@ -91,6 +91,8 @@ public class BudgetResources extends Task {
 		};
 		
 	// Data members		
+	private boolean	useOffice = false;
+		
 	private int lifeResource;
 	
 	private int diff = 0;
@@ -128,8 +130,9 @@ public class BudgetResources extends Task {
 			// Note: office building is optional
 			if (officeBuilding != null) {
 				office = officeBuilding.getAdministration();	
-				if (!office.isFull()) {
+				if (!useOffice && !office.isFull()) {
 					office.addStaff();
+					useOffice = true;
 					// Walk to the office building.
 					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 				}
@@ -305,30 +308,39 @@ public class BudgetResources extends Task {
 			
 		switch(goal) {
 			case ICE_RESOURCE:
+				
 				if (diff != 0) {
-					person.getAssociatedSettlement().setIceReviewDue(false);
-					
-					person.getAssociatedSettlement().setIceApprovalDue(true);
 					
 					double currentValue = person.getAssociatedSettlement().getIceDigValue();
 					
-					logger.info(person, 5_000, "Submitted new ice dig value: "
-							+ Math.round(currentValue * 10.0)/10.0 
-							+ " -> " + Math.round((diff + currentValue) * 10.0)/10.0);
+					if (diff + currentValue >= 0) {
+						person.getAssociatedSettlement().setIceReviewDue(false);
+						
+						person.getAssociatedSettlement().setIceApprovalDue(true);
+						
+						logger.info(person, 5_000, "Submitted new ice dig value: "
+								+ Math.round(currentValue * 10.0)/10.0 
+								+ " -> " + Math.round((diff + currentValue) * 10.0)/10.0);
+					}
 				}
 				break;
 				
 			case REGOLITH_RESOURCE:
+				
 				if (diff != 0) {
-					person.getAssociatedSettlement().setRegolithReviewDue(false);
-					
-					person.getAssociatedSettlement().setRegolithApprovalDue(true);					
 					
 					double currentValue = person.getAssociatedSettlement().getRegolithDigValue();
 					
-					logger.info(person, 5_000, "Submitted new regolith dig value: "
-							+ Math.round(currentValue * 10.0)/10.0 
-							+ " -> " + Math.round((diff + currentValue) * 10.0)/10.0);
+					if (diff + currentValue >= 0) {
+						person.getAssociatedSettlement().setRegolithReviewDue(false);
+						
+						person.getAssociatedSettlement().setRegolithApprovalDue(true);					
+
+						logger.info(person, 5_000, "Submitted new regolith dig value: "
+								+ Math.round(currentValue * 10.0)/10.0 
+								+ " -> " + Math.round((diff + currentValue) * 10.0)/10.0);
+					}
+
 				}
 				break;
 				
@@ -382,7 +394,7 @@ public class BudgetResources extends Task {
 		super.clearDown();
 		
 		// Remove person from administration function so others can use it.
-		if (office != null && office.getNumStaff() > 0) {
+		if (useOffice && office != null && office.getNumStaff() > 0) {
 			office.removeStaff();
 		}
 	}

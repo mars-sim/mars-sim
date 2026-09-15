@@ -23,8 +23,8 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	private static final long serialVersionUID = 1L;
 	
 	/** Static members */
-	private static final int WIDTH = 6;
-	private static final int LENGTH = 6;
+	private static final int WIDTH = 10;
+	private static final int LENGTH = 10;
 	public static final double HYPOTENUSE = Math.sqrt(WIDTH * WIDTH + LENGTH * LENGTH);
 	
 	private static final String DATACOLLECTIONSITE = "DATACOLLECTIONSITE";

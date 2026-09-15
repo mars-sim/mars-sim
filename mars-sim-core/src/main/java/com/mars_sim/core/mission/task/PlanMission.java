@@ -48,6 +48,7 @@ public class PlanMission extends Task {
 	private static final double STRESS_MODIFIER = -.1D;
 
 	// Data members
+	private boolean	useOffice = false;
 	/** The administration building the person is using. */
 	private Administration office;
 
@@ -72,8 +73,9 @@ public class PlanMission extends Task {
 			// Note: office building is optional
 			if (officeBuilding != null) {
 				office = officeBuilding.getAdministration();	
-				if (!office.isFull()) {
+				if (!useOffice && !office.isFull()) {
 					office.addStaff();
+					useOffice = true;
 					// Walk to the office building.
 					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 				}
@@ -259,7 +261,7 @@ public class PlanMission extends Task {
 	@Override
 	protected void clearDown() {
 		// Remove person from administration function so others can use it.
-		if (office != null && office.getNumStaff() > 0) {
+		if (useOffice && office != null && office.getNumStaff() > 0) {
 			office.removeStaff();
 		}
 	}
