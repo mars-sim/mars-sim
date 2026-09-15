@@ -188,18 +188,22 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 * @return true if vehicle is being repaired or maintained.
 	 */
 	private boolean isVehicleRepairOrMaintenance(Vehicle vehicle) {
-		boolean result = vehicle.isReservedForMaintenance();
 
-		// Check if vehicle is reserved for maintenance.
-
-        // Check if vehicle has malfunction.
-		// Note: a newly arrived vehicle may not have MalfunctionManager fully set up yet and 
-		// MalfunctionManager will be unavailable and NPE
-		if (vehicle.getMalfunctionManager().hasMalfunction()) {
-			result = true;
+		if (vehicle.getMalfunctionManager() == null) {
+		// Note: a newly arrived vehicle may not have MalfunctionManager fully set up yet  
+		// MalfunctionManager will be unavailable temporarily and NPE will result
+			return true;
 		}
-
-		return result;
+		else if (vehicle.getMalfunctionManager().hasMalfunction()) {
+	        // Check if vehicle has malfunction.
+			return true;
+		}
+		else if (vehicle.isReservedForMaintenance()) {
+			// Check if vehicle is reserved for maintenance.
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**
