@@ -111,6 +111,15 @@ public abstract class GatherDataMeta extends MetaTask
     protected List<SettlementTask> getSettlementTaskJobs(Settlement settlement,
                             double collectionProbability) {
     	
+        // Check preconditions
+        // - an airlock is available for egress
+        // - at least one EVA suit at settlement.
+    	if (collectionProbability < 0
+//            || (rh.findNumDataRecorder() == 0)
+            ) {                
+    		return Collections.emptyList();
+        }
+    	
         var rh = settlement.getEquipmentInventory();
         double popfactor = settlement.getLogPopFactor();
         
@@ -132,18 +141,9 @@ public abstract class GatherDataMeta extends MetaTask
         
         // If one of the instrument is not available, the score would be lower.
         instrumentAverageScore = instrumentAverageScore * (availableSize / size) / popfactor * BASE;
-        
-        // Check preconditions
-        // - an airlock is available for egress
-        // - at least one EVA suit at settlement.
-        // - at least one empty bag at settlement.
-    	if ((collectionProbability == 0.0)
-            || (rh.findNumDataRecorder() == 0)) {                
-    		return Collections.emptyList();
-        }
 
         double base = RandomUtil.getRandomDouble(collectionProbability / 3, collectionProbability);
-        if (base <= 0) {
+        if (base <= 0.00) {
             return Collections.emptyList();
         }
         else if (base > MAX_BASE) {

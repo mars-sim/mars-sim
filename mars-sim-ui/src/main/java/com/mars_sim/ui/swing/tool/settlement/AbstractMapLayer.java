@@ -708,8 +708,8 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         double xLoc = placement.getXLocation();
         double yLoc = placement.getYLocation();
         
-        double width = placement.getWidth() * .8;
-        double length = placement.getLength() * .8;
+        double width = placement.getWidth();
+        double length = placement.getLength();
         
         double centerX = width * scale / 2;
         double centerY = length * scale / 2;

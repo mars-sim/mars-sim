@@ -41,7 +41,7 @@ public class GatherGroundDataMeta extends GatherDataMeta {
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
     	
       	double iceValue = settlement.getIceDigValueCache();
-      	
-    	return getSettlementTaskJobs(settlement, iceValue);
+
+      	return getSettlementTaskJobs(settlement, iceValue);
     }
 }

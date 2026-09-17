@@ -9,9 +9,11 @@ package com.mars_sim.core.equipment;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -304,6 +306,7 @@ public class EquipmentInventory
 
 	/**
 	 * Gets the item resource stored.
+	 * Note: it doesn't retrieve the item
 	 *
 	 * @param resource
 	 * @return quantity
@@ -475,8 +478,6 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int findNumContainersOfType(EquipmentType containerType) {
-		
-		
 		return (int) containerSet.stream().filter(e -> e.getEquipmentType() == containerType).count();
 	}
 	
@@ -527,7 +528,7 @@ public class EquipmentInventory
 	 * Finds a container in storage.
 	 *
 	 * @param containerType
-	 * @param empty does it need to be empty ?
+	 * @param personId
 	 * @param resource If -1 then resource doesn't matter
 	 * @return instance of container or null if none.
 	 */
@@ -548,6 +549,45 @@ public class EquipmentInventory
 	}
 
 	/**
+	 * Finds a data recorder with a person's id.
+	 *
+	 * @param personId
+	 * @return
+	 */
+	public DataRecorder findOwnedDataRecorder(int personId) {
+		for (Equipment e : recorderSet) {
+			DataRecorder dr = (DataRecorder)e;
+			if (dr.checkRegisteredOwnerID(personId)) {
+				return dr;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Finds a data recorder.
+	 *
+	 * @param personId
+	 * @return
+	 */
+	public DataRecorder findDataRecorder() {
+		if (!recorderSet.isEmpty()) {
+//			return (DataRecorder) new ArrayList<>(recorderSet).get(0);
+			
+			// Select the data recorder that has the least # of datasets
+			Optional<Equipment> smallestDataset = recorderSet.stream()
+					.min(Comparator.comparingInt(r -> ((DataRecorder)r).getDataset().size()));
+			
+			return (DataRecorder)smallestDataset.get();
+		}
+		return null;
+		
+
+	}
+	
+	
+	
+	/*
 	 * Finds the number of data recorder .
 	 *
 	 * Note: will not count EVA suits.

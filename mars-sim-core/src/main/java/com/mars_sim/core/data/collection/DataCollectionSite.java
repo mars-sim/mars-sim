@@ -16,6 +16,7 @@ import com.mars_sim.core.environment.CollectionSite;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.person.Person;
 
 public class DataCollectionSite extends CollectionSite implements LocalBoundedObject, Entity {
 
@@ -32,10 +33,9 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	private static final String DATA_SITE_ = "DCS ";
 	/** Static identifier that increment when a new site is created. */
 	private static int currentIdentifier;
+	
 	/** Unique identifier for each site. */
 	private int identifier;
-	
-	
 	/** The quality of being known about this site. */
 	private int familiarity = 0;
 	/** The list of instruments present on site. */
@@ -43,6 +43,10 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	/** The local position of this site of a given coordinates. */
 	private LocalPosition localPosition;
 	
+	private Person primaryOperator;
+
+	private Person secondaryOperator;
+
 	/**
 	 * Constructor 1.
 	 * 
@@ -74,6 +78,15 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	 */
 	public static DataCollectionSite creatEmptySite(Coordinates location) {
 		return new DataCollectionSite(location);
+	}
+	
+	
+	public Person getPrimaryOperator() {
+		return primaryOperator;
+	}
+
+	public Person getSecondaryOperator() {
+		return secondaryOperator;
 	}
 	
 	/**

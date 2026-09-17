@@ -36,6 +36,7 @@ import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Container;
+import com.mars_sim.core.equipment.DataRecorder;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
@@ -1612,6 +1613,28 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
+	 * Does this person have a data recorder ?
+	 * 
+	 * @return
+	 */
+	public boolean hasDataRecorder() {
+		return eqmInventory.containsEquipment(EquipmentType.DATA_RECORDER);
+	}
+	
+	/**
+	 * Looks for one's data recorder.
+	 * 
+	 * @return
+	 */
+	public DataRecorder lookForDataRecorder() {
+		DataRecorder dr = eqmInventory.findOwnedDataRecorder(getIdentifier());
+		if (dr == null)
+			return eqmInventory.findDataRecorder();
+		else
+			return dr;
+	}
+	
+	/**
 	 * Does this person have a thermal bottle ?
 	 * 
 	 * @return
@@ -1627,7 +1650,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 */
 	public void fillUpThermalBottle(double amount) {
 		Container bottle = lookForThermalBottle();
-		bottle.storeAmountResource(ResourceUtil.WATER_ID, amount);
+		if (bottle != null)
+			bottle.storeAmountResource(ResourceUtil.WATER_ID, amount);
 	}
 	
 	/**
@@ -1644,23 +1668,26 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 	
 	/**
-	 * Assigns a thermal bottle as a standard living necessity.
-	 * @param store the equipment owner to claim the thermal bottle from
+	 * Assigns an equipment.
+	 * 
+	 * @param store the equipment owner to claim from
+	 * @param equipmentType
 	 */
-	private void assignThermalBottle(EquipmentOwner store) {
+	private void assignEquipment(EquipmentOwner store, EquipmentType equipmentType) {
 
 		if (!hasThermalBottle() && isInside()) {
 			Equipment aBottle = null;
 			for (Equipment e : store.getContainerSet()) {
-				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
+				if (e.getEquipmentType() == equipmentType) {
 					Person originalOwner = e.getRegisteredOwner();
 					if (originalOwner != null && originalOwner.equals(this)) {
-						// Remove it from the container unit
-						e.transfer(this);
-						// Register the person as the owner of this bottle
-						e.setRegisteredOwner(this);
-						
-						return;
+						// Transfer it from the container unit to this person
+						if (e.transfer(this)) {
+							// Register the person as the owner of this bottle
+							e.setRegisteredOwner(this);
+							
+							return;
+						}
 					}
 					
 					// Tag this bottle first
@@ -1674,22 +1701,23 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			// if it still can't find a bottle that was last assigned to this person
 			// get the first saved one 
 			if (aBottle != null) {
-				// Remove it from the container unit
-				aBottle.transfer(this);
-				// Register the person as the owner of this bottle
-				aBottle.setRegisteredOwner(this);
+				// Transfer it from the container unit to this person
+				if (aBottle.transfer(this)) {
+					// Register the person as the owner of this bottle
+					aBottle.setRegisteredOwner(this);
+				}
 			}
 		}
 	}
 	
 	/**
-	 * Drops off the thermal bottle such as when going out for an EVA.
+	 * Drops off all equipment of a certain type prior to going out for an EVA.
 	 */
-	private void dropOffThermalBottle() {
+	private void dropOffEquipment(EquipmentType equipmentType) {
 
 		if (isInside()) {
 			var bottles = eqmInventory.getContainerSet().stream()
-					.filter(e -> e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE)
+					.filter(e -> e.getEquipmentType() == equipmentType)
 					.toList();
 			
 			bottles.forEach(e -> e.transfer(getContainerUnit()));
@@ -1699,35 +1727,53 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	/**
 	 * This method prepares the Person for life inside. It involves removing any Pressure Suit and putting on a garment.
 	 * It also assigns a thermal bottle to the person.
+	 * 
 	 * @param eo Store where items can be found
 	 */
 	public void dressForInside(EquipmentOwner eo) {
 		releaseItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, eo);
 		claimItemResource(ItemResourceUtil.GARMENT_ID, eo);
-		assignThermalBottle(eo);
+		assignEquipment(eo, EquipmentType.THERMAL_BOTTLE);
 	}
 
 	/**
 	 * This method prepares the Person for life outside. It involves removing any garment and putting on a Pressure Suit.
+	 * 
 	 * @param eo Store where items can be found
 	 */
 	public void dressForEVA(EquipmentOwner eo) {
 		releaseItemResource(ItemResourceUtil.GARMENT_ID, eo);
 		claimItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, eo);
-		dropOffThermalBottle();
+		dropOffEquipment(EquipmentType.THERMAL_BOTTLE);
 	}
 
-	private void claimItemResource(int itemId, ItemHolder store) {
+	/**
+	 * Claims an item resource.
+	 * 
+	 * @param itemId
+	 * @param store
+	 * @return
+	 */
+	private boolean claimItemResource(int itemId, ItemHolder store) {
 		// Local inventory has no item, and the store has an item to retrieve
-		if ((eqmInventory.getItemResourceStored(itemId) == 0)
+		if ((!eqmInventory.hasItemResource(itemId))
 					&& store.retrieveItemResource(itemId, 1) == 0) {
-			eqmInventory.storeItemResource(itemId, 1);
+			return eqmInventory.storeItemResource(itemId, 1) == 0;
 		}
+		
+		return false;
 	}
 
+	/**
+	 * Releases an item resource.
+	 * 
+	 * @param itemId
+	 * @param store
+	 * @return
+	 */
 	private boolean releaseItemResource(int itemId, ItemHolder store) {
 		// Local inventory has at least one item, and the store has an item to hold
-		if ((eqmInventory.getItemResourceStored(itemId) > 0)
+		if ((eqmInventory.hasItemResource(itemId))
 					&& eqmInventory.retrieveItemResource(itemId, 1) == 0) {
 			return store.storeItemResource(itemId, 1) == 0;
 		}
