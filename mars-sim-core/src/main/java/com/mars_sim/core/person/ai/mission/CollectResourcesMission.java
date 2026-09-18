@@ -110,10 +110,23 @@ public abstract class CollectResourcesMission extends EVAMission
 
 		var rover = getRover();
 		double range = rover.getEstimatedRange();
+		
+//		double proposed = getPlan().getProposedDistance();
+//		double durationMSols = getEstimateTravelTime(proposed);
+		
 		double timeLimit = rover.getTotalTripTimeLimit(true);
 
 		// Determining the actual traveling range.
 		double timeRange = getTripTimeRange(timeLimit, numSites, true);
+		
+		logger.warning(this, "Range: " + Math.round(range * 10.0) / 10.0
+//							+ " km. proposed: " + Math.round(proposed * 10.0) / 10.0
+//							+ " km. durationMSols: " + Math.round(durationMSols * 10.0) / 10.0
+							+ " km. timeLimit: " + Math.round(timeLimit * 10.0) / 10.0
+							+ " msols. timeRange: " + Math.round(timeRange * 10.0) / 10.0
+							+ " msols"
+						);
+		
 		if (timeRange < range)
 			range = timeRange;
 		if (range <= 0D) {

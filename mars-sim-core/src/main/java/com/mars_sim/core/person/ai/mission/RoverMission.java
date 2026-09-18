@@ -39,6 +39,7 @@ import com.mars_sim.core.person.health.task.RequestMedicalTreatment;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
@@ -1480,6 +1481,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		return result;
 	}
 
+	
 	/**
 	 * Gets EVA suit parts for the trip.
 	 *

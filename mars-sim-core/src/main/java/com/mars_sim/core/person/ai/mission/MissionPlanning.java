@@ -30,7 +30,8 @@ public class MissionPlanning implements Serializable {
 	private int reviewPercentComplete; // 0% to 100%
 	private double score; // 0 to 1000 points
 	private double passingScore = 0;
-
+	private double proposed;
+	
 	private PlanType status = PlanType.PREPARING;
 
 	private Mission mission;
@@ -43,6 +44,14 @@ public class MissionPlanning implements Serializable {
 		this.mission = mission;
 		this.passingScore = passingScore;
 		reviewers = new ArrayList<>();
+	}
+	
+	public void setProposedDistance(double proposed) {
+		this.proposed = proposed;
+	}
+	
+	public double getProposedDistance() {
+		return proposed;
 	}
 	
 	/**

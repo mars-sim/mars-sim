@@ -762,9 +762,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (this instanceof AbstractVehicleMission avm) {
 			avm.releaseVehicle();
 		}
-		else {
-			endMission(MISSION_ABORTED_BY_PLAYER);
-		}
 		
 		fireMissionUpdate(END_MISSION_EVENT);
 	}
