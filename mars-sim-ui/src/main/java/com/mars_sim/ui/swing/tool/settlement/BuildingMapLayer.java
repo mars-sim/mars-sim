@@ -13,6 +13,9 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.map.location.SettlementPOI;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,7 +33,6 @@ import javax.swing.JOptionPane;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
@@ -43,7 +45,6 @@ import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
@@ -126,7 +127,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
 
     @Override
     public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
-            Entity selectedEntity) {
+            SettlementPOI selectedEntity) {
                 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
@@ -460,10 +461,10 @@ public class BuildingMapLayer extends AbstractMapLayer {
     
 
 	@Override
-	public void destroy() {
+	public void release() {
 		hatchSVG = null;
 	    brickHatchSVG = null; 
 		mapPanel = null;
-		super.destroy();
+		super.release();
 	}
 }

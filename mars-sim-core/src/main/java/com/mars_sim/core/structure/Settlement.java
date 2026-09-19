@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -386,8 +387,8 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedNGaragedVehicles = new UnitSet<>();
-		indoorPeople = new UnitSet<>();
+		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
+		indoorPeople = new CopyOnWriteArraySet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
@@ -427,12 +428,14 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedNGaragedVehicles = new UnitSet<>();
-		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
-		
+
+		// These collections are read many and write infrequent so suitable for concurrent collections
+		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
+		indoorPeople = new CopyOnWriteArraySet<>();
+
 		dataCollectionSiteMap = new HashMap<>();
 		
 		// Create equipment inventory
@@ -483,12 +486,14 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedNGaragedVehicles = new UnitSet<>();
-		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
-		
+				
+		// This are read many and write infrequesnt so suitable for concurrent collections
+		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
+		indoorPeople = new CopyOnWriteArraySet<>();
+
 		dataCollectionSiteMap = new HashMap<>();
 		
 		allowTradeMissionSettlements = new HashMap<>();
@@ -1760,7 +1765,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @return collection of associated people.
 	 */
 	public Collection<Person> getAllAssociatedPeople() {
-//		return citizens.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(citizens);
 	}
 
@@ -1770,7 +1774,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @return collection of dead people.
 	 */
 	public Collection<Person> getDeathRegistry() {
-//		return deathRegistry.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(deathRegistry);
 	}
 	
@@ -1860,7 +1863,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @return list of tourists within
 	 */
 	public Collection<Person> getTouristList() {
-//		return touristPool.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(touristPool);
 	}
 
@@ -1888,7 +1890,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @return Collection of people within
 	 */
 	public Collection<Person> getIndoorPeople() {
-//		return indoorPeople.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(indoorPeople);
 	}
 
@@ -1988,7 +1989,6 @@ public class Settlement extends Unit implements Temporal,
 	 *  Gets the citizen.
 	 */
 	public Collection<Person> getCitizens() {
-//		return citizens.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(citizens);
 	}
 	
@@ -2215,7 +2215,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @return collection of associated vehicles.
 	 */
 	public Collection<Vehicle> getAllAssociatedVehicles() {
-//		return ownedVehicles.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(ownedVehicles);
 	}
 

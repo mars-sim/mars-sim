@@ -18,10 +18,10 @@ import javax.swing.JMenuItem;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
@@ -95,7 +95,7 @@ public class ConstructionMapLayer extends AbstractMapLayer {
 
     @Override
     public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
-            Entity selectedEntity) {
+            SettlementPOI selectedEntity) {
 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();

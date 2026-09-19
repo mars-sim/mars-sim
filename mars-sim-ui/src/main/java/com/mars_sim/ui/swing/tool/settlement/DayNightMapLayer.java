@@ -15,8 +15,8 @@ import java.util.Properties;
 
 import javax.swing.JMenuItem;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.environment.SurfaceFeatures;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.UIConfig;
 
@@ -47,7 +47,7 @@ public class DayNightMapLayer extends AbstractMapLayer {
     
 	@Override
 	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
-			Entity selectedEntity) {
+			SettlementPOI selectedEntity) {
 
 		if (showDaylightLayer) {
 
@@ -92,8 +92,10 @@ public class DayNightMapLayer extends AbstractMapLayer {
 	}
 
 	@Override
-	public void destroy() {
+	public void release() {
 		mapPanel = null;
 		surfaceFeatures = null;
+
+		super.release();
 	}
 }

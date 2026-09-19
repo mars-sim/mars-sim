@@ -9,9 +9,9 @@ package com.mars_sim.ui.swing.tool.settlement;
 import java.util.Collections;
 import java.util.List;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
 
 /**
@@ -19,7 +19,7 @@ import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
  * This class provides methods to determine if a point is within the bounds of the target entity, retrieve descriptions and summaries for display, and manage actions that can be applied to the target entity.
  * @param <T> Type held.
  */
-abstract class MapHotspot<T extends Entity> {
+abstract class MapHotspot<T extends SettlementPOI> {
     protected final T target;
 
     protected MapHotspot(T target) {

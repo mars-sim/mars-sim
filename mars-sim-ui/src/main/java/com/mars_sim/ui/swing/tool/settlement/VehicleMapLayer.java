@@ -19,9 +19,9 @@ import javax.swing.JMenuItem;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
@@ -97,7 +97,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 	@Override
 	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
-			Entity selectedEntity) {
+			SettlementPOI selectedEntity) {
 
 		// Save original graphics transforms.
 		AffineTransform saveTransform = viewpoint.prepareGraphics();
@@ -193,7 +193,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		if (vehicle.getMalfunctionManager() == null) {
 		// Note: a newly arrived vehicle may not have MalfunctionManager fully set up yet  
 		// MalfunctionManager will be unavailable temporarily and NPE will result
-			return true;
+			return false;
 		}
 		else if (vehicle.getMalfunctionManager().hasMalfunction()) {
 	        // Check if vehicle has malfunction.

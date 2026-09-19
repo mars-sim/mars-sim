@@ -322,7 +322,7 @@ public abstract class GatherData extends EVAOperation {
 	    	
 	    	if (locationPos != null) { 
 				// Create and add this site to settlement
-		    	dataCollectionSite = new DataCollectionSite(coord, locationPos);
+		    	dataCollectionSite = new DataCollectionSite(coord, settlement, locationPos);
 		    	settlement.addSite(distance, dataCollectionSite);
 	    	}
 		}

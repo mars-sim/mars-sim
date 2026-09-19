@@ -10,15 +10,17 @@ package com.mars_sim.core.data.collection;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.environment.CollectionSite;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SettlementPOI;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.person.Person;
 
-public class DataCollectionSite extends CollectionSite implements LocalBoundedObject, Entity {
+public class DataCollectionSite extends CollectionSite
+	implements LocalBoundedObject, SettlementPOI {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -28,9 +30,9 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	private static final int LENGTH = 10;
 	public static final double HYPOTENUSE = Math.sqrt(WIDTH * WIDTH + LENGTH * LENGTH);
 	
-	private static final String DATACOLLECTIONSITE = "DATACOLLECTIONSITE";
+	private static final String DCS_ENTITY_TYPE = "DATACOLLECTIONSITE";
 	private static final String DATA_COLLECTION_SITE = "Data Collection Site";
-	private static final String DATA_SITE_ = "DCS ";
+	private static final String DATA_SITE = "DCS ";
 	/** Static identifier that increment when a new site is created. */
 	private static int currentIdentifier;
 	
@@ -42,6 +44,8 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	private List<Integer> instrumentAvailability = new ArrayList<>();
 	/** The local position of this site of a given coordinates. */
 	private LocalPosition localPosition;
+	private Settlement settlement;
+	
 	
 	private Person primaryOperator;
 
@@ -52,13 +56,13 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	 * 
 	 * @param location
 	 */
-	public DataCollectionSite(Coordinates location, LocalPosition localPosition) {
+	public DataCollectionSite(Coordinates location, Settlement settlement, LocalPosition localPosition) {
 		super(location);
-		
-		this.localPosition = localPosition;
-		
+				
 		identifier = currentIdentifier;
 		currentIdentifier++;
+
+		setPosition(settlement, localPosition);
 	}
 
 	/**
@@ -169,31 +173,45 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	}
 	
 	/**
+	 * Gets the settlement in which this data collection site is located.
+	 * @see com.mars_sim.core.map.location.SettlementPOI#getSettlement()
+	 * @return the settlement in which this data collection site is located. Maybe null if on surface.
+	 */
+	@Override
+	public Settlement getSettlement() {
+		return settlement;
+	}
+
+	/**
 	 * Gets the local position.
 	 * 
 	 * @return
 	 */
+	@Override
 	public LocalPosition getPosition() {
 		return localPosition;
 	}
 	
 	/**
-	 * Sets the local position.
+	 * Sets the local position within a Settlement,
 	 * 
-	 * @return
+	 * @param settlement the settlement in which the local position is set
+	 * @param localPosition the local position to set
 	 */
-	public void setPosition(LocalPosition localPosition) {
+	public void setPosition(Settlement settlement, LocalPosition localPosition) {
+		this.settlement = settlement;
 		this.localPosition = localPosition;
 	}
 	
 	
 	/**
 	 * Gets the name of the site.
-	 * 
-	 * @return
+	 *
+	 * @return the name of the site
 	 */
+	@Override
 	public String getName() {
-		return DATA_SITE_ + identifier;
+		return DATA_SITE + identifier;
 	}
 
 	/**
@@ -236,7 +254,7 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 
 	@Override
 	public EntityIdentifier getEntityIdentifier() {
-		return new EntityIdentifier(DATACOLLECTIONSITE, String.valueOf(identifier));
+		return new EntityIdentifier(DCS_ENTITY_TYPE, String.valueOf(identifier));
 	}
 	
 	/**
@@ -245,10 +263,10 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	 * @param o
 	 * @return true if matched, false otherwise
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if ((o != null) && (o instanceof DataCollectionSite)) {
-			DataCollectionSite s = (DataCollectionSite) o;
+		if (o instanceof DataCollectionSite s) {
             return this.location.equals(s.getLocation())
                     && this.localPosition == s.getPosition();
 		}
@@ -261,7 +279,8 @@ public class DataCollectionSite extends CollectionSite implements LocalBoundedOb
 	 *
 	 * @return hash code.
 	 */
+	@Override
 	public int hashCode() {
-		return (int)(localPosition.hashCode() + location.hashCode());
+		return (localPosition.hashCode() + location.hashCode());
 	}
 }
