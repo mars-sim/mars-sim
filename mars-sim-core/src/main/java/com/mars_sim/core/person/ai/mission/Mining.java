@@ -451,7 +451,7 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for(MineralSite site : surfaceFeatures.getSpecificSites()) {
+			for(MineralSite site : surfaceFeatures.getMineableSites(false)) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 
@@ -494,7 +494,7 @@ public class Mining extends EVAMission
 			}
 
 			var authority = homeSettlement.getReportingAuthority();
-			for (MineralSite site : surfaceFeatures.getSpecificClaimedSites()) {
+			for (MineralSite site : surfaceFeatures.getMineableSites(true)) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 				if (isMature

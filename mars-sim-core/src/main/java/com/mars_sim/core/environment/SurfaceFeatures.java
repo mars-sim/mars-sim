@@ -9,11 +9,10 @@ package com.mars_sim.core.environment;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -61,7 +60,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	private static final double THREE_HALF_PI = 1.5 * Math.PI;
 	private static final double OPTICAL_DEPTH_STARTING = 0.2342;
 	
-	private static final String MINERAL_SITE_ = "Mineral Site ";
+	private static final String MINERAL_SITE_PREFIX = "Mineral Site ";
 
 	/** The most recent value of optical depth by Coordinate. */
 	private transient Map<Coordinates, Double> opticalDepthMap = new HashMap<>();
@@ -93,7 +92,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		
 		terrainElevation = new TerrainElevation();
 		mineralMap = RandomMineralFactory.createRandomMap();
-		regionOfInterestLocations = new ArrayList<>();
+		regionOfInterestLocations = new CopyOnWriteArrayList<>();
 		areothermalMap = new AreothermalMap();
 	}
 
@@ -211,31 +210,6 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		tau = Math.round(tau * 1000.0)/1000.0;
 		
 		return tau;
-	}
-
-	/**
-	 * Returns a float value representing the current sunlight conditions at a
-	 * particular location.
-	 *
-	 * @return value from 0.0 - 1.0; 0.0 represents night time darkness. 1.0
-	 *         represents daylight. Values in between 0.0 and 1.0 represent twilight
-	 *         conditions.
-	 */
-	public double getSurfaceSunlightRatio(Coordinates location) {
-		double result;
-
-		// Method 2:
-		double z = orbitInfo.getSolarZenithAngle(location);
-
-		if (z < 1.4708) {
-			result = 1D;
-		} else if (z > 1.6708) {
-			result = 0D;
-		} else {
-			result = 8.354 - 5 * z;
-		}
-
-		return result;
 	}
 
 	/**
@@ -560,7 +534,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 
 		if (totalConc > 0) {
 				
-			String name = MINERAL_SITE_ + (regionOfInterestLocations.size() + 1);
+			String name = MINERAL_SITE_PREFIX + (regionOfInterestLocations.size() + 1);
 			result = new MineralSite(name, location, skill, initialMineralEstimations);
 			
 			regionOfInterestLocations.add(result);
@@ -577,9 +551,8 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 */
 	public MineralSite getDeclaredROI(Coordinates coord) {
 		// Note: The line findFirst() below triggers CME. Switch to findAny()
-		return Collections.unmodifiableCollection(regionOfInterestLocations).stream()
+		return regionOfInterestLocations.stream()
 				  .filter(e -> e.getCoordinates().equals(coord))
-//				  .findFirst()
 				  .findAny()
 				  .orElse(null);
 	}
@@ -595,24 +568,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets a set of specific claimed sites.
+	 * Gets a set of mineable sites.
 	 *
+	 * @param onlyClaimed whether to include only claimed sites.
 	 * @return list of explored locations.
 	 */
-	public List<MineralSite> getSpecificClaimedSites() {
-		return Collections.unmodifiableCollection(regionOfInterestLocations).stream()
-		  .filter(s -> s.isMinable() && !s.isReserved() && s.isExplored() && s.isClaimed())
-		  .toList();
-	}
-	
-	/**
-	 * Gets a set of specific sites.
-	 *
-	 * @return list of explored locations.
-	 */
-	public List<MineralSite> getSpecificSites() {
-		return Collections.unmodifiableCollection(regionOfInterestLocations).stream()
-		  .filter(s -> s.isMinable() && !s.isReserved() && s.isExplored())
+	public List<MineralSite> getMineableSites(boolean onlyClaimed) {
+		return regionOfInterestLocations.stream()
+		  .filter(s -> s.isMinable() && !s.isReserved() && s.isExplored() && (!onlyClaimed || s.isClaimed()))
 		  .toList();
 	}
 
