@@ -117,6 +117,13 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 		}
 	}
 
+	/**
+	 * Get the owning Unit of this inventory.
+	 */
+	public Unit getOwner() {
+		return owner;
+	}
+
 	@Override
 	public double getCargoCapacity() {
 		return totalCapcity;
@@ -127,8 +134,8 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 *
 	 * @return
 	 */
-	public void addTotalCapacity(double stockCapacity) {
-		this.totalCapcity += stockCapacity;
+	public void addTotalCapacity(double extraCapacity) {
+		this.totalCapcity += extraCapacity;
 	}
 
 	/**
