@@ -7,11 +7,14 @@
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JPanel;
 
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.tool.monitor.FilteredTableModel.Filter;
 
 /**
  * This class represents an abstraction of a view displayed in the Monitor
@@ -99,18 +102,17 @@ public abstract class MonitorTab extends JPanel {
 
 	/**
 	 * Default implementation returns false.
-	 * @return
+	 * @return Does this tab support filters?
 	 */
     public boolean isFilterable() {
         return false;
     }
 
 	/**
-	 * Show the filter dialog is available. The default implementation does nothing.
-	 * @param context
+	 * Get the filters supported by this tab. The default implementation returns an empty list.
 	 */
-	public void showFilters(UIContext context) {
-		// By default nothing happens
+	public List<Filter> getFilters() {
+		return Collections.emptyList();
 	}
 
     public boolean isEntityDriven() {

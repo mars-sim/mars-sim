@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -159,24 +160,21 @@ public class TableTab extends MonitorTab {
 	}	
 
 	/**
-	 * Show the filter dialog is available.
-	 * @param context
+	 * Gets the filters of the underlying table model.
+	 * @see com.mars_sim.ui.swing.tool.monitor.MonitorTab#getFilters()
 	 */
 	@Override
-	public void showFilters(UIContext context) {
-		if (!isFilterable()) {
-			// Should not happen
-			return;
+	public List<FilteredTableModel.Filter> getFilters() {
+		if (getModel() instanceof FilteredTableModel ftm) {
+			return ftm.getActiveFilters();
 		}
-		MonitorFilter filter = new MonitorFilter((FilteredTableModel) getModel(), context.getTopFrame());
-		filter.setVisible(true);
+		return Collections.emptyList();
 	}
-
+	
 	/**
 	 * Filters the settlements.
 	 * 
-	 * @param currentSelection
-	 * @return
+	 * @param currentSelection Lisst of selected settlements to filter by.
 	 */
 	public boolean setSettlementFilter(Set<Settlement> currentSelection) {
 		if (settlementColumnId > 0) {
