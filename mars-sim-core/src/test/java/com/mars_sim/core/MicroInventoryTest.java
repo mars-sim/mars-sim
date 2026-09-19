@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
@@ -47,11 +50,11 @@ class MicroInventoryTest {
 	 * Test method loading Equipment
 	 */
 	@Test
-	void testLoading() {
-		MicroInventory inv = new MicroInventory(settlement);
+	void testAmountLoading() {
 		int resource = ResourceUtil.CO2_ID;
-		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
-		
+		MicroInventory inv = new MicroInventory(settlement, 2*CAPACITY_AMOUNT, 0,
+											Map.of(resource, CAPACITY_AMOUNT));
+
 		assertEquals(0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2), "No excess on 1st load");
 		assertEquals(CAPACITY_AMOUNT/2, inv.getSpecificAmountResourceStored(resource), "Stored capacity after 1st load");
 		assertEquals(CAPACITY_AMOUNT/2, inv.getRemainingSpecificCapacity(resource), "Remaining after 1st load capacity");
@@ -64,14 +67,15 @@ class MicroInventoryTest {
 
 	}
 
+	
 	/*
-	 * Test method loading Equipment
+	 * Test overload storing AmountResource
 	 */
 	@Test
-	void testOverloading() {
-		MicroInventory inv = new MicroInventory(settlement);
+	void testAmountOverloading() {
 		int resource = ResourceUtil.CO2_ID;
-		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
+		MicroInventory inv = new MicroInventory(settlement, 2*CAPACITY_AMOUNT, 0,
+											Map.of(resource, CAPACITY_AMOUNT));
 		
 		assertEquals(0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2), "No excess on capacity load");
 
@@ -81,13 +85,61 @@ class MicroInventoryTest {
 	}
 
 	/*
-	 * Test method loading Equipment
+	 * Test stock overloading of AmountResource
 	 */
 	@Test
-	void testUnsupported() {
-		MicroInventory inv = new MicroInventory(settlement);
+	void testAmountStockOverloading() {
+		final double stockSize = CAPACITY_AMOUNT/10;
 		int resource = ResourceUtil.CO2_ID;
-		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
+		MicroInventory inv = new MicroInventory(settlement, 2*CAPACITY_AMOUNT, stockSize,
+											Map.of(resource, CAPACITY_AMOUNT));
+
+		assertEquals(CAPACITY_AMOUNT + stockSize, inv.getRemainingSpecificCapacity(resource), "Initial capacity with stock");
+		
+		assertEquals(0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT), "No excess on capacity load");
+
+		assertEquals(CAPACITY_AMOUNT - stockSize, inv.storeAmountResource(resource, CAPACITY_AMOUNT), "Excess on overload");
+		assertEquals(CAPACITY_AMOUNT + stockSize, inv.getSpecificAmountResourceStored(resource), "Stored capacity after overload");
+		assertEquals(0D, inv.getRemainingSpecificCapacity(resource), "Remaining after overload");
+	}
+
+	/*
+	 * Test stock is shared for AmountResource
+	 */
+	@Test
+	void testAmountSharedStock() {
+		final double stockSize = CAPACITY_AMOUNT/10;
+		int resource1 = ResourceUtil.CO2_ID;
+		int resource2 = ResourceUtil.OXYGEN_ID;
+		MicroInventory inv = new MicroInventory(settlement, 2*CAPACITY_AMOUNT, stockSize,
+											Map.of(resource1, CAPACITY_AMOUNT, resource2, CAPACITY_AMOUNT/2));
+
+		assertEquals(CAPACITY_AMOUNT + stockSize, inv.getRemainingSpecificCapacity(resource1), "Initial resource 1 capacity");
+		assertEquals(CAPACITY_AMOUNT/2 + stockSize, inv.getRemainingSpecificCapacity(resource2), "Initial resource 2 capacity");
+	
+		assertEquals(0D, inv.storeAmountResource(resource1, CAPACITY_AMOUNT), "No excess on capacity load");
+		assertEquals(stockSize, inv.getRemainingSpecificCapacity(resource1), "Resource 1 capacity after 1st load");
+		assertEquals(CAPACITY_AMOUNT/2 + stockSize, inv.getRemainingSpecificCapacity(resource2), "Resource 2 capacity after 1st load");
+
+		// Copnsume all stock
+		assertEquals(0D, inv.storeAmountResource(resource2, CAPACITY_AMOUNT/2 + stockSize), "No excess on capacity load");
+		assertEquals(0D, inv.getRemainingSpecificCapacity(resource1), "Resource 1 capacity after 2nd load");
+		assertEquals(0D, inv.getRemainingSpecificCapacity(resource2), "Resource 2 capacity after 2nd load");
+
+		// Remove some to release stock
+		inv.retrieveAmountResource(resource2, stockSize);
+		assertEquals(stockSize, inv.getRemainingSpecificCapacity(resource2), "Resource 2 capacity after releasing stock");
+		assertEquals(stockSize, inv.getRemainingSpecificCapacity(resource1), "Resource 1 capacity after releasing stock");
+	}
+
+	/*
+	 * Test method loading unsopprted AmountResource
+	 */
+	@Test
+	void testUnsupportedAmountResource() {
+		int resource = ResourceUtil.CO2_ID;
+		MicroInventory inv = new MicroInventory(settlement, 2*CAPACITY_AMOUNT, 0,
+											Map.of(resource, CAPACITY_AMOUNT));
 
 		int unprovisioned = ResourceUtil.OXYGEN_ID;
 
@@ -101,13 +153,13 @@ class MicroInventoryTest {
 	}
 	
 	/*
-	 * Test method loading Equipment
+	 * Test method unloading AmountResource
 	 */
 	@Test
-	void testUnloading()  {
-		MicroInventory inv = new MicroInventory(settlement);
+	void testUnloadingAmountResource()  {
 		int resource = ResourceUtil.CO2_ID;
-		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
+		MicroInventory inv = new MicroInventory(settlement, 2*CAPACITY_AMOUNT, 0,
+											Map.of(resource, CAPACITY_AMOUNT));
 		
 		inv.storeAmountResource(resource, CAPACITY_AMOUNT);
 		
@@ -143,11 +195,12 @@ class MicroInventoryTest {
 	 */
 	@Test
 	void testMultiples()  {
-		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
-		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
 		int resource2  = ResourceUtil.OXYGEN_ID;
-		inv.setSpecificCapacity(resource2, 100D);
+		MicroInventory inv = new MicroInventory(settlement, 2*CAPACITY_AMOUNT, 0,
+											Map.of(resource, CAPACITY_AMOUNT,
+												resource2, 100D
+											));
 
 		assertEquals(CAPACITY_AMOUNT, inv.getRemainingSpecificCapacity(resource), "Remaining capacity 1st resource");
 		assertEquals(100D, inv.getRemainingSpecificCapacity(resource2), "Remaining capacity 2nd resource");
@@ -155,6 +208,5 @@ class MicroInventoryTest {
 		inv.storeAmountResource(resource, CAPACITY_AMOUNT/2);
 		inv.storeAmountResource(resource2, 100D);
 		assertEquals((CAPACITY_AMOUNT/2 + 100D), inv.getStoredMass(), "Total mass after combined load");
-
 	}
 }

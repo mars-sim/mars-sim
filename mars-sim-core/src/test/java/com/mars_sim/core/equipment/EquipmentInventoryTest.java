@@ -9,6 +9,7 @@ package com.mars_sim.core.equipment;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -133,7 +134,7 @@ class EquipmentInventoryTest extends MarsSimUnitTest {
 		int resource = ResourceUtil.CO2_ID;
 		
 		EquipmentInventory inv = new EquipmentInventory(settlement, 0);
-		inv.setSpecificResourceCapacity(resource, CAPACITY_AMOUNT);
+		inv.setResourceCapacityMap(Map.of(resource, CAPACITY_AMOUNT), false);
 		
 		double sCap = inv.getSpecificCapacity(resource);
 		assertEquals(CAPACITY_AMOUNT, sCap, "Check specific capacity");
@@ -141,8 +142,6 @@ class EquipmentInventoryTest extends MarsSimUnitTest {
 		double cargo = inv.getCargoCapacity();
 		assertEquals(0D, cargo, "No cargo capacity");
 		
-		double stock = inv.getStockCapacity();
-		assertEquals(0D, stock, "No stock capacity");
 		
 		double rCCap = inv.getRemainingCombinedCapacity(resource);
 		assertEquals(CAPACITY_AMOUNT, rCCap, "Check remaining combined capacity");

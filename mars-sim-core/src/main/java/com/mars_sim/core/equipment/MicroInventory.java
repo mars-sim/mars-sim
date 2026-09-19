@@ -9,13 +9,14 @@ package com.mars_sim.core.equipment;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.resource.ItemResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 
@@ -31,6 +32,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 
 		double capacity = 0;
 		double storedAmount = 0;
+		double overload = 0;
 
 		// Need to decide how to handle when storedAmount becomes zero.
 		// Should it be used for tagging it as a used but empty inventory ?
@@ -45,6 +47,11 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 			return "AmountStored [capacity: " + capacity
 					+ ", storedAmount: " + storedAmount + "]";
 		}
+
+		private void adjustStoredAmount(double quantity) {
+			storedAmount += quantity;
+			overload = Math.max(0, storedAmount - capacity);
+		}
 	}
 
 	private static final class ItemStored implements Serializable {
@@ -56,15 +63,6 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 		double massPerItem = 0;
 		double totalMass = 0;
 		
-		// Note: Is there a need for defining the max capacity for storing items/parts ?
-
-		// Need to decide how to handle when quantity becomes zero.
-		// Should it be used for tagging it as a used but empty inventory ?
-		
-		ItemStored() {
-			super();
-		}
-
 		@Override
 		public String toString() {
 			return "ItemStored [quantity=" + quantity + " massPerItem: " + massPerItem
@@ -78,52 +76,50 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	/* default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MicroInventory.class.getName());
 
-	private static final double SMALL_AMOUNT = 0.000_001;
-
 	/** The owner of this micro inventory. */
 	private Unit owner;
-	/** A map of stock amount resources. */
-	private Map<Integer, Double> stockAmountStorage = new HashMap<>();
 	/** A map of specific amount resources. */
-	private Map<Integer, AmountStored> specificAmountStorage = new HashMap<>();
+	private Map<Integer, AmountStored> amountStorage = new HashMap<>();
 	/** A map of item resources. */
 	private Map<Integer, ItemStored> itemStorage = new HashMap<>();
 
-	private double stockAmountTotalMass = 0D;
-	private double specificAmountTotalMass = 0D;
+	private double amountStockCapacity = 0D;
+	private double amountStockAvailable = 0D;
+	private double amountTotalMass = 0D;
 	private double itemTotalMass = 0D;
-	private double stockCapacity = 0D;
+	private double totalCapcity = 0D;
 
-	public MicroInventory(Unit owner) {
-		this.owner = owner;
+	/**
+	 * Constructs a new MicroInventory with the specified owner and total capacity.
+	 * @param owner Owner of the micro inventory.
+	 * @param totalCapacity Total capacity of the micro inventory.
+	 * @param amountStockCapacity The stock capacity (overload) for specific amount resources.
+	 */
+	public MicroInventory(Unit owner, double totalCapacity, double amountStockCapacity) {
+		this(owner, totalCapacity, amountStockCapacity, null);
 	}
 
-	public MicroInventory(Unit owner, double stockCapacity) {
+	/**
+	 * Constructs a new MicroInventory with the specified owner, total capacity, and resource capacities.
+	 * @param owner Owner of the micro inventory.
+	 * @param totalCapacity Total capacity of the micro inventory.
+	 * @param amountStockCapacity The stock capacity (overload) for specific amount resources.
+	 * @param amountCapacities Map of specific amount resource capacities.
+	 */
+	public MicroInventory(Unit owner, double totalCapacity, double amountStockCapacity, Map<Integer, Double> amountCapacities) {
 		this.owner = owner;
-		this.stockCapacity = stockCapacity;
+		this.totalCapcity = totalCapacity;
+		this.amountStockCapacity = amountStockCapacity;
+		this.amountStockAvailable = amountStockCapacity;
+
+		if (amountCapacities != null) {
+			setResourceCapacityMap(amountCapacities, false);
+		}
 	}
 
 	@Override
 	public double getCargoCapacity() {
-		return stockCapacity;
-	}
-
-	/**
-	 * Gets the stock capacity.
-	 *
-	 * @return
-	 */
-	public double getStockCapacity() {
-		return stockCapacity;
-	}
-
-	/**
-	 * Sets the stock capacity.
-	 *
-	 * @return
-	 */
-	public void setStockCapacity(double stockCapacity) {
-		this.stockCapacity = stockCapacity;
+		return totalCapcity;
 	}
 
 	/**
@@ -131,54 +127,33 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 *
 	 * @return
 	 */
-	public void addStockCapacity(double stockCapacity) {
-		this.stockCapacity += stockCapacity;
-	}
-	
-	/**
-     * Gets the specific capacity of this amount resource that this container can hold.
-     *
-     * @return capacity (kg).
-     */
-    public double getSpecificCapacity(int resource) {
-		AmountStored s = specificAmountStorage.get(resource);
-		if (s != null) {
-			return s.capacity;
-		}
-		return 0;
-    }
-
-	/**
-	 * Sets the capacity of an amount resource.
-	 *
-	 * @param resource
-	 * @param capacity
-	 */
-	public void setSpecificCapacity(int resource, double capacity) {
-		AmountStored s = specificAmountStorage.get(resource);
-		if (s != null) {
-			// To set to a new capacity
-			s.capacity = capacity;
-		}
-		else {
-			specificAmountStorage.put(resource, new AmountStored(capacity));
-		}
+	public void addTotalCapacity(double stockCapacity) {
+		this.totalCapcity += stockCapacity;
 	}
 
 	/**
-	 * Adds the capacity of an amount resource.
-	 *
-	 * @param resource
-	 * @param capacity
+	 * Sets the resource capacities.
+	 * 
+	 * @param capacities
+	 * @param add True if it should these be "added" on top of its existing capacity. False if it should be 'set' to a new capacity
 	 */
-	public void addSpecificCapacity(int resource, double capacity) {
-		AmountStored s = specificAmountStorage.get(resource);
-		if (s != null) {
-			// To add to its existing capacity
-			s.capacity += capacity;
-		}
-		else {
-			specificAmountStorage.put(resource, new AmountStored(capacity));
+	public void setResourceCapacityMap(Map<Integer, Double> capacities, boolean toAdd) {
+		for (Entry<Integer, Double> v : capacities.entrySet()) {
+			Integer resource = v.getKey();
+			Double capacity = v.getValue();
+			AmountStored s = amountStorage.get(resource);
+			if (s != null) {
+				if (toAdd) {
+					s.capacity += capacity;
+				}
+				else {
+					// To set to a new capacity
+					s.capacity = capacity;
+				}
+			}
+			else {
+				amountStorage.put(resource, new AmountStored(capacity));
+			}
 		}
 	}
 
@@ -189,7 +164,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param capacity
 	 */
 	public void removeSpecificCapacity(int resource, double capacity) {
-		AmountStored s = specificAmountStorage.get(resource);
+		AmountStored s = amountStorage.get(resource);
 
 		if (s != null) {
 			s.capacity -= capacity;
@@ -205,10 +180,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @return mass [kg]
 	 */
 	public double getStoredMass() {
-		updateStockAmountResourceTotalMass();
-		updateSpecificAmountResourceTotalMass();
-		updateItemResourceTotalMass();
-		return Math.round((stockAmountTotalMass + specificAmountTotalMass + itemTotalMass) * 100.0)/100.0;
+		return amountTotalMass + itemTotalMass;
 	}
 
 	/**
@@ -227,11 +199,8 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @return
 	 */
 	public boolean isEmpty(int resource) {
-		AmountStored s = specificAmountStorage.get(resource);
-		boolean hasStockResource = stockAmountStorage.containsKey(resource);
-		double stockAmount = stockAmountStorage.get(resource);
-		return ((s == null && !hasStockResource) 
-				|| (s.storedAmount == 0D && stockAmount == 0D));
+		AmountStored s = amountStorage.get(resource);
+		return (s == null || s.storedAmount == 0D);
 	}
 
 	/**
@@ -241,13 +210,14 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
 	 */
+	@Override
 	public double storeAmountResource(int resource, double quantity) {
-		AmountStored s = specificAmountStorage.get(resource);
+		AmountStored s = amountStorage.get(resource);
 		if (s == null) {
 			return quantity;
 		}
 			
-		double remaining =  s.capacity - s.storedAmount;
+		double remaining =  (s.capacity - s.storedAmount) + amountStockAvailable;
 		double excess = 0D;
 		if (remaining < quantity) {
 			// Obtain the excess
@@ -257,64 +227,20 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 			
 			if (ResourceUtil.getEssentialResources().contains(resource)) {
 				String name = ResourceUtil.findAmountResourceName(resource);
-				logger.warning(owner, 60_000L, "Specific Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
+				logger.warning(owner, 60_000L, "Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
 			}
-			
-			// Store excess as stock amount resource
-			excess = storeStockAmountResource(resource, excess);
 		}
 
-		s.storedAmount += quantity;
+		s.adjustStoredAmount(quantity);
 
 		// Update the specific amount total mass
-		specificAmountTotalMass += quantity;
+		refreshAmountTotals();
 		
 		// Fire the unit event type
 		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
 		return excess;
 	}
 
-	/**
-	 * Stores the stock amount resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	private double storeStockAmountResource(int resource, double quantity) {
-		double stockAmount = 0;
-		
-		if (stockAmountStorage.containsKey(resource)) {
-			// Gets the existing stock amount
-			stockAmount = stockAmountStorage.get(resource);
-		}
-
-		double remaining = stockAmountTotalMass - stockAmount;
-		
-		double excess = 0D;
-		
-		if (remaining < quantity) {
-			// Obtain the excess
-			excess = quantity - remaining;
-			// Update the quantity
-			quantity = remaining;
-			
-			String name = ResourceUtil.findAmountResourceName(resource);
-			for (int i: ResourceUtil.getEssentialResources()) {
-				if (i == resource)
-					logger.warning(owner, 120_000L, "Stock Storage is full. Excess " + Math.round(excess * 1_000.0)/1_000.0 + " kg " + name + ".");
-			}
-		}
-		// Increase the existing stock amount by adding quantity
-		stockAmount += quantity;
-		// Update the stock storage map with the new stock amount
-		stockAmountStorage.put(resource, stockAmount);
-		// Update the stock amount total mass
-		stockAmountTotalMass += quantity;
-		// Fire the unit event type
-		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
-		return excess;
-	}
 	
 	/**
 	 * Stores the item resource.
@@ -323,21 +249,19 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param quantity
 	 * @return excess quantity that cannot be stored
 	 */
+	@Override
 	public int storeItemResource(int resource, int quantity) {
-		ItemStored s = itemStorage.get(resource);
-		if (s == null) {
-			s = new ItemStored();
-			s.massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
-			s.totalMass = 0;
-
-			// Save the item resource
-			itemStorage.put(resource, s);
-		}
+		ItemStored s = itemStorage.computeIfAbsent(resource, k -> {
+			var is = new ItemStored();
+			is.massPerItem = ItemResourceUtil.findItemResource(k).getMassPerItem();
+			is.totalMass = 0;
+			return is;
+		});
 
 		double massPerItem = s.massPerItem;
 		double totalMass = s.totalMass;
 		
-		double rCap = getRemainingStockCapacity();
+		double rCap = getRemainingTotalCapacity();
 		int itemCap = (int)Math.floor(rCap / massPerItem);
 		int excessQ = 0;
 
@@ -374,10 +298,8 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 					+ " itemCap: " + itemCap
 					+ " excessQ: " + excessQ
 					+ " quantity: " + quantity
-					+ " sharedCapacity: " + stockCapacity
-					+ " stockAmountTotalMass: " + stockAmountTotalMass
-					+ " specificAmountTotalMass: " + specificAmountTotalMass
-					+ " totalMass: " + totalMass);
+					+ " sharedCapacity: " + totalCapcity
+					+ " itemStored: " + totalMass);
 			
 			logger.warning(owner, "No space to store " + ItemResourceUtil.findItemResource(resource).getName() 
 					+ " [quantity: " + quantity + "].");
@@ -385,46 +307,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 
 		return excessQ;
 	}
-
-	/**
-	 * Recalculates the stock amount resource total mass.
-	 * 
-	 * NOTE: Do NOT delete. Will need it in future.
-	 */
-	private void updateStockAmountResourceTotalMass() {
-		// Note: to avoid ConcurrentModificationException, use new ArrayList
-		stockAmountTotalMass = stockAmountStorage.values().stream().mapToDouble(d -> d).sum();
-	}
 	
-	/**
-	 * Recalculates the specific amount resource total mass.
-	 * 
-	 * NOTE: Do NOT delete. Will need it in future.
-	 */
-	private void updateSpecificAmountResourceTotalMass() {
-		// Note: to avoid ConcurrentModificationException, use new ArrayList
-		specificAmountTotalMass = specificAmountStorage.values().stream().mapToDouble(r -> r.storedAmount).sum();
-	}
-
-	/**
-	 * Recalculates the item resource total mass.
-	 * 
-	 * NOTE: Do NOT delete. Will need it in future.
-	 */
-	private void updateItemResourceTotalMass() {
-		double result = 0;
-		for (int resource: itemStorage.keySet()) {
-			int q = itemStorage.get(resource).quantity;
-			if (q > 0) {
-				ItemResource ir = ItemResourceUtil.findItemResource(resource);
-				if (ir != null)
-					result += ir.getMassPerItem() * q;
-			}
-		}
-
-		itemTotalMass = result;
-	}
-
 	/**
 	 * Retrieves the specific amount resource.
 	 *
@@ -432,91 +315,57 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param quantity
 	 * @return shortfall quantity that cannot be retrieved
 	 */
+	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
-		AmountStored s = specificAmountStorage.get(resource);
+		AmountStored s = amountStorage.get(resource);
 		if (s == null) {
 			return quantity;
 		}
 
 		double shortfall = 0D;
-		double remaining = s.storedAmount - quantity;
+		if (quantity > s.storedAmount) {
+			shortfall = quantity - s.storedAmount;
 
-		if (remaining < 0) {
-			shortfall = -remaining;
-			
-			if (shortfall > SMALL_AMOUNT) {
-				String name = ResourceUtil.findAmountResourceName(resource);
-				logger.warning(owner, 10_000L, "Attempting to retrieve "
-						+ Math.round(quantity * 1_000.0)/1_000.0 + " kg "
-						+ name + " from specific amount resource storage but lacking " + Math.round(shortfall * 1_000.0)/1_000.0 + " kg.");
-				
-				// Retrieve shortfall from stock amount resource
-				shortfall = retrieveStockAmountResource(resource, shortfall);
-			}
-			
-			remaining = 0;
-			
-			// Update the specific amount resource total mass
-			specificAmountTotalMass -= s.storedAmount;
-		}
-		else {
-			// Update the specific amount resource total mass
-			specificAmountTotalMass -= quantity;
+			String name = ResourceUtil.findAmountResourceName(resource);
+			logger.warning(owner, 10_000L, "Attempting to retrieve "
+					+ Math.round(quantity * 1_000.0)/1_000.0 + " kg "
+					+ name + " from specific amount resource storage but lacking " + Math.round(shortfall * 1_000.0)/1_000.0 + " kg.");			
+			quantity = s.storedAmount;
 		}
 	
-		// Update the stored amount
-		s.storedAmount = remaining;
-	
+		// Update the stored amount; reversed so a negative decrease in stored
+		s.adjustStoredAmount(shortfall - quantity);
+		refreshAmountTotals();
+
 		// Fire the unit event type
 		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
 		return shortfall;
 	}
 
-	/**
-	 * Retrieves the stock amount resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return shortfall quantity that cannot be retrieved
-	 */
-	private double retrieveStockAmountResource(int resource, double quantity) {
-		double stockAmount = 0;
+	private static class AmountVisitor implements Consumer<AmountStored> {
+		double total = 0D;
+		double stockUsed = 0D;
 		
-		if (stockAmountStorage.containsKey(resource)) {
-			// Gets the existing stock amount
-			stockAmount = stockAmountStorage.get(resource);
-		}
+		@Override
+		public void accept(AmountStored s) {
+			total += s.storedAmount;
 
-		double shortfall = 0D;
-		double remaining = stockAmount - quantity;
-
-		if (remaining < 0) {
-			shortfall = -remaining;
-			
-			if (shortfall > SMALL_AMOUNT) {
-				String name = ResourceUtil.findAmountResourceName(resource);
-				logger.warning(owner, 10_000L, "Attempting to retrieve "
-						+ Math.round(quantity * 1_000.0)/1_000.0 + " kg "
-						+ name + " from stock storage but lacking " + Math.round(shortfall * 1_000.0)/1_000.0 + " kg.");
-			}
-			// Update the remaining
-			remaining = 0;
-			// Reduce the stock amount resource total mass by stockAmount
-			stockAmountTotalMass -= stockAmount;
+			stockUsed += s.overload;
 		}
-		else {
-			// Update the existing stock amount resource total mass
-			stockAmountTotalMass -= quantity;
-		}
-
-		// Update the stock storage map with remaining
-		stockAmountStorage.put(resource, remaining);
-		// Fire the unit event type
-		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
-		
-		return shortfall;
 	}
+
+	private void refreshAmountTotals() {
 	
+		var visitor = new AmountVisitor();
+
+		// Recalculate the specific amount total mass to avoid drift between the actual stored amounts
+		// Use of Double precision arithmetic which may introduce small errors over multiple operations.
+		amountStorage.values().forEach(visitor);
+
+		amountTotalMass = visitor.total;
+		amountStockAvailable = amountStockCapacity - visitor.stockUsed;
+	}
+
 	/**
 	 * Retrieves the item resource.
 	 *
@@ -524,6 +373,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param quantity
 	 * @return quantity that cannot be retrieved
 	 */
+	@Override
 	public int retrieveItemResource(int resource, int quantity) {
 		ItemStored s = itemStorage.get(resource);
 		if (s == null) {
@@ -567,14 +417,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 */
 	@Override
 	public Set<Integer> getAllAmountResourceStoredIDs() {
-		Set<Integer> set = specificAmountStorage.keySet()
-				.stream()
-				.filter(i -> (specificAmountStorage.get(i).storedAmount > 0))
-				.collect(Collectors.toSet());
-		
-		set.addAll(stockAmountStorage.keySet());
-		
-		return set;
+		return getSpecificResourceStoredIDs();
 	}
 	
 	/**
@@ -583,10 +426,12 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 *
 	 * @return
 	 */
+	@Override 
 	public Set<Integer> getSpecificResourceStoredIDs() {
-		return specificAmountStorage.keySet()
+		return amountStorage.entrySet()
 				.stream()
-				.filter(i -> (specificAmountStorage.get(i).storedAmount > 0))
+				.filter(i -> (i.getValue().storedAmount > 0))
+				.map(Entry::getKey)
 				.collect(Collectors.toSet());
 	}
 
@@ -596,6 +441,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * 
 	 * @return
 	 */
+	@Override
 	public Set<Integer> getItemResourceIDs() {
 		return itemStorage.keySet()
 				.stream()
@@ -610,8 +456,9 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param resource
 	 * @return quantity
 	 */
+	@Override
 	public double getRemainingCombinedCapacity(int resource) {
-		return getRemainingStockCapacity() + getRemainingSpecificCapacity(resource);
+		return getRemainingTotalCapacity() + getRemainingSpecificCapacity(resource);
 	}
 
 	/**
@@ -620,37 +467,48 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param resource
 	 * @return quantity
 	 */
+	@Override
 	public double getRemainingSpecificCapacity(int resource) {
-		AmountStored s = specificAmountStorage.get(resource);
+		AmountStored s = amountStorage.get(resource);
 		if (s != null) {
-			return s.capacity - s.storedAmount;
+			// Account for overload resoruces which have an effective increased capacity equals to the overload
+			return ((s.capacity + s.overload) - s.storedAmount) + amountStockAvailable;
 		}
 		return 0;
 	}
-	
+		
 	/**
-	 * Obtains the remaining stock capacity storage space.
+     * Gets the specific capacity of this amount resource that this container can hold.
+     *
+     * @return capacity (kg).
+     */
+	@Override
+    public double getSpecificCapacity(int resource) {
+		AmountStored s = amountStorage.get(resource);
+		if (s != null) {
+			return s.capacity + amountStockAvailable;
+		}
+		return 0;
+    }
+
+	/**
+	 * Obtains the remaining total capacity storage space.
 	 *
-	 * @param resource
 	 * @return quantity
 	 */
-	public double getRemainingStockCapacity() {
-		return stockCapacity - getStoredMass();
+	private double getRemainingTotalCapacity() {
+		return totalCapcity - getStoredMass();
 	}
-	
+
 	/**
 	 * Does it have unused space or capacity for a particular resource ?
 	 * 
 	 * @param resource
 	 * @return
 	 */
+	@Override
 	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		AmountStored s = specificAmountStorage.get(resource);
-		if (s != null) {
-			return s.capacity > s.storedAmount;
-		}
-		
-		return false;
+		return getRemainingSpecificCapacity(resource) > 0;
 	}
 	
 	/**
@@ -659,17 +517,12 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param resource
 	 * @return quantity
 	 */
+	@Override
 	public int getItemResourceRemainingQuantity(int resource) {
 		ItemStored s = itemStorage.get(resource);
-		double rCap = getRemainingStockCapacity();
-		if (s != null) {
-			// Question : does it have to be tagged or defined ahead of time for storing items or parts ?
-			return (int)Math.floor(rCap / s.massPerItem);
-		}
-		else {
-			double massPerItem = ItemResourceUtil.findItemResource(resource).getMassPerItem();
-			return (int)Math.floor(rCap / massPerItem);	
-		}
+		double massPerItem = (s != null ? s.massPerItem
+				: ItemResourceUtil.findItemResource(resource).getMassPerItem());	
+		return (int)Math.floor(getRemainingTotalCapacity() / massPerItem);	
 	}
 
 	/**
@@ -678,22 +531,13 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param resource
 	 * @return quantity
 	 */
+	@Override
 	public double getSpecificAmountResourceStored(int resource) {
-		AmountStored s = specificAmountStorage.get(resource);
+		AmountStored s = amountStorage.get(resource);
 		if (s != null) {
 			return s.storedAmount;
 		}
 		return 0;
-	}
-	
-	/**
-	 * Gets the quantity of the stock amount resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	private double getStockAmountResourceStored(int resource) {
-		return stockAmountStorage.getOrDefault(resource, 0.0);
 	}
 	
 	/**
@@ -702,8 +546,9 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param resource
 	 * @return quantity
 	 */
+	@Override
 	public double getAllAmountResourceStored(int resource) {
-		return getStockAmountResourceStored(resource) + getSpecificAmountResourceStored(resource);
+		return  getSpecificAmountResourceStored(resource);
 	}
 
 	/**
@@ -712,6 +557,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @param resource
 	 * @return quantity
 	 */
+	@Override
 	public int getItemResourceStored(int resource) {
 		ItemStored s = itemStorage.get(resource);
 		if (s != null) {
@@ -727,6 +573,6 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	 * @return
 	 */
 	public boolean isResourceSupported(int resource) {
-		return specificAmountStorage.containsKey(resource);
+		return amountStorage.containsKey(resource);
 	}
 }

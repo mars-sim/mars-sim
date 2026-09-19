@@ -45,18 +45,18 @@ class UnloadVehicleGarageTest extends MarsSimUnitTest {
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
-        
+
+        // Return to base
+        assertTrue(task.isDone(), "Task completed"); 
+
         mass = vehEO.getStoredMass();
+        assertEquals(0.0, mass, "Final stored mass");
 
         var rh = s.getEquipmentInventory();
-        assertEquals(0.0, mass, "Final stored mass");
         assertEquals(RESOURCE_AMOUNT, Math.round(rh.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)), "Oxygen unloaded");
         assertEquals(RESOURCE_AMOUNT, Math.round(rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID)), "Food unloaded");
         assertEquals(ITEM_AMOUNT, rh.getItemResourceStored(ItemResourceUtil.GARMENT_ID), "Garments unloaded");
         assertFalse(v.haveStatusType(StatusType.UNLOADING), "Vehicle has UNLOADING");
-
-        // Return to base
-        assertTrue(task.isDone(), "Task completed"); 
     }
 
     @Test

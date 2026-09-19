@@ -70,8 +70,8 @@ public class EquipmentInventory
 		suitSet = new UnitSet<>();
 		containerSet = new UnitSet<>();
 		
-		// Create microInventory instance
-		microInventory = new MicroInventory(owner, cargoCapacity);
+		// Create microInventory instance with a 10% stock
+		microInventory = new MicroInventory(owner, cargoCapacity, cargoCapacity * 0.1D);
 				
 		// Create the amount resource bin set
 		amountResourceBinSet = new HashSet<>();
@@ -275,7 +275,7 @@ public class EquipmentInventory
 	public double retrieveAmountResource(int resource, double quantity) {
 		double shortfall = quantity;
 		double stored = microInventory.getSpecificAmountResourceStored(resource);
-		if (stored > 0) {
+		if (stored > 0D) {
 			shortfall = microInventory.retrieveAmountResource(resource, shortfall);
 		}
 
@@ -297,7 +297,7 @@ public class EquipmentInventory
 		if (!microInventory.isResourceSupported(resource)) {
 			// Since cargoCapacity is changing dynamically,
 			// does it mean one must constantly update the capacity of this amount resource ?
-			microInventory.setSpecificCapacity(resource, cargoCapacity);
+			microInventory.setResourceCapacityMap(Map.of(resource, cargoCapacity), false);
 		}
 		return microInventory.storeAmountResource(resource, quantity);
 	}
@@ -367,16 +367,6 @@ public class EquipmentInventory
 		return (cap > stored);
 		
 		// Warning : May also needs to account for the amount resources inside equipment
-	}
-	
-	
-	/**
-	 * Gets the stock capacity of its micro inventory.
-	 *
-	 * @return
-	 */
-	double getStockCapacity() {
-		return microInventory.getStockCapacity();
 	}
 	
 	/**
@@ -654,45 +644,15 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Sets a specific resource capacity.
-	 *
-	 * @param resource
-	 * @param capacity
-	 */
-	public void setSpecificResourceCapacity(int resource, double capacity) {
-		if (ResourceUtil.findAmountResource(resource) != null) {
-			microInventory.setSpecificCapacity(resource, capacity);
-		}
-	}
-
-	/**
 	 * Sets the resource capacities.
 	 * 
 	 * @param capacities
 	 * @param add True if it should these be "added" on top of its existing capacity. False if it should be 'set' to a new capacity
 	 */
 	public void setResourceCapacityMap(Map<Integer, Double> capacities, boolean toAdd) {
-		for (Entry<Integer, Double> v : capacities.entrySet()) {
-			Integer foundResource = v.getKey();
-			if (toAdd) {
-				microInventory.addSpecificCapacity(foundResource, v.getValue());
-			}
-			else {
-				microInventory.setSpecificCapacity(foundResource, v.getValue());
-			}
-		}
+		microInventory.setResourceCapacityMap(capacities, toAdd);
 	}
 
-	/**
-	 * Sets the cargo/general/shared capacity.
-	 *
-	 * @param value
-	 */
-	public void setCargoCapacity(double value) {
-		cargoCapacity = value;
- 		microInventory.setStockCapacity(cargoCapacity);
-	}
-	
 	/**
 	 * Adds the cargo/general/shared capacity.
 	 *
@@ -700,7 +660,7 @@ public class EquipmentInventory
 	 */
 	public void addCargoCapacity(double value) {
 		cargoCapacity += value;
- 		microInventory.addStockCapacity(cargoCapacity);
+ 		microInventory.addTotalCapacity(value);
 	}
 	
 	/**

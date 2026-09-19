@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -476,9 +477,13 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		
 		// Not nice, EquipmentOwner needs to support capacity changes
 		if (target instanceof EquipmentInventory inv) {
-			for (Entry<Integer, Double> v : requiredResourcesMap.entrySet()) {
-				inv.setSpecificResourceCapacity(v.getKey(), v.getValue().doubleValue() * 1.01D);
-			}
+			var adjustedResourcesMap = requiredResourcesMap.entrySet().stream()
+				.collect(Collectors.toMap(
+					Entry::getKey,
+					e -> e.getValue().doubleValue() * 1.01D
+				));
+
+			inv.setResourceCapacityMap(adjustedResourcesMap, false);
 		}
 		else {
 			assertTrue(false, "EquipmentOwner is not an EquipmentInventory");
