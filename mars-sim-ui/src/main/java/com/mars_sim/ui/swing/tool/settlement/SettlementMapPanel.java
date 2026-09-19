@@ -259,11 +259,14 @@ public class SettlementMapPanel extends JPanel {
 
 			@Override
 			public void mouseReleased(MouseEvent evt) {
+				var selected = getHotspotAt(evt);
+
 				// Note that SwingUtilities.isRightMouseButton() is needed for macOS to detect right mouse button (Ctrl + left button)
-				if (evt.isPopupTrigger() || SwingUtilities.isRightMouseButton(evt)) {
+				if ((selected != null) && (evt.isPopupTrigger() || SwingUtilities.isRightMouseButton(evt))) {
 					setCursor(new Cursor(Cursor.HAND_CURSOR));
-					doPop(evt);
-				} else {
+					doPop(evt, selected);
+				}
+				else {
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
 
@@ -280,25 +283,31 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Checks if the player selected an unit.
-	 *
-	 * @param evt
+	 * Gets the hotspot at the location of the given mouse event.
+	 * @param evt MMouse event
+	 * @return Matched hotspot
 	 */
-	private void doPop(final MouseEvent evt) {
+	private MapHotspot<?> getHotspotAt(MouseEvent evt) {
 		int x = evt.getX();
 		int y = evt.getY();
 
 		LocalPosition settlementPosition = convertToSettlementLocation(x, y);
 
-		var selected = hotspots.stream()
+		return hotspots.stream()
 					.filter(h -> h.isWithinRange(settlementPosition))
 					.findFirst().orElse(null);
+	}
 
-		if (selected != null) {
-			var menu = new PopUpUnitMenu(selected, context);
-			menu.show(evt.getComponent(), x, y);
-		}
-		repaint();
+	/**
+	 * Checks if the player selected an unit.
+	 *
+	 * @param evt
+	 */
+	private void doPop(final MouseEvent evt, MapHotspot<?> selected) {
+
+		displayEntity(selected.target);
+		var menu = new PopUpUnitMenu(selected, context);
+		menu.show(evt.getComponent(), evt.getX(), evt.getY());
 	}
 
 	/**
