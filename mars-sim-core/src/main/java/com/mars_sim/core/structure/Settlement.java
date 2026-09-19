@@ -432,7 +432,7 @@ public class Settlement extends Unit implements Temporal,
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
 
-		// This are read many and write infrequesnt so suitable for concurrent collections
+		// These collections are read many and write infrequent so suitable for concurrent collections
 		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
 		indoorPeople = new CopyOnWriteArraySet<>();
 

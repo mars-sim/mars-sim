@@ -27,13 +27,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.utils.StatefulComponent;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -53,7 +54,8 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * </p>
  */
 @SuppressWarnings("serial")
-public class SettlementMapPanel extends JPanel {
+public class SettlementMapPanel extends JPanel 
+	implements StatefulComponent {
 
 	// Property names for UI Config
 	private static final String SETTLEMENT_PROP = "SETTLEMENT";
@@ -89,7 +91,7 @@ public class SettlementMapPanel extends JPanel {
 
 	private List<SettlementMapLayer> mapLayers;
 
-	private Map<Settlement, Entity>   selectedEntity   = new HashMap<>();
+	private Map<Settlement, SettlementPOI>   selectedEntity   = new HashMap<>();
 
 	private List<MapHotspot<?>> hotspots = new ArrayList<>();
 	
@@ -284,7 +286,7 @@ public class SettlementMapPanel extends JPanel {
 
 	/**
 	 * Gets the hotspot at the location of the given mouse event.
-	 * @param evt MMouse event
+	 * @param evt Mouse event
 	 * @return Matched hotspot
 	 */
 	private MapHotspot<?> getHotspotAt(MouseEvent evt) {
@@ -299,13 +301,15 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Checks if the player selected an unit.
+	 * Display a popup menu for the selected hotspot. This will be contextual according to the selection.
 	 *
-	 * @param evt
+	 * @param evt Mouse event that triggered the popup menu.
+	 * @param selected The hotspot that was selected.
 	 */
 	private void doPop(final MouseEvent evt, MapHotspot<?> selected) {
+		// Select the entity
+		setSelectedEntity(settlement, selected.target);
 
-		displayEntity(selected.target);
 		var menu = new PopUpUnitMenu(selected, context);
 		menu.show(evt.getComponent(), evt.getX(), evt.getY());
 	}
@@ -447,15 +451,43 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	/**
-	 * Displays the robot on the map.
-	 *
-	 * @param robot
+	 * Displays a Settlement POI on the map. This will change the selected Settlement if necessary.
+	 * The map is refocused on the selected entity.
+	 * 
+	 * @param e The Settlement POI to display.
 	 */
-	void displayEntity(Entity e) {
-		if (settlement != null && e != null) {
-			selectedEntity.put(settlement, e);
-			repaint();
+	void displayEntity(SettlementPOI e) {
+		if (e != null) {
+			var targetSettlement = e.getSettlement();
+			refocusMap(targetSettlement, e.getPosition());
+			setSelectedEntity(targetSettlement, e);
 		}
+	}
+
+	/**
+	 * Set the selected entity for a given settlement and repaint
+	 * @param targetSettlement Settlement where the entity is located.
+	 * @param e The settlement POI to set as selected.
+	 */
+	private void setSelectedEntity(Settlement targetSettlement, SettlementPOI e) {
+		selectedEntity.put(targetSettlement, e);
+		repaint();
+	}
+
+	/**
+	 * Centers the map panel on a position in a Settlement.
+	 * 
+	 * @param settlement To display
+	 * @param position Location position within the set
+	 */
+	private void refocusMap(Settlement settlement, LocalPosition position) {
+		// Surely this should be simpler ?
+		settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
+
+		double xLoc = position.getX();
+		double yLoc = position.getY();
+		reCenter();
+		moveCenter(xLoc * scale, yLoc * scale);
 	}
 
 	protected List<SettlementMapLayer> getMapLayers() {
@@ -561,7 +593,8 @@ public class SettlementMapPanel extends JPanel {
 	/**
 	 * Cleans up the map panel for disposal.
 	 */
-	public void destroy() {
+	@Override
+	public void release() {
 
 		// Stop timers and free caches
 		iconCache.clear();
@@ -569,7 +602,7 @@ public class SettlementMapPanel extends JPanel {
 
 		// Destroy all map layers (this includes dayNightMapLayer).
 		if (mapLayers != null) {
-			mapLayers.forEach(SettlementMapLayer::destroy);
+			mapLayers.forEach(SettlementMapLayer::release);
 			mapLayers = null;
 		}
 	}

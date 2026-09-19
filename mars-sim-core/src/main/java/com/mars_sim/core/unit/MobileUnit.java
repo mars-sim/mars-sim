@@ -2,6 +2,7 @@ package com.mars_sim.core.unit;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -9,7 +10,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 /**
  * Represents an entity that can be mobile.
  */
-public interface MobileUnit extends SurfacePOI {
+public interface MobileUnit extends SettlementPOI, SurfacePOI {
 
 	// Event type when the mobile unit changes container
 	static final String CONTAINER_EVENT = "container";
@@ -68,13 +69,6 @@ public interface MobileUnit extends SurfacePOI {
 	 * @param position
 	 */
 	public void setCurrentBuilding(Building building);
-
-	/**
-	 * Gets the Worker's position within the Settlement/Vehicle.
-	 * 
-	 * @return
-	 */
-	public LocalPosition getPosition();
 	
 	/**
 	 * Sets the worker's position at a settlement.

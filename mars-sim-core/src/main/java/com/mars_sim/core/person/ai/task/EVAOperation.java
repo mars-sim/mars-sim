@@ -846,7 +846,7 @@ public abstract class EVAOperation extends Task {
 				sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, lbo);
 				
 				// Set the local position in the empty DCS
-				emptyDCS.setPosition(sLoc);
+				emptyDCS.setPosition(settlement, sLoc);
 				
 				// Vehicles will move from place to place. No need to check
 //				goodLocation = LocalAreaUtil.isVehicleBoundedOjectIntersected(emptyLBO, settlement, false);

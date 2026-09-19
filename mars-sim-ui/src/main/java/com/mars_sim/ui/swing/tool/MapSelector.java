@@ -8,8 +8,6 @@ package com.mars_sim.ui.swing.tool;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.Person;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.unit.MobileUnit;
@@ -39,7 +37,7 @@ public final class MapSelector {
         }
         else if (u instanceof FixedUnit fu) {
             var sw = getSettlementWindow(uiContext);
-            sw.displayPosition(fu.getAssociatedSettlement(), fu.getPosition());
+            sw.displayEntity(fu);
         }
         else if (u instanceof Settlement s) {
             marsPosn = s.getCoordinates();
@@ -118,21 +116,14 @@ public final class MapSelector {
 	/**
 	 * Opens the Settlement map and show a Unit
 	 * 
-	 * @param u
+	 * @param uiContext Current UI context
+	 * @param u Mobile unit to display
 	 */
 	private static void showSettlementMap(UIContext uiContext, MobileUnit u) {
-		// person just happens to step outside the settlement at its
-		// vicinity temporarily
-		SettlementWindow sw = getSettlementWindow(uiContext);
-		if (u instanceof Person p) {
-			sw.displayPerson(p);
-		} 
-		else if (u instanceof Robot r) {
-			sw.displayRobot(r);
+		// Check unit is in a Settlement
+		if (u.isInSettlement()) {
+			SettlementWindow sw = getSettlementWindow(uiContext);
+			sw.displayEntity(u);
 		}
-        else if (u instanceof Vehicle fu) {
-            sw.displayPosition(fu.getSettlement(), fu.getPosition());
-        }
 	}
-	
 }

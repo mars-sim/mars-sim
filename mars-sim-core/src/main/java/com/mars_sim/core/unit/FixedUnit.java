@@ -7,6 +7,7 @@
 package com.mars_sim.core.unit;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.structure.Settlement;
@@ -15,7 +16,7 @@ import com.mars_sim.core.structure.Settlement;
  * Represent a Unit that is at a Fixed location in a Settlement
  */
 public abstract class FixedUnit extends Unit 
-    implements LocalBoundedObject {
+    implements LocalBoundedObject, SettlementPOI {
     
     private static final long serialVersionUID = 1L;
 	private Settlement owner;
