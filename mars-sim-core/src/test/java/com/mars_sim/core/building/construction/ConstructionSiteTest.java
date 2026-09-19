@@ -114,7 +114,7 @@ class ConstructionSiteTest extends MarsSimUnitTest {
         var rh = s.getEquipmentInventory();
         for(var e : parts.entrySet()) {
             assertTrue(e.getValue().getAvailable() > 0, "Reclaimed " + e.getKey());
-            assertTrue(rh.getItemResourceStored(e.getKey()) > 0, "Settlement " + e.getKey());
+            assertTrue(rh.hasItemResource(e.getKey()), "Settlement " + e.getKey());
         }
     }
 

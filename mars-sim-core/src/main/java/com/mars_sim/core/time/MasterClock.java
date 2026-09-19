@@ -712,7 +712,8 @@ public class MasterClock implements Serializable {
 		// Ensure that Settlements stay synch'ed and some don't get ahead of others as tasks queue
 		// May use parallelStream() after it's proven to be safe
 		if (clockListenerTasks != null) {
-			Collections.synchronizedSet(new HashSet<>(clockListenerTasks)).stream().forEach(this::executeClockListenerTask);
+//			Collections.synchronizedSet(new HashSet<>(clockListenerTasks)).stream().forEach(this::executeClockListenerTask);
+			clockListenerTasks.stream().forEach(this::executeClockListenerTask);
 		}
 	}
 
@@ -728,13 +729,13 @@ public class MasterClock implements Serializable {
 			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
 			result.get();
 		} catch (ExecutionException ee) {
-			logger.severe( "ExecutionException. Problem with clock listener tasks: ", ee);
+			logger.severe( "Execution Exception. Problem with clock listener tasks: ", ee);
 		} catch (InterruptedException | RejectedExecutionException ie) {
 			// If clock is shutting down then interruption is expected.
 			if (!shuttingDown) {
 				// Program closing down
 				Thread.currentThread().interrupt();
-				logger.severe("Exception. Problem with clock listener tasks: ", ie);
+				logger.severe("Interrupted Exception or Rejected ExecutionException. Problem with clock listener tasks: ", ie);
 			}
 		}
 	}

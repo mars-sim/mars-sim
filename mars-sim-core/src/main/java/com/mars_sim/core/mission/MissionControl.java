@@ -41,7 +41,8 @@ import com.mars_sim.core.time.MarsTime;
  */
 public class MissionControl implements ScheduledEventHandler {
 
-    /** Initial mission passing score. */
+    private static final long serialVersionUID = 1L;
+	/** Initial mission passing score. */
 	private static final double INITIAL_MISSION_PASSING_SCORE = 50D;
 	/** The Maximum mission score that can be recorded. */
 	private static final double MAX_MISSION_SCORE = 1000D;

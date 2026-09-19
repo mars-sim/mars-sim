@@ -127,6 +127,25 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	}
 	
 	/**
+	 * Checks the registered owner id.
+	 * 
+	 * @param ownerID
+	 * @return
+	 */
+	public boolean checkRegisteredOwnerID(int ownerID) {
+		return dataset.keySet().stream().anyMatch(p -> p.getIdentifier() == ownerID);
+
+//		Set<Integer> ids = dataset.keySet().stream()
+//				.map(p -> p.getIdentifier()) 
+//			    .collect(Collectors.toSet());
+//		
+//		if (ids.contains(ownerID))
+//			return true;
+//		
+//		return false;
+	}
+	
+	/**
 	 * Adds a dataset.
 	 *  
 	 * @param person

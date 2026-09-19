@@ -65,6 +65,8 @@ public class ApproveMeasures extends Task {
 		};
 		
 	// Data members
+	private boolean	useOffice = false;
+	
 	private int diff = 0;
 	/** The administration building the person is using. */
 	private Administration office;
@@ -98,8 +100,9 @@ public class ApproveMeasures extends Task {
 			// Note: office building is optional
 			if (officeBuilding != null) {
 				office = officeBuilding.getAdministration();	
-				if (!office.isFull()) {
+				if (!useOffice && !office.isFull()) {
 					office.addStaff();
+					useOffice = true;
 					// Walk to the office building.
 					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 				}
@@ -306,7 +309,7 @@ public class ApproveMeasures extends Task {
 		super.clearDown();
 		
 		// Remove person from administration function so others can use it.
-		if (office != null && office.getNumStaff() > 0) {
+		if (useOffice && office != null && office.getNumStaff() > 0) {
 			office.removeStaff();
 		}
 	}

@@ -62,6 +62,7 @@ public class ReviewMissionPlan extends Task {
 	private static final double STRESS_MODIFIER = -.1D;
 	
 	// Data members
+	private boolean	useOffice = false;
 	/** The administration building the person is using. */
 	private Administration office;
 
@@ -95,9 +96,9 @@ public class ReviewMissionPlan extends Task {
 		// Note: office building is optional
 		if (officeBuilding != null) {
 			office = officeBuilding.getAdministration();	
-			if (!office.isFull()) {
+			if (!useOffice && !office.isFull()) {
 				office.addStaff();
-
+				useOffice = true;
 				choosenBuilding = officeBuilding;
 				choosenFunction = FunctionType.ADMINISTRATION;
 			}
@@ -201,106 +202,6 @@ public class ReviewMissionPlan extends Task {
 	}
 
 	/**
-	 * Completes the executive review.
-	 * 
-	 * @param m
-	 * @param reviewerSettlement
-	 * @param mp
-	 */
-	private void completeExecutiveReview(Mission m, Settlement reviewerSettlement, MissionPlanning mp) {		
-	    GoodsManager goodsManager = reviewerSettlement.getGoodsManager();
-	    
-		Person leader = m.getStartingPerson();
-    	
-		// 1. Reviews requester's cumulative job rating
-		double rating = leader.getJobHistory().getCummulativeJobRating();
-			
-		// 2. Relationship Score 
-		int relation = assessLeader(leader, reviewerSettlement);
-
-		// 3. Mission Qualification Score
-		double qual = 1D;
-		var meta = MetaMissionRegistry.getMetaMission(m.getMissionType());
-		if (meta != null) {
-			qual = meta.getWorkerSuitability(person) * 0.4D;
-		}
-		
-		// 4. Settlement objective score, is the Mission type
-		// is preferred for the Objective
-		double obj = 0;
-		ObjectiveType objective = reviewerSettlement.getObjective();
-		Set<ObjectiveType> satisfiedObjectives = m.getObjectiveSatisfied();
-		if (satisfiedObjectives.contains(objective)) {
-			CommerceType cFactor = ObjectiveUtil.toCommerce(objective);
-			if (cFactor != null) {
-				obj += 5D * goodsManager.getCommerceFactor(cFactor);
-			}
-		}
-
-		// 5. emergency
-		int emer = 0;
-	
-		// 6. Site Value
-		double siteValue = 0;
-		if (m instanceof SiteMission sm) {
-			// The site value is divided by the distance proposed
-			siteValue = sm.getTotalSiteScore(reviewerSettlement)/ ((VehicleMission)m).getTotalDistanceProposed();
-		}
-
-		// 7. proposed route distance (note that a negative score represents a penalty)
-		int dist = 0;
-		if (m instanceof VehicleMission vm) {
-			double range = vm.getVehicle().getEstimatedRange();
-			double proposed = vm.getTotalDistanceProposed();
-			
-			// Scoring rule:
-			// At range = 0, the score is 0
-			// At half the range, the score is -100
-			// At full range, the score is -200
-			
-			// Calculate the dist score
-			dist = (int)(- (200.0 * proposed)/ range);
-		}
-		
-		// 8. Leadership and Charisma
-		NaturalAttributeManager attrMgr = person.getNaturalAttributeManager();
-		int leadership = (int)(.075 * attrMgr
-							.getAttribute(NaturalAttributeType.LEADERSHIP)
-						+ .025 * attrMgr
-							.getAttribute(NaturalAttributeType.ATTRACTIVENESS));				
-
-		// 9. reviewer role weight
-		int reviewerRole = assessReviewer();
-
-		// 10. luck
-		int luck = RandomUtil.getRandomInt(-5, 5);	
-		
-		// Future: 9. Go to him/her to have a chat
-		// Future: 10. mission lead's leadership/charisma
-		
-		double score = Math.round((rating + relation + qual + obj + emer + siteValue + dist + leadership + reviewerRole + luck)* 10.0)/10.0;
-
-		// Updates the mission plan status
-		mp.scoreMissionPlan(score, person);
-
-		StringBuilder msg = new StringBuilder();
-		msg.append("Grading ").append(m.getName());
-		msg.append(" - Rating: ").append(rating); 
-		msg.append(", Rels: ").append(relation); 
-		msg.append(", Quals: ").append(qual); 
-		msg.append(", Obj: ").append(obj);
-		msg.append(", Emer: ").append(emer);
-		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0);
-		msg.append(", Dist: ").append(dist);
-		msg.append(", Lead: ").append(leadership); 							
-		msg.append(", Review: ").append(reviewerRole); 
-		msg.append(", Luck: ").append(luck); 
-		msg.append("; Subtotal: ").append(score);
-		
-		logger.log(worker, Level.INFO, 0,  msg.toString());
-	}
-
-	/**
 	 * Assesses the relationship of the reviewer with the Mission Leader.
 	 * 
 	 * @param leader
@@ -355,6 +256,111 @@ public class ReviewMissionPlan extends Task {
 	}
 	
 	/**
+	 * Completes the executive review.
+	 * 
+	 * @param m
+	 * @param reviewerSettlement
+	 * @param mp
+	 */
+	private void completeExecutiveReview(Mission m, Settlement reviewerSettlement, MissionPlanning mp) {		
+	    GoodsManager goodsManager = reviewerSettlement.getGoodsManager();
+	    
+		Person leader = m.getStartingPerson();
+    	
+		// 1. Reviews requester's cumulative job rating
+		double rating = leader.getJobHistory().getCummulativeJobRating();
+			
+		// 2. Relationship Score 
+		int relation = assessLeader(leader, reviewerSettlement);
+
+		// 3. Mission Qualification Score
+		double qual = 1D;
+		var meta = MetaMissionRegistry.getMetaMission(m.getMissionType());
+		if (meta != null) {
+			qual = Math.sqrt(meta.getWorkerSuitability(person));
+		}
+		
+		// 4. Settlement objective score, is the Mission type
+		// is preferred for the Objective
+		double obj = 0;
+		ObjectiveType objective = reviewerSettlement.getObjective();
+		Set<ObjectiveType> satisfiedObjectives = m.getObjectiveSatisfied();
+		if (satisfiedObjectives.contains(objective)) {
+			CommerceType cFactor = ObjectiveUtil.toCommerce(objective);
+			if (cFactor != null) {
+				obj += 5D * goodsManager.getCommerceFactor(cFactor);
+			}
+		}
+
+		// 5. emergency
+		int emer = 0;
+	
+
+		// 6. proposed route distance (note that a negative score represents a penalty)
+		double dist = 0;
+		double proposed = 0;
+		if (m instanceof VehicleMission vm) {
+			double range = vm.getVehicle().getEstimatedRange();
+			// Note: investigate if using proposed makes sense  
+			proposed = vm.getTotalDistanceProposed();		
+			
+			mp.setProposedDistance(proposed);
+			// Calculate the dist score
+			dist = range / proposed / 2;
+			
+			logger.info(worker, m.getName() + " proposed: " + Math.round(proposed * 10.0)/10.0 
+					 + " km. range: " + Math.round(range * 10.0)/10.0 
+					 + " km. dist: " + Math.round(dist * 10.0)/10.0);
+		}
+		
+		// 7. Site Value
+		double siteValue = 0;
+	
+		if (m instanceof SiteMission sm) {
+			// The site value is divided by the distance proposed
+			siteValue = sm.getTotalSiteScore(reviewerSettlement);
+		}
+
+		
+		// 8. Leadership and Charisma
+		NaturalAttributeManager attrMgr = person.getNaturalAttributeManager();
+		int leadership = (int)(.075 * attrMgr
+							.getAttribute(NaturalAttributeType.LEADERSHIP)
+						+ .025 * attrMgr
+							.getAttribute(NaturalAttributeType.ATTRACTIVENESS));				
+
+		// 9. reviewer role weight
+		int reviewerRole = assessReviewer();
+
+		// 10. luck
+		int luck = RandomUtil.getRandomInt(-5, 5);	
+		
+		// Future: 9. Go to him/her to have a chat
+		// Future: 10. mission lead's leadership/charisma
+		
+		double score = Math.round((rating + relation + qual + obj + emer + siteValue + dist + leadership + reviewerRole + luck)* 10.0)/10.0;
+
+		// Updates the mission plan status
+		mp.scoreMissionPlan(score, person);
+
+		StringBuilder msg = new StringBuilder();
+		msg.append("Grading ").append(m.getName());
+		msg.append(" - Rating: ").append(rating); 
+		msg.append(", Rels: ").append(relation); 
+		msg.append(", Quals: ").append(qual); 
+		msg.append(", Obj: ").append(obj);
+		msg.append(", Emer: ").append(emer);
+		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0);
+		msg.append(", Dist: ").append(dist);
+		msg.append(", Lead: ").append(leadership); 							
+		msg.append(", Review: ").append(reviewerRole); 
+		msg.append(", Luck: ").append(luck); 
+		msg.append("; Subtotal: ").append(score);
+		
+		logger.log(worker, Level.INFO, 0,  msg.toString());
+	}
+	
+	/**
 	 * Completes the general review.
 	 * 
 	 * @param m
@@ -366,17 +372,33 @@ public class ReviewMissionPlan extends Task {
 		Person leader = m.getStartingPerson();
 		int relation = assessLeader(leader, reviewerSettlement);
 		
-		// 6. Site Value
+		// 6. proposed route distance (note that a negative score represents a penalty)
+		double dist = 0;
+		double proposed = 0;
+		if (m instanceof VehicleMission vm) {
+			double range = vm.getVehicle().getEstimatedRange();
+			// Note: investigate if using proposed makes sense  
+			proposed = vm.getTotalDistanceProposed();			
+			// Calculate the dist score
+			dist = range / proposed / 2;
+			
+			logger.info(worker, m.getName() + " proposed: " + Math.round(proposed * 10.0)/10.0 
+					 + " km. range: " + Math.round(range * 10.0)/10.0 
+					 + " km. dist: " + Math.round(dist * 10.0)/10.0);
+		}
+		
+		// 7. Site Value
 		double siteValue = 0;
+	
 		if (m instanceof SiteMission sm) {
 			// The site value is divided by the distance proposed
-			siteValue = sm.getTotalSiteScore(reviewerSettlement)/ ((VehicleMission)m).getTotalDistanceProposed();
+			siteValue = sm.getTotalSiteScore(reviewerSettlement);
 		}
 
 		// 9. reviewer role weight
 		int reviewerRole = assessReviewer();
 		
-		double score = Math.round((relation + siteValue + reviewerRole)* 10.0)/10.0;
+		double score = Math.round((relation + dist + siteValue + reviewerRole)* 10.0)/10.0;
 
 		// Updates the mission plan status
 		mp.scoreMissionPlan(score, person);
@@ -384,6 +406,7 @@ public class ReviewMissionPlan extends Task {
 		StringBuilder msg = new StringBuilder();
 		msg.append("Reviewing ").append(m.getName());
 		msg.append(" - Rels: ").append(relation); 
+		msg.append(", Dist: ").append(Math.round(dist*10.0)/10.0);
 		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0); 							
 		msg.append(", Review: ").append(reviewerRole); 
 		msg.append("; Subtotal: ").append(score);
@@ -446,7 +469,7 @@ public class ReviewMissionPlan extends Task {
 		super.clearDown();
 		
 		// Remove person from administration function so others can use it.
-		if (office != null && office.getNumStaff() > 0) {
+		if (useOffice && office != null && office.getNumStaff() > 0) {
 			office.removeStaff();
 		}
 		if (mp != null) {

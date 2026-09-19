@@ -818,16 +818,16 @@ public abstract class EVAOperation extends Task {
 	/**
 	 * Determines a random outside data collection location.
 	 *
-	 * @param lbo the origin building's LBO
-	 * @param dcs the data center site LBO
-	 * @param settlement
+	 * @param lbo the LBO of either the original airlock or vehicle or a DCS
+	 * @param coord the coordinates of the prospective site
+	 * @param settlement the associated settlement
 	 * @return Was a site found
 	 */
 	protected boolean findRandomDataCollectionOutsideLoc(LocalBoundedObject lbo, Coordinates coord, Settlement settlement) {
 
 		DataCollectionSite emptyDCS = DataCollectionSite.creatEmptySite(coord);
 		
-		LocalPosition sLoc = null;
+		LocalPosition emptyDCSSLoc = null;
 		boolean goodLocation = false;
 		
 		int width = (int) lbo.getWidth();
@@ -838,28 +838,30 @@ public abstract class EVAOperation extends Task {
 			for (int y = 0; (y < 30) && !goodLocation; y++) {
 
 				double distance = RandomUtil.getRandomRegressionInteger(length * width) 
-						+ (x + 1) * width /2 + (y + 1) * length / 2 + hypotenuse + DataCollectionSite.HYPOTENUSE;
+						+ (x + 1) * width 
+						+ (y + 1) * length 
+						+ hypotenuse + DataCollectionSite.HYPOTENUSE;
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2);
 
-				LocalPosition boundedLocalPoint = lbo.getPosition().getPosition(distance, radianDirection);
-
-				sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, lbo);
+				LocalPosition lboSLoc = LocalAreaUtil.convert2SettlementPos(lbo.getPosition(), lbo);
 				
+				emptyDCSSLoc = lboSLoc.getPosition(distance, radianDirection);
+				
+//				sLoc = LocalAreaUtil.convert2SettlementPos(boundedLocalPoint, emptyDCS);
 				// Set the local position in the empty DCS
-				emptyDCS.setPosition(settlement, sLoc);
+				emptyDCS.setPosition(settlement, emptyDCSSLoc);
 				
 				// Vehicles will move from place to place. No need to check
 //				goodLocation = LocalAreaUtil.isVehicleBoundedOjectIntersected(emptyLBO, settlement, false);
 				// Check only immovable objects
-				goodLocation = !LocalAreaUtil.isImmovableBoundedOjectIntersected(emptyDCS, settlement);
-				
+				goodLocation = !LocalAreaUtil.isImmovableBoundedOjectIntersected(emptyDCS, settlement, 30);
 				// Note: isPositionCollisionFree doesn't consider the size of the proposed data collection site
 //				goodLocation = LocalAreaUtil.isPositionCollisionFree(sLoc, settlement);
 			}
 		}
 
 		if (goodLocation) {
-			setOutsideSiteLocation(sLoc);
+			setOutsideSiteLocation(emptyDCSSLoc);
 		}
 		else {
             endEVA("No good random outside location found.");

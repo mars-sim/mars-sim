@@ -17,6 +17,7 @@ import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.person.Person;
 
 public class DataCollectionSite extends CollectionSite
 	implements LocalBoundedObject, SettlementPOI {
@@ -25,8 +26,8 @@ public class DataCollectionSite extends CollectionSite
 	private static final long serialVersionUID = 1L;
 	
 	/** Static members */
-	private static final int WIDTH = 6;
-	private static final int LENGTH = 6;
+	private static final int WIDTH = 10;
+	private static final int LENGTH = 10;
 	public static final double HYPOTENUSE = Math.sqrt(WIDTH * WIDTH + LENGTH * LENGTH);
 	
 	private static final String DCS_ENTITY_TYPE = "DATACOLLECTIONSITE";
@@ -34,10 +35,9 @@ public class DataCollectionSite extends CollectionSite
 	private static final String DATA_SITE = "DCS ";
 	/** Static identifier that increment when a new site is created. */
 	private static int currentIdentifier;
+	
 	/** Unique identifier for each site. */
 	private int identifier;
-	
-	
 	/** The quality of being known about this site. */
 	private int familiarity = 0;
 	/** The list of instruments present on site. */
@@ -47,6 +47,10 @@ public class DataCollectionSite extends CollectionSite
 	private Settlement settlement;
 	
 	
+	private Person primaryOperator;
+
+	private Person secondaryOperator;
+
 	/**
 	 * Constructor 1.
 	 * 
@@ -78,6 +82,15 @@ public class DataCollectionSite extends CollectionSite
 	 */
 	public static DataCollectionSite creatEmptySite(Coordinates location) {
 		return new DataCollectionSite(location);
+	}
+	
+	
+	public Person getPrimaryOperator() {
+		return primaryOperator;
+	}
+
+	public Person getSecondaryOperator() {
+		return secondaryOperator;
 	}
 	
 	/**

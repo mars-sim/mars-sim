@@ -99,7 +99,7 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
      	// Check if it's drawing the mouse-picked building 
         Color selectedColor = (site.equals(selectedSite) ? SITE_SELECTED_COLOR : null);
     	
-        drawRectangle(site, SITE_COLOR, selectedColor, viewpoint);
+        drawCircle(site, SITE_COLOR, selectedColor, viewpoint);
         
         if (showLabel) {
             String words = site.getName();

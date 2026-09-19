@@ -128,7 +128,6 @@ public abstract class GatherData extends EVAOperation {
         this.collectionTimeLimit = duration * 0.6;
         this.teardownTimeLimit = duration * 0.2;
         
-        // To dig local, a person must start at a Settlement
         containerUnit = person.getContainerUnit();
         
         Coordinates coord = null;
@@ -146,10 +145,13 @@ public abstract class GatherData extends EVAOperation {
  
             dataCollectionSite = findSiteMap(s, coord, isSettlement);
             
+            boolean hasInstrument = false;
+            
            	if (dataCollectionSite != null && locationPos != null) {
-            	findInstrument(s.getEquipmentInventory());
+           		hasInstrument = findInstrument(s.getEquipmentInventory());
         	}
-           	else {
+           	
+           	if (!hasInstrument) {
            		logger.warning(person, 5_000L, "No available data collection site found near " + s + ".");
                 endEVA("No available data collection site found near " + s + ".");
            		return;
@@ -178,14 +180,16 @@ public abstract class GatherData extends EVAOperation {
             	
         		// Note: in future, more than one person may work on this data collection site.
             	// Therefore, it's good to set a reference in AbstractVehicleMission
+            	 boolean hasInstrument = false;
             	
             	if (dataCollectionSite != null) {
                 	// Attach this site to AbstractVehicleMission
                 	avm.addDataCollectionSite(dataCollectionSite);
                 	
-                	findInstrument(v.getEquipmentInventory());
+                	hasInstrument = findInstrument(v.getEquipmentInventory());
             	}
-               	else {
+            	
+            	if (!hasInstrument) {
                		logger.warning(person, 5_000L, "No available data collection site found near " + v + ".");
                     endEVA("No available data collection site found near " + v + ".");
                		return;
@@ -205,7 +209,7 @@ public abstract class GatherData extends EVAOperation {
 	 */
 	private boolean findInstrument(EquipmentInventory ei) {
 		// Look at how many types of instruments a settlement/vehicle would have
-    	List<Integer> availableList = getAvailableWaterDetectionTool(ei);
+    	int availableTool = selectWaterDetectionTool(ei);
 
         List<Integer> siteAvailableList = dataCollectionSite.getInstrumentAvailability();
         
@@ -213,19 +217,18 @@ public abstract class GatherData extends EVAOperation {
         	// already available at the site. For now, no need of deploying another one.
         	logger.info(person, 5_000L, "The site at " + locationPos
         			+ " already had instrument(s). No need to bring more for now.");
-        	return false;
+        	return true;
         }
-        else if (!availableList.isEmpty()) {
-        	int selected = availableList.get(0);
+        else if (availableTool != -1) {
         	// Can a person pick up an instrument from a settlement/vehicle and carries it ?
-        	if (carryDataInstrument(EquipmentOwner.getAttached(containerUnit), person, selected)) {
-        		selectedInstrument = selected;
-        		logger.info(person, 5_000L, "Selected " + ItemResourceUtil.findItemResourceName(selected) 
+        	if (carryDataInstrument(EquipmentOwner.getAttached(containerUnit), person, availableTool)) {
+        		selectedInstrument = availableTool;
+        		logger.info(person, 5_000L, "Selected " + ItemResourceUtil.findItemResourceName(availableTool) 
         			+ " to carry it to the site at " + locationPos + ".");
         		return true;
         	}
         	else {
-        		logger.warning(person, 5_000L, "Unable to pick up " + ItemResourceUtil.findItemResourceName(selected) 
+        		logger.warning(person, 5_000L, "Unable to pick up " + ItemResourceUtil.findItemResourceName(availableTool) 
     				+ " to carry it to the site at " + locationPos + ".");
         		return false;
         	}
@@ -239,27 +242,27 @@ public abstract class GatherData extends EVAOperation {
 	}
 	
 	/**
-	 * Gets an available list of water detection tool.
+	 * Selects an available water detection tool.
 	 * 
 	 * @return
 	 */
-	public List<Integer> getAvailableWaterDetectionTool(EquipmentInventory ei) {
-		List<Integer> availableTool = new ArrayList<>();
-		
+	public int selectWaterDetectionTool(EquipmentInventory ei) {
 		List<Integer> allInstruments = new ArrayList<>(GatherDataMeta.waterDetectionTool);
+		Collections.shuffle(allInstruments);
+		
 		for (int instrumentID: allInstruments) {
-			if (ei.getItemResourceStored(instrumentID) > 0)
-				availableTool.add(instrumentID);
+			if (ei.hasItemResource(instrumentID))
+				return instrumentID;
 		}
 
-		return availableTool;
+		return -1;
 	}
 	
 	/**
 	 * Finds the site map.
 	 * 
-	 * @param s
-	 * @param coord
+	 * @param settlement the associated settlement
+	 * @param coord the coordinates of the prospective site
 	 * @param local. Is this in a settlement vicinity ?
 	 */
 	private DataCollectionSite findSiteMap(Settlement settlement, Coordinates coord, boolean local) {
@@ -307,7 +310,7 @@ public abstract class GatherData extends EVAOperation {
 		}
 		
 		// Note: even if there are existing sites, give it a chance to start a new site
-		if (siteList.isEmpty() || RandomUtil.getRandomInt(numExistingSites + 3) == 0) {
+		if (siteList.isEmpty() || RandomUtil.getRandomInt(numExistingSites + 100) == 0) {
 			
 	    	if (locationPos == null) {
 	        	locationPos = determineSiteLocation(coord, settlement, local);
@@ -324,6 +327,7 @@ public abstract class GatherData extends EVAOperation {
 	    	}
 		}
 		else {
+			// Go back to an old DCS
 			dataCollectionSite = siteList.get(0);
 		}
 		
@@ -340,8 +344,8 @@ public abstract class GatherData extends EVAOperation {
     /**
      * Determines location for the site.
      * 
-     * @param coord
-     * @param settlement
+     * @param coord the coordinates of the prospective site
+     * @param settlement the associated settlement
      * @return X and Y local position of the site .
      */
     private LocalPosition determineSiteLocation(Coordinates coord, Settlement settlement, boolean local) {
@@ -350,19 +354,18 @@ public abstract class GatherData extends EVAOperation {
     		LocalBoundedObject lbo = (Building)airlock.getEntity();
     		
     		int num = person.getSettlement().getLocalDataCollectionSitesList().size();
-    		// Give it a 50% chance to pick an existing site
-    		if (num > 0 && RandomUtil.getRandomInt(1) == 0) {
+    		// Give it a chance to pick an existing site
+    		if (num > 0 && RandomUtil.getRandomInt(5) <= 3) {
     			List<DataCollectionSite> list = person.getSettlement().getLocalDataCollectionSitesList();
     			if (num > 1)
     				Collections.shuffle(list);
-    			// Choose lbo to be from one of the data collection site
-    			// and from this site, look for another new site position
+    			// Choose an existing DCS as the origin
     			lbo = list.get(0);
     		}
     		
     		boolean found = false;
 
-    		for (int i = 0; i<100 && !found; i++) {	
+    		for (int i = 0; i<50 && !found; i++) {	
     			found = findRandomDataCollectionOutsideLoc(lbo, coord, person.getSettlement());
     		}
     		
@@ -457,7 +460,7 @@ public abstract class GatherData extends EVAOperation {
 	 * @return
 	 */
 	public boolean hasInstrument(EquipmentOwner holder, int intrumentID) {
-		return holder.getItemResourceStored(intrumentID) > 0;
+		return holder.hasItemResource(intrumentID);
 	}
 
 	/**
@@ -468,7 +471,7 @@ public abstract class GatherData extends EVAOperation {
 	 * @return
 	 */
 	public boolean hasInstrument(Person person, int intrumentID) {
-		return person.getEquipmentInventory().getItemResourceStored(intrumentID) > 0;
+		return person.getEquipmentInventory().hasItemResource(intrumentID);
 	}
 	
 	

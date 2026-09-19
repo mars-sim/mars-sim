@@ -31,11 +31,9 @@ public class PersonTableModel extends BasePersonModel
 	private static final String PEOPLE = Msg.getString("person.plural");
 	private static final String ALIVE = "Show Alive";
 	private static final String DECEASED = "Show Deceased";
-//	private static final String BURIED = "Show Buried";
 	
 	private boolean isAliveCB = true;
 	private boolean isDeceasedCB = false;
-//	private boolean isBuriedCB = false;
 	private Set<Settlement> settlements = new HashSet<>();
 
 	/**
@@ -88,7 +86,18 @@ public class PersonTableModel extends BasePersonModel
 					.flatMap(Collection::stream)
 					.filter(this::isPersonDisplayable)
 					.toList();
-		
+
+		if (isDeceasedCB) {
+			var deceased = settlements.stream()
+					.map(Settlement::getDeathRegistry)
+					.flatMap(Collection::stream)
+					.toList();
+			
+			// Create a set to combine alive & dead
+			entities = new HashSet<>(entities);
+			entities.addAll(deceased);
+		}
+
 		setEntities(entities);
 	}
 
@@ -99,12 +108,9 @@ public class PersonTableModel extends BasePersonModel
 	 * @return
 	 */
 	private boolean isPersonDisplayable(Person p) {
-		if (!isAliveCB && !isDeceasedCB) {// && !isBuriedCB) {
+		if (!isAliveCB && !isDeceasedCB) {
 			return false;
 		}
-//		if (p.isBuried()) {
-//			return isBuriedCB;
-//		}
 		if (p.isDeclaredDead()) {
 			return isDeceasedCB;
 		}
@@ -120,9 +126,8 @@ public class PersonTableModel extends BasePersonModel
 	@Override
 	public List<FilteredTableModel.Filter> getActiveFilters() {
 		var filters = new ArrayList<FilteredTableModel.Filter>();
-		filters.add(new Filter(ALIVE, ALIVE, isAliveCB));
-		filters.add(new Filter(DECEASED, DECEASED, isDeceasedCB));
-//		filters.add(new Filter(BURIED, BURIED, isBuriedCB));
+		filters.add(new Filter(ALIVE, isAliveCB, b -> setFilter(ALIVE, b)));
+		filters.add(new Filter(DECEASED, isDeceasedCB, b -> setFilter(DECEASED, b)));
 
 		return filters;
 	}
@@ -133,12 +138,10 @@ public class PersonTableModel extends BasePersonModel
 	 * @param name Name of the filter
 	 * @param selected true to display, false to block
 	 */
-	@Override
-	public void setFilter(String name, boolean isDisplayed) {
+	private void setFilter(String name, boolean isDisplayed) {
 		switch (name) {
 			case ALIVE -> isAliveCB = isDisplayed;
 			case DECEASED -> isDeceasedCB = isDisplayed;
-//			case BURIED -> isBuriedCB = isDisplayed;
 			default -> {
 				// Do nothing as only LIVE or DECEASED filters supported
 			}
@@ -166,6 +169,12 @@ public class PersonTableModel extends BasePersonModel
 					removeEntity(p);
 				}
 			}
+		}
+		else if (event.getSource() instanceof Person p && EntityEventType.DEATH_EVENT.equals(event.getType())
+				&& !isPersonDisplayable(p)) {
+			// If there is a death event does this make the person undisplayable?
+			// Remove the person from the display as they are no longer displayable.
+			removeEntity(p);
 		}
 		else {
 			super.entityUpdate(event);

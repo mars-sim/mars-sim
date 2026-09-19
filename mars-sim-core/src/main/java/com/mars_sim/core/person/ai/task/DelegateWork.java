@@ -43,6 +43,7 @@ public class DelegateWork extends Task {
 	private static final double STRESS_MODIFIER = .5D;
 
 	// Data members
+	private boolean	useOffice = false;
 	/** The administration building the person is using. */
 	private Administration office;
 
@@ -65,8 +66,9 @@ public class DelegateWork extends Task {
 				// Walk to the office building.
 				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, false);
 				office = officeBuilding.getAdministration();
-				if (!office.isFull()) {
+				if (!useOffice && !office.isFull()) {
 					office.addStaff();
+					useOffice = true;
 					// Walk to the dining building.
 					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 				}
@@ -169,7 +171,7 @@ public class DelegateWork extends Task {
 	@Override
 	protected void clearDown() {
 		// Remove person from administration function so others can use it.
-		if (office != null && office.getNumStaff() > 0) {
+		if (useOffice && office != null && office.getNumStaff() > 0) {
 			office.removeStaff();
 		}
 	}
