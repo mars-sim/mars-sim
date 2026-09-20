@@ -2119,13 +2119,13 @@ public class Settlement extends Unit implements Temporal,
 		if (parkedNGaragedVehicles.remove(vehicle)) {
 			
 			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
-			
+
 			return true;
 		}
 		
 		return false;
 	}
-
+	
 	/**
 	 * Does it have this vicinity vehicle parked and garaged at the settlement ?
 	 *

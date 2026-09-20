@@ -48,8 +48,8 @@ public class ConstructionMapLayer extends AbstractMapLayer {
 		@Override
 		UnitSummary getSummary() {
             var stageInfo = target.getCurrentConstructionStage().getInfo();
-
-			return new UnitSummary(stageInfo.getType().getName(), target.getPosition(), stageInfo.getName());
+            String[] description = new String[] {stageInfo.getName()};
+			return new UnitSummary(stageInfo.getType().getName(), target.getPosition(), description);
 		}
     
 		@Override

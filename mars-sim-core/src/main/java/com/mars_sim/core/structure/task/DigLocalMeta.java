@@ -96,7 +96,7 @@ public abstract class DigLocalMeta extends MetaTask
         // - at least one empty bag at settlement.
     	if ((collectionProbability == 0.0)
             || rh.getSuitSet().isEmpty()
-            || (rh.findNumContainersOfType(containerType) == 0)) {                
+            || !rh.containsEquipment(containerType)) {                
     		return Collections.emptyList();
         }
 

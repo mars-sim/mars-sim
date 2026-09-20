@@ -1198,7 +1198,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 */
 	@Override
 	public double getMass() {
-		return (eqmInventory != null ? eqmInventory.getModifiedMass(EquipmentType.WHEELBARROW, 20) : 0) + getBaseMass();
+		return (eqmInventory != null ? eqmInventory.getModifiedMass(EquipmentType.WHEELBARROW, 10) : 0) + getBaseMass();
 	}
 	
 	/**
@@ -1446,25 +1446,12 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 	
 	/**
-	 * Looks for one's data recorder.
-	 * 
-	 * @return
-	 */
-	public DataRecorder lookForDataRecorder() {
-		DataRecorder dr = eqmInventory.findOwnedDataRecorder(getIdentifier());
-		if (dr == null)
-			return eqmInventory.findDataRecorder();
-		else
-			return dr;
-	}
-	
-	/**
 	 * Does this person have a thermal bottle ?
 	 * 
 	 * @return
 	 */
 	public boolean hasThermalBottle() {
-		return eqmInventory.findNumContainersOfType(EquipmentType.THERMAL_BOTTLE) > 0;
+		return eqmInventory.containsEquipment(EquipmentType.THERMAL_BOTTLE);
 	}
 	
 	/**
@@ -1604,6 +1591,18 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		return false;
 	}
 
+	/**
+	 * Finds a data recorder with a person's id.
+	 * If not found, get an available recorder.
+	 *
+	 * @param personId
+	 * @param retrieving
+	 * @return
+	 */
+	public DataRecorder retrieveOwnedDataRecorder(int personId, boolean retrieving) {
+		return eqmInventory.retrieveOwnedDataRecorder(personId, retrieving);
+	}
+	
 	/**
 	 * Rescues the person from the rover in settlement vicinity.
 	 * 

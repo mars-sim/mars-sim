@@ -113,6 +113,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 			StatusType.TOWING
 			);
 
+	private boolean isReady;
 	/** True if the vehicle is currently inside a building, a vehicle, or a settlement. */
 	private boolean isInside;
 	/** True if the vehicle is currently outside on Mars Surface, in a settlement/vehicle vicinity. */

@@ -121,12 +121,11 @@ public abstract class EVAOperation extends Task {
 				logger.warning(person, "Supposed to be inside a building but interiorObject is null.");
 				endTask();
 			}
+			
 			else {
 				// Set initial phase.
 				setPhase(WALK_TO_OUTSIDE_SITE);
 			}
-			
-			
 		}
 
 		else if (person.isInVehicleInGarage()) {

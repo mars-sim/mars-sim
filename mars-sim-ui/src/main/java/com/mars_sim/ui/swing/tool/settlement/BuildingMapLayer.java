@@ -274,7 +274,8 @@ public class BuildingMapLayer extends AbstractMapLayer {
         
 		@Override
 		UnitSummary getSummary() {
-			return new UnitSummary(target.getBuildingType(), target.getPosition(), target.getDescription());
+			String[] description = new String[] {target.getDescription()};
+			return new UnitSummary(target.getBuildingType(), target.getPosition(), description);
 		}
 
 		@Override

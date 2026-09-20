@@ -45,7 +45,8 @@
 		<equipment type="large bag" number="24" />
 		<equipment type="specimen box" number="24" />
     	<equipment type="thermal bottle" number="8" />	
- 	    <equipment type="wheelbarrow" number="8" />	   
+ 	    <equipment type="wheelbarrow" number="8" />
+ 	    <equipment type="data recorder" number="8" />
 
 		<robot type="RepairBot-Standard" number="1"/>
 	
@@ -306,14 +307,6 @@
 
 		<equipment type="EVA Suit" number="4" />
 
-		 <!-- Containers-->
-		<equipment type="barrel" number="40" />
-		<equipment type="bag" number="40" />
-		<equipment type="gas canister" number="40" />
-		<equipment type="large bag" number="40" />
-		<equipment type="specimen box" number="40" />
-    	<equipment type="thermal bottle" number="4" />
-   	    <equipment type="wheelbarrow" number="4" />
 
 		<robot type="MakerBot-Standard" number="1"/>
 		<robot type="RepairBot-Standard" number="1"/>
@@ -334,14 +327,6 @@
 
 		<equipment type="EVA Suit" number="8" />
 
-		<equipment type="barrel" number="80" />
-		<equipment type="bag" number="80" />
-		<equipment type="gas canister" number="80" />
-		<equipment type="large bag" number="80" />
-		<equipment type="specimen box" number="80" />
-    	<equipment type="thermal bottle" number="8" />
-   	    <equipment type="wheelbarrow" number="8" />
-
    	    <robot type="MakerBot-Standard" number="1"/>
 		<robot type="RepairBot-Standard" number="1"/>
 
@@ -356,19 +341,8 @@
 		<vehicle type="Light Utility Vehicle" number="1" />
 		<vehicle type="Delivery Drone" number="1" />
 					
-	    
 		<equipment type="EVA Suit" number="8" />
-							
-		 <!-- Containers-->
-		<equipment type="barrel" number="100" />
-		<equipment type="bag" number="100" />
-		<equipment type="gas canister" number="100" />		
-		<equipment type="large bag" number="100" />
-		<equipment type="specimen box" number="100" />
-    	<equipment type="thermal bottle" number="10" />	
- 	    <equipment type="wheelbarrow" number="6" />
 
-		
 		<resource type="hydrogen" amount="1000.0" />
 		<resource type="food" amount="1657.0" />
 		
@@ -385,15 +359,6 @@
 		
 		<equipment type="EVA Suit" number="24" />
 		
-		 <!-- Containers-->
-		<equipment type="barrel" number="120" />
-		<equipment type="bag" number="120" />
-		<equipment type="gas canister" number="120" />		
-		<equipment type="large bag" number="120" />
-		<equipment type="specimen box" number="120" />
-    	<equipment type="thermal bottle" number="12" />	
- 	    <equipment type="wheelbarrow" number="8" />
-				
 		<robot type="RepairBot-Standard" number="1"/>
 		<robot type="GardenBot-Standard" number="1"/>
 		<robot type="MakerBot-Standard" number="1"/>

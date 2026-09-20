@@ -54,7 +54,8 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		@Override
 		UnitSummary getSummary() {
-			return new UnitSummary(target.getVehicleType().getName(), target.getPosition(), target.getDescription());
+			String[] description = new String[] {target.getDescription()};
+			return new UnitSummary(target.getVehicleType().getName(), target.getPosition(), description);
 		}
 
 		@Override

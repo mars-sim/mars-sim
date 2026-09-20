@@ -64,8 +64,8 @@ public abstract class GatherDataMeta extends MetaTask
         }
     }
 
-    private static final int BASE = 100;
-	private static final int MAX_BASE = 2_000;
+    private static final int BASE = 50;
+	private static final int MAX_BASE = 1_000;
 	private static final int DEFAULT_EVA_NUM = 5;
 	
     /* The maximum shift fraction completed for a person to start this task.
@@ -111,47 +111,16 @@ public abstract class GatherDataMeta extends MetaTask
     protected List<SettlementTask> getSettlementTaskJobs(Settlement settlement,
                             double collectionProbability) {
     	
+        var rh = settlement.getEquipmentInventory();
+        
         // Check preconditions
         // - an airlock is available for egress
         // - at least one EVA suit at settlement.
     	if (collectionProbability < 0
-//            || (rh.findNumDataRecorder() == 0)
+            || (rh.findNumDataRecorder() == 0)
             ) {                
     		return Collections.emptyList();
         }
-    	
-        var rh = settlement.getEquipmentInventory();
-        double popfactor = settlement.getLogPopFactor();
-        
-        Map<Integer, Integer> instrumentAvailability = new HashMap<>();
-        
-        double instrumentAverageScore = 0;
-        
-        for (int id: waterDetectionTool) {
-        	int num = rh.getItemResourceStored(id);
-        	instrumentAvailability.put(id, num);
-        }
-        
-        int size = waterDetectionTool.size();
-        
-        int availableSize = instrumentAvailability.size();
-        for (int id: instrumentAvailability.keySet()) {
-        	instrumentAverageScore += instrumentAvailability.get(id);
-        }
-        
-        // If one of the instrument is not available, the score would be lower.
-        instrumentAverageScore = instrumentAverageScore * (availableSize / size) / popfactor * BASE;
-
-        double base = RandomUtil.getRandomDouble(collectionProbability / 3, collectionProbability);
-        if (base <= 0.00) {
-            return Collections.emptyList();
-        }
-        else if (base > MAX_BASE) {
-        	base = MAX_BASE;
-        }
- 
-        // Determine the base score
-        RatingScore score = new RatingScore(base);
 
         // Note: Will work on monitoringLevel based on what the settlement needs later.
         int monitoringLevel = 10;
@@ -165,10 +134,45 @@ public abstract class GatherDataMeta extends MetaTask
         if (maxEVA <= 0) {
         	return Collections.emptyList();
         }
-  
-        // Should use the demand & resources stored to influence the score. 50% capacity is
-        // the unmodified baseline
-//        result.addModifier("capacity", 1 + (capacity - MIN_CAPACITY));
+        
+        double base = RandomUtil.getRandomDouble(collectionProbability / 3, collectionProbability);
+        if (base <= 0.00) {
+            return Collections.emptyList();
+        }
+        else if (base > MAX_BASE) {
+        	base = MAX_BASE;
+        }
+ 
+        // Determine the base score
+        RatingScore score = new RatingScore(base);
+
+        
+//        if (!rh.containsEquipment(EquipmentType.DATA_RECORDER)) {
+//        	return Collections.emptyList();
+//        }
+        
+        double popfactor = settlement.getLogPopFactor();
+        
+        Map<Integer, Integer> instrumentAvailability = new HashMap<>();
+        
+        double instrumentAverageScore = 0;
+        
+        for (int id: waterDetectionTool) {
+        	int num = rh.getItemResourceStored(id);
+        	instrumentAvailability.put(id, num);
+        }
+        
+        int maxPossibleNum = waterDetectionTool.size();
+        
+        int availableSize = instrumentAvailability.size();
+        for (int id: instrumentAvailability.keySet()) {
+        	instrumentAverageScore += instrumentAvailability.get(id);
+        }
+        
+        // If one of the instrument is not available, the score would be lower.
+        instrumentAverageScore = (availableSize / maxPossibleNum) / popfactor * BASE;
+
+        score.addModifier("instruments", 1 + instrumentAverageScore);
 
         List<SettlementTask> resultList = new ArrayList<>();
         resultList.add(new GatherDataTaskJob(this, settlement, score, maxEVA));

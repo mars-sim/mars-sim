@@ -7,17 +7,20 @@
 
 package com.mars_sim.core.data.collection;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import com.mars_sim.core.EntityIdentifier;
+import com.mars_sim.core.data.collection.task.SiteVisit;
 import com.mars_sim.core.environment.CollectionSite;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SettlementPOI;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.person.Person;
 
 public class DataCollectionSite extends CollectionSite
 	implements LocalBoundedObject, SettlementPOI {
@@ -40,16 +43,16 @@ public class DataCollectionSite extends CollectionSite
 	private int identifier;
 	/** The quality of being known about this site. */
 	private int familiarity = 0;
-	/** The list of instruments present on site. */
-	private List<Integer> instrumentAvailability = new ArrayList<>();
+
+	/** The Map of site visits. */
+	private Map<Integer, SiteVisit> siteVisits = new HashMap<>();
+	
 	/** The local position of this site of a given coordinates. */
 	private LocalPosition localPosition;
 	private Settlement settlement;
 	
-	
-	private Person primaryOperator;
-
-	private Person secondaryOperator;
+	private Worker primaryOperator;
+	private Worker secondaryOperator;
 
 	/**
 	 * Constructor 1.
@@ -84,13 +87,92 @@ public class DataCollectionSite extends CollectionSite
 		return new DataCollectionSite(location);
 	}
 	
+	/**
+	 * Checks the site visit.
+	 * 
+	 * @param missionSol
+	 * @param worker
+	 * @return
+	 */
+	public SiteVisit checkSiteVisit(int missionSol, Worker worker) {
+		if (siteVisits.containsKey(missionSol)) {
+			return siteVisits.get(missionSol);
+		}
+		else {
+			// Note: cope with tracking multiple day site visit
+			int oldSol = getCurrentSiteVisitKey();
+			if (oldSol == 0) {
+				return createSiteVisit(missionSol, worker);
+			}
+			else if (oldSol + 1 == missionSol) {
+				SiteVisit oldSiteVisit = siteVisits.get(oldSol);
+				if (oldSiteVisit.isClosed()) {
+					return createSiteVisit(missionSol, worker);
+				}
+				else {
+					return siteVisits.get(oldSol);
+				}	
+			}
+			else
+				return createSiteVisit(missionSol, worker);
+		}
+	}
 	
-	public Person getPrimaryOperator() {
+	/**
+	 * Creates site visit.
+	 * 
+	 * @param missionSol
+	 * @param worker
+	 * @return
+	 */
+	private SiteVisit createSiteVisit(int missionSol, Worker worker) {
+		SiteVisit siteVisit = new SiteVisit(missionSol, worker);
+		siteVisits.put(missionSol, siteVisit);
+		return siteVisit;
+	}
+	
+	/**
+	 * Gets the current site visit.
+	 * 
+	 * @return
+	 */
+	public SiteVisit getCurrentSiteVisit() {
+		// Find the maximum key, then get its value
+		int maxKey = getCurrentSiteVisitKey();
+
+		return siteVisits.get(maxKey);
+	}
+	
+	/**
+	 * Gets the current site visit's key (missionSol).
+	 * 
+	 * @return
+	 */
+	public int getCurrentSiteVisitKey() {
+		if (siteVisits.isEmpty())
+			return 0;
+		// Find the maximum key, then get its value
+		Optional<Integer> maxKey = siteVisits.keySet().stream()
+		    .max(Comparator.naturalOrder()); // or .max(K::compareTo)
+		
+		return maxKey.get();
+	}
+	
+	
+	public Worker getPrimaryOperator() {
 		return primaryOperator;
 	}
 
-	public Person getSecondaryOperator() {
+	public Worker getSecondaryOperator() {
 		return secondaryOperator;
+	}
+
+	public void setPrimaryOperator(Worker w) {
+		primaryOperator = w;
+	}
+
+	public void setSecondaryOperator(Worker w) {
+		secondaryOperator = w;
 	}
 	
 	/**
@@ -118,58 +200,6 @@ public class DataCollectionSite extends CollectionSite
 	 */
 	public void setFamiliarity(int value) {
 		familiarity = value;
-	}
-	
-	/**
-	 * Gets the instrument availability list.
-	 * 
-	 * @return
-	 */
-	public List<Integer> getInstrumentAvailability() {
-		return instrumentAvailability;
-	}
-	
-	/**
-	 * Gets the number of instruments available.
-	 * 
-	 * @return
-	 */
-	public int getNumInstrumentAvailable() {
-		if (instrumentAvailability.isEmpty())
-			return 0;
-		else {
-			return instrumentAvailability.size();
-		}
-	}
-	
-	/**
-	 * Adds an instrument.
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public boolean addInstrument(Integer id) {
-		return instrumentAvailability.add(id);
-	}
-
-	/**
-	 * Removes an instrument.
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public boolean removeInstrument(Integer id) {
-		return instrumentAvailability.remove(id);
-	}
-	
-	/**
-	 * Removes an instrument.
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public boolean hasInstrument(Integer id) {
-		return instrumentAvailability.contains(id);
 	}
 	
 	/**
@@ -228,8 +258,12 @@ public class DataCollectionSite extends CollectionSite
 	 * 
 	 * @return
 	 */
-	public String getDescription() {
-		return "# Instruments available: " + getNumInstrumentAvailable();
+	public String[] getDescription() {
+		String[] result = {
+				"# of Site Visits: " + siteVisits.size(),
+				primaryOperator == null ? ("Pri Operator: " + primaryOperator.getName()) : "Pri Operator: None",
+				secondaryOperator == null ? ("Sec Operator: " + secondaryOperator.getName()) : "Sec Operator: None"};
+		return result;
 	}
 	
 	@Override

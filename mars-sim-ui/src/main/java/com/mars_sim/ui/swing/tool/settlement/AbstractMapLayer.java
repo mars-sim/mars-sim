@@ -752,6 +752,17 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         );
 	
 		if (selectedColor != null) {
+			
+	        g2d.setPaint(Color.WHITE);
+			// Save original stroke
+	    	Stroke oldStroke = g2d.getStroke();
+			// Draw the dashed border over the selected 
+			g2d.setStroke(DASHED);
+			// Draw the svg
+			g2d.draw(circle);
+			// Restore the stroke
+			g2d.setStroke(oldStroke);
+			
 			Color edge = Color.YELLOW;
 			Color[] colors = {
 				    new Color(selectedColor.getRed(), selectedColor.getGreen(), selectedColor.getBlue(), 255),   // fully opaque at center
@@ -764,16 +775,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	        g2d.setPaint(gradient);
 		}
 		else {
-	        
-	        g2d.setPaint(Color.WHITE);
-			// Save original stroke
-	    	Stroke oldStroke = g2d.getStroke();
-			// Draw the dashed border over the selected 
-			g2d.setStroke(DASHED);
-			// Draw the svg
-			g2d.draw(circle);
-			// Restore the stroke
-			g2d.setStroke(oldStroke);
 			
 			Color edge = Color.LIGHT_GRAY;
 			Color[] colors = {

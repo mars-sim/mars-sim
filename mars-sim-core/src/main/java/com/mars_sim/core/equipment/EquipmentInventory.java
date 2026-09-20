@@ -85,6 +85,10 @@ public class EquipmentInventory
 		amountResourceBinSet.add(crates);
 	}
 
+	public Unit getOwner() {
+		return owner;
+	}
+	
 	/**
 	 * Gets the locally held amount resource bin set.
 	 * 
@@ -132,7 +136,7 @@ public class EquipmentInventory
 			else
 				result += e.getMass();
 		}
-		return result +  microInventory.getStoredMass();
+		return result + microInventory.getStoredMass() ;
 	}
 	
 	/**
@@ -550,41 +554,49 @@ public class EquipmentInventory
 
 	/**
 	 * Finds a data recorder with a person's id.
+	 * If not found, get an available recorder.
 	 *
 	 * @param personId
+	 * @param retrieving
 	 * @return
 	 */
-	public DataRecorder findOwnedDataRecorder(int personId) {
+	public DataRecorder retrieveOwnedDataRecorder(int personId, boolean retrieving) {
 		for (Equipment e : recorderSet) {
 			DataRecorder dr = (DataRecorder)e;
 			if (dr.checkRegisteredOwnerID(personId)) {
+				if (retrieving) {
+					recorderSet.remove(dr);
+				}
 				return dr;
 			}
 		}
-		return null;
+		return findDataRecorder(retrieving);
 	}
 	
 	/**
 	 * Finds a data recorder.
 	 *
-	 * @param personId
+	 * @param retrieving
 	 * @return
 	 */
-	public DataRecorder findDataRecorder() {
-		if (!recorderSet.isEmpty()) {
-//			return (DataRecorder) new ArrayList<>(recorderSet).get(0);
-			
-			// Select the data recorder that has the least # of datasets
-			Optional<Equipment> smallestDataset = recorderSet.stream()
-					.min(Comparator.comparingInt(r -> ((DataRecorder)r).getDataset().size()));
-			
-			return (DataRecorder)smallestDataset.get();
+	public DataRecorder findDataRecorder(boolean retrieving) {
+		if (recorderSet.isEmpty()) {
+			return null;
 		}
-		return null;
-		
-
-	}
 	
+		// Select the data recorder that has the least # of datasets
+		Optional<Equipment> smallestDataset = recorderSet.stream()
+				.min(Comparator.comparingInt(r -> ((DataRecorder)r).getDataset().size()));
+		
+		DataRecorder dr = (DataRecorder)smallestDataset.get();
+		
+		if (dr != null && retrieving) {
+			recorderSet.remove(dr);
+		}
+	
+		return dr;
+	}
+
 	
 	
 	/*
