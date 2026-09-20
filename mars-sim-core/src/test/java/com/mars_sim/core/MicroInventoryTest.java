@@ -94,13 +94,14 @@ class MicroInventoryTest {
 		MicroInventory inv = new MicroInventory(settlement, 2*CAPACITY_AMOUNT, stockSize,
 											Map.of(resource, CAPACITY_AMOUNT));
 
-		assertEquals(CAPACITY_AMOUNT + stockSize, inv.getRemainingSpecificCapacity(resource), "Initial capacity with stock");
+		assertEquals(CAPACITY_AMOUNT, inv.getRemainingSpecificCapacity(resource), "Initial capacity, no stock");
 		
 		assertEquals(0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT), "No excess on capacity load");
 
 		assertEquals(CAPACITY_AMOUNT - stockSize, inv.storeAmountResource(resource, CAPACITY_AMOUNT), "Excess on overload");
 		assertEquals(CAPACITY_AMOUNT + stockSize, inv.getSpecificAmountResourceStored(resource), "Stored capacity after overload");
 		assertEquals(0D, inv.getRemainingSpecificCapacity(resource), "Remaining after overload");
+		assertEquals(0D, inv.getAmountStockAvailable(), "Stock remains after overload");
 	}
 
 	/*
@@ -112,28 +113,39 @@ class MicroInventoryTest {
 		int resource1 = ResourceUtil.CO2_ID;
 		int resource2 = ResourceUtil.OXYGEN_ID;
 		MicroInventory inv = new MicroInventory(settlement, 2*CAPACITY_AMOUNT, stockSize,
-											Map.of(resource1, CAPACITY_AMOUNT, resource2, CAPACITY_AMOUNT/2));
+											Map.of(resource1, CAPACITY_AMOUNT, resource2, CAPACITY_AMOUNT));
 
-		assertEquals(CAPACITY_AMOUNT + stockSize, inv.getRemainingSpecificCapacity(resource1), "Initial resource 1 capacity");
-		assertEquals(CAPACITY_AMOUNT/2 + stockSize, inv.getRemainingSpecificCapacity(resource2), "Initial resource 2 capacity");
-	
-		assertEquals(0D, inv.storeAmountResource(resource1, CAPACITY_AMOUNT), "No excess on capacity load");
-		assertEquals(stockSize, inv.getRemainingSpecificCapacity(resource1), "Resource 1 capacity after 1st load");
-		assertEquals(CAPACITY_AMOUNT/2 + stockSize, inv.getRemainingSpecificCapacity(resource2), "Resource 2 capacity after 1st load");
+		assertEquals(CAPACITY_AMOUNT, inv.getRemainingSpecificCapacity(resource1), "Initial resource 1 capacity");
+		assertEquals(CAPACITY_AMOUNT, inv.getRemainingSpecificCapacity(resource2), "Initial resource 2 capacity");
+		assertEquals(stockSize, inv.getAmountStockAvailable(), "Initial stock available");
 
-		// Copnsume all stock
-		assertEquals(0D, inv.storeAmountResource(resource2, CAPACITY_AMOUNT/2 + stockSize), "No excess on capacity load");
-		assertEquals(0D, inv.getRemainingSpecificCapacity(resource1), "Resource 1 capacity after 2nd load");
+		double overloadAmount = CAPACITY_AMOUNT + (stockSize/2);
+		assertEquals(0D, inv.storeAmountResource(resource1, overloadAmount), "No excess on capacity load");
+		assertEquals(0D, inv.getRemainingSpecificCapacity(resource1), "Resource 1 capacity after 1st load");
+		assertEquals(stockSize/2, inv.getAmountStockAvailable(), "Half stock used");
+
+		// Consume all stock
+		assertEquals(0D, inv.storeAmountResource(resource2, overloadAmount), "No excess on capacity load");
+		assertEquals(overloadAmount, inv.getSpecificAmountResourceStored(resource2), "Resource 2 stored after 2nd load");
 		assertEquals(0D, inv.getRemainingSpecificCapacity(resource2), "Resource 2 capacity after 2nd load");
+		assertEquals(0D, inv.getAmountStockAvailable(), "All stock used");
 
 		// Remove some to release stock
-		inv.retrieveAmountResource(resource2, stockSize);
-		assertEquals(stockSize, inv.getRemainingSpecificCapacity(resource2), "Resource 2 capacity after releasing stock");
-		assertEquals(stockSize, inv.getRemainingSpecificCapacity(resource1), "Resource 1 capacity after releasing stock");
+		inv.retrieveAmountResource(resource2, stockSize/2);
+		assertEquals(0D, inv.getRemainingSpecificCapacity(resource2), "Resource 2 capacity after releasing stock");
+		assertEquals(stockSize/2, inv.getAmountStockAvailable(), "Half stock returned");
+
+		// RRetrieve more does not impact stock
+		inv.retrieveAmountResource(resource2, stockSize/2);
+		assertEquals(stockSize/2, inv.getAmountStockAvailable(), "Only half stock returned");
+
+		// Consume released stcok
+		inv.storeAmountResource(resource1, overloadAmount);
+		assertEquals(0D, inv.getAmountStockAvailable(), "All stock consumed by Resource1");
 	}
 
 	/*
-	 * Test method loading unsopprted AmountResource
+	 * Test method loading unsupported AmountResource
 	 */
 	@Test
 	void testUnsupportedAmountResource() {

@@ -129,6 +129,14 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 		return totalCapcity;
 	}
 
+	public double getAmountStockCapacity() {
+		return amountStockCapacity;
+	}
+
+	public double getAmountStockAvailable() {
+		return amountStockAvailable;
+	}
+
 	/**
 	 * Adds the stock capacity.
 	 *
@@ -157,6 +165,10 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 					// To set to a new capacity
 					s.capacity = capacity;
 				}
+
+				// Recalculate overload
+				s.overload = Math.max(0D, s.storedAmount - s.capacity);
+				refreshAmountTotals();
 			}
 			else {
 				amountStorage.put(resource, new AmountStored(capacity));
@@ -224,7 +236,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 			return quantity;
 		}
 			
-		double remaining =  (s.capacity - s.storedAmount) + amountStockAvailable;
+		double remaining =  ((s.capacity + s.overload) - s.storedAmount) + amountStockAvailable;
 		double excess = 0D;
 		if (remaining < quantity) {
 			// Obtain the excess
@@ -341,7 +353,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 		}
 	
 		// Update the stored amount; reversed so a negative decrease in stored
-		s.adjustStoredAmount(shortfall - quantity);
+		s.adjustStoredAmount(-quantity);
 		refreshAmountTotals();
 
 		// Fire the unit event type
@@ -370,7 +382,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 		amountStorage.values().forEach(visitor);
 
 		amountTotalMass = visitor.total;
-		amountStockAvailable = amountStockCapacity - visitor.stockUsed;
+		amountStockAvailable = Math.max(0, amountStockCapacity - visitor.stockUsed);
 	}
 
 	/**
@@ -478,8 +490,8 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	public double getRemainingSpecificCapacity(int resource) {
 		AmountStored s = amountStorage.get(resource);
 		if (s != null) {
-			// Account for overload resoruces which have an effective increased capacity equals to the overload
-			return ((s.capacity + s.overload) - s.storedAmount) + amountStockAvailable;
+			// The remaining capacity doesn't include stock capacity as that is for emergencies
+			return Math.max(0, (s.capacity - s.storedAmount));
 		}
 		return 0;
 	}
@@ -493,7 +505,8 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
     public double getSpecificCapacity(int resource) {
 		AmountStored s = amountStorage.get(resource);
 		if (s != null) {
-			return s.capacity + amountStockAvailable;
+			return s.capacity;
+			// Potentially could include amountStockAvailable but it is for emergency only
 		}
 		return 0;
     }
