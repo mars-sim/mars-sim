@@ -406,6 +406,10 @@ public final class RandomUtil {
 	 * @return a randomly selected string from the array.
 	 */
     public static String getRandomString(String ...outputs) {
+		if (outputs == null || outputs.length == 0) {
+			throw new IllegalArgumentException("No outputs provided");
+		}
+		
         int totalRange = outputs.length - 1;
         int rand = getRandomInt(totalRange);
         return outputs[rand];

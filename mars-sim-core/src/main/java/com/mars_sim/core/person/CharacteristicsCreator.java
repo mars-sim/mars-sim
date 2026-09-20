@@ -21,7 +21,8 @@ class CharacteristicsCreator {
     }
 
     /**
-	 * Computes a person's blood type and its chromosome. This derives from 2 random parents.
+	 * Computes a person's blood type. This derives from 2 random parents.
+	 * @return the computed blood type of the person, including the Rh factor.
 	 */
 	public static String calculateBloodType() {
 
@@ -67,7 +68,7 @@ class CharacteristicsCreator {
 		if (momRh.equals("POS") && dadRh.equals("POS"))
 			percentRhPositive = 93.75;
 		else if ((momRh.equals("POS") && dadRh.equals("NEG"))
-			|| (momRh.equals("NEG") && momRh.equals("POS")))
+			|| (momRh.equals("NEG") && dadRh.equals("POS")))
 			percentRhPositive = 75.0;
 		else 
 			tempRh = "-";

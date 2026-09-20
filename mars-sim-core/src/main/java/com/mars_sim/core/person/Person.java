@@ -141,8 +141,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	private double eatingSpeed = .5 + RandomUtil.getRandomDouble(-.05, .05);
 	/** The height of the person (in cm). */
 	private double height;
-	/** The height of the person (in kg). */
-	private double weight;
 	
 	/** The person's country of origin. */
 	private String country;
@@ -209,9 +207,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 					int age, PopulationCharacteristics ethnicity,
 					Map<NaturalAttributeType, Integer> initialAttrs) {
 		super(name, settlement);
-		// Call Person's setContainerUnit to set up coordinates and related states
-//		setContainerUnit(getContainerUnit());
-		
+
 		super.setDescription(EARTHLING);
 		this.gender = gender;
 
@@ -290,9 +286,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			int age, Map<NaturalAttributeType, Integer> initialAttrs) {
 		super(name, settlement);
 		super.setDescription(EARTHLING);
-		
-		// Call Person's setContainerUnit to set up coordinates and related states
-//		setContainerUnit(getContainerUnit());
 		
 		this.gender = gender;
 
@@ -741,10 +734,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 				// Check if a person's age should be updated
 				age = updateAge(pulse.getMasterClock().getEarthTime());
-
-//				// Checks if a person has a role
-//				if (role.getType() == null)
-//					role.obtainNewRole();
 			}
 		}
 	}
@@ -1245,12 +1234,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			if (newContainer instanceof MobileUnit mu) {
 				setCoordinates(mu.getCoordinates());
 			}
-//			else if (oldCU instanceof MobileUnit mu) {
-//				// Since it's on the surface of Mars,
-//				// First set its initial location to its old parent's location as it's leaving its parent.
-//				// Later it may move around and updates its coordinates by itself
-//				setCoordinates(mu.getCoordinates());
-//			}
 
 			// Note: need to decide what to set for a deceased person
 			
