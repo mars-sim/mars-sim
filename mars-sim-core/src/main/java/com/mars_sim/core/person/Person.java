@@ -50,7 +50,6 @@ import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.fav.Favorite;
-import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.fav.Preference;
 import com.mars_sim.core.person.ai.job.util.AssignmentHistory;
 import com.mars_sim.core.person.ai.job.util.AssignmentType;
@@ -65,7 +64,6 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.social.Appraiser;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.training.TrainingType;
@@ -373,167 +371,10 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		
 		setBaseMass(nationPeople.getRandomWeight(gender, height));
 		// Biochemistry: id 0 - 19
-		setupBloodType();
+		bloodType = CharacteristicsCreator.calculateBloodType();
+
 		// Set up carrying capacity and personality traits: id 40 - 59
-		setupCarryingCapAttributeTrait(personConfig);
-	}
-
-	/**
-	 * Computes a person's carrying capacity and attributes and its chromosome.
-	 * 
-	 * @param personConfig
-	 */
-	private void setupCarryingCapAttributeTrait(PersonConfig personConfig) {
-		// Note: set up a set of genes that was passed onto this person
-		// from two hypothetical parents
-
-		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
-		int endurance = attributes.getAttribute(NaturalAttributeType.ENDURANCE);
-		double gym = 2D * getPreference().getPreferenceScore(MetaTaskUtil.getWorkoutMetaID()); 
-		if (getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
-			gym += RandomUtil.getRandomRegressionInteger(20);
-		else if (getFavorite().getFavoriteActivity() == FavoriteType.SPORT)
-			gym += RandomUtil.getRandomRegressionInteger(10);
-
-		if (age < 0) {
-			throw new IllegalStateException("Age is not defined");
-		}
-		int baseCap = (int)personConfig.getBaseCapacity();
-		int load = 0;
-		if (age > 4 && age < 8)
-			load = age;
-		else if (age > 7 && age <= 12)
-			load = age * 2;
-		else if (age > 11 && age <= 14)
-			load = (baseCap/3 + age * 2);
-		else if (age > 14 && age <= 18)
-			load = (int)(baseCap/2.5 + age * 1.5);
-		else if (age > 18 && age <= 25)
-			load = (int)(baseCap/2.0 + 35 - age / 7.5);
-		else if (age > 25 && age <= 35)
-			load = (int)(baseCap + 30 - age / 12.5);
-		else if (age > 35 && age <= 45)
-			load = (baseCap + 25 - age / 10);
-		else if (age > 45 && age <= 55)
-			load = (int)(baseCap + 20 - age / 7.5);
-		else if (age > 55 && age <= 65)
-			load = (int)(baseCap/1.25 + 15 - age / 6.0);
-		else if (age > 65 && age <= 70)
-			load = (int)(baseCap/1.5 + 10 - age / 5.0);
-		else if (age > 70 && age <= 75)
-			load = (int)(baseCap/1.75 - age / 4.0);
-		else if (age > 75 && age <= 80)
-			load = (int)(baseCap/2.0 - age / 4.0);
-		else
-			load = (int)(baseCap/2.5 - age / 4.0);
-
-		// Set inventory total mass capacity based on the person's weight and strength.
-		// Must be able to carry an EVA suit
-		carryingCapacity = Math.max((int)(EVASuit.getEmptyMass() * 2),
-						(int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0
-				+ RandomUtil.getRandomRegressionInteger(10)));
-	}
-
-	private static final String getRandomBloodtype() {
-		int rand = RandomUtil.getRandomInt(100);
-		if (rand <= 34)
-			return "A_POS";
-		else if (rand < 40)
-			return "A_NEG";
-		else if (rand < 49)
-			return "B_POS";
-		else if (rand < 51)
-			return "B_NEG";
-		else if (rand < 55)
-			return "AB_POS";
-		else if (rand < 56)
-			return "AB_NEG";
-		else if (rand < 94)
-			return "O_POS";
-		else 
-			return "O_NEG";
-	}
-
-	/**
-	 * Computes a person's blood type and its chromosome.
-	 */
-	private void setupBloodType() {
-
-		String dad = getRandomBloodtype();
-		String mom = getRandomBloodtype();
-		
-		String[] dadSplitted = dad.split("_");
-		String dadBlood = dadSplitted[0];
-		String dadRh = dadSplitted[1];
-		
-		String[] momSplitted = mom.split("_");
-		String momBlood = momSplitted[0];
-		String momRh = momSplitted[1];
-		
-		// Compute the person's blood type
-		String tempBloodType = dadBlood + "-" + momBlood;
-		
-		
-		tempBloodType = switch(tempBloodType) {
-		
-		// Note 0 : Need to rework into calculating percent probability of possible blood type for a child
-		// Note 1 : that the O blood type is recessive, and the B blood type is dominant		
-		// Note 3 : variable = (condition) ? expressionTrue : expressionFalse
-		// (RandomUtil.getRandomInt(1) == 0 ) ? "A" : "O" 	
-		// (RandomUtil.getRandomInt(2) == 0 ) ? "B" : ((RandomUtil.getRandomInt(1) == 0 ) ? "A" : "B") 	
-		
-	
-			case "A-A" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "O";
-			case "A-B" -> (RandomUtil.getRandomInt(1) == 0 ) 
-						? ((RandomUtil.getRandomInt(1) == 0 ) ? "A" : "B") 
-						: ((RandomUtil.getRandomInt(1) == 0 ) ? "AB" : "O");
-			case "A-AB" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
-			case "A-O" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "O";
-
-			
-			case "B-A" -> (RandomUtil.getRandomInt(1) == 0 ) 
-						? ((RandomUtil.getRandomInt(1) == 0 ) ? "A" : "B") 
-						: ((RandomUtil.getRandomInt(1) == 0 ) ? "AB" : "O");
-			case "B-B" -> (RandomUtil.getRandomInt(1) == 0) ? "B" : "O";
-			case "B-AB" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
-			case "B-O" -> (RandomUtil.getRandomInt(1) == 0) ? "B" : "O";
-			
-			
-			case "AB-A" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
-			case "AB-B" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
-			case "AB-AB" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
-			case "AB-O" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "B";
-			
-			
-			case "O-A" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "O";
-			case "O-B" -> (RandomUtil.getRandomInt(1) == 0) ? "B" : "O";
-			case "O-AB" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "B";
-			case "O-O" -> "O";
-			
-			default -> throw new IllegalStateException("Cannot get bloodtype from parents of " + tempBloodType);
-		};
-		
-		// Compute the person's Rh factor
-		String tempRh = null; //"POS";
-		double percentRhPositive = 0;
-		
-		if (momRh.equals("POS") && dadRh.equals("POS"))
-			percentRhPositive = 93.75;
-		else if ((momRh.equals("POS") && dadRh.equals("NEG"))
-			|| (momRh.equals("NEG") && momRh.equals("POS")))
-			percentRhPositive = 75.0;
-		else 
-			tempRh = "-";
-		
-		if (tempRh == null) {
-			int rand = RandomUtil.getRandomInt(100);
-			if (rand <= percentRhPositive)
-				tempRh =  "+";
-			else 
-				tempRh = "-";
-		}
-
-		this.bloodType = tempBloodType + tempRh;
+		carryingCapacity = CharacteristicsCreator.calculateCarryingCapacity(personConfig, age, getBaseMass(), attributes);
 	}
 
 	/**

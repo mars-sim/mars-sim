@@ -39,15 +39,9 @@ public final class RandomUtil {
 
 	// See Mersenne Twister in JAVA 
 	// at http://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/VERSIONS/JAVA/java.html
-	
-	// Initiaise the Ramdom with a seed based on current time
-//	private static ThreadLocal<Random> random = ThreadLocal.withInitial(() -> new Random(System.currentTimeMillis()));
 
 	// Create a uniform random number generator
-	private static UniformRandomProvider rng = ThreadLocalRandomSource.current(RandomSource.SPLIT_MIX_64);; //RandomSource.WELL_19937_A.create();
-
-	// Create the Ziggurat normalized Gaussian sampler
-//	private static ZigguratNormalizedGaussianSampler sampler = ZigguratNormalizedGaussianSampler.of(rng);
+	private static UniformRandomProvider rng = ThreadLocalRandomSource.current(RandomSource.SPLIT_MIX_64);
 	
 	private RandomUtil() {}
 
@@ -176,17 +170,6 @@ public final class RandomUtil {
 		// Note: switch from using ThreadLocalRandom.current().nextDouble(base, ceiling)
 		return (getDouble() * (ceiling - base)) + base;
 	}
-
-	/**
-//	 * Returns a random double number (-infi to +infi) under Gaussian ("normally") distributed with
-//	 * mean 0.0 and standard deviation 1.0 from this random number generator's
-//	 * sequence
-//	 *
-//	 * @return the random number
-//	 */
-//	public static double getGaussianDouble() {
-//		return getRandom().nextGaussian();
-//	}
 
 	/**
 	 * Computes a positive gaussian random double number.
@@ -416,4 +399,15 @@ public final class RandomUtil {
 
 		return result;
 	}
+
+	/**
+	 * Select one of the string arguments randomly. It is assumed these are evenly weighted.
+	 * @param outputs the array of strings to choose from.
+	 * @return a randomly selected string from the array.
+	 */
+    public static String getRandomString(String ...outputs) {
+        int totalRange = outputs.length - 1;
+        int rand = getRandomInt(totalRange);
+        return outputs[rand];
+    }
 }
