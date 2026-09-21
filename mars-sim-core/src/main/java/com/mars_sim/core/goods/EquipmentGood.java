@@ -54,11 +54,12 @@ public class EquipmentGood extends Good {
 	private static final double INITIAL_EQUIPMENT_DEMAND = 30;
 	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
 	private static final double EVA_SUIT_VALUE = 0.5;
-	private static final double DATA_RECORDER_VALUE = 1.5;
 	private static final double CONTAINER_VALUE = 0.1;
-
+	private static final double INSTRUMENT_VALUE = 0.75;
+	
 	private static final double EVA_SUIT_FLATTENING_FACTOR = 0.5;
 	private static final double CONTAINER_FLATTENING_FACTOR = .25;
+	private static final double INSTRUMENT_FLATTENING_FACTOR = .75;
 
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
@@ -86,6 +87,9 @@ public class EquipmentGood extends Good {
 		if (equipmentType == EquipmentType.EVA_SUIT) {
 			return EVA_SUIT_FLATTENING_FACTOR;
         }
+		else if (equipmentType == EquipmentType.DATA_RECORDER) {
+			return INSTRUMENT_FLATTENING_FACTOR;
+        }
 		
 		return CONTAINER_FLATTENING_FACTOR; 
 	}
@@ -112,7 +116,8 @@ public class EquipmentGood extends Good {
 	
     @Override
     public GoodCategory getCategory() {
-        if (equipmentType == EquipmentType.EVA_SUIT) {
+        if (equipmentType == EquipmentType.EVA_SUIT
+        	|| equipmentType == EquipmentType.DATA_RECORDER) {
             return GoodCategory.EQUIPMENT;
         }
         
@@ -133,6 +138,9 @@ public class EquipmentGood extends Good {
         if (equipmentType == EquipmentType.EVA_SUIT) {
             return GoodType.EVA;
         }
+        else if (equipmentType == EquipmentType.DATA_RECORDER) {
+            return GoodType.INSTRUMENT;
+        }
         
         return GoodType.CONTAINER;
     }
@@ -142,6 +150,10 @@ public class EquipmentGood extends Good {
         if (equipmentType == EquipmentType.EVA_SUIT) {
 			return EVA_SUIT_VALUE;
 		}
+        else if (equipmentType == EquipmentType.DATA_RECORDER) {
+			return INSTRUMENT_VALUE;
+		}
+        
         return CONTAINER_VALUE;
     }
 
@@ -183,9 +195,12 @@ public class EquipmentGood extends Good {
 		double supply = settlement.getGoodsManager().getSupplyScore(getID());
         if (equipmentType == EquipmentType.EVA_SUIT) {
     		mass = EquipmentFactory.getEquipmentMass(equipmentType);
-    		
             // Need to increase the value for EVA
     		factor = 2.4 * Math.log(mass/80.0 + 1) / supply;
+    	}
+        else if (equipmentType == EquipmentType.DATA_RECORDER) {
+    		mass = EquipmentFactory.getEquipmentMass(equipmentType);
+    		factor = 2.3 * Math.log(mass/80.0 + 1) / supply;
     	}
     	else {
     		// For containers
@@ -245,7 +260,6 @@ public class EquipmentGood extends Good {
 		// Note: need to look into parts and equipment reliability in MalfunctionManager 
 		// to derive the repair value 
 		if (equipmentType == EquipmentType.EVA_SUIT) {
-			
 			repairDemand = owner.getEVASuitLevel() * owner.getDemandScore(this) / 20;
 		}
 		else {
@@ -299,18 +313,18 @@ public class EquipmentGood extends Good {
 
 		// Determine the EVA suits demand
 		if (equipmentType == EquipmentType.EVA_SUIT) {
-			// Add the whole EVA Suit demand.
-			baseDemand += getWholeEVASuitDemand(owner);
+			// Add the specific demand from parts
+			baseDemand += getEVASuitPartsDemand(owner);
 
 			return baseDemand * owner.getEVASuitMod() * EVA_SUIT_VALUE;
 		}
 
 		// Determine the data recorder demand
 		if (equipmentType == EquipmentType.DATA_RECORDER) {
-			// Add the  demand.
-			baseDemand += getDataRecorderPartDemand(owner);
+			// Add the specific demand from parts
+			baseDemand += getDataRecorderPartsDemand(owner);
 
-			return baseDemand * DATA_RECORDER_VALUE;
+			return baseDemand * INSTRUMENT_VALUE;
 		}
 				
 		// Determine the number of containers that are needed.
@@ -402,7 +416,7 @@ public class EquipmentGood extends Good {
 	 * @param owner Owner of Goods
 	 * @return demand
 	 */
-	private static double getWholeEVASuitDemand(GoodsManager owner) {
+	private static double getEVASuitPartsDemand(GoodsManager owner) {
 		double demand = 0;
 	
 		double num = ItemResourceUtil.evaSuitPartIDs.size();
@@ -421,16 +435,16 @@ public class EquipmentGood extends Good {
 	 * @param owner Owner of Goods
 	 * @return demand
 	 */
-	private static double getDataRecorderPartDemand(GoodsManager owner) {
-		double demand = 2;
+	private static double getDataRecorderPartsDemand(GoodsManager owner) {
+		double demand = 0;
 	
-		double num = 2; //ItemResourceUtil.evaSuitPartIDs.size();
-		
-//		if (ItemResourceUtil.evaSuitPartIDs != null && !ItemResourceUtil.evaSuitPartIDs.isEmpty()) {
-//			for (int id : ItemResourceUtil.evaSuitPartIDs) {
-//				demand += owner.getDemandScoreWithID(id);
-//			}
-//		}
+		double num = ItemResourceUtil.dataRecordIDs.size();
+
+		if (ItemResourceUtil.dataRecordIDs != null && !ItemResourceUtil.dataRecordIDs.isEmpty()) {
+			for (int id : ItemResourceUtil.dataRecordIDs) {
+				demand += owner.getDemandScoreWithID(id);
+			}
+		}
 		return demand / num;
 	}
 	

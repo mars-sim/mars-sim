@@ -921,7 +921,9 @@
 
 <!-- Misc. -->
 	<resource name="Glass" type="gemstone" phase="solid" demand="0.5" >For making vessels</resource>
-	<resource name="Quartz" type="gemstone" phase="solid" demand="5" >Quartz is crystalline silica (SiO2). For making electronic components</resource>
+	<resource name="Quartz" type="gemstone" phase="solid" demand="5" >Quartz is crystalline silica (SiO2). For making electronic components.</resource>
 
+<!-- Electronic -->
+	<resource name="Fiberglass-epoxy composite" type="electronic" phase="solid" >FR-4 is the standard substrate for virtually all rigid PCBs.</resource>
 
 </resource-list>

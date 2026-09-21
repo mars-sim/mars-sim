@@ -131,6 +131,7 @@ class AmountResourceGood extends Good {
 	private static final double COMPOUND_FLATTENING_FACTOR = 1.5;
 	private static final int CONSTRUCTION_FLATTENING_FACTOR = 1;
 	private static final int ELEMENT_FLATTENING_FACTOR = 2;
+	private static final int ELECTRONIC_FLATTENING_FACTOR = 5;
 
 	private static final int GEMSTONE_FLATTENING_FACTOR = 3;
 
@@ -352,7 +353,12 @@ class AmountResourceGood extends Good {
 			mod = DERIVED_FLATTENING_FACTOR;
 			
 			break;
-					
+				
+		case ELECTRONIC:
+			mod = ELECTRONIC_FLATTENING_FACTOR;
+			
+			break;
+			
 		case ELEMENT:
 			mod = ELEMENT_FLATTENING_FACTOR;
 			

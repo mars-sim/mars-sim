@@ -1173,7 +1173,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg spool of fiber glass. -->
-	<process name="Draw optical fiber glass" tech="3" skill="1" work-time="50" process-time="100"
+	<process name="Draw optical fiberglass" tech="3" skill="1" work-time="50" process-time="100"
 			power-required=".1">
 		<inputs>
 			<resource name="Sand" amount="2.0" />
@@ -3389,6 +3389,72 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
+	<process name="Make Fiberglass-epoxy composite" tech="4" skill="4" work-time="30" process-time="60"
+			tooling="Fabrication" power-required=".01">
+		<description>
+			Fiberglass-epoxy composite (commonly known by its NEMA grade designation FR-4) 
+			is a layered laminate made from two core materials:
+
+				1. Woven E-glass fiberglass cloth — provides mechanical strength, rigidity, and dimensional 
+				   stability.  The glass fibers are non-conductive, moisture-resistant, and chemically inert.
+
+				2. Epoxy resin — a thermosetting polymer that cures under heat and pressure, binding the 
+				   glass layers together and providing electrical insulation, chemical resistance, and 
+				   thermal durability.  Flame-retardant additives (typically brominated compounds) are 
+				   mixed into the resin to give the material its self-extinguishing (UL 94 V-0) property. 
+				   
+			By weight, a typical FR-4 laminate is roughly 60% glass fiber / 40% epoxy resin.  
+			
+			In PCB fabrication, copper foil is laminated to one or both faces of the FR-4 core, then 
+			etched to form the conductive traces. 
+
+			The name breaks down as: FR = Flame Retardant, 4 = the NEMA material class code indicating 
+			epoxy resin + glass cloth reinforcement at the UL 94 V-0 fire rating.  
+			
+			It's the standard substrate for the vast majority of rigid printed circuit boards, 
+			including the green board inside a RAM module. 				   
+		</description>
+		<inputs>
+			<resource name="Epoxy resin" amount="4.0"/>
+			<part name="Fiberglass cloth" number="6" />
+		</inputs>
+		<outputs>
+			<resource name="Fiberglass-epoxy composite" amount="10.0" />
+		</outputs>
+	</process>
+	
+	<process name="Manufacture memory module" tech="4" skill="4" work-time="120" process-time="200"
+			tooling="Fabrication" power-required=".01">
+		<inputs>
+			<resource name="Epoxy resin" amount=".5"/>
+			<resource name="Gold" amount="0.01"/>
+			<resource name="Silver" amount="0.015"/>
+			<resource name="Tin" amount="0.001"/>
+			<resource name="Copper" amount="0.1"/>
+			<resource name="Nickel" amount="0.005"/>
+			<resource name="Glass" amount="0.1"/>	
+			<part name="semiconductor wafer" number="1" />
+		</inputs>
+		<outputs>
+			<part name="memory module" number="10" />
+		</outputs>
+	</process>
+			
+	<process name="Manufacture data recorder" tech="4" skill="4" work-time="100" process-time="200"
+			tooling="Fabrication" power-required=".01">
+		<inputs>
+			<resource name="epoxy resin" amount="0.5"/>
+			<part name="logic board" number="1" />
+			<part name="capacitor" number="5" />	
+			<part name="resistor" number="5" />	
+			<part name="diode" number="5" />
+			<part name="memory module" number="3" />
+		</inputs>
+		<outputs>
+			<equipment name="Data recorder" number="1" />
+		</outputs>
+	</process>
+	
 	<!-- 2015-05-19 Added manufacturing led bulb. -->
 	<process name="Manufacture light emitting diode bulb" tech="3" skill="2" work-time="150" process-time="300"
 			tooling="Fabrication" power-required="0.2">
@@ -3404,6 +3470,15 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture microcontroller" tech="4" skill="4" work-time="500" process-time="500"
 			tooling="Fabrication" power-required="1.0">
 		<inputs>
+			<resource name="Epoxy resin" amount="0.2"/>
+			<resource name="Gold" amount="0.01"/>
+			<resource name="Silver" amount="0.015"/>
+			<resource name="Tin" amount="0.01"/>
+			<resource name="Copper" amount="0.1"/>
+			<resource name="Nickel" amount="0.005"/>
+			<resource name="Glass" amount="0.1"/>
+			<resource name="Fiberglass-epoxy composite" amount="1.0" />
+			<part name="Memory module" number="4" />
 			<part name="semiconductor wafer" number="1" />
 		</inputs>
 		<outputs>
@@ -3914,15 +3989,19 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 		<!-- 2017-09-11 Added manufacture resisters -->
-	<process name="Manufacture resistors" tech="1" skill="2" work-time="50" process-time="30"
+	<process name="Manufacture resistor" tech="1" skill="2" work-time="50" process-time="30"
 			power-required="1">
 		<inputs>
 			<resource name="Aluminum" amount="0.1" >
 				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>
-			<resource name="zinc" amount="0.1" />
-			<resource name="nickel" amount="0.1" />
-			<resource name="iron powder" amount="0.1" />
+			<resource name="Zinc" amount="0.01" />
+			<resource name="Copper" amount="0.02" />
+			<resource name="Titanium" amount="0.5" />
+			<resource name="Calcium" amount="0.05" />
+			<resource name="Tin" amount="0.01" />
+			<resource name="Nickel" amount="0.08" />
+			<resource name="Iron powder" amount="0.01" />
 			<resource name="Carbon" amount="1" />
 		</inputs>
 		<outputs>
@@ -3931,17 +4010,20 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 		<!-- 2017-09-11 Added manufacture capacitors -->
-	<process name="Manufacture capacitors" tech="1" skill="2" work-time="75" process-time="30"
+	<process name="Manufacture capacitor" tech="1" skill="2" work-time="75" process-time="30"
 			power-required="1">
 		<inputs>
 			<resource name="Aluminum" amount="0.1" >
 				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>
-			<resource name="zinc" amount="0.05" />
-			<resource name="nickel" amount="0.05" />
-			<resource name="iron powder" amount="0.05" />
+			<resource name="Zinc" amount="0.01" />
+			<resource name="Copper" amount="0.02" />
+			<resource name="Titanium" amount="0.5" />
+			<resource name="Calcium" amount="0.05" />
+			<resource name="Tin" amount="0.01" />
+			<resource name="Nickel" amount="0.08" />
+			<resource name="Iron powder" amount="0.01" />
 			<resource name="Carbon" amount="1" />
-			<resource name="silicon" amount="1" />
 		</inputs>
 		<outputs>
 			<part name="capacitor" number="150" />
@@ -3952,35 +4034,68 @@ Note: 1 kg of H2 is 14.13 liter
 	https://en.wikipedia.org/wiki/Diode
 	Today, most diodes are made of silicon, but other semiconductors
 	such as selenium and germanium are sometimes used.	-->
-	<process name="Manufacture diodes" tech="1" skill="2" work-time="200" process-time="50"
+	<process name="Manufacture diode" tech="1" skill="2" work-time="200" process-time="50"
 			power-required="1">
 		<inputs>
-			<resource name="Aluminum" amount="0.2"  >
-				<alternative name="Aluminum oxide" amount="0.378"/>
+			<resource name="Aluminum" amount="0.1" >
+				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>
-			<resource name="silicon" amount="1" />
-			<resource name="iron powder" amount="0.1" />
+			<resource name="Zinc" amount="0.01" />
+			<resource name="Titanium" amount="0.01" />
+			<resource name="Calcium" amount="0.05" />
+			<resource name="Tin" amount="0.01" />
+			<resource name="Nickel" amount="0.08" />
+			<resource name="Iron powder" amount="0.01" />
+			<resource name="Carbon" amount="0.05" />
+			<resource name="Silicon" amount="0.1" />
+			<resource name="Copper" amount="0.2" />
+			<resource name="Epoxy resin" amount="0.3" />
+			<resource name="Silica" amount="0.7" />
 		</inputs>
 		<outputs>
 			<part name="diode" number="200" />
 		</outputs>
 	</process>
 
+	<process name="Manufacture power transistor" tech="1" skill="2" work-time="200" process-time="50"
+			power-required="1">
+			<description></description>
+		<inputs>
+			<resource name="Aluminum" amount="0.01" >
+				<alternative name="Aluminum oxide" amount="0.019"/>
+			</resource>
+			<resource name="Zinc" amount="0.01" />
+			<resource name="Calcium" amount="0.01" />
+			<resource name="Tin" amount="0.05" />
+			<resource name="Nickel" amount="0.08" />
+			<resource name="Iron powder" amount="0.01" />
+			<resource name="Carbon" amount="0.05" />
+			<resource name="Silicon" amount="0.01" />
+			<resource name="Copper" amount="0.668" />
+			<resource name="Epoxy resin" amount="0.073" />
+			<resource name="Silica" amount="0.232" />
+		</inputs>
+		<outputs>
+			<part name="power transistor" number="100" />
+		</outputs>
+	</process>
+	
 	<!-- 2017-09-11 Added manufacture logic board -->
 	<process name="Manufacture logic board" tech="3" skill="2" work-time="400" process-time="50"
 			tooling="Fabrication" power-required="3">
 		<inputs>
-			<resource name="copper" amount="0.2" />
-			<resource name="iron powder" amount="0.2" />
-			<resource name="magnesium" amount="0.4" />
-			<resource name="epoxy resin" amount="0.5"/>
+			<resource name="Fiberglass-epoxy composite" amount="1.0" />
+			<resource name="copper" amount="0.1" />
+			<resource name="iron powder" amount="0.1" />
+			<resource name="magnesium" amount="0.1" />
+			<resource name="epoxy resin" amount="0.1"/>
 			<resource name="Aluminum" amount="0.1"  >
 				<alternative name="Aluminum oxide" amount="0.189"/>
 			</resource>
-			<part name="fiberglass cloth" number="2" />
 			<part name="resistor" number="40" />
 			<part name="capacitor" number="20" />
 			<part name="diode" number="10" />
+			<part name="Memory module" number="4" />
 			<part name="semiconductor wafer" number="1" />
 		</inputs>
 		<outputs>

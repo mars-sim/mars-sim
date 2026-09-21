@@ -22,6 +22,7 @@ import com.mars_sim.core.data.collection.WaterIceData;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -49,10 +50,16 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	// Data members
 	private static double usualMass = -1;
 	
+	static {
+		// Initialize the parts
+		ItemResourceUtil.initDataRecorder();
+	}
+	
 	private Map<Worker, List<FieldDataSet>> dataset = new HashMap<>();
 	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
+	
 	
 	/**
 	 * Constructor 1.

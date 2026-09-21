@@ -66,6 +66,14 @@ class TestGood {
 	}
 
 	@Test
+	void testDataRecorderGood() {
+		Good g = GoodsUtil.getGood(EquipmentType.getResourceID(EquipmentType.DATA_RECORDER));
+		
+		testGoodsBasics(g, GoodCategory.EQUIPMENT);
+	}
+
+	
+	@Test
 	void testOxygenGood() {
 		Good g = GoodsUtil.getGood(ResourceUtil.OXYGEN_ID);
 		
