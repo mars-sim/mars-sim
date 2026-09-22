@@ -307,7 +307,6 @@
 
 		<equipment type="EVA Suit" number="4" />
 
-
 		<robot type="MakerBot-Standard" number="1"/>
 		<robot type="RepairBot-Standard" number="1"/>
 
@@ -358,6 +357,7 @@
 		<vehicle type="Delivery Drone" number="1" />
 		
 		<equipment type="EVA Suit" number="24" />
+		<equipment type="Wheelbarrow" number="8" />
 		
 		<robot type="RepairBot-Standard" number="1"/>
 		<robot type="GardenBot-Standard" number="1"/>

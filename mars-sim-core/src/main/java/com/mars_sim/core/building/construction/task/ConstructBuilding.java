@@ -287,7 +287,7 @@ public class ConstructBuilding extends EVAOperation {
 					
 				// Place light utility vehicles at a random location in the construction site.
 				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
-				v.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+				v.updateCrewLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 				
 				// Warning: do not call addOccupant directly
 
@@ -354,7 +354,7 @@ public class ConstructBuilding extends EVAOperation {
 					if (canTransfer) {
 						operatingLUV = false;
 						LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
-						luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+						luv.updateCrewLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 						logger.info(person, "Left " + luv + " at the vicinity of " + s.getName() + ".");
 					} else {
 						logger.info(person,

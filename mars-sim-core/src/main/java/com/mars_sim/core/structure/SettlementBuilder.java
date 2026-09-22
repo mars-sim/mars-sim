@@ -59,6 +59,7 @@ import com.mars_sim.core.robot.RobotSpec;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleFactory;
 
 /**
@@ -275,7 +276,8 @@ public final class SettlementBuilder {
 			String vehicleType = v.getKey();
 			int number = v.getValue();
 			for (int x = 0; x < number; x++) {
-				VehicleFactory.createVehicle(unitManager, settlement, vehicleType);
+				Vehicle newVehicle = VehicleFactory.createVehicle(unitManager, settlement, vehicleType);
+				newVehicle.addToAGarage();
 			}
 		}
 	}

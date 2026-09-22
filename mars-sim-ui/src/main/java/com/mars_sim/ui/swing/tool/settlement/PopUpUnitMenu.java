@@ -50,7 +50,7 @@ class PopUpUnitMenu extends JPopupMenu {
 		add(createItem("details", entity, context::showDetails));
 
 		// Custom actions for specific entity types
-		for(var a : selected.getActions()) {
+		for (var a : selected.getActions()) {
 			var actionItem = new JMenuItem(Msg.getString("PopUpUnitMenu." + a));
 			actionItem.addActionListener(e -> {
 				selected.applyAction(a);

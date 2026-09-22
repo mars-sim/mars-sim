@@ -391,7 +391,8 @@ public class ConfigHelper {
 
 	/**
 	 * Parses an element that represent a Range object with a min and optional max value.
-	 * If the max vlaue is not specifd; then the min is used with a span modifier applied.
+	 * 
+	 * If the max value is not specified; then the min is used with a span modifier applied.
 	 * max equals min * defaultSpan.
 	 * 
 	 * @param element
@@ -412,14 +413,14 @@ public class ConfigHelper {
 	}
 	
 
-
 	/**
-	 * Parse a XML list of nodes that represents a list of name/value pairs. 
+	 * Parses a XML list of nodes that represents a list of name/value pairs. 
+	 * 
 	 * @param <T> Type of the name
 	 * @param <V> Type of the value
 	 * @param context Context messages for any error
 	 * @param nodes XML Nodes to parse
-	 * @param nameAttr Name of the Name atttribute
+	 * @param nameAttr Name of the Name attribute
 	 * @param nameFunc Function to convert String value into a <T>
 	 * @param valAttr Name of the value attribute
 	 * @param valFunc Function to convert String value into a <V>
@@ -444,11 +445,12 @@ public class ConfigHelper {
 	}
 
 	/**
-	 * Parse a collection of XML name/values pairs where the value is an Integer
+	 * Parses a collection of XML name/values pairs where the value is an Integer.
+	 * 
 	 * @param <T> Type of the name
 	 * @param context Context messages for any error
 	 * @param nodes XML Nodes to parse
-	 * @param nameAttr Name of the Name atttribute
+	 * @param nameAttr Name of the Name attribute
 	 * @param nameFunc Function to convert String value into a <T>
 	 * @param valAttr Name of the integer attribute
 	 * @return
@@ -460,12 +462,13 @@ public class ConfigHelper {
 						valAttr, Integer::parseInt);
 	}
 
-		/**
-	 * Parse a collection of XML name/values pairs where the value is a Double
+	/**
+	 * Parses a collection of XML name/values pairs where the value is a Double.
+	 * 
 	 * @param <T> Type of the name
 	 * @param context Context messages for any error
 	 * @param nodes XML Nodes to parse
-	 * @param nameAttr Name of the Name atttribute
+	 * @param nameAttr Name of the Name attribute
 	 * @param nameFunc Function to convert String value into a <T>
 	 * @param valAttr Name of the double attribute
 	 * @return

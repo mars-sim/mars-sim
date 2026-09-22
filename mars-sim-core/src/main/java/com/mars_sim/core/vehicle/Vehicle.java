@@ -466,7 +466,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @param position  Position of the parking relative to the Settlement
 	 * @param facing    (degrees from North clockwise).
 	 */
-	public void setParkedLocation(LocalPosition position, double facing) {
+	public void updateCrewLocation(LocalPosition position, double facing) {
 		// Set new parked location for the vehicle.
 		setPosition(position);
 		
@@ -486,18 +486,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 			setRobotCrewPositions(currentRobotCrewPositions);
 	}
 
-	/**
-	 * Sets the location and facing of the drone when parked at a settlement.
-	 *
-	 * @param position  Position of the parking relative to the Settlement
-	 * @param facing    (degrees from North clockwise).
-	 */
-	public void setParkedFlyerLocation(LocalPosition position, double facing) {
-		// Set new parked location for the flyer.
-		setPosition(position);
-		this.facingParked = facing;
-	}
-	
 	/**
 	 * Gets all human crew member positions relative to within the vehicle.
 	 *
@@ -1808,7 +1796,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
-	 * Finds a new parking location and facing.
+	 * Finds a new outside parking location and facing.
 	 */
 	public void findNewParkingLoc() {
 
@@ -1819,46 +1807,32 @@ public abstract class Vehicle extends AbstractMobileUnit
 		}
 
 		LocalPosition centerLoc = LocalPosition.DEFAULT_POSITION;
-
-		int weight = 2;
-
+		double facing = 0;
+	
 		List<Building> evas = new ArrayList<>(settlement.getBuildingManager()
 				.getBuildingsOfSameCategoryZone0(BuildingCategory.EVA));
+		int numEVAs = evas.size();
 		int numGarages = settlement.getBuildingManager().getGarages().size();
-		int total = (evas.size() + numGarages * weight - 1);
-		if (total < 0)
-			total = 0;
-		int rand = RandomUtil.getRandomInt(total);
-
-		if (rand != 0) {
-			// Try parking near the eva for short walk
-			if (rand < evas.size()) {
-				Building eva = evas.get(rand);
-				centerLoc = eva.getPosition();
-			}
-
-			else {
-				// Try parking near a garage					
-				Building garage = BuildingManager.getAGarage(getSettlement());
-				if (garage != null) {
-					centerLoc = garage.getPosition();
-				}
-			}
-		}
-		else {
-			// Try parking near a garage
-			// Get a nearby garage (but doesn't go in)
+		
+		if (numGarages > 0) {
+			// Try parking near a garage					
 			Building garage = BuildingManager.getAGarage(getSettlement());
 			if (garage != null) {
+				facing = garage.getFacing();
 				centerLoc = garage.getPosition();
 			}
+		}
+		else if (numEVAs > 0) {
+			
+			int rand = RandomUtil.getRandomInt(evas.size() - 1);
+			Building eva = evas.get(rand);
+			facing = eva.getFacing();
+			centerLoc = eva.getPosition();
 		}
 
 		// Place the vehicle starting from the settlement center (0,0).
 		int oX = 10;
 		int oY = 10;
-		double newFacing = 0D;
-		LocalPosition newLoc = null;
 		int step = 2;
 		boolean foundGoodLocation = false;
 
@@ -1878,16 +1852,23 @@ public abstract class Vehicle extends AbstractMobileUnit
 		// Note: May need a more permanent solution by figuring out how to detect those enclosed space
 		
 		int count = 0;
+		LocalPosition newLoc = null;
+		double newFacing = facing;
 		
 		// Try iteratively outward from 10m to 500m distance range.
-		for (int x = oX; (x < 500) && !foundGoodLocation; x+=step) {
+		for (int x = oX; (x < 500) && !foundGoodLocation && count < 100; x+=step) {
 			// Try random locations at each distance range.
 			for (int y = oY; (y < 500) && !foundGoodLocation; y++) {
 				double distance = Math.max(y, RandomUtil.getRandomRegressionInteger((int)(-.5*x), (int)(.5*x)) + .5*y);
 				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
 				
 				newLoc = centerLoc.getPosition(distance, radianDirection);
-				newFacing = RandomUtil.getRandomDouble(360D);
+				
+				if (numGarages > 0) {
+					newFacing = newFacing + 90 * RandomUtil.getRandomInt(0, 3);
+				}
+				else
+					newFacing = RandomUtil.getRandomInt(0, 359);
 
 				// Check if new vehicle location collides with anything.
 				
@@ -1901,7 +1882,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		}
 
 		if (foundGoodLocation) {
-			setParkedLocation(newLoc, newFacing);
+			updateCrewLocation(newLoc, newFacing);
 		}
 	}
 
@@ -1909,34 +1890,88 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * Tags a vehicle for maintenance.
 	 */
 	public void maintainVehicle() {
+		setReservedForMaintenance(true);
         logger.info(this, "Triggering a vehicle maintenance task.");
 	}
-	
-	
+
 	/**
 	 * Relocates a vehicle. 
+	 * @param goToGarage
 	 */
-	public void relocateVehicle() {
-		if (isInGarage()) {
-			BuildingManager.removeFromGarage(this);
-			// Note: removeVehicle or removeFlyer will automatically call 
-			// parkInVicinity which will in turns call findNewParkingLoc
-			logger.info(this, 3_000L, "Left garage and parked outside as instructed.");
-		}
-		else if (reservedForMaintenance || getPrimaryStatus() == StatusType.MAINTENANCE) {
+	public void relocateVehicle(boolean goToGarage) {
+		if (reservedForMaintenance) {
 			// If it's under maintenance, go to a garage if possible
 			// else park outside
-			logger.info(this, 3_000L, "Under maintenance. Looking for a garage.");
-			boolean done = addToAGarage();
-			if (!done) {
-				logger.info(this, 3_000L, "Garage space not found. Parked outside.");
-				findNewParkingLoc();
-			}
+			logger.info(this, 0, "Reserved for maintenance. Unable to relocate now.");
+		}
+		else if (reservedForMaintenance || getPrimaryStatus() == StatusType.MAINTENANCE
+				|| getPrimaryStatus() == StatusType.TOWED 
+				|| getPrimaryStatus() == StatusType.LOADING
+				|| getPrimaryStatus() == StatusType.UNLOADING
+				|| getPrimaryStatus() == StatusType.TOWING
+				|| getPrimaryStatus() == StatusType.MALFUNCTION
+				) {
+			logger.info(this, 0, "Status: " + getPrimaryStatus().getName() + ". Unable to relocate now.");
 		}
 		else {
-			logger.info(this, 3_000L, "Looking for another spot to park outside.");
-			findNewParkingLoc();
+			if (goToGarage) {
+				if (isInGarage()) {
+					logger.info(this, 0, "Already in a garage. Unable to relocating as instructed.");
+				}
+				else {
+					boolean done = addToAGarage();
+					if (done) {
+						logger.info(this, 0, "Garage space found. Relocated and Parked inside as instructed.");
+					}
+					else {
+						logger.info(this, 0, "Looking for another spot to park outside.");
+						findNewParkingLoc();
+					}
+				}
+			}
+			else {
+				if (isInGarage()) {
+					BuildingManager.removeFromGarage(this);
+					// Note: removeVehicle will automatically call 
+					// parkInVicinity which will in turns call findNewParkingLoc
+					logger.info(this, 0, "Left garage and parked outside as instructed.");
+				}
+				else {
+					logger.info(this, 0, "Looking for another spot to park outside.");
+					findNewParkingLoc();
+				}
+			}
 		}
+		
+//		if (isInGarage()) {
+//			BuildingManager.removeFromGarage(this);
+//			// Note: removeVehicle or removeFlyer will automatically call 
+//			// parkInVicinity which will in turns call findNewParkingLoc
+//			logger.info(this, 0, "Left garage and parked outside as instructed.");
+//		}
+//		else {
+//			if (reservedForMaintenance) {
+//				// If it's under maintenance, go to a garage if possible
+//				// else park outside
+//				logger.info(this, 0, "Reserved for maintenance. Will relocate automatically.");
+//			}
+//			else if (reservedForMaintenance || getPrimaryStatus() == StatusType.MAINTENANCE
+//					|| getPrimaryStatus() == StatusType.TOWED 
+//					|| getPrimaryStatus() == StatusType.TOWING
+//					|| getPrimaryStatus() == StatusType.MALFUNCTION) {
+//				logger.info(this, 0, "Status: " + getPrimaryStatus().getName() + ". Unable to relocate.");
+//			}
+//			else {
+//				boolean done = addToAGarage();
+//				if (done) {
+//					logger.info(this, 0, "Garage space found. Parked inside.");
+//				}
+//				else {
+//					logger.info(this, 0, "Looking for another spot to park outside.");
+//					findNewParkingLoc();
+//				}
+//			}
+//		}
 	}
 
 	public static double getFuelRangeErrorMargin() {
@@ -2235,6 +2270,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return true if successful.
 	 */
 	public boolean addToAGarage() {
+		if (isInGarage()) {
+			return true;
+		}
 		return getSettlement().getBuildingManager().addToGarageBuilding(this) != null;
 	}
 	

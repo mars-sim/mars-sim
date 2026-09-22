@@ -2091,14 +2091,14 @@ public class Settlement extends Unit implements Temporal,
 			boolean canGarage = getBuildingManager().addToGarage(vehicle);
 	
 			if (!canGarage) {
-				// Set vehicle's coordinates to that of settlement
-				vehicle.setCoordinates(getCoordinates());
 				// Call findNewParkingLoc to get a non-collided x and y coordinates
 				vehicle.findNewParkingLoc();
 			}
 			
-			else
-				fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
+			// Set vehicle's coordinates to that of settlement
+			vehicle.setCoordinates(getCoordinates());
+			
+			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
 			return true;
 		}

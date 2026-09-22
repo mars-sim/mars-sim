@@ -461,7 +461,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     /**
      * Parses an XML to create a Settlement Supply instance. The buildings are created externally.
      * 
-     * @param context The conext this is being parsed
+     * @param context The context this is being parsed
      * @param supplyElement The XML element
      * @param newBuildings The list of building templates
      * @param partPackageConfig2 
@@ -488,7 +488,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         Map<String, Integer> newVehicles = ConfigHelper.parseIntList(context, supplyElement.getChildren(VEHICLE),
                                                     TYPE, s -> s, NUMBER);
         
-                                                    // Load robots
+        // Load robots
         Map<String, Integer> newBots = ConfigHelper.parseIntList(context, supplyElement.getChildren(ROBOT),
                                                     TYPE, s -> s, NUMBER);
 

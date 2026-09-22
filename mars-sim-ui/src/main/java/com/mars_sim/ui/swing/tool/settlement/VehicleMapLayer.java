@@ -60,13 +60,14 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		@Override
 		List<String> getActions() {
-			return List.of("relocate", "maintain");
+			return List.of("relocateOutside", "relocateGarage", "maintain");
 		}
 
 		@Override
 		void applyAction(String action) {
 			switch (action) {
-				case "relocate" -> target.relocateVehicle();
+				case "relocateOutside" -> target.relocateVehicle(false);
+				case "relocateGarage" -> target.relocateVehicle(true);
 				case "maintain" -> target.maintainVehicle();
 				default -> throw new IllegalArgumentException("Unknown action: " + action);
 			}
