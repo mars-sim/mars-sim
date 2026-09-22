@@ -1224,18 +1224,25 @@ public class BuildingManager implements Serializable {
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if vehicle cannot be added to any building.
 	 *
-	 * @return the garage building already in or just added
+	 * @return the garage building thatthe vehicle already in or just being added in 
 	 */
 	public Building addToGarageBuilding(Vehicle vehicle) {
 		// if no garage buildings are present in this settlement
 		if (garages.isEmpty()) {
 			return null;
 		}
-
+		
+		Building bestBuilding = vehicle.getGarage();
+		
+		if (bestBuilding != null) {
+			return bestBuilding;
+		}
+		
 		VehicleType type = vehicle.getVehicleType();
 		
 		if (vehicle.isBeingTowed()
 				|| (VehicleType.isRover(type) && ((Rover)vehicle).isTowingAVehicle())) {
+			logger.info(vehicle, "Towed or being towed. Unable to park in a garage.");
 			return null;
 		}
 	
@@ -1243,15 +1250,16 @@ public class BuildingManager implements Serializable {
 		
 		Optional<Building> best = priorityGarageMap.entrySet()
 			    .stream()
-			    .max(Map.Entry.comparingByValue())
+			    .max(Map.Entry.comparingByValue()) // get the element with the largest value
 			    .map(Map.Entry::getKey);
 		
-		Building bestBuilding = best.get();
+		bestBuilding = best.get();
 		VehicleMaintenance garage = bestBuilding.getVehicleMaintenance();
-		
+
 		if (VehicleType.isRover(type)) {
 			// If there is no garage space, check if an existing rover can leave
 			// the garage to make room for a new rover to come in
+
 			if (garage.getAvailableRoverCapacity() == 0) {
 				// Try removing a non-reserved vehicle inside a garage
 				for (Rover rover : garage.getRovers()) {
@@ -1263,6 +1271,7 @@ public class BuildingManager implements Serializable {
 					}
 				}
 			}
+
 			// Check again to see if any parking space has been freed up
 			if ((garage.getAvailableRoverCapacity() > 0) && garage.addRover((Rover)vehicle, true)) {
 
@@ -1284,10 +1293,10 @@ public class BuildingManager implements Serializable {
 					}
 				}
 			}
-			System.out.println("2. garage space: " + garage.getAvailableFlyerCapacity());
+
 			// Check again to see if any parking space has been freed up
 			if (garage.getAvailableFlyerCapacity() > 0 && garage.addFlyer((Flyer)vehicle, true)) {
-				System.out.println("3. selected garage: " + bestBuilding);
+
 				return bestBuilding;
 			}
 		}

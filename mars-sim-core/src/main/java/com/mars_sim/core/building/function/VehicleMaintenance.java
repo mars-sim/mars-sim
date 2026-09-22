@@ -196,28 +196,28 @@ public class VehicleMaintenance extends Function {
 	 * @param locations
 	 * @param newVehicle
 	 * @param transferCrew
-	 * @return
+	 * @return false if the vehicle can't be added, or if the vehicle is already in a garage
 	 */
 	private <T extends Vehicle> boolean addVehicle(List<ParkingLocation<T>> locations, T newVehicle, boolean transferCrew) {
 		if (newVehicle == null) {
-			logger.log(newVehicle, Level.INFO, 1000, building + "Vehicle cannot be null.");
+			logger.log(newVehicle, Level.INFO, 0, building + "Vehicle cannot be null.");
 			return false;
 		}
 
 		ParkingLocation<T> location = getAssignedLocation(locations, newVehicle);
 		
 		if (location != null) {
-			logger.log(newVehicle, Level.INFO, 1000,  "Already garaged in " + building + ".");
-			return true;
+			logger.log(newVehicle, Level.INFO, 0,  "Already garaged in " + building + ".");
+			return false;
 		}
-		
+
 		// Put vehicle in assigned parking location within building.
 		location = getEmptyLocation(locations);
 		if (location == null) {
-			logger.log(newVehicle, Level.INFO, 1000, building + ": No empty parking location found.");	
+			logger.log(newVehicle, Level.INFO, 0, building + ": No empty parking location found.");	
 			return false;
 		}
-		
+
 		// If parking spot is found
 		
 		location.parkVehicle(newVehicle);
