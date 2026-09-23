@@ -85,7 +85,7 @@ class AmountResourceGood extends Good {
 	
 	// Water related flattening factors
 	private static final double ICE_FLATTENING_FACTOR = 1.25;
-	private static final double WATER_FLATTENING_FACTOR = 1.5;
+	private static final double WATER_FLATTENING_FACTOR = 0.9;
 	
 	// Gases flattening factors
 	private static final double METHANOL_FLATTENING_FACTOR = 1.1;
@@ -157,7 +157,7 @@ class AmountResourceGood extends Good {
 	
 	// Demand Modifiers
     private static final double ICE_VALUE_MODIFIER = 1.05;
-	private static final double WATER_VALUE_MODIFIER = 1.25;
+	private static final double WATER_VALUE_MODIFIER = 0.75;
 	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;

@@ -422,8 +422,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 
 				<!--For producing Water -->
-				<process-engine name="Melt Ice" number-modules="10" />
-				<process-engine name="Filter Brine Water" number-modules="10" />
+				<process-engine name="Melt Ice" number-modules="1" />
+				<process-engine name="Filter Brine Water" number-modules="1" />
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>		
 				<process-engine name="CO Hydrogenation" number-modules="2"/>
 				<process-engine name="Catalytic Recombination into Water" number-modules="8"/>	
@@ -887,8 +887,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="12"/>					
 
 				<!--For producing Water -->
-				<process-engine name="Melt Ice" number-modules="40" />
-				<process-engine name="Filter Brine Water" number-modules="40" />
+				<process-engine name="Melt Ice" number-modules="4" />
+				<process-engine name="Filter Brine Water" number-modules="4" />
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>	
 				<process-engine name="CO Hydrogenation" number-modules="6"/>
 				<process-engine name="Catalytic Recombination into Water" number-modules="24"/>	
@@ -2271,8 +2271,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Melt Ice" number-modules="80"/>	
-				<process-engine name="Filter Brine Water" number-modules="80"/>						
+				<process-engine name="Melt Ice" number-modules="8"/>	
+				<process-engine name="Filter Brine Water" number-modules="8"/>						
 			</resource-processing>
 			
 			<storage stock-capacity="300000">
@@ -3523,8 +3523,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<resource-processing low-power-level="0.2">
 				<process-engine name="Excavate Ice" number-modules="3" />
-				<process-engine name="Melt Ice" number-modules="30" />
-				<process-engine name="Filter Brine Water" number-modules="30" />
+				<process-engine name="Melt Ice" number-modules="3" />
+				<process-engine name="Filter Brine Water" number-modules="3" />
 				
 			</resource-processing>
 			
@@ -4520,8 +4520,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				
 				<!--For producing Water -->
-				<process-engine name="Melt Ice" number-modules="10" />
-				<process-engine name="Filter Brine Water" number-modules="10" />
+				<process-engine name="Melt Ice" number-modules="1" />
+				<process-engine name="Filter Brine Water" number-modules="1" />
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>	
 				<process-engine name="CO Hydrogenation" number-modules="2"/>	
 				<process-engine name="Catalytic Recombination into Water" number-modules="8"/>	

@@ -1354,23 +1354,20 @@ public class ExitAirlock extends Task {
 			airlock.addCheckEVASuit();
 			// EVA suit is not available.
 			return false;
-
 		}
 
 		else if (person.isInVehicle()) {
 
 			Vehicle v = person.getVehicle();
+			
+			Settlement settlement = v.getSettlement();
 
-			if (v.isRightOutsideSettlement()
-						|| v.isInSettlement()) {
-				Settlement settlement = v.getSettlement();
-
+			if (settlement != null) {
 				logger.warning(person, 4_000, "Attempting a rescue operation in/near " + settlement.getName() + ".");  
 				// Attempt a rescue operation
 				person.rescueOperation((Rover)v, settlement);
 				// Note: rescueOperation() is more like a hack, rather than a legitimate way 
 				// of transferring a person through the airlock into the settlement 
-				
 				return true;
 			}
 			

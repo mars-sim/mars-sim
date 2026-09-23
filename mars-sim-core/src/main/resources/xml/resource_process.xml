@@ -1027,7 +1027,7 @@
 		<output resource="ice" rate="4000.0" core="true" />		
 	</process> <!-- "Excavate Ice" -->
 	
-	<process name="Melt Ice" kW-required="0.18" defaultOn="true" >
+	<process name="Melt Ice" kW-required="1.8" defaultOn="true" >
 		<description> This process melts permafrost ice into brine water.
 		
 		a.	Specific heat capacity of ice is 2.09 (or 2.108) J/g/C			
@@ -1061,16 +1061,16 @@
 			2. Exposing ice sunlight is the most economic way of melting ice.
 			3. Ice melts when outside temperature is above zero deg Celsius 			 
 		</description>
-		<input resource="ice" rate="400.0"  />
+		<input resource="ice" rate="4000.0"  />
 		
-		<output resource="brine water" rate="390.0" core="true" />
-		<output resource="regolith" rate="6.0" core="true" />
+		<output resource="brine water" rate="3900.0" core="true" />
+		<output resource="regolith" rate="60.0" core="true" />
 		<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
-		<output resource="rock salt" rate="4.0" core="true"  />
+		<output resource="rock salt" rate="40.0" core="true"  />
 	</process>
 
 
-	<process name="Filter Brine Water" kW-required="0.01" defaultOn="true" >
+	<process name="Filter Brine Water" kW-required="0.1" defaultOn="true" >
 		<description> 
 			Removing perchlorate from a Martian settlement's water supply can be done 
 			in a number of ways. Methods to remove perchlorates from water include 
@@ -1078,59 +1078,59 @@
 			photochemically via UV light on a metallic iron catalyst.
 			See https://marspedia.org/Perchlorate
 		</description>
-		<input resource="brine water" rate="390.0"  />
+		<input resource="brine water" rate="3900.0"  />
 		
-		<output resource="water" rate="350.0" core="true" />
+		<output resource="water" rate="3500.0" core="true" />
 		
-		<output resource="sand" rate="4.0" core="true" />
+		<output resource="sand" rate="40.0" core="true" />
 		
-		<output resource="regolith" rate="20.0" core="true" />
+		<output resource="regolith" rate="200.0" core="true" />
 			
-		<output resource="gypsum" rate="5.0" core="true" />			
+		<output resource="gypsum" rate="50.0" core="true" />			
 
-		<output resource="lime" rate="1.0" core="true" />	
+		<output resource="lime" rate="10.0" core="true" />	
 		
-		<output resource="perchlorate" rate="2.0" core="true" />	
+		<output resource="perchlorate" rate="20.0" core="true" />	
 		
-		<output resource="iron oxide" rate="1.5" core="true" />	
-		<output resource="nickel" rate="0.5" core="true" />	
+		<output resource="iron oxide" rate="15.0" core="true" />	
+		<output resource="nickel" rate="5" core="true" />	
 		
-		<output resource="sulfur" rate="0.8" core="true" />	
+		<output resource="sulfur" rate="8" core="true" />	
 		
-		<output resource="calcium" rate="0.7" core="true" />			
-		<output resource="Calcium carbonate" rate="1.5" core="true" />
+		<output resource="calcium" rate="7" core="true" />			
+		<output resource="Calcium carbonate" rate="15" core="true" />
 				
-		<output resource="iron chloride" rate="0.1" />
-		<output resource="magnesium" rate="0.9" core="true" />	
+		<output resource="iron chloride" rate="1" />
+		<output resource="magnesium" rate="9" core="true" />	
 		
-		<output resource="manganese" rate="0.1" core="true" />	
-		<output resource="copper" rate="0.1" core="true"/>	
-		<output resource="gold" rate="0.1" core="true" />	
-		<output resource="platinum" rate="0.1" core="true"/>	
-		<output resource="chromium" rate="0.1" core="true"/>	
+		<output resource="manganese" rate="1" core="true" />	
+		<output resource="copper" rate="1" core="true"/>	
+		<output resource="gold" rate="1" core="true" />	
+		<output resource="platinum" rate="1" core="true"/>	
+		<output resource="chromium" rate="1" core="true"/>	
 		
-		<output resource="scandium" rate="0.1" core="true" />	
-		<output resource="aluminum" rate="0.1" core="true"/>	
-		<output resource="silver" rate="0.1" core="true"/>	
-		<output resource="tin" rate="0.1" core="true"/>	
-		<output resource="titanium" rate="0.1" core="true"/>	
+		<output resource="scandium" rate="1" core="true" />	
+		<output resource="aluminum" rate="1" core="true"/>	
+		<output resource="silver" rate="1" core="true"/>	
+		<output resource="tin" rate="1" core="true"/>	
+		<output resource="titanium" rate="1" core="true"/>	
 		
-		<output resource="vanadium" rate="0.1" core="true"/>	
-		<output resource="zinc" rate="0.1" core="true"/>
-		<output resource="aluminum oxide" rate="0.8" core="true"/>	
+		<output resource="vanadium" rate="1" core="true"/>	
+		<output resource="zinc" rate="1" core="true"/>
+		<output resource="aluminum oxide" rate="8" core="true"/>	
 
-		<output resource="Chalcopyrite" rate="1.0" core="true" />
-		<output resource="Goethite" rate="1.0" core="true" />
-		<output resource="Hematite" rate="1.0" core="true" />	
-		<output resource="Kamacite" rate="1.0" core="true" />	
+		<output resource="Chalcopyrite" rate="10.0" core="true" />
+		<output resource="Goethite" rate="10.0" core="true" />
+		<output resource="Hematite" rate="10.0" core="true" />	
+		<output resource="Kamacite" rate="10.0" core="true" />	
 		
-		<output resource="Magnesite" rate="1.0" core="true" />
-		<output resource="Magnetite" rate="1.0" core="true" />	
-		<output resource="Malachite" rate="1.0" core="true" />	
-		<output resource="Olivine" rate="1.0" core="true" />
+		<output resource="Magnesite" rate="10.0" core="true" />
+		<output resource="Magnetite" rate="10.0" core="true" />	
+		<output resource="Malachite" rate="10.0" core="true" />	
+		<output resource="Olivine" rate="10.0" core="true" />
 		
-		<output resource="Taenite" rate="1.0" core="true" />	
-		<output resource="Sylvite" rate="1.0" core="true" />	
+		<output resource="Taenite" rate="10.0" core="true" />	
+		<output resource="Sylvite" rate="10.0" core="true" />	
 
 								
 	</process>
