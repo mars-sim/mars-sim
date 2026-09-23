@@ -152,14 +152,13 @@ public class MedicalCare extends Function implements MedicalAid {
 				.getABuilding(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT);
 
 		if (building != null) {
-
 			// Send this doctor to occupy a physical spot
 			success = BuildingManager.addToActivitySpot(worker, building, FunctionType.MEDICAL_CARE);
 				
-			if (success)
-				logger.info(worker, 10_000, "Arrived at " + building.getName() + ".");
-			else
-				logger.info(worker, 10_000, "Unable to be go to " + building.getName() + " or to be added to a medical activity spot.");
+//			if (success)
+//				logger.info(worker, 10_000, "Arrived at " + building.getName() + ".");
+//			else
+//				logger.info(worker, 10_000, "Unable to go to " + building.getName() + " or to be added to a medical activity spot.");
 		}
 		else
 			logger.info(worker, 10_000, "Unable to find a medical building.");

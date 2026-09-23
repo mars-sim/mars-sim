@@ -32,8 +32,6 @@ public abstract class ResourceProcessor extends Function {
 
 	private List<ResourceProcess> processes;
 	
-	
-
 	/**
 	 * Constructor.
 	 * 

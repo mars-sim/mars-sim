@@ -129,7 +129,7 @@ public abstract class GatherData extends EVAOperation {
         	// Get the  airlock
             airlock = getWalkableAvailableEgressAirlock(worker);
             if (airlock == null) {
-            	logger.warning(worker, 5_000L, "No available settlement airlock.");
+            	logger.warning(worker, 15_000L, "No available settlement airlock.");
                 endEVA("No available settlement airlock.");
             	return;
             }
@@ -138,7 +138,7 @@ public abstract class GatherData extends EVAOperation {
             dataCollectionSite = findSiteMap(s, coord, isSettlement);
             
            	if (dataCollectionSite == null) {
-           		logger.warning(worker, 5_000L, "No available DCS found near " + s + ".");
+           		logger.warning(worker, 15_000L, "No available DCS found near " + s + ".");
                 endEVA("No available DCS found near " + s + ".");
            		return;
            	}
@@ -164,7 +164,7 @@ public abstract class GatherData extends EVAOperation {
             		dataCollectionSite.setSecondaryOperator(secondary);
             	}
             	else {
-                	logger.warning(worker, 5_000L, "No available operator slot.");
+                	logger.warning(worker, 15_000L, "No available operator slot.");
                     endEVA("No available operator slot.");
                 	return;
             	}
@@ -177,13 +177,13 @@ public abstract class GatherData extends EVAOperation {
         	}
 
            	if (!hasInstrument) {
-           		logger.warning(worker, 5_000L, "No instrument available for DCS near " + s + ".");
+           		logger.warning(worker, 15_000L, "No instrument available for DCS near " + s + ".");
                 endEVA("No instrument available for DCS near " + s + ".");
            		return;
            	}
            	
            	if (!hasDataRecorder) {
-           		logger.warning(worker, 5_000L, "No data recorder available for DCS near " + s + ".");
+           		logger.warning(worker, 15_000L, "No data recorder available for DCS near " + s + ".");
                 endEVA("No data recorder available for DCS near " + s + ".");
            		return;
            	}
@@ -193,7 +193,7 @@ public abstract class GatherData extends EVAOperation {
         	// Get the vehicular airlock
             airlock = ((Rover)v).getAirlock();
             if (airlock == null) {
-            	logger.warning(worker, 5_000L, "No available vehicular airlock.");
+            	logger.warning(worker, 15_000L, "No available vehicular airlock.");
                 endEVA("No available vehicular airlock.");
             	return;
             }
@@ -209,7 +209,7 @@ public abstract class GatherData extends EVAOperation {
                 }
             	
                	if (dataCollectionSite == null) {
-               		logger.warning(worker, 5_000L, "No available DCS found near " + v + ".");
+               		logger.warning(worker, 15_000L, "No available DCS found near " + v + ".");
                     endEVA("No available DCS found near " + v + ".");
                		return;
                	}
@@ -237,7 +237,7 @@ public abstract class GatherData extends EVAOperation {
                 		dataCollectionSite.setSecondaryOperator(secondary);
                 	}
                 	else {
-                    	logger.warning(worker, 5_000L, "No available operator slot.");
+                    	logger.warning(worker, 15_000L, "No available operator slot.");
                         endEVA("No available operator slot.");
                     	return;
                 	}
@@ -251,13 +251,13 @@ public abstract class GatherData extends EVAOperation {
             	}
                	
                	if (!hasInstrument) {
-               		logger.warning(worker, 5_000L, "No instrument available for DCS near " + v + ".");
+               		logger.warning(worker, 15_000L, "No instrument available for DCS near " + v + ".");
                     endEVA("No instrument available for DCS near " + v + ".");
                		return;
                	}
                	
                	if (!hasDataRecorder) {
-               		logger.warning(worker, 5_000L, "No data recorder available for DCS near " + v + ".");
+               		logger.warning(worker, 15_000L, "No data recorder available for DCS near " + v + ".");
                     endEVA("No data recorder available for DCS near " + v + ".");
                		return;
                	}

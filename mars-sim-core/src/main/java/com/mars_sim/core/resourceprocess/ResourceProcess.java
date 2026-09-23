@@ -41,7 +41,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private boolean isRunning;
 	private boolean isLockOn;
 	
-	private int levelOfEffort = 3;
+	private int percentEffort = 3;
 	private int modules;
 	
 	private double currentProductionLevel;
@@ -62,7 +62,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	/**
 	 * Constructor.
 	 *
-	 * @param engine The processing engine that this Process manages
+	 * @param engine The processing engine that this process manages
 	 */
 	public ResourceProcess(ResourceProcessEngine engine, Building building) {
 		this.processSpec = engine.getProcessSpec();
@@ -72,7 +72,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 		this.engine = engine;
 		this.building = building;
 		this.assessment = DEFAULT_ASSESSMENT;
-		this.modules = engine.getMaxModules();
+		this.modules = 1; // engine.getMaxModules();
 
 		// Add some randomness, today is sol 1
 		resetToggleWait(20 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
@@ -100,7 +100,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 			
 			double newProdLevel = productionLevel;
 			// Set the current production level.
-			currentProductionLevel = newProdLevel * levelOfEffort / 5;
+			currentProductionLevel = newProdLevel * percentEffort / 5;
 
 			// Increment the duty time here
 			dutyTime += time;
@@ -226,7 +226,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 		// Note : No need of checking if (isProcessRunning()) since 
 		// ResourceProcessor::getCombinedPowerLoad will check 
 		// if a process is running
-		return processSpec.getkWRequired() * getNumModules() * levelOfEffort / 5;
+		return processSpec.getkWRequired() * getNumModules() * percentEffort / 5;
 	}
 
 	/**
@@ -332,21 +332,21 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 	
 	/**
-	 * Sets the level of effort.
+	 * Sets the percentage of effort.
 	 * 
-	 * @param level
+	 * @param Percent
 	 */
-	public void setLevel(int level) {
-		levelOfEffort = level;
+	public void setPercentEffort(int Percent) {
+		percentEffort = Percent;
 	}
 	
 	/**
-	 * Gets the level of effort.
+	 * Gets the percentage of effort.
 	 * 
 	 * @return
 	 */
-	public int getLevel() {
-		return levelOfEffort;
+	public int getPercentEffort() {
+		return percentEffort;
 	}
 	
 	public void setAssessment(ResourceProcessAssessment assessment) {

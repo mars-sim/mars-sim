@@ -256,7 +256,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 						double modTime = (maxTime - diff) / 5;
 						score.addModifier(TOGGLE_TIME, modTime);
 						// score.getScore() is 20 at max
-						if (score.getScore() >= 3 * process.getLevel()) { 
+						if (score.getScore() >= 3 * process.getPercentEffort()) { 
 							toggleOffTasks.add(new ToggleOffJob(this, settlement, building, process, score));
 						}
 					}
@@ -478,11 +478,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //				} else if (ResourceUtil.isCO2(resource)) { 					// CO2	
 //					score += mrate * SUPER;
 				} else if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
-					score += mrate * SUPREME;
+					score += mrate * EXCEEDING;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
-					score += mrate * MEGA;
+					score += mrate * EXCEEDING;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
-					score += mrate * MEGA;
+					score += mrate * EXCEEDING;
 				} else if (ResourceUtil.isOxygen(resource)) {  				// oxygen
 					score += mrate / SUPER;
 				} else if (ResourceUtil.isDerivedResource(resource)) { 		// glucose, leaves, soil 

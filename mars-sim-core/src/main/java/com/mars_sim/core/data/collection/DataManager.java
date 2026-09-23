@@ -17,19 +17,19 @@ import com.mars_sim.core.structure.Settlement;
 
 public class DataManager implements Serializable {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-		/** The settlement's data library. */
-		private Map<Settlement, List<FieldDataSet>> dataArchive;
-		/**
-		 * Constructor for a {@link DataManager}.
-		 */
-		public DataManager() {
-			dataArchive = new ConcurrentHashMap<>();	
-		}
-		
-		public Map<Settlement, List<FieldDataSet>> getDataArchive() {
-			return dataArchive;
-		}
+	/** The settlement's data library. */
+	private Map<Settlement, List<FieldDataSet>> dataArchive;
+	/**
+	 * Constructor for a {@link DataManager}.
+	 */
+	public DataManager() {
+		dataArchive = new ConcurrentHashMap<>();	
+	}
+	
+	public Map<Settlement, List<FieldDataSet>> getDataArchive() {
+		return dataArchive;
+	}
 }

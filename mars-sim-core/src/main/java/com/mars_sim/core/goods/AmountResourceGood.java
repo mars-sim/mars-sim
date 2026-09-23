@@ -872,8 +872,15 @@ class AmountResourceGood extends Good {
 			totalDemand *= 0.995;
 		}
 		
-		if (owner.getLifeResources().contains(id) && totalDemand < 1) {
-			totalDemand = 1.0;
+		// For life support resources, need to adjust the demand so that the VP is at least 1
+		if (owner.getLifeResources().contains(id)) {
+			
+			int expectedGoodValuePoint = 1;
+			double expectedDemand = totalSupply * expectedGoodValuePoint;
+			
+			if (totalDemand < expectedDemand) {
+				totalDemand = expectedDemand;
+			}
 		}
 		
 		// Save the goods demand

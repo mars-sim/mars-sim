@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.logging.Level;
 
 import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -118,29 +117,29 @@ public class ExamineBody extends MedicalAidTask {
 		// First walk to a medical activity spot 
 		boolean success = walkToDoctorStation(false);  
 
-		if (!success) {
-			logger.info(worker, 10_000, "Unsuccessfully tried to walk to Doctor's station to examine " + deceasedPerson.getName() + ".");
-			// Note: Avoid calling this to instantly send the doctor there.
-			// Check if the doctor is already at a medical activity spot	
-			success = MedicalCare.dispatchToMedical(worker);
-			
-			if (!success) {
-				logger.info(worker, 10_000, "Unsuccessfully dispatched to Doctor's station to examine " + deceasedPerson.getName() + ".");
-				// If no medical activity spot is available, end the task
-				
-				// Note: for now, do NOT call endTask, or else this task may not be able to get done
-				
-//				endTask();
-				// Note: should be able to 'remotely' treat a patient
-//				return ;
-			}
-			else {
-				logger.info(worker, 10_000, "Successfully dispatched to Doctor's station to treat health problem.");
-			}
-		} 
-		else {
-			logger.info(worker, 10_000, "Successfully arrived at Doctor's station to examine " + deceasedPerson.getName() + ".");
-		}
+//		if (!success) {
+//			logger.info(worker, 10_000, "Unsuccessfully tried to walk to Doctor's station to examine " + deceasedPerson.getName() + ".");
+//			// Note: Avoid calling this to instantly send the doctor there.
+//			// Check if the doctor is already at a medical activity spot	
+//			success = MedicalCare.dispatchToMedical(worker);
+//			
+//			if (!success) {
+//				logger.info(worker, 10_000, "Unsuccessfully dispatched to Doctor's station to examine " + deceasedPerson.getName() + ".");
+//				// If no medical activity spot is available, end the task
+//				
+//				// Note: for now, do NOT call endTask, or else this task may not be able to get done
+//				
+////				endTask();
+//				// Note: should be able to 'remotely' treat a patient
+////				return ;
+//			}
+//			else {
+//				logger.info(worker, 10_000, "Successfully dispatched to Doctor's station to treat health problem.");
+//			}
+//		} 
+//		else {
+//			logger.info(worker, 10_000, "Successfully arrived at Doctor's station to examine " + deceasedPerson.getName() + ".");
+//		}
 		
         String des = "Performing postmortem exam on " + deceasedPerson;
         logger.log(examiner, Level.INFO, 10_000, des + ".");
