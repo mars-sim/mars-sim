@@ -28,7 +28,7 @@ public class MineralMap implements Serializable {
 	/*
 	 * Additional Map Resources
 	 * 
-	 * (A). Arizona State University (ASU) Mars Space FLight Facility
+	 * (A). Arizona State University (ASU) Mars Space Flight Facility
 	 * 
 	 * 1. GLobal Data Sets - THEMIS, MOLA, TES THermal Inertia, etc.
 	 * 2. TES Mineral Maps - Hematite, K-Feldspar, Plagioclase, High/Low-Ca Pyroxene, Olivine, Si, Quartz, Amphibole
@@ -89,7 +89,8 @@ public class MineralMap implements Serializable {
 	private List<MineralType> types;
 	
 	/**
-	 * Create a mineral map that is based on a configuration
+	 * Creates a mineral map that is based on a configuration.
+	 * 
 	 * @param mineralMapConfig Defines details of map
 	 */
 	MineralMap(MineralMapConfig mineralMapConfig) {
@@ -100,7 +101,8 @@ public class MineralMap implements Serializable {
 	}
 
 	/**
-	 * Add a mineral concentration to a specific location
+	 * Adds a mineral concentration to a specific location.
+	 * 
 	 * @param locn
 	 * @param mineral
 	 * @param conc
@@ -130,6 +132,7 @@ public class MineralMap implements Serializable {
 
 	/**
 	 * Gets the mineral concentration at a given location.
+	 * 
 	 * @note Called by SurfaceFeatures's addExploredLocation()
 	 * and ExploreSite's improveSiteEstimates()
 	 * 
@@ -147,7 +150,8 @@ public class MineralMap implements Serializable {
 	}
 	
 	/**
-	 * Get the mneral types in this map
+	 * Gets the mineral types in this map.
+	 * 
 	 * @return
 	 */
 	public List<MineralType> getTypes() {
@@ -234,8 +238,9 @@ public class MineralMap implements Serializable {
 	}
 
 	/**
-	 * Get all the mineral deposit within a range of a specific center point. The deposits are filtered
-	 * by a list of valid minerals
+	 * Gets all the mineral deposit within a range of a specific center point. The deposits are filtered
+	 * by a list of valid minerals.
+	 * 
 	 * @param center
 	 * @param arcAngle
 	 * @param minerals
@@ -249,7 +254,8 @@ public class MineralMap implements Serializable {
     }
 
 	/**
-	 * Is the specified mineral present in the deposit
+	 * Is the specified mineral present in the deposit ?
+	 * 
 	 * @param f
 	 * @param minerals
 	 * @return

@@ -2095,29 +2095,30 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Process Phyllo-Silicate from Regolith-C" number-modules="30"/>
 				<process-engine name="Process Basaltic from Regolith-D" number-modules="30"/>
 				
-				<!-- 10 processes for breaking down minerals -->
-				<process-engine name="Do Chalcopyrite Smelting" number-modules="15"/>
-				<!-- https://geologyscience.com/minerals/goethite/ -->
-				<process-engine name="Do Goethite Smelting" number-modules="15"/>				
-				<!-- https://geologyscience.com/minerals/hematite/ -->
-				<process-engine name="Do Hematite Smelting" number-modules="15"/>
-				<process-engine name="Do Kamacite Smelting" number-modules="15"/> 
-				<process-engine name="Do Magnesite Smelting" number-modules="15"/>								
-				<process-engine name="Do Magnetite Smelting" number-modules="15"/>
-				<process-engine name="Do Malachite Smelting" number-modules="15"/>				
-				<process-engine name="Do Olivine Smelting" number-modules="15"/>				
-				<process-engine name="Do Taenite Smelting" number-modules="15"/>
-				<process-engine name="Do Sylvite Smelting" number-modules="15"/>
-								
-				<!-- 9 processes for extracting ore deposits -->			
-				<process-engine name="Process Basaltic deposits" number-modules="15"/>
-				<process-engine name="Process Smectite deposits" number-modules="15"/>
-				<process-engine name="Process Allophane deposits" number-modules="15"/>
-				<process-engine name="Process Akaganeite deposits" number-modules="15"/> 
-				<process-engine name="Process Bassanite deposits" number-modules="15"/> 
+				<!-- 12 processes for breaking down minerals -->
+				<process-engine name="Smelt Chalcopyrite" number-modules="10"/>
+				<process-engine name="Smelt Goethite" number-modules="10"/>				
+				<process-engine name="Smelt Hematite" number-modules="10"/>
+				<process-engine name="Smelt Kamacite" number-modules="10"/> 
+				<process-engine name="Smelt Magnesite" number-modules="10"/>								
+				<process-engine name="Smelt Magnetite" number-modules="10"/>
+				<process-engine name="Smelt Malachite" number-modules="10"/>
+				<process-engine name="Smelt Olivine" number-modules="10"/>
+				<process-engine name="Smelt Plagioclase Feldspar" number-modules="10"/>
+				<process-engine name="Smelt Pyroxene" number-modules="10"/>
+				<process-engine name="Smelt Sylvite" number-modules="10"/>
+				<process-engine name="Smelt Taenite" number-modules="10"/>
 
-				<process-engine name="Reduce Gypsum with Carbon Monoxide" number-modules="15"/>
-				<process-engine name="Reduce Gypsum with Hydrogen" number-modules="15"/>
+								
+				<!-- 8 processes for extracting contents from Ore Deposits -->			
+				<process-engine name="Separate Basaltic deposits" number-modules="10"/>
+				<process-engine name="Separate Smectite deposits" number-modules="10"/>
+				<process-engine name="Separate Allophane deposits" number-modules="10"/>
+				<process-engine name="Separate Akaganeite deposits" number-modules="10"/> 
+				<process-engine name="Separate Bassanite deposits" number-modules="10"/> 
+
+				<process-engine name="Separate Gypsum with Carbon Monoxide" number-modules="10"/>
+				<process-engine name="Separate Gypsum with Hydrogen" number-modules="10"/>
 				
 				<process-engine name="Make Gypsum Plaster via Calcination" number-modules="15"/>							
 			</resource-processing>
@@ -2132,17 +2133,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="gypsum" amount="5000.0" />
 				<resource-capacity type="smectite" amount="1000.0" />		
 					
-				<!-- 10 types of minerals -->												
+				<!-- 12 types of minerals -->												
 				<resource-capacity type="chalcopyrite" amount="1000.0" />
 				<resource-capacity type="goethite" amount="1000.0" />
 				<resource-capacity type="hematite" amount="1000.0" />		
 				<resource-capacity type="kamacite" amount="1000.0" />
 				<resource-capacity type="magnesite" amount="1000.0" />
 				
-				<resource-capacity type="magnetite" amount="5000.0" />
+				<resource-capacity type="magnetite" amount="1000.0" />
 				<resource-capacity type="malachite" amount="1000.0" />	
 				<resource-capacity type="olivine" amount="1000.0" />
-				<resource-capacity type="taenite" amount="5000.0" />
+				<resource-capacity type="Plagioclase Feldspar" amount="5000.0" />
+				<resource-capacity type="Pyroxene" amount="5000.0" />
+				<resource-capacity type="taenite" amount="1000.0" />
 				<resource-capacity type="sylvite" amount="1000.0" />					
 
 				<resource-capacity type="iron powder" amount="1000.0" />									

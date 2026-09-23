@@ -11,7 +11,7 @@ import java.util.Set;
 
 /**
  * Represents a type of mineral and it's properties.
- * It provides extended properties to an existign AmountResource of type mineral.
+ * It provides extended properties to an existing AmountResource of type mineral.
  * This is immutable and the resourceId is unique key.
  * 
  */
@@ -48,7 +48,8 @@ public class MineralType implements Serializable {
 	}
 
     /**
-     * Get the surface region locales where this mineral can be found
+     * Gets the surface region locales where this mineral can be found.
+     * 
      * @return Locales name of favoured regions.
      */
 	public Set<String> getLocales() {

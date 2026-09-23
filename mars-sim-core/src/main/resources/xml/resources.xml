@@ -680,14 +680,21 @@
 	<resource name="Nitrate" type="compound" phase="solid"> NO3 is an essential nutrient for plants</resource>
 	<resource name="Nitrite" type="compound" phase="solid"> NO2 is an essential nutrient for plants</resource>
 	<resource name="Potash lye" type="compound" phase="solid" demand="2"> Potassium Hydroxide (KOH). Used for
-		liquid soap production. Also for food processing, such as curing olives and making certain types of noodles.</resource>
+		liquid soap production. Also for food processing, such as curing olives and making certain types of noodles.
+
+		The "K₂O industry" is really the potash industry: mine sylvite/carnallite → float or leach KCl 
+		→ convert to KOH (electrolysis), K₂SO₄ (Mannheim), or K₂CO₃ as needed. 
+		
+		Pure K₂O is a laboratory curiosity at scale; in glass, cement, and fertilizer it exists only 
+		as a bookkeeping convention for the potassium content. 
+		</resource>
 	<resource name="Sand" type="compound" phase="solid"> Soil with iron oxide removed. Used for making glass.</resource>
 	<resource name="Silica" type="compound" phase="solid"> The word Silica came from the Latin silex. 
 	 Also known as silicon dioxide, silica is an oxide of silicon with the chemical formula
 	 SiO2, most commonly found in nature as quartz and in various living
 	 organisms. In many parts of the world, silica is the major constituent
 	 of sand. </resource>
-	 	
+	
 	<resource name="Sodium oxide" type="compound" phase="solid"> extracted from regolith.</resource>
 			 
 	<resource name="Sodium carbonate" type="compound" phase="solid">Na2CO3, also called washing soda,
@@ -821,6 +828,15 @@
 	 elements present in highest concentrations. Olivine gives its name to the group of minerals
 	 with a related structure (the olivine group)—which includes tephroite (Mn2SiO4),
 	 monticellite (CaMgSiO4) and kirschsteinite (CaFeSiO4).</resource>
+	 
+	  <resource name="Plagioclase Feldspar" type="mineral" phase="solid">Plagioclase feldspars 
+	  (sodium–calcium solid solution): ranging from Albite (NaAlSi₃O₈) to Anorthite (CaAl₂Si₂O₈) 
+	  
+	  Feldspars occur in all major rock types (igneous, metamorphic, and sedimentary) and are the 
+	  primary ingredient in ceramics, glass, and enamel. When they weather, they break down into 
+	  clay minerals (e.g., kaolinite), which is how most soils form. 
+	   </resource>
+	 
 	 <resource name="Pyroxene" type="mineral" phase="solid">Pyroxenes have the general formula XY(Si,Al)2O6,
 	 where X represents calcium (Ca), sodium (Na), iron (Fe(II)) or magnesium (Mg) and more rarely zinc, 
 	 manganese or lithium, and Y represents ions of smaller size, such as chromium (Cr), aluminium (Al), 
@@ -877,6 +893,7 @@
 	<resource name="Calcium" type="element" phase="solid">An element.</resource>
 	<resource name="Carbon" type="element" phase="solid" demand="1.2" >Carbon powder</resource>
 	<resource name="Chromium" type="element" phase="solid">An element.</resource>
+	<resource name="Cobalt" type="element" phase="solid">An element.</resource>
 	<resource name="Copper" type="element" phase="solid">An elemen.</resource>
 	<resource name="Gold" type="element" phase="solid">An element.</resource>
 	<resource name="Iron powder" type="element" phase="solid" demand="1.1">An element.</resource>
@@ -900,7 +917,18 @@
 	</resource>
 	<resource name="Phosphorus" type="element" phase="solid">An element.</resource>
 	<resource name="Platinum" type="element" phase="solid">An element.</resource>
-	<resource name="Potassium" type="element" phase="solid">An element.</resource>
+	<resource name="Potassium" type="element" phase="solid">
+		The following forms of potassium may exist on Mars :
+		
+	 1. K⁺ in silicate lattices — plagioclase (the ~0.2–0.5 wt% K₂O discussed earlier), K-feldspar 
+	   (sanidine/microcline in more evolved rocks), micas (phlogopite, biotite)
+     2. KCl — in evaporite/sulfate deposits (e.g., Valles Marineris, Terra Cimmeria); detected by 
+        orbital CRISM/OMEGA
+     3. K-bearing smectites (nontronite) — in Gale and Jezero Crater sediments
+
+		So potassium is abundant (~2.5–3.5 wt% K₂O in bulk crustal rock), but exclusively as K⁺ 
+		in crystal structures or halide salts — never as a free oxide or peroxide phase.
+	</resource>
 	<resource name="Scandium" type="element" phase="solid">An element.</resource>
 	<resource name="Silicon" type="element" phase="solid" demand="0.75" >An element.</resource>
 	<resource name="Silver" type="element" phase="solid">An element.</resource>

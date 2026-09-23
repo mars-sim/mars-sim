@@ -29,6 +29,7 @@ public class MineralMapConfig {
 	private static final String NAME = "name";
 	private static final String FREQUENCY = "frequency";
 	private static final String LOCALE_LIST = "locale-list";
+	/* locale means terrain descriptors */
 	private static final String LOCALE = "locale";
 
 	// Frequency Strings
@@ -36,6 +37,7 @@ public class MineralMapConfig {
 	private static final String UNCOMMON_TAG = "uncommon";
 	private static final String RARE_TAG = "rare";
 	private static final String VERY_RARE_TAG = "very rare";
+	
 	static final int COMMON_FREQUENCY = 10;
 	static final int UNCOMMON_FREQUENCY = 30;
 	static final int RARE_FREQUENCY = 60;
