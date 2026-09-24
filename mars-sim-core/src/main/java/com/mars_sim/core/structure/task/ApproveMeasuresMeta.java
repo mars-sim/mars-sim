@@ -124,23 +124,34 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
+		int num = settlement.getNumCitizens();
+		double chance = 1;
+		
+		if (num < 24) {
+			// Encourage smaller settlement the chance to respond faster to the resource issues
+			chance = 24.0 / num; 
+			if (chance > 6)
+				chance = 6.0;
+		}
+		
+		
 		if (settlement.getRationing().isApprovalDue()) {
 //			int levelDiff = settlement.getRationing().getLevelDiff();
 //			if (levelDiff != 0) {
-				RatingScore score = new RatingScore("water.rationing", 5 * BASE_SCORE);
+				RatingScore score = new RatingScore("water.rationing", 5 * BASE_SCORE * chance);
 				tasks.add(new ApproveMeasuresJob(this, settlement, score, 1, ReviewGoal.WATER_RATIONING));
 //			}
 		}
 		
 		boolean iceFlag = settlement.isIceApprovalDue();
 		if (iceFlag) {
-			RatingScore score = new RatingScore("ice.probability", 5 * BASE_SCORE);  
+			RatingScore score = new RatingScore("ice.probability", 5 * BASE_SCORE * chance);  
 			tasks.add(new ApproveMeasuresJob(this, settlement, score, 1, ReviewGoal.ICE_RESOURCE));
 		}
 
 		boolean regFlag = settlement.isRegolithApprovalDue();
 		if (regFlag) {
-			RatingScore score = new RatingScore("regolith.probability", 5 * BASE_SCORE);  
+			RatingScore score = new RatingScore("regolith.probability", 5 * BASE_SCORE * chance);  
 			tasks.add(new ApproveMeasuresJob(this, settlement, score, 1, ReviewGoal.REGOLITH_RESOURCE));
 		}
 		

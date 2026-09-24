@@ -896,8 +896,20 @@ public class GoodsManager implements Serializable {
 	public Set<Integer> getLifeResources() {
 		return resLimits.keySet();
 	}
+	
 	/**
-	 * Gets the resources for review.
+	 * Gets the reserve limit of a resource.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public double getReserveLimit(int id) {
+		return resLimits.get(id).reserve();
+	}
+	
+	/**
+	 * 
+	 * Gets the unreviewed resources for a review.
 	 * 
 	 * @return
 	 */

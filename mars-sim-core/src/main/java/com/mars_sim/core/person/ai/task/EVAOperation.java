@@ -741,10 +741,10 @@ public abstract class EVAOperation extends Task {
 		if (s == null) {
 			s = CollectionUtils.findSettlement(person.getCoordinates());
 			if (s != null)
-				isEmergency = s.getRationing().isAtEmergency();
+				isEmergency = s.getRationing().isAboveEmergency40();
 		}
 		else {
-			isEmergency = s.getRationing().isAtEmergency();
+			isEmergency = s.getRationing().isAboveEmergency40();
 		}
 		return isEmergency;
 	}

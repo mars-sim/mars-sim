@@ -60,7 +60,7 @@ public abstract class DigLocalMeta extends MetaTask
         }
     }
 
-	private static final int MAX_BASE = 500;
+	private static final int MAX_BASE = 1000;
 	private static final int DEFAULT_EVA_NUM = 5;
 	
     private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger digging
@@ -111,7 +111,7 @@ public abstract class DigLocalMeta extends MetaTask
         // Determine the base score
         RatingScore result = new RatingScore(base);
 
-        boolean isEmergency = settlement.getRationing().isAtEmergency();
+        boolean isEmergency = settlement.getRationing().isAboveEmergency40();
         
         int rationingLevel = settlement.getRationing().getRationingLevel();
         

@@ -159,7 +159,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 		
 		int numResource = settlement.getGoodsManager().getResourceReviewDue();
 		if (numResource > 0) { 
-			RatingScore score = new RatingScore("resource.lifeSupport", BASE_SCORE * numResource * chance);
+			RatingScore score = new RatingScore("resource.lifeSupport", BASE_SCORE * numResource * chance * chance);
 			if (score.getScore() > 0)
 				tasks.add(new BudgetResourcesJob(this, settlement, score, numResource, ReviewGoal.LIFE_RESOURCE));
 		}

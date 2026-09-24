@@ -26,6 +26,45 @@ public class Rationing implements Serializable {
 	
 	private static final double WASH_WATER_USAGE = SimulationConfig.instance().getPersonConfig().getWaterUsageRate();
 	
+	public enum EmergencyLevel {
+		NONE (0),
+		ALPHA (1),
+		BRAVO (21),
+		CHARLIE (61),
+		DELTA (141),
+		ECHO (301);
+		
+		private int rationLevel = 0;
+
+		EmergencyLevel(int rationLevel) {
+			this.rationLevel = rationLevel;
+		}
+
+		public int getRationLevel() {
+			return rationLevel;
+		}
+
+		/**
+		 * Convert from ration leveling to emergency Level
+		 * 
+		 * @param name
+		 * @return type id
+		 */
+		private static EmergencyLevel convertInt2Enum(int level) {
+		    for (int i = 0; i < 6; i++) {
+		    	EmergencyLevel e = EmergencyLevel.values()[i];
+		    	if (level <= e.rationLevel) {
+		    		if (i > 0)
+		    			return EmergencyLevel.values()[i - 1];
+		    		else {
+		    			return EmergencyLevel.NONE;
+		    		}
+		    	}
+		    }
+			return EmergencyLevel.ECHO;
+		}
+	}
+	
 	/** The flag to see if a rationing approval is due. */
 	private boolean approvalDue = false;
 	/** The flag to see if a rationing review is due. */
@@ -36,8 +75,8 @@ public class Rationing implements Serializable {
 	private int recommendedLevel;
 	
 	/** The player adjustable rationing level that would trigger the state of emergency for the settlement. */
-	private int emergencyLevel = 100;
-
+//	private EmergencyLevel emergencyLevel = EmergencyLevel.NONE;
+	
 	/** The associated settlement. */
 	private Settlement settlement;
 	
@@ -48,6 +87,28 @@ public class Rationing implements Serializable {
 	
 	public Rationing(Settlement settlement)  {
 		this.settlement = settlement;
+	}
+	
+	/**
+	 * Is the settlement at above level 40 in water rationing ?
+	 * 
+	 * @return
+	 */
+	public boolean isAboveEmergency40() {
+		if (currentLevel <= 40) {
+			// 40 is in between BRAVO and CHARLIE
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Gets the Emergency Level in enum.
+	 * 
+	 * @return
+	 */
+	public EmergencyLevel getEmergencyLevel() {
+		return EmergencyLevel.convertInt2Enum(currentLevel);
 	}
 	
 	/** 
@@ -114,34 +175,6 @@ public class Rationing implements Serializable {
 		return approvalDue;
 	}
 	
-	
-	/**
-	 * Sets the emergency level.
-	 * 
-	 * @param level
-	 */
-	public void setEmergencyLevel(int level) {
-		emergencyLevel = level;
-	}
-	
-	/**
-	 * Gets the emergency level.
-	 * 
-	 * @return
-	 */
-	public int getEmergencyLevel() {
-		return emergencyLevel;
-	}
-	
-	/**
-	 * Checks if the emergency level has been reached.
-	 * 
-	 * @return
-	 */
-	public boolean isAtEmergency() {
-		return currentLevel >= emergencyLevel;
-	}
-	
 	/**
 	 * Computes the rationing level at the settlement.
 	 * Note: do NOT approve the change of level in this method.
@@ -150,15 +183,19 @@ public class Rationing implements Serializable {
 	 */
 	public int reviewRationingLevel() {
 		var rh = settlement.getEquipmentInventory();
-		double stored = rh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
-		int reserve = settlement.getNumCitizens() * Settlement.MIN_WATER_RESERVE;
+		double storedWater = rh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+		double storedBrine = rh.getSpecificAmountResourceStored(ResourceUtil.BRINE_WATER_ID);
+		double storedIce = rh.getSpecificAmountResourceStored(ResourceUtil.ICE_ID);
+		double industrialReserve = Settlement.MIN_WATER_RESERVE;
+		
+		double personReserve = settlement.getGoodsManager().getReserveLimit(ResourceUtil.WATER_ID);
 		
 		// Assuming a 90-day supply of this resource and including industrial usage 
 		// of WASH_WATER_USAGE
-		double required = (5 * WASH_WATER_USAGE + settlement.getWaterConsumptionRate())
-				* settlement.getNumCitizens() * 120;
+		double required = 90 * (5 * WASH_WATER_USAGE + settlement.getWaterConsumptionRate());
 	
-		int newLevel = (int)((required + reserve) / (1 + stored));
+		int newLevel = (int)(settlement.getSqrtPopFactor() * (required + industrialReserve - personReserve) 
+				/ (1 + storedWater + .75 * storedBrine + .5 * storedIce));
 		if (newLevel < 1)
 			newLevel = 0;
 		else if (newLevel > 1000)

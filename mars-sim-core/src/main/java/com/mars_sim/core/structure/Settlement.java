@@ -120,7 +120,7 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Shared preference key for Mission limits
 	 */
-	private static final int RESOURCE_UPDATE_FREQ = 30;
+	private static final int RESOURCE_UPDATE_FREQ = 27;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
 
@@ -1067,7 +1067,7 @@ public class Settlement extends Unit implements Temporal,
 
 			// Future : Convert computing ice/regolith probability to a task done by settlers
 			remainder = msol % RESOURCE_UPDATE_FREQ;
-			if (remainder == 2 || remainder == 9) {
+			if (remainder == 0 || remainder == 9|| remainder == 18) {
 				
 				setIceReviewDue(true);
 				setRegolithReviewDue(true);
@@ -2609,14 +2609,14 @@ public class Settlement extends Unit implements Temporal,
 			iceDemand = 1;
 		
 		double waterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.WATER_ID);
-		waterDemand = waterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
+		waterDemand = waterDemand * Math.sqrt(1.0 + 3 * rationing.getRationingLevel());
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
 		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID) / 2;
-		brineWaterDemand = brineWaterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
+		brineWaterDemand = brineWaterDemand * Math.sqrt(1.0 + 3 * rationing.getRationingLevel());
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)

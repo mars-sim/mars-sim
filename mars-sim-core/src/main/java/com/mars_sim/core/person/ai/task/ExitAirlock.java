@@ -1297,36 +1297,25 @@ public class ExitAirlock extends Task {
 			return false;
 		}
 		
-		if (person.getSettlement() != null && !person.getSettlement().getRationing().isAtEmergency()
+		if (person.getSettlement() != null) {
+				
+			if (person.getSettlement().getRationing().isAboveEmergency40()) {
+
+				return false;
+			}
 				// Check if person is incapacitated.
-			&& (person.getPerformanceRating() <= MIN_PERFORMANCE
-				|| person.getPhysicalCondition().hasSeriousMedicalProblems())) {
-			// May need to relocate the following code to a proper place
-			
-			// Prevent the logger statement below from being repeated multiple times
-			logger.info(person, 4_000,
+			if (person.getPerformanceRating() <= MIN_PERFORMANCE
+				|| person.getPhysicalCondition().hasSeriousMedicalProblems()) {
+				// May need to relocate the following code to a proper place
+				
+				// Prevent the logger statement below from being repeated multiple times
+				logger.info(person, 4_000,
 					"Could not exit the airlock from " + airlock.getEntityName()
 					+ " due to crippling performance rating of " + person.getPerformanceRating() + ".");
 
-//			try {
-//
-//				if (person.isInVehicle() 
-//						&& (person.getVehicle().isRightOutsideSettlement()
-//							|| person.getVehicle().isInSettlement())) {
-//					Settlement settlement = person.getVehicle().getSettlement();
-//
-//					logger.warning(person, 4_000, "Attempting a rescue operation in/near " + settlement.getName() + ".");  
-//					// Attempt a rescue operation
-//					person.rescueOperation((Rover) person.getVehicle(), settlement);
-//					// Note: rescueOperation() is more like a hack, rather than a legitimate way 
-//					// of transferring a person through the airlock into the settlement 
-//				}
-//
-//			} catch (Exception e) {
-//				logger.severe(person, 4_000, "Could not get new action: ", e);
-//			}
+				return false;
+			}
 
-			return false;
 		}
 
 		// Check if person is outside.
