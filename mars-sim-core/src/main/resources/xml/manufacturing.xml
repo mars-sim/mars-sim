@@ -2158,7 +2158,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Convert bio-based oil into hydraulic fluid" tech="1" skill="1" work-time="50" process-time="50"
+	<process name="Convert bio-based oil into hydraulic fluid" tech="1" skill="1" work-time="50" process-time="100"
 		tooling="Chemical" power-required="1.0">
 		<inputs>
 			<resource name="Ethylene glycol" amount=".1"/>
@@ -2174,7 +2174,7 @@ Note: 1 kg of H2 is 14.13 liter
 			</resource>
 		</inputs>
 		<outputs>
-			<resource name="Hydraulic Fluid" amount="4" />
+			<resource name="Hydraulic fluid" amount="4" />
 		</outputs>
 	</process>
 

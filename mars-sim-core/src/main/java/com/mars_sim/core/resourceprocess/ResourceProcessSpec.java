@@ -38,7 +38,7 @@ public class ResourceProcessSpec implements Serializable{
 	private Set<Integer> coreResources;
 
 	/** How long does it take to complete the process */
-	private int processTime = 333;
+	private int processTime = 750;
 
 	/** The work time required to toggle this process on or off. */
 	private int workTime = 10;

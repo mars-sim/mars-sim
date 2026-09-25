@@ -50,7 +50,7 @@ class AmountResourceGood extends Good {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(AmountResourceGood.class.getName());
 	
-	private static final double INITIAL_AMOUNT_DEMAND = 0.1;
+	private static final double INITIAL_AMOUNT_DEMAND = 0.5;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0.01;
 
 	private static final double WASTE_WATER_VALUE_MODIFIER = 1.5;

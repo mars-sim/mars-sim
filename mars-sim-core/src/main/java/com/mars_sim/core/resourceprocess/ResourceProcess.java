@@ -75,7 +75,8 @@ public class ResourceProcess implements ScheduledEventHandler {
 		this.modules = 1; // engine.getMaxModules();
 
 		// Add some randomness, today is sol 1
-		resetToggleWait(20 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
+		int delay = RandomUtil.getRandomInt(0, 50);
+		resetToggleWait(delay);
 	}
 
 	/**
@@ -122,8 +123,8 @@ public class ResourceProcess implements ScheduledEventHandler {
 			
 			if (!processSpec.isAmbientInputResource(resource)) {
 				
-				double fullRate = getBaseFullInputRate(resource);
-				double resourceRate = fullRate * currentProductionLevel;
+				double currentRate = getCurrentInputRate(resource);
+				double resourceRate = currentRate * currentProductionLevel;
 				double required = resourceRate;
 				if (required == 0D)
 					continue;
@@ -166,8 +167,8 @@ public class ResourceProcess implements ScheduledEventHandler {
 			
 			if (!isWasteOutputResource(resource)) {	
 				
-				double maxRate = getBaseFullOutputRate(resource);
-				double resourceRate = maxRate * currentProductionLevel;
+				double currentRate = getCurrentOutputRate(resource);
+				double resourceRate = currentRate * currentProductionLevel;
 				double required = resourceRate;
 				double remainingCap = host.getRemainingCombinedCapacity(resource);
 							
@@ -416,6 +417,15 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	/**
+	 * Gets the current input resource rate for a given resource.
+	 *
+	 * @return rate in kg/millisol.
+	 */
+	public double getCurrentInputRate(Integer resource) {
+		return getNumModules() * processSpec.getBaseInputRate(resource);
+	}
+	
+	/**
 	 * Gets the base full input resource rate for a given resource.
 	 *
 	 * @return rate in kg/millisol.
@@ -450,6 +460,15 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 */
 	public double getBaseSingleOutputRate(Integer resource) {
 		return processSpec.getBaseOutputRate(resource);
+	}
+
+	/**
+	 * Gets the current output resource rate for a given resource.
+	 *
+	 * @return rate in kg/millisol.
+	 */
+	public double getCurrentOutputRate(Integer resource) {
+		return getNumModules() * processSpec.getBaseOutputRate(resource);
 	}
 
 	/**
@@ -560,11 +579,17 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 		this.isRunning = newRunning;
 
-		int delay = processSpec.getProcessTime();
-		if (!isRunning) {
-			// Not running so half the time before it can be restarted
-			delay /= 2;
+		int delay = 0;
+		
+		if (isRunning) {
+			delay = processSpec.getProcessTime();
+			resetToggleWait(delay);
 		}
+		
+		else {		
+			delay = 10;
+		}
+		
 		resetToggleWait(delay);
 	}
 

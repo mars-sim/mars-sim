@@ -3532,13 +3532,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</resource-processing>
 			
 			<storage stock-capacity="100000">
-				<resource-capacity type="Brine Water" amount="90000.0" />
-				<resource-capacity type="Rock Salt" amount="500.0" />
-				<resource-capacity type="Hydraulic Fluid" amount="500.0" />
+				<resource-capacity type="Brine water" amount="20000.0" />
+				<resource-capacity type="Water" amount="70000.0" />
+				<resource-capacity type="Rock salt" amount="500.0" />
+				<resource-capacity type="Hydraulic fluid" amount="500.0" />
 				<resource-capacity type="Ice" amount="8000.0" />
 				
-				<resource-initial type="Hydraulic Fluid" amount="100.0" />
-				<resource-initial type="Rock Salt" amount="10.0" />
+				<resource-initial type="Hydraulic fluid" amount="100.0" />
+				<resource-initial type="Rock salt" amount="10.0" />
 			</storage>
 			
 		</functions>

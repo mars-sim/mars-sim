@@ -932,7 +932,7 @@
 	</process> <!-- "Low Temperature Plasma CO2 Decomposition" -->
 	
 	     
-	<process name="Microwave Plasma Conversion of Air" kW-required="0.005" defaultOn="true" >
+	<process name="Microwave Plasma Conversion of Air" kW-required="0.005" defaultOn="false" >
 		<description> 	 
 		 Microwave (MW)-plasma-based conversion of Martian air involves using 
 		 high-frequency electromagnetic waves to ionize atmospheric gases, 
@@ -1006,7 +1006,7 @@
 		<output resource="methanol" rate="32.0" core="true" />
 	</process> <!-- "Methanol Synthesis with Syngas" -->
 
-	<process name="Excavate Ice" kW-required="0.5" defaultOn="true" >
+	<process name="Excavate Ice" kW-required="0.5" defaultOn="false" >
 	<description>
 		This process works hand in hand with theresource process of melting the ice.
 		
@@ -1063,14 +1063,14 @@
 		</description>
 		<input resource="ice" rate="4000.0"  />
 		
-		<output resource="brine water" rate="3900.0" core="true" waste="false" />
+		<output resource="brine water" rate="3900.0" core="true" />
 		<output resource="regolith" rate="60.0" core="true" />
 		<!-- Amount of rock salt or Halite is arbitrary. Need more research -->
 		<output resource="rock salt" rate="40.0" core="true"  />
 	</process>
 
 
-	<process name="Filter Brine Water" kW-required="0.1" defaultOn="true" >
+	<process name="Filter Brine Water" kW-required="0.1" defaultOn="false" >
 		<description> 
 			Removing perchlorate from a Martian settlement's water supply can be done 
 			in a number of ways. Methods to remove perchlorates from water include 
@@ -1082,9 +1082,9 @@
 		
 		<output resource="water" rate="3500.0" core="true" />
 		
-		<output resource="sand" rate="40.0" core="true" waste="false" />
+		<output resource="sand" rate="40.0" core="true" />
 		
-		<output resource="regolith" rate="200.0" core="true" waste="false" />
+		<output resource="regolith" rate="200.0" core="true" />
 			
 		<output resource="gypsum" rate="50.0" core="true" />			
 
@@ -1100,7 +1100,7 @@
 		<output resource="calcium" rate="7" core="true" />			
 		<output resource="Calcium carbonate" rate="15" core="true" />
 				
-		<output resource="iron chloride" rate="1" />
+		<output resource="iron chloride" rate="1" core="true" />
 		<output resource="magnesium" rate="9" core="true" />	
 		
 		<output resource="manganese" rate="1" core="true" />	
