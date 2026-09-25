@@ -41,7 +41,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private boolean isRunning;
 	private boolean isLockOn;
 	
-	private int percentEffort = 3;
+	private double percentEffort = 100.0;
 	private int modules;
 	
 	private double currentProductionLevel;
@@ -100,7 +100,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 			
 			double newProdLevel = productionLevel;
 			// Set the current production level.
-			currentProductionLevel = newProdLevel * percentEffort / 5;
+			currentProductionLevel = newProdLevel * (percentEffort / 100);
 
 			// Increment the duty time here
 			dutyTime += time;
@@ -226,7 +226,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 		// Note : No need of checking if (isProcessRunning()) since 
 		// ResourceProcessor::getCombinedPowerLoad will check 
 		// if a process is running
-		return processSpec.getkWRequired() * getNumModules() * percentEffort / 5;
+		return processSpec.getkWRequired() * getNumModules() * (percentEffort / 100);
 	}
 
 	/**
@@ -336,7 +336,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * 
 	 * @param Percent
 	 */
-	public void setPercentEffort(int Percent) {
+	public void setPercentEffort(double Percent) {
 		percentEffort = Percent;
 	}
 	
@@ -345,7 +345,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * 
 	 * @return
 	 */
-	public int getPercentEffort() {
+	public double getPercentEffort() {
 		return percentEffort;
 	}
 	

@@ -188,7 +188,7 @@ class VehicleGood extends Good {
 		
 		// Calculate total supply
 		double totalSupply = owner.getAverageSupply(getNumberForSettlement(settlement));
-		
+		if (totalSupply < 1) totalSupply = .5;
 		owner.setSupplyScore(this, totalSupply);
 			
 		double newProjDemand = determineVehicleProjectedDemand(owner, settlement);

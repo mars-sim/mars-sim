@@ -130,19 +130,19 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	
 	private static final String TOGGLE_TIME = "toggleTime";
 	
-	private static final double MIN_SCORE = 1;
+	private static final double MIN_SCORE = 0.05;
 	private static final double MAX_SCORE = 500;
 	
 	private static final double WASTE_THRESHOLD = 0.3; // % waste need to be available to toggle
 	
-	private static final double GOD_BIAS = 2048;	
-	private static final double OMNI_BIAS = 1792;
-	private static final double HOVERING = 1536;
-	private static final double SIGNIFICANT = 1024;	
-	private static final double OVERWHELMING = 768;
-	private static final double EXCEEDING = 512;	
+//	private static final double GOD_BIAS = 2048;	
+//	private static final double OMNI_BIAS = 1792;
+//	private static final double HOVERING = 1536;
+//	private static final double SIGNIFICANT = 1024;	
+//	private static final double OVERWHELMING = 768;
+//	private static final double EXCEEDING = 512;	
 	private static final double SUPREME = 256;	
-	private static final double TRENDY = 192;	
+//	private static final double TRENDY = 192;	
 	private static final double EXTREME = 128;
 	private static final double MEGA = 64;
 	private static final double SUPER = 32;
@@ -237,8 +237,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 				if (process.isProcessRunning()) {
 	
-					if (process.getOverallScore() <= 0) {
-						toggleOffTasks.add(new ToggleOffJob(this, settlement, building, process, new RatingScore(100)));
+					if (process.getOverallScore() < 1) {
+						toggleOffTasks.add(new ToggleOffJob(this, settlement, building, process, new RatingScore(1)));
 					}
 					// Note: Allow a running process to stop once in a while in order to reduce wear and tear
 					// Reduce the likelihood of having to submit ToggleOffJob all the time
@@ -256,7 +256,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 						double modTime = (maxTime - diff) / 5;
 						score.addModifier(TOGGLE_TIME, modTime);
 						// score.getScore() is 20 at max
-						if (score.getScore() >= 3 * process.getPercentEffort()) { 
+						if (score.getScore() >= .03 * process.getPercentEffort()) { 
 							toggleOffTasks.add(new ToggleOffJob(this, settlement, building, process, score));
 						}
 					}
@@ -331,9 +331,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 			}
 			else {
 				// Compute the input score
-				double inputValue = MathUtils.between(computeResourcesValue(settlement, spec, modules, true), 0.01, MAX_SCORE);
+				double inputValue = MathUtils.between(computeResourcesValue(settlement, spec, modules, true), MIN_SCORE, MAX_SCORE);
 				// Compute the output score		
-				double outputValue = MathUtils.between(computeResourcesValue(settlement, spec, modules, false), 0.01, MAX_SCORE);
+				double outputValue = MathUtils.between(computeResourcesValue(settlement, spec, modules, false), MIN_SCORE, MAX_SCORE);
 						
 				a = new ResourceProcessAssessment(inputValue, outputValue,
 								Math.min(2 * MAX_SCORE, outputValue/inputValue), true);
@@ -341,8 +341,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				score.addModifier("outputs", outputValue); //'.addBase("inputs", -inputValue);
 			}
 
-			if (score.getScore() >= MIN_SCORE) {
-				score.applyRange(MIN_SCORE, 2 * MAX_SCORE);
+			if (score.getScore() >= 1) {
+				score.applyRange(1, 2 * MAX_SCORE);
 				scoreMap.put(new ToggleOnJob(this, settlement, isWaste, spec, score), score.getScore());
 			}
 		}
@@ -445,7 +445,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// For inputs:
 				
 				// Favors to keep the input resource
-				score = 0.0;
+				score = 0.01;
 				
 //				if (vp < 0.75)
 //					vp = 0.75;
@@ -471,19 +471,24 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isAmbientInputResource(resource)) {
 					// Note: 'Ambient' is used mostly for CO2 only
 					// Encourage the free use of CO2 as input resource
-					score += value / MEGA;
+					score += value / EXTREME;
 				}
+				else {
+					// Note: Mark ambient as 'false' to hint that this process is discouraged
+					score += value * SUPER;
+				}
+				
 				if (ResourceUtil.isRawMaterial(resource)) {   			// all ores, all minerals, sand)
 //					|| ResourceUtil.isChemical(resource)) {					// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 
 					score += value / MEGA;
 				} else if (ResourceUtil.isCO2(resource)) { 					// CO2	
 					score += value / SUPER;
-//				} else if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
-//					score += value * EXCEEDING;
-//				} else if (ResourceUtil.isMethane(resource)) { 				// methane
-//					score += value * EXCEEDING;
-//				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
-//					score += value * EXCEEDING;
+				} else if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
+					score += value * SUPER;
+				} else if (ResourceUtil.isMethane(resource)) { 				// methane
+					score += value * SUPER;
+				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
+					score += value * SUPER;
 				} else if (ResourceUtil.isOxygen(resource)) {  				// oxygen
 					score += value * SUPER;
 				} else if (ResourceUtil.isDerivedResource(resource)) { 			// glucose, leaves, soil 
@@ -505,7 +510,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// For outputs:
 				
 				// Favors to produce the output resource
-				score = 0.0;
+				score = 0.01;
 				
 //				// Gets the remaining amount of this resource
 //				double remain = settlement.getRemainingSpecificCapacity(resource);
@@ -535,7 +540,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				double value = vp;
 
 				if (processSpec.isCoreOutputResource(resource)) {
-					value = value * SUPER;
+					value = value * MID;
 				}
 				
 //				score += value;''
@@ -545,7 +550,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
-				// Note: 'waste' is used for N2, CO and CO2 
+					// Note: Mark waste as 'true' to hint that this process is encouraged
 					score += value * SUPER;
 //				} else if (ResourceUtil.isHydrogen(resource)) { 		// hydrogen
 //					score += mrate * EXCEEDING;
@@ -570,7 +575,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //					|| ResourceUtil.isCriticalResource(resource)) {		// glass
 //					score += value * SUPREME;
 				} else if (ResourceUtil.isWater(resource)) { 			// water
-					score += value * TRENDY;
+					score += value * MEGA;
 				} else if (ResourceUtil.isRawMaterial(resource)) { 		// all ores, all minerals, sand
 					score += value * EXTREME;
 				} else
@@ -599,6 +604,5 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		else {
 			return moduleFactor.get(modules);
 		}
-	}
-	
+	}	
 }

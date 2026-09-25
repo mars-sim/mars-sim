@@ -412,7 +412,7 @@ public class PartGood extends Good {
 	       
 		// Calculate total supply
 		double totalSupply = owner.getAverageSupply(eo.getItemResourceStored(id));
-		// Save the average supply
+		if (totalSupply < 1) totalSupply = .5;
 		owner.setSupplyScore(this, totalSupply);
     
 		// Get demand for a part.

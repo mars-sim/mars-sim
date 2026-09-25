@@ -135,7 +135,7 @@ class RobotGood extends Good {
 		Settlement settlement = owner.getSettlement();
 	
 		double totalSupply = owner.getAverageSupply(getNumberForSettlement(settlement));
-				
+		if (totalSupply < 1) totalSupply = .5;
 		owner.setSupplyScore(this, totalSupply);
 		
 		double previousDemand = owner.getDemandScore(this);

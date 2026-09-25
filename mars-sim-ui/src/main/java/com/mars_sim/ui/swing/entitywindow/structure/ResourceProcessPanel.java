@@ -196,7 +196,7 @@ public class ResourceProcessPanel extends JPanel {
      * 
      * @param level
      */
-    public void setPercentEffort(int percent) {
+    public void setPercentEffort(double percent) {
     	for (ResourceProcess p: resourceProcessTableModel.getProcesses()) {
     		p.setPercentEffort(percent);
     	}
@@ -294,7 +294,7 @@ public class ResourceProcessPanel extends JPanel {
 		public Class<?> getColumnClass(int columnIndex) {
             switch(columnIndex) {
                 case RUNNING_STATE: return ResourceProcess.ProcessState.class;
-                case BUILDING_NAME: return String.class;
+                case BUILDING_NAME: return Building.class;
                 case NUM_MODULE: return JSpinner.class;
                 case MAX_MODULE: return Integer.class;
                 case PROCESS_NAME: return ResourceProcess.class;
@@ -346,7 +346,7 @@ public class ResourceProcessPanel extends JPanel {
             
             switch(column) {
                 case RUNNING_STATE: return p.getState();
-                case BUILDING_NAME: return getBuilding(row).getName();
+                case BUILDING_NAME: return getBuilding(row);
                 case NUM_MODULE: return p.getNumModules();
                 case MAX_MODULE: return p.getMaxModules();
                 case PROCESS_NAME: return p;
@@ -397,10 +397,8 @@ public class ResourceProcessPanel extends JPanel {
         Building getBuilding(int rowIndex) {
             if (buildings == null) 
                 return mainBuilding;
-        	// Convert to model index — THIS is the critical step
-        	int modelIndex = pTable.convertRowIndexToModel(rowIndex);
-        	
-            return buildings.get(modelIndex);
+            
+            return buildings.get(rowIndex);
         }
 
         @Override
@@ -577,7 +575,7 @@ public class ResourceProcessPanel extends JPanel {
          * Gets the associated process object.
          */
         public ResourceProcess getProcess(int rowIndex) {
-        	// Convert to model index — THIS is the critical step
+        	// Convert to model index — Note: this is a CRITICAL step
         	int modelIndex = pTable.convertRowIndexToModel(rowIndex);
 
         	// Now safely access the underlying data

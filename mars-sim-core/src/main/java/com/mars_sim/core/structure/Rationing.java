@@ -132,7 +132,7 @@ public class Rationing implements Serializable {
 	 */
 	public void enforceNewRationingLevel() {
 		
-		logger.info(settlement, 30_000L, "currentLevel: " + currentLevel + "  recommendedLevel: " + recommendedLevel);
+		logger.info(settlement, 30_000L, "Current Water Rationing Level: " + currentLevel + "  recommendedLevel: " + recommendedLevel);
 		// Update the current level to the newly recommended level
 		currentLevel = recommendedLevel;
 		// Set the approval due back to false if it hasn't happened
@@ -186,6 +186,7 @@ public class Rationing implements Serializable {
 		double storedWater = rh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		double storedBrine = rh.getSpecificAmountResourceStored(ResourceUtil.BRINE_WATER_ID);
 		double storedIce = rh.getSpecificAmountResourceStored(ResourceUtil.ICE_ID);
+		// In future, consider how to vary industrialReserve according to the specific industrial need of the settlement
 		double industrialReserve = Settlement.MIN_WATER_RESERVE;
 		
 		double personReserve = settlement.getGoodsManager().getReserveLimit(ResourceUtil.WATER_ID);
@@ -194,7 +195,7 @@ public class Rationing implements Serializable {
 		// of WASH_WATER_USAGE
 		double required = 90 * (5 * WASH_WATER_USAGE + settlement.getWaterConsumptionRate());
 	
-		int newLevel = (int)(settlement.getSqrtPopFactor() * (required + industrialReserve - personReserve) 
+		int newLevel = (int)(settlement.getSqrtPopFactor() * (required + industrialReserve + personReserve) 
 				/ (1 + storedWater + .75 * storedBrine + .5 * storedIce));
 		if (newLevel < 1)
 			newLevel = 0;

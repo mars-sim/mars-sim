@@ -51,12 +51,13 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 	private static final String _PERCENT = " %";
 	private static final String ICON = "resource";
 	private static final String[] PERCENT_EFFORT = {"10", "20", "30", "40", "50", "60", "70", "80", "90", "100"}; 
+	private static final String ONE_HUNDRED = "100";
 	
 	private JComboBox<String> percentEffortComboBox;
 	
 	private JLabel dutyCycleLabel;
 	/** Track the percentage of effort. */ 
-	private int percent;
+	private double percent = 100;
 	
 	private ResourceProcessPanel processPanel;
 
@@ -119,8 +120,8 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		// Prepare percentage of effort combo box
 		percentEffortComboBox = new JComboBox<>(PERCENT_EFFORT);
 		percentEffortComboBox.setAlignmentY(Component.TOP_ALIGNMENT);
-		percentEffortComboBox.setPrototypeDisplayValue("50");
-		percentEffortComboBox.setSelectedItem("50");
+		percentEffortComboBox.setPrototypeDisplayValue(ONE_HUNDRED);
+		percentEffortComboBox.setSelectedItem(ONE_HUNDRED);
 		percentEffortComboBox.addActionListener(this);
         
 		levelPanel.add(percentEffortComboBox);

@@ -248,7 +248,7 @@ public class EquipmentGood extends Good {
 		owner.setProjectedDemandScore(this, projected);
 		
 		double totalSupply = owner.getAverageSupply(settlement.getEquipmentInventory().findNumContainersOfType(equipmentType));
-				
+		if (totalSupply < 1) totalSupply = .5;
 		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache

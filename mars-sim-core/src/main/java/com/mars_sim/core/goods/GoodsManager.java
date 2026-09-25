@@ -39,95 +39,6 @@ import com.mars_sim.core.vehicle.VehicleType;
  */
 public class GoodsManager implements Serializable {
 
-	/**
-	 * Scheduled event handler for update Goods Values
-	 */
-	private class GoodsUpdater implements ScheduledEventHandler {
-		private static final long serialVersionUID = 1L;
-		// For now, update 20 times per day
-		// May adjust it according to the time ratio
-		private static final int UPDATE_GOODS_PERIOD = (1000/20); 
-
-
-		@Override
-		public String getEventDescription() {
-			return "Refresh Goods Values";
-		}
-
-		/**
-		 * Time to updated Goods
-		 * 
-		 * @param now Current time not used.
-		 */
-		@Override
-		public int execute(MarsTime now) {
-			updatedMetrics();
-			return UPDATE_GOODS_PERIOD;
-		}	
-	}
-
-	/**
-	 * Scheduled event handler for refreshing the shopping lists
-	 */
-	private class TradeListUpdater implements ScheduledEventHandler {
-		// Duration that buying & selling list are valid
-		private static final int LIST_VALIDITY = 500;
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public String getEventDescription() {
-			return "Refresh Buy/Sell list";
-		}
-
-		/**
-		 * Time to updated lists.
-		 * 
-		 * @param now Current time not used.
-		 */
-		@Override
-		public int execute(MarsTime now) {
-			// MUST calculate the buy list before the sell
-			calculateBuyList();
-			calculateSellList();
-			return LIST_VALIDITY;
-		}	
-	}
-
-	/**
-	 * Scheduled event handler for triggering the next review of essential resources
-	 */
-	private class ResourcesReset implements ScheduledEventHandler {
-		// Duration to between reviewing essential resources
-		private static final int REVIEW_PERIOD = 80; // in millisols
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public String getEventDescription() {
-			return "Start review period of essential resources";
-		}
-
-		/**
-		 * Resets the review.
-		 * 
-		 * @param now Current time not used.
-		 */
-		@Override
-		public int execute(MarsTime now) {
-			resetEssentialsReview();
-			// Review 2 resources 
-			selectResourceForReview();
-			selectResourceForReview();
-			return REVIEW_PERIOD;
-		}	
-	}
-
-	/**
-	 * Types of commerce factor
-	 */
-	public enum CommerceType {
-		TRANSPORT, TOURISM, CROP, MANUFACTURING, RESEARCH, TRADE, BUILDING
- 	}
-
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
@@ -139,8 +50,7 @@ public class GoodsManager implements Serializable {
 	private static final int BASE_MAINT_PART = 15;
 	private static final int BASE_EVA_SUIT = 1;	
 	private static final int BASE_BOT = 1;	
-	private static final int MAX_SUPPLY = 5_000;
-	
+
 	public static final double THROTTLING = .25;
 	
 	static final double MIN_VP = 0.01;
@@ -149,8 +59,9 @@ public class GoodsManager implements Serializable {
 	
 	static final int MAX_DEMAND = 10_000;
 	static final double MIN_DEMAND = 0.01;
-
-	private static final double MIN_SUPPLY = 1;
+	private static final int MAX_SUPPLY = 10_000;
+	private static final double MIN_SUPPLY = 0.01;
+	
 	private static final double PERCENT_110 = 1.1;
 	private static final double PERCENT_90 = .9;
 	private static final double PERCENT_81 = .81;
@@ -192,12 +103,101 @@ public class GoodsManager implements Serializable {
 
 	private Set<Integer> reviewedEssentials = new HashSet<>();
 
+	/**
+	 * Types of commerce factor
+	 */
+	public enum CommerceType {
+		TRANSPORT, TOURISM, CROP, MANUFACTURING, RESEARCH, TRADE, BUILDING
+ 	}
+
+	
 	private Settlement settlement;
 
 	private static UnitManager unitManager;
 	private static MarketManager marketManager;
 	private static MasterClock masterClock;
 
+	/**
+	 * Scheduled event handler for refreshing the shopping lists
+	 */
+	private class TradeListUpdater implements ScheduledEventHandler {
+		// Duration that buying & selling list are valid
+		private static final int LIST_VALIDITY = 500;
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getEventDescription() {
+			return "Refresh Buy/Sell list";
+		}
+
+		/**
+		 * Time to updated lists.
+		 * 
+		 * @param now Current time not used.
+		 */
+		@Override
+		public int execute(MarsTime now) {
+			// MUST calculate the buy list before the sell
+			calculateBuyList();
+			calculateSellList();
+			return LIST_VALIDITY;
+		}	
+	}
+
+	/**
+	 * Scheduled event handler for update Goods Values
+	 */
+	private class GoodsUpdater implements ScheduledEventHandler {
+		private static final long serialVersionUID = 1L;
+		// For now, update 20 times per day
+		// May adjust it according to the time ratio
+		private static final int UPDATE_GOODS_PERIOD = (1000/20); 
+
+
+		@Override
+		public String getEventDescription() {
+			return "Refresh Goods Values";
+		}
+
+		/**
+		 * Time to updated Goods
+		 * 
+		 * @param now Current time not used.
+		 */
+		@Override
+		public int execute(MarsTime now) {
+			updatedMetrics();
+			return UPDATE_GOODS_PERIOD;
+		}	
+	}
+	
+	/**
+	 * Scheduled event handler for triggering the next review of essential resources
+	 */
+	private class ResourcesReset implements ScheduledEventHandler {
+		// Duration to between reviewing essential resources
+		private static final int REVIEW_PERIOD = 80; // in millisols
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public String getEventDescription() {
+			return "Start review period of essential resources";
+		}
+
+		/**
+		 * Resets the review.
+		 * 
+		 * @param now Current time not used.
+		 */
+		@Override
+		public int execute(MarsTime now) {
+			resetEssentialsReview();
+			// Review 2 resources 
+			selectResourceForReview();
+			selectResourceForReview();
+			return REVIEW_PERIOD;
+		}	
+	}
 
 	/**
 	 * Constructor.
@@ -287,7 +287,7 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
 	public double getAverageSupply(double supplyStored) {
-		return Math.log(1 + supplyStored);
+		return MathUtils.between(Math.log(1 + supplyStored), MIN_SUPPLY, MAX_SUPPLY);
 	}
 	
     
@@ -396,8 +396,7 @@ public class GoodsManager implements Serializable {
 			}
 			
 			// Calculate the good value
-			double newGoodValue = newDemand / (1 + totalSupply);
-//			double newGoodValue = oldDemand / (1 + totalSupply);
+			double newGoodValue = newDemand / (0.001 + totalSupply);
 			
 			// Check if it surpasses MAX_VP
 			if (newGoodValue > MAX_VP) {
@@ -414,19 +413,22 @@ public class GoodsManager implements Serializable {
 			// Check for inflation and deflation adjustment due to other resources
 			newGoodValue = checkDeflation(id, newGoodValue);
 			
-			if (msol % FREQUENCY == 0) {
+			if (msol % FREQUENCY == 1) {
 				// Adjust the market VP
 				double marketVP = adjustMarketVP(good, newGoodValue);
 				newGoodValue = LIMIT * newGoodValue + DELTA * marketVP;
 				
-				// Save the value point if it has changed
-				double oldValue = goodsValues.get(id);
-				
-				if (oldValue != newGoodValue) {
-					setGoodValue(good, newGoodValue);
-				}
+//				// Save the value point if it has changed
+//				double oldValue = goodsValues.get(id);
+//				
+//				if (oldValue != newGoodValue) {
+//					setGoodValue(good, newGoodValue);
+//				}
 			}
 
+			// Update the new good value
+			setGoodValue(good, newGoodValue);
+			
 			return newGoodValue;
 		} else
 			logger.severe(settlement, "Good is null.");

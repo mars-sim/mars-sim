@@ -330,7 +330,7 @@ public abstract class GatherData extends EVAOperation {
         		return true;
         	}
         	else {
-        		logger.warning(worker, 5_000L, "Unable to pick up " + selectedInstrument.getName()
+        		logger.warning(worker, 5_000L, "Unable to pick up any instruments "
     				+ " to carry it to the site at " + locationPos + ".");
         		return false;
         	}

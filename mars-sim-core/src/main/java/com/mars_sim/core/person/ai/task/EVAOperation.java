@@ -481,7 +481,7 @@ public abstract class EVAOperation extends Task {
 		}
 		
 		if (isInEmergency(person)) {
-			logger.info(person, "Medical Emergency.");
+			logger.info(person, "Settlement Emergency.");
 			return true;
 		}	
 		

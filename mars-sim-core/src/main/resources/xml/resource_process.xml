@@ -395,8 +395,8 @@
 		<input resource="Carbon dioxide" rate="660" ambient="true" />
 		<input resource="hydrogen" rate="60" />
 		
-		<output resource="methane" rate="80" core="true" />
 		<output resource="Carbon monoxide" rate="280" />
+		<output resource="methane" rate="80" core="true" />
 		<output resource="water" rate="360" core="true" />
 	</process> <!-- "Sabatier RWGS Reactor" -->
 
@@ -416,7 +416,7 @@
 		<input resource="Carbon monoxide" rate="140" />
 		<input resource="hydrogen" rate="30" />
 		
-		<output resource="methane" rate="80" core="true" />
+		<output resource="methane" rate="80" />
 		<output resource="water" rate="90" />
 	</process> <!-- "CO Methanation" -->
 
@@ -466,15 +466,15 @@
 		</description> 
 		<!-- Note: Set ambient to false to reduce the probability of 
 				overusing hydrogen to produce methanol -->
-		<input resource="Carbon dioxide" rate="44.0" ambient="false" />
-		<input resource="hydrogen" rate="4.0"  />
+		<input resource="Carbon dioxide" rate="44.0" />
+		<input resource="hydrogen" rate="4.0" ambient="false" />
 		
 		<output resource="water" rate="36.0" core="true" />
 		<output resource="carbon" rate="12.0"  />
 		
 	</process> <!-- "Continuous Bosch Reactor (C-Bosch)" -->
 	
-	<process name="CO Hydrogenation" kW-required="0.01" >
+	<process name="CO Hydrogenation" kW-required="0.1" >
 		<description> 						
         The carbon monoxide hydrogenation step in the Bosch process is
         exothermic. It releases energy rather than requiring a net input.	
@@ -494,11 +494,11 @@
 		make the process energy-intensive in practice.
 		
 		</description> 
-		<input resource="Carbon monoxide" rate="140.0" />
-		<input resource="hydrogen" rate="10.0"  />
+		<input resource="Carbon monoxide" rate="140.0" ambient="false" />
+		<input resource="hydrogen" rate="10.0" ambient="false" />
 		
 		<output resource="water" rate="90.0" />
-		<output resource="carbon" rate="60.0" core="true" />
+		<output resource="carbon" rate="60.0" />
 		
 	</process> <!-- "CO Hydrogenation" -->
 		
@@ -548,7 +548,7 @@
 	2. https://www.sciencedirect.com/science/article/abs/pii/S0016236102000741
 	-->
 	
-	<process name="Produce Oxygen and Acetylene with Chloride and Carbides" kW-required="0.05" >
+	<process name="Electrochemical reduction of CO2" kW-required="0.05" >
 		<description>
 			This reaction produces acetylene utilizing the electrochemical reduction
 			of CO2 by high-temperature molten salts, namely chloride melts. 
@@ -906,7 +906,7 @@
 
 	</process> <!-- Catalytic Recombination into Water -->
 		
-	<process name="Low Temperature Plasma CO2 Decomposition" kW-required="0.02" defaultOn="true" >
+	<process name="Low Temperature Plasma CO2 Decomposition" kW-required="0.02" defaultOn="false" >
 		<description> 
 			CO₂ (reactant): 12.01 + 2(16.00) = 44.01 g/mol
 			CO: 12.01 + 16.00 = 28.01 g/mol
@@ -979,7 +979,7 @@
 		<output resource="Carbon dioxide" rate="20.0" core="true" waste="false" />
 	</process> <!-- "Microwave Plasma Conversion of Air" -->
 	
-	<process name="Methanol Synthesis with Syngas" kW-required="0.1" defaultOn="true" >
+	<process name="Methanol Synthesis with Syngas" kW-required="0.1" defaultOn="false" >
 	<description>
 		Synthesis gas (or Syngas) is used to produce methanol as in the following reaction :
 				CO2 + 3 H2 -> H2O + CH3OH	
@@ -1136,7 +1136,7 @@
 	</process>
 
 
-	<process name="Process Ores from Regolith" kW-required="0.02" defaultOn="true" >
+	<process name="Process Ores from Regolith" kW-required="0.02" defaultOn="false" >
 		<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 		analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 		Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
@@ -1156,7 +1156,7 @@
 	</process>
 
 
-	<process name="Process Nitrogen Compounds from Regolith" kW-required="0.005" defaultOn="true" >
+	<process name="Process Nitrogen Compounds from Regolith" kW-required="0.005" defaultOn="false" >
 		<description> 
 			According to https://newatlas.com/nitrates-nitrogen-mars-curiosity-nasa/36700/, 
 			Nitrates are widespread on Mars with concentrations of 1,100 parts per million at the drill sites.
@@ -1179,7 +1179,7 @@
 	</process>
 
 
-	<process name="Process Poly-Hydrated Sulfate from Regolith-B" kW-required="0.03" defaultOn="true" >
+	<process name="Process Poly-Hydrated Sulfate from Regolith-B" kW-required="0.03" defaultOn="false" >
 		<description>
 			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O.
 
@@ -1198,7 +1198,7 @@
 			<output resource="sand" rate="20.0"  />
 	</process>
 
-	<process name="Process Phyllo-Silicate from Regolith-C" kW-required="0.03" defaultOn="true" >
+	<process name="Process Phyllo-Silicate from Regolith-C" kW-required="0.03" defaultOn="false" >
 		<description>
 			This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
 					40% smectite;
@@ -1216,7 +1216,7 @@
 	</process>
 
 
-	<process name="Process Basaltic from Regolith-D" kW-required="0.03" defaultOn="true" >
+	<process name="Process Basaltic from Regolith-D" kW-required="0.03" defaultOn="false" >
 		<description>
 			This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
 					23.5% basaltic;
@@ -1521,7 +1521,7 @@
 		<output resource="brine water" rate="1.0" />
 	</process>
 		
-	<process name="Make Silica from Sand" kW-required="0.1" defaultOn="true" >
+	<process name="Make Silica from Sand" kW-required="0.1" defaultOn="false" >
 		<description> Assume Mars sand has most (if not all) ingredients for making glass.
 			Typically, manufactured glass contains around 15% sodium oxide, 70% silica
 			(silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate (soda) or sodium oxide

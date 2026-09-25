@@ -401,7 +401,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="CO Methanation" number-modules="4"/>
 	
 				<!--For producing Oxygen -->
-				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
+				<process-engine name="Electrochemical reduction of CO2" number-modules="8"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="16"/>
@@ -867,7 +867,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="CO Methanation" number-modules="12"/>
 				
 				<!--For producing Oxygen -->
-				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="16"/>	
+				<process-engine name="Electrochemical reduction of CO2" number-modules="16"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="12"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="32"/>
@@ -2437,7 +2437,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Microwave Plasma Conversion of Air" number-modules="50"/>
 				<!--For producing Oxygen -->
-				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="32"/>
+				<process-engine name="Electrochemical reduction of CO2" number-modules="32"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="24"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="64"/>
@@ -4502,7 +4502,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="CO Methanation" number-modules="4"/>
 				
 				<!--For producing Oxygen -->
-				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
+				<process-engine name="Electrochemical reduction of CO2" number-modules="8"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>		
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="16"/>

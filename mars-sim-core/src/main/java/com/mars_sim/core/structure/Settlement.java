@@ -217,14 +217,14 @@ public class Settlement extends Unit implements Temporal,
 	private MarsZone zone;
 	
 	/** The previous ice prob value. */
-	private double icegetIceDigValueCache = 400D;
+	private double computedIceDigValue = 400D;
 	/** The current ice prob value. */
-	private double icegetIceDigValue;
+	private double iceDigValue;
 	/** The recommended ice prob value. */
 	private double recommendedIceDigValue;
 	
 	/** The previous regolith prob value. */
-	private double regolithDigValueCache = 400D;
+	private double computedRegolithDigValue = 400D;
 	/** The current regolith prob value. */
 	private double regolithDigValue;
 	/** The recommended regolith prob value. */
@@ -972,9 +972,9 @@ public class Settlement extends Unit implements Temporal,
 			// Reset justLoaded
 			justLoaded = false;
 
-			icegetIceDigValueCache = computeIceAdjustedDemand();
+			computedIceDigValue = computeIceAdjustedDemand();
 
-			regolithDigValueCache = computeRegolithAdjustedDemand();
+			computedRegolithDigValue = computeRegolithAdjustedDemand();
 
 			// Initialize the goods manager
 			goodsManager.updatedMetrics();
@@ -2668,9 +2668,9 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public void enforceIceDemandLevel() {
 		// Back up the current level to the cache
-		icegetIceDigValueCache = icegetIceDigValue;
+		computedIceDigValue = iceDigValue;
 		// Update the current level to the newly recommended level
-		icegetIceDigValue = recommendedIceDigValue;
+		iceDigValue = recommendedIceDigValue;
 		// Set the approval due back to false if it hasn't happened
 		setIceApprovalDue(false);
 	}
@@ -2680,7 +2680,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public void enforceRegolithDemandLevel() {
 		// Back up the current level to the cache
-		regolithDigValueCache = regolithDigValue;
+		computedRegolithDigValue = regolithDigValue;
 		// Update the current level to the newly recommended level
 		regolithDigValue = recommendedRegolithDigValue;
 		// Set the approval due back to false if it hasn't happened
@@ -2770,7 +2770,7 @@ public class Settlement extends Unit implements Temporal,
 		
 		recommendedIceDigValue = newValue;
 		
-		return (int)(icegetIceDigValueCache - newValue);
+		return (int)(computedIceDigValue - newValue);
 	}
 	
 	/**
@@ -2784,7 +2784,7 @@ public class Settlement extends Unit implements Temporal,
 		
 		recommendedRegolithDigValue = newValue;
 		
-		return (int)(regolithDigValueCache - newValue);
+		return (int)(computedRegolithDigValue - newValue);
 	}
 	
 	/**
@@ -2802,7 +2802,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return
 	 */
 	public double getIceDigValue() {
-		return icegetIceDigValue;
+		return iceDigValue;
 	}
 
 	
@@ -2830,7 +2830,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return
 	 */
 	public double getIceDigValueCache() {
-		return icegetIceDigValueCache;
+		return computedIceDigValue;
 	}
 
 	/**
@@ -2839,7 +2839,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return
 	 */
 	public double getRegolithDigValueCache() {
-		return regolithDigValueCache;
+		return computedRegolithDigValue;
 	}
 
 	public double getOutsideTemperature() {

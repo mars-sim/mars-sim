@@ -63,7 +63,7 @@ public abstract class DigLocalMeta extends MetaTask
 	private static final int MAX_BASE = 1000;
 	private static final int DEFAULT_EVA_NUM = 5;
 	
-    private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger digging
+    private static final double MIN_CAPACITY = 0.125D; // Minimum capacity to trigger digging
     /* The maximum shift fraction completed for a person to start this task.
     If above this value, the person will not consider picking this task. */
     private static final double MAX_SHIFT_FRACTION = 0.66D;
@@ -116,7 +116,7 @@ public abstract class DigLocalMeta extends MetaTask
         int rationingLevel = settlement.getRationing().getRationingLevel();
         
         // Calculate the capacity for more EVAs
-        int maxEVA = (int)Math.sqrt(1.0 + rationingLevel) 
+        int maxEVA = (int)Math.sqrt(1.0 + 2 * rationingLevel) 
         		+ settlement.getPreferences().getIntValue(SettlementParameters.MAX_EVA,
                                                     DEFAULT_EVA_NUM);
         
@@ -134,7 +134,7 @@ public abstract class DigLocalMeta extends MetaTask
         if (capacity <= MIN_CAPACITY) {
             return Collections.emptyList();
         }
-        result.addModifier("capacity", 1 + MathUtils.between(0, 1, capacity - MIN_CAPACITY));
+        result.addModifier("capacity", 1 + MathUtils.between(capacity - MIN_CAPACITY, 0, 1));
 
         List<SettlementTask> resultList = new ArrayList<>();
         resultList.add(new DigLocalTaskJob(this, settlement, result, maxEVA));
