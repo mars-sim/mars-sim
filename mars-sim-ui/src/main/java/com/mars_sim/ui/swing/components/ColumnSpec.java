@@ -19,6 +19,7 @@ public record ColumnSpec (int id, String name, Class<?> type, int style) {
     public static final int STYLE_DIGIT3 = 4;
     public static final int STYLE_PERCENTAGE = 5;
     public static final int STYLE_RIGHT = 6;
+    public static final int STYLE_TREND_INTEGER = 7;
 
     public ColumnSpec(String name, Class<?> type) {
         this(-1, name, type, STYLE_DEFAULT);
