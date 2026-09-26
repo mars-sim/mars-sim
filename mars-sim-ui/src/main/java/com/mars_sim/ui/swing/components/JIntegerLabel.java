@@ -6,6 +6,8 @@
  */
 package com.mars_sim.ui.swing.components;
 
+import java.text.DecimalFormat;
+
 import javax.swing.JLabel;
 
 /**
@@ -14,6 +16,8 @@ import javax.swing.JLabel;
  * The label updates its text only when the value changes, to minimize unnecessary updates.
  */
 public class JIntegerLabel extends JLabel {
+
+    private static final DecimalFormat DECIMAL_PLACES0 = new DecimalFormat("#,###,###,###");
 
     private int currentValue = Integer.MIN_VALUE;
 
@@ -44,7 +48,7 @@ public class JIntegerLabel extends JLabel {
             return;
         }
 
-        setText(Integer.toString(value));
+        setText(DECIMAL_PLACES0.format(value));
         this.currentValue = value;
     }
 }

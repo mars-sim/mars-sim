@@ -19,7 +19,6 @@ import java.awt.LinearGradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
-import java.time.format.DateTimeFormatter;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -66,19 +65,15 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String AUDIO_CONTROL = "AUDIO";
 	private static final String MAIN_WIKI = "main-wiki";
 	private static final String WHITESPACE = " ";
-	
-	private DateTimeFormatter EARTH_TIMESTAMP_FORMATTER = 
-			DateTimeFormatter.ofPattern("EEE yyyy-MMM-dd HH:mm:ss ");
 
-	private final int HEIGHT = 27;
-	private String SOL = " Sol ";
+	private static final int HEIGHT = 27;
+	private static final String SOL = " Sol ";
 	
-	private String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //-NLS-1$
+	private static final String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //-NLS-1$
 
-	private final Font FONT_MONOSPACED = new Font(Font.MONOSPACED, Font.ROMAN_BASELINE, 12);
-	private final Font FONT_SANS_SERIF = new Font(Font.SANS_SERIF, Font.BOLD, 12);
+	private static final Font FONT_MONOSPACED = new Font(Font.MONOSPACED, Font.ROMAN_BASELINE, 12);
+	private static final Font FONT_SANS_SERIF = new Font(Font.SANS_SERIF, Font.BOLD, 12);
 
-	
 	private UIContext context;
 
 	private MarsCalendarDisplay calendarDisplay; 
@@ -86,7 +81,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private JLabel monthLabel;
 	private JLabel weeksolLabel;
 
-	private JLabel earthDate;
 	private CircleLabel missionSol;
 	private JLabel marsTime;
 	
@@ -98,6 +92,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private ContentManager manager;
 
 	private Dimension dim = new Dimension(HEIGHT, HEIGHT);
+
 	/**
 	 * Constructs a ToolToolBar object.
 	 * 
@@ -126,9 +121,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		}	
 		
 		addSeparator(dim);
-		
-////////////////////////////////////////////////////////////////////////////////////////////////////
-		
+				
 		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //-NLS-1$
 		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //-NLS-1$
 		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //-NLS-1$
@@ -142,12 +135,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		addToolButton(MARSCAL, "Mars Calendar", "schedule");
 		
-////////////////////////////////////////////////////////////////////////////////////////////////////
-		
 		addSeparator(dim);
 
 		createDatePanel();
-
 		
 		// Prepare tool window buttons
 		prepareToolWindowButtons();
@@ -182,10 +172,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private void createDatePanel() {
 		
 		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));	
-		
-		earthDate = createTextLabel(FONT_MONOSPACED, false, true, "Greenwich Mean Time (GMT) for Earth. Format: 'Week Year-Month-Date Hour:Minute:Second'");
-		timePanel.add(earthDate);
-			
+
 		missionSol = createCircleLabel(HEIGHT, HEIGHT, FONT_SANS_SERIF, "Simulation Mission Sol");
 		timePanel.add(missionSol);
 	
@@ -236,8 +223,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private CircleLabel createCircleLabel(int width, int height, Font font, String tooltip) {
 		// Set as label icon
 		CircleLabel circlePanel = new CircleLabel(width, height);
-//		label.setVerticalAlignment(SwingConstants.CENTER);
-//		label.setAlignmentY(SwingConstants.CENTER);
+
 		int style = font.getStyle();
 		int size = font.getSize();
 		String fontType = font.getFontName();
@@ -339,7 +325,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	public void incrementClocks(MasterClock master) {
         SwingUtilities.invokeLater(() -> {
     		missionSol.setText(SOL + master.getMarsTime().getMissionSol() + " ");
-    		earthDate.setText(WHITESPACE + master.getEarthTime().format(EARTH_TIMESTAMP_FORMATTER));
     		marsTime.setText(WHITESPACE + MarsTimeFormat.getSolOfWeekString(master.getMarsTime().getSolOfWeek()) + WHITESPACE 
     				+ master.getMarsTime().getTruncatedDateTimeStamp() + WHITESPACE);
         });

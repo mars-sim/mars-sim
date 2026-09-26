@@ -7,46 +7,31 @@
 package com.mars_sim.ui.swing.tool.time;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
-import org.jdesktop.swingx.JXTaskPane;
-import org.jdesktop.swingx.JXTaskPaneContainer;
-
-import com.formdev.flatlaf.FlatClientProperties;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.OrbitInfo;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.ClockUtils;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
-import com.mars_sim.core.time.MarsZone;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ContentPanel;
-import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
- * The TimeWindow is a tool window that displays the current Martian date and time and simulation parameters.
+ * The TimeWindow is a tool window that displays the current Martian date and time.
  */
 public class TimeTool extends ContentPanel {
 
@@ -57,7 +42,7 @@ public class TimeTool extends ContentPanel {
 	private static final long serialVersionUID = 1L;
 
 	private static final int WIDTH = 320;
-	private static final int HEIGHT = 650;
+	private static final int HEIGHT = 360;
 	
 	
 	public static final String NAME = "time";
@@ -75,35 +60,12 @@ public class TimeTool extends ContentPanel {
 	private static final String WINTER_STRING = Msg.getString("TimeWindow.season.winter");
 	
 	private static final String DEG = Msg.getString("direction.degreeSign");
-	
-	private static final String X_END = " x";
-	private static final String DESIRE_TR = "Desired TR";
-	private static final String AVERAGE_TPS = "Average TPS";
 
 	private static final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
-		
-	/** The time elapsed label string */
-	private static final String ELAPSED = "Time Elapsed";
-	/** The execution time label string */
-	private static final String EXEC = "Execution";
-	/** The sleep time label string */
-	private static final String SLEEP_TIME = "Sleep";
-	/** The desired pulse width label string */
-	private static final String DESIRED_PULSE_WDITH_MS = "Desired Pulse Width";
-	/** The lead time pulse width label string */
-	private static final String LEAD_PULSE_TIME = "Lead Pulse Width";
-	/** The pulse deviation label string */
-	private static final String PULSE_DEVIATION = "Pulse Deviation";
-	/** The optimal pulse label string */
-	private static final String OPTIMAL = "Optimal Pulse Width";
-	/** The reference pulse label string */
-	private static final String REFERENCE = "Ref Pulse Width";
-	/** The reference pulse label string */
-	private static final String TASK_PULSE_TIME = "Task Pulse Width";
-	/** The time ratio string */
-	private static final String ACTUAL_TIME_RATIO = Msg.getString("TimeWindow.actualTRHeader"); //$NON-NLS-1$
-	/** The execution time unit */
-	private static final String MS = " ms";
+
+	private static final DateTimeFormatter EARTH_FORMAT = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM,
+															FormatStyle.SHORT);
+
 
 	// Data members
 	/** The time in ms when last updated. */
@@ -117,54 +79,16 @@ public class TimeTool extends ContentPanel {
 	/** Martian calendar panel. */
 	private MarsCalendarDisplay calendarDisplay;
 
-	/** The cpu util spinner */
-	private JSpinner cpuSpinner;
-	/** The task pulse damper spinner */
-	private JSpinner taskPulseDamperSpinner;
-	/** The task pulse ratio spinner */
-	private JSpinner taskPulseRatioSpinner;
-	/** The ref pulse ratio spinner */
-	private JSpinner refPulseRatioSpinner;
-	/** The ref pulse damper spinner */
-	private JSpinner refPulseDamperSpinner;
-	/** The label for Martian time. */
 	private JLabel martianTimeLabel;
+	private JLabel earthTimeLabel;
+	private JLabel uptimeLabel;
+
 	/** The label for areocentric longitude. */
 	private JLabel lonLabel;
 	/** The label for Northern hemisphere season. */
 	private JLabel northernSeasonLabel;
 	/** The label for Southern hemisphere season. */
 	private JLabel southernSeasonLabel;
-	/** The label for uptimer. */
-	private JLabel uptimeLabel;
-	/** The label for pulses per second label. */
-	private JLabel ticksPerSecLabel;
-	/** The label for pulses per second label. */
-	private JLabel averageTPSLabel;
-	/** The label for actual time ratio. */
-	private JLabel actualTRLabel;
-	/** The label for desire time ratio. */
-	private JLabel desireTRLabel;
-	/** The label for pulse deviation percent. */
-	private JLabel pulseDeviationLabel;
-	/** The label for optimal pulse width. */
-	private JLabel optimalPulseLabel;
-	/** The label for rff pulse width. */
-	private JLabel refPulseLabel;
-	/** The label for elapsed time. */
-	private JLabel elapsedTimeLabel;
-	/** The label for execution time. */
-	private JLabel execTimeLabel;
-	/** The label for sleep time. */
-	private JLabel sleepTimeLabel;
-	/** The label for lead pulse width. */
-	private JLabel leadPulseLabel;
-	/** The label for ref pulse width. */
-	private JLabel taskPulseLabel;
-	/** The label for desired pulse in millisec. */
-	private JLabel desiredPulseMSLabel;
-	/** The label for time compression. */
-	private JLabel realTimeClockLabel;
 	/** The label for the month. */
 	private JLabel monthLabel;
 	/** The label for the week. */
@@ -185,22 +109,18 @@ public class TimeTool extends ContentPanel {
 		MasterClock masterClock = sim.getMasterClock();
 		MarsTime marsTime = masterClock.getMarsTime();
 		orbitInfo = sim.getOrbitInfo();
-		
-		// Set up scroll pane
-		var scrollPane = new JScrollPane();
-		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		setLayout(new BorderLayout());
-		add(scrollPane, BorderLayout.CENTER);
 		
 		// Set up main pane
 		JPanel mainPane = new JPanel(new BorderLayout());
-		mainPane.setPreferredSize(new Dimension(WIDTH - 5, HEIGHT));
 		mainPane.setBorder(SwingHelper.createEtchedBorder());
 
-		scrollPane.setViewportView(mainPane);
-		scrollPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		var size = new Dimension(WIDTH, HEIGHT);
+		mainPane.setPreferredSize(size);
+		mainPane.setMinimumSize(size);
+
+		add(mainPane, BorderLayout.CENTER);
 		
 		// Set up martian pane
 		JPanel martianPane = new JPanel(new BorderLayout());
@@ -211,13 +131,12 @@ public class TimeTool extends ContentPanel {
 		martianPane.add(martianTimePane, BorderLayout.NORTH);
 	
 		// Create Martian time header label
-		martianTimeLabel = new JLabel();
-		martianTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		martianTimeLabel.setVerticalAlignment(SwingConstants.CENTER);
-		martianTimeLabel.setText("");
-		martianTimeLabel.setToolTipText("Mars Timestamp in Mars Central Time (MCT)");
-		martianTimePane.add(martianTimeLabel, BorderLayout.CENTER);
-		martianTimePane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.martianTime"))); //$NON-NLS-1$
+		var timePanel = new AttributePanel();
+		martianTimeLabel = timePanel.addTextField(Msg.getString("TimeWindow.martianTime"), null, "Mars Timestamp in Mars Central Time (MCT 0)");
+		earthTimeLabel = timePanel.addTextField("Earth Time", null, "Time back on Earth");
+		uptimeLabel = timePanel.addTextField(Msg.getString("TimeWindow.simUptime"), null, "Simulation Uptime");
+		martianTimePane.add(timePanel, BorderLayout.CENTER);
+		martianTimePane.setBorder(SwingHelper.createLabelBorder("Times")); //$NON-NLS-1$
 
 		JButton wikiButton = new JButton(GuideWindow.wikiIcon);
 		wikiButton.setAlignmentX(.5f);
@@ -263,7 +182,6 @@ public class TimeTool extends ContentPanel {
 		innerCalendarPane.add(calendarDisplay);
 		calendarPane.add(innerCalendarPane, BorderLayout.CENTER);
 
-
 		JPanel seasonPane = new JPanel(new BorderLayout());
 		martianPane.add(seasonPane, BorderLayout.SOUTH);
 
@@ -293,373 +211,14 @@ public class TimeTool extends ContentPanel {
 		// Create areocentric longitude header label
 		lonLabel = hemiPane.addTextField(Msg.getString("TimeWindow.areocentricLon"), "", 
 				"The Areocentric Longitude [0 to 360 degrees] of Mars with respect to the Sun");
-		
-		JPanel paramPane = new JPanel(new BorderLayout());
-		mainPane.add(paramPane, BorderLayout.CENTER);
 
-		JPanel attributePane = new JPanel(new BorderLayout());
-		paramPane.add(attributePane, BorderLayout.NORTH);
 		
-		// Create speed panel
-		AttributePanel speedPane = new AttributePanel();
-		speedPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.simParam"))); //$NON-NLS-1$
-		attributePane.add(speedPane, BorderLayout.NORTH);
-
-		ticksPerSecLabel = speedPane.addTextField(Msg.getString("TimeWindow.ticksPerSecond"), "", //$NON-NLS-1$
-				"The current ticks per sec");
-		averageTPSLabel = speedPane.addTextField(AVERAGE_TPS, "", 
-				"The average ticks per sec");
-		execTimeLabel = speedPane.addTextField(EXEC, "", 
-				"The last execution time of a tick");
-		sleepTimeLabel = speedPane.addTextField(SLEEP_TIME, "", 
-				"The sleep time [ms] of the last tick");
-		desiredPulseMSLabel = speedPane.addTextField(DESIRED_PULSE_WDITH_MS, "", 
-				"The desired pulse width [ms]");
-		elapsedTimeLabel = speedPane.addTextField(ELAPSED, "", 
-				"The real elapsed time between each frame");
-		actualTRLabel = speedPane.addTextField(ACTUAL_TIME_RATIO, "",
-				"Master clock's actual time ratio");
-		desireTRLabel = speedPane.addTextField(DESIRE_TR, "",
-				"Master clock's desire time ratio");
-		realTimeClockLabel = speedPane.addTextField(Msg.getString("TimeWindow.rtc"), "", 
-				"The amount of simulation time at the passing of each second of the real time"); //$NON-NLS-1$
-		uptimeLabel = speedPane.addTextField(Msg.getString("TimeWindow.simUptime"), "", 
-				"The amount of real time the simulation has been running"); //$NON-NLS-1$
-	
-		// Create pulse panel
-		AttributePanel pulsePane = new AttributePanel();
-		pulsePane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.pulseParams"))); //$NON-NLS-1$
-		attributePane.add(pulsePane, BorderLayout.CENTER);
-		
-		taskPulseLabel = pulsePane.addTextField(TASK_PULSE_TIME, "", 
-				"How many millisol the task pulse width is");
-		refPulseLabel = pulsePane.addTextField(REFERENCE, "", 
-				"How many millisol the reference pulse width is");
-		optimalPulseLabel = pulsePane.addTextField(OPTIMAL, "", 
-				"How many millisol the optimal pulse width is");
-		pulseDeviationLabel = pulsePane.addTextField(PULSE_DEVIATION, "", 
-				"The percentage of deviation between the optimal pulse width and the next pulse width");
-		leadPulseLabel = pulsePane.addTextField(LEAD_PULSE_TIME, "", 
-				"How many millisol the leading pulse width will be");
-	
-		createAdvancePanel(masterClock, paramPane);
-		
-		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-
 		// Update the two time labels
-		updateFastLabels(masterClock);
+		updateTime(masterClock);
 		updateDateLabels(masterClock);
-		updateTimeLabels(masterClock);
 		
 		// Update season labels
 		updateSeason();
-	}
-	
-	/**
-	 * Creates the advanced panel for adjusting pulse params.
-	 * 
-	 * @param masterClock
-	 * @param pane
-	 */
-	private void createAdvancePanel(MasterClock masterClock, JPanel pane) {
-		JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
-		taskPaneContainer.setPreferredSize(new Dimension(WIDTH - 10, 180));
-		JXTaskPane actionPane = new JXTaskPane();
-		actionPane.setPreferredSize(new Dimension(WIDTH - 10, 180));
-		actionPane.setBackground(new Color(0, 0, 0, 128));
-		actionPane.setBackground(getBackground());
-		actionPane.setOpaque(false);
-		actionPane.setTitle("Advanced Setting");
-		actionPane.setSpecial(true); // This can be used to highlight a primary task pane
-		taskPaneContainer.add(actionPane); 	
-		pane.add(taskPaneContainer, BorderLayout.CENTER);
-		
-		
-		// Create the cpu spinner
-		float value = Math.round(masterClock.getCPUUtil() * 100.0)/100.0f;
-		float min = Math.round(value / 5 * 100.0)/100.0f;
-		float max = Math.round(5 * value * 100.0)/100.0f;
-		float step = Math.round(value / 20 * 100.0)/100.0f;
-		cpuSpinner = createSpinner(value, min, max, step);
-		cpuSpinner.addChangeListener(e -> {
-			float cpu = ((SpinnerNumberModel)(cpuSpinner.getModel())).getNumber().floatValue();
-			// Change the pulse load
-			masterClock.setCPUUtil(cpu);
-		});		
-		JPanel cpuPane = createPane("cpuUtil");
-		cpuPane.add(cpuSpinner);
-		
-		JButton cpuButton = createResetButton();
-		cpuButton.addActionListener(e ->
-             masterClock.computeOriginalCPULoad()
-        );
-		cpuPane.add(cpuButton);
-		
-		actionPane.add(cpuPane);
-		
-		
-		// Create the ref pulse ratio spinner
-		value = Math.round(masterClock.getRefPulseRatio() * 100.0)/100.0f;
-		min = .05f;
-		max = 1; 
-		step = .05f; 
-		refPulseRatioSpinner = createSpinner(value, min, max, step);
-		refPulseRatioSpinner.addChangeListener(e -> {
-			float rpr = ((SpinnerNumberModel)(refPulseRatioSpinner.getModel())).getNumber().floatValue();
-			// Change the ref pulse ratio
-			masterClock.setRefPulseRatio(rpr);
-		});
-		
-		JPanel rpRatioPane = createPane("refPulseRatio");
-		rpRatioPane.add(refPulseRatioSpinner);
-		
-		JButton rprButton = createResetButton();
-		rprButton.addActionListener(e -> 
-             masterClock.resetRefPulseRatio()
-         );
-		rpRatioPane.add(rprButton);
-		
-		actionPane.add(rpRatioPane);
-		
-		// Create the ref pulse damper spinner
-		value = masterClock.getRefPulseDamper();
-		min = 5;
-		max = 1000;
-		step = 5;
-		refPulseDamperSpinner = createSpinner(value, min, max, step);
-		refPulseDamperSpinner.addChangeListener(e -> {
-			int rpd = ((SpinnerNumberModel)(refPulseDamperSpinner.getModel())).getNumber().intValue();
-			// Change the ref pulse damper
-			masterClock.setRefPulseDamper(rpd);
-		});
-		
-		JPanel rpDamperPane = createPane("refPulseDamper"); 
-		rpDamperPane.add(refPulseDamperSpinner);
-		
-		JButton rpdButton = createResetButton();
-		rpdButton.addActionListener(e -> 
-             masterClock.resetRefPulseDamper()
-        );
-		rpDamperPane.add(rpdButton);
-		
-		actionPane.add(rpDamperPane);
-		
-
-		// Create the task pulse ratio spinner
-		value = Math.round(masterClock.getTaskPulseRatio() * 100.0)/100.0f;
-		min = .05f;
-		max = 1;
-		step = .05f;
-		taskPulseRatioSpinner = createSpinner(value, min, max, step);
-		taskPulseRatioSpinner.addChangeListener(e -> {
-			float tpr = ((SpinnerNumberModel)(taskPulseRatioSpinner.getModel())).getNumber().floatValue();
-			// Change the task pulse ratio
-			masterClock.setTaskPulseRatio(tpr);
-		});
-		
-		JPanel tpRatioPane = createPane("taskPulseRatio");
-		tpRatioPane.add(taskPulseRatioSpinner);
-		
-		JButton tprButton = createResetButton();
-		tprButton.addActionListener(e ->
-             masterClock.resetTaskPulseRatio()
-        );
-		tpRatioPane.add(tprButton);
-	
-		actionPane.add(tpRatioPane);
-		
-		
-		// Create the task pulse damper spinner
-		value = masterClock.getTaskPulseDamper();
-		min = 5;
-		max = 1000;
-		step = 5;
-		taskPulseDamperSpinner = createSpinner(value, min, max, step);
-		taskPulseDamperSpinner.addChangeListener(e -> {
-			int tpd = ((SpinnerNumberModel)(taskPulseDamperSpinner.getModel())).getNumber().intValue();
-			// Change the task pulse damper
-			masterClock.setTaskPulseDamper(tpd);
-		});
-		
-		JPanel tpDamperPane = createPane("taskPulseDamper");
-		tpDamperPane.add(taskPulseDamperSpinner);
-		
-		JButton tpdButton = createResetButton();
-		tpdButton.addActionListener(e ->
-             masterClock.resetTaskPulseDamper()
-        );
-		tpDamperPane.add(tpdButton);
-	
-		actionPane.add(tpDamperPane);
-	}
-
-	/**
-	 * Creates a pane.
-	 * 
-	 * @param label
-	 * @return
-	 */
-	private JPanel createPane(String label) {
-		String fullStr = "TimeWindow." + label;
-		fullStr = Msg.getString(fullStr); //$NON-NLS-1$
-		JPanel tpDamperPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-		JLabel label3 = new JLabel(fullStr);
-		label3.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
-		fullStr = "TimeWindow." + label + ".tooltip";
-		fullStr = Msg.getString(fullStr); //$NON-NLS-1$
-		tpDamperPane.add(label3);
-		tpDamperPane.setToolTipText(fullStr); 
-		return tpDamperPane;
-	}
-	
-	/**
-	 * Creates a reset button.
-	 * 
-	 * @return
-	 */
-	private JButton createResetButton() {
-		JButton tpdButton = new JButton("\u238c");
-		tpdButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
-		tpdButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
-		tpdButton.setToolTipText(Msg.getString("TimeWindow.reset.tooltip")); 
-		return tpdButton;
-	}
-	
-	/**
-	 * Creates a spinner.
-	 * 
-	 * @param masterClock
-	 * @param value
-	 * @param min
-	 * @param max
-	 * @return
-	 */
-	private JSpinner createSpinner(double value, double min, double max, double step) {
-		
-		SpinnerNumberModel spinnerModel = new SpinnerNumberModel(value, min, max, step);
-
-		spinnerModel.setValue(value);
-		
-		JSpinner spinner = new JSpinner(spinnerModel);	
-		
-		spinner.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
-		// 1. Get the editor component of your spinner:
-		Component spinnerEditor = spinner.getEditor();
-		// 2. Get the text field of your spinner's editor:
-		JFormattedTextField jftf = ((JSpinner.DefaultEditor) spinnerEditor).getTextField();
-		// 3. Set a default size to the text field:
-		jftf.setColumns(3);
-		// 4. Set the horizontal alignment
-		jftf.setHorizontalAlignment(SwingConstants.RIGHT);
-		
-		return spinner;
-	}
-	
-	/**
-	 * Updates various time labels.
-	 * 
-	 * @param masterClock
-	 */
-	private void updateTimeLabels(MasterClock masterClock) {
-		
-		// Update the cpu util spinner
-		float value0 = Math.round(masterClock.getCPUUtil() * 100.0)/100.0f;	
-		SpinnerNumberModel spinnerModel0 = (SpinnerNumberModel)(cpuSpinner.getModel());
-		float spinValue0 = spinnerModel0.getNumber().floatValue();
-		if (spinValue0 != value0) {
-			spinnerModel0.setValue(value0);
-		}
-
-		// Update the ref pulse damper spinner
-		int value2 = masterClock.getRefPulseDamper();
-		SpinnerNumberModel spinnerModel2 = (SpinnerNumberModel)(refPulseDamperSpinner.getModel());
-		int spinValue2 = spinnerModel2.getNumber().intValue();
-		if (spinValue2 != value2) {
-			spinnerModel2.setValue(value2);
-		}
-
-		// Update the ref pulse ratio spinner
-		float value3 = Math.round(masterClock.getRefPulseRatio() * 100.0)/100.0f;
-		SpinnerNumberModel spinnerModel3 = (SpinnerNumberModel)(refPulseRatioSpinner.getModel());
-		float spinValue3 = spinnerModel3.getNumber().floatValue();
-		if (spinValue3 != value3) {
-			spinnerModel3.setValue(value3);
-		}
-		
-		// Update the task pulse damper spinner
-		int value4 = masterClock.getTaskPulseDamper();
-		SpinnerNumberModel spinnerModel4 = (SpinnerNumberModel)(taskPulseDamperSpinner.getModel());
-		int spinValue4 = spinnerModel4.getNumber().intValue();
-		if (spinValue4 != value4) {
-			spinnerModel4.setValue(value4);
-		}
-
-		// Update the task pulse ratio spinner
-		float value5 = Math.round(masterClock.getTaskPulseRatio() * 100.0)/100.0f;
-		SpinnerNumberModel spinnerModel5 = (SpinnerNumberModel)(taskPulseRatioSpinner.getModel());
-		float spinValue5 = spinnerModel5.getNumber().floatValue();
-		if (spinValue5 != value5) {
-			spinnerModel5.setValue(value5);
-		}
-		
-		// Update elapsed time label
-		long elapsedTime = masterClock.getRealElapsedMillisec();
-		elapsedTimeLabel.setText(StyleManager.DECIMAL_PLACES1.format(elapsedTime) + MS);
-		
-		// Update execution time label
-		float execTime = masterClock.getExecutionTime();
-		execTimeLabel.setText(StyleManager.DECIMAL_PLACES1.format(execTime) + MS);
-
-		// Update sleep time label
-		float sleepTime = masterClock.getSleepTime();
-		sleepTimeLabel.setText(StyleManager.DECIMAL_PLACES1.format(sleepTime) + MS);
-
-		// Update sleep time label
-		float desiredPulseMS = masterClock.getMillisecPerPulse();
-		desiredPulseMSLabel.setText(StyleManager.DECIMAL_PLACES1.format(desiredPulseMS) + MS);
-		
-		// Update pulse width label
-		float leadPulse = masterClock.getLeadPulseTime();
-		float refPulse = masterClock.getReferencePulse();
-		float optPulse = masterClock.getOptPulseTime();
-		float taskPulse = masterClock.geTaskPulseWidth();
-		
-		StringBuilder taskPulseText = new StringBuilder();
-		taskPulseText.append(StyleManager.DECIMAL_PLACES4.format(taskPulse));
-		taskPulseLabel.setText(taskPulseText.toString());
-
-		StringBuilder leadPulseText = new StringBuilder();
-		leadPulseText.append(StyleManager.DECIMAL_PLACES4.format(leadPulse));
-		leadPulseLabel.setText(leadPulseText.toString());
-		
-		// Update pulse deviation label
-		double percent = masterClock.getNextPulseDeviation() * 100;
-		StringBuilder pulseDevText = new StringBuilder();
-		pulseDevText.append(StyleManager.DECIMAL1_PERC.format(percent));
-		pulseDeviationLabel.setText(pulseDevText.toString());
-		
-		StringBuilder refText = new StringBuilder();
-		refText.append(StyleManager.DECIMAL_PLACES4.format(refPulse));
-		refPulseLabel.setText(refText.toString());
-		
-		StringBuilder optimalText = new StringBuilder();
-		optimalText.append(StyleManager.DECIMAL_PLACES4.format(optPulse));
-		optimalPulseLabel.setText(optimalText.toString());
-		
-		// Update actual TR label
-		StringBuilder atrText = new StringBuilder();
-		atrText.append(StyleManager.DECIMAL_PLACES1.format(masterClock.getActualTR()))
-			  .append(X_END);
-		
-		StringBuilder dtrText = new StringBuilder();
-		dtrText.append(StyleManager.DECIMAL_PLACES1.format(masterClock.getDesiredTR()))
-			  .append(X_END);
-			  
-		actualTRLabel.setText(atrText.toString());
-		desireTRLabel.setText(dtrText.toString());
-		
-		// Update real time clock (RTC) or time compression label
-		realTimeClockLabel.setText(ClockUtils.getRTCString(masterClock.getActualTR()));
 	}
 
 	/**
@@ -744,43 +303,30 @@ public class TimeTool extends ContentPanel {
 	 * 
 	 * @param mc
 	 */
-	private void updateFastLabels(MasterClock mc) {
+	private void updateTime(MasterClock mc) {
 		// Update mars time
 		MarsTime mTime = mc.getMarsTime();
-		MarsZone zone = MarsZone.getMarsZone(new Coordinates(0,0));
-		String ts = MarsTimeFormat.getSolOfWeekString(mTime.getSolOfWeek()) + " " + mTime.getDateTimeStamp() + " " +  zone.getId();
+		martianTimeLabel.setText(MarsTimeFormat.getSolOfWeekString(mTime.getSolOfWeek())
+						+ " " + mTime.getTruncatedDateTimeStamp());
+		earthTimeLabel.setText(mc.getEarthTime().format(EARTH_FORMAT));
 
-		// Update average TPS label
-		double atps = mc.getAveragePulsesPerSecond();
-		StringBuilder atpsText = new StringBuilder();
-		atpsText.append(StyleManager.DECIMAL_PLACES2.format(atps));
-		
-		// Update current ticks per second
-		double ctps = mc.getCurrentPulsesPerSecond();
-		StringBuilder ctpsText = new StringBuilder();
-		ctpsText.append(StyleManager.DECIMAL_PLACES2.format(ctps));
-	
-        SwingUtilities.invokeLater(() -> {
-    		martianTimeLabel.setText(ts);
-    		averageTPSLabel.setText(atpsText.toString());
-    		ticksPerSecLabel.setText(ctpsText.toString());
-    		uptimeLabel.setText(mc.getUpTimer().getUptime());
-        });
+		uptimeLabel.setText(mc.getUpTimer().getUptime());
 	}
 
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
 		MasterClock masterClock = pulse.getMasterClock();
 
-		// update the fast labels
-		updateFastLabels(masterClock);
+		SwingHelper.runInEDT(() -> {
+			// update the fast labels
+			updateTime(masterClock);
 
-		long currentTime = System.currentTimeMillis();
-		if ((currentTime - lastUpdateTime) > DATE_UPDATE_PERIOD) {
-			// update the slow labels
-			updateDateLabels(masterClock);
-			updateTimeLabels(masterClock);
-			lastUpdateTime = currentTime;
-		}
+			long currentTime = System.currentTimeMillis();
+			if ((currentTime - lastUpdateTime) > DATE_UPDATE_PERIOD) {
+				// update the slow labels
+				updateDateLabels(masterClock);
+				lastUpdateTime = currentTime;
+			}
+		});
 	}
 }
