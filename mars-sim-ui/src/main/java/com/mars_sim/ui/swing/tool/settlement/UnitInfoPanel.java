@@ -21,7 +21,7 @@ import com.mars_sim.ui.swing.tool.LineBreakPanel;
 @SuppressWarnings("serial")
 class UnitInfoPanel extends JPanel {
 
-	record UnitSummary(String type, LocalPosition pos, String description) {} 
+	record UnitSummary(String type, LocalPosition pos, String[] description) {} 
 
 	public static final int MARGIN_WIDTH = 2;
 	public static final int MARGIN_HEIGHT = 2;
@@ -36,24 +36,20 @@ class UnitInfoPanel extends JPanel {
 		setSize(PopUpUnitMenu.WIDTH_1 - 10, PopUpUnitMenu.HEIGHT_1 - 10); 
 		
     	List<String> list = new ArrayList<>();
-    	list.add("Name: ");
-    	list.add(unitName);
+    	list.add("Name: " + unitName);
     	list.add(" \n");
-    	list.add("Type: ");
-    	list.add(summary.type());
+    	list.add("Type: " + summary.type());
     	list.add(" \n");
-    	list.add("Local Position: ");
-    	list.add(summary.pos().getShortFormat());
+    	list.add("Local Position: " + summary.pos().getShortFormat());
     	list.add(" \n");
     	list.add("Description: ");
-    	list.add(summary.description());
-    	list.add(" \n");
+    	int length = summary.description().length;
+    	for (int i=0; i<length; i++) {
+	    	list.add(summary.description()[i]);
+    	}
     	
     	LineBreakPanel lineBreakPanel = new LineBreakPanel(list);
         add(lineBreakPanel, BorderLayout.CENTER);
-
-		
 		setVisible(true);
-
 	}
 }

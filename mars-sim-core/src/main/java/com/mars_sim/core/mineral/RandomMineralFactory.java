@@ -51,6 +51,10 @@ public final class RandomMineralFactory {
 	private static final String CRATER_REGION = "crater";
 	private static final String VOLCANIC_REGION = "volcanic";
 	private static final String SEDIMENTARY_REGION = "sedimentary";
+	// For Future use: 
+//	private static final String PLUTONIC_REGION = "plutonic";
+//	private static final String TECTONIC_REGION = "tectonic";
+//	private static final String AEOLIAN_REGION = "aeolian";
 	
 	/**
 	 * This class finds a set of potential Coordinates that have the correct geology to
@@ -61,7 +65,11 @@ public final class RandomMineralFactory {
 		private Set<Coordinates> craterRegionSet;
 		private Set<Coordinates> volcanicRegionSet;
 		private Set<Coordinates> sedimentaryRegionSet;
-
+		// For Future use: 
+//		private Set<Coordinates> plutonicRegionSet;
+//		private Set<Coordinates> tectonicRegionSet;
+//		private Set<Coordinates> aeolianRegionSet;
+		
 		LocationSelector() {
 			// Load topographical regions.
 			craterRegionSet = getTopoRegionSet(CRATER_IMG, TOPO_W, TOPO_H);
@@ -80,6 +88,11 @@ public final class RandomMineralFactory {
 					case CRATER_REGION -> craterRegionSet;
 					case VOLCANIC_REGION -> volcanicRegionSet;
 					case SEDIMENTARY_REGION -> sedimentaryRegionSet;
+					// For Future use: 
+//					case PLUTONIC_REGION -> plutonicRegionSet;
+//					case TECTONIC_REGION -> tectonicRegionSet;
+//					case AEOLIAN_REGION -> aeolianRegionSet;
+					
 					default -> null;
 				};
 				if (newRegion != null) {
@@ -114,14 +127,14 @@ public final class RandomMineralFactory {
 	}
 
 	/**
-	 * Add mineral to a mineralmap randomly over a number of iteratons building up the final
+	 * Adds mineral to a mineral map randomly over a number of iterations building up the final
 	 * result in layers. A function provides potential locations that can support the mineral
 	 * of the required type;
 	 * 
-	 * @param newMap Map to hold new monerals
+	 * @param newMap Map to hold new minerals
 	 * @param lowerBaseCon Lower bound of the base concentration
 	 * @param highBaseConc Upper bound
-	 * @param locator Return potential suitable locations for a certian mineraltype
+	 * @param locator Return potential suitable locations for a certain mineral type
 	 */
 	private static void addRandomMinerals(MineralMap newMap, int lowerBaseCon, int highBaseConc,
 						Function<MineralType,List<Coordinates>> locator) {
@@ -149,7 +162,7 @@ public final class RandomMineralFactory {
 
 			// Built mineral for each iteration
 			for (int x = numIteration; x > 0; x--) {
-				// Introduce randomoness to repeast using same base coord to get clustering
+				// Introduce randomness using same base coord to get clustering
 				if (RandomUtil.getRandomInt(5) == 0) {
 					// Choose a new random location
 					c = RandomUtil.getRandomElement(potentialLocns);
@@ -173,9 +186,9 @@ public final class RandomMineralFactory {
 	 * Generates mineral concentrations.
 	 * 
 	 * @param map Mineral map holding new minerals
-	 * @param baseLocn Base of the ne wmineral concentration
+	 * @param baseLocn Base of the new mineral concentration
 	 * @param concentration Concentration of new mineral
-	 * @param mineral Typeof mineral to add
+	 * @param mineral Type of mineral to add
 	 */
 	private static int createMinerals(MineralMap map, Coordinates baseLocn, int concentration,
 								MineralType mineral) {
@@ -198,11 +211,11 @@ public final class RandomMineralFactory {
 	 * @param location
 	 */
 	public static void createLocalConcentration(MineralMap targetMap, Coordinates location) {
-		// Potential locnations is just a single one
+		// Potential locations is just a single one
 		List<Coordinates> locns = new ArrayList<>();
 		locns.add(location);
 
-		// Local minerals have alower concentraton and only a single Location
+		// Local minerals have lower concentration and only a single Location
 		addRandomMinerals(targetMap, 5, 25, m -> locns);
 	}
 	

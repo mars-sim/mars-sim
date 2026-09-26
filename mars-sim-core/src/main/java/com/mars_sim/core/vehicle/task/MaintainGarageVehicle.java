@@ -24,8 +24,6 @@ import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.Drone;
-import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -94,14 +92,12 @@ public class MaintainGarageVehicle extends Task {
 		else {
 			// If not in a garage, try to add it to a garage with empty space.
 			Settlement settlement = worker.getSettlement();
-
 			if (settlement == null) {
 				clearTask(worker.getName() + " not in a settlement.");
 				return;
 			}
 		
 			building = settlement.getBuildingManager().addToGarageBuilding(vehicle);
-				
 			if (building != null) {
 				garage = building.getVehicleMaintenance();
 			}
@@ -239,14 +235,17 @@ public class MaintainGarageVehicle extends Task {
 						garage.removeRover(rover, transCrew);
 					}
 					
-				} 
-				else if (vehicle instanceof LightUtilityVehicle luv) {
-					boolean transCrew = !luv.hasNoCrew();
-					garage.removeUtilityVehicle(luv, transCrew);
 				}
-				else if (vehicle instanceof Drone d) {
-					garage.removeFlyer(d, true);
-				}
+				
+				// Note: For now, allow the luv and drones to stay inside as much as possible
+				
+//				else if (vehicle instanceof LightUtilityVehicle luv) {
+//					boolean transCrew = !luv.hasNoCrew();
+//					garage.removeUtilityVehicle(luv, transCrew);
+//				}
+//				else if (vehicle instanceof Drone d) {
+//					garage.removeFlyer(d, true);
+//				}
 			}
 		}
 		super.clearDown();

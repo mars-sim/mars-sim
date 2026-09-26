@@ -9,8 +9,10 @@ package com.mars_sim.core.equipment;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -284,19 +286,6 @@ public class EquipmentInventory extends MicroInventory
 						&& (e.getEquipmentType() == containerType))
 					.count();
 		
-		// May try out
-//		return Collections.synchronizedSet(containerSet).stream()
-//				.filter(e -> e.isEmpty(brandNew) 
-//						&& (e.getEquipmentType() == containerType))
-//				.collect(Collectors.toSet())
-//				.size();
-		
-		// Note: trigger CME at .collect(Collectors.toSet())
-//		return containerSet.stream()
-//				.filter(e -> e.isEmpty(brandNew) 
-//						&& (e.getEquipmentType() == containerType))
-//				.collect(Collectors.toSet())
-//				.size();
 		
 		// Note: the line .count() below trigger CME
 //		return (int) containerSet.stream()
@@ -365,7 +354,7 @@ public class EquipmentInventory extends MicroInventory
 	 * Finds a container in storage.
 	 *
 	 * @param containerType
-	 * @param empty does it need to be empty ?
+	 * @param personId
 	 * @param resource If -1 then resource doesn't matter
 	 * @return instance of container or null if none.
 	 */
@@ -385,6 +374,53 @@ public class EquipmentInventory extends MicroInventory
 		return null;
 	}
 
+	/**
+	 * Finds a data recorder with a person's id.
+	 * If not found, get an available recorder.
+	 *
+	 * @param personId
+	 * @param retrieving
+	 * @return
+	 */
+	public DataRecorder retrieveOwnedDataRecorder(int personId, boolean retrieving) {
+		for (Equipment e : recorderSet) {
+			DataRecorder dr = (DataRecorder)e;
+			if (dr.checkRegisteredOwnerID(personId)) {
+				if (retrieving) {
+					recorderSet.remove(dr);
+				}
+				return dr;
+			}
+		}
+		return findDataRecorder(retrieving);
+	}
+	
+	/**
+	 * Finds a data recorder.
+	 *
+	 * @param retrieving
+	 * @return
+	 */
+	public DataRecorder findDataRecorder(boolean retrieving) {
+		if (recorderSet.isEmpty()) {
+			return null;
+		}
+	
+		// Select the data recorder that has the least # of datasets
+		Optional<Equipment> smallestDataset = recorderSet.stream()
+				.min(Comparator.comparingInt(r -> ((DataRecorder)r).getDataset().size()));
+		
+		DataRecorder dr = (DataRecorder)smallestDataset.get();
+		
+		if (dr != null && retrieving) {
+			recorderSet.remove(dr);
+		}
+	
+		return dr;
+	}
+
+	
+	
 	/**
 	 * Finds the number of data recorder .
 	 *

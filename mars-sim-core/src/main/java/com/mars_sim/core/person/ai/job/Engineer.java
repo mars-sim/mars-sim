@@ -29,7 +29,9 @@ public class Engineer extends JobSpec {
 	/** Constructor. */
 	public Engineer() {
 		// Use Job constructor
-		super(JobType.ENGINEER, JobSpec.buildRoleMap(5.0, 20.0, 30.0, 10.0, 10.0, 15.0, 10.0, 20.0));
+		super(JobType.ENGINEER, JobSpec.buildRoleMap(
+				1.0, 20.0, 35.0, 9.0, 
+				8.0, 7.0, 10.0, 10.0));
 	}
 
 	/**

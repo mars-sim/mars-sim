@@ -1193,6 +1193,30 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Creates a priority map for available garages spaces of a vehicle type in a Settlement.
+	 * 
+	 * @param vehicle
+	 */
+	public Map<Building, Integer> getPriorityGarageMap(VehicleType type) {
+		Map<Building, Integer> map = new HashMap<>();
+		
+		for (Building j : settlement.getBuildingManager().getBuildingSet(
+				FunctionType.VEHICLE_MAINTENANCE)) {
+			VehicleMaintenance garage = j.getVehicleMaintenance();
+			
+			if (VehicleType.isRover(type))
+				map.put(j, garage.getAvailableRoverCapacity());
+			else if (VehicleType.isDrone(type))
+				map.put(j, garage.getAvailableFlyerCapacity());
+			else if (type == VehicleType.LUV)
+				map.put(j, garage.getAvailableUtilityVehicleCapacity());
+		}
+
+		return map;
+	}
+
+	
+	/**
 	 * Adds a vehicle to a random ground vehicle maintenance building within a
 	 * settlement.
 	 *
@@ -1200,106 +1224,196 @@ public class BuildingManager implements Serializable {
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if vehicle cannot be added to any building.
 	 *
-	 * @return the garage building already in or just added
+	 * @return the garage building thatthe vehicle already in or just being added in 
 	 */
 	public Building addToGarageBuilding(Vehicle vehicle) {
 		// if no garage buildings are present in this settlement
 		if (garages.isEmpty()) {
 			return null;
 		}
-
+		
+		Building bestBuilding = vehicle.getGarage();
+		
+		if (bestBuilding != null) {
+			return bestBuilding;
+		}
+		
+		VehicleType type = vehicle.getVehicleType();
+		
 		if (vehicle.isBeingTowed()
-				|| (VehicleType.isRover(vehicle.getVehicleType()) && ((Rover) vehicle).isTowingAVehicle())) {
+				|| (VehicleType.isRover(type) && ((Rover)vehicle).isTowingAVehicle())) {
+			logger.info(vehicle, "Towed or being towed. Unable to park in a garage.");
 			return null;
 		}
+	
+		Map<Building, Integer> priorityGarageMap = getPriorityGarageMap(type);
+		
+		Optional<Building> best = priorityGarageMap.entrySet()
+			    .stream()
+			    .max(Map.Entry.comparingByValue()) // get the element with the largest value
+			    .map(Map.Entry::getKey);
+		
+		bestBuilding = best.get();
+		VehicleMaintenance garage = bestBuilding.getVehicleMaintenance();
 
-		for (Building garageBuilding : garages) {
-			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+		if (VehicleType.isRover(type)) {
+			// If there is no garage space, check if an existing rover can leave
+			// the garage to make room for a new rover to come in
 
-			if (vehicle instanceof Rover r) {
-				if (garage.containsRover(r)) {
-					logger.info(r, 60_000, "Already inside " + garageBuilding.getName() + ".");
-
-					return garageBuilding;
-				} else {
-					boolean vacated = false;
-
-					// If there is no garage space, check if an existing rover can leave
-					// the garage to make room for a new rover to come in
-					if (garage.getAvailableRoverCapacity() == 0) {
-						// Try removing a non-reserved vehicle inside a garage
-						for (Rover rover : garage.getRovers()) {
-							if (!vacated && !rover.isReserved() && !rover.isReservedForMaintenance()
-									&& rover.getMission() == null && rover.hasNoCrew()
-									&& garage.removeRover(rover, true)) {
-								vacated = true;
-								break;
-							}
-						}
-					}
-
-					if ((garage.getAvailableRoverCapacity() > 0) && garage.addRover(r, true)) {
-
-						return garageBuilding;
+			if (garage.getAvailableRoverCapacity() == 0) {
+				// Try removing a non-reserved vehicle inside a garage
+				for (Rover rover : garage.getRovers()) {
+					if (!rover.isReserved()
+							&& rover.getMission() == null 
+							&& rover.hasNoCrew()
+							&& garage.removeRover(rover, true)) {
+						break;
 					}
 				}
 			}
 
-			else if (vehicle instanceof Flyer f) {
+			// Check again to see if any parking space has been freed up
+			if ((garage.getAvailableRoverCapacity() > 0) && garage.addRover((Rover)vehicle, true)) {
 
-				if (garage.containsFlyer(f)) {
-					logger.info(f, 60_000, "Already inside " + garageBuilding.getName() + ".");
-
-					return garageBuilding;
-				} else {
-					boolean vacated = false;
-
-					// If there is no garage space, check if an existing flyer can leave
-					// the garage to make room for a new flyer to come in
-					if (garage.getAvailableFlyerCapacity() == 0) {
-						// Try removing a non-reserved drone inside a garage
-						for (Flyer flyer : garage.getFlyers()) {
-							if (!vacated && !flyer.isReserved() && !flyer.isReservedForMaintenance()
-									&& flyer.getMission() == null && garage.removeFlyer(flyer, true)) {
-								vacated = true;
-								break;
-							}
-						}
-					}
-
-					if (garage.getAvailableFlyerCapacity() > 0 && garage.addFlyer(f, true)) {
-
-						return garageBuilding;
-					}
-				}
-			}
-
-			else if (vehicle instanceof LightUtilityVehicle luv) {
-				if (garage.containsUtilityVehicle(luv)) {
-					logger.info(luv, 60_000, "Already inside " + garageBuilding.getName() + ".");
-
-					return garageBuilding;
-				} else {
-					boolean vacated = false;
-
-					if (garage.getAvailableUtilityVehicleCapacity() == 0) {
-						// Try removing a non-reserved vehicle inside a garage
-						for (LightUtilityVehicle l : garage.getUtilityVehicles()) {
-							if (!vacated && !l.isReserved() && !l.isReservedForMaintenance() && l.getMission() == null
-									&& l.hasNoCrew() && garage.removeUtilityVehicle(l, false)) {
-								vacated = true;
-								break;
-							}
-						}
-					}
-
-					if ((garage.getAvailableUtilityVehicleCapacity() > 0) && garage.addUtilityVehicle(luv, true)) {
-
-						return garageBuilding;
-					}
-				}
+				return bestBuilding;
 			}
 		}
+			
+		else if (VehicleType.isDrone(type)) {
+			// If there is no garage space, check if an existing flyer can leave
+			// the garage to make room for a new flyer to come in
+			if (garage.getAvailableFlyerCapacity() == 0) {
+				// Try removing a non-reserved drone inside a garage
+				for (Flyer flyer : garage.getFlyers()) {
+					if (!flyer.isReserved() 
+							&& flyer.getMission() == null 
+//							&& flyer.hasNoCrew()
+							&& garage.removeFlyer(flyer, true)) {
+						break;
+					}
+				}
+			}
+
+			// Check again to see if any parking space has been freed up
+			if (garage.getAvailableFlyerCapacity() > 0 && garage.addFlyer((Flyer)vehicle, true)) {
+
+				return bestBuilding;
+			}
+		}
+			
+		else if (type == VehicleType.LUV) {
+			if (garage.getAvailableUtilityVehicleCapacity() == 0) {
+				// Try removing a non-reserved vehicle inside a garage
+				for (LightUtilityVehicle l : garage.getUtilityVehicles()) {
+					if (!l.isReserved() 
+							&& l.getMission() == null
+							&& l.hasNoCrew() 
+							&& garage.removeUtilityVehicle(l, true)) {
+						break;
+					}
+				}
+			}
+			// Check again to see if any parking space has been freed up
+			if ((garage.getAvailableUtilityVehicleCapacity() > 0) && garage.addUtilityVehicle((LightUtilityVehicle)vehicle, true)) {
+
+				return bestBuilding;
+			}
+		}
+		
+		
+//		for (Building garageBuilding : garages) {
+//			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+//
+//			if (vehicle instanceof Rover r) {
+//				if (garage.containsRover(r)) {
+//					logger.info(r, 4_000, "Already inside " + garageBuilding.getName() + ".");
+//
+//					return garageBuilding;
+//				} else {
+//					boolean vacated = false;
+//
+//					// If there is no garage space, check if an existing rover can leave
+//					// the garage to make room for a new rover to come in
+//					if (garage.getAvailableRoverCapacity() == 0) {
+//						// Try removing a non-reserved vehicle inside a garage
+//						for (Rover rover : garage.getRovers()) {
+//							if (!vacated && !rover.isReserved()
+//									&& rover.getMission() == null 
+//									&& rover.hasNoCrew()
+//									&& garage.removeRover(rover, true)) {
+//								vacated = true;
+//								break;
+//							}
+//						}
+//					}
+//					// Check again to see if any parking space has been freed up
+//					if ((garage.getAvailableRoverCapacity() > 0) && garage.addRover(r, true)) {
+//
+//						return garageBuilding;
+//					}
+//				}
+//			}
+//
+//			else if (vehicle instanceof Flyer f) {
+//
+//				if (garage.containsFlyer(f)) {
+//					logger.info(f, 4_000, "Already inside " + garageBuilding.getName() + ".");
+//
+//					return garageBuilding;
+//				} else {
+//					boolean vacated = false;
+//					System.out.println("1. garage space: " + garage.getAvailableFlyerCapacity());
+//					// If there is no garage space, check if an existing flyer can leave
+//					// the garage to make room for a new flyer to come in
+//					if (garage.getAvailableFlyerCapacity() == 0) {
+//						// Try removing a non-reserved drone inside a garage
+//						for (Flyer flyer : garage.getFlyers()) {
+//							if (!vacated && !flyer.isReserved() 
+//									&& flyer.getMission() == null 
+////									&& flyer.hasNoCrew()
+//									&& garage.removeFlyer(flyer, true)) {
+//								vacated = true;
+//								break;
+//							}
+//						}
+//					}
+//					System.out.println("2. garage space: " + garage.getAvailableFlyerCapacity());
+//					// Check again to see if any parking space has been freed up
+//					if (garage.getAvailableFlyerCapacity() > 0 && garage.addFlyer(f, true)) {
+//						System.out.println("3. selected garage: " + garageBuilding);
+//						return garageBuilding;
+//					}
+//				}
+//			}
+//
+//			else if (vehicle instanceof LightUtilityVehicle luv) {
+//				if (garage.containsUtilityVehicle(luv)) {
+//					logger.info(luv, 4_000, "Already inside " + garageBuilding.getName() + ".");
+//
+//					return garageBuilding;
+//				} else {
+//					boolean vacated = false;
+//
+//					if (garage.getAvailableUtilityVehicleCapacity() == 0) {
+//						// Try removing a non-reserved vehicle inside a garage
+//						for (LightUtilityVehicle l : garage.getUtilityVehicles()) {
+//							if (!vacated && !l.isReserved() 
+//									&& l.getMission() == null
+//									&& l.hasNoCrew() 
+//									&& garage.removeUtilityVehicle(l, true)) {
+//								vacated = true;
+//								break;
+//							}
+//						}
+//					}
+//					// Check again to see if any parking space has been freed up
+//					if ((garage.getAvailableUtilityVehicleCapacity() > 0) && garage.addUtilityVehicle(luv, true)) {
+//
+//						return garageBuilding;
+//					}
+//				}
+//			}
+//		}
 
 		return null;
 	}

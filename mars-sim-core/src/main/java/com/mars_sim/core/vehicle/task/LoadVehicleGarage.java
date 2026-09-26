@@ -94,7 +94,6 @@ public class LoadVehicleGarage extends Task {
 		if (garage == null) {
 			// Add the rover to a garage if possible
 			garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
-		
 			// End task if vehicle or garage not available
 			if (garage == null) {
 				clearTask("Garage not available for " + vehicle.getName() + ".");

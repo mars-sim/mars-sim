@@ -15,9 +15,9 @@ import java.util.Properties;
 
 import javax.swing.JMenuItem;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
@@ -53,7 +53,7 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
 
     @Override
     public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
-            Entity selectedEntity) {
+            SettlementPOI selectedEntity) {
 
         // Save original graphics transforms.
         AffineTransform saveTransform = viewpoint.prepareGraphics();
@@ -99,7 +99,7 @@ public class DataCollectionSiteMapLayer extends AbstractMapLayer {
      	// Check if it's drawing the mouse-picked building 
         Color selectedColor = (site.equals(selectedSite) ? SITE_SELECTED_COLOR : null);
     	
-        drawRectangle(site, SITE_COLOR, selectedColor, viewpoint);
+        drawCircle(site, SITE_COLOR, selectedColor, viewpoint);
         
         if (showLabel) {
             String words = site.getName();

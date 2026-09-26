@@ -38,11 +38,12 @@ public class VehicleMaintenanceTest extends MarsSimUnitTest {
         var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         int cap = g.getRoverCapacity();
 
-        assertFalse(g.containsRover(r), "Rover found");
-        assertTrue(g.addRover(r, false), "Add Rover");
-        assertTrue(r.isInGarage(), "Rover in garage");
-        assertTrue(g.getRovers().contains(r), "Garage contains rover");
-        assertFalse(g.addRover(r, false), "Add 2nd Rover");
+        assertFalse(g.containsRover(r), "The rover should not be in the garage yet.");
+        assertTrue(g.addRover(r, false), "Add the rover to the garage");
+        assertTrue(r.isInGarage(), "The rover is in the garage");
+        assertTrue(g.getRovers().contains(r), "The garage contains the rover");
+        // This is an arbitrary design choice below to return true/false if a rover is already in a garage 
+        assertFalse(g.addRover(r, false), "Add the same rover again into the garage");
         assertEquals(cap-1, g.getAvailableRoverCapacity(), "Capacity reduced");
 
         // Remove it

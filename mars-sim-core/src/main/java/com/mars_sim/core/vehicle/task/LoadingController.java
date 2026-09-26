@@ -350,12 +350,15 @@ public class LoadingController implements Serializable {
 			if (settlementStored < amountToLoad) {
 				if (mandatory) {
 					retryAttempts--;
-					logger.warning(vehicle, "Not enough available for loading "
+					// Note: Added timeBetweenLogs to avoid repetitive warnings
+					logger.warning(vehicle, 10_000, "Not enough available for loading "
 							+ Math.round(amountToLoad * 100D) / 100D
 							+ " kg " + resourceName
 							+ ". Settlement has "
 							+ Math.round(settlementStored * 100D) / 100D
-							+ " kg. will try " + retryAttempts + " more times.");
+							+ " kg. "
+//							+ "will try " + retryAttempts + " more times."
+							);
 					return amountLoading;
 				}
 				else {
@@ -375,7 +378,7 @@ public class LoadingController implements Serializable {
 				}
 				else if (mandatory && ((amountToLoad - remainingCapacity) > SMALLEST_RESOURCE_LOAD)) {
 					// Will load up as much required resource as possible
-					logger.warning(vehicle, "Not enough capacity for loading "
+					logger.warning(vehicle, 10_000, "Not enough capacity for loading "
 							+ Math.round(amountToLoad * 100D) / 100D + " kg "
 							+ resourceName
 							+ ". Vehicle remaining cap: "
@@ -400,7 +403,7 @@ public class LoadingController implements Serializable {
 			manifest.remove(resource);
 		}
 		else if (!mandatory && usedSupply) {
-			logger.info(vehicle, loader + " could not load " + resourceName
+			logger.info(vehicle, 10_000, loader + " could not load " + resourceName
 						+ ", returning " + Math.round(amountNeeded * 100D) / 100D + " kg.");
 			manifest.remove(resource);
 		}

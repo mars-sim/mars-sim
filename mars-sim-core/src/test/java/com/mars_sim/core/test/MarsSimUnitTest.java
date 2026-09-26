@@ -102,7 +102,7 @@ public abstract class MarsSimUnitTest {
 		var building0 = buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
 									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, true);
 	    
-	    return building0.getVehicleParking();
+	    return building0.getVehicleMaintenance();
 	}
 	
 	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing) {
@@ -172,7 +172,7 @@ public abstract class MarsSimUnitTest {
 								settlement);
 		if (parked != null) {			
 			// Note: since settlement.addOwnedVehicle(this) was called in Vehicle's constructor
-			luv.setParkedLocation(parked, 0D);
+			luv.updateCrewLocation(parked, 0D);
 		}
 		
 	    getSim().getUnitManager().addUnit(luv);

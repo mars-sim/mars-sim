@@ -70,8 +70,9 @@ public class ItemResourceUtil {
 	// Must be one after the last fixed resource
 	public static final int FIRST_FREE_ITEM_RESOURCE_ID = STEEL_PIPE_ID + 1;
 	
-	// Light utility vehicle attachment parts for mining or construction.
-
+	/** String name of the manufacturing process of producing a data recorder. */	
+	private static final String MANUFACTURE_DATA_RECORDER = "Manufacture Data Recorder";
+	
 	/** String name of the manufacturing process of producing an EVA suit. */	
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
@@ -86,6 +87,7 @@ public class ItemResourceUtil {
 	
 	public static Set<Integer> evaSuitPartIDs;
 	public static Set<Integer> botPartIDs;
+	public static Set<Integer> dataRecordIDs;
 	
 	/** A set of common parts that will be consumed during a malfunction repair. */
 	public static Set<Integer> consumablePartIDs;
@@ -235,6 +237,30 @@ public class ItemResourceUtil {
 				logger.config("Unable to find EVA suit part IDs.");
 		}
 	}
+	
+	/**
+	 * Initializes the data recorder parts.
+	 */
+	public static void initDataRecorder() {
+		if (dataRecordIDs == null || dataRecordIDs.isEmpty()) {
+
+			ManufactureProcessInfo manufactureProcessInfo = null;
+			
+			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
+			
+			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
+				if (info.getName().equalsIgnoreCase(MANUFACTURE_DATA_RECORDER)) {
+		        	manufactureProcessInfo = info;
+		        	dataRecordIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
+		        	break;
+				}
+			}
+
+			if (manufactureProcessInfo == null)
+				logger.config("Unable to find data recorder part IDs.");
+		}
+	}
+	
 	
 	
 	/**

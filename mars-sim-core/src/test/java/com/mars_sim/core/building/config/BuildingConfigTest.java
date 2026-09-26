@@ -52,14 +52,13 @@ public class BuildingConfigTest {
         BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
         assertNotNull(spec, "Building spec " + LANDER_HAB);
 
-        // Lander Hab has many functions
-        assertEquals(21, spec.getFunctionSupported().size(), "Number of Functions in " + LANDER_HAB);
+        // Lander Hab now has 22 functions
+        assertEquals(22, spec.getFunctionSupported().size(), "Number of Functions in " + LANDER_HAB);
     }
 
     @Test
     void testLanderHabActivitySpots() {
         var bc = config.getBuildingConfiguration();
-
 
         BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
 

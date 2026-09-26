@@ -25,7 +25,9 @@ public class Chemist extends JobSpec {
 	 */
 	public Chemist() {
 		// Use Job constructor
-		super(JobType.CHEMIST, JobSpec.buildRoleMap(20.0, 10.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
+		super(JobType.CHEMIST, JobSpec.buildRoleMap(
+				20.0, 10.0, 5.0, 5.0, 
+				5.0, 10.0, 15.0, 30.0));
 	}
 
 	@Override

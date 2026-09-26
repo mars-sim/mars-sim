@@ -60,10 +60,10 @@ public abstract class DigLocalMeta extends MetaTask
         }
     }
 
-	private static final int MAX_BASE = 500;
+	private static final int MAX_BASE = 1000;
 	private static final int DEFAULT_EVA_NUM = 5;
 	
-    private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger digging
+    private static final double MIN_CAPACITY = 0.125D; // Minimum capacity to trigger digging
     /* The maximum shift fraction completed for a person to start this task.
     If above this value, the person will not consider picking this task. */
     private static final double MAX_SHIFT_FRACTION = 0.66D;
@@ -96,7 +96,7 @@ public abstract class DigLocalMeta extends MetaTask
         // - at least one empty bag at settlement.
     	if ((collectionProbability == 0.0)
             || rh.getSuitSet().isEmpty()
-            || (rh.findNumContainersOfType(containerType) == 0)) {                
+            || !rh.containsEquipment(containerType)) {                
     		return Collections.emptyList();
         }
 
@@ -111,12 +111,12 @@ public abstract class DigLocalMeta extends MetaTask
         // Determine the base score
         RatingScore result = new RatingScore(base);
 
-        boolean isEmergency = settlement.getRationing().isAtEmergency();
+        boolean isEmergency = settlement.getRationing().isAboveEmergency40();
         
         int rationingLevel = settlement.getRationing().getRationingLevel();
         
         // Calculate the capacity for more EVAs
-        int maxEVA = (int)Math.sqrt(1.0 + rationingLevel) 
+        int maxEVA = (int)Math.sqrt(1.0 + 2 * rationingLevel) 
         		+ settlement.getPreferences().getIntValue(SettlementParameters.MAX_EVA,
                                                     DEFAULT_EVA_NUM);
         
@@ -134,7 +134,7 @@ public abstract class DigLocalMeta extends MetaTask
         if (capacity <= MIN_CAPACITY) {
             return Collections.emptyList();
         }
-        result.addModifier("capacity", 1 + MathUtils.between(0, 1, capacity - MIN_CAPACITY));
+        result.addModifier("capacity", 1 + MathUtils.between(capacity - MIN_CAPACITY, 0, 1));
 
         List<SettlementTask> resultList = new ArrayList<>();
         resultList.add(new DigLocalTaskJob(this, settlement, result, maxEVA));

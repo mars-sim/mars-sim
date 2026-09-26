@@ -18,8 +18,10 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
@@ -251,7 +253,7 @@ public class MonitorWindow extends ContentPanel
 
 		buttonFilter = new JButton(ImageLoader.getIconByName(FILTER_ICON));
 		buttonFilter.setToolTipText(Msg.getString("MonitorWindow.tooltip.categoryFilter")); //$NON-NLS-1$
-		buttonFilter.addActionListener(e -> filterCategories());
+		buttonFilter.addActionListener(e -> filterCategories(buttonFilter));
 		statusPanel.add(buttonFilter);
 
 		statusPanel.add(new JSeparator(SwingConstants.VERTICAL));
@@ -400,7 +402,9 @@ public class MonitorWindow extends ContentPanel
 
 	@Override
 	public void tableChanged(TableModelEvent e) {
-		if ((e.getType() == TableModelEvent.INSERT) || (e.getType() == TableModelEvent.DELETE)) {
+		// Explicit insert, delete, or update of all rows which means a full reload
+		if ((e.getType() == TableModelEvent.INSERT) || (e.getType() == TableModelEvent.DELETE)
+			|| (e.getType() == TableModelEvent.UPDATE && e.getLastRow() == Integer.MAX_VALUE)) {
 			// Redisplay row count
 			MonitorTab selectedTab = getSelectedTab();
 			updateRowCount(selectedTab);
@@ -457,10 +461,19 @@ public class MonitorWindow extends ContentPanel
 		}
 	}
 
-	private void filterCategories() {
+	private void filterCategories(JButton source) {
 		var selected = getSelectedTab();
-		if (selected.isFilterable()) {
-			selected.showFilters(context);
+		
+		var filters = selected.getFilters();
+		if (!filters.isEmpty()) {
+
+			var menu = new JPopupMenu();
+			for (var filter : filters) {
+        		var item = new JCheckBoxMenuItem(filter.name(), filter.isActive());
+        		item.addActionListener(e -> filter.updater().accept(item.isSelected()));
+        		menu.add(item);
+			}
+			menu.show(source, 0, source.getHeight());
 		}
 	}
 

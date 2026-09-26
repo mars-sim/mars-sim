@@ -182,8 +182,8 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 				case 9 -> eo.findNumContainersOfType(containerType) < containerMin
 										? "Insufficient containers : " + containerMin : null;
 				case 10 -> settlement.findNumVehiclesOfType(VehicleType.LUV) == 0 ? NONE_AVAILABLE : null;
-				case 11 -> eo.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID) == 0 ? NONE_AVAILABLE : null;
-				case 12 -> eo.getItemResourceStored(ItemResourceUtil.BACKHOE_ID) == 0 ? NONE_AVAILABLE : null;
+				case 11 -> !eo.hasItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID) ? NONE_AVAILABLE : null;
+				case 12 -> !eo.hasItemResource(ItemResourceUtil.BACKHOE_ID) ? NONE_AVAILABLE : null;
 				case 13 -> settlement.getConstructionManager().getConstructionSites().isEmpty() ? NONE_AVAILABLE : null;
 				default -> null;
 			};

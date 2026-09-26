@@ -47,14 +47,17 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelResourceProcesses.class.getName());
 
+	private static final String AVERAGE_DUTY_CYCLE = "Average Duty Cycle: ";
+	private static final String _PERCENT = " %";
 	private static final String ICON = "resource";
-	private static final String[] LEVEL_NAMES = {"1", "2", "3", "4", "5"}; 
+	private static final String[] PERCENT_EFFORT = {"10", "20", "30", "40", "50", "60", "70", "80", "90", "100"}; 
+	private static final String ONE_HUNDRED = "100";
 	
-	private JComboBox<String> levelComboBox;
+	private JComboBox<String> percentEffortComboBox;
 	
 	private JLabel dutyCycleLabel;
-	
-	private int level;
+	/** Track the percentage of effort. */ 
+	private double percent = 100;
 	
 	private ResourceProcessPanel processPanel;
 
@@ -102,30 +105,33 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		content.add(topPanel, BorderLayout.NORTH);
 		
 		JPanel gridPanel = new JPanel(new GridLayout(1, 3, 2, 2));
+		gridPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		topPanel.add(gridPanel);
 				
 		// Create level panel.
 		JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		gridPanel.add(levelPanel);
 		
-		JLabel levelLabel = new JLabel("All Effort Level:");
+		JLabel levelLabel = new JLabel("Percentage of Effort:");
 		levelLabel.setAlignmentY(Component.TOP_ALIGNMENT);
-		levelLabel.setToolTipText("How much effort (Level 1 to 5 [highest]) devoted to producing output resources. Apply to all processes");
+		levelLabel.setToolTipText("The percentage of effort devoted to producing output resources. Apply to all processes.");
 		levelPanel.add(levelLabel);
 			
-		// Prepare level combo box
-		levelComboBox = new JComboBox<>(LEVEL_NAMES);
-		levelComboBox.setPrototypeDisplayValue("3");
-		levelComboBox.setSelectedItem("3");
-		levelComboBox.addActionListener(this);
+		// Prepare percentage of effort combo box
+		percentEffortComboBox = new JComboBox<>(PERCENT_EFFORT);
+		percentEffortComboBox.setAlignmentY(Component.TOP_ALIGNMENT);
+		percentEffortComboBox.setPrototypeDisplayValue(ONE_HUNDRED);
+		percentEffortComboBox.setSelectedItem(ONE_HUNDRED);
+		percentEffortComboBox.addActionListener(this);
         
-		levelPanel.add(levelComboBox);
+		levelPanel.add(percentEffortComboBox);
 		
 		// Create duty cycle panel.
 		JPanel dutyCyclePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		dutyCyclePanel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		gridPanel.add(dutyCyclePanel);
 		
-		dutyCycleLabel = new JLabel("Average Duty Cycle: " + Math.round(averagePercentDuty * 10.0)/10.0 + "%");
+		dutyCycleLabel = new JLabel(AVERAGE_DUTY_CYCLE + Math.round(averagePercentDuty * 10.0)/10.0 + _PERCENT);
 		dutyCycleLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		dutyCyclePanel.add(dutyCycleLabel);
 		
@@ -155,12 +161,12 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() instanceof JComboBox) {
-			int newLevel = Integer.parseInt((String)levelComboBox.getSelectedItem());
-			if (level != newLevel) {
-				level = newLevel;
-				processPanel.setLevelOfEffort(newLevel);
+			int newPercent = Integer.parseInt((String)percentEffortComboBox.getSelectedItem());
+			if (percent != newPercent) {
+				percent = newPercent;
+				processPanel.setPercentEffort(newPercent);
 				processPanel.update();
-				logger.info(getEntity(), "Manually changed to level " + newLevel + " as the overall output effort in all resource processes.");
+				logger.info(getEntity(), "Manually changed to " + newPercent + " % as the overall output effort in all resource processes.");
 			}
 		}
 	}	
@@ -190,6 +196,6 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 			size = 1;
 		double averagePercentDuty = sum / size;
 		
-		dutyCycleLabel.setText("Overall Duty Cycle: " + Math.round(averagePercentDuty*10.0)/10.0 + "%");
+		dutyCycleLabel.setText(AVERAGE_DUTY_CYCLE + Math.round(averagePercentDuty * 10.0)/10.0 + _PERCENT);
 	}
 }

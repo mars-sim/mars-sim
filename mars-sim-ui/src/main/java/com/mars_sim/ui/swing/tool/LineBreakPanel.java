@@ -82,7 +82,7 @@ public class LineBreakPanel extends JPanel {
 		int y = MARGIN_HEIGHT;
 		int w = getWidth() - MARGIN_WIDTH * 2;
 		int h = getHeight() - MARGIN_HEIGHT * 2;
-		int arc = 15;
+		int arc = 5;
 
 		Graphics2D g2 = (Graphics2D) g.create();
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

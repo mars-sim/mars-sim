@@ -204,7 +204,7 @@ public class MarsSimContextImpl implements MarsSimContext {
 								settlement);
 		if (parked != null) {			
 			// Note: since settlement.addOwnedVehicle(this) was called in Vehicle's constructor
-	    	rover1.setParkedLocation(parked, 0D);
+	    	rover1.updateCrewLocation(parked, 0D);
 		}
 	    unitManager.addUnit(rover1);
 	    

@@ -30,7 +30,6 @@ import com.mars_sim.ui.swing.UIContext;
  * this uses a lazy loading approach to building the UI. It is only built when it is
  * first displayed.
  */
-@SuppressWarnings("serial")
 public abstract class EntityTabPanel<T extends Entity>  {
 
     // Name of the icon to use for the general tab

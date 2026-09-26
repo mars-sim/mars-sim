@@ -119,7 +119,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 	 * @return Has all evictions completed?
      */
     private boolean evictStragglers(MissionProject m, Vehicle v) {
-		logger.info(v, "Look to evict members for " + m.getName());
+		logger.info(v, 5_000L, "Look to evict members for " + m.getName());
 
 		List<Person> ejectedMembers = new ArrayList<>();
 		Collection<Worker> members = m.getMembers();

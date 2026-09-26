@@ -101,6 +101,7 @@ public class PartGood extends Good {
 	private static final double STEEL_DEMAND = 1.25;
 	private static final double BRICK_DEMAND = 1.0;
 	private static final double ELECTRICAL_DEMAND = 1.25;
+	private static final double ELECTRONIC_DEMAND = 0.5;
 	private static final double INSTRUMENT_DEMAND = 1.2;
 	private static final double METALLIC_DEMAND = 0.8;
 	private static final double UTILITY_DEMAND = 0.75;
@@ -196,6 +197,9 @@ public class PartGood extends Good {
 				return ELECTRICAL_DEMAND;
 			}
 
+			case ELECTRONIC:
+				return ELECTRONIC_DEMAND;
+				
 			case INSTRUMENT:
 				return INSTRUMENT_DEMAND;
 
@@ -408,7 +412,7 @@ public class PartGood extends Good {
 	       
 		// Calculate total supply
 		double totalSupply = owner.getAverageSupply(eo.getItemResourceStored(id));
-		// Save the average supply
+		if (totalSupply < 1) totalSupply = .5;
 		owner.setSupplyScore(this, totalSupply);
     
 		// Get demand for a part.

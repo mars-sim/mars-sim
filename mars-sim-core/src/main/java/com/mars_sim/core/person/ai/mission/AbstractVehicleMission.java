@@ -204,6 +204,22 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		setStartingSettlement(startingMember.getAssociatedSettlement());
 	}
 
+
+    /**
+     * Gets the estimated travel time take for this Mission to cover a distance.
+     * 
+     * @param distance Distance to cover
+     * @return Duration in mSols
+     */
+    public double getEstimateTravelTime(double distance) {
+        double result = 0D;
+        double averageSpeed = getVehicle().getBaseSpeed() * 0.8D;
+		if (averageSpeed > 0) {
+			result = distance / averageSpeed * MarsTime.MILLISOLS_PER_HOUR;
+		}
+        return result;
+    }
+    
 	/**
 	 * Sets the starting state of the mission.
 	 * 

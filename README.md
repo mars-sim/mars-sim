@@ -81,16 +81,15 @@ as many as 240 settlers. Besides, players may build a *Trading Outpost* or a *Mi
 near sites with high mineral concentrations. 
 
 Each sponsoring agency or country of origin has unique templates that utiliize various types of buildings. 
-Altogether, there is a total of 42 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
+Altogether, there is a total of 44 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
 to choose from.
 
 ## Settlement Development
 
-The goals in mars-sim include populating Mars with human settlements, outposts, weather stations, 
-communication towers, and, in future, transportation corridors such as road/train/plane network. 
+The goals in mars-sim include populating Mars with human settlements and outposts, developing transportation corridors between them. 
 Initially, a sponsor decides the location of a landing site and provides specific guidance over 
-the development of its settlements such as mission agendas and [objectives](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective).
-. Eventually, settlements will outgrow these goals and develop its own laws and governance 
+the development of its settlements such as mission agendas and [objectives](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective). 
+Eventually, settlements will outgrow these goals and develop its own laws and governance 
 and evolve at their own pace. 
 
 ## Economics
@@ -103,18 +102,18 @@ based upon the VPs due to the exchange of resources from trading or delivery mis
 
 ## Authorities
 
-In mars-sim, we witness an incredible undertaking in that 33 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
+In mars-sim, we witness an incredible undertaking in as many as 38 [countries](https://github.com/mars-sim/mars-sim/wiki/Countries) 
 from Earth are participating in this dream of making Mars as the second home for humanity. 
 
-Altogether, there's a total of 2 blocs, 12 space agencies, 1 organization, and 2 corporations 
-to choose from when funding a settlement. 
+Altogether, there's a total of 2 blocs, 14 space agencies/authorities, 1 grass-root organization, 
+and 2 corporations to choose from when funding a settlement. 
 
 European Space Agency (ESA) is a bloc that consists of 22 member nations united in shaping 
 the development of Europe's space capability. 
 
 Meanwhile, International Space Research Alliance (ISRA) comprises China, Russia, Taiwan and United Arab Emirates.
 
-Notably, the Mars Society is an international organization that has chapters in all 33 member nations. 
+Notably, the Mars Society is an international organization that has chapters in all 38 member nations. 
 
 Two corporations, namely, SpaceX and Blue Origin, have joined in to build settlements on Mars.
 

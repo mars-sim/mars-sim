@@ -14,7 +14,7 @@ import java.util.Properties;
 import javax.swing.JMenuItem;
 
 import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.Entity;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
@@ -48,7 +48,7 @@ public class PersonMapLayer extends WorkerMapLayer<Person> {
 	
 	@Override
 	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
-			Entity selectedEntity) {
+			SettlementPOI selectedEntity) {
 		Collection<Person> people = CollectionUtils.getPeopleInSettlementVicinity(settlement, false);		
 		Person selectedPerson = (selectedEntity instanceof Person p) ? p : null;
 

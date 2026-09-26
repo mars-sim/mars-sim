@@ -127,7 +127,7 @@ public class BinGood extends Good {
 		double average = determineBinDemand(owner, settlement);
 
 		double totalSupply = owner.getAverageSupply(settlement.getEquipmentInventory().findNumBinsOfType(binType));
-		
+		if (totalSupply < 1) totalSupply = .5;
 		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache

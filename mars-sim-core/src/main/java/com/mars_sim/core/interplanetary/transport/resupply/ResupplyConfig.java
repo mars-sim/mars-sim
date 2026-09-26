@@ -76,11 +76,11 @@ public class ResupplyConfig {
 	                        buildingType, bounds));	
 	            }
 
-				// Load tje supplies
+				// Load the supplies
 				var supplies = SettlementTemplateConfig.parseSupplies(name, resupplyElement, buildings,
 												partPackageConfig);
                 
-				// Build the 
+				// Build the manifest 
                 ResupplyManifest template = new ResupplyManifest(name, people, supplies);
 	            resupplyTemplates.add(template);
 	        }

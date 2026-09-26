@@ -13,13 +13,14 @@ import java.util.Properties;
 
 import javax.swing.JMenuItem;
 
-import com.mars_sim.core.Entity;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.ui.swing.utils.StatefulComponent;
 
 /**
  * An interface for a display layer on the settlement map.
  */
-public interface SettlementMapLayer {
+public interface SettlementMapLayer extends StatefulComponent {
 
 	/**
 	 * Displays the settlement map layer.
@@ -30,12 +31,7 @@ public interface SettlementMapLayer {
 	 * @return List of clickable hotspots
 	 */
 	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
-			Entity selectedEntity);
-
-	/**
-	 * Destroy the map layer.
-	 */
-	public void destroy();
+			SettlementPOI selectedEntity);
 
 	/**
 	 * Gets the filter controls for the map layer.

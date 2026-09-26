@@ -25,7 +25,6 @@ import com.mars_sim.ui.swing.entitywindow.structure.ResourceProcessPanel;
  * The BuildingPanelResourceProcessing class is a building function panel representing
  * the resource processes of a building.
  */
-@SuppressWarnings("serial")
 class BuildingPanelResourceProcessing extends EntityTabPanel<Building>
  implements TemporalComponent {
 

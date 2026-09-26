@@ -15,11 +15,9 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 import com.mars_sim.ui.swing.tool.settlement.UnitInfoPanel.UnitSummary;
@@ -52,7 +50,7 @@ class PopUpUnitMenu extends JPopupMenu {
 		add(createItem("details", entity, context::showDetails));
 
 		// Custom actions for specific entity types
-		for(var a : selected.getActions()) {
+		for (var a : selected.getActions()) {
 			var actionItem = new JMenuItem(Msg.getString("PopUpUnitMenu." + a));
 			actionItem.addActionListener(e -> {
 				selected.applyAction(a);

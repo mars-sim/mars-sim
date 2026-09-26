@@ -357,7 +357,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	private static boolean isCollisionFreeImmovable(BuildingTemplate t, Settlement settlement) {
 
 		return !LocalAreaUtil.isImmovableBoundedOjectIntersected(t.getBounds(), 
-				settlement);
+				settlement, 0);
 	}
 
 	/**

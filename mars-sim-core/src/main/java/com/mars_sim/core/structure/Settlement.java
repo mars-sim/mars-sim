@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -119,7 +120,7 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Shared preference key for Mission limits
 	 */
-	private static final int RESOURCE_UPDATE_FREQ = 30;
+	private static final int RESOURCE_UPDATE_FREQ = 27;
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
 
@@ -216,14 +217,14 @@ public class Settlement extends Unit implements Temporal,
 	private MarsZone zone;
 	
 	/** The previous ice prob value. */
-	private double icegetIceDigValueCache = 400D;
+	private double computedIceDigValue = 400D;
 	/** The current ice prob value. */
-	private double icegetIceDigValue;
+	private double iceDigValue;
 	/** The recommended ice prob value. */
 	private double recommendedIceDigValue;
 	
 	/** The previous regolith prob value. */
-	private double regolithDigValueCache = 400D;
+	private double computedRegolithDigValue = 400D;
 	/** The current regolith prob value. */
 	private double regolithDigValue;
 	/** The recommended regolith prob value. */
@@ -386,8 +387,8 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedNGaragedVehicles = new UnitSet<>();
-		indoorPeople = new UnitSet<>();
+		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
+		indoorPeople = new CopyOnWriteArraySet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
@@ -427,12 +428,14 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedNGaragedVehicles = new UnitSet<>();
-		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
-		
+
+		// These collections are read many and write infrequent so suitable for concurrent collections
+		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
+		indoorPeople = new CopyOnWriteArraySet<>();
+
 		dataCollectionSiteMap = new HashMap<>();
 		
 		// Create equipment inventory
@@ -483,12 +486,14 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedNGaragedVehicles = new UnitSet<>();
-		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
-		
+				
+		// This are read many and write infrequesnt so suitable for concurrent collections
+		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
+		indoorPeople = new CopyOnWriteArraySet<>();
+
 		dataCollectionSiteMap = new HashMap<>();
 		
 		allowTradeMissionSettlements = new HashMap<>();
@@ -967,9 +972,9 @@ public class Settlement extends Unit implements Temporal,
 			// Reset justLoaded
 			justLoaded = false;
 
-			icegetIceDigValueCache = computeIceAdjustedDemand();
+			computedIceDigValue = computeIceAdjustedDemand();
 
-			regolithDigValueCache = computeRegolithAdjustedDemand();
+			computedRegolithDigValue = computeRegolithAdjustedDemand();
 
 			// Initialize the goods manager
 			goodsManager.updatedMetrics();
@@ -1062,7 +1067,7 @@ public class Settlement extends Unit implements Temporal,
 
 			// Future : Convert computing ice/regolith probability to a task done by settlers
 			remainder = msol % RESOURCE_UPDATE_FREQ;
-			if (remainder == 2 || remainder == 9) {
+			if (remainder == 0 || remainder == 9|| remainder == 18) {
 				
 				setIceReviewDue(true);
 				setRegolithReviewDue(true);
@@ -1760,7 +1765,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @return collection of associated people.
 	 */
 	public Collection<Person> getAllAssociatedPeople() {
-//		return citizens.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(citizens);
 	}
 
@@ -1770,7 +1774,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @return collection of dead people.
 	 */
 	public Collection<Person> getDeathRegistry() {
-//		return deathRegistry.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(deathRegistry);
 	}
 	
@@ -1860,7 +1863,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @return list of tourists within
 	 */
 	public Collection<Person> getTouristList() {
-//		return touristPool.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(touristPool);
 	}
 
@@ -1888,7 +1890,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @return Collection of people within
 	 */
 	public Collection<Person> getIndoorPeople() {
-//		return indoorPeople.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(indoorPeople);
 	}
 
@@ -1988,7 +1989,6 @@ public class Settlement extends Unit implements Temporal,
 	 *  Gets the citizen.
 	 */
 	public Collection<Person> getCitizens() {
-//		return citizens.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(citizens);
 	}
 	
@@ -2091,14 +2091,14 @@ public class Settlement extends Unit implements Temporal,
 			boolean canGarage = getBuildingManager().addToGarage(vehicle);
 	
 			if (!canGarage) {
-				// Set vehicle's coordinates to that of settlement
-				vehicle.setCoordinates(getCoordinates());
 				// Call findNewParkingLoc to get a non-collided x and y coordinates
 				vehicle.findNewParkingLoc();
 			}
 			
-			else
-				fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
+			// Set vehicle's coordinates to that of settlement
+			vehicle.setCoordinates(getCoordinates());
+			
+			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
 			return true;
 		}
@@ -2119,13 +2119,13 @@ public class Settlement extends Unit implements Temporal,
 		if (parkedNGaragedVehicles.remove(vehicle)) {
 			
 			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
-			
+
 			return true;
 		}
 		
 		return false;
 	}
-
+	
 	/**
 	 * Does it have this vicinity vehicle parked and garaged at the settlement ?
 	 *
@@ -2215,7 +2215,6 @@ public class Settlement extends Unit implements Temporal,
 	 * @return collection of associated vehicles.
 	 */
 	public Collection<Vehicle> getAllAssociatedVehicles() {
-//		return ownedVehicles.stream().collect(Collectors.toUnmodifiableSet());
 		return Collections.unmodifiableSet(ownedVehicles);
 	}
 
@@ -2610,14 +2609,14 @@ public class Settlement extends Unit implements Temporal,
 			iceDemand = 1;
 		
 		double waterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.WATER_ID);
-		waterDemand = waterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
+		waterDemand = waterDemand * Math.sqrt(1.0 + 3 * rationing.getRationingLevel());
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
 		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID) / 2;
-		brineWaterDemand = brineWaterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
+		brineWaterDemand = brineWaterDemand * Math.sqrt(1.0 + 3 * rationing.getRationingLevel());
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
@@ -2669,9 +2668,9 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public void enforceIceDemandLevel() {
 		// Back up the current level to the cache
-		icegetIceDigValueCache = icegetIceDigValue;
+		computedIceDigValue = iceDigValue;
 		// Update the current level to the newly recommended level
-		icegetIceDigValue = recommendedIceDigValue;
+		iceDigValue = recommendedIceDigValue;
 		// Set the approval due back to false if it hasn't happened
 		setIceApprovalDue(false);
 	}
@@ -2681,7 +2680,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public void enforceRegolithDemandLevel() {
 		// Back up the current level to the cache
-		regolithDigValueCache = regolithDigValue;
+		computedRegolithDigValue = regolithDigValue;
 		// Update the current level to the newly recommended level
 		regolithDigValue = recommendedRegolithDigValue;
 		// Set the approval due back to false if it hasn't happened
@@ -2771,7 +2770,7 @@ public class Settlement extends Unit implements Temporal,
 		
 		recommendedIceDigValue = newValue;
 		
-		return (int)(icegetIceDigValueCache - newValue);
+		return (int)(computedIceDigValue - newValue);
 	}
 	
 	/**
@@ -2785,7 +2784,7 @@ public class Settlement extends Unit implements Temporal,
 		
 		recommendedRegolithDigValue = newValue;
 		
-		return (int)(regolithDigValueCache - newValue);
+		return (int)(computedRegolithDigValue - newValue);
 	}
 	
 	/**
@@ -2803,7 +2802,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return
 	 */
 	public double getIceDigValue() {
-		return icegetIceDigValue;
+		return iceDigValue;
 	}
 
 	
@@ -2831,7 +2830,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return
 	 */
 	public double getIceDigValueCache() {
-		return icegetIceDigValueCache;
+		return computedIceDigValue;
 	}
 
 	/**
@@ -2840,7 +2839,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return
 	 */
 	public double getRegolithDigValueCache() {
-		return regolithDigValueCache;
+		return computedRegolithDigValue;
 	}
 
 	public double getOutsideTemperature() {

@@ -24,7 +24,9 @@ extends JobSpec {
 	/** Constructor. */
 	public Architect() {
 		// Use Job constructor.
-		super(JobType.ARCHITECT, JobSpec.buildRoleMap(5.0, 15.0, 25.0, 10.0, 10.0, 5.0, 20.0, 10.0));
+		super(JobType.ARCHITECT, JobSpec.buildRoleMap(
+				2.0, 20.0, 30.0, 3.0, 
+				10.0, 5.0, 20.0, 10.0));
 	}
 
 	@Override

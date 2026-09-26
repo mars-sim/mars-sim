@@ -65,13 +65,13 @@ public class ResourceProcessPanel extends JPanel {
  	private static final String EM_SPACE = "&emsp;"; // typically twice as wide as EN_SPACE or four times as wide as NON_BREAKING_SPACE
 	private static final String TABS = EM_SPACE + EM_SPACE + EM_SPACE + EM_SPACE + EM_SPACE + EM_SPACE + EN_SPACE; //"&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;";
 	
+	private static final String PROCESS = EM_SPACE + EM_SPACE + NON_BREAKING_SPACE + "Process:" + EM_SPACE;
+	private static final String BUILDING_HEADER = EM_SPACE + EM_SPACE + NON_BREAKING_SPACE + "Building:" + EM_SPACE;
+	private static final String MAX_NUM_MODULES = "Max Modules:" + EM_SPACE;
+	private static final String POWER_REQ   = EM_SPACE + "Power Req:" + EM_SPACE;
 	private static final String INPUTS = EM_SPACE + EM_SPACE + NON_BREAKING_SPACE + "Inputs:" + EM_SPACE;
-	private static final String OUTPUTS = EM_SPACE + NON_BREAKING_SPACE + "Outputs:" + EM_SPACE;
-
-	private static final String PROCESS = EM_SPACE + NON_BREAKING_SPACE + "Process:" + EM_SPACE;
-	private static final String BUILDING_HEADER = EM_SPACE + NON_BREAKING_SPACE + "Building:" + EM_SPACE;
-	private static final String MAX_NUM_MODULES = "Max # Modules:" + EM_SPACE;
-	private static final String POWER_REQ   = "Power Req:" + EM_SPACE;
+	private static final String OUTPUTS = EM_SPACE + EM_SPACE + NON_BREAKING_SPACE + "Outputs:" + EM_SPACE;
+	
 	private static final String NOTE = EM_SPACE + "<i>Note:  * denotes an ambient resource</i>";
 
     private ResourceProcessTableModel resourceProcessTableModel;
@@ -128,7 +128,7 @@ public class ResourceProcessPanel extends JPanel {
         TableColumnModel columnModel = pTable.getColumnModel();
         columnModel.getColumn(0).setCellRenderer(new RunningCellRenderer());
         columnModel.getColumn(0).setCellEditor(new RunningCellEditor());
-        columnModel.getColumn(0).setPreferredWidth(20);
+        columnModel.getColumn(0).setPreferredWidth(15);
         columnModel.getColumn(1).setPreferredWidth(90);
 
         // Initialize with min 1, max 100, step 1
@@ -172,17 +172,18 @@ public class ResourceProcessPanel extends JPanel {
             }
         };
 
-        // Apply renderer to the spinner column
+        // Center the component in this column
         pTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-	
-
-        columnModel.getColumn(2).setPreferredWidth(50);
-        		
-        columnModel.getColumn(3).setPreferredWidth(150);
-        columnModel.getColumn(4).setPreferredWidth(40);
-        columnModel.getColumn(5).setPreferredWidth(40);
-        columnModel.getColumn(6).setPreferredWidth(40);
-        columnModel.getColumn(7).setPreferredWidth(40);
+        columnModel.getColumn(2).setPreferredWidth(25);
+     // Center the component in this column
+        pTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        columnModel.getColumn(3).setPreferredWidth(25); 
+        
+        columnModel.getColumn(4).setPreferredWidth(150);
+        columnModel.getColumn(5).setPreferredWidth(30);
+        columnModel.getColumn(6).setPreferredWidth(30);
+        columnModel.getColumn(7).setPreferredWidth(30);
+        columnModel.getColumn(8).setPreferredWidth(30);
         
         setLayout(new BorderLayout());
         add(scrollPanel, BorderLayout.CENTER);
@@ -191,13 +192,13 @@ public class ResourceProcessPanel extends JPanel {
     }
 
     /**
-     * Sets the level of Effort.
+     * Sets the percentage of Effort.
      * 
      * @param level
      */
-    public void setLevelOfEffort(int level) {
+    public void setPercentEffort(double percent) {
     	for (ResourceProcess p: resourceProcessTableModel.getProcesses()) {
-    		p.setLevel(level);
+    		p.setPercentEffort(percent);
     	}
     }
     
@@ -208,12 +209,14 @@ public class ResourceProcessPanel extends JPanel {
     	int numRow = resourceProcessTableModel.getRowCount();
     	for (int i=0; i< numRow; i++) {	
     		resourceProcessTableModel.fireTableCellUpdated(i, 0);
-    		
+//    		resourceProcessTableModel.fireTableCellUpdated(i, 1);
     		resourceProcessTableModel.fireTableCellUpdated(i, 2);
-    		
-    		resourceProcessTableModel.fireTableCellUpdated(i, 4);
+//    		resourceProcessTableModel.fireTableCellUpdated(i, 3);
+//    		resourceProcessTableModel.fireTableCellUpdated(i, 4);
     		resourceProcessTableModel.fireTableCellUpdated(i, 5);
     		resourceProcessTableModel.fireTableCellUpdated(i, 6);
+    		resourceProcessTableModel.fireTableCellUpdated(i, 7);
+    		resourceProcessTableModel.fireTableCellUpdated(i, 8);
     	}
     }
 	
@@ -226,12 +229,13 @@ public class ResourceProcessPanel extends JPanel {
                 implements EntityModel, ToolTipTableModel {
 		private static final int RUNNING_STATE = 0;
         private static final int BUILDING_NAME = 1;		
-        private static final int MODULE_NAME = 2;
-        private static final int PROCESS_NAME = 3;
-        private static final int DUTY_PERCENT = 4;
-        private static final int INPUT_SCORE = 5;
-        private static final int OUTPUT_SCORE = 6;
-        private static final int SCORE = 7;
+        private static final int NUM_MODULE = 2;
+        private static final int MAX_MODULE = 3;
+        public static final int PROCESS_NAME = 4;
+        private static final int DUTY_PERCENT = 5;
+        private static final int INPUT_SCORE = 6;
+        private static final int OUTPUT_SCORE = 7;
+        private static final int SCORE = 8;
 
         private static final String BUILDING = Msg.getString("building.singular");
         private static final String BUILDING_TOOLTIP = Msg.getString("entity.doubleClick");
@@ -278,20 +282,21 @@ public class ResourceProcessPanel extends JPanel {
 
         @Override
 		public int getColumnCount() {
-        	return 8; 
+        	return 9; 
 		}
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return (columnIndex == RUNNING_STATE || columnIndex == MODULE_NAME);
+            return (columnIndex == RUNNING_STATE || columnIndex == NUM_MODULE);
         }
 
         @Override
 		public Class<?> getColumnClass(int columnIndex) {
             switch(columnIndex) {
                 case RUNNING_STATE: return ResourceProcess.ProcessState.class;
-                case BUILDING_NAME: return String.class;
-                case MODULE_NAME: return JSpinner.class;
+                case BUILDING_NAME: return Building.class;
+                case NUM_MODULE: return JSpinner.class;
+                case MAX_MODULE: return Integer.class;
                 case PROCESS_NAME: return ResourceProcess.class;
                 case DUTY_PERCENT: return Double.class; 
                 case INPUT_SCORE: return Double.class;
@@ -307,7 +312,8 @@ public class ResourceProcessPanel extends JPanel {
             switch(columnIndex) {
                 case RUNNING_STATE: return "S";
                 case BUILDING_NAME: return BUILDING;
-                case MODULE_NAME: return "M #";
+                case NUM_MODULE: return "# M";
+                case MAX_MODULE: return "Max M";
                 case PROCESS_NAME: return "Process";
                 case DUTY_PERCENT: return "% Duty";
                 case INPUT_SCORE: return "In";
@@ -340,8 +346,9 @@ public class ResourceProcessPanel extends JPanel {
             
             switch(column) {
                 case RUNNING_STATE: return p.getState();
-                case BUILDING_NAME: return getBuilding(row).getName();
-                case MODULE_NAME: return p.getNumModules();
+                case BUILDING_NAME: return getBuilding(row);
+                case NUM_MODULE: return p.getNumModules();
+                case MAX_MODULE: return p.getMaxModules();
                 case PROCESS_NAME: return p;
                 case DUTY_PERCENT: return getFormattedScore(p.getPercentDuty());
                 case INPUT_SCORE: return getFormattedScore(p.getInputScore());
@@ -390,10 +397,8 @@ public class ResourceProcessPanel extends JPanel {
         Building getBuilding(int rowIndex) {
             if (buildings == null) 
                 return mainBuilding;
-        	// Convert to model index — THIS is the critical step
-        	int modelIndex = pTable.convertRowIndexToModel(rowIndex);
-        	
-            return buildings.get(modelIndex);
+            
+            return buildings.get(rowIndex);
         }
 
         @Override
@@ -411,12 +416,26 @@ public class ResourceProcessPanel extends JPanel {
                     case INPUTS_UNAVAILABLE -> "Input Resource Unavailable";
                 };
             }
-            else if (col == MODULE_NAME) {
+            else if (col == NUM_MODULE) {
                 return "The number of running modules currently activated";
             }
-            // Only display tooltip if hovering over the 3rd column named "Process"
+            else if (col == MAX_MODULE) {
+                return "The maximumn number of modules possible for this resource process in this building";
+            }
             else if (col == PROCESS_NAME) {
                 return generateProcessTooltip(getProcess(row), getBuilding(row));
+            }
+            else if (col == DUTY_PERCENT) {
+                return "The duty cycle in percentage - how often it is executed";
+            }
+            else if (col == INPUT_SCORE) {
+                return "The input score - how much the input resources are worth";
+            }
+            else if (col == OUTPUT_SCORE) {
+                return "The output score - how much the output resources are worth";
+            }
+            else if (col == SCORE) {
+                return "The final score - how much this resource process are worth running";
             }
             else if (col == BUILDING_NAME && buildings != null) {
                 return BUILDING_TOOLTIP;
@@ -442,15 +461,15 @@ public class ResourceProcessPanel extends JPanel {
             result.append(MAX_NUM_MODULES).append(process.getMaxModules()).append(BR);
             result.append(POWER_REQ).append(StyleManager.DECIMAL2_KW.format
             		(process.getkWRequired())).append(BR);
-
             result.append(INPUTS);
+            
             boolean firstItem = true;
             boolean hasAmbient = false;
             for (Integer resource: process.getInputResources()) {
                 if (!firstItem) 
                     result.append(TABS);
-                double fullRate = process.getBaseFullInputRate(resource) * 1000D;
-                String rateString = StyleManager.DECIMAL_PLACES2.format(fullRate);
+                double inputRate = process.getBaseSingleInputRate(resource) * 1000D;
+                String rateString = StyleManager.DECIMAL_PLACES2.format(inputRate);
 
                 result.append(ResourceUtil.findAmountResource(resource).getName());
                 if (process.isAmbientInputResource(resource)) {
@@ -466,8 +485,8 @@ public class ResourceProcessPanel extends JPanel {
             for (Integer resource : process.getOutputResources()) {
                 if (!firstItem)
                     result.append(TABS);
-                double fullRate = process.getBaseFullOutputRate(resource) * 1000D;
-                String rateString = StyleManager.DECIMAL_PLACES2.format(fullRate);
+                double outputRate = process.getBaseSingleOutputRate(resource) * 1000D;
+                String rateString = StyleManager.DECIMAL_PLACES2.format(outputRate);
                 result.append(ResourceUtil.findAmountResource(resource).getName())
                     .append(" - ").append(rateString).append(KG_SOL).append(BR);
                 firstItem = false;    
@@ -536,7 +555,7 @@ public class ResourceProcessPanel extends JPanel {
         	ResourceProcess rp = getProcess(row);
         	int maxModules = rp.getMaxModules();
         	int modules = (Integer) value;
-        	logger.info("Selecting '" + rp + "': " + modules + "/" + maxModules + "activated/max modules");
+        	logger.info("Selecting '" + rp + "': " + modules + " modules activated ( " + maxModules + " max)");
         	
             spinnerModel = new SpinnerNumberModel(modules, 1, maxModules, 1);
             
@@ -556,13 +575,13 @@ public class ResourceProcessPanel extends JPanel {
          * Gets the associated process object.
          */
         public ResourceProcess getProcess(int rowIndex) {
-        	// Convert to model index — THIS is the critical step
+        	// Convert to model index — Note: this is a CRITICAL step
         	int modelIndex = pTable.convertRowIndexToModel(rowIndex);
 
         	// Now safely access the underlying data
-        	Object value = pTable.getModel().getValueAt(modelIndex, 3);   
+        	ResourceProcess value = (ResourceProcess)pTable.getModel().getValueAt(modelIndex, ResourceProcessTableModel.PROCESS_NAME);  
         	
-        	return (ResourceProcess)value;
+        	return value;
         }
     }
 	

@@ -27,7 +27,7 @@ public class Tourist extends JobSpec {
 	 */
 	public Tourist() {
 		// Use Job constructor.
-		super(JobType.TOURIST, JobSpec.buildRoleMap(20.0, 5.0, 5.0, 35.0, 10.0, 10.0, 10.0, 5.0));
+		super(JobType.TOURIST, JobSpec.buildRoleMap(10.0, 10.0, 10.0, 30.0, 10.0, 10.0, 10.0, 10.0));
 	}
 
 	/**

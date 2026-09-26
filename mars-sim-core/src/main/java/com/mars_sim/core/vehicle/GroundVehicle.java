@@ -102,7 +102,7 @@ public abstract class GroundVehicle extends Vehicle {
 		if (isStuck) {
 			setPrimaryStatus(StatusType.PARKED, StatusType.STUCK);
 			setSpeed(0D);
-			setParkedLocation(LocalPosition.DEFAULT_POSITION, getDirection().getDirection());
+			updateCrewLocation(LocalPosition.DEFAULT_POSITION, getDirection().getDirection());
 		}
 	}
 }

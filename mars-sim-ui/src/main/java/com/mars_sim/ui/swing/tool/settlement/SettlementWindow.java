@@ -22,13 +22,10 @@ import javax.swing.SwingConstants;
 import javax.swing.plaf.LayerUI;
 
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.StyleManager;
@@ -172,87 +169,13 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 	}
 
 	/**
-	 * Centers the map panel on a position in a Settlement.
+	 * Displays an Entity in the appropriate Settlement map. The map will be switched to 
+	 * the appropriate Settlement and focused on the Entity. The Entity labels will be enabled.
 	 * 
-	 * @param settlement To display
-	 * @param position Location position within the set
+	 * @param e Entity to display
 	 */
-	private void refocusMap(Settlement settlement, LocalPosition position) {
-		// Surely this should be simpler ?
-		mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(settlement);
-
-		double xLoc = position.getX();
-		double yLoc = position.getY();
-		double scale = mapPanel.getScale();
-		mapPanel.reCenter();
-		mapPanel.moveCenter(xLoc * scale, yLoc * scale);
-	}
-
-	/**
-	 * Displays a position in a Settlement. The map will be flipped if needed
-	 * 
-	 * @param s Settlement to display
-	 * @param posn Local position for focus
-	 */
-    public void displayPosition(Settlement s, LocalPosition posn) {
-		refocusMap(s, posn);
-    }
-
-	/**
-	 * Displays a worker in the settlement map. This caters for the Worker.
-	 * 1. In a Building
-	 * 2. In a Vehicle
-	 * 3. Outside doing a local EVA
-	 * 
-	 * @param w Worker to display
-	 */
-	private boolean displayWorker(Worker w) {
-		Settlement home = null;
-		LocalPosition p = null;
-		if (w.isInSettlement()) {
-			home = w.getSettlement();
-			if (w.getBuildingLocation() != null)
-				p = w.getBuildingLocation().getPosition();
-		}
-		else if (w.isInVehicle()) {
-			Vehicle v = w.getVehicle();
-			home = v.getSettlement();
-			p = v.getPosition();
-		}
-		else if (w.isOutside()) {
-			home = w.getSettlement();
-			p = w.getPosition();
-		}
-		else {
-			return false;
-		}
-
-		refocusMap(home, p);
-		return true;
-	}
-
-	/**
-	 * Displays a Robot in the appropriate Settlement map. The map will be switched to 
-	 * the appropriate Settlement and focused on the Robot. The Robot labels will be enabled.
-	 * 
-	 * @param r Robot to display
-	 */
-    public void displayRobot(Robot r) {
-		if (displayWorker(r)) {
-			mapPanel.displayEntity(r);
-		}
-    }
-
-	/**
-	 * Displays a Person in the appropriate Settlement map. The map will be switched to 
-	 * the appropriate Settlement and focused on the Person. The Person labels will be enabled.
-	 * 
-	 * @param p Person to display
-	 */
-    public void displayPerson(Person p) {
-		if (displayWorker(p)) {
-			mapPanel.displayEntity(p);
-		}
+    public void displayEntity(SettlementPOI e) {
+		mapPanel.displayEntity(e);
     }
 
 	/**
@@ -275,7 +198,7 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 	@Override
 	public void destroy() {
 		
-		mapPanel.destroy();
+		mapPanel.release();
 		super.destroy();
 	}
 }

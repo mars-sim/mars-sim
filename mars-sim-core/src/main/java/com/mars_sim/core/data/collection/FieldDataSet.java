@@ -18,25 +18,23 @@ import com.mars_sim.core.time.MarsTime;
 public abstract class FieldDataSet implements SurfacePOI {
 	
 	private static int currentIdentifier;
+
+	// Unique identifier
+	private int identifier;
+	/** What is the starting quality of the data at the time of collection. from 0 to 100. */
+	private final int initialQuality;
+	/** What is the quality of the data. from 0 to 100. */
+	private int quality;
+	/** How difficult is it in processing the data. from 0 to 100. */
+	private int difficultyLevel;
+	/** researchTime in millisols. */
+	private double researchTime; 
+	/** workTime in millisols. */
+	private double workTime;
 	
 	private DataType dataType;
 	
 	private Map<ScienceType, Integer> scienceTypes;
-	
-	// Unique identifier
-	private int identifier;
-	
-	/** What is the starting quality of the data at the time of collection. from 0 to 100. */
-	private final int initialQuality;
-	
-	/** What is the quality of the data. from 0 to 100. */
-	private int quality;
-	
-	/** How difficult is it in processing the data. from 0 to 100. */
-	private int difficultyLevel;
-
-	/** researchTime in millisols. */
-	private int researchTime; 
 	
 	private Person owner;
 	
@@ -44,11 +42,11 @@ public abstract class FieldDataSet implements SurfacePOI {
 	
 	private Coordinates location;
 	
-	private MarsTime timeCollected;
+	private MarsTime startTimpstamp;
 	
 	public FieldDataSet(DataType dataType, MarsTime timeCollected, int initialQuality) {
 		this.dataType = dataType;
-		this.timeCollected = timeCollected;
+		this.startTimpstamp = timeCollected;
 		this.initialQuality = initialQuality;
 		
 		identifier = currentIdentifier;
@@ -78,14 +76,17 @@ public abstract class FieldDataSet implements SurfacePOI {
 			quality = 100;
 	}
 	
-	public int getResearchTime() {
+	public double getResearchTime() {
 		return researchTime;
 	}
 	
-	public void addResearchTime(int time) {
+	public void addResearchTime(double time) {
 		researchTime += time;
 	}
 
+	public void addWorkTime(double time) {
+		workTime += time;
+	}
 	
 	private Person getOwner() {
 		return owner;

@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.mars_sim.core.Entity;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.ImageLoader;
 
@@ -107,7 +107,7 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 	 */
 	@Override
 	public Collection<MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
-			Entity selectedEntity) {
+			SettlementPOI selectedEntity) {
 
 		double scale = viewpoint.scale();
 
@@ -356,7 +356,7 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 	}
 
 	@Override
-	public void destroy() {
+	public void release() {
 		// Dispose heavy resources first.
 		dispose();
 

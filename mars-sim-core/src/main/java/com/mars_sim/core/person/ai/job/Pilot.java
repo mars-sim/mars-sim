@@ -27,7 +27,9 @@ public class Pilot extends JobSpec {
 	 */
 	public Pilot() {
 		// Use Job constructor
-		super(JobType.PILOT, JobSpec.buildRoleMap(5.0, 5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
+		super(JobType.PILOT, JobSpec.buildRoleMap(
+				2.0, 5.0, 20.0, 20.0, 
+				25.0, 5.0, 15.0, 8.0));
 	}
 
 	/**
@@ -64,7 +66,7 @@ public class Pilot extends JobSpec {
 		// Add contributions from all garage.
 		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.VEHICLE_MAINTENANCE).iterator();
 		while (j.hasNext()) {
-			result += (double) j.next().getVehicleParking().getRoverCapacity() / 2.5;
+			result += (double) j.next().getVehicleMaintenance().getRoverCapacity() / 2.5;
 		}
 		
 		// Get number of associated vehicles at a settlement.

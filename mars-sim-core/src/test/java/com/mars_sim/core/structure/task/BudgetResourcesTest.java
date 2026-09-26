@@ -61,15 +61,19 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
 
         // Continue to complete review
         var ph = task.getPhase();
+        assertTrue(ph.getName().equals("Reviewing Resource Budget"), "Phase is 'Reviewing Resource Budget'");
         executeTaskUntilPhase(p, task, 1000);
         assertFalse(task.isDone(), "Task is still active");
+        // Need to look at how the change of isNewOneThirdSol() would affect the phase
+        assertTrue(task.getPhase().getName().equals("Submitting Resource Budget"), "Phase is 'Submitting Resource Budget'");
         assertNotEquals(ph, task.getPhase(), "Phase changed");
 
         // Approval
         executeTaskForDuration(p, task, task.getTimeLeft());
         assertTrue(task.isDone(), "Task is done");
+        // Need to look at how the change of isNewOneThirdSol() would affect ice review
         assertFalse(s.isIceReviewDue(), "Ice Prob review is no longer due");
-        // ice approval is now set to be due
+        // Need to look at how the change of isNewOneThirdSol() would affect ice approval
         assertTrue(s.isIceApprovalDue(), "Ice Prob approval is due");
     }
 

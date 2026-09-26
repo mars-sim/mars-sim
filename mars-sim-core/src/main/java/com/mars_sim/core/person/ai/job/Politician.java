@@ -28,7 +28,9 @@ public class Politician extends JobSpec {
 	 */
 	public Politician() {
 		// Use Job constructor.
-		super(JobType.POLITICIAN, JobSpec.buildRoleMap(15.0, 0.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0));
+		super(JobType.POLITICIAN, JobSpec.buildRoleMap(
+				15.0, 0.0, 5.0, 25.0, 
+				25.0, 20.0, 5.0, 5.0));
 	}
 
 	/**

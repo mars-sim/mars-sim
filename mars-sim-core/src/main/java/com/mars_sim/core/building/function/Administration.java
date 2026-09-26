@@ -29,11 +29,10 @@ public class Administration extends Function {
 	private static final String POPULATION_SUPPORT = "population-support";
 
 	// Data members
-	
-	// Note: define the use of populationSupport
-	private int populationSupport;
+	private final int staffCapacity;
+	// Note: need to reevaluate the use of populationSupport
+	private final int populationSupport;
 	private int staff;
-	private int staffCapacity;
 
 	/**
 	 * Constructor.

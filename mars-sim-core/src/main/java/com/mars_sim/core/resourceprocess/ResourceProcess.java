@@ -41,7 +41,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private boolean isRunning;
 	private boolean isLockOn;
 	
-	private int levelOfEffort = 3;
+	private double percentEffort = 100.0;
 	private int modules;
 	
 	private double currentProductionLevel;
@@ -62,7 +62,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	/**
 	 * Constructor.
 	 *
-	 * @param engine The processing engine that this Process manages
+	 * @param engine The processing engine that this process manages
 	 */
 	public ResourceProcess(ResourceProcessEngine engine, Building building) {
 		this.processSpec = engine.getProcessSpec();
@@ -72,10 +72,11 @@ public class ResourceProcess implements ScheduledEventHandler {
 		this.engine = engine;
 		this.building = building;
 		this.assessment = DEFAULT_ASSESSMENT;
-		this.modules = engine.getMaxModules();
+		this.modules = 1; // engine.getMaxModules();
 
 		// Add some randomness, today is sol 1
-		resetToggleWait(20 + RandomUtil.getRandomInt(processSpec.getProcessTime()));
+		int delay = RandomUtil.getRandomInt(0, 50);
+		resetToggleWait(delay);
 	}
 
 	/**
@@ -100,7 +101,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 			
 			double newProdLevel = productionLevel;
 			// Set the current production level.
-			currentProductionLevel = newProdLevel * levelOfEffort / 5;
+			currentProductionLevel = newProdLevel * (percentEffort / 100);
 
 			// Increment the duty time here
 			dutyTime += time;
@@ -122,8 +123,8 @@ public class ResourceProcess implements ScheduledEventHandler {
 			
 			if (!processSpec.isAmbientInputResource(resource)) {
 				
-				double fullRate = getBaseFullInputRate(resource);
-				double resourceRate = fullRate * currentProductionLevel;
+				double currentRate = getCurrentInputRate(resource);
+				double resourceRate = currentRate * currentProductionLevel;
 				double required = resourceRate;
 				if (required == 0D)
 					continue;
@@ -166,8 +167,8 @@ public class ResourceProcess implements ScheduledEventHandler {
 			
 			if (!isWasteOutputResource(resource)) {	
 				
-				double maxRate = getBaseFullOutputRate(resource);
-				double resourceRate = maxRate * currentProductionLevel;
+				double currentRate = getCurrentOutputRate(resource);
+				double resourceRate = currentRate * currentProductionLevel;
 				double required = resourceRate;
 				double remainingCap = host.getRemainingCombinedCapacity(resource);
 							
@@ -226,7 +227,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 		// Note : No need of checking if (isProcessRunning()) since 
 		// ResourceProcessor::getCombinedPowerLoad will check 
 		// if a process is running
-		return processSpec.getkWRequired() * getNumModules() * levelOfEffort / 5;
+		return processSpec.getkWRequired() * getNumModules() * (percentEffort / 100);
 	}
 
 	/**
@@ -332,21 +333,21 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 	
 	/**
-	 * Sets the level of effort.
+	 * Sets the percentage of effort.
 	 * 
-	 * @param level
+	 * @param Percent
 	 */
-	public void setLevel(int level) {
-		levelOfEffort = level;
+	public void setPercentEffort(double Percent) {
+		percentEffort = Percent;
 	}
 	
 	/**
-	 * Gets the level of effort.
+	 * Gets the percentage of effort.
 	 * 
 	 * @return
 	 */
-	public int getLevel() {
-		return levelOfEffort;
+	public double getPercentEffort() {
+		return percentEffort;
 	}
 	
 	public void setAssessment(ResourceProcessAssessment assessment) {
@@ -416,6 +417,15 @@ public class ResourceProcess implements ScheduledEventHandler {
 	}
 
 	/**
+	 * Gets the current input resource rate for a given resource.
+	 *
+	 * @return rate in kg/millisol.
+	 */
+	public double getCurrentInputRate(Integer resource) {
+		return getNumModules() * processSpec.getBaseInputRate(resource);
+	}
+	
+	/**
 	 * Gets the base full input resource rate for a given resource.
 	 *
 	 * @return rate in kg/millisol.
@@ -450,6 +460,15 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 */
 	public double getBaseSingleOutputRate(Integer resource) {
 		return processSpec.getBaseOutputRate(resource);
+	}
+
+	/**
+	 * Gets the current output resource rate for a given resource.
+	 *
+	 * @return rate in kg/millisol.
+	 */
+	public double getCurrentOutputRate(Integer resource) {
+		return getNumModules() * processSpec.getBaseOutputRate(resource);
 	}
 
 	/**
@@ -560,11 +579,17 @@ public class ResourceProcess implements ScheduledEventHandler {
 
 		this.isRunning = newRunning;
 
-		int delay = processSpec.getProcessTime();
-		if (!isRunning) {
-			// Not running so half the time before it can be restarted
-			delay /= 2;
+		int delay = 0;
+		
+		if (isRunning) {
+			delay = processSpec.getProcessTime();
+			resetToggleWait(delay);
 		}
+		
+		else {		
+			delay = 10;
+		}
+		
 		resetToggleWait(delay);
 	}
 

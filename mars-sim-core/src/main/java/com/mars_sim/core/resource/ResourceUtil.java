@@ -647,7 +647,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isConstructionResource(int resource) {
 		return switch (resource) {
-			case GYPSUM_PLASTER_ID, GYPSUM_ID, CEMENT_ID, CONCRETE_ID, LIME_ID, ACETYLENE_ID -> true;
+			case GYPSUM_PLASTER_ID, GYPSUM_ID, CEMENT_ID, LIME_ID, ACETYLENE_ID -> true;
 			default -> false;
 		};
 	}

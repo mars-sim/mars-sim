@@ -68,8 +68,8 @@ public class MaintainEVAVehicle extends EVAOperation {
         // Choose an available needy ground vehicle.
         vehicle = target;
 
-        // Add the rover to a garage if possible.
-        if (settlement.getBuildingManager().addToGarage(vehicle)) {
+        // If the rover to a garage
+        if (settlement.getBuildingManager().isInGarage(vehicle)) {
             // no need of doing EVA
         	endEVA("Vehicle in garage.");
             return;

@@ -95,7 +95,6 @@ public class UnloadVehicleGarage extends Task {
 
 		// Add the vehicle to a garage if possible
 		Building garage = settlement.getBuildingManager().addToGarageBuilding(vehicle);
-
 		// End task if vehicle or garage not available
 		if (garage == null) {
 			clearTask(vehicle.getName() + " no garage found.");

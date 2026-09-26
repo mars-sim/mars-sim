@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.job.util;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.mars_sim.core.UnitManager;
@@ -40,10 +41,27 @@ public abstract class JobSpec {
 	 * 
 	 * @param jobProspects 
 	 * @param name the name of the job.
+	 * @throws Exception 
 	 */
 	protected JobSpec(JobType jobType, Map<RoleType, Double> jobProspects) {
 		this.jobType = jobType;
 		this.jobProspects = jobProspects;
+		
+		Map<RoleType, Double> specialists = new HashMap<>(jobProspects);
+		specialists.remove(RoleType.CREW_ENGINEER);
+		specialists.remove(RoleType.CREW_SAFETY_OFFICER);
+		specialists.remove(RoleType.CREW_OPERATION_OFFICER);
+		specialists.remove(RoleType.CREW_SCIENTIST);
+		
+		Collection<Double> totals = specialists.values();
+		
+		double total = totals.stream()
+	    .mapToDouble(Double::doubleValue)
+	    .sum();
+		
+		if (total > 100 || total < 100) {
+			throw new IllegalArgumentException(jobType.getName() + ": sum of all specialists' role factors are " + total);
+		}
 	}
 
 	public JobType getType() {
@@ -98,7 +116,7 @@ public abstract class JobSpec {
 		m.put(RoleType.CREW_SAFETY_OFFICER, saf);
 		m.put(RoleType.CREW_OPERATION_OFFICER, log);
 		m.put(RoleType.CREW_SCIENTIST, sci);
-		
+
 		return Collections.unmodifiableMap(m);
 	}
 	

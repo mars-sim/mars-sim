@@ -8,7 +8,6 @@ package com.mars_sim.core.person.health.task;
 
 import java.util.logging.Level;
 
-import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -159,30 +158,30 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
 		// Check if the doctor is already at a medical activity spot	
 		boolean success = walkToDoctorStation(true);
 
-		if (!success) {
-			logger.info(worker, 10_000, "Unsuccessfully tried to walk to Doctor's station to treat " + healthProblem + ".");
-			
-			// First walk to a medical activity spot
-			success = MedicalCare.dispatchToMedical(worker);
-			
-			if (!success) {
-				logger.info(worker, 10_000, "Unsuccessfully dispatched to Doctor's station to treat " + healthProblem + ".");
-				
-				// If no medical activity spot is available, end the task
-				
-				// Note: for now, do NOT call endTask, or else this task may not be able to get done
-				
-//				endTask();
-				
-//				return timeLeft / 2;
-			}
-			else {
-				logger.info(worker, 10_000, "Successfully dispatched to Doctor's station to treat " + healthProblem + ".");
-			}
-		}
-		else {
-			logger.info(worker, 10_000, "Successfully arrived at Doctor's station to treat " + healthProblem + ".");
-		}
+//		if (!success) {
+//			logger.info(worker, 10_000, "Unsuccessfully tried to walk to Doctor's station to treat " + healthProblem + ".");
+//			
+//			// First walk to a medical activity spot
+//			success = MedicalCare.dispatchToMedical(worker);
+//			
+//			if (!success) {
+//				logger.info(worker, 10_000, "Unsuccessfully dispatched to Doctor's station to treat " + healthProblem + ".");
+//				
+//				// If no medical activity spot is available, end the task
+//				
+//				// Note: for now, do NOT call endTask, or else this task may not be able to get done
+//				
+////				endTask();
+//				
+////				return timeLeft / 2;
+//			}
+//			else {
+//				logger.info(worker, 10_000, "Successfully dispatched to Doctor's station to treat " + healthProblem + ".");
+//			}
+//		}
+//		else {
+//			logger.info(worker, 10_000, "Successfully arrived at Doctor's station to treat " + healthProblem + ".");
+//		}
 		
 		setPhase(TREATMENT);
 		

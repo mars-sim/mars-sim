@@ -19,9 +19,9 @@ import javax.swing.JMenuItem;
 
 import org.apache.batik.gvt.GraphicsNode;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.map.location.SettlementPOI;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
@@ -54,18 +54,20 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		@Override
 		UnitSummary getSummary() {
-			return new UnitSummary(target.getModelName(), target.getPosition(), target.getDescription());
+			String[] description = new String[] {target.getDescription()};
+			return new UnitSummary(target.getVehicleType().getName(), target.getPosition(), description);
 		}
 
 		@Override
 		List<String> getActions() {
-			return List.of("relocate", "maintain");
+			return List.of("relocateOutside", "relocateGarage", "maintain");
 		}
 
 		@Override
 		void applyAction(String action) {
 			switch (action) {
-				case "relocate" -> target.relocateVehicle();
+				case "relocateOutside" -> target.relocateVehicle(false);
+				case "relocateGarage" -> target.relocateVehicle(true);
 				case "maintain" -> target.maintainVehicle();
 				default -> throw new IllegalArgumentException("Unknown action: " + action);
 			}
@@ -97,7 +99,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 	@Override
 	public Collection<? extends MapHotspot<?>> displayLayer(Settlement settlement, MapViewPoint viewpoint,
-			Entity selectedEntity) {
+			SettlementPOI selectedEntity) {
 
 		// Save original graphics transforms.
 		AffineTransform saveTransform = viewpoint.prepareGraphics();
@@ -107,6 +109,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
 		Vehicle selectedVehicle = (selectedEntity instanceof Vehicle v) ? v : null;
 
+		// Note: the line .toList() below create CME
 		var hotspots = vehicles.stream()
 				.filter(v -> viewpoint.isVisible(v.getPosition()))
 				.map(v -> drawVehicle(v, selectedVehicle, showLabel, viewpoint))
@@ -188,18 +191,22 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 * @return true if vehicle is being repaired or maintained.
 	 */
 	private boolean isVehicleRepairOrMaintenance(Vehicle vehicle) {
-		boolean result = vehicle.isReservedForMaintenance();
 
-		// Check if vehicle is reserved for maintenance.
-
-        // Check if vehicle has malfunction.
-		// Note: a newly arrived vehicle may not have MalfunctionManager fully set up yet and 
-		// MalfunctionManager will be unavailable and NPE
-		if (vehicle.getMalfunctionManager().hasMalfunction()) {
-			result = true;
+		if (vehicle.getMalfunctionManager() == null) {
+		// Note: a newly arrived vehicle may not have MalfunctionManager fully set up yet  
+		// MalfunctionManager will be unavailable temporarily and NPE will result
+			return false;
 		}
-
-		return result;
+		else if (vehicle.getMalfunctionManager().hasMalfunction()) {
+	        // Check if vehicle has malfunction.
+			return true;
+		}
+		else if (vehicle.isReservedForMaintenance()) {
+			// Check if vehicle is reserved for maintenance.
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -238,7 +245,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 										MapViewPoint viewpoint) {
 		var ih = vehicle.getEquipmentInventory();
 		for(Part part : vehicle.getPossibleAttachmentParts()) {
-			if (ih.getItemResourceStored(part.getID()) > 0) {
+			if (ih.hasItemResource(part.getID())) {
 				// Use SVG image for part if available.
 				GraphicsNode partSvg = SVGMapUtil.getAttachmentPartSVG(part.getName().toLowerCase());
 				if ((partSvg != null) && (vehicleSvg != null)) {

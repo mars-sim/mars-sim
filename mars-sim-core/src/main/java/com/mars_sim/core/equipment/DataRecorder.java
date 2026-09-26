@@ -11,15 +11,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
+import com.mars_sim.core.data.collection.DataType;
 import com.mars_sim.core.data.collection.FieldDataSet;
-import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.data.collection.WaterIceData;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
-import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -31,7 +34,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	private static final long serialVersionUID = 1L;
 	
 	/* default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(DataRecorder.class.getName());
+	// Will add back: private static final SimLogger logger = SimLogger.getLogger(DataRecorder.class.getName())
 	
 	// Static members
 	/** The wear lifetime value is 1 orbit. */
@@ -39,7 +42,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	/** The maintenance time in millisols. */
 	private static final double MAINTENANCE_TIME = 20D;
 	
-	public static final String DATA = "Data";
+	public static final String INSTRUMENT = "Instrument";
 	
 	/** String name. */	
 	public static final String TYPE = SystemType.DATA_RECORDER.getName();
@@ -47,10 +50,16 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	// Data members
 	private static double usualMass = -1;
 	
-	private Map<Person, List<FieldDataSet>> dataset = new HashMap<>();
+	static {
+		// Initialize the parts
+		ItemResourceUtil.initDataRecorder();
+	}
+	
+	private Map<Worker, List<FieldDataSet>> dataset = new HashMap<>();
 	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
+	
 	
 	/**
 	 * Constructor 1.
@@ -61,20 +70,8 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 */
 	protected DataRecorder(String name, Settlement settlement) {
 		// Use Equipment constructor.
-		this(name, EquipmentType.DATA_RECORDER, TYPE, settlement);
-	}
-	
-	/**
-	 * Constructor 2.
-	 * 
-	 * @param name
-	 * @param eType
-	 * @param type
-	 * @param settlement
-	 */
-	protected DataRecorder(String name, EquipmentType eType, String type, Settlement settlement) {
-		super(name, eType, type, settlement);
-		
+		super(name, TYPE, settlement);
+			
 		setDescription("A standard data recorder.");
 
 		// Add scope to malfunction manager.
@@ -83,13 +80,13 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 		
 		// Add "Data" to the part scope
-		partConfig.addScopes(DATA);
+		partConfig.addScopes(INSTRUMENT);
 
 		// Add TYPE to the part scope
 		partConfig.addScopes(TYPE);
 
 		// Add "Data" to malfunction manager scope
-		malfunctionManager.addScopeString(DATA);
+		malfunctionManager.addScopeString(INSTRUMENT);
 		
 		// Add TYPE to malfunction manager scope
 		malfunctionManager.addScopeString(TYPE);
@@ -122,8 +119,76 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * 
 	 * @return
 	 */
-	public Map<Person, List<FieldDataSet>> getDataset() {
+	public Map<Worker, List<FieldDataSet>> getDataset() {
 		return dataset;
+	}
+	
+	/**
+	 * Checks the registered owner id.
+	 * 
+	 * @param ownerID
+	 * @return
+	 */
+	public boolean checkRegisteredOwnerID(int ownerID) {
+		return dataset.keySet().stream().anyMatch(p -> p.getIdentifier() == ownerID);
+
+//		Set<Integer> ids = dataset.keySet().stream()
+//				.map(p -> p.getIdentifier()) 
+//			    .collect(Collectors.toSet());
+//		
+//		if (ids.contains(ownerID))
+//			return true;
+//		
+//		return false;
+	}
+	
+	/**
+	 * Records the data.
+	 * 
+	 * @param worker
+	 * @param workTime
+	 * @param initialQuality
+	 * @param isNewRecording
+	 */
+	public void recordData(Worker worker, double workTime, int initialQuality, boolean isNewRecording) {
+		if (dataset.isEmpty()) {
+			startNewDataset(worker, workTime, initialQuality);
+		}
+		else {
+			List<FieldDataSet> list = dataset.get(worker);
+			FieldDataSet data = null;
+			if (list.isEmpty()) {
+				data = startNewDataset(worker, workTime, initialQuality);
+				list = new ArrayList<>();
+			}
+			else if (isNewRecording) {
+				data = startNewDataset(worker, workTime, initialQuality);
+			}
+			else {
+				int size = list.size();
+				data = list.get(size - 1);
+			}
+			data.addWorkTime(workTime);
+			list.add(data);
+			dataset.put(worker, list);
+		}
+	}
+	
+	/**
+	 * Starts a new dataset.
+	 * 
+	 * @param worker
+	 * @param workTime
+	 * @param initialQuality
+	 * @return
+	 */
+	private FieldDataSet startNewDataset(Worker worker, double workTime, int initialQuality) {
+		FieldDataSet data = new WaterIceData(
+				DataType.GROUND_DATA,
+				Simulation.instance().getMasterClock().getMarsTime(), 
+				initialQuality);
+		data.addWorkTime(workTime);
+		return data;
 	}
 	
 	/**
@@ -132,9 +197,9 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * @param person
 	 * @param dataSet
 	 */
-	public void addDataset(Person person, FieldDataSet dataSet) {
-		if (dataset.containsKey(person)) {
-			List<FieldDataSet> list = dataset.get(person);
+	public void addDataset(Worker worker, FieldDataSet dataSet) {
+		if (dataset.containsKey(worker)) {
+			List<FieldDataSet> list = dataset.get(worker);
 			for (FieldDataSet fds: list) {
 				if (fds.getIdentifier() == dataSet.getIdentifier()) {
 					// Overwrite the dataset
@@ -148,7 +213,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		else {
 			List<FieldDataSet> list = new ArrayList<>();
 			// Add the dataset
-			dataset.put(person, list);
+			dataset.put(worker, list);
 		}
 	}
 	

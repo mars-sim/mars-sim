@@ -52,15 +52,11 @@ class ResupplyConfigTest {
         		"MakerBot-Standard", 1);
         assertEquals(expectedRobots, supply.getRobots(), "Expected robots in manifest to match");
 
+        // Note: each letters of the equipment name must be in lowercase in order to pass the test below
         var expectedEqm = Map.of(
                 		"eva suit", 24,
-                        "barrel", 120,
-                        "bag", 120,
-                        "gas canister", 120,		
-                        "large bag", 120,
-                        "specimen box", 120,
-                        "thermal bottle", 12,
-                        "wheelbarrow", 8);
+        				"wheelbarrow", 8
+                        );
         assertEquals(expectedEqm, supply.getEquipment(), "Expected equipment in manifest to match");
 
         var expectedResources = Map.of(

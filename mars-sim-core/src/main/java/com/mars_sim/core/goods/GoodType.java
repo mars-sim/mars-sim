@@ -57,7 +57,10 @@ public enum GoodType {
     
     // For containers
     CONTAINER		("Container"),
+    
+    // For equipment
     EVA				("EVA"),
+    // INSTRUMENT		("Instrument"),
     
     // For bins
     BIN				("Bin"),

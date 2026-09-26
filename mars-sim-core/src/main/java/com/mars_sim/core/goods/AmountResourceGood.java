@@ -50,8 +50,8 @@ class AmountResourceGood extends Good {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(AmountResourceGood.class.getName());
 	
-	private static final double INITIAL_AMOUNT_DEMAND = 0.1;
-	private static final double INITIAL_AMOUNT_SUPPLY = 0;
+	private static final double INITIAL_AMOUNT_DEMAND = 0.5;
+	private static final double INITIAL_AMOUNT_SUPPLY = 0.01;
 
 	private static final double WASTE_WATER_VALUE_MODIFIER = 1.5;
 	private static final double GREY_WATER_VALUE_MODIFIER = 1;
@@ -85,12 +85,12 @@ class AmountResourceGood extends Good {
 	
 	// Water related flattening factors
 	private static final double ICE_FLATTENING_FACTOR = 1.25;
-	private static final double WATER_FLATTENING_FACTOR = 1.5;
+	private static final double WATER_FLATTENING_FACTOR = 0.7;
 	
 	// Gases flattening factors
 	private static final double METHANOL_FLATTENING_FACTOR = 1.1;
-	private static final double METHANE_FLATTENING_FACTOR = 1.5;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 0.7;
+	private static final double METHANE_FLATTENING_FACTOR = 1.1;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 1.1;
 	private static final double OXYGEN_FLATTENING_FACTOR = 0.7;	
 	
 
@@ -131,6 +131,7 @@ class AmountResourceGood extends Good {
 	private static final double COMPOUND_FLATTENING_FACTOR = 1.5;
 	private static final int CONSTRUCTION_FLATTENING_FACTOR = 1;
 	private static final int ELEMENT_FLATTENING_FACTOR = 2;
+	private static final int ELECTRONIC_FLATTENING_FACTOR = 5;
 
 	private static final int GEMSTONE_FLATTENING_FACTOR = 3;
 
@@ -156,7 +157,7 @@ class AmountResourceGood extends Good {
 	
 	// Demand Modifiers
     private static final double ICE_VALUE_MODIFIER = 1.05;
-	private static final double WATER_VALUE_MODIFIER = 1.25;
+	private static final double WATER_VALUE_MODIFIER = 0.5;
 	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
@@ -352,7 +353,12 @@ class AmountResourceGood extends Good {
 			mod = DERIVED_FLATTENING_FACTOR;
 			
 			break;
-					
+				
+		case ELECTRONIC:
+			mod = ELECTRONIC_FLATTENING_FACTOR;
+			
+			break;
+			
 		case ELEMENT:
 			mod = ELEMENT_FLATTENING_FACTOR;
 			
@@ -866,8 +872,15 @@ class AmountResourceGood extends Good {
 			totalDemand *= 0.995;
 		}
 		
-		if (owner.getLifeResources().contains(id) && totalDemand < 1) {
-			totalDemand = 1.0;
+		// For life support resources, need to adjust the demand so that the VP is at least 1
+		if (owner.getLifeResources().contains(id)) {
+			
+			int expectedGoodValuePoint = 1;
+			double expectedDemand = totalSupply * expectedGoodValuePoint;
+			
+			if (totalDemand < expectedDemand) {
+				totalDemand = expectedDemand;
+			}
 		}
 		
 		// Save the goods demand
@@ -1570,7 +1583,7 @@ class AmountResourceGood extends Good {
 			double waterRationLevel = settlement.getRationing().getRationingLevel();
 			double amountNeededSol = personConfig.getWaterUsageRate();
 			demand = amountNeededSol *  WATER_VALUE_MODIFIER 
-					* owner.getCommerceFactor(CommerceType.TRADE) * Math.sqrt(1.0 + waterRationLevel);
+					* owner.getCommerceFactor(CommerceType.TRADE) * Math.sqrt(1.0 + 2 * waterRationLevel);
 		}
 
 		return demand;

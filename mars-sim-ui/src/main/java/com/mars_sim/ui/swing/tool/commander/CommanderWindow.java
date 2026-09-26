@@ -38,14 +38,12 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
@@ -73,6 +71,7 @@ import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.PendingTask;
 import com.mars_sim.core.person.ai.task.util.TaskFactory;
 import com.mars_sim.core.structure.OverrideType;
+import com.mars_sim.core.structure.Rationing.EmergencyLevel;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
@@ -145,12 +144,12 @@ public class CommanderWindow extends ContentPanel {
 	private JRadioButton r1;
 	private JRadioButton r2;
 	private JRadioButton r3;
-	
 
 	private JButton prefButton;
 	
-	private JTextField waterLimitTextField;
+//	private JTextField waterLimitTextField;
 	
+	private JLabel elevelLabel;
 	private JLabel clevelLabel;
 	private JLabel iceProbLabel;
 	private JLabel regolithProbLabel;
@@ -1081,13 +1080,18 @@ public class CommanderWindow extends ContentPanel {
 		clevelLabel = currentPanel.addRow("Current Water Rationing Level", "");
 		clevelLabel.setText(currentLevel + "");
 		
-		// Set up a textfield for inputting water rationing emergency limit
-		waterLimitTextField = new JTextField(10); 
-		waterLimitTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
-		waterLimitTextField.setText(settlement.getRationing().getEmergencyLevel() + "");
+		// Get the water rationing 
+		EmergencyLevel eLevel = settlement.getRationing().getEmergencyLevel();
+		elevelLabel = currentPanel.addRow("Current Settlement Emergency Level", "");
+		elevelLabel.setText(eLevel.name() + "");
 		
-		currentPanel.addLabelledItem("Emergency Water Rationing Level", waterLimitTextField, 
-				"Please input the Emergency Water Rationing Level Limit as an integer");
+//		// Set up a textfield for inputting water rationing emergency limit
+//		waterLimitTextField = new JTextField(10); 
+//		waterLimitTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
+//		waterLimitTextField.setText(settlement.getRationing().getEmergencyLevel() + "");
+//		
+//		currentPanel.addLabelledItem("Emergency Water Rationing Level", waterLimitTextField, 
+//				"Please input the Emergency Water Rationing Level Limit as an integer");
 	
 		return emerPanel;
 	}
@@ -1540,23 +1544,26 @@ public class CommanderWindow extends ContentPanel {
 		int currentLevel = settlement.getRationing().getRationingLevel();
 		clevelLabel.setText(currentLevel + "");
 		
-		int limit = 0;
-
-		
-		if (isDouble(waterLimitTextField.getText())) {
-			double limitDouble = Double.parseDouble(waterLimitTextField.getText());
-			limit = (int)limitDouble;
-		}
-		else {
-			try {
-				limit = Integer.parseInt(waterLimitTextField.getText());
-			    settlement.getRationing().setEmergencyLevel(limit);
-			} catch (NumberFormatException e) {
-			    JOptionPane.showMessageDialog(this, 
-			    		"Please enter a valid integer for the emergency water rationing level", 
-			    		"Input Error", JOptionPane.ERROR_MESSAGE);  
-			}
-		}
+		// Get the water rationing 
+		EmergencyLevel eLevel = settlement.getRationing().getEmergencyLevel();
+		elevelLabel.setText(eLevel.name());
+				
+//		int limit = 0;
+//		
+//		if (isDouble(waterLimitTextField.getText())) {
+//			double limitDouble = Double.parseDouble(waterLimitTextField.getText());
+//			limit = (int)limitDouble;
+//		}
+//		else {
+//			try {
+//				limit = Integer.parseInt(waterLimitTextField.getText());
+//			    settlement.getRationing().setEmergencyLevel(limit);
+//			} catch (NumberFormatException e) {
+//			    JOptionPane.showMessageDialog(this, 
+//			    		"Please enter a valid integer for the emergency water rationing level", 
+//			    		"Input Error", JOptionPane.ERROR_MESSAGE);  
+//			}
+//		}
 	}
 	
 	

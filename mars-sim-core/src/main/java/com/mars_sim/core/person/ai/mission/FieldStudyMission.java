@@ -9,6 +9,8 @@ package com.mars_sim.core.person.ai.mission;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.mission.MetaMission;
@@ -33,6 +35,9 @@ public abstract class FieldStudyMission extends EVAMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(FieldStudyMission.class.getName());
 
 	/** Mission phase. */
 	public static final MissionPhase RESEARCH_SITE = new MissionPhase("Mission.phase.researchingFieldSite");
@@ -75,8 +80,36 @@ public abstract class FieldStudyMission extends EVAMission {
 
 			// Determine field site location.
 			if (hasVehicle()) {
-				double tripTimeLimit = getRover().getTotalTripTimeLimit(true);
-				determineFieldSite(getVehicle().getEstimatedRange(), tripTimeLimit);
+				var rover = getRover();
+				double range = rover.getEstimatedRange();
+				double timeLimit = getRover().getTotalTripTimeLimit(true);
+				
+				// Determining the actual traveling range.
+				double timeRange = getTripTimeRange(timeLimit, 1, true);
+				
+				logger.warning(this, "Range: " + Math.round(range * 10.0) / 10.0
+//									+ " km. proposed: " + Math.round(proposed * 10.0) / 10.0
+//									+ " km. durationMSols: " + Math.round(durationMSols * 10.0) / 10.0
+									+ " km. timeLimit: " + Math.round(timeLimit * 10.0) / 10.0
+									+ " msols. timeRange: " + Math.round(timeRange * 10.0) / 10.0
+									+ " msols"
+								);
+				
+				if (timeRange < range)
+					range = timeRange;
+				if (range <= 0D) {
+					logger.warning(this, "Zero range for mission.");
+					endMission(NO_VEHICLE_WITHIN_RANGE);
+					return;
+				}
+				
+				double personScore = 1;
+				
+				if (crew.leader() instanceof Person person) {
+					personScore = person.getMissionExperience(missionType);
+				}
+				
+				determineFieldSite(range, timeLimit, personScore);
 			}
 
 			// Add home settlement
@@ -190,9 +223,10 @@ public abstract class FieldStudyMission extends EVAMission {
 	 * 
 	 * @param roverRange    the rover's driving range
 	 * @param tripTimeLimit the time limit (millisols) of the trip.
+	 * @param score
 	 * @throws MissionException of site can not be determined.
 	 */
-	private void determineFieldSite(double roverRange, double tripTimeLimit) {
+	private void determineFieldSite(double roverRange, double tripTimeLimit, double score) {
 
 		// Determining the actual traveling range.
 		double range = roverRange;
@@ -206,10 +240,14 @@ public abstract class FieldStudyMission extends EVAMission {
 
 		// Determine the research site.
 		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
-		double limit = range / 4D;
+		
+		int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
+		
+		double limit = Math.min(missionSol * 7, Math.min(range, range / 10 * (1 + score / 1.5)));
+		
 		double siteDistance = RandomUtil.getRandomDouble(limit);
 		var fieldSite = startingLocation.getNewLocation(direction, siteDistance);
-		addNavpoint(fieldSite, "Fesearch Site");
+		addNavpoint(fieldSite, "Field Research Site");
 	}
 
 	/**

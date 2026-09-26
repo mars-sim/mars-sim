@@ -114,11 +114,11 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		List<SettlementTask> tasks = new ArrayList<>();
 
 		Vehicle worstVehicle = null;
-		double highestScore = 0;
-		RatingScore score = new RatingScore(0);
+		double highestScore = 0D;
+		RatingScore score = new RatingScore(0D);
 		var eo = settlement.getEquipmentInventory();
 				
-		for (Vehicle vehicle : getAllDownVehicleCandidates(settlement, false)) {
+		for (Vehicle vehicle : getDownVehicleCandidates(settlement, false)) {
 				
 			MalfunctionManager manager = vehicle.getMalfunctionManager();
 			
@@ -140,8 +140,8 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 			}
 		}
 		
-		// Vehicle in need of maintenance
-		if (highestScore > 0) {
+		// Pick just one vehicle in need of maintenance
+		if (highestScore > 0D) {
 			
 			boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
 					worstVehicle.getAssociatedSettlement(), worstVehicle);
@@ -149,39 +149,41 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 			tasks.add(new VehicleMaintenanceJob(this, settlement, worstVehicle, !garageTask, score));
 		}
 
-		// Reset them
-		worstVehicle = null;
-		highestScore = 0;
+		if (worstVehicle == null) {
 			
-		for (Vehicle vehicle : getAllGoodVehicleCandidates(settlement, false)) {
+			// Reset them
+			highestScore = 0D;
 				
-			MalfunctionManager manager = vehicle.getMalfunctionManager();
-			
-			boolean hasMalfunction = manager.hasMalfunction();
-			
-			// Note: Look for entities that are NOT malfunction since
-			//       malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
-			if (!hasMalfunction) {
-			
-				boolean partsPosted = vehicle.getMalfunctionManager()
-						.hasMaintenancePartsInStorage(eo);
+			for (Vehicle vehicle : getGoodVehicleCandidates(settlement, false)) {
+					
+				MalfunctionManager manager = vehicle.getMalfunctionManager();
 				
-				score = MaintenanceUtil.scoreMaintenance(manager, vehicle, partsPosted);
-	
-				if (score.getScore() > highestScore) {
-					worstVehicle = vehicle;
-					highestScore = score.getScore();
+				boolean hasMalfunction = manager.hasMalfunction();
+				
+				// Note: Look for entities that are NOT malfunction since
+				//       malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
+				if (!hasMalfunction) {
+				
+					boolean partsPosted = vehicle.getMalfunctionManager()
+							.hasMaintenancePartsInStorage(eo);
+					
+					score = MaintenanceUtil.scoreMaintenance(manager, vehicle, partsPosted);
+		
+					if (score.getScore() > highestScore) {
+						worstVehicle = vehicle;
+						highestScore = score.getScore();
+					}
 				}
 			}
-		}
-		
-		// Vehicle in need of maintenance
-		if (highestScore > 0) {
 			
-			boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
-					worstVehicle.getAssociatedSettlement(), worstVehicle);
-			
-			tasks.add(new VehicleMaintenanceJob(this, settlement, worstVehicle, !garageTask, score));
+			// Pick just one vehicle for inspection
+			if (highestScore > 0D) {
+				
+				boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+						worstVehicle.getAssociatedSettlement(), worstVehicle);
+				
+				tasks.add(new VehicleMaintenanceJob(this, settlement, worstVehicle, !garageTask, score));
+			}
 		}
 		
 		return tasks;
@@ -195,11 +197,13 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	 * @param mustBeOutside
 	 * @return collection of ground vehicles available for maintenance.
 	 */
-	private static List<Vehicle> getAllGoodVehicleCandidates(Settlement home, boolean mustBeOutside) {
-		// Vehicle must not be reserved for Mission nor maintenance
+	private static List<Vehicle> getGoodVehicleCandidates(Settlement home, boolean mustBeOutside) {
+		// Vehicle must not be reserved for Mission and for maintenance
 		return home.getParkedNGaragedVehicles().stream()
-			.filter(v -> (!v.isReserved() && !v.isReservedForMaintenance()
-						&& (!mustBeOutside || !v.isInGarage())))
+			.filter(v -> (!v.isReservedForMission() 
+						&& !v.isReservedForMaintenance())
+//						&& (!mustBeOutside || !v.isInGarage()))
+					)
 			.collect(Collectors.toList());
 	}
 
@@ -211,11 +215,13 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	 * @param mustBeOutside
 	 * @return collection of ground vehicles available for maintenance.
 	 */
-	private static List<Vehicle> getAllDownVehicleCandidates(Settlement home, boolean mustBeOutside) {
-		// Vehicle must not be reserved for Mission nor maintenance
+	private static List<Vehicle> getDownVehicleCandidates(Settlement home, boolean mustBeOutside) {
+		// Vehicle must first be reserved for maintenance and must not be reserved for Mission 
 		return home.getParkedNGaragedVehicles().stream()
-			.filter(v -> (!v.isReserved() && v.isReservedForMaintenance()
-						&& (!mustBeOutside || !v.isInGarage())))
+			.filter(v -> (!v.isReservedForMission() 
+						&& v.isReservedForMaintenance())
+//						&& (!mustBeOutside || !v.isInGarage()))
+					)
 			.collect(Collectors.toList());
 	}
 	
@@ -229,7 +235,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
 		for (Building j : settlement.getBuildingManager().getBuildingSet(
 				FunctionType.VEHICLE_MAINTENANCE)) {
-			VehicleMaintenance garage = j.getVehicleParking();
+			VehicleMaintenance garage = j.getVehicleMaintenance();
 			
 			boolean hasSpace = false;
 			if (vehicle instanceof Rover)
@@ -255,7 +261,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		int garageSpaces = 0;
 		for(Building j : settlement.getBuildingManager().getBuildingSet(
 				FunctionType.VEHICLE_MAINTENANCE)) {
-			VehicleMaintenance garage = j.getVehicleParking();
+			VehicleMaintenance garage = j.getVehicleMaintenance();
 			
 			if (vehicle instanceof Rover)
 				garageSpaces += garage.getAvailableRoverCapacity();

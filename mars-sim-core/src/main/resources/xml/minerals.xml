@@ -7,18 +7,18 @@
 	<!ATTLIST mineral frequency (common|uncommon|rare|very_rare) #REQUIRED>
 	<!ELEMENT locale-list (locale+)>
 	<!ELEMENT locale EMPTY>
-	<!ATTLIST locale name (volcanic|sedimentary|plutonic|crater) #REQUIRED>
+	<!-- locale name are terrain descriptors -->
+	<!ATTLIST locale name (volcanic|sedimentary|plutonic|aeolian|tectonic|crater) #REQUIRED>
 ]>
 
-<!-- List of all mineral concentrations that can be mined. -->
+<!-- List of all 11 mineral concentrations that can be mined. -->
 <mineral-concentrations>
 
 	<!-- 
 		
 		See https://www.mars.asu.edu/data/ for mineral map
 		
-		
-		A. Brave browser
+		A. Plutonic
 		
 		Given the Martian environment and the presence of clay minerals, it’s likely that plutonic rocks 
 		on Mars would contain minerals such as:
@@ -30,9 +30,37 @@
 		4. Clay minerals: abundant on Mars, these minerals would likely be present in Martian plutonic rocks, 
 		   potentially in the form of phyllosilicates (e.g., montmorillonite, kaolinite)
 		
+		B. The 3 basic terrain descriptors
 		
-		B. https://www.thoughtco.com/plutonic-rocks-1440845
-		   https://www.thoughtco.com/about-igneous-rocks-1438950
+		Note that "Volcanic," "sedimentary," and "crater" are all well-established, standard 
+		descriptors for Martian locales. 
+		
+		"Plutonic" is technically defensible (there is some orbital evidence) but is not a 
+		recognized terrain class in Mars geologic mapping — it would read as unusual or overly 
+		specific to most planetary geologists. 
+		
+		If a fourth category is warranted, "tectonic" (e.g., graben, ridges, wrinkle ridges) or "aeolian" 
+		(dune fields, yardangs) would be more conventional.
+		
+		C. Clarified crater vs tectonic terrain descriptors
+		
+		They differ in origin, geometry, and how they're mapped:
+		
+		A "crater locale" refers to a specific impact feature or its ejecta — you can point to it and say 
+		"this is the rim of X crater" or "this is ejecta from Y basin."
+		
+		A "tectonic locale" refers to a zone of crustal deformation — typically a field of parallel 
+		grabens or wrinkle ridges, not a single bounded feature. You'd describe it as "the Noctis 
+		Fossae graben system" or "the circum-Tharsis compressional zone."
+
+		So if you're labeling a region on a map: "crater" identifies a discrete, bounded feature 
+		with a known age; "tectonic" identifies a zone of deformation whose extent is defined by 
+		the spatial distribution of structural elements rather than by a single morphology.
+		
+		D. igneous vs. plutonic rocks
+		
+		https://www.thoughtco.com/plutonic-rocks-1440845
+		https://www.thoughtco.com/about-igneous-rocks-1438950
 		
 		There are three main types of igneous rocks. Rock formed of lava is called extrusive, rock from 
 		shallow magma is called intrusive, and rock from deep magma is called plutonic. 
@@ -47,12 +75,25 @@
 		In contrast, volcanic rocks are formed by magma above ground. Their crystals are evident only through
 		an examination under a microscope.
 		
-		Plutonic rock is holocrystalline—every bit of mineral matter is in a crystalline form, and there is 
+		Plutonic rock is holocrystalline — every bit of mineral matter is in a crystalline form, and there is 
 		no glassy fraction. Typical plutonic rocks look like granite.
 		
 		Whereas plutonic rocks form continents, basalt lies in the crust underneath the oceans.
 		
 		Rocks are extrusive if it did erupt.
+		
+		E. Aeolian locale
+		
+		Aeolian deposits (dune fields, sand sheets, yardangs) are mineralogically diverse but 
+		dominated by mafic silicates inherited from their basaltic source rocks. The composition 
+		varies by region and degree of alteration.
+		
+		A 2021 study of Hargraves Crater dunes gave the most detailed breakdown: feldspar 36 ± 7%, 
+		pyroxene 22 ± 6%, olivine 12 ± 5%, high-silica phase 16 ± 7%, hematite 4 ± 1%, sulfate 3 ± 2%.
+		
+		Key point: Dune sand is a basaltic assemblage — it mirrors the surrounding volcanic terrain 
+		and typically has not traveled more than a few hundred km from its source.
+		
 	-->
 
 	<!-- Chalcopyrite is a copper sulfide mineral. -->
@@ -74,7 +115,7 @@
 	<!-- Goethite is an iron ore that has metamorphic origins. -->
 	<!-- http://en.wikipedia.org/wiki/Goethite -->
 	<!-- Yellow-brown, Reddish-brown, Dark brown. iron(III) oxide-hydroxide named in honor to the poet Goethe. RGB color: #BAAA47 (pale gold) -->
-	<mineral name="Goethite" color="#BAAA47" frequency="common">
+	<mineral name="Goethite" color="#BAAA47" frequency="uncommon">
 		<locale-list>
 			<locale name="sedimentary" />
 		</locale-list>
@@ -143,12 +184,14 @@
 		
 		It is a common rock-forming mineral found in sedimentary, metamorphic, 
 		and igneous rocks at locations throughout the world.
+
 	-->
 	<!-- Grey, rust red, brown. Fe2O3. has impurities. RGB color: #B05508 (rust orange, slightly red) -->
-	<mineral name="Hematite" color="#B05508" frequency="common">
+	<mineral name="Hematite" color="#B05508" frequency="uncommon">
 		<locale-list>
 			<locale name="volcanic" />
 			<locale name="sedimentary" />
+			<locale name="aeolian" />
 		</locale-list>
 	</mineral>
 	
@@ -157,7 +200,7 @@
 	<!-- http://en.wikipedia.org/wiki/Kamacite 
 	     Derived from the Greek root καμακ- "kamak" or κάμαξ "kamaks", meaning vine-pole.-->
 	<!-- dark brass, black, gray Fe2O3. has impurities. RGB color: #6d6329 (dull mud brown slightly orange) -->
-	<mineral name="Kamacite" color="#6d6329" frequency="common">
+	<mineral name="Kamacite" color="#6d6329" frequency="uncommon">
 		<locale-list>
 			<locale name="crater" />
 		</locale-list>
@@ -253,9 +296,10 @@
      	Magnesium Iron Silicate (Mg,Fe)2SiO4. A type of nesosilicate or orthosilicate
  	-->
 	<!-- yellow to yellow-green color, occasionally ranging to pale olive green. RGB color: #a4d629 (greenish yellow) -->
-	<mineral name="Olivine" color="#a4d629" frequency="uncommon">
+	<mineral name="Olivine" color="#a4d629" frequency="common">
 		<locale-list>
 			<locale name="crater" />
+			<locale name="aeolian" />
 		</locale-list>
 	</mineral>
 
@@ -277,6 +321,15 @@
 		</locale-list>
 	</mineral>
 	
+	<!-- RGB color 210, 205, 195. (R = 210 → D2, G = 205 → CD, B = 195 → C3). Hex : #D2CDC3 (Light warm gray, slightly cream) -->
+	<mineral name="Plagioclase Feldspar" color="#D2CDC3" frequency="common">
+		<locale-list>
+			<locale name="volcanic" />
+			<locale name="plutonic" />
+			<locale name="aeolian" />
+		</locale-list>
+	</mineral>
+	
 	<!-- Pyroxenes are a group of important rock-forming inosilicate minerals found in many igneous and metamorphic rocks. -->
 	<!-- https://en.wikipedia.org/wiki/Pyroxene													-->
 	<!-- Pyroxenes have the general formula XY(Si,Al)2O6, where X represents calcium (Ca), sodium (Na), iron (Fe(II)) or 
@@ -294,6 +347,7 @@
 		<locale-list>
 			<locale name="volcanic" />
 			<locale name="plutonic" />
+			<locale name="aeolian" />
 		</locale-list>
 	</mineral>
 	
@@ -332,7 +386,14 @@
 
 
 	<!-- jarosite, Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz,
-    Amphibole, Silicates -->
+    Amphibole, Silicates
+    
+    Feldspars occur in all major rock types (igneous, metamorphic, and sedimentary) and are the 
+    primary ingredient in ceramics, glass, and enamel. 
+    
+    When they weather, they break down into clay minerals (e.g., kaolinite), which is how 
+    most soils form.
+     -->
 	
 	<!-- 
 		A. https://en.wikipedia.org/wiki/Amphibole

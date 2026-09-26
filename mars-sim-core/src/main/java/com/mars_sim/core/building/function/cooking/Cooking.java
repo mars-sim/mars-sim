@@ -125,7 +125,7 @@ public class Cooking extends Function {
 	private boolean cookNoMore = false;
 
 	/** The cache for msols */
-	private int cookCapacity;
+	private final int cookCapacity;
 	
 	private int mealCounterPerSol = 0;
 	/** The amount of waste water in the holding tank. */

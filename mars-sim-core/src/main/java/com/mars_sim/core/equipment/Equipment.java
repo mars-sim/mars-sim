@@ -227,8 +227,11 @@ public abstract class Equipment extends AbstractMobileUnit implements Salvagable
 	 * @return
 	 */
 	public Person getRegisteredOwner() {
-		if (registeredOwner != -1)
-			return unitManager.getPersonByID(registeredOwner);
+		if (registeredOwner != -1) {
+			Person p = unitManager.getPersonByID(registeredOwner);
+			if (!p.isDeclaredDead())
+				return p;
+		}
 		return null;
 	}
 

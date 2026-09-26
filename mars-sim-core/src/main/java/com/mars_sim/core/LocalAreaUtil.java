@@ -400,30 +400,51 @@ public class LocalAreaUtil {
 	 * @param settlement
 	 * @return true if location collides with something.
 	 */
-	public static boolean isImmovableBoundedOjectIntersected(LocalBoundedObject object, Settlement settlement) { 
+	public static boolean isImmovableBoundedOjectIntersected(LocalBoundedObject object, Settlement settlement, int extendedRadius) { 
 
 		// Add all buildings at settlement.
-		Iterator<Building> j = settlement.getBuildingManager().getBuildingSet().iterator();
-		while (j.hasNext()) {
-			Building b = j.next();
-			if (!b.getInTransport() && isTwoBoundedOjectsIntersected(object, b)) {
-				return true;
+		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet().iterator();
+		while (i.hasNext()) {
+			Building b = i.next();
+			if (extendedRadius == 0) {
+				if (!b.getInTransport() && isTwoBoundedOjectsIntersected(object, b)) {
+					return true;
+				}
+			}
+			else {
+				if (!b.getInTransport() && isTwoExtendedBOIntersected(object, b, extendedRadius)) {
+					return true;
+				}
 			}
 		}
 
 		// Check all construction sites at settlement.
-		Iterator<ConstructionSite> k = settlement.getConstructionManager().getConstructionSites().iterator();
-		while (k.hasNext()) {
-			if (isTwoBoundedOjectsIntersected(object, k.next())) {
-				return true;
+		Iterator<ConstructionSite> j = settlement.getConstructionManager().getConstructionSites().iterator();
+		while (j.hasNext()) {
+			if (extendedRadius == 0) {
+				if (isTwoBoundedOjectsIntersected(object, j.next())) {
+					return true;
+				}
+			}
+			else {
+				if (isTwoExtendedBOIntersected(object, j.next(), extendedRadius)) {
+					return true;
+				}
 			}
 		}
 
 		// Check all data collection sites at settlement.
-		Iterator<DataCollectionSite> i = settlement.getLocalDataCollectionSitesList().iterator();
-		while (i.hasNext()) {
-			if (isTwoBoundedOjectsIntersected(object, i.next())) {
-				return true;
+		Iterator<DataCollectionSite> k = settlement.getLocalDataCollectionSitesList().iterator();
+		while (k.hasNext()) {
+			if (extendedRadius == 0) {
+				if (isTwoBoundedOjectsIntersected(object, k.next())) {
+					return true;
+				}
+			}
+			else {
+				if (isTwoExtendedBOIntersected(object, k.next(), extendedRadius)) {
+					return true;
+				}
 			}
 		}
 		
@@ -464,7 +485,7 @@ public class LocalAreaUtil {
 		// Add all construction sites at settlement vicinity.
 		result.addAll(settlement.getConstructionManager().getConstructionSites());
 		// Add all data collection sites at settlement vicinity.
-		result.addAll(settlement.getLocalDataCollectionSitesList());
+//		result.addAll(settlement.getLocalDataCollectionSitesList());
 
 		return result;
 	}
@@ -631,6 +652,21 @@ public class LocalAreaUtil {
 	}
 
 	/**
+	 * Gets the extended bounded object area.
+	 * 
+	 * @param object
+	 * @param extendedRadius
+	 * @return
+	 */
+	private static Area getExtendedBOArea(LocalBoundedObject object, int extendedRadius) {
+		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
+				object.getYLocation() - (object.getLength() / 2D), 
+				object.getWidth() + extendedRadius, object.getLength() + extendedRadius);
+		Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
+		return new Area(path);
+	}
+	
+	/**
 	 * Checks if two bound objects collide.
 	 *
 	 * @param o1 the first bound object
@@ -641,6 +677,17 @@ public class LocalAreaUtil {
 		return doAreasCollide(getBoundedObjectArea(o1), getBoundedObjectArea(o2));
 	}
 
+	/**
+	 * Checks if two extended bound objects collide.
+	 *
+	 * @param o1 the first bound object
+	 * @param o2 the second bound object
+	 * @return true if they do collide
+	 */
+	public static boolean isTwoExtendedBOIntersected(LocalBoundedObject o1, LocalBoundedObject o2, int extendedRadius) {
+		return doAreasCollide(getExtendedBOArea(o1, extendedRadius), getExtendedBOArea(o2, extendedRadius));
+	}
+	
 	/**
 	 * Gets the line segments.
 	 * 

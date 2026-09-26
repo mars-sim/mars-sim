@@ -218,6 +218,7 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 		return description;
 	}
 
+	
 	/**
 	 * Sets the unit's description.
 	 *

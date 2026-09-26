@@ -34,7 +34,6 @@ import com.mars_sim.ui.swing.entitywindow.structure.ResourceProcessPanel;
 /**
  * A tab panel for displaying all of the waste processes in a settlement.
  */
-@SuppressWarnings("serial")
 class TabPanelWasteProcesses extends EntityTabPanel<Settlement>
 			implements TemporalComponent {
 	

@@ -119,7 +119,7 @@ class TradeTableModel extends CategoryTableModel<Good> implements FilteredTableM
 	@Override
 	public List<FilteredTableModel.Filter> getActiveFilters() {
 		var filters = new ArrayList<FilteredTableModel.Filter>();
-		filters.add(new Filter(LIFE_RESOURCES, LIFE_RESOURCES, lifeResourcesCB));
+		filters.add(new Filter(LIFE_RESOURCES, lifeResourcesCB, b -> setFilter(LIFE_RESOURCES, b)));
 
 		return filters;
 	}
@@ -130,8 +130,7 @@ class TradeTableModel extends CategoryTableModel<Good> implements FilteredTableM
 	 * @param name Name of the filter
 	 * @param selected true to display, false to block
 	 */
-	@Override
-	public void setFilter(String name, boolean isDisplayed) {
+	private void setFilter(String name, boolean isDisplayed) {
 		if (LIFE_RESOURCES.equals(name)) {
 			lifeResourcesCB = isDisplayed;
 

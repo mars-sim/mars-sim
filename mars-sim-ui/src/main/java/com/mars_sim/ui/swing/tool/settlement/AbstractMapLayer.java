@@ -13,12 +13,14 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.LinearGradientPaint;
 import java.awt.MultipleGradientPaint;
+import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -54,7 +56,7 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 	    BasicStroke.CAP_BUTT,     // end cap style
 	    BasicStroke.JOIN_MITER,   // corner join style
 	    6.0f,                    // miter limit
-	    new float[]{5.0f, 2.0f},             // 10px dash, 5px gap
+	    new float[]{1.0f, .2f},             // 10px dash, 5px gap
 	    0.0f                      // dash phase (offset)
 	);
 	
@@ -650,6 +652,16 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			g2d.setPaint(gradient);
 		}
 		else {
+			
+			// Save original stroke
+	    	Stroke oldStroke = g2d.getStroke();
+			// Draw the dashed border over the selected 
+			g2d.setStroke(DASHED);
+			// Draw the svg
+			g2d.draw(bounds);
+			// Restore the stroke
+			g2d.setStroke(oldStroke);
+			
 			Color[] colors = {color, Color.GRAY, color};
 			
 			// Create the linear gradient (top-to-bottom over the recot)
@@ -662,15 +674,6 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 			);
 		
 			g2d.setPaint(gradient);
-			
-			// Save original stroke
-	    	Stroke oldStroke = g2d.getStroke();
-			// Draw the dashed border over the selected 
-			g2d.setStroke(DASHED);
-			// Draw the svg
-			g2d.draw(bounds);
-			// Restore the stroke
-			g2d.setStroke(oldStroke);
 		}
 			
 		// Make it semi-transparent
@@ -684,9 +687,119 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         g2d.setTransform(saveTransform);
     }
 
+	/**
+     * Draws a circle on the map.
+     * 
+     * @param placement Placement of structure
+     * @param color the color to display the circle.
+	 * @param selectedColor If not null then the highlight color
+
+     */
+    protected void drawCircle(LocalBoundedObject placement,
+            Color color, Color selectedColor, MapViewPoint viewpoint) {
+
+		var g2d = viewpoint.graphics();
+
+    	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    	g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+		double scale = viewpoint.scale();
+		
+        double xLoc = placement.getXLocation();
+        double yLoc = placement.getYLocation();
+        
+        double width = placement.getWidth();
+        double length = placement.getLength();
+        
+        double centerX = width * scale / 2;
+        double centerY = length * scale / 2;
+        
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
+   
+        AffineTransform newTransform = new AffineTransform();
+        
+        // Determine bounds.
+//        RoundRectangle2D bounds = new RoundRectangle2D.Double(-width/2, -length/2, width, length, width/6, length/6);
+        
+        // Define gradient parameters
+        Point2D center = new Point2D.Double(-width / 2, -length / 2);
+        float radius = (float)width / 2f;
+        float[] dist = {0.0f, 1.0f}; // 0% at center, 100% at edge
+    
+        // Determine transform information.
+        double scalingWidth = width / radius * scale / 2;
+        double scalingLength = length / radius * scale / 2;
+        
+        double boundsPosX = center.getX() * scalingWidth; // center.getX()
+        double boundsPosY = center.getY() * scalingLength;
+        
+        double translationX = (-1D * xLoc) - boundsPosX - centerX;
+        double translationY = (-1D * yLoc) - boundsPosY- centerY;
+        
+		// Draw filled rectangle.
+		newTransform.scale(scalingWidth, scalingLength);
+		// Apply graphic transforms for structure.		
+		newTransform.translate(translationX, translationY);
+		g2d.transform(newTransform);
+			
+        // Fill the circle
+        Ellipse2D circle = new Ellipse2D.Double(
+            center.getX() - radius,  // the X coordinate of the upper-left corner of the framing rectangle
+            center.getY() - radius,  // the Y coordinate of the upper-left corner of the framing rectangle
+            radius * 2, 
+            radius * 2
+        );
 	
+		if (selectedColor != null) {
+			
+	        g2d.setPaint(Color.WHITE);
+			// Save original stroke
+	    	Stroke oldStroke = g2d.getStroke();
+			// Draw the dashed border over the selected 
+			g2d.setStroke(DASHED);
+			// Draw the svg
+			g2d.draw(circle);
+			// Restore the stroke
+			g2d.setStroke(oldStroke);
+			
+			Color edge = Color.YELLOW;
+			Color[] colors = {
+				    new Color(selectedColor.getRed(), selectedColor.getGreen(), selectedColor.getBlue(), 255),   // fully opaque at center
+				    new Color(edge.getRed(), edge.getGreen(), edge.getBlue(), 0)      // fully transparent at edge
+			};
+			
+			  // Create and apply the paint
+	        RadialGradientPaint gradient = new RadialGradientPaint(center, radius, dist, colors);
+	        
+	        g2d.setPaint(gradient);
+		}
+		else {
+			
+			Color edge = Color.LIGHT_GRAY;
+			Color[] colors = {
+				    new Color(color.getRed(), color.getGreen(), color.getBlue(), 255),   // fully opaque at center
+				    new Color(edge.getRed(), edge.getGreen(), edge.getBlue(), 0)      // fully transparent at edge
+			};
+			
+			  // Create and apply the paint
+	        RadialGradientPaint gradient = new RadialGradientPaint(center, radius, dist, colors);
+	        
+	        g2d.setPaint(gradient);
+		}
+			
+		// Make it semi-transparent
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
+		// Fill the rect
+		g2d.fill(circle);
+		// Reset to fully opaque
+		g2d.setComposite(AlphaComposite.SrcOver);
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
+    }
+    
     @Override
-    public void destroy() {
+    public void release() {
 		labelImageCache.clear();
 		labelImageCache = null;
         svgImageCache.clear();

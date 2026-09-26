@@ -372,7 +372,7 @@ public class ConstructionMission extends AbstractMission {
 			if (luv.isCrewmember(worker)) {
 				// Place light utility vehicles at random location in construction site.
 				LocalPosition settlementLocSite = LocalAreaUtil.getRandomLocalPos(site);
-				luv.setParkedLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
+				luv.updateCrewLocation(settlementLocSite, RandomUtil.getRandomDouble(360D));
 			}
 		}
 	}

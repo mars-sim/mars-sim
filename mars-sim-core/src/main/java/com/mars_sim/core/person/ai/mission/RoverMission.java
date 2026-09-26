@@ -808,7 +808,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				
 	        	// Add vehicle to a garage if available.
 				Building garage = disembarkSettlement.getBuildingManager().addToGarageBuilding(v0);
-				
 				if (garage != null) {
 					logger.info(v0, "Done transferring to " + disembarkSettlement.getName() + " in " + garage + ".");
 				}
@@ -897,7 +896,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
         if (!towedRover.isBeingTowed()) {
         	// Add vehicle to a garage if available.
 			Building garage = disembarkSettlement.getBuildingManager().addToGarageBuilding(towingRover);
-			
 			if (garage != null) {
 				logger.info(towedRover, "Done transferring to " + disembarkSettlement.getName() + " in " + garage + ".");
 			}
@@ -1480,6 +1478,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		return result;
 	}
 
+	
 	/**
 	 * Gets EVA suit parts for the trip.
 	 *

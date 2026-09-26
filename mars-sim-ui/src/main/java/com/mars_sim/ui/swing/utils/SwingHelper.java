@@ -197,13 +197,15 @@ public final class SwingHelper {
 		    var header = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, col);
 		    preferredWidth = Math.max(preferredWidth, header.getPreferredSize().width + 15);
 
-			// Sample the first N rows
-			for (int row = 0; row < Math.min(5, table.getRowCount()); row++) {
-				TableCellRenderer tableCellRenderer = table.getCellRenderer(row, col);
-				var c = table.prepareRenderer(tableCellRenderer, row, col);
-				int cellWidth = c.getPreferredSize().width + table.getIntercellSpacing().width + 15;
-				preferredWidth = Math.max(cellWidth, preferredWidth);
-			}
+		    if (table.getRowCount() > 0) {
+				// Sample the first N rows
+				for (int row = 0; row < Math.min(5, table.getRowCount()); row++) {
+					TableCellRenderer tableCellRenderer = table.getCellRenderer(row, col);
+					var c = table.prepareRenderer(tableCellRenderer, row, col);
+					int cellWidth = c.getPreferredSize().width + table.getIntercellSpacing().width + 15;
+					preferredWidth = Math.max(cellWidth, preferredWidth);
+				}
+		    }
 
 			tableColumn.setPreferredWidth(preferredWidth);
 		}

@@ -178,9 +178,9 @@ public class BuildingConfig {
 		// Process description
 		Element descElement = buildingElement.getChild(DESCRIPTION);
 		String desc = descElement.getValue().trim();
-		desc = desc.replaceAll("\n", "").replaceAll("\r", "")
-				.replaceAll("\t+", "").replaceAll("\s+", " ")
-				.replace("   ", " ").replace("  ", " ");
+		desc = desc.replaceAll("\n", " ").replaceAll("\r", " ")
+				.replaceAll("\t+", " ").replaceAll("\s+", " ")
+				.replace("    ", " ").replace("   ", " ").replace("  ", " ");
 		
 		// Process the scopes
 		Set<String> scopeNames = new HashSet<>();

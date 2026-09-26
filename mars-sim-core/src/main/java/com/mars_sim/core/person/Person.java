@@ -36,6 +36,7 @@ import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Container;
+import com.mars_sim.core.equipment.DataRecorder;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
@@ -49,7 +50,6 @@ import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.fav.Favorite;
-import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.fav.Preference;
 import com.mars_sim.core.person.ai.job.util.AssignmentHistory;
 import com.mars_sim.core.person.ai.job.util.AssignmentType;
@@ -64,7 +64,6 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.social.Appraiser;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.EVAOperation;
-import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.training.TrainingType;
@@ -142,8 +141,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	private double eatingSpeed = .5 + RandomUtil.getRandomDouble(-.05, .05);
 	/** The height of the person (in cm). */
 	private double height;
-	/** The height of the person (in kg). */
-	private double weight;
 	
 	/** The person's country of origin. */
 	private String country;
@@ -210,9 +207,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 					int age, PopulationCharacteristics ethnicity,
 					Map<NaturalAttributeType, Integer> initialAttrs) {
 		super(name, settlement);
-		// Call Person's setContainerUnit to set up coordinates and related states
-//		setContainerUnit(getContainerUnit());
-		
+
 		super.setDescription(EARTHLING);
 		this.gender = gender;
 
@@ -292,9 +287,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		super(name, settlement);
 		super.setDescription(EARTHLING);
 		
-		// Call Person's setContainerUnit to set up coordinates and related states
-//		setContainerUnit(getContainerUnit());
-		
 		this.gender = gender;
 
 		// Create a prior training profile
@@ -372,167 +364,10 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		
 		setBaseMass(nationPeople.getRandomWeight(gender, height));
 		// Biochemistry: id 0 - 19
-		setupBloodType();
+		bloodType = CharacteristicsCreator.calculateBloodType();
+
 		// Set up carrying capacity and personality traits: id 40 - 59
-		setupCarryingCapAttributeTrait(personConfig);
-	}
-
-	/**
-	 * Computes a person's carrying capacity and attributes and its chromosome.
-	 * 
-	 * @param personConfig
-	 */
-	private void setupCarryingCapAttributeTrait(PersonConfig personConfig) {
-		// Note: set up a set of genes that was passed onto this person
-		// from two hypothetical parents
-
-		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
-		int endurance = attributes.getAttribute(NaturalAttributeType.ENDURANCE);
-		double gym = 2D * getPreference().getPreferenceScore(MetaTaskUtil.getWorkoutMetaID()); 
-		if (getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
-			gym += RandomUtil.getRandomRegressionInteger(20);
-		else if (getFavorite().getFavoriteActivity() == FavoriteType.SPORT)
-			gym += RandomUtil.getRandomRegressionInteger(10);
-
-		if (age < 0) {
-			throw new IllegalStateException("Age is not defined");
-		}
-		int baseCap = (int)personConfig.getBaseCapacity();
-		int load = 0;
-		if (age > 4 && age < 8)
-			load = age;
-		else if (age > 7 && age <= 12)
-			load = age * 2;
-		else if (age > 11 && age <= 14)
-			load = (baseCap/3 + age * 2);
-		else if (age > 14 && age <= 18)
-			load = (int)(baseCap/2.5 + age * 1.5);
-		else if (age > 18 && age <= 25)
-			load = (int)(baseCap/2.0 + 35 - age / 7.5);
-		else if (age > 25 && age <= 35)
-			load = (int)(baseCap + 30 - age / 12.5);
-		else if (age > 35 && age <= 45)
-			load = (baseCap + 25 - age / 10);
-		else if (age > 45 && age <= 55)
-			load = (int)(baseCap + 20 - age / 7.5);
-		else if (age > 55 && age <= 65)
-			load = (int)(baseCap/1.25 + 15 - age / 6.0);
-		else if (age > 65 && age <= 70)
-			load = (int)(baseCap/1.5 + 10 - age / 5.0);
-		else if (age > 70 && age <= 75)
-			load = (int)(baseCap/1.75 - age / 4.0);
-		else if (age > 75 && age <= 80)
-			load = (int)(baseCap/2.0 - age / 4.0);
-		else
-			load = (int)(baseCap/2.5 - age / 4.0);
-
-		// Set inventory total mass capacity based on the person's weight and strength.
-		// Must be able to carry an EVA suit
-		carryingCapacity = Math.max((int)(EVASuit.getEmptyMass() * 2),
-						(int)(gym + load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0
-				+ RandomUtil.getRandomRegressionInteger(10)));
-	}
-
-	private static final String getRandomBloodtype() {
-		int rand = RandomUtil.getRandomInt(100);
-		if (rand <= 34)
-			return "A_POS";
-		else if (rand < 40)
-			return "A_NEG";
-		else if (rand < 49)
-			return "B_POS";
-		else if (rand < 51)
-			return "B_NEG";
-		else if (rand < 55)
-			return "AB_POS";
-		else if (rand < 56)
-			return "AB_NEG";
-		else if (rand < 94)
-			return "O_POS";
-		else 
-			return "O_NEG";
-	}
-
-	/**
-	 * Computes a person's blood type and its chromosome.
-	 */
-	private void setupBloodType() {
-
-		String dad = getRandomBloodtype();
-		String mom = getRandomBloodtype();
-		
-		String[] dadSplitted = dad.split("_");
-		String dadBlood = dadSplitted[0];
-		String dadRh = dadSplitted[1];
-		
-		String[] momSplitted = mom.split("_");
-		String momBlood = momSplitted[0];
-		String momRh = momSplitted[1];
-		
-		// Compute the person's blood type
-		String tempBloodType = dadBlood + "-" + momBlood;
-		
-		
-		tempBloodType = switch(tempBloodType) {
-		
-		// Note 0 : Need to rework into calculating percent probability of possible blood type for a child
-		// Note 1 : that the O blood type is recessive, and the B blood type is dominant		
-		// Note 3 : variable = (condition) ? expressionTrue : expressionFalse
-		// (RandomUtil.getRandomInt(1) == 0 ) ? "A" : "O" 	
-		// (RandomUtil.getRandomInt(2) == 0 ) ? "B" : ((RandomUtil.getRandomInt(1) == 0 ) ? "A" : "B") 	
-		
-	
-			case "A-A" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "O";
-			case "A-B" -> (RandomUtil.getRandomInt(1) == 0 ) 
-						? ((RandomUtil.getRandomInt(1) == 0 ) ? "A" : "B") 
-						: ((RandomUtil.getRandomInt(1) == 0 ) ? "AB" : "O");
-			case "A-AB" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
-			case "A-O" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "O";
-
-			
-			case "B-A" -> (RandomUtil.getRandomInt(1) == 0 ) 
-						? ((RandomUtil.getRandomInt(1) == 0 ) ? "A" : "B") 
-						: ((RandomUtil.getRandomInt(1) == 0 ) ? "AB" : "O");
-			case "B-B" -> (RandomUtil.getRandomInt(1) == 0) ? "B" : "O";
-			case "B-AB" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
-			case "B-O" -> (RandomUtil.getRandomInt(1) == 0) ? "B" : "O";
-			
-			
-			case "AB-A" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
-			case "AB-B" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
-			case "AB-AB" -> (RandomUtil.getRandomInt(2) == 0 ) ? "A" : ((RandomUtil.getRandomInt(1) == 0 ) ? "B" : "AB");
-			case "AB-O" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "B";
-			
-			
-			case "O-A" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "O";
-			case "O-B" -> (RandomUtil.getRandomInt(1) == 0) ? "B" : "O";
-			case "O-AB" -> (RandomUtil.getRandomInt(1) == 0) ? "A" : "B";
-			case "O-O" -> "O";
-			
-			default -> throw new IllegalStateException("Cannot get bloodtype from parents of " + tempBloodType);
-		};
-		
-		// Compute the person's Rh factor
-		String tempRh = null; //"POS";
-		double percentRhPositive = 0;
-		
-		if (momRh.equals("POS") && dadRh.equals("POS"))
-			percentRhPositive = 93.75;
-		else if ((momRh.equals("POS") && dadRh.equals("NEG"))
-			|| (momRh.equals("NEG") && momRh.equals("POS")))
-			percentRhPositive = 75.0;
-		else 
-			tempRh = "-";
-		
-		if (tempRh == null) {
-			int rand = RandomUtil.getRandomInt(100);
-			if (rand <= percentRhPositive)
-				tempRh =  "+";
-			else 
-				tempRh = "-";
-		}
-
-		this.bloodType = tempBloodType + tempRh;
+		carryingCapacity = CharacteristicsCreator.calculateCarryingCapacity(personConfig, age, getBaseMass(), attributes);
 	}
 
 	/**
@@ -899,10 +734,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 				// Check if a person's age should be updated
 				age = updateAge(pulse.getMasterClock().getEarthTime());
-
-//				// Checks if a person has a role
-//				if (role.getType() == null)
-//					role.obtainNewRole();
 			}
 		}
 	}
@@ -1367,7 +1198,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 */
 	@Override
 	public double getMass() {
-		return (eqmInventory != null ? eqmInventory.getModifiedMass(EquipmentType.WHEELBARROW, 20) : 0) + getBaseMass();
+		return (eqmInventory != null ? eqmInventory.getModifiedMass(EquipmentType.WHEELBARROW, 10) : 0) + getBaseMass();
 	}
 	
 	/**
@@ -1403,12 +1234,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			if (newContainer instanceof MobileUnit mu) {
 				setCoordinates(mu.getCoordinates());
 			}
-//			else if (oldCU instanceof MobileUnit mu) {
-//				// Since it's on the surface of Mars,
-//				// First set its initial location to its old parent's location as it's leaving its parent.
-//				// Later it may move around and updates its coordinates by itself
-//				setCoordinates(mu.getCoordinates());
-//			}
 
 			// Note: need to decide what to set for a deceased person
 			
@@ -1612,12 +1437,21 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
+	 * Does this person have a data recorder ?
+	 * 
+	 * @return
+	 */
+	public boolean hasDataRecorder() {
+		return eqmInventory.containsEquipment(EquipmentType.DATA_RECORDER);
+	}
+	
+	/**
 	 * Does this person have a thermal bottle ?
 	 * 
 	 * @return
 	 */
 	public boolean hasThermalBottle() {
-		return eqmInventory.findNumContainersOfType(EquipmentType.THERMAL_BOTTLE) > 0;
+		return eqmInventory.containsEquipment(EquipmentType.THERMAL_BOTTLE);
 	}
 	
 	/**
@@ -1627,7 +1461,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 */
 	public void fillUpThermalBottle(double amount) {
 		Container bottle = lookForThermalBottle();
-		bottle.storeAmountResource(ResourceUtil.WATER_ID, amount);
+		if (bottle != null)
+			bottle.storeAmountResource(ResourceUtil.WATER_ID, amount);
 	}
 	
 	/**
@@ -1644,23 +1479,26 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 	
 	/**
-	 * Assigns a thermal bottle as a standard living necessity.
-	 * @param store the equipment owner to claim the thermal bottle from
+	 * Assigns an equipment.
+	 * 
+	 * @param store the equipment owner to claim from
+	 * @param equipmentType
 	 */
-	private void assignThermalBottle(EquipmentOwner store) {
+	private void assignEquipment(EquipmentOwner store, EquipmentType equipmentType) {
 
 		if (!hasThermalBottle() && isInside()) {
 			Equipment aBottle = null;
 			for (Equipment e : store.getContainerSet()) {
-				if (e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE) {
+				if (e.getEquipmentType() == equipmentType) {
 					Person originalOwner = e.getRegisteredOwner();
 					if (originalOwner != null && originalOwner.equals(this)) {
-						// Remove it from the container unit
-						e.transfer(this);
-						// Register the person as the owner of this bottle
-						e.setRegisteredOwner(this);
-						
-						return;
+						// Transfer it from the container unit to this person
+						if (e.transfer(this)) {
+							// Register the person as the owner of this bottle
+							e.setRegisteredOwner(this);
+							
+							return;
+						}
 					}
 					
 					// Tag this bottle first
@@ -1674,22 +1512,23 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			// if it still can't find a bottle that was last assigned to this person
 			// get the first saved one 
 			if (aBottle != null) {
-				// Remove it from the container unit
-				aBottle.transfer(this);
-				// Register the person as the owner of this bottle
-				aBottle.setRegisteredOwner(this);
+				// Transfer it from the container unit to this person
+				if (aBottle.transfer(this)) {
+					// Register the person as the owner of this bottle
+					aBottle.setRegisteredOwner(this);
+				}
 			}
 		}
 	}
 	
 	/**
-	 * Drops off the thermal bottle such as when going out for an EVA.
+	 * Drops off all equipment of a certain type prior to going out for an EVA.
 	 */
-	private void dropOffThermalBottle() {
+	private void dropOffEquipment(EquipmentType equipmentType) {
 
 		if (isInside()) {
 			var bottles = eqmInventory.getContainerSet().stream()
-					.filter(e -> e.getEquipmentType() == EquipmentType.THERMAL_BOTTLE)
+					.filter(e -> e.getEquipmentType() == equipmentType)
 					.toList();
 			
 			bottles.forEach(e -> e.transfer(getContainerUnit()));
@@ -1699,41 +1538,71 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	/**
 	 * This method prepares the Person for life inside. It involves removing any Pressure Suit and putting on a garment.
 	 * It also assigns a thermal bottle to the person.
+	 * 
 	 * @param eo Store where items can be found
 	 */
 	public void dressForInside(EquipmentOwner eo) {
 		releaseItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, eo);
 		claimItemResource(ItemResourceUtil.GARMENT_ID, eo);
-		assignThermalBottle(eo);
+		assignEquipment(eo, EquipmentType.THERMAL_BOTTLE);
 	}
 
 	/**
 	 * This method prepares the Person for life outside. It involves removing any garment and putting on a Pressure Suit.
+	 * 
 	 * @param eo Store where items can be found
 	 */
 	public void dressForEVA(EquipmentOwner eo) {
 		releaseItemResource(ItemResourceUtil.GARMENT_ID, eo);
 		claimItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, eo);
-		dropOffThermalBottle();
+		dropOffEquipment(EquipmentType.THERMAL_BOTTLE);
 	}
 
-	private void claimItemResource(int itemId, ItemHolder store) {
+	/**
+	 * Claims an item resource.
+	 * 
+	 * @param itemId
+	 * @param store
+	 * @return
+	 */
+	private boolean claimItemResource(int itemId, ItemHolder store) {
 		// Local inventory has no item, and the store has an item to retrieve
-		if ((eqmInventory.getItemResourceStored(itemId) == 0)
+		if ((!eqmInventory.hasItemResource(itemId))
 					&& store.retrieveItemResource(itemId, 1) == 0) {
-			eqmInventory.storeItemResource(itemId, 1);
+			return eqmInventory.storeItemResource(itemId, 1) == 0;
 		}
+		
+		return false;
 	}
 
+	/**
+	 * Releases an item resource.
+	 * 
+	 * @param itemId
+	 * @param store
+	 * @return
+	 */
 	private boolean releaseItemResource(int itemId, ItemHolder store) {
 		// Local inventory has at least one item, and the store has an item to hold
-		if ((eqmInventory.getItemResourceStored(itemId) > 0)
+		if ((eqmInventory.hasItemResource(itemId))
 					&& eqmInventory.retrieveItemResource(itemId, 1) == 0) {
 			return store.storeItemResource(itemId, 1) == 0;
 		}
 		return false;
 	}
 
+	/**
+	 * Finds a data recorder with a person's id.
+	 * If not found, get an available recorder.
+	 *
+	 * @param personId
+	 * @param retrieving
+	 * @return
+	 */
+	public DataRecorder retrieveOwnedDataRecorder(int personId, boolean retrieving) {
+		return eqmInventory.retrieveOwnedDataRecorder(personId, retrieving);
+	}
+	
 	/**
 	 * Rescues the person from the rover in settlement vicinity.
 	 * 

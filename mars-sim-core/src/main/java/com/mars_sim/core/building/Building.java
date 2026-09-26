@@ -343,10 +343,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return getFunction(FunctionType.FOOD_PRODUCTION);
 	}
 
-	public VehicleMaintenance getVehicleParking() {
-		return getFunction(FunctionType.VEHICLE_MAINTENANCE);
-	}
-
 	public LivingAccommodation getLivingAccommodation() {
 		return getFunction(FunctionType.LIVING_ACCOMMODATION);
 	}
@@ -405,6 +401,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 	public WasteProcessing getWasteProcessing() {
 		return getFunction(FunctionType.WASTE_PROCESSING);
+	}
+	
+	private int getNumEmptyFlyerCap() {
+		return getVehicleMaintenance().getAvailableFlyerCapacity();
 	}
 	
 	/**

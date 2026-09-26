@@ -105,7 +105,7 @@ class WorkshopProcessTest extends MarsSimUnitTest {
 
         for(var i: processInfo.getOutputList()) {
             if (i.getType() == ItemType.PART) {
-                assertTrue(rh.getItemResourceStored(i.getId()) > 0D, "Settlement has output " + i.getName());
+                assertTrue(rh.hasItemResource(i.getId()), "Settlement has output " + i.getName());
             }
         }
     }

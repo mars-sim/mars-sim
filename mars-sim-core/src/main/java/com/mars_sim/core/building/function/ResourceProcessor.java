@@ -32,8 +32,6 @@ public abstract class ResourceProcessor extends Function {
 
 	private List<ResourceProcess> processes;
 	
-	
-
 	/**
 	 * Constructor.
 	 * 
@@ -164,7 +162,7 @@ public abstract class ResourceProcessor extends Function {
 				productionLevel = 1D;
 			else if (mode == PowerMode.LOW_POWER) {
 				// Note: For now, low power mode will reduce the processing capability by 50%
-				productionLevel = lowPowerProcessingLevel;
+				productionLevel = .5; //lowPowerProcessingLevel;
 			}
 			
 			if (mode != PowerMode.NO_POWER) {

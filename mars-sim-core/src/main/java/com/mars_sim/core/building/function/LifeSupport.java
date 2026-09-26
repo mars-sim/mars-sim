@@ -36,11 +36,11 @@ public class LifeSupport extends Function {
 	private static final double POWER_PER_OCCUPANT = .25; // in kW
 	
 	// Data members
-	private int occupantCapacity;
+	private final int occupantCapacity;
 
 	private double lifeSupportPower;
 
-	protected double floorArea;
+	protected final double floorArea;
 
 	private Collection<Person> occupants;
 
@@ -55,22 +55,22 @@ public class LifeSupport extends Function {
 	public LifeSupport(Building building, FunctionSpec spec) {
 		super(FunctionType.LIFE_SUPPORT, spec, building);
 
-		this.lifeSupportPower = occupantCapacity * POWER_PER_OCCUPANT;
-
-		floorArea = building.getFloorArea();
-
-		occupants = new UnitSet<>();
-
-		this.occupantCapacity = spec.getCapacity();
-		
+		this.floorArea = building.getFloorArea();
+	
 		if (BuildingCategory.CONNECTION == building.getCategory()) {
-			occupantCapacity = (int)(Math.ceil(occupantCapacity * floorArea / 4));
+			this.occupantCapacity = (int)(Math.ceil(spec.getCapacity() * floorArea / 4));
 		}
+		else {
+			this.occupantCapacity = spec.getCapacity();
+		}
+		
+		this.lifeSupportPower = occupantCapacity * POWER_PER_OCCUPANT;
+		
+		occupants = new UnitSet<>();
 		
 		double t = AirComposition.C_TO_K + building.getCurrentTemperature();
 		double vol = building.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
-		air = new AirComposition(t, vol);
-		
+		air = new AirComposition(t, vol);	
 		// Run monitorGases right away as soon as AirComposition is created
 		air.monitorGases(building.getAssociatedSettlement().getEquipmentInventory(), t);
 	}
