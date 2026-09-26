@@ -72,7 +72,7 @@ public class LifeSupport extends Function {
 		double vol = building.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
 		air = new AirComposition(t, vol);	
 		// Run monitorGases right away as soon as AirComposition is created
-		air.monitorGases(building, t);
+		air.monitorGases(building.getAssociatedSettlement().getEquipmentInventory(), t);
 	}
 
 	/**
@@ -169,8 +169,7 @@ public class LifeSupport extends Function {
 
 	/**
 	 * Adds a person to the building. Note: building occupant capacity can be
-	 * exceeded but stress levels in the building will increase. (todo: add stress
-	 * later)
+	 * exceeded but stress levels in the building will increase.
 	 * 
 	 * @param person new person to add to building.
 	 */

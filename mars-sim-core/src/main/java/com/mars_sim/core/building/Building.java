@@ -58,8 +58,6 @@ import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerMonitor;
 import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
-import com.mars_sim.core.equipment.ItemHolder;
-import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
@@ -86,7 +84,7 @@ import com.mars_sim.core.unit.UnitHolder;
  * The Building class is a settlement's building.
  */
 public class Building extends FixedUnit implements Malfunctionable,
-	 InsidePathLocation, Temporal, ResourceHolder, UnitHolder, ItemHolder {
+	 InsidePathLocation, Temporal, UnitHolder{
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1445,153 +1443,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return UnitType.BUILDING;
 	}
 
-	/**
-	 * Gets the specific amount resources stored, NOT including those inside equipment.
-	 *
-	 * @param resource
-	 * @return amount
-	 */
-	@Override
-	public double getSpecificAmountResourceStored(int resource) {
-		return getAssociatedSettlement().getEquipmentInventory().getSpecificAmountResourceStored(resource);
-	}
-	
-	/**
-	 * Gets the quantity of all stock and specific amount resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAllAmountResourceStored(int resource) {
-		return getAssociatedSettlement().getEquipmentInventory().getAllAmountResourceStored(resource);
-	}
-	
-	/**
-	 * Stores the amount resource
-	 *
-	 * @param resource the amount resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public double storeAmountResource(int resource, double quantity) {
-		return getAssociatedSettlement().getEquipmentInventory().storeAmountResource(resource, quantity);
-	}
-
-	/**
-	 * Retrieves the resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public double retrieveAmountResource(int resource, double quantity) {
-		return getAssociatedSettlement().getEquipmentInventory().retrieveAmountResource(resource, quantity);
-	}
-
-	/**
-	 * Gets the capacity of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return capacity
-	 */
-	@Override
-	public double getSpecificCapacity(int resource) {
-		return getAssociatedSettlement().getEquipmentInventory().getSpecificCapacity(resource);
-	}
-
-	/**
-	 * Obtains the remaining combined storage space of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingCombinedCapacity(int resource) {
-		return getAssociatedSettlement().getEquipmentInventory().getRemainingCombinedCapacity(resource);
-	}
-
-	/**
-	 * Obtains the remaining specific storage space of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getRemainingSpecificCapacity(int resource) {
-		return getAssociatedSettlement().getEquipmentInventory().getRemainingSpecificCapacity(resource);
-	}
-	
-	/**
-	 * Does it have unused space or capacity for a particular resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		return getAssociatedSettlement().getEquipmentInventory().hasAmountResourceRemainingCapacity(resource);
-	}
-	
-	/**
-	 * Gets all stored amount resources.
-	 *
-	 * @return all stored amount resources.
-	 */
-	@Override
-	public Set<Integer> getSpecificResourceStoredIDs() {
-		return getAssociatedSettlement().getEquipmentInventory().getSpecificResourceStoredIDs();
-	}
-	
-	/**
-	 * Gets all stored amount resources in eqmInventory, including inside equipment.
-	 *
-	 * @return all stored amount resources.
-	 */
-	@Override
-	public Set<Integer> getAllAmountResourceStoredIDs() {
-		return getAssociatedSettlement().getEquipmentInventory().getAllAmountResourceStoredIDs();
-	}
-
-	@Override
-	public int storeItemResource(int resource, int quantity) {
-		return getAssociatedSettlement().getEquipmentInventory().storeItemResource(resource, quantity);
-	}
-
-	@Override
-	public int retrieveItemResource(int resource, int quantity) {
-		return getAssociatedSettlement().getEquipmentInventory().retrieveItemResource(resource, quantity);
-	}
-
-
-	@Override
-	public int getItemResourceStored(int resource) {
-		return getAssociatedSettlement().getEquipmentInventory().getItemResourceStored(resource);
-	}
-
-	/**
-	 * Gets the remaining quantity of an item resource.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public int getItemResourceRemainingQuantity(int resource) {
-		return getAssociatedSettlement().getEquipmentInventory().getItemResourceRemainingQuantity(resource);
-	}
-
-	@Override
-	public Set<Integer> getItemResourceIDs() {
-		return getAssociatedSettlement().getEquipmentInventory().getItemResourceIDs();
-	}
-	
-	@Override
-	public double getCargoCapacity() {
-		return 0;
-	}
-	
 	/**
 	 * Checks if this building is isInhabitable.
 	 * 

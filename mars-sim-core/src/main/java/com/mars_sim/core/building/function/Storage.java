@@ -65,7 +65,7 @@ public class Storage extends Function {
 		double stockCapacity = spec.getStockCapacity();
 		
 		// Add the stock/general/cargo capacity of this building to its owner
-		inv.addCargoCapacity(stockCapacity);
+		inv.addTotalCapacity(stockCapacity);
 	
 		// Account for the initial specific resources available for each building
 		Map<Integer, Double> initialResources = storageSpec.getInitialResources();

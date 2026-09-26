@@ -99,7 +99,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	/** The maximum number of sols for storing stats. */
 	public static final int MAX_NUM_SOLS = 7;
 	/** The standard hand carrying capacity for food in a person. */
-	public static final int CARRYING_CAPACITY_FOOD = 1;
+	public static final double CARRYING_CAPACITY_FOOD = 1;
 	
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.01;
@@ -255,7 +255,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Construct the EquipmentInventory instance. Start with the default
 		eqmInventory = new EquipmentInventory(this, 100D);
 		
-		eqmInventory.setSpecificResourceCapacity(ResourceUtil.FOOD_ID, CARRYING_CAPACITY_FOOD);
+		eqmInventory.setResourceCapacityMap(Map.of(ResourceUtil.FOOD_ID, CARRYING_CAPACITY_FOOD), false);
 		// Construct the ResearchStudy instance
 		research = new ResearchStudy();
 		

@@ -78,10 +78,8 @@ class UnloadHelperTest extends MarsSimUnitTest{
         var v = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
 
         var srh = s.getEquipmentInventory();
-        srh.setCargoCapacity(50);
 
         var vehEO = v.getEquipmentInventory();
-        vehEO.setCargoCapacity(60);
         
         // Load the vehicle
         int res1 = ResourceUtil.OXYGEN_ID;
