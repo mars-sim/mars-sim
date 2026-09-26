@@ -195,9 +195,11 @@ public class PerformanceTool extends ContentPanel {
 	private void newEventsArrived(Map<String, Integer> newMetrics) {
 		eventModel.newEvents(newMetrics);
 
-		var total = newMetrics.values().stream().mapToInt(Integer::intValue).sum();
-		eventTotal.setValue(total);
-		eventUpdate.setText(LocalDateTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM)));
+		SwingHelper.runInEDT(() -> {
+			var total = newMetrics.values().stream().mapToInt(Integer::intValue).sum();
+			eventTotal.setValue(total);
+			eventUpdate.setText(LocalDateTime.now().format(DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM)));
+		});
 	}
 
 	private static class EventModel extends AbstractEnhancedTableModel  {

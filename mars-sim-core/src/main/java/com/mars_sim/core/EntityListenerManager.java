@@ -23,6 +23,9 @@ import com.mars_sim.core.logging.SimLogger;
 public class EntityListenerManager {
     private static final SimLogger logger = SimLogger.getLogger(EntityListenerManager.class.getName());
 
+    // Used for synchronizing access to the metrics map and flush operations
+    private static final Object metricsLock = new Object();
+
     private static Map<String, Integer> metrics = new TreeMap<>();
     private static long lastFlushTime = System.currentTimeMillis();
     private static long flushInternal;
@@ -115,7 +118,7 @@ public class EntityListenerManager {
      * @param newEvent Event that was fired.
 W     */
     private static void updateMetrics(EntityEvent newEvent) {
-        synchronized (metrics) {
+        synchronized (metricsLock) {
             metrics.merge(newEvent.getType(), 1, (a,b) -> a + b);
 
             // Flush metrics if the interval has passed

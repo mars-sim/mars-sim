@@ -317,14 +317,16 @@ public class TimeTool extends ContentPanel {
 	public void clockUpdate(ClockPulse pulse) {
 		MasterClock masterClock = pulse.getMasterClock();
 
-		// update the fast labels
-		updateTime(masterClock);
+		SwingHelper.runInEDT(() -> {
+			// update the fast labels
+			updateTime(masterClock);
 
-		long currentTime = System.currentTimeMillis();
-		if ((currentTime - lastUpdateTime) > DATE_UPDATE_PERIOD) {
-			// update the slow labels
-			updateDateLabels(masterClock);
-			lastUpdateTime = currentTime;
-		}
+			long currentTime = System.currentTimeMillis();
+			if ((currentTime - lastUpdateTime) > DATE_UPDATE_PERIOD) {
+				// update the slow labels
+				updateDateLabels(masterClock);
+				lastUpdateTime = currentTime;
+			}
+		});
 	}
 }
