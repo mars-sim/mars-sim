@@ -29,7 +29,7 @@ public class AttributePanel extends JPanel {
 	}
 
 	private AttributePanelLayout attributeLayout;
-	private static boolean useDyanmic = false;
+	private static boolean useDyanmic = true;
 
 	/**
 	 * Sets whether to use dynamic layout or fixed layout for all AttributePanels.

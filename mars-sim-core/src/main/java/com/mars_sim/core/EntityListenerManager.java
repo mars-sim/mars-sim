@@ -7,10 +7,12 @@
 package com.mars_sim.core;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 
 import com.mars_sim.core.logging.SimLogger;
 
@@ -21,28 +23,12 @@ import com.mars_sim.core.logging.SimLogger;
 public class EntityListenerManager {
     private static final SimLogger logger = SimLogger.getLogger(EntityListenerManager.class.getName());
 
-    // Metrics for monitoring the number of events fired and listeners notified
-    private static class EventMetric {
-        private long eventFired = 0;
-        private long listenersNotified = 0;
-
-        public void recordEvent(int listenersCount) {
-            eventFired++;
-            listenersNotified += listenersCount;
-        }
-
-        public long getEventsFired() {
-            return eventFired;
-        }
-
-        public long getListenersNotified() {
-            return listenersNotified;
-        }
-    }
-
-    private static Map<String, EventMetric> metrics = new TreeMap<>();
+    private static Map<String, Integer> metrics = new TreeMap<>();
     private static long lastFlushTime = System.currentTimeMillis();
-    private static final long FLUSH_INTERVAL_MS = 60000; // Flush metrics every 60 seconds
+    private static long flushInternal;
+
+    // Consumer to handle flushing of metrics
+    private static Consumer<Map<String, Integer>> flushConsumer = null;
 
     // Accept the expensive cost of CopyOnWriteArraySet as updates are significantly less common than reads
     // and it allows us to avoid synchronisation on the listeners set when firing events.
@@ -108,40 +94,42 @@ public class EntityListenerManager {
         }
 
         // Update metrics
-        // Uncomment only when needed as this is an expensive operation
-        //updateMetrics(newEvent, listeners.size());
+        if (flushConsumer != null)
+            updateMetrics(newEvent);
+    }
+
+    /**
+     * Registers a flush consumer and interval for updating metrics.
+     * @param consumer the consumer to handle flushed metrics.
+     * @param interval the interval in milliseconds at which to flush metrics.
+     */
+    public static void registerFlush(Consumer<Map<String, Integer>> consumer, long interval) {
+        flushInternal = interval;
+        flushConsumer = consumer;
+        lastFlushTime = System.currentTimeMillis();
     }
 
     /**
      * This method updates the global metrics for the number of listeners and events fired.
      * If the valid period has passed then it will flush the metrics to the logger and reset the counts.
      * @param newEvent Event that was fired.
-     * @param listenersCount Number of listeners the event was fired to.
-     */
-    private static void updateMetrics(EntityEvent newEvent, int listenersCount) {
+W     */
+    private static void updateMetrics(EntityEvent newEvent) {
         synchronized (metrics) {
-            var key = newEvent.getSource().getClass().getSimpleName() + ":" + newEvent.getType();
-            EventMetric metric = metrics.computeIfAbsent(key, k -> new EventMetric());
-            metric.recordEvent(listenersCount);
+            metrics.merge(newEvent.getType(), 1, (a,b) -> a + b);
 
             // Flush metrics if the interval has passed
-            if (System.currentTimeMillis() - lastFlushTime > FLUSH_INTERVAL_MS) {
-                int totalEvents = 0;
-                int totalListeners = 0;
-                for (Map.Entry<String, EventMetric> entry : metrics.entrySet()) {
-                    EventMetric recordedMetric = entry.getValue();
-
-                    totalEvents += recordedMetric.getEventsFired();
-                    totalListeners += recordedMetric.getListenersNotified();
-                    logger.info("Events - Source: " + entry.getKey() + ", Fired: " + recordedMetric.getEventsFired()
-                                + ", Notified: " + recordedMetric.getListenersNotified());
+            if (System.currentTimeMillis() - lastFlushTime > flushInternal) {
+                if (flushConsumer != null) {
+                    // Flush the recorded events
+                    flushConsumer.accept(metrics);
                 }
-                logger.info("Events - Total over " + FLUSH_INTERVAL_MS / 1000 + " s, Fired: " + totalEvents
-                                        + ", Notified: " + totalListeners);
 
-                // Reset
+                logger.info("Events Flushed after " + flushInternal / 1000 + " s, recorded " + metrics.size());
+
+                // Reset, new map so the consumer can keep the old metrics if needed
                 lastFlushTime = System.currentTimeMillis();
-                metrics.clear();
+                metrics = new HashMap<>();
             }
         }
     }
