@@ -33,7 +33,8 @@ public class SettlementTableModel extends BaseSettlementModel implements Monitor
 	 */
 	public SettlementTableModel() {
 		super(NAME, POPULATION, PARKED, MISSION, POWER_GEN, POWER_LOAD, ENERGY_STORED);
-		addResourceColumns(RESOURCES);
+		// Show whether each resource amount is increasing or decreasing
+		addResourceColumns(RESOURCES, true);
 	}
 
 	@Override

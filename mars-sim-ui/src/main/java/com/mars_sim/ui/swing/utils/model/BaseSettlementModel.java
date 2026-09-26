@@ -17,6 +17,7 @@ import com.mars_sim.core.mission.MissionControl;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
+import com.mars_sim.ui.swing.components.TrendValue;
 
 /**
  * A generic table model showing Settlements. It provides a number of predefined available columns.
@@ -53,6 +54,9 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
     // Resource columns
     private List<Integer> resources = new ArrayList<>();
 
+    // Tracks the direction of change of resources; null if trends are not shown
+    private ResourceTrendTracker<Settlement> trends;
+
     /**
      * Creates a generic building model with the specified columns.
      * 
@@ -67,8 +71,44 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
      * @param resources Resource IDs to add
      */
     protected void addResourceColumns(List<Integer> resources) {
-        addColumns(InventoryColumnHelper.getResourceColumn(resources));
+        addResourceColumns(resources, false);
+    }
+
+    /**
+     * Add resource columns to the model. The resource columns are created for the specified list of resource IDs.
+     * @param resources Resource IDs to add
+     * @param showTrend If true the columns also show whether each amount is increasing or decreasing
+     */
+    protected void addResourceColumns(List<Integer> resources, boolean showTrend) {
+        addColumns(InventoryColumnHelper.getResourceColumn(resources, showTrend));
         this.resources.addAll(resources);
+        if (showTrend && trends == null) {
+            trends = new ResourceTrendTracker<>();
+        }
+    }
+
+    /**
+     * Releases the model and forgets any tracked trends.
+     */
+    @Override
+    public void release() {
+        super.release();
+        if (trends != null) {
+            trends.clear();
+        }
+    }
+
+    /**
+     * Removes a Settlement and forgets its tracked trends.
+     *
+     * @param entity Settlement to remove
+     */
+    @Override
+    public void removeEntity(Settlement entity) {
+        super.removeEntity(entity);
+        if (trends != null) {
+            trends.remove(entity);
+        }
     }
 
     /**
@@ -85,7 +125,17 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
                 // Not a monitored resource
                 return;
             }
-        }        
+
+            // Recalculate the trend only when the amount actually changes, not on every repaint
+            if (trends != null && event.getSource() instanceof Settlement s) {
+                int resourceID = InventoryColumnHelper.getResourceID(event.getTarget());
+                var amount = InventoryColumnHelper.getValue(s.getEquipmentInventory(),
+                                        InventoryColumnHelper.AMOUNT_VAL + resourceID);
+                if (amount instanceof Number n) {
+                    trends.update(s, resourceID, n.doubleValue());
+                }
+            }
+        }
 
         super.entityUpdate(event);
     }
@@ -108,7 +158,23 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
             case POWER_GEN_VAL -> entity.getPowerGrid().getGeneratedPower();
             case POWER_LOAD_VAL -> entity.getPowerGrid().getPowerLoad();
             case ENERGY_STORED_VAL -> entity.getPowerGrid().displayStoredEnergy();
-            default -> InventoryColumnHelper.getValue(entity.getEquipmentInventory(), valueIndex);
+            default -> getResourceValue(entity, valueIndex);
         };
+    }
+
+    /**
+     * Gets the value of a resource column. If trends are shown the amount is wrapped with its last trend.
+     *
+     * @param entity The Settlement.
+     * @param valueIndex Column value index.
+     * @return Resource amount, or null if not a resource column.
+     */
+    private Object getResourceValue(Settlement entity, int valueIndex) {
+        var amount = InventoryColumnHelper.getValue(entity.getEquipmentInventory(), valueIndex);
+        if (trends != null && amount instanceof Number n) {
+            int resourceID = valueIndex - InventoryColumnHelper.AMOUNT_VAL;
+            return new TrendValue(n.doubleValue(), trends.getTrend(entity, resourceID));
+        }
+        return amount;
     }
 }

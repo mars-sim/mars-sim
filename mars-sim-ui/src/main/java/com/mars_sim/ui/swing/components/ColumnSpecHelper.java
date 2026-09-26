@@ -62,6 +62,7 @@ public final class ColumnSpecHelper {
             case ColumnSpec.STYLE_DIGIT2 -> new NumberCellRenderer(2);
             case ColumnSpec.STYLE_DIGIT3 -> new NumberCellRenderer(3);
             case ColumnSpec.STYLE_PERCENTAGE -> new PercentageTableCellRenderer(false);
+            case ColumnSpec.STYLE_TREND_INTEGER -> new TrendCellRenderer(0);
             case ColumnSpec.STYLE_RIGHT -> { var t = new DefaultTableCellRenderer();
                                              t.setHorizontalAlignment(SwingConstants.RIGHT);
                                              yield t; }
