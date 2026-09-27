@@ -87,7 +87,7 @@ public class Tourist extends JobSpec {
 			}
 		}
 
-		result = (result + population / 24D) / 2.0;
+		result = (result + population / 24D) / 1.7;
 				
 		return result;
 	}

@@ -34,12 +34,12 @@ public class SettlementTemplateConfigTest {
     }
 
     @Test
-    void testHubBase() {
+    void testHubBase1() {
         var st = config.getSettlementTemplateConfiguration();
 
-        var hubBase = st.getItem("Hub Base");
-        assertNotNull(hubBase, "Hub Base template found");
-        assertEquals("Hub Base", hubBase.getName(), "Name of template");
+        var hubBase = st.getItem("Hub Base 1");
+        assertNotNull(hubBase, "Hub Base 1 template found");
+        assertEquals("Hub Base 1", hubBase.getName(), "Name of template");
 
         assertEquals("Standard 4 Shift", hubBase.getShiftDefinition().getName(), "Shift pattern");
     

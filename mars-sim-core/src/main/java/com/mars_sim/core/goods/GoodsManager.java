@@ -194,7 +194,7 @@ public class GoodsManager implements Serializable {
 			resetEssentialsReview();
 			// Review 2 resources 
 			selectResourceForReview();
-			selectResourceForReview();
+//			selectResourceForReview();
 			return REVIEW_PERIOD;
 		}	
 	}
@@ -287,7 +287,7 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
 	public double getAverageSupply(double supplyStored) {
-		return MathUtils.between(Math.log(1 + supplyStored), MIN_SUPPLY, MAX_SUPPLY);
+		return MathUtils.between(Math.log(MIN_SUPPLY + supplyStored), MIN_SUPPLY, MAX_SUPPLY);
 	}
 	
     
@@ -396,7 +396,7 @@ public class GoodsManager implements Serializable {
 			}
 			
 			// Calculate the good value
-			double newGoodValue = newDemand / (0.001 + totalSupply);
+			double newGoodValue = newDemand / (0.0001 + totalSupply);
 			
 			// Check if it surpasses MAX_VP
 			if (newGoodValue > MAX_VP) {
@@ -742,6 +742,31 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
+	 * Reduces the demand score.
+	 * 
+	 * @param id
+	 * @param percent
+	 */
+	public void reduceDemandScore(int id, double percent) {
+		double oldDemand = getDemandScoreWithID(id);
+		double newDemand = (100 - percent)/100 * oldDemand;
+		this.setDemandScore(id, newDemand);
+	}
+	
+	/**
+	 * Increases the demand score.
+	 * 
+	 * @param id
+	 * @param percent
+	 */
+	public void increaseDemandScore(int id, double percent) {
+		double oldDemand = getDemandScoreWithID(id);
+		double newDemand = (100 + percent)/100 * oldDemand;
+		this.setDemandScore(id, newDemand);
+	}
+	
+	
+	/**
 	 * Gets the demand score from an resource id.
 	 *
 	 * @param good's id.
@@ -823,6 +848,18 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
+	 * Sets the demand score of a good.
+	 * 
+	 * @param id
+	 * @param newScore
+	 */
+	public void setDemandScore(int id, double newScore) {
+		double clippedValue = MathUtils.between(newScore, MIN_DEMAND, MAX_DEMAND);
+		demandCache.put(id, clippedValue);
+		settlement.fireUnitUpdate(EntityEventType.DEMAND_EVENT, GoodsUtil.getGood(id));
+	}
+	
+	/**
 	 * Sets the good value or value point (VP) of a good.
 	 * 
 	 * @param good
@@ -892,6 +929,15 @@ public class GoodsManager implements Serializable {
 		return resLimits.size() - reviewedEssentials.size();
 	}
 	
+	/**
+	 * Gets the number of resources already reviewed.
+	 * 
+	 * @return
+	 */
+	public int numReviewed() {
+		return reviewedEssentials.size();
+	}
+	
 	/*
 	 * Gets the life resources.*
 	 */
@@ -949,34 +995,11 @@ public class GoodsManager implements Serializable {
     		
     		double reserve = reservePerPop / popFactor;
     		
-	    	double stored = rh.getAllAmountResourceStored(resourceID) / settlement.getNumCitizens();
+	    	double stored = rh.getAllAmountResourceStored(resourceID) / (1 + settlement.getNumCitizens());
  		
-	    	double riskRatio = 2 * reserve/stored;
-	    	
-	    	double prob = riskRatio;
-	       	if (riskRatio > 2) {
-	    		// In very high demand
-	    		prob = 2 * riskRatio;
-	    	}
-	    	if (riskRatio > 1.25) {
-	    		// In high demand
-	    		prob = 1.25 * riskRatio;
-	    	}
-	    	else if (riskRatio > 1) {
-	    		// In high demand
-	    		prob = riskRatio;
-	    	}
-	    	else if (riskRatio < .75) {
-	    		// Not in demand
-	    		prob = .25 * riskRatio;
-	    	}
-	    	else {
-	    		// demand somewhat met
-	    		prob = .5 * riskRatio;
-	    	}
+	    	double riskRatio = reserve/(.01 + stored);
 
-			if (prob > 0.2)
-				map.put(resourceID, prob);
+			map.put(resourceID, riskRatio);
     	}
 		
     	if (!map.isEmpty())
@@ -984,6 +1007,8 @@ public class GoodsManager implements Serializable {
     	
     	if (selectID != -1) {
     		reviewedEssentials.add(selectID);
+    		logger.info(settlement, 0, "Selected " + ResourceUtil.findAmountResourceName(selectID) 
+    			+ " for review (size: " + reviewedEssentials.size() + ")");
     	}
     	
 		return selectID;
@@ -1006,57 +1031,27 @@ public class GoodsManager implements Serializable {
 		}
 		
 		int reservePerPop = limits.reserve();
-		int optimalPerPop = limits.optimal();
+//		int optimalPerPop = limits.optimal();
 		
 		double popFactor = settlement.getLogPopFactor();
   		
 		double reserve = reservePerPop / popFactor;
 //		double optimal = optimalPerPop / popFactor;
 		
-    	double stored = rh.getAllAmountResourceStored(resourceID) / settlement.getNumCitizens();
+    	double stored = rh.getAllAmountResourceStored(resourceID) / (1 + settlement.getNumCitizens());
 		
-//		if (stored >= optimal) {
-//			return 0;
-//		}
 		
-    	double riskRatio = 2 * reserve/stored;
-    	
-    	double prob = 0;
-
+    	double riskRatio = reserve/(.01 + stored);
+    
     	double demand = getDemandScoreWithID(resourceID);
-		double lacking = 2 * reserve - stored;
+		double lacking = reserve - stored;
     	double surplus = -lacking;
-    	double delta = 0;
-	
-    	if (riskRatio > 2) {
-    		// In very high demand
-    		prob = 2 * riskRatio;
-    		delta = Math.min(demand * prob, Math.sqrt(1.5 * lacking));
-    	}
-    	if (riskRatio > 1.25) {
-    		// In high demand
-    		prob = 1.25 * riskRatio;
-    		delta = Math.min(demand * prob, Math.sqrt(1.25 * lacking));
-    	}
-    	else if (riskRatio > 1) {
-    		// In high demand
-    		prob = riskRatio;
-    		delta = Math.min(demand * prob, Math.sqrt(lacking));
-    	}
-    	else if (riskRatio < .75) {
-    		// Not in demand
-    		prob = .25 * riskRatio;
-    		delta = Math.min(demand * prob, Math.sqrt(.25 * surplus));
-    	}
+    	double delta = 0; 
+    	
+    	if (riskRatio >= 1)
+    		delta = demand * riskRatio / 3 + Math.sqrt(lacking) / 3;
     	else {
-    		// demand somewhat met
-    		prob = .5 * riskRatio;
-    		if (lacking > 0) {
-    			delta = Math.min(demand * prob, Math.sqrt(.5 * lacking));
-    		}
-    		else if (lacking < 0) {
-    			delta = Math.min(demand * prob, Math.sqrt(.5 * surplus));
-    		}
+    		delta = demand * riskRatio / 6 + Math.sqrt(surplus) / 6;
     	}
 
 		double fraction = delta / demand;
@@ -1070,9 +1065,8 @@ public class GoodsManager implements Serializable {
 				+ "  reserve: " + Math.round(reserve * 100.0)/100.0
 				+ "  popFactor: " + Math.round(popFactor * 100.0)/100.0
 //				+ "  optimal: " + Math.round(optimal * 100.0)/100.0 
-				+ "  surplus/lacking: " + Math.round(surplus * 100.0)/100.0
+				+ "  lacking: " + Math.round(lacking * 100.0)/100.0
 				+ "  riskRatio: " + Math.round(riskRatio * 100.0)/100.0
-				+ "  prob: " + Math.round(prob * 100.0)/100.0
 				+ ".");
 		
 		return delta;

@@ -397,24 +397,29 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Microwave Plasma Conversion of Air" number-modules="10"/>
 
 				<!--For producing Methane and Water -->
-				<process-engine name="Sabatier RWGS Reactor" number-modules="6"/>
-				<process-engine name="CO Methanation" number-modules="4"/>
+				<!--Found in Large Sabatier Processor, for producing Water and Methane -->
+				<process-engine name="Sabatier RWGS Reactor" number-modules="3"/>
+				<!--For Producing Water -->
+				<process-engine name="CO Methanation" number-modules="1"/>
 	
 				<!--For producing Oxygen -->
 				<process-engine name="Electrochemical reduction of CO2" number-modules="8"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="16"/>
-						
+				<process-engine name="CO2 Electroreduction from H2O to Ethylene and O2" number-modules="6"/>
+			
 				<!--For producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>	
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="2"/>
 				<process-engine name="Dry Methane Reforming (DMR)" number-modules="7"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="1"/>
 				
 				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
-				<process-engine name="Enzymatic Dehydrogenation" number-modules="4"/>				
-				<process-engine name="Methanogenesis by Archaea" number-modules="2"/>			
+				<process-engine name="Enzymatic Dehydrogenation" number-modules="4"/>	
+				<!--Bio-Reaction: Use Methanol and Hydrogen to produce Water and Methane -->									
+				<process-engine name="Methanogenesis by Archaea" number-modules="2"/>	
+				<!--Bio-Reaction: Use Methane and Water to produce Methanol -->		
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="2"/>
 				
 				<!--For producing Methanol -->
@@ -422,11 +427,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 
 				<!--For producing Water -->
+				<!-- Found in ERV-I -->
 				<process-engine name="Melt Ice" number-modules="1" />
 				<process-engine name="Filter Brine Water" number-modules="1" />
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>		
-				<process-engine name="CO Hydrogenation" number-modules="2"/>
-				<process-engine name="Catalytic Recombination into Water" number-modules="8"/>	
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="1"/>		
+				<process-engine name="CO Hydrogenation" number-modules="1"/>
+				<process-engine name="Catalytic Recombination into Water" number-modules="1"/>	
 				
 				<!-- Bio-based processes -->
 				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
@@ -863,32 +869,37 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Microwave Plasma Conversion of Air" number-modules="20"/>
 				
 				<!--For producing Methane and Water -->
+				<!--Found in Large Sabatier Processor, for producing Water and Methane -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="18"/>			
-				<process-engine name="CO Methanation" number-modules="12"/>
+				<!--For Producing Water -->
+				<process-engine name="CO Methanation" number-modules="6"/>
 				
 				<!--For producing Oxygen -->
 				<process-engine name="Electrochemical reduction of CO2" number-modules="16"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="12"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="32"/>
-				
+				<process-engine name="CO2 Electroreduction from H2O to Ethylene and O2" number-modules="12"/>
+			
 				<!--For producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="16"/>	
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="16"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="4"/>
 				<process-engine name="Dry Methane Reforming (DMR)" number-modules="14"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="2"/>
 					
 				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
 				<process-engine name="Enzymatic Dehydrogenation" number-modules="16"/>
-				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="2"/>
+				<!--Bio-Reaction: Use Methane and Water to produce Methanol -->	
+				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="8"/>
 				
 				<!--For producing Methanol -->
-				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="24"/>	
-				<process-engine name="Methanol Synthesis with Syngas" number-modules="12"/>					
+				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="18"/>	
+				<process-engine name="Methanol Synthesis with Syngas" number-modules="9"/>					
 
 				<!--For producing Water -->
-				<process-engine name="Melt Ice" number-modules="4" />
-				<process-engine name="Filter Brine Water" number-modules="4" />
+				<!-- Found in ERV-I -->
+				<process-engine name="Melt Ice" number-modules="2" />
+				<process-engine name="Filter Brine Water" number-modules="2" />
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>	
 				<process-engine name="CO Hydrogenation" number-modules="6"/>
 				<process-engine name="Catalytic Recombination into Water" number-modules="24"/>	
@@ -1256,7 +1267,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.65" yloc="-1.76" />	
 				</activity>
 			</research>
-			
+			<!-- Bioreactor-F -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Glucose Fermentation" number-modules="8"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="16"/>
@@ -1333,7 +1344,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.65" yloc="-1.76" />	
 				</activity>
 			</research>
-			
+			<!-- Bioreactor-E -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="32"/>
 				<activity>
@@ -1412,7 +1423,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<!-- end of Bioreactor-M -->
 			<resource-processing low-power-level="0.25">
+				<!--Bio-Reaction: Use Methanol and Hydrogen to produce Water and Methane -->	
 				<process-engine name="Methanogenesis by Archaea" number-modules="12"/>
+				<!--Bio-Reaction: Use Methane and Water to produce Methanol -->	
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="16"/>
 				
 				<activity>
@@ -1489,7 +1502,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.65" yloc="-1.76" />					
 				</activity>
 			</research>
-			
+			<!-- Bioreactor-G -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="20"/>
 				<activity>
@@ -1601,7 +1614,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- Inflatable Greenhouse -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Microwave Plasma Conversion of Air" number-modules="10"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="6"/>		
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="2"/>		
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="6"/>
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="3"/>
@@ -1780,9 +1793,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="4.25" yloc="-7.7" />
 				</activity>
 			</research>
+			
+			<!-- For Large Greenhouse -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Microwave Plasma Conversion of Air" number-modules="20"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="5"/>
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="12"/>
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="6"/>
@@ -1800,7 +1815,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 
 			<storage stock-capacity="50000">
-
 				<!-- gases -->
 				<resource-capacity type="carbon dioxide" amount="6000.0" />
 				<resource-capacity type="oxygen" amount="10000.0" />					
@@ -2030,9 +2044,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			 <!-- "ERV-A" -->
 			<resource-processing low-power-level="0.25">		
 				
-				<!--For producing Hydrogen -->
+				<!--Producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="24"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="6"/>
 				<process-engine name="Dry Methane Reforming (DMR)" number-modules="9"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="1"/>	
 				
@@ -2248,20 +2262,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		    processing that provide ice and water related life-support functions. It is NOT fully flight 
 		    capable and would require retrofitting to become flight-ready.
 			
-				Mars Direct Mission Plan :
-				  (1). ERV -
-				 	(a). Payload imported from Earth -
-					 	 Consumables : 3400 kg
-					 	 Hydrogen feedstock : 6300 kg
+			Mars Direct Mission Plan :
+			   (1). ERV -
+				 	(a). Payload imported from Earth :
+					 	        Consumables :  3,400 kg
+					 	 Hydrogen feedstock :  6,300 kg
 					(b). Produced on Mars :
-						 water : 18900 kg
-						 Oxygen : 16080 kg
-						 Methane : 8400 kg
+						              water : 18,900 kg
+						             Oxygen : 16,080 kg
+						            Methane :  8,400 kg
 
-				  (2). Hab -
-					(a). Payload imported from Earth -
-					 	 Consumables : 7000 kg
-				 			
+			   (2). Hab -
+					(a). Payload imported from Earth :
+		  				 	    Consumables :  7,000 kg
 		</description>
 		<base-power power-priority="6" base-full-power="0.5" base-low-power="0.05"/>
 
@@ -2274,8 +2287,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Melt Ice" number-modules="8"/>	
-				<process-engine name="Filter Brine Water" number-modules="8"/>						
+				<!--For Producing Water -->
+				<process-engine name="Melt Ice" number-modules="2" />
+				<process-engine name="Filter Brine Water" number-modules="2" />
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>	
+				<process-engine name="CO Hydrogenation" number-modules="6"/>
+				<process-engine name="CO Methanation" number-modules="6"/>
+				<process-engine name="Catalytic Recombination into Water" number-modules="24"/>	
+				<!-- "Sabatier RWGS Reactor" and other processes also produce water. They are included in other buildings -->
+				
 			</resource-processing>
 			
 			<storage stock-capacity="300000">
@@ -3211,7 +3231,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Glucose Fermentation" number-modules="2"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
+				<!--Bio-Reaction: Use Methanol and Hydrogen to produce Water and Methane -->	
 				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
+				<!--Bio-Reaction: Use Methane and Water to produce Methanol -->	
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="8"/>
 				
 				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
@@ -3524,7 +3546,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<power-storage capacity="20" discharge-rate="1.3"/>
 			
-			<resource-processing low-power-level="0.2">
+			<resource-processing low-power-level="0.25">
 				<process-engine name="Excavate Ice" number-modules="3" />
 				<process-engine name="Melt Ice" number-modules="3" />
 				<process-engine name="Filter Brine Water" number-modules="3" />
@@ -3754,8 +3776,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			<resource-processing low-power-level="0.25">
-				<!--For producing Methane and Water -->
+				<!--Found in Large Sabatier Processor, for producing Water and Methane  -->
 				<process-engine name="Sabatier RWGS Reactor" number-modules="36"/>
+				<!--For Producing Water -->
 				<process-engine name="CO Methanation" number-modules="24"/>
 				
 			</resource-processing>
@@ -3974,7 +3997,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Glucose Fermentation" number-modules="2"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
+				
+				<!--Bio-Reaction: Use Methanol and Hydrogen to produce Water and Methane -->	
 				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
+				<!--Bio-Reaction: Use Methane and Water to produce Methanol -->	
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="8"/>
 				
 				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
@@ -4499,36 +4525,41 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Microwave Plasma Conversion of Air" number-modules="10"/>
 				
 				<!--For producing Methane and Water -->
-				<process-engine name="Sabatier RWGS Reactor" number-modules="6"/>
-				<process-engine name="CO Methanation" number-modules="4"/>
+				<!--Found in Large Sabatier Processor, for producing Water and Methane -->
+				<process-engine name="Sabatier RWGS Reactor" number-modules="3"/>
+				<!--For Producing Water -->
+				<process-engine name="CO Methanation" number-modules="1"/>
 				
 				<!--For producing Oxygen -->
 				<process-engine name="Electrochemical reduction of CO2" number-modules="8"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>		
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="16"/>
+				<process-engine name="CO2 Electroreduction from H2O to Ethylene and O2" number-modules="6"/>				
 								
 				<!--For producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="8"/>	
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="2"/>
 				<process-engine name="Dry Methane Reforming (DMR)" number-modules="7"/>
 				<process-engine name="Steam Methane Reforming (SMR)" number-modules="1"/>
 				
 				<!--Bio-Reaction: Use Methanol and Water to produce Hydrogen -->
 				<process-engine name="Enzymatic Dehydrogenation" number-modules="4"/>
+				<!--Bio-Reaction: Use Methanol and Hydrogen to produce Water and Methane -->	
 				<process-engine name="Methanogenesis by Archaea" number-modules="2"/>
 								
 				<!--For producing Methanol -->
+				<!-- Found in Syngas Plant -->
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="6"/>	
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 
-				
 				<!--For producing Water -->
+				<!-- Found in ERV-I -->
 				<process-engine name="Melt Ice" number-modules="1" />
 				<process-engine name="Filter Brine Water" number-modules="1" />
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="4"/>	
-				<process-engine name="CO Hydrogenation" number-modules="2"/>	
-				<process-engine name="Catalytic Recombination into Water" number-modules="8"/>	
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="1"/>	
+				<process-engine name="CO Hydrogenation" number-modules="1"/>	
+				<process-engine name="Catalytic Recombination into Water" number-modules="1"/>	
 								
 				<!-- Bio-based processes -->
 				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
@@ -4841,7 +4872,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Glucose Fermentation" number-modules="1"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="1"/>
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="1"/>
+				<!--Bio-Reaction: Use Methanol and Hydrogen to produce Water and Methane -->
 				<process-engine name="Methanogenesis by Archaea" number-modules="1"/>
+				
+				<!--Bio-Reaction: Use Methane and Water to produce Methanol -->	
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="3"/>
 				
 				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="1"/>
@@ -4986,7 +5020,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- "Inground Greenhouse" -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Microwave Plasma Conversion of Air" number-modules="10"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="6"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="2"/>
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="3"/>
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="3"/>

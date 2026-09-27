@@ -1,8 +1,8 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Hub Base" shift-pattern="Standard 4 Shift" 
+        name="Hub Base 1" shift-pattern="Standard 4 Shift" 
         default-population="56" sponsor="MS"
-        description="MS Base With Central Hub">
+        description="MS Hub Base 1">
 
     <!-- HUBS : 0 to 100, 200, 300, 400 -->   
     
@@ -26,7 +26,15 @@
     <building id="REHAB" type="Research Hab" xloc="-100.0" yloc="-18.5" facing="0.0">
         <connection-list>
             <connection id="201" hatch-facing="north" />
-            <connection id="203" hatch-facing="south" />         
+            <connection id="203" hatch-facing="south" />      
+            <connection id="EVA0" hatch-facing="west" />   
+        </connection-list>
+    </building>
+    
+   <!-- This EVA Airlock is attached to the Research hab -->
+    <building id="EVA0" type="EVA Airlock" xloc="-92.5" yloc="-18.5" facing="0.0">
+        <connection-list>
+            <connection id="REHAB" hatch-facing="east" />
         </connection-list>
     </building>
     
@@ -37,11 +45,10 @@
         </connection-list>
     </building>
 
-    <building id="MEDHAB" type="Medical Hab" xloc="-100.0" yloc="-31.5" facing="0.0">
+    <building id="MEDHAB" type="Medical Hab" xloc="-100.0" yloc="-31.5" facing="180.0">
         <connection-list>
             <connection id="203" hatch-facing="north" />     
-            <connection id="205" hatch-facing="south" />  
-            <connection id="EVA1" hatch-facing="west" />                                   
+            <connection id="205" hatch-facing="south" />                                   
         </connection-list>
     </building>
 
@@ -55,13 +62,14 @@
     <building id="MACHAB" type="Machinery Hab" xloc="-100.0" yloc="-44.5" facing="0.0">
         <connection-list>
             <connection id="205" hatch-facing="north" />
+            <connection id="EVA1" hatch-facing="west" />  
         </connection-list>
     </building>
 
-   <!-- This EVA Airlock is attached to the Medical hab -->
-    <building id="EVA1" type="EVA Airlock" xloc="-92.5" yloc="-31.5" facing="0.0">
+   <!-- This EVA Airlock is attached to the Machinery hab -->
+    <building id="EVA1" type="EVA Airlock" xloc="-92.5" yloc="-44.5" facing="0.0">
         <connection-list>
-            <connection id="MEDHAB" hatch-facing="east" />
+            <connection id="MACHAB" hatch-facing="east" />
         </connection-list>
     </building>
     
@@ -266,14 +274,14 @@
         </connection-list>
     </building>
     
-    <building id="SHAB" type="Storage Hab" xloc="-16.0" yloc="0" facing="270.0">
+    <building id="SHAB" type="Storage Hab" xloc="-16.5" yloc="0" facing="270.0">
         <connection-list>
             <connection id="111" hatch-facing="east" />
             <connection id="EVA2" hatch-facing="west" />
         </connection-list>
     </building>
     
-    <building id="EVA2" type="EVA Airlock" xloc="-8.0" yloc="0" facing="0.0">
+    <building id="EVA2" type="EVA Airlock" xloc="-9.0" yloc="0" facing="0.0">
         <connection-list>
             <connection id="SHAB" hatch-facing="east" />
         </connection-list>
@@ -363,7 +371,7 @@
    	<building-package name="ERV Set 4"/>
    	<building-package name="Air Set 1 - 1x5"/>
     <building-package name="Sabatier Set 1 - 1x5"/>
-	<building-package name="Syngas Set 1 - 1x1"/>
+	<building-package name="Syngas Set 1 - 1x3"/>
 	<building-package name="Solar Thermal Set 1 - 1x9"/>
 	<building-package name="Wind Set 1 - 1x6"/>
 	<building-package name="Kilo Set 1 - 1x2"/>

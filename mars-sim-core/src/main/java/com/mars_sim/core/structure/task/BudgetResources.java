@@ -111,7 +111,7 @@ public class BudgetResources extends Task {
 		// Use Task constructor.
 		super(NAME, person, false, IMPACT, STANDARD_DURATION);
 				
-		if (person.isInSettlement()) {
+		if (person.isInside()) {
 		
 			if (!selectTask(goal)) {
 				endTask();
@@ -124,32 +124,34 @@ public class BudgetResources extends Task {
 			// Duration is skill-dependent	
 			setDuration(getDuration() / (1 + effectiveSkillLevel));
 			
-			// If person is in a settlement, try to find an office building.
-			Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
-
-			// Note: office building is optional
-			if (officeBuilding != null) {
-				office = officeBuilding.getAdministration();	
-				if (!useOffice && !office.isFull()) {
-					office.addStaff();
-					useOffice = true;
-					// Walk to the office building.
-					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
+			if (person.isInSettlement()) {
+				// If person is in a settlement, try to find an office building.
+				Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
+	
+				// Note: office building is optional
+				if (officeBuilding != null) {
+					office = officeBuilding.getAdministration();	
+					if (!useOffice && !office.isFull()) {
+						office.addStaff();
+						useOffice = true;
+						// Walk to the office building.
+						walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
+					}
 				}
-			}
-
-			else {
-				Building managementBuilding = Management.getAvailableStation(person);
-				if (managementBuilding != null) {
-					// Walk to the management building.
-					walkToTaskSpecificActivitySpotInBuilding(managementBuilding, FunctionType.MANAGEMENT, true);
-				}
-				else {	
-					Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
-					// Note: dining building is optional
-					if (dining != null) {
-						// Walk to the dining building.
-						walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
+	
+				else {
+					Building managementBuilding = Management.getAvailableStation(person);
+					if (managementBuilding != null) {
+						// Walk to the management building.
+						walkToTaskSpecificActivitySpotInBuilding(managementBuilding, FunctionType.MANAGEMENT, true);
+					}
+					else {	
+						Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
+						// Note: dining building is optional
+						if (dining != null) {
+							// Walk to the dining building.
+							walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
+						}
 					}
 				}
 			}

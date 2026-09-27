@@ -59,8 +59,8 @@ public class ToggleResourceProcessTest extends MarsSimUnitTest {
         // Pick the second process, namely, "Sabatier RWGS Reactor"
         var p = r.getProcesses().get(1);
         
-        assertTrue(22 == r.getProcesses().size(), "# of Resource process");
-        assertTrue(p.getProcessName().equals("Sabatier RWGS Reactor"), "Name of the Resource proess");
+        assertEquals(23, r.getProcesses().size(), "# of Resource processes");
+        assertTrue(p.getProcessName().equals("Sabatier RWGS Reactor"), "Name of the Resource process");
         
         // Reset toggle for now
         ToggleResourceProcessMetaTest.moveToToggle(getContext(), p);

@@ -672,8 +672,11 @@
 		<!-- Life Support Resources -->
 		<resource type="food" amount="12000" />
 		<resource type="water" amount="14400" />
+		<resource type="methane" amount="9600" />
+		<resource type="methanol" amount="9600" />
 		<resource type="oxygen" amount="12000" />
-
+		<resource type="hydrogen" amount="12000" />
+		
   		<part-package name="Instrument Package 1" number="6" />	
 	    <part-package name="Tech Part Package 5" number="2" />
 	    <part-package name="Standard Part Package 1" number="12" />

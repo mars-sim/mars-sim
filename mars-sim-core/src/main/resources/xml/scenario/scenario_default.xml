@@ -35,7 +35,7 @@
 			<location coordinates="24.3612 -29.7837" />
 		</settlement>
 
-		<settlement name="Hong Tian" template="Phase 2-CN" persons="8" robots="8" sponsor="CNSA">
+		<settlement name="Bezo Town" template="Phase 2-BO" persons="8" robots="8" sponsor="BO">
 			<location coordinates="15.9873 -47.8419" />
 		</settlement>
 
@@ -44,7 +44,7 @@
 		</settlement>
 
 		<settlement name="New Seoul" template="Phase 2-KR" persons="14" robots="8" sponsor="KASA">
-			<location coordinates="40.4244 -105.8939" />
+			<location coordinates="40.4244 -88.3939" />
 		</settlement>
 	
 		<settlement name="New Shanghai" template="Phase 3-ISRA" persons="16" robots="8" sponsor="ISRA">
@@ -62,9 +62,9 @@
        		<!-- PM-1 site (Elev -3.2 km) in Phelgra Montes, the 1st prime landing -->
 			<location coordinates="35.23 163.95" />        		
      		<!-- AP-1site (Elev -3.9 km) in Arcadia Planitia, the 2nd prime landing -->
-			<location coordinates="39.8 202.1" />       
+			<!--  location coordinates="39.8 202.1" /  -->       
       		<!-- AP-9 site (Elev -3.9 km) in Arcadia Planitia, the 3rd prime landing -->
-			<location coordinates="40.02 203.35" />        		
+			<!--  location coordinates="40.02 203.35" / -->        		
      		<!-- EM-16 site (Elev -3.9 km) in Erebus Montes, the 4th prime landing -->
 			<!-- location coordinates="39.89 192.03" / -->
 		</settlement>
@@ -86,13 +86,18 @@
 			<location coordinates="-4.8051 0.0" />
 		</settlement>
 			
-		<settlement name="Heritage" template="Hub Base" persons="52" robots="36" sponsor="MS">
+		<settlement name="Heritage" template="Hub Base 1" persons="56" robots="32" sponsor="MS">
 			<location coordinates="15.1255 114.1535" />
+		</settlement>
+
+		<settlement name="Tiangong" template="Hub Base 2" persons="124" robots="52" sponsor="CNSA">
+			<location coordinates="13.124 -4.76" />
 		</settlement>
 
 		<settlement name="Foundation" template="Sector Base 2" crew="Founders" persons="240" robots="120" sponsor="MS">
 			<location coordinates="24.14 172.29" />
 		</settlement>
+
 
 	</initial-settlement-list>
 	<arriving-settlement-list>
@@ -100,7 +105,7 @@
 		<arriving-settlement name="New Madinah" template="Phase 1-SA" 
 			persons="4" robots="4" sponsor="SSA" arrival-in-sols="5">
 			<!-- location coordinates="45.4157 -141.3300" / -->
-			<location coordinates="39.07 250.97" />
+			<location coordinates="39.07 230.97" />
 		</arriving-settlement>
 			
 		<arriving-settlement name="New Dubai" template="Phase 0-AE" 

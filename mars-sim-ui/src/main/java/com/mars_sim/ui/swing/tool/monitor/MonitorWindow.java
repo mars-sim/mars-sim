@@ -166,7 +166,9 @@ public class MonitorWindow extends ContentPanel
 		
 		// Lastly activate the default tab
 		currentSelection = new HashSet<>(settlementSelector.getSelectedSettlements());
-		selectNewTab(getSelectedTab());
+		var tab = getSelectedTab();
+		if (tab != null)
+			selectNewTab(tab);
 
 		// List for changes in the settlement selection
 		settlementSelector.setSelectionListener("selectionChanged", e -> changeSelection());

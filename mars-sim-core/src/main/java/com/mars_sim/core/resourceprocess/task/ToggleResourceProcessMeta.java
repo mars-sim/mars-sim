@@ -131,7 +131,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	private static final String TOGGLE_TIME = "toggleTime";
 	
 	private static final double MIN_SCORE = 0.05;
-	private static final double MAX_SCORE = 500;
+	public static final double MAX_SCORE = 500;
 	
 	private static final double WASTE_THRESHOLD = 0.3; // % waste need to be available to toggle
 	
@@ -430,7 +430,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 												ResourceProcessSpec processSpec,
 												int modules, boolean input) {
 		// Set the basic score
-		double score = 0.01;
+		double score = MIN_SCORE;
 		// Note: beware of not reseting score inside the for loop, 
 		// or else losing the carryover from previous calculation
 
@@ -461,35 +461,35 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isAmbientInputResource(resource)) {
 					// Note: 'Ambient' is used for CO2 and brine water
 					// reduce the score in order to encourage this process
-					value = value / EXCEEDING;
+					value = value / EXTREME;
 				}
-				else {
-					// Note: Mark ambient as 'false' to hint that this process is discouraged
-					value = value * MID;
-				}
+//				else {
+//					// Note: Mark ambient as 'false' to hint that this process is discouraged
+//					score += value * SUPER;
+//				}
 				
-				if (ResourceUtil.isRawMaterial(resource)) {   				// all ores, all minerals, sand)
-//					|| ResourceUtil.isChemical(resource)) {					// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 
-					score += value / MEGA;
-				} else if (ResourceUtil.isCO2(resource)) { 					// CO2	
-					score += value / SUPER;
-				} else if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
+				if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
 					score += value * SUPER;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
 					score += value * SUPER;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
 					score += value * SUPER;
 				} else if (ResourceUtil.isOxygen(resource)) {  				// oxygen
-					score += value * MEGA;
+					score -= value * MID;
+				} else if (ResourceUtil.isWater(resource)) { 				// water
+					score -= value * GOOD;
+				} else if (ResourceUtil.isRawMaterial(resource)) {   				// all ores, all minerals, sand)
+//					|| ResourceUtil.isChemical(resource)) {					// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 
+					score += value / MEGA;
+				} else if (ResourceUtil.isCO2(resource)) { 					// CO2	
+					score += value / SUPER;
 				} else if (ResourceUtil.isDerivedResource(resource)) { 		// glucose, leaves, soil 
 					score += value / MEGA;
 				} else if (ResourceUtil.isInSitu(resource)					// all regolith types
 						|| ResourceUtil.isWasteProduct(resource)) { 		// grey water, black water, * waste
-					score += value / OVERWHELMING;
+					score += value / SUPER;
 				} else if (ResourceUtil.isTier1Resource(resource)) { 		// ice, brine water, rock salt
-					score += value / SIGNIFICANT;
-				} else if (ResourceUtil.isWater(resource)) { 				// water
-					score += value * MID; 
+					score -= value * MEGA;
 				} else if (ResourceUtil.isConstructionResource(resource)) {	// GYPSUM_PLASTER_ID, GYPSUM_ID, CEMENT_ID, LIME_ID, ACETYLENE_ID
 					score += value / MID;
 				} else {
@@ -505,7 +505,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				double value = vp;
 
 				if (processSpec.isCoreOutputResource(resource)) {
-					value = value * GOOD;
+					score += value * MEGA;
 				}
 				
 //				score += value;
@@ -515,20 +515,25 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
-					// Note: Mark waste as 'true' to hint that this process is encouraged
+					// Note: Mark waste as 'true' to hint that this process is somewhat encouraged
 					score += value * SUPER;
+				}
+				else  {
+					// Note: Mark waste as 'true' to hint that this process is very encouraged
+					score += value * MEGA;
+				}
 //				} else if (ResourceUtil.isHydrogen(resource)) { 		// hydrogen
-//					score += mrate * EXCEEDING;
+//					score += value * EXCEEDING;
 //				} else if (ResourceUtil.isMethane(resource)) { 			// methane
-//					score += mrate * SIGNIFICANT;
+//					score += value * SIGNIFICANT;
 //				} else if (ResourceUtil.isMethanol(resource)) { 		// methanol
-//					score += mrate * SUPREME;
-				} else if (ResourceUtil.isOxygen(resource)) {			// oxygen
-					score += value * SUPER;
+//					score += value * SUPREME;
+//				} else if (ResourceUtil.isOxygen(resource)) {			// oxygen
+//					score += value;
 //				} else if (ResourceUtil.isRawElement(resource)      	// carbon, iron powder, iron oxide
 //					|| ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick, gypsum plaster			
 //					score += value * MEGA;					
-				} else if (ResourceUtil.isTier1Resource(resource)) { 	// ice, brine water, rock salt	
+				if (ResourceUtil.isTier1Resource(resource)) { 	// ice, brine water, rock salt	
 					score += value * SUPREME;	
 //				} else if (ResourceUtil.isInSitu(resource)) {			// all regolith types
 //					score += value * SIGNIFICANT;	
@@ -539,10 +544,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil
 //					|| ResourceUtil.isCriticalResource(resource)) {		// glass
 //					score += value * SUPREME;
-				} else if (ResourceUtil.isWater(resource)) { 			// water
-					score += value * MEGA;
+//				} else if (ResourceUtil.isWater(resource)) { 			// water
+//					score += value;
 				} else if (ResourceUtil.isRawMaterial(resource)) { 		// all ores, all minerals, sand
-					score += value * EXTREME;
+					score += value * MEGA;
 				} else
 					score += value;
 			}

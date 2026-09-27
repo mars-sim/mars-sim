@@ -12,8 +12,11 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.ScheduledEventHandler;
+import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.resourceprocess.task.ToggleResourceProcessMeta;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -25,7 +28,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	// May add back: private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName())
+	private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName());
 
 	private static final double SMALL_AMOUNT = 0.000001;
 	
@@ -41,9 +44,9 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private boolean isRunning;
 	private boolean isLockOn;
 	
-	private double percentEffort = 100.0;
 	private int modules;
 	
+	private double percentEffort = 100.0;
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
 	private double dutyTime;
@@ -72,9 +75,9 @@ public class ResourceProcess implements ScheduledEventHandler {
 		this.engine = engine;
 		this.building = building;
 		this.assessment = DEFAULT_ASSESSMENT;
-		this.modules = 1; // engine.getMaxModules();
+		this.modules = (int)MathUtils.between(engine.getMaxModules() / 3.0, 1, engine.getMaxModules());
 
-		// Add some randomness, today is sol 1
+		// Add some randomness at the start of the sim
 		int delay = RandomUtil.getRandomInt(0, 50);
 		resetToggleWait(delay);
 	}
@@ -569,6 +572,11 @@ public class ResourceProcess implements ScheduledEventHandler {
     	else if (selected == ProcessState.INPUTS_UNAVAILABLE) {
     		newRunning = false;
     		isLockOn = false;
+    		
+//    		if (modules > 0) {
+//    			increaseInputResourceDemand();
+//				logger.info(building, getProcessName() + "'s # of modules : " + modules + " -> " + --modules);
+//			}
     	}
 			
 		// If it used to be running and now it has stopped
@@ -577,20 +585,35 @@ public class ResourceProcess implements ScheduledEventHandler {
 			building.getAssociatedSettlement().recordProcess(processSpec.getName(), "Resource", building);
 		}
 
-		this.isRunning = newRunning;
-
 		int delay = 0;
 		
-		if (isRunning) {
-			delay = processSpec.getProcessTime();
-			resetToggleWait(delay);
+		if (newRunning) {
+//			delay = processSpec.getProcessTime();
+//			resetToggleWait(delay);
+			
+			// Q: when is it appropriate to call reduceOutputResourceDemand() to tone down the output resource demand ?
+			
+			if (modules == 0) {
+				logger.info(building, getProcessName() + "'s # of modules : " + modules + " -> " + ++modules);
+			}
+			else if (modules < engine.getMaxModules())  {
+				int diff = (int)(getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
+				int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
+				if (rand <= diff) {
+					logger.info(building, getProcessName() + "'s # of modules : " + modules + " -> " + ++modules);
+				}
+			}
+			else if (getOverallScore() <= 5.0 && (getOutputScore() < 10) && modules > 1) {
+				logger.info(building, getProcessName() + "'s # of modules : " + modules + " -> " + --modules);
+			}
 		}
 		
 		else {		
-			delay = 10;
+			delay = 20;
+			resetToggleWait(delay);
 		}
 		
-		resetToggleWait(delay);
+		this.isRunning = newRunning;
 	}
 
 	/**
@@ -603,6 +626,26 @@ public class ResourceProcess implements ScheduledEventHandler {
 		toggleDue = event.getWhen();
 	}
 
+	/**
+	 * Reduces the demand score of the output resource.
+	 */
+	private void reduceOutputResourceDemand() {
+		Set<Integer> resources = getOutputResources();
+		for (int r: resources) {
+			building.getAssociatedSettlement().getGoodsManager().reduceDemandScore(r, 1);
+		}
+	}
+	
+	/**
+	 * Increases the demand score of the input resource.
+	 */
+	private void increaseInputResourceDemand() {
+		Set<Integer> resources = getInputResources();
+		for (int r: resources) {
+			building.getAssociatedSettlement().getGoodsManager().increaseDemandScore(r, 1);
+		}
+	}
+	
 	/**
 	 * Gets the string value for this object.
 	 *

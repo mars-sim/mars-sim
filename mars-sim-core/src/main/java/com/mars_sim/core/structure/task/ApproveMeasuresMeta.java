@@ -145,13 +145,13 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
 		
 		boolean iceFlag = settlement.isIceApprovalDue();
 		if (iceFlag) {
-			RatingScore score = new RatingScore("ice.probability", 5 * BASE_SCORE * chance);  
+			RatingScore score = new RatingScore("ice.probability", 5 * BASE_SCORE * chance / 3);  
 			tasks.add(new ApproveMeasuresJob(this, settlement, score, 1, ReviewGoal.ICE_RESOURCE));
 		}
 
 		boolean regFlag = settlement.isRegolithApprovalDue();
 		if (regFlag) {
-			RatingScore score = new RatingScore("regolith.probability", 5 * BASE_SCORE * chance);  
+			RatingScore score = new RatingScore("regolith.probability", 5 * BASE_SCORE * chance / 3);  
 			tasks.add(new ApproveMeasuresJob(this, settlement, score, 1, ReviewGoal.REGOLITH_RESOURCE));
 		}
 		

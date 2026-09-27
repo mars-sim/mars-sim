@@ -63,17 +63,20 @@ public class ResourceProcessPanel extends JPanel {
  	private static final String NON_BREAKING_SPACE = "&nbsp;";
 	private static final String EN_SPACE = "&ensp;";
  	private static final String EM_SPACE = "&emsp;"; // typically twice as wide as EN_SPACE or four times as wide as NON_BREAKING_SPACE
-	private static final String TABS = EM_SPACE + EM_SPACE + EM_SPACE + EM_SPACE + EM_SPACE + EM_SPACE + EN_SPACE; //"&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;";
+ 	private static final String TWO_EM_SPACE = EM_SPACE + EM_SPACE;
+ 	private static final String TWO_EN_SPACE = EN_SPACE + EN_SPACE;
+	private static final String TABS = TWO_EM_SPACE + TWO_EM_SPACE + EM_SPACE + EM_SPACE + TWO_EN_SPACE; 
 	
-	private static final String PROCESS = EM_SPACE + EM_SPACE + NON_BREAKING_SPACE + "Process:" + EM_SPACE;
-	private static final String BUILDING_HEADER = EM_SPACE + EM_SPACE + NON_BREAKING_SPACE + "Building:" + EM_SPACE;
+	private static final String PROCESS = TWO_EM_SPACE + NON_BREAKING_SPACE + "Process:" + EM_SPACE;
+	private static final String BUILDING_HEADER = TWO_EM_SPACE + NON_BREAKING_SPACE + "Building:" + EM_SPACE;
 	private static final String MAX_NUM_MODULES = "Max Modules:" + EM_SPACE;
 	private static final String POWER_REQ   = EM_SPACE + "Power Req:" + EM_SPACE;
-	private static final String INPUTS = EM_SPACE + EM_SPACE + NON_BREAKING_SPACE + "Inputs:" + EM_SPACE;
-	private static final String OUTPUTS = EM_SPACE + EM_SPACE + NON_BREAKING_SPACE + "Outputs:" + EM_SPACE;
+	private static final String INPUTS = TWO_EM_SPACE + NON_BREAKING_SPACE + NON_BREAKING_SPACE + "Inputs:" + EM_SPACE;
+	private static final String OUTPUTS = TWO_EM_SPACE + NON_BREAKING_SPACE + "Outputs:" + EM_SPACE;
 	
-	private static final String NOTE = EM_SPACE + "<i>Note:  * denotes an ambient resource</i>";
-
+	private static final String NOTE1 = EM_SPACE + "<i>Note:  * denotes an ambient resource</i>";
+	private static final String NOTE2 = EM_SPACE + "<i>Note:  ^ denotes a waste resource</i>";
+	
     private ResourceProcessTableModel resourceProcessTableModel;
 
 	private JSpinner topSpinner;
@@ -482,6 +485,7 @@ public class ResourceProcessPanel extends JPanel {
 
             result.append(OUTPUTS);
             firstItem = true;
+            boolean hasWaste = false;
             for (Integer resource : process.getOutputResources()) {
                 if (!firstItem)
                     result.append(TABS);
@@ -489,11 +493,17 @@ public class ResourceProcessPanel extends JPanel {
                 String rateString = StyleManager.DECIMAL_PLACES2.format(outputRate);
                 result.append(ResourceUtil.findAmountResource(resource).getName())
                     .append(" - ").append(rateString).append(KG_SOL).append(BR);
+                if (process.isWasteOutputResource(resource)) {
+                    result.append("^");
+                    hasWaste = true;
+                }
                 firstItem = false;    
             }
             // Add a note to denote an ambient input resource
             if (hasAmbient)
-                result.append(NOTE);
+                result.append(NOTE1);
+            if (hasWaste)
+            	result.append(NOTE2);
             result.append("</html>");   
             
             return result.toString();

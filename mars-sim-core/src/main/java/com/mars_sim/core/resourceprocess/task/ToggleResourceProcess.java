@@ -248,11 +248,11 @@ public class ToggleResourceProcess extends Task {
 			// COmplete toggling with stop the process automatically
 			String toggle = (process.isProcessRunning() ? ON : OFF);
 			if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
-				logger.fine(resourceProcessBuilding, process + " : " + worker
-						+ " just toggled it " + toggle + " manually.");
+				logger.info(resourceProcessBuilding, process 
+						+ ". Just toggled it " + toggle + " manually by " + worker + ".");
 			else
-				logger.fine(resourceProcessBuilding, process + " : " + worker
-						+ " just toggled it " + toggle + " remotely.");
+				logger.info(resourceProcessBuilding, process
+						+ ". Just toggled it " + toggle + " remotely by " + worker + ".");
 
 			// Only need to run the finished phase once and for all
 			isFinished = true;

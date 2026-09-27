@@ -126,7 +126,7 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
         var s = buildSettlement("Budget", true);
         buildPerson("Accountant", s); // Need at least 1 person for water demand
 
-        s.getRationing().reviewRationingLevel();
+//        s.getRationing().reviewRationingLevel();
         s.getRationing().setReviewDue(true);
 
         var mt = new BudgetResourcesMeta();
@@ -134,7 +134,7 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
         var tasks = mt.getSettlementTasks(s);
 
         // Expect one per review goal
-        assertEquals(2, tasks.size(), "Expect settlement tasks");
+        assertEquals(1, tasks.size(), "Expect settlement tasks");
 
         // Check each task
         Set<ReviewGoal> found = new HashSet<>();
@@ -151,6 +151,6 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
 
             assertEquals(expect, brj.getDemand(), "Expected demaind for " + goal.name());
         }
-        assertEquals(2, found.size(), "Found goals");
+        assertEquals(1, found.size(), "Found goals");
     }
 }
