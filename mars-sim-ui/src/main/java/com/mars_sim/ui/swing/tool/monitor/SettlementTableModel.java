@@ -12,6 +12,7 @@ import java.util.Set;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.model.BaseSettlementModel;
 
 /**
@@ -33,7 +34,8 @@ public class SettlementTableModel extends BaseSettlementModel implements Monitor
 	 */
 	public SettlementTableModel() {
 		super(NAME, POPULATION, PARKED, MISSION, POWER_GEN, POWER_LOAD, ENERGY_STORED);
-		addResourceColumns(RESOURCES);
+		// Show whether each resource amount is increasing or decreasing
+		addResourceColumns(RESOURCES, ColumnSpec.STYLE_TREND_INTEGER);
 	}
 
 	@Override

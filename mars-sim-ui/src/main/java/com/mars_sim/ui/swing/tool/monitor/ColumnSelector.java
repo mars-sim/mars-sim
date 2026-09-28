@@ -25,6 +25,7 @@ import javax.swing.WindowConstants;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.components.TrendValue;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -214,7 +215,7 @@ public class ColumnSelector extends JDialog {
 	}
 
 	private boolean isNumber(Class<?> columnClass) {
-		return (Number.class.isAssignableFrom(columnClass)
+		return ((Number.class.isAssignableFrom(columnClass) || TrendValue.class.equals(columnClass))
 				&& !String.class.equals(columnClass));
 	}
 }

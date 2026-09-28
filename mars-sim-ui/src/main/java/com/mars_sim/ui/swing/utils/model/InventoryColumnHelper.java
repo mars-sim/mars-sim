@@ -16,6 +16,7 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResource;
 import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.ui.swing.components.ColumnSpec;
+import com.mars_sim.ui.swing.components.TrendValue;
 import com.mars_sim.ui.swing.utils.model.AbstractEntityModel.EntityColumnSpec;
 
 /**
@@ -43,6 +44,17 @@ public class InventoryColumnHelper {
      * @return Array of EntityColumnSpec covering the resource columns.  
      */
     static EntityColumnSpec[] getResourceColumn(List<Integer> resources) {
+        return getResourceColumn(resources, ColumnSpec.STYLE_INTEGER);
+    }
+
+    /**
+     * Create an array of EntityColumnSpec for the specified Resources.
+     * @param resources Set of resource IDs to create columns for.
+     * @param style Column style; a trend style makes the columns hold a TrendValue.
+     * @return Array of EntityColumnSpec covering the resource columns.
+     */
+    static EntityColumnSpec[] getResourceColumn(List<Integer> resources, int style) {
+        Class<?> type = (isTrendStyle(style) ? TrendValue.class : Double.class);
         EntityColumnSpec[] resourceColumns = new EntityColumnSpec[resources.size()];
     
         // Then add the resource columns with the pseudo event type for each resource
@@ -54,7 +66,7 @@ public class InventoryColumnHelper {
             }
 
             var name = ResourceType.getName(resourceID);
-            var resColumn = new EntityColumnSpec(new ColumnSpec(AMOUNT_VAL + resourceID, name, Double.class, ColumnSpec.STYLE_INTEGER),
+            var resColumn = new EntityColumnSpec(new ColumnSpec(AMOUNT_VAL + resourceID, name, type, style),
                                 Set.of(RES_PREFIX + resourceID));
             resourceColumns[idx++] = resColumn;
         }
@@ -69,13 +81,7 @@ public class InventoryColumnHelper {
      */
     static EntityEvent convertResourceToEvent(EntityEvent event, List<Integer> resources) {
         // Resource change
-        var target = event.getTarget();
-        int resourceID = switch (target) {
-            case AmountResource ar -> ar.getID();
-            case ItemResource ir -> ir.getID();
-            case Integer i -> i;
-            default -> -1;
-        };
+        int resourceID = getResourceID(event.getTarget());
 
         // Is the resource a monitored one
         var pseudoEventType = (resources.contains(resourceID)) ? RES_PREFIX + resourceID : null;
@@ -84,6 +90,29 @@ public class InventoryColumnHelper {
             return null;
         }
         return new EntityEvent(event.getSource(), pseudoEventType, event.getTarget());
+    }
+
+    /**
+     * Does the column style show the direction of change of the value?
+     * @param style Column style.
+     * @return true if a trend style.
+     */
+    static boolean isTrendStyle(int style) {
+        return style == ColumnSpec.STYLE_TREND_INTEGER;
+    }
+
+    /**
+     * Get the resource ID referenced by the target of an inventory event.
+     * @param target Target of the event.
+     * @return Resource ID, or -1 if the target is not a resource.
+     */
+    static int getResourceID(Object target) {
+        return switch (target) {
+            case AmountResource ar -> ar.getID();
+            case ItemResource ir -> ir.getID();
+            case Integer i -> i;
+            case null, default -> -1;
+        };
     }
 
 
