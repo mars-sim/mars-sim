@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceProcessor.java
- * @date 2022-10-29
+ * @date 2026-09-27
  * @author Barry Evans
  */
 package com.mars_sim.core.building.function;
@@ -12,7 +12,6 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
-import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
 import com.mars_sim.core.structure.Settlement;
@@ -33,7 +32,7 @@ public abstract class ResourceProcessor extends Function {
 	private List<ResourceProcess> processes;
 	
 	/**
-	 * Constructor.
+	 * Constructor 1.
 	 * 
 	 * @param building the building this function is for.
 	 */
@@ -45,10 +44,15 @@ public abstract class ResourceProcessor extends Function {
 		lowPowerProcessingLevel = spec.getDoubleProperty(LOW_POWER_LEVEL);
 		processes = new ArrayList<>();
 		for (ResourceProcessEngine wspec : processSpecs) {
-			processes.add(new ResourceProcess(wspec, building));
+//			processes.add(new ResourceProcess(wspec, building));
+			// Add tracking this resource process in settlement
+			if (type == FunctionType.RESOURCE_PROCESSING)
+				building.getSettlement().addResourceProcess(wspec);
+			else 
+				building.getSettlement().addWasteProcess(wspec);
 		}
 	}
-
+	
 	/**
 	 * Gets the value of the function for a list of ProcessSpecs running at a particular Settlement
 	 * 
@@ -151,27 +155,27 @@ public abstract class ResourceProcessor extends Function {
 	public boolean timePassing(ClockPulse pulse) {
 		boolean valid = isValid(pulse);
 		
-		double cumulativeMillisols = masterClock.getMarsTime().getLandingMillisols();
-		
-		if (valid) {
-			double productionLevel = 0D;
-			
-			PowerMode mode = getBuilding().getPowerMonitor().getPowerMode();
-			
-			if (mode == PowerMode.FULL_POWER)
-				productionLevel = 1D;
-			else if (mode == PowerMode.LOW_POWER) {
-				// Note: For now, low power mode will reduce the processing capability by 50%
-				productionLevel = .5; //lowPowerProcessingLevel;
-			}
-			
-			if (mode != PowerMode.NO_POWER) {
-			// Run each resource process.
-				for (ResourceProcess p : processes) {
-					p.processResources(pulse, productionLevel, cumulativeMillisols);
-				}
-			}
-		}
+//		double cumulativeMillisols = pulse.getMarsTime().getLandingMillisols();
+//		
+//		if (valid) {
+//			double productionLevel = 0D;
+//			
+//			PowerMode mode = getBuilding().getPowerMonitor().getPowerMode();
+//			
+//			if (mode == PowerMode.FULL_POWER)
+//				productionLevel = 1D;
+//			else if (mode == PowerMode.LOW_POWER) {
+//				// Note: For now, low power mode will reduce the processing capability by 50%
+//				productionLevel = lowPowerProcessingLevel;
+//			}
+//			
+//			if (mode != PowerMode.NO_POWER) {
+//			// Run each resource process.
+//				for (ResourceProcess p : processes) {
+//					p.processResources(pulse, productionLevel, cumulativeMillisols);
+//				}
+//			}
+//		}
 		return valid;
 	}
 

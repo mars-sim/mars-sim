@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @date 2026-07-26
+ * @date 2026-09-27
  * @author Scott Davis
  */
 package com.mars_sim.core.resourceprocess.task;
@@ -10,12 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.ResourceProcessor;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -60,22 +56,22 @@ public class ToggleResourceProcess extends Task {
 
 	/** The resource process to be toggled. */
 	private ResourceProcess process;
-	/** The building the resource process is in. */
-	private Building resourceProcessBuilding;
+	/** The settlement the resource process is in. */
+	private Settlement settlement;
 
 	/**
 	 * Turns a process off.
 	 *
 	 * @param worker the worker performing the task.
 	 */
-	public ToggleResourceProcess(Worker worker, Building processBuilding, ResourceProcess process) {
+	public ToggleResourceProcess(Worker worker, Settlement settlement, ResourceProcess process) {
 		super(NAME, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 20D);
 		if (!worker.isInSettlement()) {
 			clearTask("Not in Settlement.");
 			return;
 		}
 
-		this.resourceProcessBuilding = processBuilding;
+		this.settlement = settlement;
 		this.process = process;
 		
 		prepResourceProcess();
@@ -101,18 +97,22 @@ public class ToggleResourceProcess extends Task {
 		prepResourceProcess();
 	}
 
-	private static record PotentialProcess(Building building, ResourceProcess process) {}
+	private static record PotentialProcess(Settlement settlement, ResourceProcess process) {}
 	
 	/**
-	 * Creates a potential record if the processor can start the selected processSpec
+	 * Creates a potential record if the processor can start the selected processSpec.
+	 * 
+	 * @param p
+	 * @param processSpec
+	 * @param settlement
+	 * @return
 	 */
-	private static PotentialProcess createPotential(ResourceProcessor processor,
-			ResourceProcessSpec processSpec) {
-		for (var p : processor.getProcesses()) {
-			if (p.getSpec().equals(processSpec) && p.canToggle()
-				&& !p.isWorkerAssigned() && !p.isProcessRunning()) {
-				return new PotentialProcess(processor.getBuilding(), p);
-			}
+	private static PotentialProcess createPotential(ResourceProcess p, ResourceProcessSpec processSpec, Settlement settlement) {
+		if (p.getSpec().equals(processSpec) 
+				&& p.canToggle()
+				&& !p.isWorkerAssigned() 
+				&& !p.isProcessRunning()) {
+			return new PotentialProcess(settlement, p);
 		}
 		return null;
 	}
@@ -127,12 +127,24 @@ public class ToggleResourceProcess extends Task {
 	private boolean selectResourceProcess(Settlement s, boolean useWaste, ResourceProcessSpec processSpec) {
 		
 		// Create a set of potential processes to toggle on
-		List<PotentialProcess> potentials = s.getBuildingManager().getBuildingSet((useWaste ? FunctionType.WASTE_PROCESSING
-									: FunctionType.RESOURCE_PROCESSING)).stream()
-					.map(b -> (useWaste ? b.getWasteProcessing() : b.getResourceProcessing()))
-					.map(rp -> createPotential(rp, processSpec))
+//		List<PotentialProcess> potentials = s.getBuildingManager().getBuildingSet((useWaste ? FunctionType.WASTE_PROCESSING
+//									: FunctionType.RESOURCE_PROCESSING)).stream()
+//					.map(b -> (useWaste ? b.getWasteProcessing() : b.getResourceProcessing()))
+//					.map(rp -> createPotential(rp, processSpec))
+//					.filter(Objects::nonNull)
+//					.toList();
+		
+		// Create a set of potential processes to toggle on
+		List<PotentialProcess> potentials = s.getResourceProcesses().stream()
+					.map(rp -> createPotential(rp, processSpec, settlement))
 					.filter(Objects::nonNull)
 					.toList();
+		
+//		List<PotentialProcess> potentials = new ArrayList<>();
+//		for (ResourceProcess rp: s.getResourceProcesses()) {
+//			PotentialProcess pp = createPotential(rp, processSpec, settlement);
+//			potentials.add(pp);
+//		}
 		
 		Map<PotentialProcess, Double> scoreMap = new HashMap<>();
 				
@@ -147,7 +159,7 @@ public class ToggleResourceProcess extends Task {
 			return false;
 		}
 		this.process = selected.process;
-		this.resourceProcessBuilding = selected.building;
+		this.settlement = selected.settlement;
 
 		return true;
 	}
@@ -164,14 +176,14 @@ public class ToggleResourceProcess extends Task {
 		if (process.isProcessRunning()) {
 			setName(TOGGLE_OFF);
 			setDescription(TOGGLE_OFF);
-			logger.fine(resourceProcessBuilding, process + " : " + worker + " made an attempt to toggle it off.");
+			logger.fine(settlement, process + " : " + worker + " made an attempt to toggle it off.");
 		} else {
 			setDescription(TOGGLE_ON);
-			logger.fine(resourceProcessBuilding, process + " : " + worker + " made an attempt to toggle it on.");
+			logger.fine(settlement, process + " : " + worker + " made an attempt to toggle it on.");
 		}
 
-		if (worker.getUnitType() == UnitType.PERSON)
-			checkIn();
+//		if (worker.getUnitType() == UnitType.PERSON)
+//			checkIn();
 		// Note: For robots, they do need to walk back and forth for a work place
 		// and can connect to a resource panel and access control remotely
 		
@@ -229,10 +241,10 @@ public class ToggleResourceProcess extends Task {
 		}
 
 		// Check if an accident happens during the manual toggling.
-		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
-			checkForAccident(resourceProcessBuilding, time, 0.002);
-		}
-
+//		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
+//			checkForAccident(resourceProcessBuilding, time, 0.002);
+//		}	
+		
 		return 0;
 	}
 
@@ -245,13 +257,13 @@ public class ToggleResourceProcess extends Task {
 	protected double finishedPhase(double time) {
 
 		if (!isFinished) {			
-			// COmplete toggling with stop the process automatically
+			// Print logs 
 			String toggle = (process.isProcessRunning() ? ON : OFF);
-			if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
-				logger.info(resourceProcessBuilding, process 
-						+ ". Just toggled it " + toggle + " manually by " + worker + ".");
-			else
-				logger.info(resourceProcessBuilding, process
+//			if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
+//				logger.info(resourceProcessBuilding, process 
+//						+ ". Just toggled it " + toggle + " manually by " + worker + ".");
+//			else
+				logger.info(settlement, process
 						+ ". Just toggled it " + toggle + " remotely by " + worker + ".");
 
 			// Only need to run the finished phase once and for all
@@ -263,109 +275,116 @@ public class ToggleResourceProcess extends Task {
 		return 0D;
 	}
 
-	/**
-	 * Walks to a local activity spot of interest.
-	 * 
-	 * @return
-	 */
-	private boolean walkToLocalSpot() {
-		boolean done = false;
-		
-		done = walkToActivitySpotInBuilding(resourceProcessBuilding,
-				FunctionType.RESOURCE_PROCESSING, false);
-		if (!done) {
-			done = walkToActivitySpotInBuilding(resourceProcessBuilding,
-					FunctionType.WASTE_PROCESSING, false);
-		}
-		if (!done) {
-			done = walkToActivitySpotInBuilding(resourceProcessBuilding,
-					FunctionType.MANAGEMENT, false);
-		}
-		if (!done) {
-			done = walkToActivitySpotInBuilding(resourceProcessBuilding,
-					FunctionType.ADMINISTRATION, false);
-		}
-		
-		return done;
-	}
-	
-	/**
-	 * Walks to another building.
-	 * 
-	 * @param functionType
-	 * @return
-	 */
-	private boolean walkOtherBuildings(FunctionType functionType) {
-		boolean done = false;
-
-		// Pick an RESOURCE_PROCESSING building for remote access to the resource building
-		Set<Building> buildingSet = worker.getSettlement().getBuildingManager()
-				.getBuildingSet(functionType);
-
-		if (!buildingSet.isEmpty()) {
-
-			for (Building b : buildingSet) {
-				if (!b.equals(resourceProcessBuilding)
-						&& b.hasFunction(functionType)) {
-					done = walkToActivitySpotInBuilding(b,
-							functionType, false);
-					if (done)
-						return true;
-				}
-			}
-		}
-		
-		return done;
-	}
-	
-	/**
-	 * Checks in an activity spot.
-	 */
-	private void checkIn() {
-		boolean done = false;
-		
-		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
-			// First, stick with resourceProcessBuilding and find a local empty spot
-			done = walkToLocalSpot();	
-			
-			if (!done) {
-				// Next, go to any instrument panel for accessing it remotely
-				operateRemotely();
-			}
-		}
-		else {
-			//Go to any instrument panel for accessing it remotely
-			operateRemotely();
-		}
-	}
-	
-	/**
-	 * Operates the resource processing panel remotely.
-	 */
-	private void operateRemotely() {
-		boolean done = false;
-		
-		if (!done) {			
-			done = walkOtherBuildings(FunctionType.RESOURCE_PROCESSING);
-		}
-		
-		if (!done) {
-			done = walkOtherBuildings(FunctionType.WASTE_PROCESSING);
-		}
-		
-		if (!done) {			
-			done = walkOtherBuildings(FunctionType.MANAGEMENT);
-		}
-		
-		if (!done) {
-			done = walkOtherBuildings(FunctionType.ADMINISTRATION);
-		}		
-		
+//	/**
+//	 * Walks to a local activity spot of interest.
+//	 * 
+//	 * @return
+//	 */
+//	private boolean walkToLocalSpot() {
+//		boolean done = false;
+//		
+//		done = walkToActivitySpotInBuilding(resourceProcessBuilding,
+//				FunctionType.RESOURCE_PROCESSING, false);
 //		if (!done) {
-//			clearTask(process.getProcessName() + ". No workspace available.");
+//			done = walkToActivitySpotInBuilding(resourceProcessBuilding,
+//					FunctionType.WASTE_PROCESSING, false);
 //		}
-	}
+//		if (!done) {
+//			done = walkToActivitySpotInBuilding(resourceProcessBuilding,
+//					FunctionType.MANAGEMENT, false);
+//		}
+//		if (!done) {
+//			done = walkToActivitySpotInBuilding(resourceProcessBuilding,
+//					FunctionType.ADMINISTRATION, false);
+//		}
+//		
+//		return done;
+//	}
 	
+//	/**
+//	 * Walks to another building.
+//	 * 
+//	 * @param functionType
+//	 * @return
+//	 */
+//	private boolean walkOtherBuildings(FunctionType functionType) {
+//		boolean done = false;
+//
+//		// Pick an RESOURCE_PROCESSING building for remote access to the resource building
+//		Set<Building> buildingSet = worker.getSettlement().getBuildingManager()
+//				.getBuildingSet(functionType);
+//
+//		if (!buildingSet.isEmpty()) {
+//
+//			for (Building b : buildingSet) {
+//				if (!b.equals(resourceProcessBuilding)
+//						&& b.hasFunction(functionType)) {
+//					done = walkToActivitySpotInBuilding(b,
+//							functionType, false);
+//					if (done)
+//						return true;
+//				}
+//			}
+//		}
+//		
+//		return done;
+//	}
+	
+//	/**
+//	 * Checks in an activity spot.
+//	 */
+//	private void checkIn() {
+//		boolean done = false;
+//		
+//		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
+//			// First, stick with resourceProcessBuilding and find a local empty spot
+//			done = walkToLocalSpot();	
+//			
+//			if (!done) {
+//				// Next, go to any instrument panel for accessing it remotely
+//				operateRemotely();
+//			}
+//		}
+//		else {
+//			//Go to any instrument panel for accessing it remotely
+//			operateRemotely();
+//		}
+//	}
+	
+//	/**
+//	 * Operates the resource processing panel remotely.
+//	 */
+//	private void operateRemotely() {
+//		boolean done = false;
+//		
+//		if (!done) {			
+//			done = walkOtherBuildings(FunctionType.RESOURCE_PROCESSING);
+//		}
+//		
+//		if (!done) {
+//			done = walkOtherBuildings(FunctionType.WASTE_PROCESSING);
+//		}
+//		
+//		if (!done) {			
+//			done = walkOtherBuildings(FunctionType.MANAGEMENT);
+//		}
+//		
+//		if (!done) {
+//			done = walkOtherBuildings(FunctionType.ADMINISTRATION);
+//		}		
+//		
+////		if (!done) {
+////			clearTask(process.getProcessName() + ". No workspace available.");
+////		}
+//	}
+
+	ResourceProcess getResourceProcess() {
+		return process;
+	}
+
+//	Building getBuilding() {
+//		return resourceProcessBuilding;
+//	}
 	
 	/**
 	 * This method is part of the Task Life Cycle. It is called once
@@ -378,13 +397,5 @@ public class ToggleResourceProcess extends Task {
 			process.setWorkerAssigned(false);
 		}
 		super.clearDown();
-	}
-
-	ResourceProcess getResourceProcess() {
-		return process;
-	}
-
-	Building getBuilding() {
-		return resourceProcessBuilding;
 	}
 }

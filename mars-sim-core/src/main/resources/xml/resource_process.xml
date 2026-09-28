@@ -2055,14 +2055,14 @@
 	</process>
 
 	<process name="Soil Generation from Compost" kW-required=".01" >
-		<input resource="compost" rate="100" />
-		<output resource="soil" rate="100" />					
+		<input resource="compost" rate="10" />
+		<output resource="soil" rate="10" />					
 	</process>
 	
 	<process name="Soil Generation from Crop Waste" kW-required=".01" >	
-		<input resource="crop waste" rate="100" />
-		<output resource="soil" rate="20" />	
-		<output resource="carbon" rate="80" />				
+		<input resource="crop waste" rate="10" />
+		<output resource="soil" rate="2" />	
+		<output resource="carbon" rate="8" />				
 	</process>
 	
 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ResourceProcessSpec.java
- * @date 2021-08-20
+ * @date 2026-09-27
  * @author Barry Evans
  */
 package com.mars_sim.core.resourceprocess;
@@ -25,9 +25,15 @@ public class ResourceProcessSpec implements Serializable{
 	private static final double MIN_PERC = 0.25;
 
 	private boolean defaultOn;
-	private String name;
+	/** How long does it take to complete the process */
+	private int processTime = 750;
+	/** The work time required to toggle this process on or off. */
+	private int workTime = 10;
+	
 	private double kWRequired;
 
+	private String name;
+	
 	private Map<Integer, Double> baseInputRates;
 	private Map<Integer, Double> baseOutputRates;
 	private Map<Integer, Double> minimumInputs;
@@ -36,12 +42,6 @@ public class ResourceProcessSpec implements Serializable{
 	private Set<Integer> ambientResources;
 	private Set<Integer> wasteResources;
 	private Set<Integer> coreResources;
-
-	/** How long does it take to complete the process */
-	private int processTime = 750;
-
-	/** The work time required to toggle this process on or off. */
-	private int workTime = 10;
 
 	/**
 	 * Constructor.

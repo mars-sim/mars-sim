@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelResourceProcesses.java
- * @date 2022-09-25
+ * @date 2026-09-27
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure;
@@ -13,9 +13,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -81,22 +79,28 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 	protected void buildUI(JPanel content) {
 		var settlement = getEntity();
 			
-		double sum = 0;
-		double size = 0;
-		BuildingManager mgr = settlement.getBuildingManager();
-		Map<Building, List<ResourceProcess>> processes = new HashMap<>();
-		for (Building building : mgr.getBuildings(FunctionType.RESOURCE_PROCESSING)) {
-			ResourceProcessing processing = building.getResourceProcessing();
-			size++;
-			sum += processing.getOverallPercentDuty();
-			processes.put(building, processing.getProcesses());
-		}
-		if (size == 0) 
-			size = 1;
-		double averagePercentDuty = sum / size;
+//		double sum = 0;
+//		double size = 0;
+//		BuildingManager mgr = settlement.getBuildingManager();
 		
+//		Map<Building, List<ResourceProcess>> processes = new HashMap<>();
+//		for (Building building : mgr.getBuildings(FunctionType.RESOURCE_PROCESSING)) {
+//			ResourceProcessing processing = building.getResourceProcessing();
+//			size++;
+//			sum += processing.getOverallPercentDuty();
+//			processes.put(building, processing.getProcesses());
+//		}
+//		if (size == 0) 
+//			size = 1;
+//		double averagePercentDuty = sum / size;
+		
+		
+		List<ResourceProcess> processes = settlement.getResourceProcesses();
+		double averagePercentDuty = 0;
+
 		// Prepare process list panel
-		processPanel = new ResourceProcessPanel(processes, getContext());
+		processPanel = new ResourceProcessPanel(settlement, processes, getContext());
+		
 		processPanel.setPreferredSize(new Dimension(160, 120));
 		content.add(processPanel, BorderLayout.CENTER);
 		

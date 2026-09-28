@@ -159,7 +159,7 @@ public class SalvageProcess extends WorkshopProcess {
 				}
 			}
 
-			settlement.recordProcess(getName(), "Salvage", building);
+			settlement.recordProcess(getName(), "Salvage", building.getName());
 		}
 
 		// Finish the salvage.

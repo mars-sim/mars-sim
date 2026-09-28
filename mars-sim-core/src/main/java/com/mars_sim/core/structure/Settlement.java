@@ -81,6 +81,8 @@ import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.process.CompletedProcess;
 import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resourceprocess.ResourceProcess;
+import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
@@ -350,6 +352,10 @@ public class Settlement extends Unit implements Temporal,
 	private Set<Person> deathRegistry;
 	/** The settlement's data collection site map. key = distance, value = site. */
 	private Map<Double, List<DataCollectionSite>> dataCollectionSiteMap;
+	/** The list of resource processes within the settlement. */
+	private List<ResourceProcess> resourceProcesses;
+	/** The list of waste processes within the settlement. */
+	private List<ResourceProcess> wasteProcesses;
 	
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(80);
@@ -395,6 +401,9 @@ public class Settlement extends Unit implements Temporal,
 		
 		dataCollectionSiteMap = new HashMap<>();
 		
+		resourceProcesses = new ArrayList<>();
+		wasteProcesses = new ArrayList<>();
+		
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
@@ -437,6 +446,9 @@ public class Settlement extends Unit implements Temporal,
 		indoorPeople = new CopyOnWriteArraySet<>();
 
 		dataCollectionSiteMap = new HashMap<>();
+		
+		resourceProcesses = new ArrayList<>();
+		wasteProcesses = new ArrayList<>();
 		
 		// Create equipment inventory
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
@@ -497,6 +509,9 @@ public class Settlement extends Unit implements Temporal,
 		dataCollectionSiteMap = new HashMap<>();
 		
 		allowTradeMissionSettlements = new HashMap<>();
+		
+		resourceProcesses = new ArrayList<>();
+		wasteProcesses = new ArrayList<>();
 		
 		logger.info(name + " (" + settlementCode + ")");
 		
@@ -661,6 +676,66 @@ public class Settlement extends Unit implements Temporal,
 		}
 	}
 
+	/**
+	 * Returns a list of resource processes.
+	 * 
+	 * @return
+	 */
+	public List<ResourceProcess> getResourceProcesses() {
+		return resourceProcesses;
+	}
+
+	/**
+	 * Adds a resource process to the list.
+	 * 
+	 * @param engine
+	 */
+	public void addResourceProcess(ResourceProcessEngine engine) {
+		
+		boolean found = false;
+		for (ResourceProcess rp: resourceProcesses) {
+			if (rp.getProcessName().equals(engine.getProcessSpec().getName())) {
+				rp.addMaxModules(engine.getMaxModules());
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found)  {
+			resourceProcesses.add(new ResourceProcess(engine, this));
+		}
+	}
+	
+	/**
+	 * Returns a list of waste processes.
+	 * 
+	 * @return
+	 */
+	public List<ResourceProcess> getWasteProcesses() {
+		return wasteProcesses;
+	}
+
+	/**
+	 * Adds a waste process to the list.
+	 * 
+	 * @param engine
+	 */
+	public void addWasteProcess(ResourceProcessEngine engine) {
+		
+		boolean found = false;
+		for (ResourceProcess rp: wasteProcesses) {
+			if (rp.getProcessName().equals(engine.getProcessSpec().getName())) {
+				rp.addMaxModules(engine.getMaxModules());
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found)  {
+			wasteProcesses.add(new ResourceProcess(engine, this));
+		}
+	}
+	
 	/**
 	 * Gets the fixed location of this Settlement.
 	 * 
@@ -1018,6 +1093,18 @@ public class Settlement extends Unit implements Temporal,
 		// Keeps track of things based on msol
 		trackByMSol(pulse);
 
+		double cumulativeMillisols = pulse.getMarsTime().getLandingMillisols();
+		
+		// Run each resource process.
+		for (ResourceProcess p : resourceProcesses) {
+			p.processResources(pulse, 1, cumulativeMillisols);
+		}
+
+		// Run each resource process.
+		for (ResourceProcess p : wasteProcesses) {
+			p.processResources(pulse, 1, cumulativeMillisols);
+		}
+		
 		return true;
 	}
 	
@@ -2881,10 +2968,10 @@ public class Settlement extends Unit implements Temporal,
 	 * Records a completed process.
 	 *
 	 * @param type Type of process
-	 * @param locn On what building it was completed
+	 * @param name
 	 */
-    public void recordProcess(String process, String type, Building locn) {
-        var ph = new CompletedProcess(process, type, locn.getName());
+    public void recordProcess(String process, String type, String name) {
+        var ph = new CompletedProcess(process, type, name);
 		processHistory.add(ph);
     }
 	

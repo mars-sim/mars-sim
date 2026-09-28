@@ -60,6 +60,6 @@ public class ManufactureProcess extends WorkshopProcess {
 		super.stopProcess(premature);
 		
 		// Record process finish
-		b.getAssociatedSettlement().recordProcess(getInfo().getName(), "Manufacture", b);
+		b.getAssociatedSettlement().recordProcess(getInfo().getName(), "Manufacture", b.getName());
     }
 }

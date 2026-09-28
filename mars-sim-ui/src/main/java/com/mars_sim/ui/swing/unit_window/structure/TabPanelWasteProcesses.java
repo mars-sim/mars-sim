@@ -9,17 +9,11 @@ package com.mars_sim.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.WasteProcessing;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
@@ -59,15 +53,14 @@ class TabPanelWasteProcesses extends EntityTabPanel<Settlement>
 	
 	@Override
 	protected void buildUI(JPanel content) {
-		BuildingManager mgr = getEntity().getBuildingManager();
-		Map<Building, List<ResourceProcess>> processes = new HashMap<>();
-		for (Building building : mgr.getBuildings(FunctionType.WASTE_PROCESSING)) {
-			WasteProcessing processing = building.getWasteProcessing();
-			processes.put(building, processing.getProcesses());
-		}
+		var settlement = getEntity();
+
+		List<ResourceProcess> processes = settlement.getWasteProcesses();
 
 		// Prepare process list panel.n
-		processPanel = new ResourceProcessPanel(processes, getContext());
+		processPanel = new ResourceProcessPanel(settlement, processes, getContext());
+
+		
 		processPanel.setPreferredSize(new Dimension(160, 120));
 		content.add(processPanel, BorderLayout.CENTER);
 
