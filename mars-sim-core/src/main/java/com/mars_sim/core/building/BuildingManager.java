@@ -147,6 +147,11 @@ public class BuildingManager implements Serializable {
 		this.settlementID = settlement.getIdentifier();
 		this.buildings = new UnitSet<>();
 		this.buildingTemplates = buildingTemplates;
+		
+		this.buildingValueMap = new HashMap<>();
+//		this.functionSetOfBuildings = new EnumMap<>(FunctionType.class);
+		this.buildingsOfFunctionTypeValues = new HashMap<>();
+//		this.adjacentBuildingMap = new HashMap<>();
 	}
 
 	/**
@@ -1870,7 +1875,9 @@ public class BuildingManager implements Serializable {
 		if (totalBuildingValues == 0D || (lastVPUpdateTime == null)
 				|| (now.getTimeDiff(lastVPUpdateTime) > BUILDING_VALUES_UPDATE)) {
 
-			buildingValueMap.clear();
+			if (buildingValueMap != null)
+				buildingValueMap.clear();
+			
 			lastVPUpdateTime = now;
 
 			computeAllFunctionTypeValues();
@@ -1946,8 +1953,16 @@ public class BuildingManager implements Serializable {
 			functionTypeValues.put(ft, value);
 		}
 
+		if (buildingsOfFunctionTypeValues == null) {
+			buildingsOfFunctionTypeValues = new HashMap<>();
+		}
+		
 		buildingsOfFunctionTypeValues.put(building, functionTypeValues);
 
+		if (buildingValueMap == null) {
+			buildingValueMap = new HashMap<>();
+		}
+		
 		buildingValueMap.put(building, totalValue);
 
 		return totalValue;

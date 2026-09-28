@@ -599,14 +599,14 @@ public class OrbitInfo implements Serializable, Temporal {
 		double angle = tanSDA * tanPhi;
 
 		if (0 - angle > 1) {
-			logger.info("At " + location + ", the sun will not rise. No daylight. Polar night.");
+			logger.info(null, 5_000, "At " + location + ", the sun will not rise. No daylight. Polar night.");
 			return -10;
 		}
 		else if ((0 - angle) == 1 || (0 - angle) == -1) {
-			logger.info("At " + location + ", the sun will be on the horizon for an instant only.");
+			logger.info(null, 5_000, "At " + location + ", the sun will be on the horizon for an instant only.");
 		}
 		else if (0 - angle < -1) {
-			logger.info("At " + location + ", the sun will not set. Daylight all day. Polar day.");
+			logger.info(null, 5_000, "At " + location + ", the sun will not set. Daylight all day. Polar day.");
 			return 10;
 		}
 		
@@ -634,15 +634,15 @@ public class OrbitInfo implements Serializable, Temporal {
 		
 		if (omega == -10) {
 			//  the sun will not rise. No daylight. Polar night.
-			logger.info("At " + location + ", the sun will not rise. No daylight. Polar night.");
+			logger.info(null, 5_000, "At " + location + ", the sun will not rise. No daylight. Polar night.");
 			return new double[] {-1, -1, 0};
 		}
 		else if (omega == 1 || omega == -1) {
-			logger.info("At " + location + ", the sun will be on the horizon for an instant only.");
+			logger.info(null, 5_000, "At " + location + ", the sun will be on the horizon for an instant only.");
 		}
 		else if (omega == 10) {
 			// the sun will not set. Daylight all day. Polar day.
-			logger.info("At " + location + ", the sun will not set. Daylight all day. Polar day.");
+			logger.info(null, 5_000, "At " + location + ", the sun will not set. Daylight all day. Polar day.");
 			return new double[] {-1, -1, 1000};
 		}
 	
