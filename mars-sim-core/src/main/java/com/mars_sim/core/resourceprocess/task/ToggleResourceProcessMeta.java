@@ -126,7 +126,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
-	private static final String TOGGLE_TIME = "toggleTime";
+//	private static final String TOGGLE_TIME = "toggleTime";
 	
 	private static final double MIN_SCORE = 0.05;
 	public static final double MAX_SCORE = 500;
@@ -218,7 +218,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		// Shuffle the list random to vary which process to pick first
 		Collections.shuffle(processes);
 	
-		int count = 0;
+//		int count = 0;
 	
 		for (ResourceProcess process : processes) {
 			// Avoid process that can't be toggled or no point toggling

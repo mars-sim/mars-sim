@@ -25,6 +25,15 @@
     <LI>The type and number of Robots is defined in the Supplies Manifest instead of explicitly in the ResupplyMission. This provides a consistent approach.</LI>
     <LI>Exploration missions rewritten to flow a Project approach.</LI>
     <LI>Complaints and Treatment are data driven.</LI>
+    <LI>Improve pulse generation and stabilize time ratio.</LI>
+	<LI>Allow tourists to be embedded and show up in settlements.</LI>	
+	<LI>Optimize methods to use settlement as a param in LocalAreaUtil.</LI>
+	<LI>Turn various methods in AmountResourceGood into mutable data members.</LI>
+	<LI>Allow emotional state to spread out over a wider range intead of converging at the states at the center of the matrix.</LI>
+	<LI>Add data gathering task to collect ground ice data.</LI>
+	<LI>Refactor resource processes in settlement-wide fashion and drastically lower CPU utilization.</LI>	
+	<LI>Add Hub Base 2 template.</LI>	
+	<LI>Allow drones to park indoor by default. Add parking space in Hab buildings to park drones other than garages.</LI>	
   </OL>
     
   <H4>B. UI IMPROVEMENT :</H4>
@@ -45,6 +54,9 @@
     <LI>Fix race condition when EntityPanel can fail if an EntityEvent is delivered during the construction.</LI>
     <li>Prevent exception in monitor window when Backlog lists are updated frequently at high time ratio.</li>
     <LI>UI Window preferences are saved for closed windows.</LI>
+	<LI>Correct building placements in settlement xml templates.</LI>
+	<LI>Fix starting construction missions and allow construct tasks to execute.</LI>
+	<LI>Fix NPE when calling endMission during missions.</LI>
   </OL>
 <br>
 
