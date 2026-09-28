@@ -65,7 +65,7 @@ public class ResourceProcessPanel extends JPanel {
  	private static final String EM_SPACE = "&emsp;"; // typically twice as wide as EN_SPACE or four times as wide as NON_BREAKING_SPACE
  	private static final String TWO_EM_SPACE = EM_SPACE + EM_SPACE;
  	private static final String TWO_EN_SPACE = EN_SPACE + EN_SPACE;
-	private static final String TABS = TWO_EM_SPACE + TWO_EM_SPACE + TWO_EM_SPACE + TWO_EN_SPACE + EN_SPACE; 
+	private static final String TABS = TWO_EN_SPACE + TWO_EM_SPACE + TWO_EM_SPACE + TWO_EN_SPACE; 
 	
 	private static final String PROCESS = TWO_EM_SPACE + NON_BREAKING_SPACE + "Process:" + EM_SPACE;
 //	private static final String BUILDING_HEADER = TWO_EM_SPACE + NON_BREAKING_SPACE + "Building:" + EM_SPACE;
@@ -145,7 +145,6 @@ public class ResourceProcessPanel extends JPanel {
         columnModel.getColumn(ResourceProcessTableModel.RUNNING_STATE).setCellRenderer(new RunningCellRenderer());
         columnModel.getColumn(ResourceProcessTableModel.RUNNING_STATE).setCellEditor(new RunningCellEditor());
         columnModel.getColumn(ResourceProcessTableModel.RUNNING_STATE).setPreferredWidth(15);
-        columnModel.getColumn(ResourceProcessTableModel.NUM_MODULE).setPreferredWidth(90);
 
         // Initialize with min 1, max 100, step 1
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(1, 1, 200, 1);
@@ -191,6 +190,7 @@ public class ResourceProcessPanel extends JPanel {
         // Center the component in this column
         pTable.getColumnModel().getColumn(ResourceProcessTableModel.NUM_MODULE).setCellRenderer(centerRenderer);
         columnModel.getColumn(ResourceProcessTableModel.NUM_MODULE).setPreferredWidth(25);
+
      // Center the component in this column
         pTable.getColumnModel().getColumn(ResourceProcessTableModel.MAX_MODULE).setCellRenderer(centerRenderer);
         columnModel.getColumn(ResourceProcessTableModel.MAX_MODULE).setPreferredWidth(25); 
@@ -225,10 +225,9 @@ public class ResourceProcessPanel extends JPanel {
     	int numRow = resourceProcessTableModel.getRowCount();
     	for (int i=0; i< numRow; i++) {	
     		resourceProcessTableModel.fireTableCellUpdated(i, ResourceProcessTableModel.RUNNING_STATE);
-//    		resourceProcessTableModel.fireTableCellUpdated(i, 1);
+    		
     		resourceProcessTableModel.fireTableCellUpdated(i, ResourceProcessTableModel.NUM_MODULE);
-//    		resourceProcessTableModel.fireTableCellUpdated(i, 3);
-//    		resourceProcessTableModel.fireTableCellUpdated(i, 4);
+
     		resourceProcessTableModel.fireTableCellUpdated(i, ResourceProcessTableModel.DUTY_PERCENT);
     		resourceProcessTableModel.fireTableCellUpdated(i, ResourceProcessTableModel.INPUT_SCORE);
     		resourceProcessTableModel.fireTableCellUpdated(i, ResourceProcessTableModel.OUTPUT_SCORE);
@@ -357,12 +356,12 @@ public class ResourceProcessPanel extends JPanel {
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             ResourceProcess p = processes.get(rowIndex);
             
-            if (columnIndex == 0) {
+            if (columnIndex == RUNNING_STATE) {
 	            ProcessState s = (ProcessState) aValue;
 	            p.setProcessState(s);
             }
             
-            else if (columnIndex == 2) {
+            else if (columnIndex == NUM_MODULE) {
             	int newModules = (Integer) aValue;
             	p.setModules(newModules); 
             }
@@ -590,6 +589,7 @@ public class ResourceProcessPanel extends JPanel {
         	ResourceProcess rp = getProcess(row);
         	int maxModules = rp.getMaxModules();
         	int modules = (Integer) value;
+        	
         	logger.info("Selecting '" + rp + "': " + modules + " modules activated ( " + maxModules + " max)");
         	
             spinnerModel = new SpinnerNumberModel(modules, 1, maxModules, 1);
@@ -614,9 +614,7 @@ public class ResourceProcessPanel extends JPanel {
         	int modelIndex = pTable.convertRowIndexToModel(rowIndex);
 
         	// Now safely access the underlying data
-        	ResourceProcess value = (ResourceProcess)pTable.getModel().getValueAt(modelIndex, ResourceProcessTableModel.PROCESS_NAME);  
-        	
-        	return value;
+        	return (ResourceProcess)pTable.getModel().getValueAt(modelIndex, ResourceProcessTableModel.PROCESS_NAME);  
         }
     }
 	

@@ -209,7 +209,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		
 	
 		List<ResourceProcess> processes = null;
-		if (isWaste) {
+		if (!isWaste) {
 			processes = settlement.getResourceProcesses();
 		}
 		else
@@ -219,9 +219,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		Collections.shuffle(processes);
 	
 		int count = 0;
-
-		Collections.shuffle(processes);
-		
+	
 		for (ResourceProcess process : processes) {
 			// Avoid process that can't be toggled or no point toggling
 			if (process.canToggle() && !process.isWorkerAssigned()) {
@@ -329,10 +327,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// Compute the output score		
 				double outputValue = MathUtils.between(computeResourcesValue(settlement, spec, modules, false), MIN_SCORE, MAX_SCORE);
 						
-				a = new ResourceProcessAssessment(inputValue, outputValue,
-								MathUtils.between(outputValue/inputValue, MIN_SCORE, 2 * MAX_SCORE), 
-								true);
-				score = new RatingScore("inputs", 1/inputValue);
+				double overallValue = MathUtils.between(outputValue/inputValue, MIN_SCORE, 2 * MAX_SCORE);
+				a = new ResourceProcessAssessment(inputValue, outputValue, overallValue, true);
+				score = new RatingScore("inputs", 1D / inputValue);
 				score.addModifier("outputs", outputValue); //'.addBase("inputs", -inputValue);
 			}
 
