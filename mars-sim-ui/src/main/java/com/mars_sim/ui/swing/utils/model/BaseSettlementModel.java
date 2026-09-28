@@ -71,18 +71,18 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
      * @param resources Resource IDs to add
      */
     protected void addResourceColumns(List<Integer> resources) {
-        addResourceColumns(resources, false);
+        addResourceColumns(resources, ColumnSpec.STYLE_INTEGER);
     }
 
     /**
      * Add resource columns to the model. The resource columns are created for the specified list of resource IDs.
      * @param resources Resource IDs to add
-     * @param showTrend If true the columns also show whether each amount is increasing or decreasing
+     * @param style Column style; a trend style also shows whether each amount is increasing or decreasing
      */
-    protected void addResourceColumns(List<Integer> resources, boolean showTrend) {
-        addColumns(InventoryColumnHelper.getResourceColumn(resources, showTrend));
+    protected void addResourceColumns(List<Integer> resources, int style) {
+        addColumns(InventoryColumnHelper.getResourceColumn(resources, style));
         this.resources.addAll(resources);
-        if (showTrend && trends == null) {
+        if (InventoryColumnHelper.isTrendStyle(style) && trends == null) {
             trends = new ResourceTrendTracker<>();
         }
     }

@@ -52,9 +52,11 @@ public class TrendCellRenderer extends NumberCellRenderer {
 		// Reset the foreground so the parent picks the table default for this cell
 		setForeground(null);
 
-		JLabel cell = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		// Format the number held in the TrendValue
+		Object amount = (value instanceof TrendValue tv) ? tv.value() : value;
+		JLabel cell = (JLabel) super.getTableCellRendererComponent(table, amount, isSelected, hasFocus, row, column);
 
-		Trend trend = (value instanceof TrendValue tv) ? tv.getTrend() : Trend.SAME;
+		Trend trend = (value instanceof TrendValue tv) ? tv.trend() : Trend.SAME;
 		switch (trend) {
 			case UP -> {
 				cell.setIcon(UP_ICON);

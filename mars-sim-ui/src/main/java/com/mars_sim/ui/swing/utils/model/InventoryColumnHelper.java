@@ -44,18 +44,17 @@ public class InventoryColumnHelper {
      * @return Array of EntityColumnSpec covering the resource columns.  
      */
     static EntityColumnSpec[] getResourceColumn(List<Integer> resources) {
-        return getResourceColumn(resources, false);
+        return getResourceColumn(resources, ColumnSpec.STYLE_INTEGER);
     }
 
     /**
      * Create an array of EntityColumnSpec for the specified Resources.
      * @param resources Set of resource IDs to create columns for.
-     * @param showTrend If true the columns hold a TrendValue and render the direction of change.
+     * @param style Column style; a trend style makes the columns hold a TrendValue.
      * @return Array of EntityColumnSpec covering the resource columns.
      */
-    static EntityColumnSpec[] getResourceColumn(List<Integer> resources, boolean showTrend) {
-        Class<?> type = (showTrend ? TrendValue.class : Double.class);
-        int style = (showTrend ? ColumnSpec.STYLE_TREND_INTEGER : ColumnSpec.STYLE_INTEGER);
+    static EntityColumnSpec[] getResourceColumn(List<Integer> resources, int style) {
+        Class<?> type = (isTrendStyle(style) ? TrendValue.class : Double.class);
         EntityColumnSpec[] resourceColumns = new EntityColumnSpec[resources.size()];
     
         // Then add the resource columns with the pseudo event type for each resource
@@ -91,6 +90,15 @@ public class InventoryColumnHelper {
             return null;
         }
         return new EntityEvent(event.getSource(), pseudoEventType, event.getTarget());
+    }
+
+    /**
+     * Does the column style show the direction of change of the value?
+     * @param style Column style.
+     * @return true if a trend style.
+     */
+    static boolean isTrendStyle(int style) {
+        return style == ColumnSpec.STYLE_TREND_INTEGER;
     }
 
     /**
