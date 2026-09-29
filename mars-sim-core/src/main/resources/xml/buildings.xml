@@ -4681,10 +4681,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<life-support capacity="12" />
-			<living-accommodation capacity="2" guesthouse="true">
+			<living-accommodation capacity="4" guesthouse="true">
 				<activity>
-					<activity-spot xloc="1.35" yloc="-1.35" />
-					<activity-spot xloc="-1.35" yloc="-1.35" />
+					<activity-spot xloc="1.60" yloc="-1.45" />
+					<activity-spot xloc="1.15" yloc="-1.45" />
+					<activity-spot xloc="-1.15" yloc="-1.45" />
+					<activity-spot xloc="-1.60" yloc="-1.45" />
 				</activity>
 			</living-accommodation>
 			<power-generation>
@@ -4695,8 +4697,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="1.6" yloc="-1.6" />
-					<activity-spot xloc="-1.6" yloc="-1.6" />
+					<activity-spot xloc="0" yloc="2.0" />
+					<activity-spot xloc="0" yloc="-2.0" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="5000"/>
@@ -4710,6 +4712,60 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Bunkhouse -->
 
+	<building type="Dining Hall" width="5.0" length="5.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="1500">
+		<description> The Dining Hall is a small brick dining facility for an outpost
+		</description>
+		<base-power power-priority="1" base-full-power=".3" base-low-power="0.03" />
+
+		<functions>
+			<cooking capacity="2">
+				<activity>
+					<activity-spot xloc="-0.3" yloc="1.7" />
+					<activity-spot xloc="-0.5" yloc="1.7" />
+				</activity>
+			</cooking>
+			<dining capacity="6">
+				<activity>
+					<activity-spot xloc="1.5" yloc="2" />
+					<activity-spot xloc="0" yloc="2" />
+					<activity-spot xloc="-1.5" yloc="2" />
+					
+					<activity-spot xloc="1.5" yloc="0" />
+					<activity-spot xloc="0" yloc="0" />
+					<activity-spot xloc="-1.5" yloc="0" />
+				</activity>
+			</dining>
+			<life-support capacity="2" >
+				<activity>
+					<activity-spot xloc="-2.0" yloc="1.0" />
+					<activity-spot xloc="2.0" yloc="1.0" />
+				</activity>
+			</life-support> 
+			<power-generation>
+				<power-source type="Solar Power Source" power="2.0" />
+				<power-source type="Fuel Power Source" toggle="false" power="3.0"
+				    fuel-type="methane"	/>
+			</power-generation>
+			<power-storage capacity="10" discharge-rate="1.25"/>
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="-0.5" yloc="0.5" />
+					<activity-spot xloc="0.5" yloc="-0.5" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="5000">
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="5.0" />
+				<heat-source type="Electric Heating" capacity="15.0" />
+			</thermal-generation>
+
+		</functions>
+	</building>
+	<!-- end of Dining Hall -->
+
 	<building type="Storage Shed" width="5.0" length="5.0" north-south-alignment="length" 
 			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="1500">
@@ -4719,7 +4775,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<base-power power-priority="1" base-full-power=".3" base-low-power="0.03" />
 
 		<functions>
-			<life-support capacity="8" />
+			<life-support capacity="8" >
+				<activity>
+					<activity-spot xloc="-2.0" yloc="2.0" />
+					<activity-spot xloc="2.0" yloc="-2.0" />
+					<activity-spot xloc="2.0" yloc="2.0" />
+					<activity-spot xloc="-2.0" yloc="-2.0" />
+					<activity-spot xloc="-1.5" yloc="0.0" />
+					<activity-spot xloc="1.5" yloc="0.0" />
+					<activity-spot xloc="0.0" yloc="-1.5" />
+					<activity-spot xloc="0.0" yloc="1.5" />
+				</activity>
+			</life-support> 
 			<power-generation>
 				<power-source type="Solar Power Source" power="2.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="3.0"

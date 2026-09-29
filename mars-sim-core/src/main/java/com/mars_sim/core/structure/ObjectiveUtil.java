@@ -20,7 +20,8 @@ public final  class ObjectiveUtil {
     private ObjectiveUtil() {}
 
     /**
-     * What is the best Commerce type for this Objective
+     * Determines the best Commerce type for this Objective.
+     * 
      * @param oType
      * @return
      */
@@ -40,7 +41,8 @@ public final  class ObjectiveUtil {
     
 	/**
 	 * Gets the building type related to the settlement objective.
-	 * @param oType Objective beign checked
+	 * 
+	 * @param oType Objective being checked
 	 * @return
 	 */
 	public static String getBuildingType(ObjectiveType oType) {

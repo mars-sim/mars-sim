@@ -139,7 +139,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         assertFalse(t.isDone(), "EatDrink task not complete");
 
         executeTask(p, t, 1000);
-        assertTrue(t.isDone(), "Eatdrnk completed");
+        assertTrue(t.isDone(), "Eatdrink completed");
         assertFalse(pc.isHungry(), "Person is not hungry");
         assertTrue(rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID) < INITIAL_RESOURCE, "Food consumed");
     }
