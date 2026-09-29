@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="scenario.xsd"
-  name="Two Settlements" description="Two Settlements">
+  name="Two Settlements" description="Two Settlements Scenario">
   
   <initial-settlement-list>
     

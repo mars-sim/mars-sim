@@ -254,6 +254,13 @@ public class StartUpChooser extends JDialog {
     	currentButtonFocus.requestFocusInWindow();
     }
     
+    /**
+     * Adds a button option.
+     * 
+     * @param panel
+     * @param labelKey
+     * @param action
+     */
     private void addStartButton(JPanel panel, String labelKey, ActionListener action) {
         JButton button = new JButton(WHITESPACE + Msg.getString("StartUpChooser." + labelKey) + WHITESPACE);
         buttonList.add(button);
@@ -305,6 +312,9 @@ public class StartUpChooser extends JDialog {
     	button.getActionMap().put("pressed", button.getAction());
     }
 
+    /**
+     * Selects a template.
+     */
     private void selectTemplate() {
         var content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
@@ -320,6 +330,9 @@ public class StartUpChooser extends JDialog {
         }
     }
 
+    /**
+     * Selects a scenario.
+     */
     private void selectScenario() {
         var content = SelectionDialog.createComboPane(scenarioLabel, 
         		scenarioConfig.getKnownItems(), s -> selectedScenario = s);
@@ -342,6 +355,11 @@ public class StartUpChooser extends JDialog {
 		}
 	}
 
+	/**
+	 * Makes a choice.
+	 * 
+	 * @param choice
+	 */
     private synchronized void choiceMade(int choice) {
         selected = choice;
         dispose();
@@ -350,6 +368,7 @@ public class StartUpChooser extends JDialog {
 
     /**
      * Gets the choice made by the user. This method blocks until a choice is made.
+     * 
      * @return The choice made by the user.
      */
     public synchronized int getChoice() {
@@ -365,6 +384,7 @@ public class StartUpChooser extends JDialog {
 
     /**
      * Gets the selected file if the user chose to load a simulation.
+     * 
      * @return Path to the selected file to load; may be null if default is to be used.
      */
     public String getSelectedFile() {
@@ -372,7 +392,8 @@ public class StartUpChooser extends JDialog {
     }
 
     /**
-     * Return the selected Scenario if the user chose to load a scenario.
+     * Returns the selected Scenario if the user chose to load a scenario.
+     * 
      * @return Scenario selected.
      */
     public Scenario getScenario() {
@@ -380,7 +401,8 @@ public class StartUpChooser extends JDialog {
     }
 
     /**
-     * Return the selected Template if the user chose to load a settlement template.
+     * Returns the selected Template if the user chose to load a settlement template.
+     * 
      * @return Template selected.
      */
     public SettlementTemplate getTemplate() {
@@ -388,7 +410,8 @@ public class StartUpChooser extends JDialog {
     }
 
     /**
-     * Return the selected Authority if the user chose to load a settlement template.
+     * Returns the selected Authority if the user chose to load a settlement template.
+     * 
      * This may be null if the default authority is to be used.
      * @return Authority selected; may be null.
      */

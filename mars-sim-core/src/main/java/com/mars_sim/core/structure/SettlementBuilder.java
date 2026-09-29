@@ -98,7 +98,7 @@ public final class SettlementBuilder {
 	 * Creates all the initial Settlements.
 	 */
 	public void createInitialSettlements(Scenario bootstrap) {
-		logger.config(bootstrap.getName() + " scenario loading...");
+		logger.config("Loading scenario '" + bootstrap.getName() + "'.");
 		for (InitialSettlement spec : bootstrap.getSettlements()) {
 			createFullSettlement(spec);
 		}
@@ -122,7 +122,7 @@ public final class SettlementBuilder {
 	 */
 	public Settlement createFullSettlement(InitialSettlement spec) {
 		SettlementTemplate template = settlementTemplateConfig.getItem(spec.getSettlementTemplate());
-		logger.config("Creating '" + spec.getName() + "' based on template '" + spec.getSettlementTemplate() + "'...");
+		logger.config("Creating '" + spec.getName() + "' based on template '" + spec.getSettlementTemplate() + "'.");
 		statusConsumer.accept("Creating settlement " + spec.getName() + "...");
 
 		StopWatch watch = new StopWatch();
