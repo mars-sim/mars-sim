@@ -8,6 +8,8 @@ package com.mars_sim.core.equipment;
 
 import java.util.Set;
 
+import com.mars_sim.core.building.Building;
+
 /**
  * Represents an entity that can hold resources.
  *
@@ -110,6 +112,7 @@ public interface ResourceHolder {
 	static ResourceHolder getAttached(Object obj) {
 		return switch(obj) {
 			case EVASuit eva -> eva.getResourcesInventory();
+			case Building b -> b.getAssociatedSettlement().getEquipmentInventory();
 			case ResourceHolder rh -> rh;
 			default -> EquipmentOwner.getAttached(obj);
 		};

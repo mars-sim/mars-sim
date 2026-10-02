@@ -62,9 +62,6 @@ class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
         double stored = rh.getStoredMass();
         assertEquals(portion0 * size, stored, "Stored mass0");
         
-        // Set zero cargo capacity
-        s.getEquipmentInventory().setCargoCapacity(100);
-        
         // Pick a process and add resources
         p = rp.get(0);
         double bucket1 = 100;

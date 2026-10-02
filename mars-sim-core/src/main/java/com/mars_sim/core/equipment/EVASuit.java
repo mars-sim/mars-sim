@@ -235,12 +235,10 @@ public class EVASuit extends Equipment
 		malfunctionManager.initScopes();
 		
 		// Create MicroInventory instance
-		microInventory = new MicroInventory(this, 1);
-
-		// Set capacity for each resource
-		microInventory.setSpecificCapacity(ResourceUtil.OXYGEN_ID, OXYGEN_CAPACITY);
-		microInventory.setSpecificCapacity(ResourceUtil.WATER_ID, WATER_CAPACITY);
-		microInventory.setSpecificCapacity(ResourceUtil.CO2_ID, CO2_CAPACITY);
+		microInventory = new MicroInventory(this, 5, 0,
+					Map.of(ResourceUtil.OXYGEN_ID, OXYGEN_CAPACITY,
+													ResourceUtil.WATER_ID, WATER_CAPACITY,
+													ResourceUtil.CO2_ID, CO2_CAPACITY));
 		
 		// Sets the base mass of the bag.
 		setBaseMass(getEmptyMass());

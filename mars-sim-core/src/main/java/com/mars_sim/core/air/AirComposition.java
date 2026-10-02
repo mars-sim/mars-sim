@@ -187,7 +187,7 @@ public class AirComposition implements Serializable {
 
 			if (pulse.isNewIntMillisol()
 					&& pulse.getMarsTime().getMillisolInt() % MILLISOLS_PER_UPDATE == 0) {
-				monitorGases(building, t);
+				monitorGases(building.getAssociatedSettlement().getEquipmentInventory(), t);
 			}
 		}
 	}

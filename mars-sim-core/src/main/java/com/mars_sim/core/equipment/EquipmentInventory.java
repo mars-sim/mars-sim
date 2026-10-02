@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,15 +27,12 @@ import com.mars_sim.core.resource.ResourceUtil;
  * This class represents an Inventory that can hold equipment as well as resources. It provides
  * basic capacity management.
  */
-public class EquipmentInventory
+public class EquipmentInventory extends MicroInventory
 		implements EquipmentOwner, BinHolder{
 
 	private static final long serialVersionUID = 1L;
 
 	// May reuse: private static final SimLogger logger = SimLogger.getLogger(EquipmentInventory.class.getName())
-
-	/** The general cargo capacity. */
-	private double cargoCapacity;
 
 	/** Locally held data recorder set. */
 	private Set<Equipment> recorderSet;
@@ -50,30 +46,31 @@ public class EquipmentInventory
 	/** Locally held amount resource bin set. */
 	private Set<AmountResourceBin> amountResourceBinSet;
 
-	/** The owner of this equipment inventory. */
-	private Unit owner;
-	
-	/** The MicroInventory inside this equipment inventory. */
-	private MicroInventory microInventory;
-
 	/**
-	 * Constructor.
+	 * Construct an EquipmentInventory without any stock storage for Amount Resources.
 	 * 
-	 * @param owner
-	 * @param cargoCapacity
+	 * @param owner The owner of this inventory; used for firing events.
+	 * @param cargoCapacity The cargo capacity of this inventory.
 	 */
 	public EquipmentInventory(Unit owner, double cargoCapacity) {
+		this(owner, cargoCapacity, 0D);
+	}
 
-		this.owner = owner;
-		this.cargoCapacity = cargoCapacity;
+	/**
+	 * Construct a fully initialized EquipmentInventory.
+	 * 
+	 * @param owner The owner of this inventory; used for firing events.
+	 * @param cargoCapacity The cargo capacity of this inventory.
+	 * @param amountStockCapacity The stock capacity (overload) for specific amount resources.
+	 */
+	public EquipmentInventory(Unit owner, double cargoCapacity, double amountStockCapacity) {
+
+		super(owner, cargoCapacity, amountStockCapacity);
 	
 		// Create equipment set
 		recorderSet = new UnitSet<>();
 		suitSet = new UnitSet<>();
 		containerSet = new UnitSet<>();
-		
-		// Create microInventory instance
-		microInventory = new MicroInventory(owner, cargoCapacity);
 				
 		// Create the amount resource bin set
 		amountResourceBinSet = new HashSet<>();
@@ -85,10 +82,6 @@ public class EquipmentInventory
 		amountResourceBinSet.add(crates);
 	}
 
-	public Unit getOwner() {
-		return owner;
-	}
-	
 	/**
 	 * Gets the locally held amount resource bin set.
 	 * 
@@ -116,7 +109,7 @@ public class EquipmentInventory
 			result += e.getMass();
 		}
 		
-		return result + microInventory.getStoredMass();
+		return result + super.getStoredMass();
 	}
 
 	/**
@@ -136,7 +129,7 @@ public class EquipmentInventory
 			else
 				result += e.getMass();
 		}
-		return result + microInventory.getStoredMass() ;
+		return result +  super.getStoredMass();
 	}
 	
 	/**
@@ -205,7 +198,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean addEquipment(Equipment equipment) {
-		owner.fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, equipment);
+		getOwner().fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, equipment);
 		
 		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
 			return suitSet.add(equipment);
@@ -224,7 +217,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean removeEquipment(Equipment equipment) {
-		owner.fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, equipment);
+		getOwner().fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, equipment);
 		
 		if (equipment.getEquipmentType() == EquipmentType.EVA_SUIT) {
 			return suitSet.remove(equipment);
@@ -239,54 +232,11 @@ public class EquipmentInventory
 
 	@Override
 	public boolean addBin(Bin bin) {
-		var	binMap = BinFactory.findBinMap(owner, getAmountResourceBinSet(), bin.getBinType());
+		var	binMap = BinFactory.findBinMap(getOwner(), getAmountResourceBinSet(), bin.getBinType());
 		
 		binMap.addBin(bin);
 		
 		return true;
-	}
-	
-	/**
-	 * Stores the item resource.
-	 *
-	 * @param resource the item resource
-	 * @param quantity
-	 * @return excess quantity that cannot be stored
-	 */
-	@Override
-	public int storeItemResource(int resource, int quantity) {
-		return microInventory.storeItemResource(resource, quantity);
-	}
-
-	/**
-	 * Retrieves the item resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return quantity that cannot be retrieved
-	 */
-	@Override
-	public int retrieveItemResource(int resource, int quantity) {
-		return microInventory.retrieveItemResource(resource, quantity);
-	}
-
-	/**
-	 * Retrieves the resource.
-	 *
-	 * @param resource
-	 * @param quantity
-	 * @return shortfall quantity that cannot be retrieved
-	 */
-	@Override
-	public double retrieveAmountResource(int resource, double quantity) {
-		double shortfall = quantity;
-		double stored = microInventory.getSpecificAmountResourceStored(resource);
-		if (stored > 0) {
-			shortfall = microInventory.retrieveAmountResource(resource, shortfall);
-		}
-
-		// Return any missing quantity
-		return shortfall;
 	}
 
 	/**
@@ -300,92 +250,14 @@ public class EquipmentInventory
 	public double storeAmountResource(int resource, double quantity) {
 		// Note: this method is different from
 		// Equipment's storeAmountResource
-		if (!microInventory.isResourceSupported(resource)) {
+		if (!isResourceSupported(resource)) {
 			// Since cargoCapacity is changing dynamically,
 			// does it mean one must constantly update the capacity of this amount resource ?
-			microInventory.setSpecificCapacity(resource, cargoCapacity);
+			setResourceCapacityMap(Map.of(resource, getCargoCapacity()), false);
 		}
-		return microInventory.storeAmountResource(resource, quantity);
+		return super.storeAmountResource(resource, quantity);
 	}
 
-	/**
-	 * Gets the item resource stored.
-	 * Note: it doesn't retrieve the item
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public int getItemResourceStored(int resource) {
-		return microInventory.getItemResourceStored(resource);
-	}
-	
-	/**
-	 * Gets the specific capacity of a particular amount resource.
-	 *
-	 * @param resource
-	 * @return capacity
-	 */
-	@Override
-	public double getSpecificCapacity(int resource) {
-		return microInventory.getSpecificCapacity(resource);
-	}
-
-	/**
-	 * Obtains the specific capacity of remaining storage space for storing an amount resource.
-	 * @apiNote This includes the stock capacity
-	 *
-	 * @param resource
-	 * @return remaining capacity
-	 */
-	@Override
-	public double getRemainingSpecificCapacity(int resource) {
-		return microInventory.getRemainingSpecificCapacity(resource);
-
-		// Warning : May also needs to account for the amount resources inside equipment
-	}
-	
-	/**
-	 * Obtains the combined capacity of remaining storage space for storing an amount resource.
-	 * @apiNote This includes the stock capacity
-	 *
-	 * @param resource
-	 * @return remaining capacity
-	 */
-	@Override
-	public double getRemainingCombinedCapacity(int resource) {
-		return microInventory.getRemainingCombinedCapacity(resource);
-
-		// Warning : May also needs to account for the amount resources inside equipment
-	}
-
-	/**
-	 * Does it have unused space or capacity for a particular resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	@Override
-	public boolean hasAmountResourceRemainingCapacity(int resource) {
-		
-		double cap = microInventory.getSpecificCapacity(resource);
-		double stored = microInventory.getSpecificAmountResourceStored(resource);
-		
-		return (cap > stored);
-		
-		// Warning : May also needs to account for the amount resources inside equipment
-	}
-	
-	
-	/**
-	 * Gets the stock capacity of its micro inventory.
-	 *
-	 * @return
-	 */
-	double getStockCapacity() {
-		return microInventory.getStockCapacity();
-	}
-	
 	/**
 	 * Obtains the remaining cargo/general/shared capacity.
 	 *
@@ -394,38 +266,6 @@ public class EquipmentInventory
 	@Override
 	public double getRemainingCargoCapacity() {
 		return getCargoCapacity() - getStoredMass();
-	}
-
-	/**
-     * Gets the cargo/general/shared capacity.
-     *
-     * @return capacity (kg).
-     */
-	@Override
-	public double getCargoCapacity() {
-		return microInventory.getCargoCapacity();
-	}
-
-	/**
-	 * Gets the specific amount resources stored, NOT including those inside equipment.
-	 *
-	 * @param resource
-	 * @return amount
-	 */
-	@Override
-	public double getSpecificAmountResourceStored(int resource) {
-		return microInventory.getSpecificAmountResourceStored(resource);
-	}
-
-	/**
-	 * Gets the quantity of all stock and specific amount resource stored.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public double getAllAmountResourceStored(int resource) {
-		return microInventory.getAllAmountResourceStored(resource);
 	}
 	
 	/**
@@ -439,11 +279,6 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int findNumEmptyContainersOfType(EquipmentType containerType, boolean brandNew) {
-		// Note: trigger CME at new HashSet<>(containerSet)
-//		Set<Equipment> set = new HashSet<>(containerSet).stream()
-//				.filter(e -> e.isEmpty(brandNew) && (e.getEquipmentType() == containerType))
-//				.collect(Collectors.toSet());
-//		return set.size();
 		
 		return (int) Collections.synchronizedSet(containerSet)
 					.stream()
@@ -451,19 +286,6 @@ public class EquipmentInventory
 						&& (e.getEquipmentType() == containerType))
 					.count();
 		
-		// May try out
-//		return Collections.synchronizedSet(containerSet).stream()
-//				.filter(e -> e.isEmpty(brandNew) 
-//						&& (e.getEquipmentType() == containerType))
-//				.collect(Collectors.toSet())
-//				.size();
-		
-		// Note: trigger CME at .collect(Collectors.toSet())
-//		return containerSet.stream()
-//				.filter(e -> e.isEmpty(brandNew) 
-//						&& (e.getEquipmentType() == containerType))
-//				.collect(Collectors.toSet())
-//				.size();
 		
 		// Note: the line .count() below trigger CME
 //		return (int) containerSet.stream()
@@ -599,7 +421,7 @@ public class EquipmentInventory
 
 	
 	
-	/*
+	/**
 	 * Finds the number of data recorder .
 	 *
 	 * Note: will not count EVA suits.
@@ -644,26 +466,6 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets a set of item resources in storage.
-	 *
-	 * @return a set of item resources.
-	 */
-	@Override
-	public Set<Integer> getItemResourceIDs() {
-		return microInventory.getItemResourceIDs();
-	}
-
-	/**
-	 * Gets a set of amount resources in storage.
-	 *
-	 * @return a set of amount resources
-	 */
-	@Override
-	public Set<Integer> getSpecificResourceStoredIDs() {
-		return microInventory.getSpecificResourceStoredIDs();
-	}
-
-	/**
 	 * Gets a set of IDs of the specific amount resources being stored, 
 	 * including those in containers and EVA suit set.
 	 * Ignore any IDs that are zero amount.
@@ -672,7 +474,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public Set<Integer> getAllAmountResourceStoredIDs() {
-		Set<Integer> set = new HashSet<>(microInventory.getAllAmountResourceStoredIDs());
+		Set<Integer> set = new HashSet<>(super.getAllAmountResourceStoredIDs());
 		for (Equipment e: containerSet) {
 			if (e instanceof ResourceHolder rh) {
 				set.addAll(rh.getSpecificResourceStoredIDs());
@@ -697,74 +499,15 @@ public class EquipmentInventory
 	 *
 	 * @return true if this unit doesn't carry any resources or equipment
 	 */
+	@Override
 	public boolean isEmpty() {
 		if (!containerSet.isEmpty())
 			return false;
 		if (!suitSet.isEmpty())
 			return false;
-		return microInventory.isEmpty();
-	}
-
-	/**
-	 * Sets a specific resource capacity.
-	 *
-	 * @param resource
-	 * @param capacity
-	 */
-	public void setSpecificResourceCapacity(int resource, double capacity) {
-		if (ResourceUtil.findAmountResource(resource) != null) {
-			microInventory.setSpecificCapacity(resource, capacity);
-		}
-	}
-
-	/**
-	 * Sets the resource capacities.
-	 * 
-	 * @param capacities
-	 * @param add True if it should these be "added" on top of its existing capacity. False if it should be 'set' to a new capacity
-	 */
-	public void setResourceCapacityMap(Map<Integer, Double> capacities, boolean toAdd) {
-		for (Entry<Integer, Double> v : capacities.entrySet()) {
-			Integer foundResource = v.getKey();
-			if (toAdd) {
-				microInventory.addSpecificCapacity(foundResource, v.getValue());
-			}
-			else {
-				microInventory.setSpecificCapacity(foundResource, v.getValue());
-			}
-		}
-	}
-
-	/**
-	 * Sets the cargo/general/shared capacity.
-	 *
-	 * @param value
-	 */
-	public void setCargoCapacity(double value) {
-		cargoCapacity = value;
- 		microInventory.setStockCapacity(cargoCapacity);
+		return super.isEmpty();
 	}
 	
-	/**
-	 * Adds the cargo/general/shared capacity.
-	 *
-	 * @param value
-	 */
-	public void addCargoCapacity(double value) {
-		cargoCapacity += value;
- 		microInventory.addStockCapacity(cargoCapacity);
-	}
-	
-	/**
-	 * Removes the specific capacity of a particular resource.
-	 *
-	 * @param resource
-	 * @param capacity
-	 */
-	public void removeSpecificCapacity(int resource, double capacity) {
-		microInventory.removeSpecificCapacity(resource, capacity);
-	}
-
 	/**
 	 * Does it have this item resource ?
 	 *
@@ -774,17 +517,6 @@ public class EquipmentInventory
 	@Override
 	public boolean hasItemResource(int resource) {
 		return getItemResourceIDs().contains(resource);
-	}
-
-	/**
-	 * Gets the remaining quantity (in integer) of an item resource that this inventory can store.
-	 *
-	 * @param resource
-	 * @return quantity
-	 */
-	@Override
-	public int getItemResourceRemainingQuantity(int resource) {
-		return microInventory.getItemResourceRemainingQuantity(resource);
 	}
 	
 	/**
@@ -947,6 +679,5 @@ public class EquipmentInventory
 		suitSet = null;
 		recorderSet.clear();
 		recorderSet = null;
-		microInventory = null;
 	}
 }
