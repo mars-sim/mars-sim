@@ -138,234 +138,230 @@
 	    <standalone type="ERV-B" xloc="110.0" yloc="260.0" facing="0.0" />
 	    <standalone type="ERV-C" xloc="110.0" yloc="280.0" facing="0.0" />
 	</building-package>
+
+
+
 	
-	<building-package name="Air Set 1 - 1x1" >
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-50.0" facing="90.0" />  
-	</building-package>
-	
-	<building-package name="Air Set 1 - 1x2" >
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-50.0" facing="90.0" />
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-60.0" facing="90.0" />    
-	</building-package>
-
-	<building-package name="Air Set 1 - 1x3" >
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-50.0" facing="90.0" />
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-60.0" facing="90.0" />   
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-70.0" facing="90.0" /> 
-	</building-package>
-
-	<building-package name="Air Set 1 - 1x4" >
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-50.0" facing="90.0" /> 
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-60.0" facing="90.0" /> 
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-70.0" facing="90.0" />
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-80.0" facing="90.0" />
-	</building-package>
-
-	<building-package name="Air Set 1 - 1x5" >
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-50.0" facing="90.0" /> 
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-60.0" facing="90.0" /> 
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-70.0" facing="90.0" />
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-80.0" facing="90.0" />
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-90.0" facing="90.0" /> 
-	</building-package>
-
-	<building-package name="Air Set 1 - 1x6" >
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-50.0" facing="90.0" /> 
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-60.0" facing="90.0" /> 
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-70.0" facing="90.0" />
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-80.0" facing="90.0" />
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-90.0" facing="90.0" />   
-	    <standalone type="Atmospheric Processor" xloc="5.0" yloc="-100.0" facing="90.0" /> 
-	</building-package>
-				
-	<building-package name="Sabatier Set 1 - 1x1" >
-	    <standalone type="Large Sabatier Processor" xloc="25.0" yloc="-20.0" facing="90.0" />    
-	</building-package>
-
-	<building-package name="Sabatier Set 1 - 1x2" >
-	    <standalone type="Large Sabatier Processor" xloc="25.0" yloc="-20.0" facing="90.0" />
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-30.0" facing="90.0" />	    
-	</building-package>
-	
-	<building-package name="Sabatier Set 1 - 1x3" >
-	    <standalone type="Large Sabatier Processor" xloc="25.0" yloc="-20.0" facing="90.0" />
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-30.0" facing="90.0" />
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-40.0" facing="90.0" />	  
-	</building-package>
-	
-	<building-package name="Sabatier Set 1 - 1x4" >
-	    <standalone type="Large Sabatier Processor" xloc="25.0" yloc="-20.0" facing="90.0" />
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-30.0" facing="90.0" />
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-40.0" facing="90.0" />	  
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-50.0" facing="90.0" />	
-	</building-package>
-		
-	<building-package name="Sabatier Set 1 - 1x5" >
-	    <standalone type="Large Sabatier Processor" xloc="25.0" yloc="-20.0" facing="90.0" />
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-30.0" facing="90.0" />
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-40.0" facing="90.0" />	  
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-50.0" facing="90.0" />	
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-60.0" facing="90.0" />
-	</building-package>
-
-	<building-package name="Sabatier Set 1 - 1x6" >
-	    <standalone type="Large Sabatier Processor" xloc="25.0" yloc="-20.0" facing="90.0" />
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-30.0" facing="90.0" />
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-40.0" facing="90.0" />	  
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-50.0" facing="90.0" />	
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-60.0" facing="90.0" />
-    	<standalone type="Large Sabatier Processor" xloc="25.0" yloc="-70.0" facing="90.0" />
-	</building-package>
-				
-	<!-- Note: xloc 45 also occupied by Solar Set 1 -->
 	<building-package name="Syngas Set 1 - 1x1" >
-	    <standalone type="Syngas Plant" xloc="45.0" yloc="-20.0" facing="90.0" />    
+	    <standalone type="Syngas Plant" xloc="45.0" yloc="-50.0" facing="90.0" />    
 	</building-package>
 
 	<building-package name="Syngas Set 1 - 1x2" >
-	    <standalone type="Syngas Plant" xloc="45.0" yloc="-20.0" facing="90.0" />
-    	<standalone type="Syngas Plant" xloc="45.0" yloc="-30.0" facing="90.0" />	    
+	    <standalone type="Syngas Plant" xloc="45.0" yloc="-50.0" facing="90.0" />
+    	<standalone type="Syngas Plant" xloc="45.0" yloc="-60.0" facing="90.0" />	    
 	</building-package>
 	
 	<building-package name="Syngas Set 1 - 1x3" >
-	    <standalone type="Syngas Plant" xloc="45.0" yloc="-20.0" facing="90.0" />
-    	<standalone type="Syngas Plant" xloc="45.0" yloc="-30.0" facing="90.0" />
-    	<standalone type="Syngas Plant" xloc="45.0" yloc="-40.0" facing="90.0" />	  
+	    <standalone type="Syngas Plant" xloc="45.0" yloc="-50.0" facing="90.0" />
+    	<standalone type="Syngas Plant" xloc="45.0" yloc="-60.0" facing="90.0" />
+    	<standalone type="Syngas Plant" xloc="45.0" yloc="-70.0" facing="90.0" />	  
 	</building-package>
 
 	<building-package name="Syngas Set 1 - 1x4" >
-	    <standalone type="Syngas Plant" xloc="45.0" yloc="-20.0" facing="90.0" />
-    	<standalone type="Syngas Plant" xloc="45.0" yloc="-30.0" facing="90.0" />
-    	<standalone type="Syngas Plant" xloc="45.0" yloc="-40.0" facing="90.0" />
-    	<standalone type="Syngas Plant" xloc="45.0" yloc="-50.0" facing="90.0" />
+	    <standalone type="Syngas Plant" xloc="45.0" yloc="-50.0" facing="90.0" />
+    	<standalone type="Syngas Plant" xloc="45.0" yloc="-60.0" facing="90.0" />
+    	<standalone type="Syngas Plant" xloc="45.0" yloc="-70.0" facing="90.0" />
+    	<standalone type="Syngas Plant" xloc="45.0" yloc="-80.0" facing="90.0" />
 	</building-package>
 	
+
 	<building-package name="Methane Set 1 - 1x1" >
-	    <standalone type="Methane Power Generator" xloc="60.0"
-	        yloc="-20.0" facing="0.0" /> 
+	    <standalone type="Methane Power Generator" xloc="65.0" yloc="-20.0" facing="0.0" /> 
 	</building-package>
 
 	<building-package name="Methane Set 1 - 1x2" >
-	    <standalone type="Methane Power Generator" xloc="60.0"
-	        yloc="-20.0" facing="0.0" />
-	    <standalone type="Methane Power Generator" xloc="60.0"
-	        yloc="-30.0" facing="0.0" />   
+	    <standalone type="Methane Power Generator" xloc="65.0" yloc="-20.0" facing="0.0" />
+	    <standalone type="Methane Power Generator" xloc="65.0" yloc="-30.0" facing="0.0" />   
 	</building-package>
 	
 	<building-package name="Methane Set 1 - 1x3" >
-	    <standalone type="Methane Power Generator" xloc="60.0"
-	        yloc="-20.0" facing="0.0" />
-	    <standalone type="Methane Power Generator" xloc="60.0"
-	        yloc="-30.0" facing="0.0" />   
-	    <standalone type="Methane Power Generator" xloc="60.0"
-	        yloc="-40.0" facing="0.0" />  
+	    <standalone type="Methane Power Generator" xloc="65.0" yloc="-20.0" facing="0.0" />
+	    <standalone type="Methane Power Generator" xloc="65.0" yloc="-30.0" facing="0.0" />   
+	    <standalone type="Methane Power Generator" xloc="65.0" yloc="-40.0" facing="0.0" />  
 	</building-package>
 	
 	<building-package name="Methane Set 1 - 1x4" >
-	    <standalone type="Methane Power Generator" xloc="60.0"
-	        yloc="-20.0" facing="0.0" />
-	    <standalone type="Methane Power Generator" xloc="60.0"
-	        yloc="-30.0" facing="0.0" />   
-	    <standalone type="Methane Power Generator" xloc="60.0"
-	        yloc="-40.0" facing="0.0" />  
-	    <standalone type="Methane Power Generator" xloc="60.0"
-	        yloc="-60.0" facing="0.0" />  
+	    <standalone type="Methane Power Generator" xloc="65.0" yloc="-20.0" facing="0.0" />
+	    <standalone type="Methane Power Generator" xloc="65.0" yloc="-30.0" facing="0.0" />   
+	    <standalone type="Methane Power Generator" xloc="65.0" yloc="-40.0" facing="0.0" />  
+	    <standalone type="Methane Power Generator" xloc="65.0" yloc="-60.0" facing="0.0" />  
+	</building-package>
+
+
+	<building-package name="Air Set 1 - 1x1" >
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-50.0" facing="90.0" />  
 	</building-package>
 	
+	<building-package name="Air Set 1 - 1x2" >
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-50.0" facing="90.0" />
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-60.0" facing="90.0" />    
+	</building-package>
+
+	<building-package name="Air Set 1 - 1x3" >
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-50.0" facing="90.0" />
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-60.0" facing="90.0" />   
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-70.0" facing="90.0" /> 
+	</building-package>
+
+	<building-package name="Air Set 1 - 1x4" >
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-50.0" facing="90.0" /> 
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-60.0" facing="90.0" /> 
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-70.0" facing="90.0" />
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-80.0" facing="90.0" />
+	</building-package>
+
+	<building-package name="Air Set 1 - 1x5" >
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-50.0" facing="90.0" /> 
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-60.0" facing="90.0" /> 
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-70.0" facing="90.0" />
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-80.0" facing="90.0" />
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-90.0" facing="90.0" /> 
+	</building-package>
+
+	<building-package name="Air Set 1 - 1x6" >
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-50.0" facing="90.0" /> 
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-60.0" facing="90.0" /> 
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-70.0" facing="90.0" />
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-80.0" facing="90.0" />
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-90.0" facing="90.0" />   
+	    <standalone type="Atmospheric Processor" xloc="85.0" yloc="-100.0" facing="90.0" /> 
+	</building-package>
+		
+
+
+	<building-package name="Sabatier Set 1 - 1x1" >
+	    <standalone type="Large Sabatier Processor" xloc="105.0" yloc="-50.0" facing="90.0" />    
+	</building-package>
+
+	<building-package name="Sabatier Set 1 - 1x2" >
+	    <standalone type="Large Sabatier Processor" xloc="105.0" yloc="-50.0" facing="90.0" />
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-60.0" facing="90.0" />	    
+	</building-package>
+	
+	<building-package name="Sabatier Set 1 - 1x3" >
+	    <standalone type="Large Sabatier Processor" xloc="105.0" yloc="-50.0" facing="90.0" />
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-60.0" facing="90.0" />
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-70.0" facing="90.0" />	  
+	</building-package>
+	
+	<building-package name="Sabatier Set 1 - 1x4" >
+	    <standalone type="Large Sabatier Processor" xloc="105.0" yloc="-50.0" facing="90.0" />
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-60.0" facing="90.0" />
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-70.0" facing="90.0" />	  
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-80.0" facing="90.0" />	
+	</building-package>
+		
+	<building-package name="Sabatier Set 1 - 1x5" >
+	    <standalone type="Large Sabatier Processor" xloc="105.0" yloc="-50.0" facing="90.0" />
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-60.0" facing="90.0" />
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-70.0" facing="90.0" />	  
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-80.0" facing="90.0" />	
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-90.0" facing="90.0" />
+	</building-package>
+
+	<building-package name="Sabatier Set 1 - 1x6" >
+	    <standalone type="Large Sabatier Processor" xloc="105.0" yloc="-50.0" facing="90.0" />
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-60.0" facing="90.0" />
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-70.0" facing="90.0" />	  
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-80.0" facing="90.0" />	
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-90.0" facing="90.0" />
+    	<standalone type="Large Sabatier Processor" xloc="105.0" yloc="-100.0" facing="90.0" />
+	</building-package>
+
 		
 	<building-package name="Small Areothermal Well Set 1 - 1x1">
-	    <standalone type="Small Areothermal Well" xloc="75.0"
-	        yloc="-10.0" facing="0.0" />
+	    <standalone type="Small Areothermal Well" xloc="160.0" yloc="20.0" facing="0.0" />
 	</building-package>
 	
 	<building-package name="Small Areothermal Well Set 1 - 1x2">
-	    <standalone type="Small Areothermal Well" xloc="75.0"
-	        yloc="-10.0" facing="0.0" />
-	    <standalone type="Small Areothermal Well" xloc="75.0"
-	        yloc="-20.0" facing="0.0" />
+	    <standalone type="Small Areothermal Well" xloc="160.0" yloc="20.0" facing="0.0" />
+	    <standalone type="Small Areothermal Well" xloc="160.0" yloc="40.0" facing="0.0" />
 	</building-package>
 		
 	<building-package name="Nuclear Set 1 - Combo 0" >
-	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="0" facing="90.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="0" facing="0.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-5" facing="0.0" />
+	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="20" facing="90.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="20" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="25" facing="0.0" />
 	</building-package>
 
 	<building-package name="Nuclear Set 1 - Combo 1" >
-	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="0" facing="90.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="0" facing="0.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-5" facing="0.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-10" facing="0.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-15" facing="0.0" />
+	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="20" facing="90.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="20" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="25" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="30" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="35" facing="0.0" />
 	</building-package>
 	
+	<!-- MD1 Set 1 uses the same xloc as TOPAZ-2 Set 1 -->
 	<building-package name="MD1 Set 1 - 1x1" >
-	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="0" facing="90.0" />
+	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="20" facing="90.0" />
 	</building-package>
 	
 	<building-package name="MD1 Set 1 - 1x2" >
-	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="0" facing="90.0" />
-	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="20" facing="90.0" />
-	</building-package>
-
-	<building-package name="MD1 Set 1 - 1x3" >
-	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="0" facing="90.0" />
 	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="20" facing="90.0" />
 	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="40" facing="90.0" />
 	</building-package>
-	
-	<building-package name="MD1 Set 1 - 1x4" >
-	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="0" facing="90.0" />
+
+	<building-package name="MD1 Set 1 - 1x3" >
 	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="20" facing="90.0" />
 	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="40" facing="90.0" />
 	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="60" facing="90.0" />
 	</building-package>
+	
+	<building-package name="MD1 Set 1 - 1x4" >
+	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="20" facing="90.0" />
+	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="40" facing="90.0" />
+	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="60" facing="90.0" />
+	    <standalone type="MD1 Nuclear Reactor" xloc="200.0" yloc="80" facing="90.0" />
+	</building-package>
 			
+	<!-- MD4 Set 1 uses the same xloc as TOPAZ-3 Set 1 -->
 	<building-package name="MD4 Set 1 - 1x1" >
-	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="0" facing="90.0" />
+	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="20" facing="90.0" />
 	</building-package>
 	
 	<building-package name="MD4 Set 1 - 1x2" >
-	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="0" facing="90.0" />
-	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="30" facing="90.0" />
-	</building-package>
-
-	<building-package name="MD4 Set 1 - 1x3" >
-	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="0" facing="90.0" />
 	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="30" facing="90.0" />
 	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="60" facing="90.0" />
 	</building-package>
+
+	<building-package name="MD4 Set 1 - 1x3" >
+	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="30" facing="90.0" />
+	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="60" facing="90.0" />
+	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="90" facing="90.0" />
+	</building-package>
 	
 	<building-package name="Kilo Set 1 - 1x1" >
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="0" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="20" facing="0.0" />
 	</building-package>
 
 	<building-package name="Kilo Set 1 - 1x2" >
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="0" facing="0.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-5" facing="0.0" />	    
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="20" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="25" facing="0.0" />	    
 	</building-package>
 	
 	<building-package name="Kilo Set 1 - 1x3" >
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="0" facing="0.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-5" facing="0.0" />	
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-10" facing="0.0" />	  
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="20" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="25" facing="0.0" />	
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="30" facing="0.0" />	  
 	</building-package>
 
 	<building-package name="Kilo Set 1 - 1x4" >
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="0" facing="0.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-5" facing="0.0" />	
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-10" facing="0.0" />	  
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-15" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="20" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="25" facing="0.0" />	
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="30" facing="0.0" />	  
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="35" facing="0.0" />
 	</building-package>
 	
 	<building-package name="Kilo Set 1 - 1x5" >
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="0" facing="0.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-5" facing="0.0" />	
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-10" facing="0.0" />	  
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-15" facing="0.0" />
-	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="-20" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="20" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="25" facing="0.0" />	
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="30" facing="0.0" />	  
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="35" facing="0.0" />
+	    <standalone type="Kilopower Reactor" xloc="180.0" yloc="40" facing="0.0" />
 	</building-package>
 	
+	<!-- MD1 Set 1 uses the same xloc as TOPAZ-2A Set 1 -->
     <building-package name="TOPAZ-2A Set 1 - 1x1">
 	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="20" facing="90.0" />    	
 	</building-package>
@@ -405,6 +401,7 @@
 	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="120" facing="90.0" />  
 	</building-package>
 		
+	<!-- MD4 Set 1 uses the same xloc as TOPAZ-3 Set 1 -->
 	<building-package name="TOPAZ-3 Set 1 - 1x1">
 	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="20" facing="90.0" />    	
 	</building-package>
@@ -478,315 +475,219 @@
 	</building-package>		
 						
 	<building-package name="Solar Set 1 - 1x3" >   
-	    <standalone type="Medium Battery Array" xloc="45.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-80.0" facing="0.0" />       	    
+	    <standalone type="Medium Battery Array" xloc="125.0"  yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-80.0" facing="0.0" />       	    
 	</building-package>
 	
 	<building-package name="Solar Set 1 - 1x6" > 
-	    <standalone type="Medium Battery Array" xloc="45.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-80.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="125.0"  yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-80.0" facing="0.0" />
 	        
-	    <standalone type="Medium Battery Array" xloc="45.0"
-	        yloc="-90.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-100.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-110.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-120.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="125.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-120.0" facing="0.0" />
 	</building-package>
 		
 	<building-package name="Solar Set 1 - 1x9" >
-	    <standalone type="Medium Battery Array" xloc="45.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-80.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="125.0"  yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0"  yloc="-80.0" facing="0.0" />
 	        
-	    <standalone type="Medium Battery Array" xloc="45.0"
-	        yloc="-90.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-100.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-110.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-120.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="125.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-120.0" facing="0.0" />
 	
-	    <standalone type="Medium Battery Array" xloc="45.0"
-	        yloc="-130.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-140.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-150.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="45.0"
-	        yloc="-160.0" facing="0.0" />           	    
+	    <standalone type="Medium Battery Array" xloc="125.0" yloc="-130.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-140.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-150.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="125.0" yloc="-160.0" facing="0.0" />           	    
 	</building-package>
 
 	<building-package name="Solar Set 2 - 1x3" >
-	    <standalone type="Medium Battery Array" xloc="60.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-80.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="145.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-80.0" facing="0.0" />
 	</building-package>            	    
 	            	    
 	<building-package name="Solar Set 2 - 1x6" >
-	    <standalone type="Medium Battery Array" xloc="60.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-80.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="145.0"  yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-80.0" facing="0.0" />
 	            	    
-	    <standalone type="Medium Battery Array" xloc="60.0"
-	        yloc="-90.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-100.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-110.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-120.0" facing="0.0" /> 	    
+	    <standalone type="Medium Battery Array" xloc="145.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-120.0" facing="0.0" /> 	    
 	</building-package>
 	
 		<building-package name="Solar Set 2 - 1x9" >
-	    <standalone type="Medium Battery Array" xloc="60.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-80.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="145.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-80.0" facing="0.0" />
 	        
-	    <standalone type="Medium Battery Array" xloc="60.0"
-	        yloc="-90.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-100.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-110.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-120.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="145.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-120.0" facing="0.0" />
 	
-	    <standalone type="Medium Battery Array" xloc="60.0"
-	        yloc="-130.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-140.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-150.0" facing="0.0" />
-	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-160.0" facing="0.0" />           	    
+	    <standalone type="Medium Battery Array" xloc="145.0" yloc="-130.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-140.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-150.0" facing="0.0" />
+	    <standalone type="Solar Photovoltaic Array" xloc="145.0" yloc="-160.0" facing="0.0" />           	    
 	</building-package>
 	
 	<building-package name="Solar Thermal Set 1 - 1x3" >   
-	    <standalone type="Medium Battery Array" xloc="75.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-80.0" facing="0.0" />       	    
+	    <standalone type="Medium Battery Array" xloc="165.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-80.0" facing="0.0" />       	    
 	</building-package>
 	
 	<building-package name="Solar Thermal Set 1 - 1x6" > 
-	    <standalone type="Medium Battery Array" xloc="75.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-80.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="165.0"  yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-80.0" facing="0.0" />
 	        
-	    <standalone type="Medium Battery Array" xloc="75.0"
-	        yloc="-90.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-100.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-110.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-120.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="165.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-120.0" facing="0.0" />
 	</building-package>
 		
 	<building-package name="Solar Thermal Set 1 - 1x9" >
-	    <standalone type="Medium Battery Array" xloc="75.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-80.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="165.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-80.0" facing="0.0" />
 	        
-	    <standalone type="Medium Battery Array" xloc="75.0"
-	        yloc="-90.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-100.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-110.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-120.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="165.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-120.0" facing="0.0" />
 	
-	    <standalone type="Medium Battery Array" xloc="75.0"
-	        yloc="-130.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-140.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-150.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
-	        yloc="-160.0" facing="0.0" />           	    
+	    <standalone type="Medium Battery Array" xloc="165.0" yloc="-130.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-140.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-150.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="165.0" yloc="-160.0" facing="0.0" />           	    
 	</building-package>
 
 	<building-package name="Solar Thermal Set 2 - 1x3" >   
-	    <standalone type="Medium Battery Array" xloc="90.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-80.0" facing="0.0" />       	    
+	    <standalone type="Medium Battery Array" xloc="185.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-80.0" facing="0.0" />       	    
 	</building-package>
 	
 	<building-package name="Solar Thermal Set 2 - 1x6" > 
-	    <standalone type="Medium Battery Array" xloc="90.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-80.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="185.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-80.0" facing="0.0" />
 	        
-	    <standalone type="Medium Battery Array" xloc="90.0"
-	        yloc="-90.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-100.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-110.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-120.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="185.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-120.0" facing="0.0" />
 	</building-package>
 		
 	<building-package name="Solar Thermal Set 2 - 1x9" >
-	    <standalone type="Medium Battery Array" xloc="90.0"
-	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-80.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="185.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-80.0" facing="0.0" />
 	        
-	    <standalone type="Medium Battery Array" xloc="90.0"
-	        yloc="-90.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-100.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-110.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-120.0" facing="0.0" />
+	    <standalone type="Medium Battery Array" xloc="185.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-120.0" facing="0.0" />
 	
-	    <standalone type="Medium Battery Array" xloc="90.0"
-	        yloc="-130.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-140.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-150.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="90.0"
-	        yloc="-160.0" facing="0.0" />           	    
+	    <standalone type="Medium Battery Array" xloc="185.0" yloc="-130.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-140.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-150.0" facing="0.0" />
+	    <standalone type="Solar Thermal Collector" xloc="185.0" yloc="-160.0" facing="0.0" />           	    
 	</building-package>
 	
    	<building-package name="Wind Set 1 - 1x3">
-		<standalone type="Medium Battery Array" xloc="105.0" yloc="-50.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-60.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-70.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-80.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="205.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-80.0" facing="0.0" />
 	</building-package>
 	
    	<building-package name="Wind Set 1 - 1x6">
-		<standalone type="Medium Battery Array" xloc="105.0" yloc="-50.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-60.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-70.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-80.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="205.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-80.0" facing="0.0" />
 
-		<standalone type="Medium Battery Array" xloc="105.0" yloc="-90.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-100.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-110.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-120.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="205.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-120.0" facing="0.0" />
 	</building-package>
 
    	<building-package name="Wind Set 1 - 1x9">
-		<standalone type="Medium Battery Array" xloc="105.0" yloc="-50.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-60.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-70.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-80.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="205.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-80.0" facing="0.0" />
 
-		<standalone type="Medium Battery Array" xloc="105.0" yloc="-90.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-100.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-110.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-120.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="205.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-120.0" facing="0.0" />
 
-		<standalone type="Medium Battery Array" xloc="105.0" yloc="-130.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-140.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-150.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="105.0" yloc="-160.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="205.0" yloc="-130.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-140.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-150.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="205.0" yloc="-160.0" facing="0.0" />
 	</building-package>
 
    	<building-package name="Wind Set 2 - 1x3">
-		<standalone type="Medium Battery Array" xloc="120.0" yloc="-50.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-60.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-70.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-80.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="225.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-80.0" facing="0.0" />
 	</building-package>
 	
    	<building-package name="Wind Set 2 - 1x6">
-		<standalone type="Medium Battery Array" xloc="120.0" yloc="-50.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-60.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-70.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-80.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="225.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-80.0" facing="0.0" />
 
-		<standalone type="Medium Battery Array" xloc="120.0" yloc="-90.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-100.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-110.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-120.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="225.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-120.0" facing="0.0" />
 	</building-package>
 
    	<building-package name="Wind Set 2 - 1x9">
-		<standalone type="Medium Battery Array" xloc="120.0" yloc="-50.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-60.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-70.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-80.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="225.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-80.0" facing="0.0" />
 
-		<standalone type="Medium Battery Array" xloc="120.0" yloc="-90.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-100.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-110.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-120.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="225.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-120.0" facing="0.0" />
 
-		<standalone type="Medium Battery Array" xloc="120.0" yloc="-130.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-140.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-150.0" facing="0.0" />
-	    <standalone type="Wind Turbine" xloc="120.0" yloc="-160.0" facing="0.0" />
+		<standalone type="Medium Battery Array" xloc="225.0" yloc="-130.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-140.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-150.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="225.0" yloc="-160.0" facing="0.0" />
 	</building-package>
 
 	<!-- Note: in future, brine water well shouldn't'have a standard location and 

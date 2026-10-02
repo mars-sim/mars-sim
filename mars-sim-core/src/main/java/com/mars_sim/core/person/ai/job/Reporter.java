@@ -82,7 +82,7 @@ public class Reporter extends JobSpec {
 			}
 		}
 
-		result = (result + population / 24D) / 2.0;
+		result = (result + population / 24D) / 3.0;
 				
 		return result;
 	}

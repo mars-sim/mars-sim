@@ -47,7 +47,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 			return switch(goal) {
 				case ICE_RESOURCE -> "Budget Ice Resource";
 				case REGOLITH_RESOURCE -> "Budget Regolith Resource";
-				case LIFE_RESOURCE -> "Budget Life Resource";
+//				case LIFE_RESOURCE -> "Budget Life Resource";
 				case WATER_RATIONING -> "Budget Settlement Water";
 			};
 		}
@@ -157,12 +157,15 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 			tasks.add(new BudgetResourcesJob(this, settlement, score, 1, ReviewGoal.REGOLITH_RESOURCE));
 		}
 		
-		int numResource = settlement.getGoodsManager().numReviewed();
-		if (numResource > 0) { 
-			RatingScore score = new RatingScore("resource.lifeSupport", BASE_SCORE * numResource * chance * chance);
-			if (score.getScore() > 0)
-				tasks.add(new BudgetResourcesJob(this, settlement, score, numResource, ReviewGoal.LIFE_RESOURCE));
-		}
+//		double timeleft = settlement.getGoodsManager().getTimeDiff() / 5;
+//		int demand = (int)timeleft;
+////		int numResource = settlement.getGoodsManager().numReviewed();
+////		if (numResource > 0) { 
+//		if (demand > 0) {
+//			RatingScore score = new RatingScore("lifeResource", BASE_SCORE * timeleft * chance * chance);
+//			if (score.getScore() > 0)
+//				tasks.add(new BudgetResourcesJob(this, settlement, score, demand, ReviewGoal.LIFE_RESOURCE));
+//		}
 		
 		return tasks;
     }

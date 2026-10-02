@@ -6,7 +6,7 @@
 
     <!-- HUBS : 0 to 100, 200, 300, 400 -->   
     
-    <building id="0" type="Central Hub A" xloc="-100.0" yloc="0.0" facing="0.0">
+    <building id="0" type="Central Dome A" xloc="-100.0" yloc="0.0" facing="0.0">
         <connection-list>
             <connection id="201" hatch-facing="south" />
             <connection id="301" hatch-facing="east" />

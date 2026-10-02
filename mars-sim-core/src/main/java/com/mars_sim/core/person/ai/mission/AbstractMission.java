@@ -131,7 +131,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static HistoricalEventManager eventManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
-	private static MasterClock clock;
+	protected static MasterClock clock;
 
 	/**
 	 * Constructor.
@@ -465,7 +465,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Move phase on
  		phase = newPhase;
 		setPhaseEnded(false);
-		phaseStartTime = clock.getMarsTime();
+		phaseStartTime = getMarsTime();
 
 		String template = newPhase.getDescriptionTemplate();
 		if (template != null) {
@@ -519,7 +519,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * Gets time elapsed [in millisols] in the current phase.
 	 */
 	protected double getPhaseTimeElapsed() {
-		return clock.getMarsTime().getTimeDiff(phaseStartTime);
+		return getMarsTime().getTimeDiff(phaseStartTime);
 	}
 
 	/**

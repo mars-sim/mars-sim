@@ -144,7 +144,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The static instance of the constructionConfig */
 	protected static ConstructionConfig constructionConfig = simulationConfig.getConstructionConfiguration();
 
-	private static Simulation sim;
+	protected static Simulation sim;
 	
 	/**
 	 * Constructor 1. Creates a Task object with a fixed duration.

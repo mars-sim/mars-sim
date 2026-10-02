@@ -47,7 +47,7 @@
     </building>
         	
     
-    <building id="Q001" type="Compact Quarters" xloc="-15.0" yloc="0.0" facing="90.0">
+    <building id="Q001" type="Compact Quarters" xloc="-15.0" yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="B1" hatch-facing="west" />
             <connection id="Q002" hatch-facing="east" />
@@ -104,7 +104,7 @@
         </connection-list>
     </building>
     
-    <building id="Q003" type="Compact Quarters" xloc="-36.0" yloc="0.0" facing="90.0">
+    <building id="Q003" type="Compact Quarters" xloc="-36.0" yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="W1" hatch-facing="west" />
             <connection id="Q004" hatch-facing="east" />
@@ -163,7 +163,7 @@
     </building>
         
         
-    <building id="Q005" type="Compact Quarters" xloc="-57.0" yloc="0.0" facing="90.0">
+    <building id="Q005" type="Compact Quarters" xloc="-57.0" yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="W2" hatch-facing="west" />
             <connection id="Q006" hatch-facing="east" />
@@ -385,7 +385,7 @@
     </building>
 
 
-    <building id="Q403" type="Compact Quarters" xloc="-15.0" yloc="24.0" facing="90.0">
+    <building id="Q403" type="Compact Quarters" xloc="-15.0" yloc="24.0" facing="270.0">
         <connection-list>
             <connection id="B1" hatch-facing="west" />
             <connection id="Q404" hatch-facing="east" />
@@ -400,7 +400,7 @@
     </building>
 
     
-    <building id="Q405" type="Compact Quarters" xloc="-36.0" yloc="24.0" facing="90.0">
+    <building id="Q405" type="Compact Quarters" xloc="-36.0" yloc="24.0" facing="270.0">
         <connection-list>
             <connection id="W1" hatch-facing="west" />
             <connection id="Q406" hatch-facing="east" />
@@ -414,7 +414,7 @@
         </connection-list>
     </building>
 	
-    <building id="Q407" type="Compact Quarters" xloc="-57.0" yloc="24.0" facing="90.0">
+    <building id="Q407" type="Compact Quarters" xloc="-57.0" yloc="24.0" facing="270.0">
         <connection-list>
             <connection id="W2" hatch-facing="west" />
             <connection id="Q408" hatch-facing="east" />

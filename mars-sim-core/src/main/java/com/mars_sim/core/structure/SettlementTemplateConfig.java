@@ -245,9 +245,9 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
                 for (Element connectionElement : connectionNodes) {
                     String connectionID = connectionElement.getAttributeValue(ID);
 
-                    if (buildingType.equalsIgnoreCase(EVA)) {
-                        buildingTemplate.addEVAAttachedBuildingID(connectionID);
-                    }
+//                    if (buildingType.equalsIgnoreCase(EVA)) {
+//                        buildingTemplate.addEVAAttachedBuildingID(connectionID);
+//                    }
 
                     // Check that connection ID is not the same as the building ID.
                     if (connectionID.equalsIgnoreCase(id)) {

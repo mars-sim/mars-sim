@@ -430,7 +430,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		List<BuildingTemplate> result = new ArrayList<>();
 		
 		List<BuildingTemplate> list = getBuildings().stream()
-				.sorted(Comparator.comparing(bt -> bt.getID()))
+				.sorted(Comparator.comparing(bt -> bt.getStreetNum()))
 				.collect(Collectors.toList());
 		
 		Iterator<BuildingTemplate> i = list.iterator();
@@ -976,6 +976,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 					// Check line rect between positions for obstacle collision.
 					Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(),
 							secondBuildingPos.getX(), secondBuildingPos.getY());
+
+					// Note: May need to change collision if checking for underground buildings or tunnels
 					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, 
 							buildingManager.getSettlement().getCoordinates(), buildingManager.getSettlement(), false);
 					if (clearPath) {

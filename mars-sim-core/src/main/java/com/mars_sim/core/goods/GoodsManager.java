@@ -113,6 +113,10 @@ public class GoodsManager implements Serializable {
 	
 	private Settlement settlement;
 
+	private ResourcesReset resourcesResetEvent;
+	
+	private MarsTime savedTime;
+	
 	private static UnitManager unitManager;
 	private static MarketManager marketManager;
 	private static MasterClock masterClock;
@@ -176,14 +180,14 @@ public class GoodsManager implements Serializable {
 	 */
 	private class ResourcesReset implements ScheduledEventHandler {
 		// Duration to between reviewing essential resources
-		private static final int REVIEW_PERIOD = 80; // in millisols
+		private static final int REVIEW_PERIOD = 120; // in millisols
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getEventDescription() {
 			return "Start review period of essential resources";
 		}
-
+		
 		/**
 		 * Resets the review.
 		 * 
@@ -191,37 +195,59 @@ public class GoodsManager implements Serializable {
 		 */
 		@Override
 		public int execute(MarsTime now) {
-			resetEssentialsReview();
-			// Review 2 resources 
-			selectResourceForReview();
-//			selectResourceForReview();
+			// Reset the last review
+//			resetEssentialsReview();
+			
+			// Review life resource 
+			int resourceID = selectResourceForReview();
+			
+			double delta = moderateLifeResourceDemand(resourceID);
+					
+			executeDemandInject(resourceID, delta);
+			// Save the time
+			savedTime = now;
+			
 			return REVIEW_PERIOD;
-		}	
+		}
 	}
 
+	/**
+	 * Gets the time diff since last resource review.
+	 * 
+	 * @return
+	 */
+	public double getTimeDiff() {
+		if (savedTime != null) 
+			return masterClock.getMarsTime().getTimeDiff(savedTime);
+		return 0;
+	}
+	
 	/**
 	 * Constructor.
 	 *
 	 * @param settlement the settlement this manager is for.
 	 */
 	public GoodsManager(Settlement settlement) {
+		
 		this.settlement = settlement;
 
 		int startOfDayOffset = settlement.getTimeZone().getMSolOffset();
-		
 		// Schedule an event to recalculate shopping lists just after start of day
 		settlement.getFutureManager().addEvent(startOfDayOffset + 10, new TradeListUpdater());
-		
 		// Future event to update Goods values; randomise first trigger
 		settlement.getFutureManager().addEvent(RandomUtil.getRandomInt(1, 50), new GoodsUpdater());
-		
 		// Populate the caches
 		populateCaches();
-
 		// Schedule reseting the first review cycle during early morning
-		settlement.getFutureManager().addEvent(startOfDayOffset + 15, new ResourcesReset());
+		resourcesResetEvent = new ResourcesReset();
+		
+		settlement.getFutureManager().addEvent(startOfDayOffset + 15, resourcesResetEvent);
 	}
     
+	public ResourcesReset getResourcesResetEvent() {
+		return resourcesResetEvent;
+	}
+	
 	/**
 	 * Populates the cache maps.
 	 */
@@ -570,7 +596,7 @@ public class GoodsManager implements Serializable {
 	 */
 	double determineTradeDemand(Good good) {
 
-		double selectedTradeValue = 0D;
+		double effectiveTradeValue = 0D;
 		int num = 0;
 		
 		for (Settlement tempSettlement : unitManager.getSettlements()) {
@@ -581,19 +607,17 @@ public class GoodsManager implements Serializable {
 				if (distance < 2000) {
 					num++;
 					double tradeValue = baseValue / (1D + (distance / 2000D));
-					if (tradeValue > selectedTradeValue)
-						// Gets the largest trade value
-						selectedTradeValue = tradeValue;
+					effectiveTradeValue += tradeValue;
 				}
 			}
 		}
 		
 		if (num > 1)
-			selectedTradeValue = selectedTradeValue / (num - 0.5);
+			effectiveTradeValue = effectiveTradeValue / num;
 		
 		double previousValue = getTradeDemandScore(good);
 				
-		double newValue = (.8 * previousValue + .2 * selectedTradeValue) / 0.999; 
+		double newValue = (.9 * previousValue + .1 * effectiveTradeValue) / 0.999; 
 		
 		return newValue;
 	}
@@ -975,19 +999,18 @@ public class GoodsManager implements Serializable {
 	 */
     public int selectResourceForReview() {
 
-		Set<Integer> unreviewed = getResourceForReview();
-		var rh = settlement.getEquipmentInventory();
-
-		// Everything has been reviewed
-		if (unreviewed.isEmpty()) {
-			return -1;
-		}
+//		Set<Integer> unreviewed = getResourceForReview();
+////
+//		// Everything has been reviewed
+//		if (unreviewed.isEmpty()) {
+//			return -1;
+//		}
 
 		Map<Integer, Double> map = new HashMap<>();
 		
     	int selectID = -1;
 	
-    	for (int resourceID: unreviewed) {
+    	for (int resourceID: resLimits.keySet()) { //unreviewed) { // 
     		var limits = resLimits.get(resourceID);
     		int reservePerPop = limits.reserve();
 
@@ -995,7 +1018,9 @@ public class GoodsManager implements Serializable {
     		
     		double reserve = reservePerPop / popFactor;
     		
-	    	double stored = rh.getAllAmountResourceStored(resourceID) / (1 + settlement.getNumCitizens());
+//    		var rh = settlement.getEquipmentInventory();
+    		
+	    	double stored = settlement.getEquipmentInventory().getAllAmountResourceStored(resourceID) / (1 + settlement.getNumCitizens());
  		
 	    	double riskRatio = reserve/(.01 + stored);
 
@@ -1021,8 +1046,11 @@ public class GoodsManager implements Serializable {
 	 * @return the new demand 
 	 */
 	public double moderateLifeResourceDemand(int resourceID) {
+		if (resourceID == -1)
+			return 0;
+		
 		var rh = settlement.getEquipmentInventory();
-
+		
 		String resourceName = ResourceUtil.findAmountResourceName(resourceID);
 		
 		var limits = resLimits.get(resourceID);
@@ -1049,11 +1077,29 @@ public class GoodsManager implements Serializable {
     	double delta = 0; 
     	
     	if (riskRatio >= 1)
-    		delta = demand * riskRatio / 3 + Math.sqrt(lacking) / 3;
+    		delta = riskRatio / 2 + Math.sqrt(lacking) / 2;
     	else {
-    		delta = demand * riskRatio / 6 + Math.sqrt(surplus) / 6;
+    		delta = riskRatio / 4 + Math.sqrt(surplus) / 4;
     	}
 
+    	if (delta > demand) {
+    		if (demand > 320) {
+        		delta = Math.min(delta, 25);
+    		}
+    		else if (demand > 160) {
+        		delta = Math.min(delta, 20);
+    		}
+    		else if (demand > 80) {
+        		delta = Math.min(delta, 15);
+    		}
+    		else if (demand > 40) {
+        		delta = Math.min(delta, 10);
+    		}
+    		else if (demand > 20) {
+        		delta = Math.min(delta, 5);
+    		}
+    	}
+    	
 		double fraction = delta / demand;
 
 		logger.info(settlement, 0,  
@@ -1072,6 +1118,29 @@ public class GoodsManager implements Serializable {
 		return delta;
 	}
 
+	/**
+	 * Executes the demand inject.
+	 * 
+	 * @param resourceID
+	 * @param delta
+	 */
+	public void executeDemandInject(int resourceID, double delta) {
+		if (resourceID == -1)
+			return;
+		
+		Good good = GoodsUtil.getGood(resourceID);
+		
+		double demand = getDemandScoreWithID(resourceID);
+		
+		injectResourceDemand(resourceID, delta + demand);
+		
+//		updateOneGood(good);
+
+		logger.info(settlement, 5_000, "Injected demand for " + good.getName() + ": "
+				+ Math.round(demand * 100.0)/100.0 
+				+ " -> " + Math.round((delta + demand) * 100.0)/100.0);
+	}
+	
 	/**
 	 * Injects the resource demand.
 	 * 

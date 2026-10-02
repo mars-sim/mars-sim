@@ -12,8 +12,6 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.Administration;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Management;
-import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -51,7 +49,7 @@ public class BudgetResources extends Task {
 	public static final double REVIEW_PERC = .9;
 
 	public enum ReviewGoal implements Named {
-		LIFE_RESOURCE, 
+//		LIFE_RESOURCE, 
 		WATER_RATIONING, 
 		ICE_RESOURCE, 
 		REGOLITH_RESOURCE;
@@ -189,33 +187,34 @@ public class BudgetResources extends Task {
 				return budgetIceResource();
 			case REGOLITH_RESOURCE:
 				return budgetRegolithResource();
-			case LIFE_RESOURCE:
-				return budgetLifeResource();
+//			case LIFE_RESOURCE:
+//				return budgetLifeResource();
 			case WATER_RATIONING:
 				return budgetSettlementWater();
 			default:
 				// Evaluate all 3 one by one
-				return (budgetLifeResource()
-				|| budgetSettlementWater()
+				return (
+//						budgetLifeResource()
+				budgetSettlementWater()
 				|| budgetIceResource()
 				|| budgetRegolithResource());
 		}
 	}
 	
-	/**
-	 * Budgets a settlement life resource.
-	 * 
-	 * @return
-	 */
-	private boolean budgetLifeResource() {
-		lifeResource = person.getAssociatedSettlement().getGoodsManager().selectResourceForReview();
-		if (lifeResource != -1) {
-			goal = ReviewGoal.LIFE_RESOURCE;
-			return true;
-		}
-		
-		return false;
-	}
+//	/**
+//	 * Budgets a settlement life resource.
+//	 * 
+//	 * @return
+//	 */
+//	private boolean budgetLifeResource() {
+//		lifeResource = person.getAssociatedSettlement().getGoodsManager().selectResourceForReview();
+//		if (lifeResource != -1) {
+//			goal = ReviewGoal.LIFE_RESOURCE;
+//			return true;
+//		}
+//		
+//		return false;
+//	}
 	
 	/**
 	 * Budgets settlement water.
@@ -280,9 +279,9 @@ public class BudgetResources extends Task {
 					diff = person.getAssociatedSettlement().reviewRegolith();
 				} break;
 				
-				case LIFE_RESOURCE: {				
-					diff = (int) person.getAssociatedSettlement().getGoodsManager().moderateLifeResourceDemand(lifeResource);					
-				} break;
+//				case LIFE_RESOURCE: {
+//					diff = (int) person.getAssociatedSettlement().getGoodsManager().moderateLifeResourceDemand(lifeResource);					
+//				} break;
 				
 				case WATER_RATIONING: {			
 					diff = person.getAssociatedSettlement().getRationing().reviewRationingLevel();
@@ -346,24 +345,24 @@ public class BudgetResources extends Task {
 				}
 				break;
 				
-			case LIFE_RESOURCE:
-				
-				if (diff > 0) {
-					
-					Good good = GoodsUtil.getGood(lifeResource);
-					
-					double demand = person.getAssociatedSettlement().getGoodsManager().getDemandScoreWithID(lifeResource);
-					
-					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(lifeResource, diff + demand);
-					
-//					person.getAssociatedSettlement().getGoodsManager().updateOneGood(good);
-			
-					logger.info(person, 5_000, "Injected demand for " + good.getName() + ": "
-							+ Math.round(demand * 100.0)/100.0 
-							+ " -> " + Math.round((diff + demand) * 100.0)/100.0);
-				}
-				
-				break;
+//			case LIFE_RESOURCE:
+//				
+//				if (diff > 0) {
+//					
+//					Good good = GoodsUtil.getGood(lifeResource);
+//					
+//					double demand = person.getAssociatedSettlement().getGoodsManager().getDemandScoreWithID(lifeResource);
+//					
+//					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(lifeResource, diff + demand);
+//					
+////					person.getAssociatedSettlement().getGoodsManager().updateOneGood(good);
+//			
+//					logger.info(person, 5_000, "Injected demand for " + good.getName() + ": "
+//							+ Math.round(demand * 100.0)/100.0 
+//							+ " -> " + Math.round((diff + demand) * 100.0)/100.0);
+//				}
+//				
+//				break;
 				
 			case WATER_RATIONING:
 				

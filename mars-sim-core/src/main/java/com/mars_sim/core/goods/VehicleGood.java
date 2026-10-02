@@ -209,7 +209,7 @@ class VehicleGood extends Good {
 	
 		double average = computeVehiclePartsCost(owner);
 		
-		double tradeDemand = determineTradeVehicleValue(owner, settlement) / 10;
+		double tradeDemand = determineTradeVehicleValue(owner, settlement);
 		
 		owner.setTradeDemandScore(this, tradeDemand);
 		
@@ -332,7 +332,7 @@ class VehicleGood extends Good {
 	private double determineTradeVehicleValue(GoodsManager owner, Settlement settlement) {
 		double tradeDemand = owner.determineTradeDemand(this);
 		double supply = getNumberForSettlement(settlement);
-		return tradeDemand / (supply + 1D);
+		return tradeDemand * Math.log(supply + 1D);
 	}
 
 	/**

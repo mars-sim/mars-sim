@@ -167,7 +167,7 @@ public class BuildingManager implements Serializable {
 				// Check for possibility of collision
 				if (!Resupply.isTemplatePositionClear(spec, bt, this)) {
 					throw new IllegalArgumentException(settlement.getName() + " - Type: " + bt.getBuildingType() 
-						+ ". ID: " + bt.getID() + ". Name: " + bt.getBuildingName() + ". This buildingTemplate collides with an existing BuildingTemplate.");
+						+ ". ID: " + bt.getStreetNum() + ". Name: " + bt.getBuildingName() + ". This buildingTemplate collides with an existing BuildingTemplate.");
 					// May relocate with bt = Resupply.clearCollision(spec, bt,
 					// Resupply.MAX_COUNTDOWN, this);
 				}

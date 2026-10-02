@@ -68,7 +68,7 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	 * 
 	 * @return id.
 	 */
-	public String getID() {
+	public String getStreetNum() {
 		return streetNum;
 	}
 
@@ -139,13 +139,13 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 		}
 	}
 	
-	public void addEVAAttachedBuildingID(String id) {
-		eVAAttachedStreetNum = id;
-	}
-	
-	public String getEVAAttachedBuildingID() {
-		return eVAAttachedStreetNum;
-	}
+//	public void addEVAAttachedBuildingID(String id) {
+//		eVAAttachedStreetNum = id;
+//	}
+//	
+//	public String getEVAAttachedBuildingID() {
+//		return eVAAttachedStreetNum;
+//	}
 	
 	/**
 	 * Gets a list of all building connection templates.

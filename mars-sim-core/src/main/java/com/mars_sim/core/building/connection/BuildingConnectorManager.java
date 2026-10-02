@@ -251,7 +251,7 @@ public class BuildingConnectorManager implements Serializable {
 			BuildingManager buildingManager) {
 		Set<PartialBuildingConnector> partialBuildingConnectorList = new HashSet<>();
 
-		String buildingID = buildingTemplate.getID();
+		String buildingID = buildingTemplate.getStreetNum();
 		Building building = buildingManager.getBuildingByTemplateID(buildingID);
 		if (building == null) {
 			throw new IllegalStateException(

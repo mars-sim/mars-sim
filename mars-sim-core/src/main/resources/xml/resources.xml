@@ -28,7 +28,7 @@
 	<resource name="Food" type="derived" phase="solid" life-support="true" demand="0.75" edible="true">
 		Represents thermo-stabilized food that is not perishable.</resource>
 	<resource name="Water" type="compound" phase="liquid" life-support="true" demand="0.95" >Potable water</resource>
-	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand="0.5" />
+	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand="0.75" />
 	<resource name="Carbon dioxide" type="compound" phase="gas" life-support="true"/>
 	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich underground permafrost</resource>
 

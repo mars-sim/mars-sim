@@ -699,9 +699,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of EVA Airlock -->
 
-	<building type="Central Hub A" shape="circular" width="20.0" length="20.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
+	<building type="Central Dome A" shape="circular" width="20.0" length="20.0" north-south-alignment="length" construction="INFLATABLE" base-level="0"
 		wear-lifetime="3340000" maintenance-time="300" room-temperature="20.0" base-mass="10000">
-		<description> The Central Hub A serves to a nexus for connecting other building modules. It has a flexible air dome and is 
+		<description> The Central Dome A serves to a nexus for connecting other building modules. It has a flexible air dome and is 
 		designed to be a place of gathering and relaxation.</description>
 		<base-power power-priority="4" base-full-power="5.0" base-low-power="0.5"/>
 
@@ -829,7 +829,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<power-storage capacity="40" discharge-rate="1.25"/>
 			
-			<!-- The central hub has recreation facilities (movies, games, music, etc.). -->
+			<!-- The central dome has recreation facilities (movies, games, music, etc.). -->
 			<recreation capacity="10">
 				<activity>
 					<activity-spot xloc="5.6" yloc="-2.6" />
@@ -864,7 +864,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 
-			<!-- "Central Hub A" -->
+			<!-- "Central Dome A" -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Microwave Plasma Conversion of Air" number-modules="20"/>
 				
@@ -959,7 +959,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 						
 		</functions>
 	</building>
-	<!-- end for Central Hub Type A -->
+	<!-- end for Central Dome Type A -->
 
 	<building type="Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="72" room-temperature="20.5" base-mass="720">
@@ -2515,7 +2515,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Compact Quarters" width="6.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="125" room-temperature="22" base-mass="1850">
-		<description> The Compact Quarters hosts 12 basic beds and small desks.
+		<description> The Compact Quarters hosts 20 bunk beds and basic furniture and 2 common rest room and bath rooms.
 		</description>
 		<base-power power-priority="9" base-full-power="1.0" base-low-power="0.1" />
 
@@ -2724,35 +2724,37 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.45" yloc="2.0" />
 
 					<activity-spot xloc="-.32" yloc="1.59" />
+					
 					<activity-spot xloc="-.65" yloc="1.23" />
 					<activity-spot xloc="-1.10" yloc="1.23" />
 					<activity-spot xloc="-1.55" yloc="1.23" />
 					<activity-spot xloc="-2.00" yloc="1.23" />
-
 					<activity-spot xloc="-2.45" yloc="1.23" />
+					
 					<activity-spot xloc="-.65" yloc=".99" />
 					<activity-spot xloc="-1.10" yloc=".99" />
 					<activity-spot xloc="-1.55" yloc=".99" />
 					<activity-spot xloc="-2.00" yloc=".99" />
-
 					<activity-spot xloc="-2.45" yloc=".99" />
+					
 					<activity-spot xloc="-.32" yloc=".62" />
+					
 					<activity-spot xloc="-.65" yloc=".22" />
 					<activity-spot xloc="-1.10" yloc=".22" />
 					<activity-spot xloc="-1.55" yloc=".22" />
-
 					<activity-spot xloc="-2.00" yloc=".22" />
 					<activity-spot xloc="-2.45" yloc=".22" />
+					
 					<activity-spot xloc="-.65" yloc="-.02" />
 					<activity-spot xloc="-1.10" yloc="-.02" />
 					<activity-spot xloc="-1.55" yloc="-.02" />
-
 					<activity-spot xloc="-2.00" yloc="-.02" />
 					<activity-spot xloc="-2.45" yloc="-.02" />
+					
 					<activity-spot xloc="-.32" yloc="-.39" />
+					
 					<activity-spot xloc="-.65" yloc="-.79" />
 					<activity-spot xloc="-1.10" yloc="-.79" />
-
 					<activity-spot xloc="-1.55" yloc="-.79" />
 					<activity-spot xloc="-2.00" yloc="-.79" />
 					<activity-spot xloc="-2.45" yloc="-.79" />
@@ -4306,7 +4308,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Hallway" width="2.0" length="-1.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="10" room-temperature="18.0" base-mass="100"
 			category="CONNECTION">
-		<description> The Hallway is a pressurized access tube connecting inhabitable buildings.
+		<description> The Hallway is a 2m wide pressurized access tube connecting inhabitable buildings.
 		</description>
 		<base-power power-priority="2" base-full-power="0.1" base-low-power="0.01" />
 
@@ -4339,7 +4341,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Walkway" width="3.0" length="-1.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="15" room-temperature="18.0" base-mass="150"
 			category="CONNECTION">
-		<description> The Walkway is a pressurized access tube connecting inhabitable buildings.
+		<description> The Walkway is a 3m wide pressurized access tube connecting inhabitable buildings.
 		</description>
 		<base-power power-priority="2" base-full-power="0.1" base-low-power="0.01" />
 
@@ -4372,7 +4374,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			construction="CONCRETE" base-level="0"
 			wear-lifetime="3340000" maintenance-time="25" room-temperature="18.0" base-mass="100"
 			category="CONNECTION">
-		<description> The Brickway is a pressurized access tube connecting inhabitable buildings.
+		<description> The Brickway is a 6m wide pressurized corridor connecting inhabitable buildings.
 		</description>
 		<base-power power-priority="2" base-full-power="0.1" base-low-power="0.01" />
 
@@ -4406,7 +4408,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Outpost Hub" width="10.0" length="10.0" north-south-alignment="length" 
 			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="22.5" base-mass="3000">
-		<description> The Outpost Hub is a vaulted brick building that acts
+		<description> The Outpost Hub is a 10m x 10m square, vaulted, brick building that acts
 			as the main hub of a trading or mining outpost. Like its cousin
 			Lander Hab, it hosts a suite of functions to its inhabitants.
 		</description>
@@ -4416,8 +4418,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<administration capacity="2" population-support="4">
 				<activity>
 					<!-- temporarily using two of the activity-spots/chairs in the dining space for now -->
-					<activity-spot xloc="-.75" yloc="2.67" />
-					<activity-spot xloc="-3.73" yloc="2.67" />
+					<activity-spot xloc="-0.75" yloc="2.97" />
+					<activity-spot xloc="-3.95" yloc="2.97" />
 				</activity>
 			</administration>
 			<communication tech-level="1" >
@@ -4430,33 +4432,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0" yloc="0" />
 				</activity>
 			</computation>
-			
-			<cooking capacity="2">
-				<activity>
-					<activity-spot xloc="-1.3" yloc="3.7" />
-					<activity-spot xloc="-1.5" yloc="3.7" />
-				</activity>
-			</cooking>
-			
+
 			<dining capacity="6">
 				<activity>
-					<activity-spot xloc="-.75" yloc="2.67" />
-					<activity-spot xloc="-3.73" yloc="2.67" />
-					<activity-spot xloc="-1.65" yloc="3.05" />
+					<activity-spot xloc="-1.48" yloc="3.45" />
+					<activity-spot xloc="-2.4" yloc="3.45" />
+					<activity-spot xloc="-3.32" yloc="3.45" />
 					
-					<activity-spot xloc="-2.8" yloc="3.05" />
-					<activity-spot xloc="-1.65" yloc="2.3" />
-					<activity-spot xloc="-2.8" yloc="2.3" />
+					<activity-spot xloc="-1.48" yloc="2.4" />
+					<activity-spot xloc="-2.4" yloc="2.4" />
+					<activity-spot xloc="-3.32" yloc="2.4" />
 				</activity>
 			</dining>
-
-			<food-production tech-level="2" concurrent-processes="3">
-				<activity>
-					<activity-spot xloc="-1.3" yloc="3.7" />
-					<activity-spot xloc="-1.3" yloc="3.7" />
-					<activity-spot xloc="-1.3" yloc="3.7" />
-				</activity>
-			</food-production>
 
 			<life-support capacity="24" />
 
@@ -4513,9 +4500,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="PSYCHOLOGY" />
 
 				<activity>
-					<activity-spot xloc="3.17" yloc="-1.02" />
-					<activity-spot xloc="4.05" yloc=".18" />
-					<activity-spot xloc="2.36" yloc=".18" />
+					<activity-spot xloc="3.19" yloc="-1.02" />
+					<activity-spot xloc="4.05" yloc=".15" />
+					<activity-spot xloc="2.36" yloc=".15" />
 				</activity>
 			</research>
 
@@ -4566,8 +4553,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
 												
 				<activity>
-					<activity-spot xloc="-3.48" yloc="-3.76" />
-					<activity-spot xloc="-4.12" yloc="-3.76" />
+					<activity-spot xloc="-3.42" yloc="-3.76" />
+					<activity-spot xloc="-4.09" yloc="-3.76" />
 				</activity>
 			</resource-processing>
 
@@ -4683,10 +4670,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="12" />
 			<living-accommodation capacity="4" guesthouse="true">
 				<activity>
-					<activity-spot xloc="1.60" yloc="-1.45" />
-					<activity-spot xloc="1.15" yloc="-1.45" />
-					<activity-spot xloc="-1.15" yloc="-1.45" />
-					<activity-spot xloc="-1.60" yloc="-1.45" />
+					<activity-spot xloc="1.85" yloc="-1.45" />
+					<activity-spot xloc="0.8" yloc="-1.45" />
+					<activity-spot xloc="-0.8" yloc="-1.45" />
+					<activity-spot xloc="-1.90" yloc="-1.45" />
 				</activity>
 			</living-accommodation>
 			<power-generation>
@@ -4715,32 +4702,43 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Dining Hall" width="5.0" length="5.0" north-south-alignment="length" 
 			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5" base-mass="1500">
-		<description> The Dining Hall is a small brick dining facility for an outpost
+		<description> The Dining Hall is a brick dining facility for outposts
 		</description>
 		<base-power power-priority="1" base-full-power=".3" base-low-power="0.03" />
 
 		<functions>
-			<cooking capacity="2">
+			<cooking capacity="3">
 				<activity>
-					<activity-spot xloc="-0.3" yloc="1.7" />
-					<activity-spot xloc="-0.5" yloc="1.7" />
+					<activity-spot xloc="1.9" yloc="1.55" />
+					<activity-spot xloc="1.2" yloc="1.55" />
+					<activity-spot xloc="-1.55" yloc="1.65" />
 				</activity>
 			</cooking>
-			<dining capacity="6">
+			<dining capacity="8">
 				<activity>
-					<activity-spot xloc="1.5" yloc="2" />
-					<activity-spot xloc="0" yloc="2" />
-					<activity-spot xloc="-1.5" yloc="2" />
+					<activity-spot xloc="-0.5" yloc="-1.033" />
+					<activity-spot xloc="1.87" yloc="-1.035" />
+				
+					<activity-spot xloc="1.38" yloc="-0.6" />
+					<activity-spot xloc="0.68" yloc="-0.6" />
+					<activity-spot xloc="-0.015" yloc="-0.6" />
 					
-					<activity-spot xloc="1.5" yloc="0" />
-					<activity-spot xloc="0" yloc="0" />
-					<activity-spot xloc="-1.5" yloc="0" />
+					<activity-spot xloc="1.38" yloc="-1.5" />
+					<activity-spot xloc="0.68" yloc="-1.5" />
+					<activity-spot xloc="-0.015" yloc="-1.5" />
 				</activity>
 			</dining>
+			<food-production tech-level="3" concurrent-processes="3">
+				<activity>
+					<activity-spot xloc="0.5" yloc="1.95" />
+					<activity-spot xloc="-1.75" yloc="-1.55" />
+					<activity-spot xloc="1.9" yloc="-1.7" />
+				</activity>
+			</food-production>
 			<life-support capacity="2" >
 				<activity>
-					<activity-spot xloc="-2.0" yloc="1.0" />
-					<activity-spot xloc="2.0" yloc="1.0" />
+					<activity-spot xloc="-1.5" yloc="0.8" />
+					<activity-spot xloc="1.5" yloc="0.8" />
 				</activity>
 			</life-support> 
 			<power-generation>
@@ -4751,8 +4749,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="10" discharge-rate="1.25"/>
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-0.5" yloc="0.5" />
-					<activity-spot xloc="0.5" yloc="-0.5" />
+					<activity-spot xloc="-0.25" yloc="0.25" />
+					<activity-spot xloc="0.25" yloc="0.25" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="5000">
@@ -5040,8 +5038,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="24.0" base-mass="2500">
 		<description> The Inground Greenhouse is a semi underground structure with a
-			vaulted fiber glass roof which is less susceptible to meteor damage.
-			It grows crops as food for the settlement.
+			transparent vaulted roof to let sunlight come in. It grows crops as food for the settlement.
 		</description>
 		<scopes>
 			<scope name="metallic element"/>
@@ -5051,11 +5048,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<farming crops="10" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="100.0">
 				<activity>
-					<activity-spot xloc="0.0" yloc="3.75" />
-					<activity-spot xloc="0.0" yloc="1.87" />
-					<activity-spot xloc="0.0" yloc="0.0" />
-					<activity-spot xloc="0.0" yloc="-1.87" />
-					<activity-spot xloc="0.0" yloc="-3.75" />
+					<activity-spot xloc="1.5" yloc="3.75" />
+					<activity-spot xloc="1.5" yloc="1.87" />
+					<activity-spot xloc="1.5" yloc="-1.87" />
+					<activity-spot xloc="1.5" yloc="-3.75" />
+					<activity-spot xloc="-1.5" yloc="3.75" />
+					<activity-spot xloc="-1.5" yloc="1.87" />
+					<activity-spot xloc="-1.5" yloc="-1.87" />
+					<activity-spot xloc="-1.5" yloc="-3.75" />
 				</activity>
 			</farming>
 
@@ -5080,8 +5080,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
-					<activity-spot xloc="-1" yloc="1.0" />
-					<activity-spot xloc="1" yloc="1.0" />
+					<activity-spot xloc="-2.2" yloc="4.5" />
+					<activity-spot xloc="2.2" yloc="4.5" />
 				</activity>
 			</research>
 			<!-- "Inground Greenhouse" -->
@@ -5093,13 +5093,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="3"/>
 				
 				<activity>
-					<activity-spot xloc="2.0" yloc="4.5" />
+					<activity-spot xloc="2.2" yloc="-4.5" />
 				</activity>
 			</resource-processing>
 
 			<robotic-station capacity="1">
 				<activity>
-					<activity-spot xloc="2" yloc="4.5" />
+					<activity-spot xloc="0.0" yloc="0.0" />
 				</activity>
 			</robotic-station>
 

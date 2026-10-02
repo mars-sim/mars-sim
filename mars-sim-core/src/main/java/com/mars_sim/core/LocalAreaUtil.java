@@ -481,7 +481,7 @@ public class LocalAreaUtil {
 		// Add all local vehicles at settlement vicinity.
 		result.addAll(settlement.getParkedNGaragedVehicles());
 		// Add all buildings at settlement vicinity.
-		result.addAll(settlement.getBuildingManager().getBuildingSet());			
+		result.addAll(settlement.getBuildingManager().getBuildingSet());
 		// Add all construction sites at settlement vicinity.
 		result.addAll(settlement.getConstructionManager().getConstructionSites());
 		// Add all data collection sites at settlement vicinity.

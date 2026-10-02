@@ -81,7 +81,7 @@ public class Engineer extends JobSpec {
 		
 		result += getBuildingScienceDemand(settlement, ScienceType.ENGINEERING, 12D);
 		
-		result = (result + population / 6D) / 1.5;
+		result = (result + population / 6D);
 			
 		return result;
 	}

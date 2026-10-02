@@ -52,10 +52,10 @@ public class Rationing implements Serializable {
 		 */
 		private static EmergencyLevel convertInt2Enum(int level) {
 		    for (int i = 0; i < 6; i++) {
-		    	EmergencyLevel e = EmergencyLevel.values()[i];
+		    	EmergencyLevel e = EmergencyLevel.values()[i-1];
 		    	if (level <= e.rationLevel) {
 		    		if (i > 0)
-		    			return EmergencyLevel.values()[i - 1];
+		    			return EmergencyLevel.values()[i];
 		    		else {
 		    			return EmergencyLevel.NONE;
 		    		}
@@ -74,6 +74,8 @@ public class Rationing implements Serializable {
 	/** The newly recommended level just being computed. */
 	private int recommendedLevel;
 	
+	private double totalWaterUsage;
+	
 	/** The player adjustable rationing level that would trigger the state of emergency for the settlement. */
 //	private EmergencyLevel emergencyLevel = EmergencyLevel.NONE;
 	
@@ -87,6 +89,14 @@ public class Rationing implements Serializable {
 	
 	public Rationing(Settlement settlement)  {
 		this.settlement = settlement;
+		
+		double reserve0 = Settlement.MIN_WATER_RESERVE;
+		
+		// Assuming a 90-day supply of this resource and including industrial usage 
+		// of WASH_WATER_USAGE
+		double reserve1 = 90 * (5 * WASH_WATER_USAGE + settlement.getWaterConsumptionRate());
+		
+		totalWaterUsage = reserve0 + reserve1;	
 	}
 	
 	/**
@@ -186,16 +196,10 @@ public class Rationing implements Serializable {
 		double storedWater = rh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		double storedBrine = rh.getSpecificAmountResourceStored(ResourceUtil.BRINE_WATER_ID);
 		double storedIce = rh.getSpecificAmountResourceStored(ResourceUtil.ICE_ID);
-		// In future, consider how to vary industrialReserve according to the specific industrial need of the settlement
-		double industrialReserve = Settlement.MIN_WATER_RESERVE;
-		
-		double personReserve = settlement.getGoodsManager().getReserveLimit(ResourceUtil.WATER_ID);
-		
-		// Assuming a 90-day supply of this resource and including industrial usage 
-		// of WASH_WATER_USAGE
-		double required = 90 * (5 * WASH_WATER_USAGE + settlement.getWaterConsumptionRate());
 	
-		int newLevel = (int)(settlement.getSqrtPopFactor() * (required + industrialReserve + personReserve) 
+		double reserve2 = settlement.getGoodsManager().getReserveLimit(ResourceUtil.WATER_ID);
+
+		int newLevel = (int)(settlement.getSqrtPopFactor() * (reserve2 + totalWaterUsage)
 				/ (1 + storedWater + .75 * storedBrine + .5 * storedIce));
 		if (newLevel < 1)
 			newLevel = 0;

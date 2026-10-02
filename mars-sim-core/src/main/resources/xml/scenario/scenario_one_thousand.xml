@@ -94,7 +94,7 @@
 			<location coordinates="72.77 164.58" />
 		</settlement>
 
-		<settlement name="Terminus" template="Alpha Base 2" crew="Alpha" persons="44" robots="24" sponsor="NASA">
+		<settlement name="Terminus" template="Alpha Base 2" persons="44" robots="24" sponsor="ESA">
 			<location coordinates="-4.8051 0.0" />
 		</settlement>
 			
@@ -102,7 +102,11 @@
 			<location coordinates="15.1255 114.1535" />
 		</settlement>
 
-		<settlement name="Tiangong" template="Hub Base 2" persons="124" robots="52" sponsor="CNSA">
+		<settlement name="Falcon" template="Hub Base 1" persons="56" robots="32" sponsor="SPACEX">
+			<location coordinates="27.4888 -53.7090" />
+		</settlement>
+		
+		<settlement name="Tiangong" template="Hub Base 2" persons="125" robots="52" sponsor="CNSA">
 			<location coordinates="13.124 -4.76" />
 		</settlement>
 
@@ -110,6 +114,10 @@
 			<location coordinates="24.14 172.29" />
 		</settlement>
 
+		<settlement name="Pilgrim" template="Sector Base 2" crew="Alpha" persons="256" robots="120" sponsor="NASA">
+			<location coordinates="31.0599 -102.9420" />
+		</settlement>
+		
 	</initial-settlement-list>
 	
 	<arriving-settlement-list>

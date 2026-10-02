@@ -83,6 +83,7 @@ import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
+import com.mars_sim.core.resourceprocess.task.ToggleResourceProcessMeta;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
@@ -1050,7 +1051,6 @@ public class Settlement extends Unit implements Temporal,
 			computedIceDigValue = computeIceAdjustedDemand();
 
 			computedRegolithDigValue = computeRegolithAdjustedDemand();
-
 			// Initialize the goods manager
 			goodsManager.updatedMetrics();
 		}
@@ -1061,16 +1061,12 @@ public class Settlement extends Unit implements Temporal,
 		powerGrid.timePassing(pulse);
 		thermalSystem.timePassing(pulse);
 		buildingManager.timePassing(pulse);
-		
 		// Set refreshTasks param to true
 		taskManager.timePassing();
-
 		// Update citizens
 		timePassingCitizens(pulse);
-
 		// Update vehicles
 		timePassing(pulse, ownedVehicles);
-		
 		// Update robots
 		timePassing(pulse, ownedRobots);
 	
@@ -1081,15 +1077,16 @@ public class Settlement extends Unit implements Temporal,
 			iceReviewDue = true;
 			// Reset regolith review due			
 			regolithReviewDue = true;
+			// Review # of modules
+			reviewProcessNumModules(resourceProcesses);
+			// Review # of modules
+			reviewProcessNumModules(wasteProcesses);
 		}
 
-	
 		if (sol > 1 && pulse.isNewSol()) {
-
 			// Perform the end of day tasks
 			performBeginningOfDayTasks();	
 		}
-
 		// Keeps track of things based on msol
 		trackByMSol(pulse);
 
@@ -1100,12 +1097,54 @@ public class Settlement extends Unit implements Temporal,
 			p.processResources(pulse, 1, cumulativeMillisols);
 		}
 
-		// Run each resource process.
+		// Run each waste process.
 		for (ResourceProcess p : wasteProcesses) {
 			p.processResources(pulse, 1, cumulativeMillisols);
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Evaluates if the number of modules is optimal.
+	 * 
+	 * @param processes
+	 */
+	private void reviewProcessNumModules(List<ResourceProcess> processes) {
+		// Evaluate each resource process.
+		for (ResourceProcess p : processes) {
+			int modules = p.getNumModules();
+			double dutyPercent = p.getPercentDuty();
+			if (dutyPercent > 50) {
+
+				if (modules == 0) {
+					logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + ++modules);
+					p.setModules(modules);
+				}
+				else if (modules < p.getMaxModules())  {
+					int diff = (int)(p.getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
+					int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
+					if (rand <= diff) {
+						logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + ++modules);
+						p.setModules(modules);
+					}
+				}
+			}
+			else if (modules > 1) {
+				if ((p.getOverallScore() <= 20.0 || p.getOutputScore() <= 20)) {
+					logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + --modules);
+					p.setModules(modules);
+				}
+				else {
+					int diff = (int)(p.getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
+					int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
+					if (rand >= diff) {
+						logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + --modules);
+						p.setModules(modules);
+					}
+				}
+			}
+		}
 	}
 	
 	/**

@@ -143,6 +143,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //	private static final double TRENDY = 192;	
 	private static final double EXTREME = 128;
 	private static final double MEGA = 64;
+	private static final double GREAT = 48;
 	private static final double SUPER = 32;
 	private static final double GOOD = 16;
 	private static final double MID = 8;
@@ -447,24 +448,26 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					// reduce the score in order to encourage this process
 					value = value / EXTREME;
 				}
-//				else {
-//					// Note: Mark ambient as 'false' to hint that this process is discouraged
-//					score += value * SUPER;
-//				}
+				else {
+					// Note: Mark ambient as 'false' to hint that this process is discouraged
+					value = value / SUPER;
+				}
 				
-				if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
+				if (ResourceUtil.isHydrogen(resource)) { 					// hydrogen	
 					score += value * SUPER;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
-					score += value * SUPER;
+					score += value * MEGA;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
 					score += value * SUPER;
 				} else if (ResourceUtil.isOxygen(resource)) {  				// oxygen
-					score -= value * MID;
+					score += value * MID;
 				} else if (ResourceUtil.isWater(resource)) { 				// water
-					score -= value * GOOD;
+					score -= value;
+				} else if (ResourceUtil.isTier1Resource(resource)) { 		// ice, brine water, rock salt
+					score -= value * MEGA;
 				} else if (ResourceUtil.isRawMaterial(resource)) {   				// all ores, all minerals, sand)
 //					|| ResourceUtil.isChemical(resource)) {					// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 
-					score += value / MEGA;
+					score += value / SUPER;
 				} else if (ResourceUtil.isCO2(resource)) { 					// CO2	
 					score += value / SUPER;
 				} else if (ResourceUtil.isDerivedResource(resource)) { 		// glucose, leaves, soil 
@@ -472,8 +475,6 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isInSitu(resource)					// all regolith types
 						|| ResourceUtil.isWasteProduct(resource)) { 		// grey water, black water, * waste
 					score += value / SUPER;
-				} else if (ResourceUtil.isTier1Resource(resource)) { 		// ice, brine water, rock salt
-					score -= value * MEGA;
 				} else if (ResourceUtil.isConstructionResource(resource)) {	// GYPSUM_PLASTER_ID, GYPSUM_ID, CEMENT_ID, LIME_ID, ACETYLENE_ID
 					score += value / MID;
 				} else {
@@ -489,7 +490,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				double value = vp;
 
 				if (processSpec.isCoreOutputResource(resource)) {
-					score += value * MEGA;
+					score += value * SUPER;
 				}
 				
 //				score += value;
@@ -531,7 +532,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //				} else if (ResourceUtil.isWater(resource)) { 			// water
 //					score += value;
 				} else if (ResourceUtil.isRawMaterial(resource)) { 		// all ores, all minerals, sand
-					score += value * MEGA;
+					score += value * 4;
 				} else
 					score += value;
 			}

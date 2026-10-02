@@ -114,7 +114,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	private int baseLevel;
 
-	
 	private double presetTemperature = 0; 
 	private double width;
 	// Regarding the length, how to best handle the variable length of brickway/walkly/hallway/tunnel 
@@ -158,7 +157,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public static Building createBuilding(BuildingTemplate template, Settlement owner) {
 		var spec = BuildingManager.getBuildingConfig().getBuildingSpec(template.getBuildingType());
 
-		return new Building(owner, template.getID(), template.getZone(), template.getBuildingName(),
+		return new Building(owner, template.getStreetNum(), template.getZone(), template.getBuildingName(),
 							template.getBounds(), spec);
 	}
 

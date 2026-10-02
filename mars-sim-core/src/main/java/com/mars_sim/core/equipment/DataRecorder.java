@@ -55,7 +55,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		ItemResourceUtil.initDataRecorder();
 	}
 	
-	private Map<Worker, List<FieldDataSet>> dataset = new HashMap<>();
+	private Map<Worker, List<FieldDataSet>> dataSetMap = new HashMap<>();
 	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -115,12 +115,12 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	}
 	
 	/**
-	 * Gets the data set in this class.
+	 * Gets the data set map.
 	 * 
 	 * @return
 	 */
-	public Map<Worker, List<FieldDataSet>> getDataset() {
-		return dataset;
+	public Map<Worker, List<FieldDataSet>> getDataSetMap() {
+		return dataSetMap;
 	}
 	
 	/**
@@ -130,7 +130,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * @return
 	 */
 	public boolean checkRegisteredOwnerID(int ownerID) {
-		return dataset.keySet().stream().anyMatch(p -> p.getIdentifier() == ownerID);
+		return dataSetMap.keySet().stream().anyMatch(p -> p.getIdentifier() == ownerID);
 
 //		Set<Integer> ids = dataset.keySet().stream()
 //				.map(p -> p.getIdentifier()) 
@@ -151,18 +151,18 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * @param isNewRecording
 	 */
 	public void recordData(Worker worker, double workTime, int initialQuality, boolean isNewRecording) {
-		if (dataset.isEmpty()) {
-			startNewDataset(worker, workTime, initialQuality);
+		if (dataSetMap.isEmpty()) {
+			createNewFieldDataSet(worker, workTime, initialQuality);
 		}
 		else {
-			List<FieldDataSet> list = dataset.get(worker);
 			FieldDataSet data = null;
+			List<FieldDataSet> list = dataSetMap.get(worker);
 			if (list.isEmpty()) {
-				data = startNewDataset(worker, workTime, initialQuality);
+				data = createNewFieldDataSet(worker, workTime, initialQuality);
 				list = new ArrayList<>();
 			}
 			else if (isNewRecording) {
-				data = startNewDataset(worker, workTime, initialQuality);
+				data = createNewFieldDataSet(worker, workTime, initialQuality);
 			}
 			else {
 				int size = list.size();
@@ -170,22 +170,22 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 			}
 			data.addWorkTime(workTime);
 			list.add(data);
-			dataset.put(worker, list);
+			dataSetMap.put(worker, list);
 		}
 	}
 	
 	/**
-	 * Starts a new dataset.
+	 * Creates a new dataset.
 	 * 
 	 * @param worker
 	 * @param workTime
 	 * @param initialQuality
 	 * @return
 	 */
-	private FieldDataSet startNewDataset(Worker worker, double workTime, int initialQuality) {
+	private FieldDataSet createNewFieldDataSet(Worker worker, double workTime, int initialQuality) {
 		FieldDataSet data = new WaterIceData(
 				DataType.GROUND_DATA,
-				Simulation.instance().getMasterClock().getMarsTime(), 
+				masterClock.getMarsTime(), 
 				initialQuality);
 		data.addWorkTime(workTime);
 		return data;
@@ -198,23 +198,24 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * @param dataSet
 	 */
 	public void addDataset(Worker worker, FieldDataSet dataSet) {
-		if (dataset.containsKey(worker)) {
-			List<FieldDataSet> list = dataset.get(worker);
+		List<FieldDataSet> list = null;
+		if (dataSetMap.containsKey(worker)) {
+			list = dataSetMap.get(worker);
 			for (FieldDataSet fds: list) {
 				if (fds.getIdentifier() == dataSet.getIdentifier()) {
 					// Overwrite the dataset
 					fds = dataSet;
-					return;
+					break;
 				}
 			}
-			// Add the dataset
-			list.add(dataSet);
 		}
 		else {
-			List<FieldDataSet> list = new ArrayList<>();
-			// Add the dataset
-			dataset.put(worker, list);
+			list = new ArrayList<>();
 		}
+		// Add the dataset
+		list.add(dataSet);
+		// Add the list
+		dataSetMap.put(worker, list);
 	}
 	
 	/**

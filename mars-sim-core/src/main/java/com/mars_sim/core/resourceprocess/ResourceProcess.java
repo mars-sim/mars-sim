@@ -8,7 +8,6 @@ package com.mars_sim.core.resourceprocess;
 
 import java.util.Set;
 
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
@@ -46,7 +45,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 	
 	private int modules;
 
-	private int settlementRunningModules;
 	private int settlementMaxModules;
 	
 	private double percentEffort = 100.0;
@@ -59,35 +57,35 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private MarsTime toggleDue = null; 
 	private ResourceProcessEngine engine;
 	private ResourceProcessSpec processSpec;
-	private Building building;
+//	private Building building;
 	private Settlement settlement;
 	private ResourceHolder host;
 	
 	public static final ResourceProcessAssessment DEFAULT_ASSESSMENT = new ResourceProcessAssessment(0, 0, 0, false);
 	
-	/**
-	 * Constructor 1.
-	 *
-	 * @param engine The processing engine that this process manages
-	 * @param building
-	 */
-	public ResourceProcess(ResourceProcessEngine engine, Building building) {
-		this.processSpec = engine.getProcessSpec();
-		isRunning = processSpec.getDefaultOn();
-		currentProductionLevel = 1D;
-		this.canToggle = false;
-		this.engine = engine;
-		this.building = building;
-		this.assessment = DEFAULT_ASSESSMENT;
-		
-		this.modules = (int)MathUtils.between(engine.getMaxModules() / 3.0, 1, engine.getMaxModules());
-
-		this.host = building.getAssociatedSettlement().getEquipmentInventory();
-		
-		// Add some randomness at the start of the sim
-		int delay = RandomUtil.getRandomInt(0, 50);
-		resetToggleWait(delay);
-	}
+//	/**
+//	 * Constructor 1.
+//	 *
+//	 * @param engine The processing engine that this process manages
+//	 * @param building
+//	 */
+//	public ResourceProcess(ResourceProcessEngine engine, Building building) {
+//		this.processSpec = engine.getProcessSpec();
+//		isRunning = processSpec.getDefaultOn();
+//		currentProductionLevel = 1D;
+//		this.canToggle = false;
+//		this.engine = engine;
+//		this.building = building;
+//		this.assessment = DEFAULT_ASSESSMENT;
+//		
+//		this.modules = (int)MathUtils.between(engine.getMaxModules() / 3.0, 1, engine.getMaxModules());
+//
+//		this.host = building.getAssociatedSettlement().getEquipmentInventory();
+//		
+//		// Add some randomness at the start of the sim
+//		int delay = RandomUtil.getRandomInt(0, 50);
+//		resetToggleWait(delay);
+//	}
 
 	/**
 	 * Constructor 2.
@@ -103,9 +101,18 @@ public class ResourceProcess implements ScheduledEventHandler {
 		this.engine = engine;
 		this.settlement = settlement;
 		this.assessment = DEFAULT_ASSESSMENT;
-		this.modules = 1;
-
-		addMaxModules(engine.getMaxModules());
+		
+		int numM = 1;
+		
+		int maxMod = engine.getMaxModules();
+		if (maxMod == 4)
+			numM = 2;
+		else if (maxMod > 4)
+			numM = RandomUtil.getRandomInt((int)MathUtils.between(maxMod/4, 2, maxMod/2), (int)MathUtils.between(maxMod/2, 2, maxMod));
+		
+		this.modules += numM;
+		
+		addMaxModules(maxMod);
 		
 		this.host = settlement.getEquipmentInventory();
 		
@@ -120,7 +127,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @param max
 	 */
 	public void addMaxModules(int max) {
-		settlementRunningModules++;
 		settlementMaxModules += max;
 	}
 	
@@ -428,7 +434,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @return
 	 */
 	public final int getMaxModules() {
-		return settlementMaxModules; // engine.getMaxModules();
+		return settlementMaxModules;
 	}
 	
 	/**
@@ -437,14 +443,14 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @return
 	 */
 	public int getNumModules() {
-		return settlementRunningModules; // modules;
+		return modules;
 	}
 	
     /**
      * Sets the number of modules for this resource process engine.
      */
     public void setModules(int value) {
-    	settlementRunningModules = value;
+    	modules = value;
     }
     
 	/**

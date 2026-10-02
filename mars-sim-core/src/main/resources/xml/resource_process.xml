@@ -416,7 +416,7 @@
 		<input resource="Carbon monoxide" rate="140" />
 		<input resource="hydrogen" rate="30" />
 		
-		<output resource="methane" rate="80" />
+		<output resource="methane" rate="80" core="true" />
 		<output resource="water" rate="90" />
 	</process> <!-- "CO Methanation" -->
 

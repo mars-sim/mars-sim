@@ -586,7 +586,7 @@ public class EquipmentInventory
 	
 		// Select the data recorder that has the least # of datasets
 		Optional<Equipment> smallestDataset = recorderSet.stream()
-				.min(Comparator.comparingInt(r -> ((DataRecorder)r).getDataset().size()));
+				.min(Comparator.comparingInt(r -> ((DataRecorder)r).getDataSetMap().size()));
 		
 		DataRecorder dr = (DataRecorder)smallestDataset.get();
 		
