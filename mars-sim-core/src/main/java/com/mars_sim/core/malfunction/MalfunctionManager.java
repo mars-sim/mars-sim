@@ -222,7 +222,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		this.parameters = params;
 		this.standardInspectionWindow = params.inspectionWindow();
 				
-		// Intial elapsed time is 0-90% of the inspection window
+		// Initial elapsed time is a random %age of the inspection window
 		// Make sure it is less than the minimum so not immediately in inspection
 		var initialElapsedTime = standardInspectionWindow * (RandomUtil.getRandomDouble(MaintenanceUtil.INSPECTION_PERCENTAGE));
 		
