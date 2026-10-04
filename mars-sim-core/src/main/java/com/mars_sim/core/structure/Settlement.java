@@ -79,10 +79,12 @@ import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.process.CompletedProcess;
+import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
+import com.mars_sim.core.resourceprocess.ResourceProcessSpec;
 import com.mars_sim.core.resourceprocess.task.ToggleResourceProcessMeta;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
@@ -116,9 +118,7 @@ public class Settlement extends Unit implements Temporal,
 	public enum MeasureType {ICE_PROBABILITY, REGOLITH_PROBABILITY};
 	
 	private static final int NUM_BACKGROUND_IMAGES = 20;
-
 	private static final int MAX_STOCK_CAP = 1_000_000;
-
 	private static final int INITIAL_FREE_OXYGEN_AMOUNT = 5_000;
 	/**
 	 * Shared preference key for Mission limits
@@ -160,13 +160,11 @@ public class Settlement extends Unit implements Temporal,
 				ResourceUtil.METHANOL_ID,
 				ResourceUtil.BRINE_WATER_ID,
 				ResourceUtil.WATER_ID,
-				
 				ResourceUtil.ICE_ID,
 				ResourceUtil.BRINE_WATER_ID,
 				ResourceUtil.GREY_WATER_ID,
 				ResourceUtil.BLACK_WATER_ID,
 				ResourceUtil.ROCK_SAMPLES_ID,
-
 				ResourceUtil.REGOLITH_ID };
 	}
 	
@@ -357,6 +355,10 @@ public class Settlement extends Unit implements Temporal,
 	private List<ResourceProcess> resourceProcesses;
 	/** The list of waste processes within the settlement. */
 	private List<ResourceProcess> wasteProcesses;
+	/** The map of amount resource and its resource processes. */
+	private Map<AmountResource, List<ResourceProcess>> outputResourceProcessMap;
+	/** The map of amount resource and its waste processes. */
+	private Map<AmountResource, List<ResourceProcess>> outputWasteProcessMap;
 	
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(80);
@@ -394,13 +396,16 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
-		indoorPeople = new CopyOnWriteArraySet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
 		
+		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
+		indoorPeople = new CopyOnWriteArraySet<>();
+		
 		dataCollectionSiteMap = new HashMap<>();
+		outputResourceProcessMap = new HashMap<>();
+		outputWasteProcessMap = new HashMap<>();
 		
 		resourceProcesses = new ArrayList<>();
 		wasteProcesses = new ArrayList<>();
@@ -411,10 +416,12 @@ public class Settlement extends Unit implements Temporal,
 
 		// Mock use the default shifts
 		// Initialize schedule event manager
-		futureEvents = new ScheduledEventManager(masterClock);	
+		futureEvents = new ScheduledEventManager(masterClock);
+		
 		ShiftPattern shifts = settlementConfig.getShiftByPopulation(initialPopulation);
+		
 		shiftManager = new ShiftManager(this, shifts,
-										masterClock.getMarsTime().getMillisolInt());
+							masterClock.getMarsTime().getMillisolInt());
 
 		missionControl = new MissionControl(this);
 	}
@@ -447,6 +454,8 @@ public class Settlement extends Unit implements Temporal,
 		indoorPeople = new CopyOnWriteArraySet<>();
 
 		dataCollectionSiteMap = new HashMap<>();
+		outputResourceProcessMap = new HashMap<>();
+		outputWasteProcessMap = new HashMap<>();
 		
 		resourceProcesses = new ArrayList<>();
 		wasteProcesses = new ArrayList<>();
@@ -458,8 +467,9 @@ public class Settlement extends Unit implements Temporal,
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftByPopulation(10);
+		
 		shiftManager = new ShiftManager(this, shifts,
-										masterClock.getMarsTime().getMillisolInt());
+							masterClock.getMarsTime().getMillisolInt());
 
 		// Initialize scientific achievement.
 		scientificAchievement = new EnumMap<>(ScienceType.class);
@@ -508,7 +518,8 @@ public class Settlement extends Unit implements Temporal,
 		indoorPeople = new CopyOnWriteArraySet<>();
 
 		dataCollectionSiteMap = new HashMap<>();
-		
+		outputResourceProcessMap = new HashMap<>();
+		outputWasteProcessMap = new HashMap<>();
 		allowTradeMissionSettlements = new HashMap<>();
 		
 		resourceProcesses = new ArrayList<>();
@@ -651,8 +662,69 @@ public class Settlement extends Unit implements Temporal,
 				new GroupActivity(ga, this, masterClock.getMarsTime());
 			}
 		}
+		
+		Map<AmountResource, List<ResourceProcessSpec>> map = simulationConfig.getResourceProcessConfiguration().getOutputResourceMap();
+		Map<ResourceProcessSpec, ResourceProcess> resourceSpecs = new HashMap<>();
+		Map<ResourceProcessSpec, ResourceProcess> wasteSpecs = new HashMap<>();
+		
+		
+		for (ResourceProcess rp: resourceProcesses) {
+			ResourceProcessSpec spec = rp.getSpec();
+			resourceSpecs.put(spec, rp);
+		}
+				
+		for (ResourceProcess rp: wasteProcesses) {
+			ResourceProcessSpec spec = rp.getSpec();
+			wasteSpecs.put(spec, rp);
+		}
+		
+		for (AmountResource ar: map.keySet()) {
+			
+			List<ResourceProcessSpec> specs = map.get(ar);
+			List<ResourceProcess> resourceProcesses = new ArrayList<>();
+			List<ResourceProcess> wasteProcesses = new ArrayList<>();
+			
+			for (ResourceProcessSpec s: specs) {
+				ResourceProcess rp = resourceSpecs.get(s);
+				if (rp != null) {
+					resourceProcesses.add(rp);
+				}
+				
+				ResourceProcess wp = wasteSpecs.get(s);
+				if (wp != null) {
+					wasteProcesses.add(wp);
+				}
+			}
+			
+			if (!resourceProcesses.isEmpty())
+				outputResourceProcessMap.put(ar, resourceProcesses);
+			if (!wasteProcesses.isEmpty())
+				outputWasteProcessMap.put(ar, wasteProcesses);
+		}		
+		
+//		System.out.println(outputResourceProcessMap.toString().replaceAll("null", "\n[NULL]"));
+//		System.out.println(outputWasteProcessMap.toString().replaceAll("null", "\n[NULL]"));
 	}
 
+	/**
+	 * Gets the output resource process map.
+	 * 
+	 * @return
+	 */
+	public Map<AmountResource, List<ResourceProcess>> getOutputResourceProcessMap() {
+		return outputResourceProcessMap;
+	}
+	
+	/**
+	 * Gets the output waste process map.
+	 * 
+	 * @return
+	 */
+	public Map<AmountResource, List<ResourceProcess>> getOutputWasteProcessMap() {
+		return outputWasteProcessMap;
+	}
+
+	
 	/**
 	 * Adds building plans from the settlement template to the construction manager queue.
 	 * Each plan will be scheduled for construction at the current Mars time plus the delay in sols.

@@ -6,14 +6,18 @@
  */
 package com.mars_sim.core.resourceprocess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+
 import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 
 /**
@@ -37,6 +41,8 @@ public class ResourceProcessConfig {
 
 	private Map<String, ResourceProcessSpec> processSpecMap = new HashMap<>();
 
+	private transient Map<AmountResource, List<ResourceProcessSpec>> outputResourceMap = new HashMap<>();
+	
 	/**
 	 * Constructor.
 	 *
@@ -55,8 +61,34 @@ public class ResourceProcessConfig {
 			}
 			processSpecMap.put(key, newProcess);
 		}
+		
+		for (ResourceProcessSpec spec: processSpecMap.values()) {
+			Set<Integer> outputResource = spec.getOutputResources();
+			List<ResourceProcessSpec> specList = new ArrayList<>();
+			for (int o: outputResource) {
+				AmountResource ar = ResourceUtil.findAmountResource(o);
+				
+				if (outputResourceMap.containsKey(ar)) {
+					specList = outputResourceMap.get(ar);
+				}
+				else {
+					specList = new ArrayList<>();
+				}
+				specList.add(spec);
+				outputResourceMap.put(ar, specList);
+			}
+		}
 	}
 
+	/**
+	 * Gets the output resource map.
+	 * 
+	 * @return
+	 */
+	public Map<AmountResource, List<ResourceProcessSpec>> getOutputResourceMap() {
+		return outputResourceMap;
+	}
+	
 	/**
 	 * Parses the specific process.
 	 * 

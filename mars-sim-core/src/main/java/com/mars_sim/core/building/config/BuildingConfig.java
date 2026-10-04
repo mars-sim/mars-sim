@@ -45,6 +45,9 @@ public class BuildingConfig {
 	private static final String BUILDING_TYPE = "type";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
+	private static final String SHAPE = "shape";
+	private static final String CIRCULAR = "circular";
+	
 	private static final String N_S_ALIGNMENT = "north-south-alignment";
 	private static final String CONSTRUCTION = "construction";
 	private static final String BASE_LEVEL = "base-level";
@@ -57,9 +60,7 @@ public class BuildingConfig {
 	private static final String CAPACITY = "capacity";
 
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
-
 	private static final String NUMBER_MODULES = "number-modules";
-	
 	private static final String PROCESS_ENGINE = "process-engine";
 	private static final String RESOURCE_CAPACITY = "resource-capacity";
 	private static final String RESOURCE_INITIAL = "resource-initial";
@@ -88,16 +89,24 @@ public class BuildingConfig {
 	
 	private static final String BASE_FULL_POWER = "base-full-power";
 	private static final String BASE_LOW_POWER = "base-low-power";
-	
 	private static final String POWER_SOURCE = "power-source";
-	
 	public static final String POWER = "power";
-	
 	private static final String PRIORITY = "power-priority";
 	
 	private static final Set<String> DEFAULT_SOURCE_ATTR = Set.of(TYPE, MODULES, CONVERSION, PERCENT_LOADING);
 
 	public final static String BAY = "Bay";
+	
+	private static final String _N = "\n";
+	private static final String _R = "\r";
+	private static final String _T_PLUS = "\t+";
+	private static final String _S_PLUS = "\s+";
+
+	private static final String UNDERSCORE = "_";
+	private static final String TWO_WHITESPACES = "  ";
+	private static final String WHITESPACE = " ";
+	private static final String FOUR_WHITESPACES = TWO_WHITESPACES + TWO_WHITESPACES;
+	private static final String THREE_WHITESPACES = "   ";
 	
 	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 	
@@ -151,9 +160,9 @@ public class BuildingConfig {
 
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
-		String shape = buildingElement.getAttributeValue("shape");
+		String shape = buildingElement.getAttributeValue(SHAPE);
 		double area;
-		if (shape != null && shape.equalsIgnoreCase("circular")) {
+		if (shape != null && shape.equalsIgnoreCase(CIRCULAR)) {
 			area = Math.PI * (length / 2.0) * (length / 2.0);
 		} else {
 			area = width * length;
@@ -178,9 +187,10 @@ public class BuildingConfig {
 		// Process description
 		Element descElement = buildingElement.getChild(DESCRIPTION);
 		String desc = descElement.getValue().trim();
-		desc = desc.replaceAll("\n", " ").replaceAll("\r", " ")
-				.replaceAll("\t+", " ").replaceAll("\s+", " ")
-				.replace("    ", " ").replace("   ", " ").replace("  ", " ");
+		desc = desc.replaceAll(_N, WHITESPACE).replaceAll(_R , WHITESPACE)
+				.replaceAll(_T_PLUS, WHITESPACE).replaceAll(_S_PLUS, WHITESPACE)
+				.replace(FOUR_WHITESPACES, WHITESPACE).replace(THREE_WHITESPACES, WHITESPACE)
+				.replace(TWO_WHITESPACES, WHITESPACE);
 		
 		// Process the scopes
 		Set<String> scopeNames = new HashSet<>();
@@ -188,7 +198,7 @@ public class BuildingConfig {
 		if (scopesElement != null) {
 			for (Element element : scopesElement.getChildren(SCOPE)) {
 				String name = element.getAttributeValue(NAME);
-				scopeNames.add(name.toLowerCase().replace("_", " "));
+				scopeNames.add(name.toLowerCase().replace(UNDERSCORE, " "));
 			}		
 		}
 		
@@ -196,10 +206,8 @@ public class BuildingConfig {
 		Map<FunctionType, FunctionSpec> supportedFunctions = new EnumMap<>(FunctionType.class);
 		Element funcElement = buildingElement.getChild(FUNCTIONS);
 		for (Element element : funcElement.getChildren()) {
-			
 			// Parse extras
 			FunctionSpec fspec = parseFunctionSpec(buildingTypeName, element, manuConfig, resProcConfig, width, length);
-
 			supportedFunctions.put(fspec.getType(), fspec);
 		}
 
@@ -342,6 +350,10 @@ public class BuildingConfig {
 
 	/**
 	 * Creates a spec for an EVA function.
+	 * 
+	 * @param base
+	 * @param evaElement
+	 * @return
 	 */
 	private FunctionSpec createEVASpec(FunctionSpec base, Element evaElement) {
 		var central = ConfigHelper.parseRelativePosition(evaElement.getChild("center-position"));
@@ -363,6 +375,12 @@ public class BuildingConfig {
 		
 	/**
 	 * Parses the vehicle maintenance specific elements.
+	 * 
+	 * @param base
+	 * @param maintElement
+	 * @param width
+	 * @param length
+	 * @return
 	 */
 	private FunctionSpec createVehicleMaintenanceSpec(FunctionSpec base, Element maintElement, double width, double length) {
 
@@ -374,10 +392,12 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Parses the specific Resource processing process-engine nodes and create a list of ResourceProcessingEngine
+	 * Parses the specific resource processing process-engine nodes and create a list of ResourceProcessingEngine.
 	 * 
+	 * @param base
 	 * @param resourceProcessingElement
-	 * @return 
+	 * @param resProcConfig
+	 * @return
 	 */
 	private ResourceProcessingSpec createResourceProcessingSpec(FunctionSpec base, Element resourceProcessingElement,
 													ResourceProcessConfig resProcConfig) {
@@ -414,6 +434,11 @@ public class BuildingConfig {
 	/**
 	 * Parses a sources element.
 	 * 
+	 * @param base
+	 * @param element
+	 * @param sourceName
+	 * @param unitName
+	 * @return
 	 */
 	private GenerationSpec createGenerationSpec(FunctionSpec base, Element element, String sourceName, String unitName) {
 		List<SourceSpec> sourceList = new ArrayList<>();
@@ -439,8 +464,9 @@ public class BuildingConfig {
 	}
 
 	/**
-	 * Parses the specific Storage properties.
+	 * Parses the specific storage properties.
 	 * 
+	 * @param context
 	 * @param newSpec
 	 * @param storageElement
 	 */
@@ -456,6 +482,13 @@ public class BuildingConfig {
 		return new StorageSpec(base, initialMap, storageMap);
 	}
 
+	/**
+	 * Parses the resource list.
+	 * 
+	 * @param context
+	 * @param resourceList
+	 * @return
+	 */
 	private static Map<Integer, Double> parseResourceList(String context, List<Element> resourceList) {
 		return ConfigHelper.parseDoubleList(context, resourceList, 
 							            TYPE, k -> ResourceUtil.findAmountResource(k).getID(),
