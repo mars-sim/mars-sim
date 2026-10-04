@@ -85,7 +85,6 @@ public final class SwingHelper {
 		location.translate(xOffset, yOffset);
 		d.setLocation(location);
 
-		
 		d.addWindowFocusListener(new WindowFocusListener() {
 			public void windowLostFocus(WindowEvent e) {
 				d.dispose();
