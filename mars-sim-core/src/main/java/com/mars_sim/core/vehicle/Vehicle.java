@@ -278,8 +278,10 @@ public abstract class Vehicle extends AbstractMobileUnit
 		
 		baseWearLifetime = spec.getWearLifetime();
 
-		// Initialize malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, baseWearLifetime, maintenanceWorkTime);
+		// Initialize malfunction manager; the parameters should come from the VehicleSpec
+		var params = new MalfunctionManager.MaintenanceParameters(baseWearLifetime, maintenanceWorkTime,
+					 0.75D, false);
+		malfunctionManager = new MalfunctionManager(this, params);
 
 		setupScopeString();
 		// Initialize the scope map.

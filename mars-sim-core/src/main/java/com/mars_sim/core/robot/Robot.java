@@ -33,6 +33,7 @@ import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.malfunction.MalfunctionManager.MaintenanceParameters;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
@@ -72,10 +73,10 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	private static final double BASE_CAPACITY = 60D;
 	/** The estimate base mass in kg. */
 	public static final double EMPTY_MASS = 61.36;
-	/** life time in number of sols. */
-	private static final double WEAR_LIFETIME = 334_000D;
-	/** 100 millisols. */
-	private static final double MAINTENANCE_TIME = 50D;
+	/** life time is 334 sols and maintenance time is 50 millisols. */
+	private static final MaintenanceParameters MAINT_PARAMS = new MaintenanceParameters(334_000D,
+				50D, 1D, false);
+
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001D;
 
@@ -188,7 +189,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		botMind = new BotMind(this);
 
 		// Add scope to malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+		malfunctionManager = new MalfunctionManager(this, MAINT_PARAMS);
 		// Add system type to malfunction manager scope
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
 		// Initialize the scope map.

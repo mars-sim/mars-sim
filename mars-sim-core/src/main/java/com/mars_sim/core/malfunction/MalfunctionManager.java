@@ -24,7 +24,6 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.equipment.DataRecorder;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -34,6 +33,7 @@ import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.PartGood;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.maintenance.MaintenanceUtil;
 import com.mars_sim.core.metrics.MetricCategory;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
@@ -156,8 +156,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private double malfunctionProbability;
 	/** Time (millisols) that entity has been actively used since last maintenance. */
 	private double effTimeSinceLastMaint;
-	/** The required base work time for each inspection maintenance on entity. */
-	private double baseMaintWorkTime;
 	/** The inspection completed. */
 	private double inspectionTimeCompleted;
 	/** The periodic time window between each inspection/maintenance.  */
@@ -168,11 +166,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private double cumulativeTime;
 	/** The current life time [in millisols] of active use. */
 	private double currentWearLifeTime;
-	/**
-	 * The expected life time [in millisols] of active use before the malfunctionable
-	 * is worn out.
-	 */
-	private final double baseWearLifeTime;
 	
 	/** The owning entity. */
 	private Malfunctionable entity;
@@ -187,6 +180,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Map<MaintenanceScope, Integer> partsNeededForMaintenance;
 	/** The map of collections of scopes. */
 	private Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
+
+	private MaintenanceParameters parameters;
 	
 	private static MasterClock masterClock;
 	private static MedicalManager medic;
@@ -194,16 +189,28 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static PartConfig partConfig;
 	
 	/**
+	 * Represents the parameters required for maintenance of a malfunctionable entity.
+	 * @param wearLifeTime Total wear time
+	 * @param maintWorkTime Maintenance work time
+	 * @param inspectionModifier Inspection modifier for the standard inspection window
+	 * @param lifeSupportImpacted Indicates if life support is impacted
+	 */
+	public record MaintenanceParameters(double wearLifeTime, double maintWorkTime, double inspectionModifier,
+										boolean lifeSupportImpacted)
+										implements Serializable {
+
+		public double inspectionWindow() {
+			return (inspectionModifier * wearLifeTime) / INSPECTION_FREQUENCY;
+		}
+	}
+
+	/**
 	 * Constructor.
 	 *
 	 * @param entity              the malfunctionable entity.
-	 * @param wearLifeTime        the expected life time (millisols) of active use
-	 *                            before the entity is worn out.
-	 * @param maintWorkTime the amount of work time (millisols) required for
-	 *                            maintenance.
-	 * Note: for buildings, see maintenance-time in buildings.xml                           
+	 * @param params the maintenance parameters for the malfunctionable entity.
 	 */
-	public MalfunctionManager(Malfunctionable entity, double wearLifeTime, double maintWorkTime) {
+	public MalfunctionManager(Malfunctionable entity, MaintenanceParameters params) {
 
 		// Initialize data members
 		this.entity = entity;
@@ -211,98 +218,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 		scopes = new HashSet<>();
 		malfunctions = new ArrayList<>();
 		
-		this.baseMaintWorkTime = maintWorkTime;
-		this.baseWearLifeTime = wearLifeTime;
-
-		boolean isInhabitable = false;
-		boolean isERV = false;
-		boolean isMainPowerGen = false;
-		boolean isHallway = false;
-		
-		if (entity instanceof Building building) {
-			if (building.isInhabitable()) {
-				// Usually power building gets deployed first.
-				isInhabitable = true;
+		this.parameters = params;
+		this.standardInspectionWindow = params.inspectionWindow();
 				
-				isERV = BuildingCategory.ERV == building.getCategory();
-				isMainPowerGen = BuildingCategory.POWER == building.getCategory();
-			}
-			else {
-				isHallway = BuildingCategory.CONNECTION == building.getCategory();
-			}
-		}
-
-		double deployedTime = 0;
+		// Intial elapsed time is 0-90% of the inspection window
+		// Make sure it is less than the minimum so not immediately in inspection
+		var initialElapsedTime = standardInspectionWindow * (RandomUtil.getRandomDouble(MaintenanceUtil.INSPECTION_PERCENTAGE));
 		
-		// deployedTime [in millisols] accounts for the pre-used time spent during the base deployment phase prior to the start of the sim
-		
-		// Note: May also vary deployedTime according to future pre-game deployment scenario.
-		
-		if (UnitType.EVA_SUIT == entity.getUnitType()) {
-			
-			this.standardInspectionWindow = .5;
-			
-			deployedTime = RandomUtil.getRandomDouble(250);
-		}
-		else if (UnitType.DATA_RECORDER == entity.getUnitType()) {
-			
-			this.standardInspectionWindow = .5;
-			
-			deployedTime = RandomUtil.getRandomDouble(50);
-		}
-		
-		else if (UnitType.VEHICLE == entity.getUnitType()) {
+		currentWearLifeTime = params.wearLifeTime() - initialElapsedTime;
+		cumulativeTime = initialElapsedTime;
+		effTimeSinceLastMaint = initialElapsedTime;
 	
-			this.standardInspectionWindow = .75;
-			
-			deployedTime = RandomUtil.getRandomDouble(500);
-		}
-		else if (isInhabitable) {
-			
-			if (isMainPowerGen) {
-				// Assume having an inspection window [in millisols] as the recommended period of time between the last and the next inspection/maintenance 
-				
-				// Note: vary this window by building category and by the frequency of malfunction of its parts
-
-				// e.g. solar array and power generator need to be inspected more often
-			
-				this.standardInspectionWindow = .5;
-	
-				// Usually power building gets deployed first.
-				deployedTime = RandomUtil.getRandomDouble(4000);
-			}
-			else if (isERV) {
-				this.standardInspectionWindow = .75;
-				
-				// Next is resource processing building such as ERV 
-				deployedTime = RandomUtil.getRandomDouble(3000);
-			}
-			else {
-				this.standardInspectionWindow = 1.0;
-				
-				deployedTime = RandomUtil.getRandomDouble(2000);
-			}
-		}
-		else if (isHallway){
-			this.standardInspectionWindow = 1.5;
-			
-			deployedTime = RandomUtil.getRandomDouble(1000);
-		}
-		else {
-			this.standardInspectionWindow = 1.0;
-			
-			deployedTime = RandomUtil.getRandomDouble(2000);
-		}
-	
-		this.standardInspectionWindow *= wearLifeTime / INSPECTION_FREQUENCY;
-				
-		deployedTime += 1_000_000.0 / standardInspectionWindow;
-		
-		currentWearLifeTime = wearLifeTime - deployedTime;
-		cumulativeTime = deployedTime;
-		effTimeSinceLastMaint = deployedTime;
-	
-		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100D;
+		currentWearCondPercent = currentWearLifeTime/params.wearLifeTime() * 100D;
 	}
 
 	/**
@@ -750,7 +677,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		currentWearLifeTime -= time * RandomUtil.getRandomDouble(.75, 1.25);
 		if (currentWearCondPercent < 0D)
 			currentWearCondPercent = 0D;
-		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100;
+		currentWearCondPercent = currentWearLifeTime/parameters.wearLifeTime() * 100;
 
 		cumulativeFatigue += time;
 		if (cumulativeFatigue > 1) {
@@ -922,11 +849,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		double time = pulse.getElapsed();
 
-		if (entity.getUnitType() == UnitType.BUILDING
-				|| entity.getUnitType() == UnitType.EVA_SUIT
-				|| entity.getUnitType() == UnitType.DATA_RECORDER) {
+		if (parameters.lifeSupportImpacted()) {
+			double time = pulse.getElapsed();
+
 			// Check if life support modifiers are still in effect.
 			setLifeSupportModifiers(time);
 			// Check if resources is still draining
@@ -980,7 +906,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 *
 	 * @param time amount of time passing (in millisols)
 	 */
-	public void setLifeSupportModifiers(double time) {
+	private void setLifeSupportModifiers(double time) {
 
 		double tempOxygenFlowModifier = 0D;
 
@@ -1023,27 +949,29 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	private void depleteResources(double time) {
 
-		if (hasMalfunction()) {
-			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isFixed() && !malfunction.getResourceEffects().isEmpty()) {
-					// Resources are depleted according to how much of the repair is remaining
-					double percent = (100.0 - malfunction.getPercentageFixed())/100D;
-					for (Entry<Integer, Double> entry : malfunction.getResourceEffects().entrySet()) {
-						Integer resource = entry.getKey();
-						double amount = entry.getValue();
-						double amountDepleted = amount * time * percent / 100;
-						ResourceHolder rh = (ResourceHolder)entity;
-						double amountStored = rh.getSpecificAmountResourceStored(resource);
+		if (!hasMalfunction()) {
+			return;
+		}
 
-						if (amountStored < amountDepleted) {
-							amountDepleted = amountStored;
-						}
-						if (amountDepleted >= 0) {
-							rh.retrieveAmountResource(resource, amountDepleted);
-							logger.log(entity, Level.WARNING, 15_000L, "Leaking "
-											+ Math.round(amountDepleted * 100.0)/100.0 + " kg of  "
-											+ ResourceUtil.findAmountResource(resource) + ".");
-						}
+		for (Malfunction malfunction : malfunctions) {
+			if (!malfunction.isFixed() && !malfunction.getResourceEffects().isEmpty()) {
+				// Resources are depleted according to how much of the repair is remaining
+				double percent = (100.0 - malfunction.getPercentageFixed())/100D;
+				for (Entry<Integer, Double> entry : malfunction.getResourceEffects().entrySet()) {
+					Integer resource = entry.getKey();
+					double amount = entry.getValue();
+					double amountDepleted = amount * time * percent / 100;
+					ResourceHolder rh = (ResourceHolder)entity;
+					double amountStored = rh.getSpecificAmountResourceStored(resource);
+
+					if (amountStored < amountDepleted) {
+						amountDepleted = amountStored;
+					}
+					if (amountDepleted >= 0) {
+						rh.retrieveAmountResource(resource, amountDepleted);
+						logger.log(entity, Level.WARNING, 15_000L, "Leaking "
+										+ Math.round(amountDepleted * 100.0)/100.0 + " kg of  "
+										+ ResourceUtil.findAmountResource(resource) + ".");
 					}
 				}
 			}
@@ -1129,7 +1057,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return time (in millisols)
 	 */
 	public double getBaseMaintenanceWorkTime() {
-		return baseMaintWorkTime;
+		return parameters.maintWorkTime();
 	}
 
 	/**
@@ -1190,7 +1118,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		
 		inspectionTimeCompleted += time;
 		// Check if work if done
-		if (inspectionTimeCompleted >= baseMaintWorkTime) {
+		if (inspectionTimeCompleted >= parameters.maintWorkTime()) {
 			// Reset the maint time to zero
 			inspectionTimeCompleted = 0D;
 			// Reset eff time since last inspection to zero
@@ -1204,8 +1132,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 			double uncertainty = RandomUtil.getRandomDouble(.95, 1);
 			// Set a upper limit for currentWearLifeTime
 			// Note: it would deteriorate over time and won't get back to baseWearLifeTime but it can improve somewhat
-			if (currentWearLifeTime > baseWearLifeTime - cumulativeTime * uncertainty)
-				currentWearLifeTime = baseWearLifeTime - cumulativeTime * uncertainty;
+			var maxWearLifeTime = parameters.wearLifeTime() - cumulativeTime * uncertainty;
+			if (currentWearLifeTime > maxWearLifeTime)
+				currentWearLifeTime = maxWearLifeTime;
 			
 			needsMore = false;
 		}
@@ -1218,10 +1147,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Gets the adjusted condition.
 	 * 
-	 * @return
+	 * @return Condition between 0 and 100%
 	 */
 	public double getAdjustedCondition() { 
-		return currentWearLifeTime / (baseWearLifeTime + cumulativeTime) * 100;
+		return currentWearLifeTime / (parameters.wearLifeTime() + cumulativeTime) * 100;
 	}
 
 	/**

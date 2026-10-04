@@ -20,6 +20,7 @@ import com.mars_sim.core.data.collection.DataType;
 import com.mars_sim.core.data.collection.FieldDataSet;
 import com.mars_sim.core.data.collection.WaterIceData;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.malfunction.MalfunctionManager.MaintenanceParameters;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
@@ -37,10 +38,10 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	// Will add back: private static final SimLogger logger = SimLogger.getLogger(DataRecorder.class.getName())
 	
 	// Static members
-	/** The wear lifetime value is 1 orbit. */
-	private static final double WEAR_LIFETIME = 668_000;
-	/** The maintenance time in millisols. */
-	private static final double MAINTENANCE_TIME = 20D;
+	/** The wear lifetime value is 1 orbit, maintenance time is 20 millisols. */
+	private static final MaintenanceParameters MAINT_PARAMS = new MaintenanceParameters(668_000,
+						20D, 0.5D, false);
+	
 	
 	public static final String INSTRUMENT = "Instrument";
 	
@@ -75,7 +76,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		setDescription("A standard data recorder.");
 
 		// Add scope to malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+		malfunctionManager = new MalfunctionManager(this, MAINT_PARAMS);
 		
 		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 		

@@ -496,7 +496,7 @@ public class CommandHelper {
 	 */
 	public static void outputMalfunction(StructuredResponse response, Malfunctionable source, Malfunction m) {
 		response.appendHeading(m.getName());
-		response.appendLabeledString(source.getUnitType().getName(), source.getName());
+		response.appendLabeledString("Entity", source.getName());
 
 		response.appendLabelledDigit("Severity", m.getSeverity());
 		response.appendLabeledString("Fixed ", String.format(PERC_FORMAT, m.getPercentageFixed()));

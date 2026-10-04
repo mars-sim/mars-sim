@@ -77,10 +77,13 @@ public abstract class EVAOperation extends Task {
 
 	// Static members
 	/** The average time for egress and ingress of EVA airlock. */
-	public static final int AVERAGE_EVA_TIME = 60;
+	protected static final int AVERAGE_EVA_TIME = 60;
 	
 	/** The base chance of an accident per millisol. */
 	public static final double BASE_ACCIDENT_CHANCE = .01;
+
+	// Used as a global flag to determine if sunlight should be checked during EVA operations.
+	private static boolean checkSunlight = true;
 
 	// Data members
 	private boolean endEVARequested;
@@ -503,14 +506,23 @@ public abstract class EVAOperation extends Task {
 		}
 
 		// Check for sunlight
-		
-		if (!(EVAOperation.isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)
-				|| surfaceFeatures.inDarkPolarRegion(person.getCoordinates()))) {
+		var personCoord = person.getCoordinates();
+		if (checkSunlight && !(EVAOperation.isSunlightAboveLevel(personCoord, minEVASunlight)
+				|| surfaceFeatures.inDarkPolarRegion(personCoord))) {
 			logger.info(person, "Sunlight below threshold.");
 			return true;
 		}
 
 		return shouldEndEVAOperation(person);
+	}
+
+	/**
+	 * Sets the override for checking sunlight during EVA operations.
+	 * This is useful to test to remove time-dependent sunlight checks.
+	 * @param newCheck The new value for the sunlight check override.
+	 */
+	public static void setCheckSunlight(boolean newCheck) {
+		checkSunlight = newCheck;
 	}
 
 	/**

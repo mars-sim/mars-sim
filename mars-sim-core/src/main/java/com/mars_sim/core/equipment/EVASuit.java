@@ -21,6 +21,7 @@ import com.mars_sim.core.data.History;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.malfunction.MalfunctionManager.MaintenanceParameters;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
@@ -106,10 +107,10 @@ public class EVASuit extends Equipment
 	private static final double TARGET_O2_PRESSURE = 17;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
-	/** The wear lifetime value is 1 orbit. */
-	private static final double WEAR_LIFETIME = 668_000;
-	/** The maintenance time in millisols. */
-	private static final double MAINTENANCE_TIME = 200D;
+	/** The wear lifetime value is 1 orbit and maintenance time is 200 millisols. */
+	private static final MaintenanceParameters maintenanceParameters = new MaintenanceParameters(
+				668_000, 200, 0.5, true);
+
 	/** The ratio of CO2 expelled to O2 breathed in. */
 	private static double gasRatio;
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
@@ -212,7 +213,7 @@ public class EVASuit extends Equipment
 		setDescription("A standard EVA suit for Mars surface operation.");
 
 		// Add scope to malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+		malfunctionManager = new MalfunctionManager(this, maintenanceParameters);
 		
 		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 		

@@ -416,17 +416,16 @@ public class EquipmentGood extends Good {
 	 * @param owner Owner of Goods
 	 * @return demand
 	 */
-	private static double getEVASuitPartsDemand(GoodsManager owner) {
-		double demand = 0;
-	
-		double num = ItemResourceUtil.evaSuitPartIDs.size();
-		
+	private static double getEVASuitPartsDemand(GoodsManager owner) {		
 		if (ItemResourceUtil.evaSuitPartIDs != null && !ItemResourceUtil.evaSuitPartIDs.isEmpty()) {
+			double demand = 0;
 			for (int id : ItemResourceUtil.evaSuitPartIDs) {
 				demand += owner.getDemandScoreWithID(id);
 			}
+			return demand / ItemResourceUtil.evaSuitPartIDs.size();
+
 		}
-		return demand / num;
+		return 0;
 	}
 	
 	/**
@@ -436,16 +435,15 @@ public class EquipmentGood extends Good {
 	 * @return demand
 	 */
 	private static double getDataRecorderPartsDemand(GoodsManager owner) {
-		double demand = 0;
 	
-		double num = ItemResourceUtil.dataRecordIDs.size();
-
 		if (ItemResourceUtil.dataRecordIDs != null && !ItemResourceUtil.dataRecordIDs.isEmpty()) {
+			double demand = 0;
 			for (int id : ItemResourceUtil.dataRecordIDs) {
 				demand += owner.getDemandScoreWithID(id);
 			}
+			return demand / ItemResourceUtil.dataRecordIDs.size();
 		}
-		return demand / num;
+		return 0;
 	}
 	
 	/**
