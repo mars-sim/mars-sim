@@ -436,6 +436,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			updateAge(pulse.getMasterClock().getEarthTime());
 
 		}
+
+		eqmInventory.fireChanges();
 		return true;
 	}
 

@@ -463,6 +463,7 @@ public class EVASuit extends Equipment
 		// called when in use by a Person.
 		malfunctionManager.timePassing(pulse);
 
+		microInventory.fireChanges();
 		return true;
 	}
 

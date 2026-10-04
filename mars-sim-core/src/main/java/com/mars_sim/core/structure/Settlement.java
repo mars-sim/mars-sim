@@ -1018,6 +1018,7 @@ public class Settlement extends Unit implements Temporal,
 		// Keeps track of things based on msol
 		trackByMSol(pulse);
 
+		eqmInventory.fireChanges();
 		return true;
 	}
 	

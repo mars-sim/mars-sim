@@ -8,6 +8,7 @@ package com.mars_sim.core.equipment;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -88,6 +89,8 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 	private double amountTotalMass = 0D;
 	private double itemTotalMass = 0D;
 	private double totalCapcity = 0D;
+
+	private Set<Integer> changedResources = new HashSet<>();
 
 	/**
 	 * Constructs a new MicroInventory with the specified owner and total capacity.
@@ -254,12 +257,26 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 
 		// Update the specific amount total mass
 		refreshAmountTotals();
-		
-		// Fire the unit event type
-		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
+		changedResources.add(resource);
+
 		return excess;
 	}
 
+	/**
+	 * Updates the status of the inventory. This notifies any listeners of changes in the inventory.
+	 */
+	public void fireChanges() {
+		if (changedResources.isEmpty()) {
+			return;
+		}
+		
+		for(var id : changedResources) {
+			// Fire the unit event type
+			owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, id);
+		}
+
+		changedResources.clear();
+	}
 	
 	/**
 	 * Stores the item resource.
@@ -356,8 +373,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 		s.adjustStoredAmount(-quantity);
 		refreshAmountTotals();
 
-		// Fire the unit event type
-		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
+		changedResources.add(resource);
 		return shortfall;
 	}
 

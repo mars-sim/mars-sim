@@ -657,11 +657,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 				logger.warning(this, 20_000, "Not in a building.");
 			}
 		}
-		// Check to see if the person has deceased
-//		if (condition.getDeathDetails() != null) {
-//			setDeceased();
-//		}
-		
+
 		// Check to see if the person is dead
 		if (condition.isDead()) {
 			return false;
@@ -690,7 +686,9 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		condition.timePassing(pulse, support);
 		
 		checkInNewSol(pulse);
-				
+
+		eqmInventory.fireChanges();
+		
 		return true;
 	}
 
