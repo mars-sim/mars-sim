@@ -66,7 +66,7 @@ public class VehicleUnitWindow extends EntityContentPanel<Vehicle> {
 			// Future: Add sickbay tab panel.
 		}
 
-		addTabPanel(new HistoryTabPanel(vehicle, vehicle.getHistory(), context));
+		addTabPanel(new HistoryTabPanel(vehicle, context));
 		addTabPanel(new MaintenanceTabPanel(vehicle, context));
 		addTabPanel(new MalfunctionTabPanel(vehicle, context));
 		addTabPanel(new NavigationTabPanel(vehicle, context));

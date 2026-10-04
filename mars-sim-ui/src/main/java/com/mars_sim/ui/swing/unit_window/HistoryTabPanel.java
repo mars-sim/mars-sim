@@ -16,6 +16,7 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.data.History;
+import com.mars_sim.core.data.HistoryTracable;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -35,7 +36,7 @@ public class HistoryTabPanel extends EntityTabPanel<Entity> implements EntityLis
 	private LogPanel statusPanel;
 	private History<MsgContext> history;
 	
-	public HistoryTabPanel(Entity entity, History<MsgContext> history, UIContext context) {
+	public HistoryTabPanel(HistoryTracable entity, UIContext context) {
 		// Use TabPanel constructor.
 		super(
 			Msg.getString("HistoryTabPanel.title"),
@@ -43,7 +44,7 @@ public class HistoryTabPanel extends EntityTabPanel<Entity> implements EntityLis
 			context, entity
 		);
 
-		this.history = history;
+		this.history = entity.getHistory();
 	}
 
 	@Override

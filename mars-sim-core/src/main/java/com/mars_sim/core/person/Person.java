@@ -33,6 +33,8 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LifeSupport;
+import com.mars_sim.core.data.History;
+import com.mars_sim.core.data.HistoryTracable;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Container;
@@ -76,6 +78,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
@@ -89,7 +92,7 @@ import com.mars_sim.core.vehicle.Vehicle;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends AbstractMobileUnit implements Worker, Temporal, UnitHolder, Appraiser {
+public class Person extends AbstractMobileUnit implements Worker, Temporal, UnitHolder, Appraiser, HistoryTracable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -191,7 +194,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	private SolMetricDataLogger<String> eVATaskTime;
 	/** The person's work shift slot. */
 	private ShiftSlot shiftSlot;
-
+	private History<MsgContext> history = new History<>(28);
+	
 	/**
 	 * Constructor 1 with the mandatory properties defined. All these are needed to construct the minimum person.
 	 *
@@ -482,7 +486,27 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	public boolean isGuest() {
 		return shiftSlot.getStatus() == WorkStatus.GUEST;
 	}
-	
+
+	/**
+	 * Gets the person's history.
+	 *
+	 * @return List of interesting events for this person.
+	 */
+	@Override
+	public History<MsgContext> getHistory() {
+		return history;
+	}
+
+	/**
+	 * Adds an entry to the person's history.
+	 * @param entry the history entry to add.
+	 */
+	@Override
+	public void addHistoryEntry(MsgContext entry) {
+		history.add(entry);
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
+	}
+
 	/**
 	 * Creates a string representing the birth time of the person.
 	 * 

@@ -17,6 +17,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MsgContext;
 
 /**
  * A new arriving settlement from Earth.
@@ -158,7 +159,8 @@ public class ArrivingSettlement extends Transportable {
 		InitialSettlement spec = new InitialSettlement(getName(), sponsorCode,
 													   template, populationNum,
 													   getLandingLocation(), null);
-		var s = build.createFullSettlement(spec);
+		var context = new MsgContext("entityhistory.transport", getName());
+		var s = build.createFullSettlement(spec, context);
 
 		return new HistoricalEvent(HistoricalEventType.TRANSPORT_ITEM_ARRIVED, this, s, null, null);
 	}

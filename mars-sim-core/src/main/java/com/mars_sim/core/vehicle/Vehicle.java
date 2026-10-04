@@ -706,15 +706,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, oldStatus);
 		}
 	}
-	
-	/**
-	 * Gets the vehicle history.
-	 *
-	 * @return List of interesting events for this vehicle.
-	 */
-	public History<MsgContext> getHistory() {
-		return history;
-	}
 
 	/**
 	 * Checks if the vehicle is reserved for any reason.
@@ -2001,8 +1992,18 @@ public abstract class Vehicle extends AbstractMobileUnit
 		fireUnitUpdate(MISSION_EVENT);
 
 		if (newMission != null) {
-			addHistoryEntry("entityhistory.mission", newMission.getName());
+			addHistoryEntry(new MsgContext("entityhistory.mission", newMission.getName()));
 		}
+	}
+		
+	/**
+	 * Gets the vehicle history.
+	 *
+	 * @return List of interesting events for this vehicle.
+	 */
+	@Override
+	public History<MsgContext> getHistory() {
+		return history;
 	}
 
 	/**
@@ -2011,8 +2012,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @param param the parameter associated with the history entry.
 	 */
 	@Override
-	public void addHistoryEntry(String key, String param) {
-		history.add(new MsgContext(key, param));
+	public void addHistoryEntry(MsgContext entry) {
+		history.add(entry);
 		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
 	}
 

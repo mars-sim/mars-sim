@@ -18,6 +18,7 @@ import com.mars_sim.ui.swing.entitywindow.worker.TabPanelActivity;
 import com.mars_sim.ui.swing.entitywindow.worker.TabPanelAttribute;
 import com.mars_sim.ui.swing.entitywindow.worker.TabPanelSchedule;
 import com.mars_sim.ui.swing.entitywindow.worker.TabPanelSkill;
+import com.mars_sim.ui.swing.unit_window.HistoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.InventoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.LocationTabPanel;
 import com.mars_sim.ui.swing.unit_window.NotesTabPanel;
@@ -69,7 +70,8 @@ public class PersonUnitWindow extends EntityContentPanel<Person>
 		addTabPanel(new TabPanelSchedule(person, context));
 		addTabPanel(new TabPanelScienceStudy(person, context));
 		addTabPanel(new TabPanelSkill(person, context));
-		addTabPanel(new TabPanelSocial(person, context));		
+		addTabPanel(new TabPanelSocial(person, context));
+		addTabPanel(new HistoryTabPanel(person, context));
 
 		applyProps(props);
 		activateListener();

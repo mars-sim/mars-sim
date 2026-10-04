@@ -1067,18 +1067,18 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 *
 	 * @return List of interesting events for this building.
 	 */
+	@Override
 	public History<MsgContext> getHistory() {
 		return eventHistory;
 	}
 
 	/**
 	 * Adds an entry to the building's history.
-	 * @param key   the key for the history entry.
-	 * @param param the parameter associated with the history entry.
+	 * @param entry the history entry to add.
 	 */
 	@Override
-	public void addHistoryEntry(String key, String param) {
-		eventHistory.add(new MsgContext(key, param));
+	public void addHistoryEntry(MsgContext entry) {
+		eventHistory.add(entry);
 		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
 	}
 

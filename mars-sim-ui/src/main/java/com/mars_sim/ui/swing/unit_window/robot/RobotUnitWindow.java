@@ -56,7 +56,7 @@ public class RobotUnitWindow extends EntityContentPanel<Robot> {
 		addTabPanel(new NotesTabPanel(robot, context));
 		addTabPanel(new TabPanelSchedule(robot, context));
 		addTabPanel(new TabPanelSkill(robot, context));
-		addTabPanel(new HistoryTabPanel(robot, robot.getHistory(), context));
+		addTabPanel(new HistoryTabPanel(robot, context));
 
 		
 		applyProps(props);

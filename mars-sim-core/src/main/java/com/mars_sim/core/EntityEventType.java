@@ -51,8 +51,6 @@ public class EntityEventType {
 	public static final String ADD_BUILDING_EVENT = "add building";
 	public static final String REMOVE_BUILDING_EVENT = "remove building";
 
-	public static final String START_BUILDING_PLACEMENT_EVENT = "start building placement";
-
 	// For Mind
 	public static final String JOB_EVENT = "job event";
 	public static final String MISSION_EVENT = "mission event";

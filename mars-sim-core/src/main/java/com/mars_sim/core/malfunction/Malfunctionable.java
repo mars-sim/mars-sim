@@ -11,11 +11,12 @@ import java.util.Collection;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.data.HistoryTracable;
 
 /**
  * The Malfunctionable interface represents a Unit that can have malfunctions.
  */
-public interface Malfunctionable extends Entity {
+public interface Malfunctionable extends Entity, HistoryTracable {
 	
 	/**
 	 * Gets the entity's malfunction manager.
@@ -37,11 +38,4 @@ public interface Malfunctionable extends Entity {
 	 * @return
 	 */
 	Settlement getAssociatedSettlement();
-
-	/**
-	 * Adds an entry to the history. This is normally triggered by a malfunction or maintenance.
-	 * @param key   the key for the history entry.
-	 * @param param the parameter associated with the history entry.
-	 */
-	void addHistoryEntry(String key, String param);
 }

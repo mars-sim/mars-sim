@@ -43,7 +43,7 @@ public class BuildingUnitWindow extends EntityContentPanel<Building> {
         addTabPanel(new MaintenanceTabPanel(building, context));
         addTabPanel(new MalfunctionTabPanel(building, context));
 		addTabPanel(new BuildingPanelPowerGen(building, context));
-		addTabPanel(new HistoryTabPanel(building, building.getHistory(), context));
+		addTabPanel(new HistoryTabPanel(building, context));
         
         for (Function f : building.getFunctions()) {
         	switch (f.getFunctionType()) {

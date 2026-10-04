@@ -51,6 +51,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.MathUtils;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -424,7 +425,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		numberMalfunctions++;
 
 		getUnit().fireUnitUpdate(MalfunctionManager.MALFUNCTION_EVENT, malfunction);
-		entity.addHistoryEntry("entityhistory.malfunction", malfunction.getName());
+		entity.addHistoryEntry(new MsgContext("entityhistory.malfunction", malfunction.getName()));
 
 		if (registerEvent) {
 			registerAMalfunction(malfunction, actor);
@@ -895,7 +896,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			u.fireUnitUpdate(MALFUNCTION_EVENT, fixed);
 
 			u.registerHistoricalEvent(HistoricalEventType.MALFUNCTION_FIXED, fixed.getName(), null, null, null);
-			entity.addHistoryEntry("entityhistory.fixed", fixed.getName());
+			entity.addHistoryEntry(new MsgContext("entityhistory.fixed", fixed.getName()));
 
 			Simulation.instance().getMetricManager().addValue(entity.getAssociatedSettlement(),
 							MALFUNCTION_CAT, FIXED_MEASURE, 1);
@@ -1141,7 +1142,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			
 			needsMore = false;
 
-			entity.addHistoryEntry("entityhistory.maintenance", null);
+			entity.addHistoryEntry(new MsgContext("entityhistory.maintenance", null));
 		}
 
 		// Question: when should numberMaintenances be lower ?

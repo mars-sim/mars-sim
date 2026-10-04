@@ -55,7 +55,7 @@ public class EquipmentUnitWindow extends EntityContentPanel<Equipment> {
         }
         
         if (equipment instanceof EVASuit es) {
-            addTabPanel(new HistoryTabPanel(es, es.getHistory(), context));
+            addTabPanel(new HistoryTabPanel(es, context));
         }
 		addTabPanel(new NotesTabPanel(equipment, context));
 
