@@ -65,7 +65,7 @@ public class HistoryTabPanel extends EntityTabPanel<Entity> implements EntityLis
 		private static final ColumnSpec[] COLUMNS = {new ColumnSpec(Msg.getString("entityhistory.event"), String.class)};
 
 		LogPanel(History<MsgContext> source) {
-			super(source, COLUMNS);
+			super(source, COLUMNS, false);
 		}
 
 		@Override

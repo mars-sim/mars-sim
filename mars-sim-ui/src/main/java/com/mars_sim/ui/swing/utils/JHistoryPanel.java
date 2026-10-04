@@ -36,7 +36,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
 @SuppressWarnings("serial")
 public abstract class JHistoryPanel<T> extends JPanel {
 
-	private static final int TIME_WIDTH = 110;
+	private static final int TIME_WIDTH = 70;
 	private static final String TIME_LABEL = Msg.getString("Time");
 
 	/**
@@ -83,8 +83,13 @@ public abstract class JHistoryPanel<T> extends JPanel {
 		}
 
 		protected void reload() {
-			MarsDate selected = (MarsDate) solBox.getSelectedItem();
-			items = source.getChanges().stream().filter(i -> i.getWhen().getDate().equals(selected)).toList();
+			if (solBox != null) {
+				MarsDate selected = (MarsDate) solBox.getSelectedItem();
+				items = source.getChanges().stream().filter(i -> i.getWhen().getDate().equals(selected)).toList();
+			}
+			else {
+				items = source.getChanges();
+			}
 			lastSize = items.size();
 			fireTableDataChanged();
 		}
@@ -110,16 +115,30 @@ public abstract class JHistoryPanel<T> extends JPanel {
      * @param columns Details of the extra columns from the Item type
      */
 	protected JHistoryPanel(History<T> source, ColumnSpec[] columns) {
+		this(source, columns, true);
+	}
+
+	/**
+	 * Creates a panel to display history details with an option to show or hide the sol selection box.
+	 * 
+	 * @param source The source of the History details
+	 * @param columns Details of the extra columns from the Item type
+	 * @param showSolBox Whether to show the sol selection box
+	 */
+	protected JHistoryPanel(History<T> source, ColumnSpec[] columns, boolean showSolBox) {
 		super(new BorderLayout());
 		this.source = source;
 		this.columns = columns;
 
-		solModel = new DefaultComboBoxModel<>();
-		solBox = new JComboBox<>(solModel);
+		if (showSolBox) {
+			solModel = new DefaultComboBoxModel<>();
+			solBox = new JComboBox<>(solModel);
+			
+			JPanel solPanel = new JPanel(new FlowLayout());
+			solPanel.add(solBox);
+			add(solPanel, BorderLayout.NORTH);
+		}
 
-		JPanel solPanel = new JPanel(new FlowLayout());
-		solPanel.add(solBox);
-		add(solPanel, BorderLayout.NORTH);
 		itemModel = new ItemModel();
 
 		// Create schedule table
@@ -155,7 +174,9 @@ public abstract class JHistoryPanel<T> extends JPanel {
 
 		add(scrollPanel, BorderLayout.CENTER);
 		
-		solBox.addActionListener(e -> itemModel.reload());
+		if (solBox != null) {
+			solBox.addActionListener(e -> itemModel.reload());
+		}
 	}
 
     /**
@@ -168,32 +189,38 @@ public abstract class JHistoryPanel<T> extends JPanel {
 			return;
 		}
 
-		// Reload the list if the composition has changed. Either a change of size
-		// or the timestamp of 1st item has changed
-		if ((lastSize != newItems.size()) 
-			|| !newItems.get(0).getWhen().equals(lastTime)) {
-			
-			Object currentSelection = solBox.getSelectedItem();
+		if (solBox != null) {
+			// Reload the list if the composition has changed. Either a change of size
+			// or the timestamp of 1st item has changed
+			if ((lastSize != newItems.size()) 
+				|| !newItems.get(0).getWhen().equals(lastTime)) {
+				
+				Object currentSelection = solBox.getSelectedItem();
 
-			// Reload the sol combo if the range has changed
-			List<MarsDate> newRange = source.getRange();
-			if (newRange.size() != solModel.getSize()) {
-				// Update the solList comboBox
-				solModel.removeAllElements();
-				solModel.addAll(newRange);
-				lastTime = newItems.get(0).getWhen();
+				// Reload the sol combo if the range has changed
+				List<MarsDate> newRange = source.getRange();
+				if (newRange.size() != solModel.getSize()) {
+					// Update the solList comboBox
+					solModel.removeAllElements();
+					solModel.addAll(newRange);
+					lastTime = newItems.get(0).getWhen();
 
-				if (currentSelection == null) {
-					currentSelection = lastTime.getDate();
+					if (currentSelection == null) {
+						currentSelection = lastTime.getDate();
+					}
+					solBox.setSelectedItem(currentSelection);
 				}
-				solBox.setSelectedItem(currentSelection);
-			}
 
-			// If the new item is visible; then reload table
-			MarsDate newItemDate = newItems.get(newItems.size()-1).getWhen().getDate();
-			if (newItemDate.equals(currentSelection)) {
-				itemModel.reload();
+				// If the new item is visible; then reload table
+				MarsDate newItemDate = newItems.get(newItems.size()-1).getWhen().getDate();
+				if (newItemDate.equals(currentSelection)) {
+					itemModel.reload();
+				}
 			}
+		}
+		else {
+			// Just reload the model
+			itemModel.reload();
 		}
 	}
 
