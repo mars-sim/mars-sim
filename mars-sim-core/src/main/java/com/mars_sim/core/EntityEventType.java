@@ -89,6 +89,9 @@ public class EntityEventType {
 	public static final String SEP_EVENT = "SEP event";
 	public static final String GCR_EVENT = "GCR event";
 
+	// For changes to an entity's history
+    public static final String HISTORY_EVENT = "entity history";
+
 	// Private constructor to prevent instantiation
 	private EntityEventType() {
 		throw new UnsupportedOperationException("Utility class");
