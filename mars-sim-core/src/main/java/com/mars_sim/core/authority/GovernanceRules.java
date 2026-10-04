@@ -39,7 +39,8 @@ public class GovernanceRules implements Serializable {
 	}
 	
 	/**
-	 * get the name of these Governance Rules
+	 * Gets the name of these Governance Rules.
+	 * 
 	 * @return
 	 */
 	public String getName() {
@@ -47,7 +48,8 @@ public class GovernanceRules implements Serializable {
 	}
 
 	/**
-	 * get all roles defined by the Governance Council
+	 * Gets all roles defined by the Governance Council.
+	 * 
 	 * @return
 	 */
     public List<RoleType> getAllRoles() {
@@ -55,7 +57,8 @@ public class GovernanceRules implements Serializable {
     }
 
 	/**
-     * get the roles that can be assigned by the Governance Council
+     * Gets the roles that can be assigned by the Governance Council.
+     * 
      * @return
      */
     public List<RoleType> getAssignableRoles() {
@@ -63,7 +66,8 @@ public class GovernanceRules implements Serializable {
     }
 
     /**
-     * Roles that govern the council and Settlement. Order in terms of importance
+     * Gets the roles that govern the council and Settlement. Order in terms of importance.
+     * 
      * @return
      */
     public List<RoleType> getCouncilRoles() {
@@ -72,6 +76,7 @@ public class GovernanceRules implements Serializable {
 
     /**
      * Do any new Job assignments need approval?
+     * 
      * @return
      */
     public boolean needJobApproval() {
@@ -79,7 +84,8 @@ public class GovernanceRules implements Serializable {
     }
 
     /**
-     * What is the maximum number of chiefs for a given population size?
+     * Gets the maximum number of chiefs for a given population size.
+     * 
      * @param popSize
      * @return
      */
@@ -88,7 +94,7 @@ public class GovernanceRules implements Serializable {
     }
 
     /**
-     * Get the minimum number of unique reviewers for a mission plan
+     * Gets the minimum number of unique reviewers for a mission plan.
      * 
      * @return
      */

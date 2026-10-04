@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
@@ -21,6 +22,7 @@ import com.mars_sim.core.data.History;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.malfunction.MalfunctionManager.MaintenanceParameters;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
@@ -31,6 +33,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.unit.UnitHolder;
 
 /**
@@ -106,10 +109,10 @@ public class EVASuit extends Equipment
 	private static final double TARGET_O2_PRESSURE = 17;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
-	/** The wear lifetime value is 1 orbit. */
-	private static final double WEAR_LIFETIME = 668_000;
-	/** The maintenance time in millisols. */
-	private static final double MAINTENANCE_TIME = 200D;
+	/** The wear lifetime value is 1 orbit and maintenance time is 200 millisols. */
+	private static final MaintenanceParameters maintenanceParameters = new MaintenanceParameters(
+				668_000, 200, 0.5, true);
+
 	/** The ratio of CO2 expelled to O2 breathed in. */
 	private static double gasRatio;
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
@@ -131,7 +134,9 @@ public class EVASuit extends Equipment
 	/** The MicroInventory instance. */
 	private MicroInventory microInventory;
 	
-	private History<UnitHolder> locnHistory;
+	private History<String> locnHistory;
+	/** The suit's malfunction event history. */
+	private History<MsgContext> eventHistory = new History<>(28);
 	
 	static {
 
@@ -212,7 +217,7 @@ public class EVASuit extends Equipment
 		setDescription("A standard EVA suit for Mars surface operation.");
 
 		// Add scope to malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+		malfunctionManager = new MalfunctionManager(this, maintenanceParameters);
 		
 		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 		
@@ -481,7 +486,7 @@ public class EVASuit extends Equipment
 			if (locnHistory == null) {
 				locnHistory = new History<>(10);
 			}
-			locnHistory.add(newContainer);
+			locnHistory.add(newContainer.getName());
 		}
 		
 		if (newContainer != null) {
@@ -501,8 +506,28 @@ public class EVASuit extends Equipment
 	 * 
 	 * @return
 	 */
-	public History<UnitHolder> getHistory() {
+	public History<String> getLocnHistory() {
 		return locnHistory;
+	}
+
+	/**
+	 * Gets the EVA suit history.
+	 *
+	 * @return List of interesting malfunction events for this EVA suit.
+	 */
+	@Override
+	public History<MsgContext> getHistory() {
+		return eventHistory;
+	}
+
+	/**
+	 * Adds an entry to the EVA suit's history.
+	 * @param entry the history entry to add.
+	 */
+	@Override
+	public void addHistoryEntry(MsgContext entry) {
+		eventHistory.add(entry);
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
 	}
 	
 	/**

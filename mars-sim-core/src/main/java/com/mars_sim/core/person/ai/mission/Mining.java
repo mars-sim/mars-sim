@@ -451,7 +451,7 @@ public class Mining extends EVAMission
 				range = tripRange;
 			}
 
-			for(MineralSite site : surfaceFeatures.getMineableSites(false)) {
+			for (MineralSite site : surfaceFeatures.getMineableSites(false)) {
 				boolean isMature = (site.getNumEstimationImprovement() >= 
 						RandomUtil.getRandomDouble(MATURE_ESTIMATE_NUM/2.0, 1.0 * MATURE_ESTIMATE_NUM));
 
@@ -523,6 +523,7 @@ public class Mining extends EVAMission
 	public static double getMiningSiteValue(MineralSite site, Settlement settlement) {
 
 		double result = 0D;
+		int num = site.getMinerals().size();
 
 		for (var conc : site.getMinerals().entrySet()) {
 			int mineralResource = conc.getKey();
@@ -532,7 +533,7 @@ public class Mining extends EVAMission
 			result += mineralValue * mineralAmount;
 		}
 
-		result = Math.min(MAX, result);
+		result = Math.min(MAX, result / num);
 		
 		logger.info(settlement, 30_000L, site.getLocation() 
 			+ " has a Mining Value of " + Math.round(result * 100.0)/100.0 + ".");

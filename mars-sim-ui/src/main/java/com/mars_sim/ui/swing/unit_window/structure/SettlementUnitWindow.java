@@ -12,6 +12,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
+import com.mars_sim.ui.swing.unit_window.HistoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.InventoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.LocationTabPanel;
 import com.mars_sim.ui.swing.unit_window.MalfunctionTabPanel;
@@ -67,6 +68,8 @@ public class SettlementUnitWindow extends EntityContentPanel<Settlement> {
 		addTabPanel(new TabPanelThermal(settlement, context));
 		addTabPanel(new TabPanelVehicles(settlement, context));
 		addTabPanel(new TabPanelWasteProcesses(settlement, context));
+		addTabPanel(new HistoryTabPanel(settlement, context));
+
 
 		applyProps(props);
 		activateListener();

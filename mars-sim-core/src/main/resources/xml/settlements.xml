@@ -326,13 +326,15 @@
 		<template name="Alpha Base 2"/>
 		<template name="Alpha Base 3"/>
 						
-		<!-- 1 Hub Base template -->			
-		<template name="Hub Base"/>
-		
-		<!-- 1 Sector Base template -->	
+		<!-- 2 Hub Base templates -->			
+		<template name="Hub Base 1"/>
+		<template name="Hub Base 2"/>
+				
+		<!-- 3 Sector Base template -->	
 		<template name="Sector Base 1"/>
 		<template name="Sector Base 2"/>
-						
+		<template name="Sector Base 3"/>
+								
 		<!-- 1 trading outpost template -->			
 		<template name="Trading Outpost"/>
 	

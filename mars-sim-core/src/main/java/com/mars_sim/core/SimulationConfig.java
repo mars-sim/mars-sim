@@ -166,7 +166,7 @@ public class SimulationConfig {
 	 * Hidden constructor. 
 	 */
 	private SimulationConfig(String xmlLoc) {
-		logger.info("Loading simulation configuration from " + xmlLoc);
+		logger.config("Loading simulation configuration from " + xmlLoc);
 		cachedResources = new ResourceCache(new File(xmlLoc), true);
 
 		readConfig();

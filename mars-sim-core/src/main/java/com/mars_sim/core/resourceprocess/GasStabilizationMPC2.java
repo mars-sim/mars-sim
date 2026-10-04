@@ -143,7 +143,14 @@ public class GasStabilizationMPC2 {
         return active;
     }
 
-    // ─── Prediction (linearized dynamics) ─────────────────────────────────
+    /**
+     * Predicts the result with linearized dynamics.
+     * 
+     * @param s
+     * @param action
+     * @param steps
+     * @return
+     */
     private double[] predictWithAction(double[] s, double[] action, int steps) {
         double[] x = s.clone();
         Process[] all = Process.values();
@@ -163,7 +170,13 @@ public class GasStabilizationMPC2 {
         return x;
     }
 
-    // ─── Cost function with chance constraints ────────────────────────────
+    /**
+     * Evaluates the cost with the cost function with chance constraints .
+     * 
+     * @param projected
+     * @param action
+     * @return
+     */
     private double evaluateCost(double[] projected, double[] action) {
         double cost = 0.0;
         Gas[] gases = Gas.values();
@@ -198,14 +211,26 @@ public class GasStabilizationMPC2 {
         return cost;
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────────────
+
+    /**
+     * Creates a mask.
+     * 
+     * @param mask
+     * @param n
+     * @return
+     */
     private double[] maskToAction(int mask, int n) {
         double[] a = new double[n];
         for (int i = 0; i < n; i++) a[i] = ((mask >> i) & 1);
         return a;
     }
 
-    /** Standard normal CDF (Abramowitz & Stegun approx) */
+    /**
+     * Applies the standard normal CDF (Abramowitz & Stegun approx).
+     * 
+     * @param z
+     * @return
+     */
     private double cdf(double z) {
         if (z < -8) return 0.0;
         if (z >  8) return 1.0;
@@ -216,26 +241,35 @@ public class GasStabilizationMPC2 {
         return z >= 0 ? p : 1.0 - p;
     }
 
-    // ─── Demo ─────────────────────────────────────────────────────────────
+
     public static void main(String[] args) {
         GasStabilizationMPC2 mpc = new GasStabilizationMPC2();
 
-        // Disturbance: CO2 dropped (photosynthesis consuming it), H2 rising
+        // Set the initial states
         mpc.setState(20.5, 0.03, 1.8, 0.35, 0.04, 0.01);
 
+        double[] is = mpc.getState();
+        System.out.printf("Step %2d | Initial %-50s", 0, "     ");
+        System.out.printf(" | O2=%.2f CO2=%.3f H2O=%.2f H2=%.2f CH4=%.3f CH3OH=%.3f%n",
+                is[0], is[1], is[2], is[3], is[4], is[5]);
+        
         for (int step = 0; step < 20; step++) {
             Set<Process> control = mpc.computeControlMove();
 
-            System.out.printf("Step %2d | Active: %-50s", step,
+            System.out.printf("Step %2d | Active: %-50s", (step + 1),
                 control.isEmpty() ? "(none)" : control.toString());
 
             // Apply control
             double[] s = mpc.getState();
-            Process[] all = Process.values();
+//            Process[] all = Process.values();
             for (Process p : control) {
                 ProcessEffect eff = mpc.effects.get(p);
                 for (int g = 0; g < 6; g++) s[g] += eff.dGas[g];
             }
+            
+            // Disturbance: CO2 dropped (photosynthesis consuming it), H2 rising
+            
+            
             // Natural drift
             s[Gas.O2.ordinal()]    -= 0.05;
             s[Gas.CO2.ordinal()]   += 0.01;

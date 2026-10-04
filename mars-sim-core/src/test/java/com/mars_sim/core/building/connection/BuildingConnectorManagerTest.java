@@ -298,7 +298,7 @@ class BuildingConnectorManagerTest {
     private Building addBuildingFromTemplate(Settlement settlement, BuildingTemplate template) {
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        MockBuilding newBuilding = new MockBuilding(settlement, template.getID(), template.getBounds());
+        MockBuilding newBuilding = new MockBuilding(settlement, template.getStreetNum(), template.getBounds());
         buildingManager.addBuilding(newBuilding, false);
 
         return newBuilding;

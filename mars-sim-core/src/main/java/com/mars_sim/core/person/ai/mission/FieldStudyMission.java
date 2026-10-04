@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.mission;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
@@ -241,7 +240,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		// Determine the research site.
 		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
 		
-		int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
+		int missionSol = getMarsTime().getMissionSol();
 		
 		double limit = Math.min(missionSol * 7, Math.min(range, range / 10 * (1 + score / 1.5)));
 		

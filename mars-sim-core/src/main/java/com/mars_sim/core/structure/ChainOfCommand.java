@@ -442,6 +442,7 @@ public class ChainOfCommand implements Serializable {
 	 * Returns the maximum number of members allowed in a mission based on the current population of the settlement.
 	 */
 	public int getMaxMissionMembers() {
+		// Future: may also consider num of robots
 		int pop = settlement.getNumCitizens();
 		int max;
 		if (pop < 4)
@@ -459,7 +460,7 @@ public class ChainOfCommand implements Serializable {
 		else if (pop < 29)
 			max = 7;
 		else
-			max = 8;
+			max = (int)(pop / 3.5);
 
 		// 50% tendency to have 1 less person
 		int rand = RandomUtil.getRandomInt(1);

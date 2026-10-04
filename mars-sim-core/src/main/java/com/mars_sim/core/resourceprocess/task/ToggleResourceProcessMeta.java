@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcessMeta.java
- * @date 2026-07-15
+ * @date 2026-09-27
  * @author Scott Davis
  */
 package com.mars_sim.core.resourceprocess.task;
@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.person.Person;
@@ -51,22 +49,22 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		
 		private ResourceProcess process;
 		
-        public ToggleOffJob(SettlementMetaTask mt, Settlement owner, Building processBuilding,
+        public ToggleOffJob(SettlementMetaTask mt, Settlement owner, 
 						ResourceProcess process,
 						RatingScore score) {
 			super(mt, owner, "Toggle Off "
-								+ process.getProcessName(), processBuilding, score);
+								+ process.getProcessName(), owner, score);
 			this.process = process;
         }
 
         @Override
         public Task createTask(Person person) {
-            return new ToggleResourceProcess(person, (Building) getFocus(), process);
+            return new ToggleResourceProcess(person, (Settlement) getFocus(), process);
         }
 
         @Override
         public Task createTask(Robot robot) {
-            return new ToggleResourceProcess(robot, (Building) getFocus(), process);
+            return new ToggleResourceProcess(robot, (Settlement) getFocus(), process);
         }
 		
  		@Override
@@ -128,23 +126,24 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.toggleResourceProcess"); //$NON-NLS-1$
 	
-	private static final String TOGGLE_TIME = "toggleTime";
+//	private static final String TOGGLE_TIME = "toggleTime";
 	
 	private static final double MIN_SCORE = 0.05;
-	private static final double MAX_SCORE = 500;
+	public static final double MAX_SCORE = 500;
 	
 	private static final double WASTE_THRESHOLD = 0.3; // % waste need to be available to toggle
 	
-	private static final double GOD_BIAS = 2048;	
+//	private static final double GOD_BIAS = 2048;	
 //	private static final double OMNI_BIAS = 1792;
 //	private static final double HOVERING = 1536;
-	private static final double SIGNIFICANT = 1024;	
-	private static final double OVERWHELMING = 768;
-	private static final double EXCEEDING = 512;	
+//	private static final double SIGNIFICANT = 1024;	
+//	private static final double OVERWHELMING = 768;
+//	private static final double EXCEEDING = 512;	
 	private static final double SUPREME = 256;	
 //	private static final double TRENDY = 192;	
 	private static final double EXTREME = 128;
 	private static final double MEGA = 64;
+	private static final double GREAT = 48;
 	private static final double SUPER = 32;
 	private static final double GOOD = 16;
 	private static final double MID = 8;
@@ -183,19 +182,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		Map<ResourceProcessSpec, ResourceProcessAssessment> assessed = new HashMap<>();
 
 		if (!settlement.getProcessOverride(OverrideType.RESOURCE_PROCESS)) {
-			Set<Building> buildingSet = settlement.getBuildingManager().getBuildingSet(FunctionType.RESOURCE_PROCESSING);
-			
-			for (Building building: buildingSet) {
-				selectToggableProcesses(building, false, tasks, assessed);
-			}
+			selectToggableProcesses(settlement, false, tasks, assessed);
 		}
 
 		if (!settlement.getProcessOverride(OverrideType.WASTE_PROCESSING)) {
-			Set<Building> buildingSet = settlement.getBuildingManager().getBuildingSet(FunctionType.WASTE_PROCESSING);
-			
-			for (Building building: buildingSet) {
-				selectToggableProcesses(building, true, tasks, assessed);
-			}
+			selectToggableProcesses(settlement, true, tasks, assessed);
 		}
 
 		return tasks;
@@ -204,34 +195,32 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	/**
 	 * Register any resource/waste process (from a building) based on its resource score.
 	 *
-	 * @param building
+	 * @param settlement
 	 * @param isWaste
 	 * @param rate0
 	 * @param rate1
 	 * @param results Holds the list of Task created
 	 * @param assessed 
 	 */
-	private void selectToggableProcesses(Building building, boolean isWaste, List<SettlementTask> results,
+	private void selectToggableProcesses(Settlement settlement, boolean isWaste, List<SettlementTask> results,
 			Map<ResourceProcessSpec, ResourceProcessAssessment> assessed) {
 
 		List<SettlementTask> toggleOffTasks = new ArrayList<>();
 		Map<SettlementTask, Double> scoreMap = new HashMap<>();
 		
+	
 		List<ResourceProcess> processes = null;
-		if (isWaste) {
-			processes = building.getWasteProcessing().getProcesses();
+		if (!isWaste) {
+			processes = settlement.getResourceProcesses();
 		}
 		else
-			processes = building.getResourceProcessing().getProcesses();
+			processes = settlement.getWasteProcesses();
 		
 		// Shuffle the list random to vary which process to pick first
 		Collections.shuffle(processes);
-		var settlement = building.getSettlement();
-
-		int count = 0;
-
-		Collections.shuffle(processes);
-		
+	
+//		int count = 0;
+	
 		for (ResourceProcess process : processes) {
 			// Avoid process that can't be toggled or no point toggling
 			if (process.canToggle() && !process.isWorkerAssigned()) {
@@ -239,7 +228,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (process.isProcessRunning()) {
 	
 					if (process.getOverallScore() < 1) {
-						toggleOffTasks.add(new ToggleOffJob(this, settlement, building, process, new RatingScore(1)));
+						toggleOffTasks.add(new ToggleOffJob(this, settlement, process, new RatingScore(1)));
 					}
 					// Note: Allow a running process to stop once in a while in order to reduce wear and tear
 					// Reduce the likelihood of having to submit ToggleOffJob all the time
@@ -269,7 +258,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //					}
 				}
 				else {
-					computeAssessment(assessed, scoreMap, building, process, isWaste);
+					computeAssessment(assessed, scoreMap, settlement, process, isWaste);
 				}
 			}
 		}
@@ -294,18 +283,17 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * 
 	 * @param mapToAssess
 	 * @param scoreMap
-	 * @param building
+	 * @param settlement
 	 * @param process
 	 * @param isWaste
 	 */
 	private void computeAssessment(Map<ResourceProcessSpec, ResourceProcessAssessment> mapToAssess, Map<SettlementTask, Double> scoreMap, 
-			Building building, ResourceProcess process, boolean isWaste) {
+			Settlement settlement, ResourceProcess process, boolean isWaste) {
 
 		var spec = process.getSpec();
 		int modules = process.getNumModules();
 		var a = mapToAssess.computeIfAbsent(spec,
-					s -> calculateAssessment(building, s, modules, isWaste, scoreMap));
-		
+					s -> calculateAssessment(settlement, s, modules, isWaste, scoreMap));
 		
 		process.setAssessment(a);
 	}
@@ -321,12 +309,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @param scoreMap
 	 * @return
 	 */
-	private ResourceProcessAssessment calculateAssessment(Building building,
+	private ResourceProcessAssessment calculateAssessment(Settlement settlement,
 					ResourceProcessSpec spec, int modules, boolean isWaste,
 					Map<SettlementTask, Double> scoreMap) {
-		ResourceProcessAssessment a = ResourceProcess.DEFAULT_ASSESSMENT;
-
-		Settlement settlement = building.getSettlement();	
+		ResourceProcessAssessment a = ResourceProcess.DEFAULT_ASSESSMENT;	
 		
 		var inputsAvaiable = isInputsPresent(settlement, spec);
 		if (inputsAvaiable) {
@@ -342,10 +328,9 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// Compute the output score		
 				double outputValue = MathUtils.between(computeResourcesValue(settlement, spec, modules, false), MIN_SCORE, MAX_SCORE);
 						
-				a = new ResourceProcessAssessment(inputValue, outputValue,
-								MathUtils.between(outputValue/inputValue, MIN_SCORE, 2 * MAX_SCORE), 
-								true);
-				score = new RatingScore("inputs", 1/inputValue);
+				double overallValue = MathUtils.between(outputValue/inputValue, MIN_SCORE, 2 * MAX_SCORE);
+				a = new ResourceProcessAssessment(inputValue, outputValue, overallValue, true);
+				score = new RatingScore("inputs", 1D / inputValue);
 				score.addModifier("outputs", outputValue); //'.addBase("inputs", -inputValue);
 			}
 
@@ -430,7 +415,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 												ResourceProcessSpec processSpec,
 												int modules, boolean input) {
 		// Set the basic score
-		double score = 0.01;
+		double score = MIN_SCORE;
 		// Note: beware of not reseting score inside the for loop, 
 		// or else losing the carryover from previous calculation
 
@@ -461,35 +446,35 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isAmbientInputResource(resource)) {
 					// Note: 'Ambient' is used for CO2 and brine water
 					// reduce the score in order to encourage this process
-					value = value / EXCEEDING;
+					value = value / EXTREME;
 				}
 				else {
 					// Note: Mark ambient as 'false' to hint that this process is discouraged
-					value = value * MID;
+					value = value / SUPER;
 				}
 				
-				if (ResourceUtil.isRawMaterial(resource)) {   				// all ores, all minerals, sand)
-//					|| ResourceUtil.isChemical(resource)) {					// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 
-					score += value / MEGA;
-				} else if (ResourceUtil.isCO2(resource)) { 					// CO2	
-					score += value / SUPER;
-				} else if (ResourceUtil.isHydrogen(resource)) { 			// hydrogen	
+				if (ResourceUtil.isHydrogen(resource)) { 					// hydrogen	
 					score += value * SUPER;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
-					score += value * SUPER;
+					score += value * MEGA;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
 					score += value * SUPER;
 				} else if (ResourceUtil.isOxygen(resource)) {  				// oxygen
-					score += value * MEGA;
+					score += value * MID;
+				} else if (ResourceUtil.isWater(resource)) { 				// water
+					score -= value;
+				} else if (ResourceUtil.isTier1Resource(resource)) { 		// ice, brine water, rock salt
+					score -= value * MEGA;
+				} else if (ResourceUtil.isRawMaterial(resource)) {   				// all ores, all minerals, sand)
+//					|| ResourceUtil.isChemical(resource)) {					// polyurethane, polyester resin, ethylene, ethylene glycol, styrene, propylene 
+					score += value / SUPER;
+				} else if (ResourceUtil.isCO2(resource)) { 					// CO2	
+					score += value / SUPER;
 				} else if (ResourceUtil.isDerivedResource(resource)) { 		// glucose, leaves, soil 
 					score += value / MEGA;
 				} else if (ResourceUtil.isInSitu(resource)					// all regolith types
 						|| ResourceUtil.isWasteProduct(resource)) { 		// grey water, black water, * waste
-					score += value / OVERWHELMING;
-				} else if (ResourceUtil.isTier1Resource(resource)) { 		// ice, brine water, rock salt
-					score += value / SIGNIFICANT;
-				} else if (ResourceUtil.isWater(resource)) { 				// water
-					score += value * MID; 
+					score += value / SUPER;
 				} else if (ResourceUtil.isConstructionResource(resource)) {	// GYPSUM_PLASTER_ID, GYPSUM_ID, CEMENT_ID, LIME_ID, ACETYLENE_ID
 					score += value / MID;
 				} else {
@@ -505,7 +490,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				double value = vp;
 
 				if (processSpec.isCoreOutputResource(resource)) {
-					value = value * GOOD;
+					score += value * SUPER;
 				}
 				
 //				score += value;
@@ -515,20 +500,25 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// then it won't need to check how much it has in stock
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
-					// Note: Mark waste as 'true' to hint that this process is encouraged
+					// Note: Mark waste as 'true' to hint that this process is somewhat encouraged
 					score += value * SUPER;
+				}
+				else  {
+					// Note: Mark waste as 'true' to hint that this process is very encouraged
+					score += value * MEGA;
+				}
 //				} else if (ResourceUtil.isHydrogen(resource)) { 		// hydrogen
-//					score += mrate * EXCEEDING;
+//					score += value * EXCEEDING;
 //				} else if (ResourceUtil.isMethane(resource)) { 			// methane
-//					score += mrate * SIGNIFICANT;
+//					score += value * SIGNIFICANT;
 //				} else if (ResourceUtil.isMethanol(resource)) { 		// methanol
-//					score += mrate * SUPREME;
-				} else if (ResourceUtil.isOxygen(resource)) {			// oxygen
-					score += value * SUPER;
+//					score += value * SUPREME;
+//				} else if (ResourceUtil.isOxygen(resource)) {			// oxygen
+//					score += value;
 //				} else if (ResourceUtil.isRawElement(resource)      	// carbon, iron powder, iron oxide
 //					|| ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick, gypsum plaster			
 //					score += value * MEGA;					
-				} else if (ResourceUtil.isTier1Resource(resource)) { 	// ice, brine water, rock salt	
+				if (ResourceUtil.isTier1Resource(resource)) { 	// ice, brine water, rock salt	
 					score += value * SUPREME;	
 //				} else if (ResourceUtil.isInSitu(resource)) {			// all regolith types
 //					score += value * SIGNIFICANT;	
@@ -539,10 +529,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil
 //					|| ResourceUtil.isCriticalResource(resource)) {		// glass
 //					score += value * SUPREME;
-				} else if (ResourceUtil.isWater(resource)) { 			// water
-					score += value * MEGA;
+//				} else if (ResourceUtil.isWater(resource)) { 			// water
+//					score += value;
 				} else if (ResourceUtil.isRawMaterial(resource)) { 		// all ores, all minerals, sand
-					score += value * EXTREME;
+					score += value * 4;
 				} else
 					score += value;
 			}

@@ -347,11 +347,11 @@ public class ReviewMissionPlan extends Task {
 		msg.append("Grading ").append(m.getName());
 		msg.append(" - Rating: ").append(rating); 
 		msg.append(", Rels: ").append(relation); 
-		msg.append(", Quals: ").append(qual); 
+		msg.append(", Quals: ").append(Math.round(qual*10.0)/10.0); 
 		msg.append(", Obj: ").append(obj);
 		msg.append(", Emer: ").append(emer);
 		msg.append(", Site: ").append(Math.round(siteValue*10.0)/10.0);
-		msg.append(", Dist: ").append(dist);
+		msg.append(", Dist: ").append(Math.round(dist*10.0)/10.0);
 		msg.append(", Lead: ").append(leadership); 							
 		msg.append(", Review: ").append(reviewerRole); 
 		msg.append(", Luck: ").append(luck); 

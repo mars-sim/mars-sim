@@ -360,7 +360,7 @@ class WeatherPanel extends JPanel {
             }
 
             if (data == null) {
-                logger.warning(0, "Yestersol sunlight data unavailable at " + location + ".");
+//                logger.warning(20_000, "Yestersol sunlight data unavailable at " + location + ".");
                 return;
             }
 

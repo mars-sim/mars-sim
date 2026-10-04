@@ -19,6 +19,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
@@ -174,7 +175,7 @@ public class TableTab extends MonitorTab {
 	/**
 	 * Filters the settlements.
 	 * 
-	 * @param currentSelection Lisst of selected settlements to filter by.
+	 * @param currentSelection List of selected settlements to filter by.
 	 */
 	public boolean setSettlementFilter(Set<Settlement> currentSelection) {
 		if (settlementColumnId > 0) {
@@ -198,7 +199,9 @@ public class TableTab extends MonitorTab {
 		// Automatically adjust the width when a significant data change
 		if (!widthAdjusted && getModel().getRowCount() > 0) {
 			widthAdjusted = true;
-			SwingHelper.resizeTableColumns(table);
+			// Defer calling resizeTableColumns until after the table is visible
+			// to avoid null viewToModel[index] at startup
+			SwingUtilities.invokeLater(() -> SwingHelper.resizeTableColumns(table));
 		}
 
 		return accepted;

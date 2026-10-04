@@ -62,7 +62,9 @@ public class ResourceUtil {
 	public static final int MAGNETITE_ID = MAGNESITE_ID + 1;
 	public static final int MALACHITE_ID = MAGNETITE_ID + 1;
 	public static final int OLIVINE_ID = MALACHITE_ID + 1;
-	public static final int PYROXENE_ID = OLIVINE_ID + 1;
+	public static final int PLAGIOCLASE_ID = OLIVINE_ID + 1;
+	public static final int PYROXENE_ID = PLAGIOCLASE_ID + 1;
+	
 	public static final int SYLVITE_ID = PYROXENE_ID + 1;
 	public static final int TAENITE_ID = SYLVITE_ID + 1;
 	
@@ -151,7 +153,8 @@ public class ResourceUtil {
 	
 	public static final int[] MINERAL_CONC_IDs = new int[]{CHALCOPYRITE_ID, GEOTHITE_ID,
 														HEMATITE_ID, KAMACITE_ID, MAGNESITE_ID, MAGNETITE_ID,
-														MALACHITE_ID, OLIVINE_ID, PYROXENE_ID, SYLVITE_ID, TAENITE_ID};
+														MALACHITE_ID, OLIVINE_ID, PLAGIOCLASE_ID, PYROXENE_ID, 
+														SYLVITE_ID, TAENITE_ID};
 	
 	public static final int[] ORE_DEPOSIT_IDS = new int[]{ALLOPHANE_ID, AKAGANEITE_ID, BASALTIC_ID,
 														BASSANITE_ID, GYPSUM_ID, SMECTITE_ID};
@@ -240,6 +243,7 @@ public class ResourceUtil {
 		fixedResources.put("olivine", OLIVINE_ID);
 		fixedResources.put("oxygen", OXYGEN_ID);
 		
+		fixedResources.put("plagioclase feldspar", PLAGIOCLASE_ID);
 		fixedResources.put("polycarbonate resin", POLYCARBONATE_RESIN_ID);
 		fixedResources.put("polyester fiber", POLYESTER_FIBER_ID);
 		fixedResources.put("polyester resin", POLYESTER_RESIN_ID);
@@ -685,30 +689,16 @@ public class ResourceUtil {
 	 * @return
 	 */
 	public static boolean isRawMaterial(int resource) {
+		
+		for (int i: MINERAL_CONC_IDs) {
+			if (resource == i) return true;
+		}
+		for (int i: ORE_DEPOSIT_IDS) {
+			if (resource == i) return true;
+		}
+		
 		return switch (resource) {
-			case SAND_ID, 
-					// 6 types of ores :
-					GYPSUM_ID,
-					BASALTIC_ID,
-					SMECTITE_ID,
-					ALLOPHANE_ID,
-					AKAGANEITE_ID,
-					BASSANITE_ID,
-					
-					// 11 types of Mineral concentrations :
-					CHALCOPYRITE_ID,
-					GEOTHITE_ID,
-					HEMATITE_ID, 
-					KAMACITE_ID, 
-					MAGNESITE_ID,
-					
-					MAGNETITE_ID, 
-					MALACHITE_ID,
-					OLIVINE_ID,
-					PYROXENE_ID,
-					SYLVITE_ID,
-					TAENITE_ID
-					
+			case SAND_ID
 					-> true;
 			default -> false;
 		};

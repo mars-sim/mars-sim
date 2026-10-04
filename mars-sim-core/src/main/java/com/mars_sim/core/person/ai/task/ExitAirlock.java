@@ -944,7 +944,7 @@ public class ExitAirlock extends Task {
 							
 				// 5. Loads the resources into the EVA suit
 				if (suit.loadResources(housing) < 0.9D) {
-					logger.warning(suit, "Not fully loaded.");
+					logger.warning(suit, 4_000, "Not fully loaded.");
 				}
 	
 				remainingDonningTime -= time;
@@ -971,7 +971,7 @@ public class ExitAirlock extends Task {
 			
 			// 5. Loads the resources into the EVA suit
 			if (suit.loadResources(housing) < 0.9D) {
-				logger.warning(suit, "Not fully loaded.");
+				logger.warning(suit, 4_000, "Not fully loaded.");
 			}
 			
 			remainingDonningTime -= time;

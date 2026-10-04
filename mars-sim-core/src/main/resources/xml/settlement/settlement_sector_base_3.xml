@@ -1,0 +1,206 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
+        name="Sector Base 3" default-population="240" description="Sector base 3 (240 + 16)"
+		sponsor="MS">
+
+	<!-- 20 beds * 12 compact quarters = 240 people; 8 * 2 residential hub = 16 tourists; max = 256  -->
+
+	<!-- CENTER: 000 -->
+
+  <building id="000" type="Central Dome A" xloc="0.0" yloc="0.0" facing="0.0">
+        <connection-list>
+            <connection id="W001" hatch-facing="east" />
+            <connection id="W101" hatch-facing="west" />
+            <connection id="W201" hatch-facing="south" />
+            <connection id="W301" hatch-facing="north" />
+        </connection-list>
+    </building>
+            
+	<!-- EAST WING : 000 to 099 -->
+      
+    <building id="W000" type="Walkway" length="58.5" xloc="-30.75" yloc="61.5" facing="90.0">
+        <connection-list>
+            <connection id="B301" hatch-facing="west" />
+            <connection id="BNE" hatch-facing="east" />
+        </connection-list>
+    </building>
+                
+    <building id="W001" type="Walkway" length="50.0" xloc="-35.0" yloc="0.0" facing="90.0">
+        <connection-list>
+            <connection id="000" hatch-facing="west" />
+            <connection id="B001" hatch-facing="east" />
+        </connection-list>
+    </building>
+      
+    <building id="B001" type="Brickcore3x3" xloc="-61.5" yloc="0.0" facing="0.0">
+        <connection-list>
+            <connection id="W001" hatch-facing="west" />
+			<connection id="W302" hatch-facing="north" />
+			<connection id="W202" hatch-facing="south" />
+        </connection-list>
+    </building>
+      
+    <building id="W002" type="Walkway" length="58.5" xloc="-30.75" yloc="-61.5" facing="90.0">
+        <connection-list>
+            <connection id="B201" hatch-facing="west" />
+            <connection id="BSE" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    
+    <!-- SOUTH WING : 201 to 299 -->            
+
+    <building id="W201" type="Walkway" length="50.0" xloc="0.0" yloc="-35.0" facing="0.0">
+        <connection-list>
+            <connection id="000" hatch-facing="north" />
+            <connection id="B201" hatch-facing="south" />
+        </connection-list>
+    </building>
+
+    <building id="B201" type="Brickcore3x3" xloc="0.0" yloc="-61.5" facing="0.0">
+        <connection-list>
+            <connection id="W201" hatch-facing="north" />
+         	<connection id="W002" hatch-facing="east" />
+          	<!-- <connection id="W102" hatch-facing="west" /> --> 
+        </connection-list>
+    </building>
+    
+    <building id="W202" type="Walkway" length="58.5" xloc="-61.5" yloc="-30.75" facing="0.0">
+        <connection-list>
+            <connection id="B001" hatch-facing="north" />
+            <connection id="BSE" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+   <building id="BSE" type="Brickcore3x3" xloc="-61.5" yloc="-61.5" facing="0.0">
+        <connection-list>
+            <connection id="W002" hatch-facing="west" />
+			<connection id="W202" hatch-facing="north" />
+        </connection-list>
+    </building>
+        
+	<!-- WEST WING : 101 to 199 -->            
+
+    <building id="W101" type="Walkway" length="50.0" xloc="35.0" yloc="0.0" facing="90.0">
+        <connection-list>
+            <connection id="000" hatch-facing="east" />
+            <connection id="B101" hatch-facing="west" />
+        </connection-list>
+    </building>
+      
+    <building id="B101" type="Brickcore3x3" xloc="61.5" yloc="0.0" facing="0.0">
+        <connection-list>
+            <connection id="W101" hatch-facing="east" />
+
+        </connection-list>
+    </building>
+
+    <!-- NORTH WING : 301 to 399 -->            
+
+    <building id="W301" type="Walkway" length="50.0" xloc="0.0" yloc="35.0" facing="0.0">
+        <connection-list>
+            <connection id="000" hatch-facing="south" />
+            <connection id="B301" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="B301" type="Brickcore3x3" xloc="0.0" yloc="61.5" facing="0.0">
+        <connection-list>
+            <connection id="W301" hatch-facing="south" />
+			<connection id="W000" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+   <building id="W302" type="Walkway" length="58.5" xloc="-61.5" yloc="30.75" facing="0.0">
+        <connection-list>
+            <connection id="B001" hatch-facing="south" />
+            <connection id="BNE" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+   <building id="BNE" type="Brickcore3x3" xloc="-61.5" yloc="61.5" facing="0.0">
+        <connection-list>
+            <connection id="W000" hatch-facing="west" />
+			<connection id="W302" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+   <!-- Building Packages -->
+    <building-package name="Storage Set 1"/>
+    <building-package name="Storage Set 2"/>
+   	<building-package name="ERV Set 1"/>
+   	<building-package name="ERV Set 2"/>
+   	<building-package name="ERV Set 3"/>
+   	<building-package name="ERV Set 4"/>    
+   	<building-package name="ERV Set 5"/>    	
+   	<building-package name="Air Set 1 - 1x4"/>
+    <building-package name="Sabatier Set 1 - 1x6"/>
+	<building-package name="Syngas Set 1 - 1x3"/>
+	<building-package name="Solar Thermal Set 1 - 1x6"/>
+	<building-package name="Solar Set 1 - 1x6"/>
+	<building-package name="Wind Set 1 - 1x9"/>
+	<building-package name="Kilo Set 1 - 1x4"/>
+	<building-package name="MD1 Set 1 - 1x2"/>
+	<building-package name="MD4 Set 1 - 1x1"/>
+  	<building-package name="Brine Water Well Set 1 - 1x5"/>
+     
+    <initial-supplies>
+     
+	    <vehicle type="Explorer Rover" number="4" />
+	    <vehicle type="Long Range Explorer" number="4" />
+	    <vehicle type="Transport Rover" number="2" />
+	    <vehicle type="Cargo Rover" number="2" />
+	    <vehicle type="Light Utility Vehicle" number="12" />
+	    <vehicle type="Delivery Drone" number="4" />
+	    <vehicle type="Cargo Drone" number="4" />
+	     
+	    <!-- Robots -->
+	    <robot type="ChefBot-Standard" number="2"/>
+	    <robot type="DeliveryBot-Standard" number="3"/>
+	    <robot type="GardenBot-Advanced" number="4"/>
+	    <robot type="MakerBot-Standard" number="3"/>
+	    <robot type="MedicBot-Advanced" number="1"/>
+	    <robot type="RepairBot-Advanced" number="3"/>
+	
+	    <equipment type="EVA Suit" number="156" />
+   	    <equipment type="Data Recorder" number="120" />
+   	    
+	    <!-- Containers-->
+		<equipment type="barrel" number="320" />
+		<equipment type="bag" number="320" />
+		<equipment type="gas canister" number="320" />		
+		<equipment type="large bag" number="320" />
+		<equipment type="specimen box" number="320" />
+	    <equipment type="thermal bottle" number="216" />	
+	 	<equipment type="wheelbarrow" number="96" />
+	
+	    <!-- Bins -->
+		<bin type="crate" number="40" />
+		<bin type="basket" number="40" />
+		<bin type="pot" number="40" />
+			
+		<!-- Life Support Resources -->
+		<resource type="food" amount="12000" />
+		<resource type="water" amount="14400" />
+		<resource type="methane" amount="9600" />
+		<resource type="methanol" amount="9600" />
+		<resource type="oxygen" amount="12000" />
+		<resource type="hydrogen" amount="12000" />
+		
+  		<part-package name="Instrument Package 1" number="6" />	
+	    <part-package name="Tech Part Package 5" number="2" />
+	    <part-package name="Standard Part Package 1" number="12" />
+
+    <!-- The resupply missions from Earth scheduled for this type of settlement. -->
+     
+    </initial-supplies>
+
+    <resupply>
+        <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">
+            <schedule firstSol="30" frequency="60" /> 
+        </resupply-mission>
+        <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1">
+            <schedule firstSol="668"/>
+        </resupply-mission>
+    </resupply>
+</template>

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.collection.DataCollectionSite;
 import com.mars_sim.core.equipment.DataRecorder;
@@ -170,7 +169,7 @@ public abstract class GatherData extends EVAOperation {
             	}
             	
                 // Obtain a SiteVisit instance
-                siteVisit = dataCollectionSite.checkSiteVisit(Simulation.instance().getMasterClock().getMarsTime().getMissionSol(), worker);
+                siteVisit = dataCollectionSite.checkSiteVisit(getMarsTime().getMissionSol(), worker);
                 
            		hasInstrument = findInstrument(s.getEquipmentInventory());
            		hasDataRecorder = findDataRecorder(s.getEquipmentInventory());
@@ -243,7 +242,7 @@ public abstract class GatherData extends EVAOperation {
                 	}
                 	
                     // Obtain a SiteVisit instance
-                    siteVisit = dataCollectionSite.checkSiteVisit(Simulation.instance().getMasterClock().getMarsTime().getMissionSol(), worker);
+                    siteVisit = dataCollectionSite.checkSiteVisit(getMarsTime().getMissionSol(), worker);
                 	// Attach this site to AbstractVehicleMission
                 	avm.addDataCollectionSite(dataCollectionSite);
                 	hasInstrument = findInstrument(v.getEquipmentInventory());

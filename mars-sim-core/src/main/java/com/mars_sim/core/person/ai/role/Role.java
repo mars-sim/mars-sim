@@ -12,11 +12,10 @@ import java.util.List;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.activities.GroupActivity;
-import com.mars_sim.core.data.History;
-import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.GroupActivityType;
+import com.mars_sim.core.tool.MsgContext;
 
 public class Role implements Serializable {
 
@@ -26,8 +25,6 @@ public class Role implements Serializable {
 	private Person person;
 
 	private RoleType roleType;
-
-	private History<RoleType> roleHistory = new History<>();
 
     // For Role change
     public static final String ROLE_EVENT = "role event";
@@ -72,61 +69,56 @@ public class Role implements Serializable {
 			throw new IllegalArgumentException("New roletype cannot be null.");
 		}
 
-		if (newType != oldType) {
-			var home = person.getAssociatedSettlement();
-			var command = home.getChainOfCommand();
+		if (newType == oldType) {
+			return;
+		}
 
-			// Note : if this is a leadership role, only one person should occupy this position 
-			List<Person> predecessors = Collections.emptyList();
-			if (newType.isChief() || newType.isCouncil()) {
-				// Find a list of predecessors who are occupying this role
-				predecessors = command.findPeopleWithRole(newType);
-				if (!predecessors.isEmpty()) {
-					Person p = predecessors.get(0);
-					// Predecessors to seek for a new role to fill
-					if (!p.isDeclaredDead())
-						p.getRole().obtainNewRole();
-				}
+		// Make the change
+		var home = person.getAssociatedSettlement();
+		var command = home.getChainOfCommand();
+
+		// Note : if this is a leadership role, only one person should occupy this position 
+		List<Person> predecessors = Collections.emptyList();
+		if (newType.isChief() || newType.isCouncil()) {
+			// Find a list of predecessors who are occupying this role
+			predecessors = command.findPeopleWithRole(newType);
+			if (!predecessors.isEmpty()) {
+				Person p = predecessors.get(0);
+				// Predecessors to seek for a new role to fill
+				if (!p.isDeclaredDead())
+					p.getRole().obtainNewRole();
 			}
-			
-			// Turn in the old role
-			relinquishOldRoleType();
+		}
+		
+		// Turn in the old role
+		relinquishOldRoleType();
 
-			// Set the role type of this person to the new role type
-			roleType = newType;
-			roleHistory.add(roleType);
-			
-			// Save the role in the settlement Registry
-			command.registerRole(roleType);
+		// Set the role type of this person to the new role type
+		roleType = newType;
+		
+		// Save the role in the settlement Registry
+		command.registerRole(roleType);
 
-			// Records the role change and fire unit update
-			person.fireUnitUpdate(ROLE_EVENT, roleType);
+		// Records the role change and fire unit update
+		person.fireUnitUpdate(ROLE_EVENT, roleType);
 
-			// If a change then create event
-			if (oldType != null) {
-				person.registerHistoricalEvent(HistoricalEventType.CHANGE_ROLE, roleType.getName(),
-					null, null, null);
-			}
+		// If a change then create event
+		if (oldType != null) {
+			person.addHistoryEntry(new MsgContext("entityhistory.rolechange", roleType.getName()));
 
-			// For Council members being changed have a meeting
-			if (roleType.isCouncil() && !predecessors.isEmpty()
-					&& home.getFutureManager() != null) {
-				GroupActivity.createPersonActivity("Council Announcement for " + roleType.getName(),
-									GroupActivityType.ANNOUNCEMENT, home, person, 0, 
-									Simulation.instance().getMasterClock().getMarsTime());
-			}
+			person.registerHistoricalEvent(HistoricalEventType.CHANGE_ROLE, roleType.getName(),
+				null, null, null);
+		}
+
+		// For Council members being changed have a meeting
+		if (roleType.isCouncil() && !predecessors.isEmpty()
+				&& home.getFutureManager() != null) {
+			GroupActivity.createPersonActivity("Council Announcement for " + roleType.getName(),
+								GroupActivityType.ANNOUNCEMENT, home, person, 0, 
+								Simulation.instance().getMasterClock().getMarsTime());
 		}
 	}
 
-	/**
-	 * Gets how has this person's role assignment has changed over time.
-	 * 
-	 * @return
-	 */
-	public List<HistoryItem<RoleType>> getChanges() {
-		return roleHistory.getChanges();
-	}
-	
 	/**
 	 * Obtains a new role.
 	 * 

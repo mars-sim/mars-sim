@@ -31,6 +31,7 @@ import com.mars_sim.core.authority.NationSpecConfig;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.equipment.BinFactory;
+import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -54,10 +55,9 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotConfig;
-import com.mars_sim.core.robot.RobotDemand;
 import com.mars_sim.core.robot.RobotSpec;
-import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.job.RobotJob;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleFactory;
@@ -98,9 +98,9 @@ public final class SettlementBuilder {
 	 * Creates all the initial Settlements.
 	 */
 	public void createInitialSettlements(Scenario bootstrap) {
-		logger.config(bootstrap.getName() + " scenario loading...");
+		logger.config("Loading scenario '" + bootstrap.getName() + "'.");
 		for (InitialSettlement spec : bootstrap.getSettlements()) {
-			createFullSettlement(spec);
+			createFullSettlement(spec, null);
 		}
 
 		statusConsumer.accept("Scenario " + bootstrap.getName() + " loaded.");
@@ -117,22 +117,26 @@ public final class SettlementBuilder {
 	 * Note: it includes all sub-units, e.g. Vehicles & Persons
 	 * along with any initial Parts & Resources.
 	 * 
-	 * @param spec
-	 * @return
+	 * @param spec Initial settlement specification
+	 * @param historyEntry History entry for the creation of the settlement
+	 * @return the created settlement
 	 */
-	public Settlement createFullSettlement(InitialSettlement spec) {
+	public Settlement createFullSettlement(InitialSettlement spec, MsgContext historyEntry) {
 		SettlementTemplate template = settlementTemplateConfig.getItem(spec.getSettlementTemplate());
-		logger.config("Creating '" + spec.getName() + "' based on template '" + spec.getSettlementTemplate() + "'...");
+		logger.config("Creating '" + spec.getName() + "' based on template '" + spec.getSettlementTemplate() + "'.");
 		statusConsumer.accept("Creating settlement " + spec.getName() + "...");
 
 		StopWatch watch = new StopWatch();
 		watch.start();
 
-		Settlement settlement = createSettlement(template, spec);
+		Settlement settlement = createSettlement(template, spec, historyEntry);
+		if (historyEntry != null) {
+			settlement.addHistoryEntry(historyEntry);
+		}
 		outputTimecheck(settlement, watch, "Create Settlement");
 
 		// Deliver the supplies
-		createSupplies(template.getSupplies(), settlement);
+		createSupplies(template.getSupplies(), settlement, historyEntry);
 		outputTimecheck(settlement, watch, "Create Supplies");
 
 		// TOCO get off the Initial Settlement
@@ -140,10 +144,10 @@ public final class SettlementBuilder {
 
 		// Create settlers to fill the settlement(s)
 		if ((crew != null) && (crewConfig != null)) {
-			createPreconfiguredPeople(settlement, crew);
+			createPreconfiguredPeople(settlement, crew, historyEntry);
 			outputTimecheck(settlement, watch, "Create Preconfigured People");
 		}
-		createPeople(settlement, settlement.getInitialPopulation(), false);
+		createPeople(settlement, settlement.getInitialPopulation(), false, historyEntry);
 		
 		// Establish a system of governance at a settlement.
 		settlement.getChainOfCommand().establishSettlementGovernance();
@@ -166,15 +170,16 @@ public final class SettlementBuilder {
 	 * 
 	 * @param settlement Target settlement
 	 * @param supplies The definition of the Supplies
+	 * @param historyEntry History entry for the supply creation
 	 */
-	public void createSupplies(SettlementSupplies supplies, Settlement settlement) {
+	public void createSupplies(SettlementSupplies supplies, Settlement settlement, MsgContext historyEntry) {
 		var eo = settlement.getEquipmentInventory();
 
-		createVehicles(supplies, settlement);
+		createVehicles(supplies, settlement, historyEntry);
 
-		createRobots(supplies, settlement);
+		createRobots(supplies, settlement, historyEntry);
 
-		createEquipment(supplies, settlement);
+		createEquipment(supplies, settlement, historyEntry);
 
 		createBins(supplies, settlement);
 		
@@ -201,11 +206,12 @@ public final class SettlementBuilder {
 	/**
 	 * Creates a settlement.
 	 * 
-	 * @param template
-	 * @param spec
-	 * @return
+	 * @param template Settlement template to use for creating the settlement
+	 * @param spec Initial settlement specification
+	 * @param historyEntry Message context for the settlement creation
+	 * @return the created settlement
 	 */
-	private Settlement createSettlement(SettlementTemplate template, InitialSettlement spec) {
+	private Settlement createSettlement(SettlementTemplate template, InitialSettlement spec, MsgContext historyEntry) {
 		Authority ra;
 		String sponsor = spec.getSponsor();
 		// If the sponsor has not be defined; then use the template
@@ -237,6 +243,9 @@ public final class SettlementBuilder {
 									spec.getSettlementTemplate(), ra,
 									location, populationNumber);
 		
+		if (historyEntry != null) {
+			settlement.addHistoryEntry(historyEntry);
+		}
 		Settlement.initializeStatics();
 		
 		settlement.initializeData();
@@ -251,8 +260,9 @@ public final class SettlementBuilder {
 	 * 
 	 * @param template
 	 * @param settlement
+	 * @param historyEntry History entry for the robot creation
 	 */
-	private void createRobots(SettlementSupplies template, Settlement settlement) {
+	private void createRobots(SettlementSupplies template, Settlement settlement, MsgContext historyEntry) {
 		for(Entry<String, Integer> v : template.getRobots().entrySet()) {
 			String robotType = v.getKey();
 			int number = v.getValue();
@@ -260,7 +270,7 @@ public final class SettlementBuilder {
 			
 				// Find the spec for this robot, take any model
 				RobotSpec spec = robotConfig.getRobotSpec(robotType);
-				buildRobot(settlement, spec);
+				buildRobot(settlement, spec, historyEntry);
 			}
 		}
 	}
@@ -270,14 +280,18 @@ public final class SettlementBuilder {
 	 * 
 	 * @param template
 	 * @param settlement
+	 * @param historyEntry Message context for the vehicle creation
 	 */
-	private void createVehicles(SettlementSupplies template, Settlement settlement) {
+	private void createVehicles(SettlementSupplies template, Settlement settlement, MsgContext historyEntry) {
 		for(Entry<String, Integer> v : template.getVehicles().entrySet()) {
 			String vehicleType = v.getKey();
 			int number = v.getValue();
 			for (int x = 0; x < number; x++) {
 				Vehicle newVehicle = VehicleFactory.createVehicle(unitManager, settlement, vehicleType);
 				newVehicle.addToAGarage();
+				if (historyEntry != null) {
+					newVehicle.addHistoryEntry(historyEntry);
+				}
 			}
 		}
 	}
@@ -285,16 +299,19 @@ public final class SettlementBuilder {
 	/**
 	 * Creates the initial equipment at a settlement.
 	 *
-	 * @param template
-	 * @param settlement
-	 * @throws Exception if error making equipment.
+	 * @param template Settlement supplies template
+	 * @param settlement Settlement where the equipment will be created
+	 * @param historyEntry History entry for the equipment creation
 	 */
-	private void createEquipment(SettlementSupplies template, Settlement settlement) {
+	private void createEquipment(SettlementSupplies template, Settlement settlement, MsgContext historyEntry) {
 		for(Entry<String, Integer> e : template.getEquipment().entrySet()) {
 			String type = e.getKey();
 			int number = e.getValue();
 			for (int x = 0; x < number; x++) {
-				EquipmentFactory.createEquipment(type, settlement);
+				var eq = EquipmentFactory.createEquipment(type, settlement);
+				if (eq instanceof EVASuit ea && historyEntry != null) {
+					ea.addHistoryEntry(historyEntry);
+				}
 			}
 		}
 	}
@@ -317,40 +334,20 @@ public final class SettlementBuilder {
 	}
 
 	/**
-	 * Creates initial Robots based on available capacity at settlements.
-	 * Need to find a home for this as teh logic mnay be useful
-	 * 
-	 * @param settlement
-	 * @param target
-	 * @deprecated This is no longer used as we want to have more control over the number of robots created at the start of the game. Instead, we can specify the number of robots in the settlement template and they will be created in createRobots() method.
-	 */
-	private void createRobotsOnDemand(Settlement settlement, int target) {
-		// Randomly create all remaining robots to fill the settlements to capacity.
-		RobotDemand demand = new RobotDemand(settlement);
-
-		// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
-		while (settlement.getNumBots() < target) {
-			// Get a robotType randomly
-			RobotType robotType = demand.getBestNewRobot();
-
-			// Find the spec for this robot, take any model
-			RobotSpec spec = robotConfig.getRobotSpec(robotType, null);
-
-			buildRobot(settlement, spec);
-		}
-	}
-
-	/**
 	 * Builds a single Robot in a settlement according to a spec.
 	 * 
 	 * @param settlement Home of the Robot
 	 * @param spec Specification of what to build
+	 * @param historyEntry Message context for the robot creation
 	 */
-	private void buildRobot(Settlement settlement, RobotSpec spec) {
+	private void buildRobot(Settlement settlement, RobotSpec spec, MsgContext historyEntry) {
 		String name = Robot.generateName(spec.getRobotType());
 
 		Robot robot = new Robot(name, settlement, spec);
 		robot.initialize();
+		if (historyEntry != null) {
+			robot.addHistoryEntry(historyEntry);
+		}
 
 		RobotJob robotJob = JobUtil.getRobotJob(spec.getRobotType());
 		robot.getBotMind().setRobotJob(robotJob, true);
@@ -403,8 +400,9 @@ public final class SettlementBuilder {
 	 * @param settlement Hosting settlement
 	 * @param targetPopulation Population goal
 	 * @param noDefaultRole True if there's no default role for this person and need to look for one for him
+	 * @param historyEntry History entry for the creation of people
 	 */
-	public void createPeople(Settlement settlement, int targetPopulation, boolean noDefaultRole) {
+	public void createPeople(Settlement settlement, int targetPopulation, boolean noDefaultRole, MsgContext historyEntry) {
 
 		Authority sponsor = settlement.getReportingAuthority();
 		
@@ -442,7 +440,9 @@ public final class SettlementBuilder {
 					.setSponsor(sponsor)
 					.setCountry(spec)
 					.build();
-
+			if (historyEntry != null) {
+				person.addHistoryEntry(historyEntry);
+			}
 			unitManager.addUnit(person);
 		
 			// Set up preference
@@ -463,10 +463,11 @@ public final class SettlementBuilder {
 	/**
 	 * Creates all pre-configured people as listed in people.xml.
 	 * 
-	 * @param settlement
-	 * @param crewName
+	 * @param settlement Settlement to which the pre-configured people will be added.
+	 * @param crewName Name of the crew to be added to the settlement.
+	 * @param historyEntry the history entry to associate with the created people
 	 */
-	private void createPreconfiguredPeople(Settlement settlement, String crewName) {
+	private void createPreconfiguredPeople(Settlement settlement, String crewName, MsgContext historyEntry) {
 
 		Crew crew = crewConfig.getItem(crewName);
 		if (crew == null) {
@@ -547,6 +548,9 @@ public final class SettlementBuilder {
 						.setSkill(skillMap)
 						.setPersonality(bigFiveMap, mbti)
 						.build();
+			
+				if (historyEntry != null)
+					person.addHistoryEntry(historyEntry);
 				
 				unitManager.addUnit(person);
 

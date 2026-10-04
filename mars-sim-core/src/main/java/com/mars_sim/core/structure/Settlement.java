@@ -40,6 +40,7 @@ import com.mars_sim.core.building.function.cooking.MealSchedule;
 import com.mars_sim.core.building.utility.heating.ThermalSystem;
 import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.data.History;
+import com.mars_sim.core.data.HistoryTracable;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.data.collection.DataCollectionSite;
@@ -79,8 +80,13 @@ import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.process.CompletedProcess;
+import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resourceprocess.ResourceProcess;
+import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
+import com.mars_sim.core.resourceprocess.ResourceProcessSpec;
+import com.mars_sim.core.resourceprocess.task.ToggleResourceProcessMeta;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
@@ -89,6 +95,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsZone;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Drone;
@@ -102,7 +109,7 @@ import com.mars_sim.core.vehicle.VehicleType;
  * contains information related to the state of the settlement.
  */
 public class Settlement extends Unit implements Temporal,
-	LifeSupportInterface, UnitHolder, Appraiser, SurfacePOI {
+	LifeSupportInterface, UnitHolder, Appraiser, SurfacePOI, HistoryTracable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -113,9 +120,7 @@ public class Settlement extends Unit implements Temporal,
 	public enum MeasureType {ICE_PROBABILITY, REGOLITH_PROBABILITY};
 	
 	private static final int NUM_BACKGROUND_IMAGES = 20;
-
 	private static final int MAX_STOCK_CAP = 1_000_000;
-
 	private static final int INITIAL_FREE_OXYGEN_AMOUNT = 5_000;
 	/**
 	 * Shared preference key for Mission limits
@@ -157,13 +162,11 @@ public class Settlement extends Unit implements Temporal,
 				ResourceUtil.METHANOL_ID,
 				ResourceUtil.BRINE_WATER_ID,
 				ResourceUtil.WATER_ID,
-				
 				ResourceUtil.ICE_ID,
 				ResourceUtil.BRINE_WATER_ID,
 				ResourceUtil.GREY_WATER_ID,
 				ResourceUtil.BLACK_WATER_ID,
 				ResourceUtil.ROCK_SAMPLES_ID,
-
 				ResourceUtil.REGOLITH_ID };
 	}
 	
@@ -350,10 +353,20 @@ public class Settlement extends Unit implements Temporal,
 	private Set<Person> deathRegistry;
 	/** The settlement's data collection site map. key = distance, value = site. */
 	private Map<Double, List<DataCollectionSite>> dataCollectionSiteMap;
+	/** The list of resource processes within the settlement. */
+	private List<ResourceProcess> resourceProcesses;
+	/** The list of waste processes within the settlement. */
+	private List<ResourceProcess> wasteProcesses;
+	/** The map of amount resource and its resource processes. */
+	private Map<AmountResource, List<ResourceProcess>> outputResourceProcessMap;
+	/** The map of amount resource and its waste processes. */
+	private Map<AmountResource, List<ResourceProcess>> outputWasteProcessMap;
 	
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(80);
 	private MissionControl missionControl;
+	private History<MsgContext> history = new History<>(28);
+
 	
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 	private static SurfaceFeatures surfaceFeatures;
@@ -387,13 +400,19 @@ public class Settlement extends Unit implements Temporal,
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
 		ownedVehicles = new UnitSet<>();
-		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
-		indoorPeople = new CopyOnWriteArraySet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		deathRegistry = new UnitSet<>();
 		
+		parkedNGaragedVehicles = new CopyOnWriteArraySet<>();
+		indoorPeople = new CopyOnWriteArraySet<>();
+		
 		dataCollectionSiteMap = new HashMap<>();
+		outputResourceProcessMap = new HashMap<>();
+		outputWasteProcessMap = new HashMap<>();
+		
+		resourceProcesses = new ArrayList<>();
+		wasteProcesses = new ArrayList<>();
 		
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
@@ -401,10 +420,12 @@ public class Settlement extends Unit implements Temporal,
 
 		// Mock use the default shifts
 		// Initialize schedule event manager
-		futureEvents = new ScheduledEventManager(masterClock);	
+		futureEvents = new ScheduledEventManager(masterClock);
+		
 		ShiftPattern shifts = settlementConfig.getShiftByPopulation(initialPopulation);
+		
 		shiftManager = new ShiftManager(this, shifts,
-										masterClock.getMarsTime().getMillisolInt());
+							masterClock.getMarsTime().getMillisolInt());
 
 		missionControl = new MissionControl(this);
 	}
@@ -437,6 +458,11 @@ public class Settlement extends Unit implements Temporal,
 		indoorPeople = new CopyOnWriteArraySet<>();
 
 		dataCollectionSiteMap = new HashMap<>();
+		outputResourceProcessMap = new HashMap<>();
+		outputWasteProcessMap = new HashMap<>();
+		
+		resourceProcesses = new ArrayList<>();
+		wasteProcesses = new ArrayList<>();
 		
 		// Create equipment inventory
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
@@ -445,8 +471,9 @@ public class Settlement extends Unit implements Temporal,
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftByPopulation(10);
+		
 		shiftManager = new ShiftManager(this, shifts,
-										masterClock.getMarsTime().getMillisolInt());
+							masterClock.getMarsTime().getMillisolInt());
 
 		// Initialize scientific achievement.
 		scientificAchievement = new EnumMap<>(ScienceType.class);
@@ -495,8 +522,12 @@ public class Settlement extends Unit implements Temporal,
 		indoorPeople = new CopyOnWriteArraySet<>();
 
 		dataCollectionSiteMap = new HashMap<>();
-		
+		outputResourceProcessMap = new HashMap<>();
+		outputWasteProcessMap = new HashMap<>();
 		allowTradeMissionSettlements = new HashMap<>();
+		
+		resourceProcesses = new ArrayList<>();
+		wasteProcesses = new ArrayList<>();
 		
 		logger.info(name + " (" + settlementCode + ")");
 		
@@ -635,8 +666,69 @@ public class Settlement extends Unit implements Temporal,
 				new GroupActivity(ga, this, masterClock.getMarsTime());
 			}
 		}
+		
+		Map<AmountResource, List<ResourceProcessSpec>> map = simulationConfig.getResourceProcessConfiguration().getOutputResourceMap();
+		Map<ResourceProcessSpec, ResourceProcess> resourceSpecs = new HashMap<>();
+		Map<ResourceProcessSpec, ResourceProcess> wasteSpecs = new HashMap<>();
+		
+		
+		for (ResourceProcess rp: resourceProcesses) {
+			ResourceProcessSpec spec = rp.getSpec();
+			resourceSpecs.put(spec, rp);
+		}
+				
+		for (ResourceProcess rp: wasteProcesses) {
+			ResourceProcessSpec spec = rp.getSpec();
+			wasteSpecs.put(spec, rp);
+		}
+		
+		for (AmountResource ar: map.keySet()) {
+			
+			List<ResourceProcessSpec> specs = map.get(ar);
+			List<ResourceProcess> resourceProcesses = new ArrayList<>();
+			List<ResourceProcess> wasteProcesses = new ArrayList<>();
+			
+			for (ResourceProcessSpec s: specs) {
+				ResourceProcess rp = resourceSpecs.get(s);
+				if (rp != null) {
+					resourceProcesses.add(rp);
+				}
+				
+				ResourceProcess wp = wasteSpecs.get(s);
+				if (wp != null) {
+					wasteProcesses.add(wp);
+				}
+			}
+			
+			if (!resourceProcesses.isEmpty())
+				outputResourceProcessMap.put(ar, resourceProcesses);
+			if (!wasteProcesses.isEmpty())
+				outputWasteProcessMap.put(ar, wasteProcesses);
+		}		
+		
+//		System.out.println(outputResourceProcessMap.toString().replaceAll("null", "\n[NULL]"));
+//		System.out.println(outputWasteProcessMap.toString().replaceAll("null", "\n[NULL]"));
 	}
 
+	/**
+	 * Gets the output resource process map.
+	 * 
+	 * @return
+	 */
+	public Map<AmountResource, List<ResourceProcess>> getOutputResourceProcessMap() {
+		return outputResourceProcessMap;
+	}
+	
+	/**
+	 * Gets the output waste process map.
+	 * 
+	 * @return
+	 */
+	public Map<AmountResource, List<ResourceProcess>> getOutputWasteProcessMap() {
+		return outputWasteProcessMap;
+	}
+
+	
 	/**
 	 * Adds building plans from the settlement template to the construction manager queue.
 	 * Each plan will be scheduled for construction at the current Mars time plus the delay in sols.
@@ -661,6 +753,87 @@ public class Settlement extends Unit implements Temporal,
 		}
 	}
 
+			
+	/**
+	 * Gets the vehicle history.
+	 *
+	 * @return List of interesting events for this vehicle.
+	 */
+	@Override
+	public History<MsgContext> getHistory() {
+		return history;
+	}
+
+	/**
+	 * Adds an entry to the vehicle's history.
+	 * @param entry history entry.
+	 */
+	@Override 
+	public void addHistoryEntry(MsgContext entry) {
+		history.add(entry);
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
+	}
+
+	/**
+	 * Returns a list of resource processes.
+	 * 
+	 * @return
+	 */
+	public List<ResourceProcess> getResourceProcesses() {
+		return resourceProcesses;
+	}
+
+	/**
+	 * Adds a resource process to the list.
+	 * 
+	 * @param engine
+	 */
+	public void addResourceProcess(ResourceProcessEngine engine) {
+		
+		boolean found = false;
+		for (ResourceProcess rp: resourceProcesses) {
+			if (rp.getProcessName().equals(engine.getProcessSpec().getName())) {
+				rp.addMaxModules(engine.getMaxModules());
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found)  {
+			resourceProcesses.add(new ResourceProcess(engine, this));
+		}
+	}
+	
+	/**
+	 * Returns a list of waste processes.
+	 * 
+	 * @return
+	 */
+	public List<ResourceProcess> getWasteProcesses() {
+		return wasteProcesses;
+	}
+
+	/**
+	 * Adds a waste process to the list.
+	 * 
+	 * @param engine
+	 */
+	public void addWasteProcess(ResourceProcessEngine engine) {
+		
+		boolean found = false;
+		for (ResourceProcess rp: wasteProcesses) {
+			if (rp.getProcessName().equals(engine.getProcessSpec().getName())) {
+				rp.addMaxModules(engine.getMaxModules());
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found)  {
+			wasteProcesses.add(new ResourceProcess(engine, this));
+		}
+	}
+	
 	/**
 	 * Gets the fixed location of this Settlement.
 	 * 
@@ -975,7 +1148,6 @@ public class Settlement extends Unit implements Temporal,
 			computedIceDigValue = computeIceAdjustedDemand();
 
 			computedRegolithDigValue = computeRegolithAdjustedDemand();
-
 			// Initialize the goods manager
 			goodsManager.updatedMetrics();
 		}
@@ -986,16 +1158,12 @@ public class Settlement extends Unit implements Temporal,
 		powerGrid.timePassing(pulse);
 		thermalSystem.timePassing(pulse);
 		buildingManager.timePassing(pulse);
-		
 		// Set refreshTasks param to true
 		taskManager.timePassing();
-
 		// Update citizens
 		timePassingCitizens(pulse);
-
 		// Update vehicles
 		timePassing(pulse, ownedVehicles);
-		
 		// Update robots
 		timePassing(pulse, ownedRobots);
 	
@@ -1006,20 +1174,76 @@ public class Settlement extends Unit implements Temporal,
 			iceReviewDue = true;
 			// Reset regolith review due			
 			regolithReviewDue = true;
+			// Review # of modules
+			reviewProcessNumModules(resourceProcesses);
+			// Review # of modules
+			reviewProcessNumModules(wasteProcesses);
 		}
 
-	
 		if (sol > 1 && pulse.isNewSol()) {
-
 			// Perform the end of day tasks
 			performBeginningOfDayTasks();	
 		}
-
 		// Keeps track of things based on msol
 		trackByMSol(pulse);
 
+		double cumulativeMillisols = pulse.getMarsTime().getLandingMillisols();
+		
+		// Run each resource process.
+		for (ResourceProcess p : resourceProcesses) {
+			p.processResources(pulse, 1, cumulativeMillisols);
+		}
+
+		// Run each waste process.
+		for (ResourceProcess p : wasteProcesses) {
+			p.processResources(pulse, 1, cumulativeMillisols);
+		}
+
 		eqmInventory.fireChanges();
+
 		return true;
+	}
+	
+	/**
+	 * Evaluates if the number of modules is optimal.
+	 * 
+	 * @param processes
+	 */
+	private void reviewProcessNumModules(List<ResourceProcess> processes) {
+		// Evaluate each resource process.
+		for (ResourceProcess p : processes) {
+			int modules = p.getNumModules();
+			double dutyPercent = p.getPercentDuty();
+			if (dutyPercent > 50) {
+
+				if (modules == 0) {
+					logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + ++modules);
+					p.setModules(modules);
+				}
+				else if (modules < p.getMaxModules())  {
+					int diff = (int)(p.getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
+					int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
+					if (rand <= diff) {
+						logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + ++modules);
+						p.setModules(modules);
+					}
+				}
+			}
+			else if (modules > 1) {
+				if ((p.getOverallScore() <= 20.0 || p.getOutputScore() <= 20)) {
+					logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + --modules);
+					p.setModules(modules);
+				}
+				else {
+					int diff = (int)(p.getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
+					int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
+					if (rand >= diff) {
+						logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + --modules);
+						p.setModules(modules);
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -2882,10 +3106,10 @@ public class Settlement extends Unit implements Temporal,
 	 * Records a completed process.
 	 *
 	 * @param type Type of process
-	 * @param locn On what building it was completed
+	 * @param name
 	 */
-    public void recordProcess(String process, String type, Building locn) {
-        var ph = new CompletedProcess(process, type, locn.getName());
+    public void recordProcess(String process, String type, String name) {
+        var ph = new CompletedProcess(process, type, name);
 		processHistory.add(ph);
     }
 	

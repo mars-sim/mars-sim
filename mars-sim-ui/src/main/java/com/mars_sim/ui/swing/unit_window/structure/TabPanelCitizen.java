@@ -151,6 +151,8 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 			super(NAME, INSIDE);
 			this.settlement = settlement;
 			update();
+			
+			enableListeners(true);
 		}
 
 		public void update() {

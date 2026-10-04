@@ -20,6 +20,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -63,6 +64,9 @@ public class MarsSimContextImpl implements MarsSimContext {
 	    Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock(),
 	    							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
 	    							 sim.getWeather(), unitManager);
+        
+        // Ignore sunlight checks during EVA operations in unit tests
+        EVAOperation.setCheckSunlight(false);
     }
 
     @Override
@@ -239,7 +243,6 @@ public class MarsSimContextImpl implements MarsSimContext {
      * @return
      */
     public ClockPulse createPulse(int missionSol, int mSol, boolean newSol, boolean newHalfSol, boolean isNewOneThirdSol) {	
-//    	int newSolOfWeek = MarsTimeFormat.getSolOfWeek(solOfMonth);
         MarsTime marsTime = new MarsTime(1, 1, 0, missionSol, mSol, missionSol);
         return createPulse(marsTime, newSol, newHalfSol, isNewOneThirdSol);
     }

@@ -261,8 +261,8 @@ public class DataCollectionSite extends CollectionSite
 	public String[] getDescription() {
 		String[] result = {
 				"# of Site Visits: " + siteVisits.size(),
-				primaryOperator == null ? ("Pri Operator: " + primaryOperator.getName()) : "Pri Operator: None",
-				secondaryOperator == null ? ("Sec Operator: " + secondaryOperator.getName()) : "Sec Operator: None"};
+				(primaryOperator != null)   ? ("Pri Operator: " + primaryOperator.getName())   : "Pri Operator: None",
+				(secondaryOperator != null) ? ("Sec Operator: " + secondaryOperator.getName()) : "Sec Operator: None"};
 		return result;
 	}
 	

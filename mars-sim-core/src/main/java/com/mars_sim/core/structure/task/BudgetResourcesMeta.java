@@ -47,7 +47,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 			return switch(goal) {
 				case ICE_RESOURCE -> "Budget Ice Resource";
 				case REGOLITH_RESOURCE -> "Budget Regolith Resource";
-				case LIFE_RESOURCE -> "Budget Life Resource";
+//				case LIFE_RESOURCE -> "Budget Life Resource";
 				case WATER_RATIONING -> "Budget Settlement Water";
 			};
 		}
@@ -94,7 +94,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
             return factor;
         }
 	   	
-        if (p.isInSettlement()) {// && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+        if (p.isInside()) {
 			
 			factor = super.assessPersonSuitability(t, p);
 			if (factor.getScore() == 0D) {
@@ -130,7 +130,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 		
 		if (num < 24) {
 			// Encourage smaller settlement the chance to respond faster to the resource issues
-			chance = 24.0 / num; 
+			chance = 24.0 / (.25 + num); 
 			if (chance > 6)
 				chance = 6.0;
 		}
@@ -153,16 +153,19 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 		
 		boolean regFlag = settlement.isRegolithReviewDue();
 		if (regFlag) {
-			RatingScore score = new RatingScore("regolith.probability", BASE_SCORE * chance);  
+			RatingScore score = new RatingScore("regolith.probability", BASE_SCORE);  
 			tasks.add(new BudgetResourcesJob(this, settlement, score, 1, ReviewGoal.REGOLITH_RESOURCE));
 		}
 		
-		int numResource = settlement.getGoodsManager().getResourceReviewDue();
-		if (numResource > 0) { 
-			RatingScore score = new RatingScore("resource.lifeSupport", BASE_SCORE * numResource * chance * chance);
-			if (score.getScore() > 0)
-				tasks.add(new BudgetResourcesJob(this, settlement, score, numResource, ReviewGoal.LIFE_RESOURCE));
-		}
+//		double timeleft = settlement.getGoodsManager().getTimeDiff() / 5;
+//		int demand = (int)timeleft;
+////		int numResource = settlement.getGoodsManager().numReviewed();
+////		if (numResource > 0) { 
+//		if (demand > 0) {
+//			RatingScore score = new RatingScore("lifeResource", BASE_SCORE * timeleft * chance * chance);
+//			if (score.getScore() > 0)
+//				tasks.add(new BudgetResourcesJob(this, settlement, score, demand, ReviewGoal.LIFE_RESOURCE));
+//		}
 		
 		return tasks;
     }

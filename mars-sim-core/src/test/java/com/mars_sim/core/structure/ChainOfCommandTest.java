@@ -34,7 +34,7 @@ class ChainOfCommandTest extends MarsSimUnitTest {
 
         // Build people but 2 have higher leadership
         var dl = buildPerson("Deputy", settlement);
-        dl.getNaturalAttributeManager().setAttribute(NaturalAttributeType.LEADERSHIP, 80);
+        dl.getNaturalAttributeManager().setAttribute(NaturalAttributeType.LEADERSHIP, 50);
         var l = buildPerson("Leader", settlement);
         l.getNaturalAttributeManager().setAttribute(NaturalAttributeType.LEADERSHIP, 100);
 
@@ -46,7 +46,11 @@ class ChainOfCommandTest extends MarsSimUnitTest {
         ChainOfCommand coc = settlement.getChainOfCommand();
         coc.establishTopLeadership();
 
+        // Note: if a settlement has 30 people, according to GovernanceRules,
+        // command roles or council roles have both RoleType.ADMINISTRATOR and RoleType.COMMANDER
         var council = coc.getGovernance().getCouncilRoles();
+        
+        
         assertEquals(council.get(0), l.getRole().getType(), "Leader role type");
         assertEquals(council.get(1), dl.getRole().getType(), "Deputy Leader role type");
     }

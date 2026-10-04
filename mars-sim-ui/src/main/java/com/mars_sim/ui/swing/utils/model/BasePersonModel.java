@@ -126,7 +126,8 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
 			case HEALTH_VAL -> entity.getPhysicalCondition().getStatus();
 			case MOBILE_LOC_VAL -> entity.getLocationTag().getContainerUnitLocation();
 			case LOCALE_VAL -> entity.getLocationTag().getLocale();
-
+			case INSIDE_VAL  -> entity.isInside();
+			
 			case ROLE_VAL -> {
 				if (!isDead) {
 					var role = entity.getRole();

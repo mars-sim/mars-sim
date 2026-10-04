@@ -40,6 +40,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.AbstractSeriesDataset;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.TrendValue;
 
 @SuppressWarnings("serial")
 class BarChartTab extends MonitorTab {
@@ -218,6 +219,9 @@ class BarChartTab extends MonitorTab {
 			Object obj = model.getValueAt(column, columns[row]);
 			if (obj instanceof Number n) {
 				return n;
+			}
+			else if (obj instanceof TrendValue tv) {
+				return tv.value();
 			}
 			else if (obj instanceof String s) {
 				return Double.valueOf(s);

@@ -360,7 +360,7 @@ public class FoodProduction extends Function {
 		process.getInfo().depositOutputs(settlement, false);
 
 		// Record process finish
-		settlement.recordProcess(process.getInfo().getName(), "Food", building);
+		settlement.recordProcess(process.getInfo().getName(), "Food", building.getName());
 	}
 
 	/**

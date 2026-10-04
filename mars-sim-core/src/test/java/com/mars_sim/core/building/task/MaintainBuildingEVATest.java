@@ -2,6 +2,7 @@ package com.mars_sim.core.building.task;
 import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.time.MasterClock;
 
-public class MaintainBuildingEVATest extends MarsSimUnitTest {
+class MaintainBuildingEVATest extends MarsSimUnitTest {
 
     private Building buildERV(BuildingManager buildingManager, LocalPosition localPosition) {
         return buildFunction(
@@ -31,35 +32,33 @@ public class MaintainBuildingEVATest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testMetaTask() {
+    void testMetaTask() {
         var s = buildSettlement("EVA Maintenance");
         var b1 = buildERV(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION);
         // 2nd building check logic
-        var b2 = buildERV(s.getBuildingManager(), new LocalPosition(10, 10));
+        buildERV(s.getBuildingManager(), new LocalPosition(10, 10));
         var mt = new MaintainBuildingMeta();
         var tasks = mt.getSettlementTasks(s);
-        // Note: there is a chance that tasks are made since scoreMaintenance currently has a probability component
-        // assertTrue(tasks.isEmpty(), "No tasks found");
+
+        assertTrue(tasks.isEmpty(), "No tasks found");
+
         // One building needs maintenance
         MaintainBuildingTest.buildingNeedMaintenance(b1, getContext());
         tasks = mt.getSettlementTasks(s);
+
         // Question : why would sometimes both buildings (b1, b2) will incur the need for maintenance ?
         // Answer : getSettlementTasks() will consider both buildings always
         // Note: tasks may have the size of 0, 1, 2. It depends on the result of scoreMaintenance()
-        if (tasks.size() == 2) {
+        if (tasks.size() == 1) {
             var found1 = tasks.get(0);
-            var found2 = tasks.get(1);
             var foundB1 = found1.getFocus();
-            var foundB2 = found2.getFocus();
-            if (found1.isEVA()) {
-                assertEquals(b1, foundB1, "Found building B1 with maintenance");
-            }
-            assertEquals(b2, foundB2, "Found building B2");
+            assertFalse(found1.isEVA(), "Maintenance task should not be EVA");
+            assertEquals(b1, foundB1, "Found building B1 with maintenance");
         }
     }
 
     @Test
-    public void testCreateEVATask() {
+    void testCreateEVATask() {
         var s = buildSettlement("EVA Maintenance");
 
         // Need daylight so move to midday

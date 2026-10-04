@@ -22,6 +22,7 @@ import com.mars_sim.ui.swing.unit_window.MaintenanceTabPanel;
 import com.mars_sim.ui.swing.unit_window.MalfunctionTabPanel;
 import com.mars_sim.ui.swing.unit_window.NotesTabPanel;
 import com.mars_sim.ui.swing.unit_window.SalvageTabPanel;
+import com.mars_sim.ui.swing.unit_window.HistoryTabPanel;
 
 /**
  * The VehicleWindow is the window for displaying a vehicle.
@@ -65,7 +66,7 @@ public class VehicleUnitWindow extends EntityContentPanel<Vehicle> {
 			// Future: Add sickbay tab panel.
 		}
 
-		addTabPanel(new TabPanelLog(vehicle, context));
+		addTabPanel(new HistoryTabPanel(vehicle, context));
 		addTabPanel(new MaintenanceTabPanel(vehicle, context));
 		addTabPanel(new MalfunctionTabPanel(vehicle, context));
 		addTabPanel(new NavigationTabPanel(vehicle, context));

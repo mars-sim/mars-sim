@@ -45,6 +45,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -1603,6 +1604,7 @@ public class PhysicalCondition implements Serializable {
 		
 		// Set mostSeriousProblem to this problem
 		this.mostSeriousProblem = problem;
+		person.addHistoryEntry(new MsgContext("entityhistory.death", problem.getComplaint().getName()));
 
 		// Create the death details
 		deathDetails = new DeathInfo(person, 
@@ -1989,7 +1991,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isDoubleHungry() {
-		return hunger > HUNGER_THRESHOLD * 2 || kJoules < ENERGY_THRESHOLD * 2;
+		return hunger > HUNGER_THRESHOLD * 2 || kJoules < ENERGY_THRESHOLD / 2;
 	}
 	
 	/**

@@ -5,6 +5,7 @@
  */
 package com.mars_sim.ui.swing.sound;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -17,9 +18,9 @@ import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.WindowConstants;
 
-
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * Swing panel controlling audio mute and volume for music and sound effects.
@@ -51,33 +52,45 @@ public class AudioControl extends JPanel {
 	}
 
 	private JPanel createMusicControls() {
-		var icon = ImageLoader.getIconByName("music");
-		JToggleButton muteToggle = new JToggleButton(icon, audioPlayer.isMusicMute());
-		muteToggle.setToolTipText("Mute music");
+		var iconOn = ImageLoader.getIconByName("music");
+		var iconOff = ImageLoader.getIconByName("music_mute");
+		JToggleButton toggle = new JToggleButton(iconOn, audioPlayer.isMusicMute());
+		toggle.setSelectedIcon(iconOff);
+		toggle.setToolTipText("Mute music");
 
 		JSlider volumeSlider = createVolumeSlider(audioPlayer.getMusicVolume());
 		if (audioPlayer.isMusicMute()) {
 			volumeSlider.setEnabled(false);
 		}
+		else {
+			volumeSlider.setEnabled(true);
+		}
+		
 		volumeSlider.addChangeListener(e -> audioPlayer.setMusicVolume(toVolume(volumeSlider.getValue())));
-		muteToggle.addActionListener(e -> musicMute(muteToggle.isSelected(), volumeSlider));
+		toggle.addActionListener(e -> musicMute(toggle.isSelected(), volumeSlider));
 
-		return createControlRow("Music", muteToggle, volumeSlider);
+		return createControlRow("Music", toggle, volumeSlider);
 	}
 
 	private JPanel createSoundEffectControls() {
-		var icon = ImageLoader.getIconByName("sound");
-		JToggleButton muteToggle = new JToggleButton(icon, audioPlayer.isSoundEffectMute());
-		muteToggle.setToolTipText("Mute sound effects");
+		var iconOn = ImageLoader.getIconByName("sound");
+		var iconOff = ImageLoader.getIconByName("sound_mute");
+		JToggleButton toggle = new JToggleButton(iconOn, audioPlayer.isSoundEffectMute());
+		toggle.setSelectedIcon(iconOff);
+		toggle.setToolTipText("Mute sound effects");
 
 		JSlider volumeSlider = createVolumeSlider(audioPlayer.getSoundEffectVolume());
 		if (audioPlayer.isSoundEffectMute()) {
 			volumeSlider.setEnabled(false);
 		}
+		else {
+			volumeSlider.setEnabled(true);
+		}
+		
 		volumeSlider.addChangeListener(e -> audioPlayer.setSoundEffectVolume(toVolume(volumeSlider.getValue())));
-		muteToggle.addActionListener(e -> soundEffectMute(muteToggle.isSelected(), volumeSlider));
+		toggle.addActionListener(e -> soundEffectMute(toggle.isSelected(), volumeSlider));
 
-		return createControlRow("Sound Effect", muteToggle, volumeSlider);
+		return createControlRow("Sound Effect", toggle, volumeSlider);
 	}
 
 	private void soundEffectMute(boolean isMuted, JSlider slider) {
@@ -91,14 +104,13 @@ public class AudioControl extends JPanel {
 	}
 
 	private JPanel createControlRow(String title, JToggleButton muteToggle, JSlider volumeSlider) {
-
-		JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+		JPanel top = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
 
 		var label = new JLabel(title);
 		label.setFont(StyleManager.getLabelFont());
 		top.add(label);
 		top.add(muteToggle);
-		top.add(volumeSlider);
+		top.add(volumeSlider, BorderLayout.EAST);
 		
 		return top;
 	}
@@ -131,12 +143,13 @@ public class AudioControl extends JPanel {
 			openDialog.toFront();
 		}
 		else {
-			var frame = new JDialog();
+			JDialog frame = SwingHelper.createPopupWindow(new AudioControl(audioPlayer), -1, -1, 0, 0);
+//			var frame = new JDialog();
 			frame.setTitle("Audio Control");
 			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			frame.setContentPane(new AudioControl(audioPlayer));
+//			frame.setContentPane(new AudioControl(audioPlayer));
 			frame.pack();
-			frame.setLocationByPlatform(true);
+//			frame.setLocationByPlatform(true);
 			frame.setResizable(false);
 			frame.setVisible(true);
 			openDialog = frame;

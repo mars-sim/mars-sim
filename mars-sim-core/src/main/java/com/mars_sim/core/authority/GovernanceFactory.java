@@ -16,7 +16,7 @@ import com.mars_sim.core.person.ai.role.RoleUtil;
 
 /**
  * Factory class to create GovernanceRules based on population size.
- * These are cached for reuse and readonly
+ * These are cached for reuse and read-only
  */
 public class GovernanceFactory {
 	private static final int MAX_POP_CREW = 4; 
@@ -43,7 +43,8 @@ public class GovernanceFactory {
     }
 
     /**
-     * Get the most approprate GovernanceRules for the given population size
+     * Gets the most appropriate GovernanceRules for the given population size.
+     * 
      * @param population
      * @return
      */
@@ -57,7 +58,8 @@ public class GovernanceFactory {
     }
 
     /**
-     * Factory method that creates GovernanceRules based on max population size
+     * Factory method that creates GovernanceRules based on max population size.
+     * 
      * @param pop
      * @return
      */

@@ -16,6 +16,7 @@ import com.mars_sim.ui.swing.entitywindow.worker.TabPanelActivity;
 import com.mars_sim.ui.swing.entitywindow.worker.TabPanelAttribute;
 import com.mars_sim.ui.swing.entitywindow.worker.TabPanelSchedule;
 import com.mars_sim.ui.swing.entitywindow.worker.TabPanelSkill;
+import com.mars_sim.ui.swing.unit_window.HistoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.InventoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.LocationTabPanel;
 import com.mars_sim.ui.swing.unit_window.MaintenanceTabPanel;
@@ -55,6 +56,8 @@ public class RobotUnitWindow extends EntityContentPanel<Robot> {
 		addTabPanel(new NotesTabPanel(robot, context));
 		addTabPanel(new TabPanelSchedule(robot, context));
 		addTabPanel(new TabPanelSkill(robot, context));
+		addTabPanel(new HistoryTabPanel(robot, context));
+
 		
 		applyProps(props);
 		activateListener();

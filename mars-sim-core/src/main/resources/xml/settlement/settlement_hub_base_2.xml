@@ -1,12 +1,12 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Hub Base" shift-pattern="Standard 4 Shift" 
-        default-population="56" sponsor="MS"
-        description="MS Base With Central Hub">
+        name="Hub Base 2" shift-pattern="Standard 4 Shift" 
+        default-population="128" sponsor="MS"
+        description="MS Hub Base 2 (20*6 + 8*2 = 136)">
 
     <!-- HUBS : 0 to 100, 200, 300, 400 -->   
     
-    <building id="0" type="Central Hub A" xloc="-100.0" yloc="0.0" facing="0.0">
+    <building id="0" type="Central Dome A" xloc="-100.0" yloc="0.0" facing="0.0">
         <connection-list>
             <connection id="201" hatch-facing="south" />
             <connection id="301" hatch-facing="east" />
@@ -26,7 +26,15 @@
     <building id="REHAB" type="Research Hab" xloc="-100.0" yloc="-18.5" facing="0.0">
         <connection-list>
             <connection id="201" hatch-facing="north" />
-            <connection id="203" hatch-facing="south" />         
+            <connection id="203" hatch-facing="south" />      
+            <connection id="EVA0" hatch-facing="west" />   
+        </connection-list>
+    </building>
+    
+   <!-- This EVA Airlock is attached to the Research hab -->
+    <building id="EVA0" type="EVA Airlock" xloc="-92.5" yloc="-18.5" facing="0.0">
+        <connection-list>
+            <connection id="REHAB" hatch-facing="east" />
         </connection-list>
     </building>
     
@@ -37,11 +45,10 @@
         </connection-list>
     </building>
 
-    <building id="MEDHAB" type="Medical Hab" xloc="-100.0" yloc="-31.5" facing="0.0">
+    <building id="MEDHAB" type="Medical Hab" xloc="-100.0" yloc="-31.5" facing="180.0">
         <connection-list>
             <connection id="203" hatch-facing="north" />     
-            <connection id="205" hatch-facing="south" />  
-            <connection id="EVA1" hatch-facing="west" />                                   
+            <connection id="205" hatch-facing="south" />                                   
         </connection-list>
     </building>
 
@@ -55,88 +62,91 @@
     <building id="MACHAB" type="Machinery Hab" xloc="-100.0" yloc="-44.5" facing="0.0">
         <connection-list>
             <connection id="205" hatch-facing="north" />
+            <connection id="EVA1" hatch-facing="west" />  
         </connection-list>
     </building>
 
-   <!-- This EVA Airlock is attached to the Medical hab -->
-    <building id="EVA1" type="EVA Airlock" xloc="-92.5" yloc="-31.5" facing="0.0">
+   <!-- This EVA Airlock is attached to the Machinery hab -->
+    <building id="EVA1" type="EVA Airlock" xloc="-92.5" yloc="-44.5" facing="0.0">
         <connection-list>
-            <connection id="MEDHAB" hatch-facing="east" />
+            <connection id="MACHAB" hatch-facing="east" />
         </connection-list>
     </building>
     
     <!-- End of SOUTH WING -->
     
 
-	<!-- EAST WING : 301 to 399 -->
+	<!-- EAST WING 1 : 301 to 399 -->
 
     <building id="301" type="Hallway" length="4.0" xloc="-112" yloc="0" facing="90.0">
         <connection-list>
             <connection id="0" hatch-facing="west" />
-            <connection id="FISH" hatch-facing="east" />
+            <connection id="BIOG" hatch-facing="east" />
         </connection-list>
     </building>
 
-	<building id="FISH" type="Fish Farm" xloc="-118.5"  yloc="0" facing="270.0">
+	<building id="BIOG" type="Bioreactor-G" xloc="-118.5"  yloc="0" facing="180.0">
         <connection-list>
             <connection id="301" hatch-facing="west" />
             <connection id="303" hatch-facing="east" />
+            <connection id="401A" hatch-facing="south" />  
         </connection-list>
     </building>
     
     <building id="303" type="Hallway" length="4.0" xloc="-125.0" yloc="0" facing="90.0">
         <connection-list>
-            <connection id="FISH" hatch-facing="west" />
-            <connection id="ALGAE" hatch-facing="east" />
+            <connection id="BIOG" hatch-facing="west" />
+            <connection id="FISH0" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="ALGAE" type="Algae Pond" xloc="-131.5" yloc="0" facing="270.0">
+    <building id="FISH0" type="Fish Farm" xloc="-131.5" yloc="0" facing="270.0">
         <connection-list>
             <connection id="303" hatch-facing="west" />
-            <connection id="305" hatch-facing="east" />
-            <connection id="304A" hatch-facing="north" />          
+            <connection id="H305" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="305" type="Hallway" length="4.0" xloc="-138.0" yloc="0" facing="270.0">
+    <building id="H305" type="Hallway" length="4.0" xloc="-138.0" yloc="0" facing="270.0">
         <connection-list>
-            <connection id="ALGAE" hatch-facing="west" />
-            <connection id="Q1" hatch-facing="east" />
+            <connection id="FISH0" hatch-facing="west" />
+            <connection id="IG0" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="Q1" type="Residential Quarters" xloc="-144.5" yloc="0" facing="270.0">
+    <building id="IG0" type="Inflatable Greenhouse" xloc="-144.5" yloc="0" facing="270.0">
         <connection-list>
-            <connection id="305" hatch-facing="west" />
-            <connection id="Q2" hatch-facing="east" />                
+            <connection id="H305" hatch-facing="west" />
+            <connection id="H307" hatch-facing="east" />  
+            <connection id="304A" hatch-facing="north" />   
+            <connection id="404A" hatch-facing="south" />  
         </connection-list>
     </building>
     
-    <building id="Q2" type="Hallway" length="4.0" xloc="-151.0" yloc="0" facing="270.0">
+    <building id="H307" type="Hallway" length="4.0" xloc="-151.0" yloc="0" facing="270.0">
         <connection-list>
-            <connection id="Q1" hatch-facing="west" />
+            <connection id="IG0" hatch-facing="west" />
             <connection id="Q3" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="Q3" type="Residential Quarters" xloc="-157.5" yloc="0"  facing="270.0">
+    <building id="Q3" type="Compact Quarters" xloc="-157.5" yloc="0"  facing="270.0">
         <connection-list>
-            <connection id="Q2" hatch-facing="west" />
-            <connection id="Q4" hatch-facing="east" />  
+            <connection id="H307" hatch-facing="west" />
+            <connection id="H8" hatch-facing="east" />  
         </connection-list>
     </building>
     
-    <building id="Q4" type="Hallway" length="4.0" xloc="-164.0" yloc="0" facing="270.0">
+    <building id="H8" type="Hallway" length="4.0" xloc="-164.0" yloc="0" facing="270.0">
         <connection-list>
            <connection id="Q3" hatch-facing="west" />
            <connection id="Q5" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="Q5" type="Residential Quarters" xloc="-170.5" yloc="0" facing="270.0">
+    <building id="Q5" type="Compact Quarters" xloc="-170.5" yloc="0" facing="270.0">
         <connection-list>
-            <connection id="Q4" hatch-facing="west" />
+            <connection id="H8" hatch-facing="west" />
             <connection id="311" hatch-facing="east" />            
         </connection-list>
     </building>
@@ -148,7 +158,7 @@
         </connection-list>
     </building>
     
-    <building id="Q6" type="Residential Quarters" xloc="-183.5" yloc="0" facing="270.0">
+    <building id="Q6" type="Compact Quarters" xloc="-183.5" yloc="0" facing="270.0">
         <connection-list>
             <connection id="311" hatch-facing="west" />
             <connection id="313" hatch-facing="east" />
@@ -167,21 +177,130 @@
             <connection id="313" hatch-facing="west" />
         </connection-list>
     </building>
+   <!-- End of EAST WING 1 -->
     
-    <!-- EAST WING EXTENSION -->
+    <!-- EAST WING 1 EXTENSION -->
     <!-- Connect this hallway to north of Algae Pond 12 -->
-    <building id="304A" type="Hallway" length="4.0" xloc="-131.5" yloc="5.5" facing="0.0">
+    <building id="304A" type="Hallway" length="4.0" xloc="-144.5" yloc="5.5" facing="0.0">
         <connection-list>
-            <connection id="ALGAE" hatch-facing="south" />
+            <connection id="IG0" hatch-facing="south" />
             <connection id="LG" hatch-facing="north" />
         </connection-list>
     </building>
-    <building id="LG" type="Large Greenhouse" xloc="-131.5" yloc="16.5" facing="0.0">
+    <building id="LG" type="Large Greenhouse" xloc="-144.5" yloc="16.5" facing="0.0">
         <connection-list>
             <connection id="304A" hatch-facing="south" />
         </connection-list>
     </building>
-     <!-- End of EAST WING EXTENSION -->
+     <!-- End of EAST WING 1 EXTENSION -->
+    
+    <!-- EAST WING 2 : 401 to 499  -->
+    <building id="401A" type="Hallway" length="4.0" xloc="-118.5" yloc="-5.0" facing="0.0">
+        <connection-list>
+            <connection id="BIOG" hatch-facing="north" />
+            <connection id="BIOF" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+	<building id="BIOF" type="Bioreactor-F" xloc="-118.5"  yloc="-10.0" facing="180.0">
+        <connection-list>
+            <connection id="401A" hatch-facing="north" />
+            <connection id="403" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="403" type="Hallway" length="4.0" xloc="-125.0" yloc="-10.0" facing="90.0">
+        <connection-list>
+            <connection id="BIOF" hatch-facing="west" />
+            <connection id="POND0" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="POND0" type="Algae Pond" xloc="-131.5" yloc="-10.0" facing="270.0">
+        <connection-list>
+            <connection id="403" hatch-facing="west" />
+            <connection id="405" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="405" type="Hallway" length="4.0" xloc="-138.0" yloc="-10.0" facing="270.0">
+        <connection-list>
+            <connection id="POND0" hatch-facing="west" />
+            <connection id="IG1" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+    <building id="404A" type="Hallway" length="4.0" xloc="-144.5" yloc="-5.0" facing="0.0">
+        <connection-list>
+            <connection id="IG0" hatch-facing="north" />
+            <connection id="IG1" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+    <building id="IG1" type="Inflatable Greenhouse" xloc="-144.5" yloc="-10.0" facing="270.0">
+        <connection-list>
+            <connection id="405" hatch-facing="west" />
+            <connection id="H7" hatch-facing="east" />
+            <connection id="404A" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="H7" type="Hallway" length="4.0" xloc="-151.0" yloc="-10.0" facing="270.0">
+        <connection-list>
+            <connection id="IG1" hatch-facing="west" />
+            <connection id="CQ3" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="CQ3" type="Compact Quarters" xloc="-157.5" yloc="-10.0"  facing="270.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="west" />
+            <connection id="H9" hatch-facing="east" />  
+        </connection-list>
+    </building>
+    
+    <building id="H9" type="Hallway" length="4.0" xloc="-164.0" yloc="-10.0" facing="270.0">
+        <connection-list>
+           <connection id="CQ3" hatch-facing="west" />
+           <connection id="CQ5" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="CQ5" type="Compact Quarters" xloc="-170.5" yloc="-10.0" facing="270.0">
+        <connection-list>
+            <connection id="H9" hatch-facing="west" />
+            <connection id="411" hatch-facing="east" />            
+        </connection-list>
+    </building>
+    
+    <building id="411" type="Hallway" length="4.0" xloc="-177.0" yloc="-10.0" facing="270.0">
+        <connection-list>
+           <connection id="CQ5" hatch-facing="west" />
+           <connection id="CQ6" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="CQ6" type="Compact Quarters" xloc="-183.5" yloc="-10.0" facing="270.0">
+        <connection-list>
+            <connection id="411" hatch-facing="west" />
+            <connection id="413" hatch-facing="east" />
+        </connection-list>
+    </building>
+ 
+    <building id="413" type="Hallway" length="4.0" xloc="-190.0" yloc="-10.0" facing="270.0">
+        <connection-list>
+           <connection id="CQ6" hatch-facing="west" />
+           <connection id="RHAB1" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="RHAB1" type="Residential Hab" xloc="-197.0" yloc="-10.0" facing="0.0">
+        <connection-list>
+            <connection id="413" hatch-facing="west" />
+        </connection-list>
+    </building>
+    
+    <!-- End of EAST WING 2 -->
     
     <!-- End of EAST WING -->
     
@@ -213,7 +332,7 @@
         <connection-list>
             <connection id="105" hatch-facing="west" />
             <connection id="103" hatch-facing="east" />
-            <connection id="104A" hatch-facing="north" />           
+            <connection id="104A" hatch-facing="north" />
         </connection-list>
     </building>
     
@@ -227,7 +346,8 @@
     <building id="WORK" type="Workshop" xloc="-55.5" yloc="0" facing="270.0">
         <connection-list>
             <connection id="107" hatch-facing="west" />
-            <connection id="105" hatch-facing="east" />          
+            <connection id="105" hatch-facing="east" />
+            <connection id="104B" hatch-facing="north" />
         </connection-list>
     </building>
     
@@ -266,14 +386,14 @@
         </connection-list>
     </building>
     
-    <building id="SHAB" type="Storage Hab" xloc="-16.0" yloc="0" facing="270.0">
+    <building id="SHAB" type="Storage Hab" xloc="-16.5" yloc="0" facing="270.0">
         <connection-list>
             <connection id="111" hatch-facing="east" />
             <connection id="EVA2" hatch-facing="west" />
         </connection-list>
     </building>
     
-    <building id="EVA2" type="EVA Airlock" xloc="-8.0" yloc="0" facing="0.0">
+    <building id="EVA2" type="EVA Airlock" xloc="-9.0" yloc="0" facing="0.0">
         <connection-list>
             <connection id="SHAB" hatch-facing="east" />
         </connection-list>
@@ -281,7 +401,7 @@
     
     
     <!-- WEST WING NORTH EXTENSION -->
-    <!-- This hallway connects the laboratory to the garage -->
+    <!-- This hallway connects the laboratory to the garage 1 -->
 	<building id="104A" type="Hallway" length="4.0" xloc="-68.5" yloc="5.5" facing="0.0">
         <connection-list>
             <connection id="LAB" hatch-facing="south" />
@@ -293,6 +413,20 @@
             <connection id="104A" hatch-facing="south" />
         </connection-list>
     </building>
+    
+    <!-- This hallway connects the laboratory to the garage 2 -->
+	<building id="104B" type="Hallway" length="4.0" xloc="-55.5" yloc="5.5" facing="0.0">
+        <connection-list>
+            <connection id="WORK" hatch-facing="south" />
+            <connection id="GAR2" hatch-facing="north" />
+        </connection-list>
+    </building>
+    <building id="GAR2" type="Garage" xloc="-55.5" yloc="15.5" facing="0.0">
+        <connection-list>
+            <connection id="104B" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
     <!-- End of WEST WING EXTENSION -->
     
     <!-- End of WEST WING -->
@@ -361,9 +495,10 @@
    	<building-package name="ERV Set 2"/>
    	<building-package name="ERV Set 3"/>
    	<building-package name="ERV Set 4"/>
+   	<building-package name="ERV Set 5"/>
    	<building-package name="Air Set 1 - 1x5"/>
     <building-package name="Sabatier Set 1 - 1x5"/>
-	<building-package name="Syngas Set 1 - 1x1"/>
+	<building-package name="Syngas Set 1 - 1x4"/>
 	<building-package name="Solar Thermal Set 1 - 1x9"/>
 	<building-package name="Wind Set 1 - 1x6"/>
 	<building-package name="Kilo Set 1 - 1x2"/>
@@ -409,6 +544,9 @@
         <resource type="food" amount="4320" />
         <resource type="water" amount="7200" />
         <resource type="oxygen" amount="5760" />
+        <resource type="Hydrogen" amount="5760" />
+        <resource type="Methane" amount="9600" />
+        <resource type="Methanol" amount="9600" />
 
   		<part-package name="Instrument Package 1" number="5" />	
         <part-package name="Tech Part Package 5" number="1" />

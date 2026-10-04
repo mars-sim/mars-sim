@@ -33,7 +33,7 @@ class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
     public void testGetResourceProcessingTasks() {
         var s = buildSettlement("Resource", true);
         var b = buildProcessing(getContext(), s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
-        var r = b.getResourceProcessing();
+//        var r = b.getResourceProcessing();
 
         // Create a second processor to test multiple
         buildProcessing(getContext(), s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
@@ -46,27 +46,33 @@ class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
 
         // Pick a process and add resources to the specific storage
         var rh = s.getEquipmentInventory();
-        var p = r.getProcesses().get(0);
-        System.out.println("# of Resource process: " + r.getProcesses().size());
+        var rp = s.getResourceProcesses();
+        var p = rp.get(0);
+        System.out.println("# of Resource process: " + rp.size());
         System.out.println("Resource proess: " + p);
         
+        double bucket0 = 100D;
+        int size = p.getInputResources().size();
+        double portion0 = bucket0/size;
         for (var i : p.getInputResources()) {
-            double excess = rh.storeAmountResource(i, 100D);
+            double excess = rh.storeAmountResource(i, portion0);
             assertEquals(0, excess, "excess mass0");
         }
         
         double stored = rh.getStoredMass();
-        assertEquals(100D, stored, "Stored mass0");
+        assertEquals(portion0 * size, stored, "Stored mass0");
         
         // Pick a process and add resources
-        p = r.getProcesses().get(0);
+        p = rp.get(0);
+        double bucket1 = 100;
+        double portion1 = bucket1/size;
         for (var i : p.getInputResources()) {
-            double excess = rh.storeAmountResource(i, 100D);
+            double excess = rh.storeAmountResource(i, portion1);
             assertEquals(0, excess, "excess mass1");
         }
         
         stored = rh.getStoredMass();
-        assertEquals(200D, stored, "Stored mass1");
+        assertEquals((portion0 + portion1) * size , stored, "Stored mass1");
         
         for (var o : p.getOutputResources()) {
             s.getGoodsManager().setSupplyScore(o, 100);  // Force a valid output value

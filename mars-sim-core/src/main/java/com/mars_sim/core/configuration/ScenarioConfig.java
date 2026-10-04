@@ -60,7 +60,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	public static final String DEFAULT_SCENARIO = "Default";
 	private static final String[] PREDEFINED_SCENARIOS = {DEFAULT_SCENARIO, 
 															"Single Settlement",
-															"Two Settlements"};
+															"Two Settlements", 
+															"One Thousand"};
 
 	/**
 	 * Constructor.

@@ -30,37 +30,30 @@ public class MaintainBuildingTest extends MarsSimUnitTest {
     public void testMetaTask() {
         var s = buildSettlement("Maintenance");
         var b1 = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
+        
         // 2nd building check logic
-        var b2 = buildResearch(s.getBuildingManager(), new LocalPosition(10, 10), 0D);
+        buildResearch(s.getBuildingManager(), new LocalPosition(10, 10), 0D);
 
         var mt = new MaintainBuildingMeta();
         var tasks = mt.getSettlementTasks(s);
         
-        // Note: there is a chance that tasks are made since scoreMaintenance() currently  has a probability component
-        // Not used: assertTrue(tasks.isEmpty(), "No tasks found");
+        assertTrue(tasks.isEmpty(), "No tasks found");
 
         // One building needs maintenance
         buildingNeedMaintenance(b1, getContext());
         tasks = mt.getSettlementTasks(s);
-
-    	// Question : why would sometimes both buildings (b1, b2) will incur the need for maintenance ?
-        // Answer : getSettlementTasks() will consider both buildings always
         
         // Note: tasks may have the size of 0, 1, 2. It depends on the result of  scoreMaintenance()
-        if (tasks.size() == 2) {
+        if (tasks.size() == 1) {
 
-	        var found1 = tasks.get(0);
-	        var found2 = tasks.get(1);
-	        
+	        var found1 = tasks.get(0);	        
 	        var foundB1 = found1.getFocus();
-	        var foundB2 = found2.getFocus();
 	        
-	        if (!found1.isEVA()) {
-	        	assertEquals(b1, foundB1, "Found building B1 with maintenance");
-	        }
-	        
-	        assertEquals(b2, foundB2, "Found building B2");
+	        assertFalse(found1.isEVA(), "Maintenance task should not be EVA");
+	        assertEquals(b1, foundB1, "Found building B1 with maintenance");
         }
+
+
     }
     
     @Test

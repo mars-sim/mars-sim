@@ -388,7 +388,7 @@ public class AudioPlayer {
 		// Play this music
 		playMusic(choosen);
 		// Print its name
-		logger.config("Playing background music track " + choosen + "'.");
+		logger.config(5_000, "Playing background music track '" + choosen + "'.");
 		// Add the new track
 		playedTracks.addLast(choosen);
 		if (playedTracks.size() > PLAYLIST_SIZE) {

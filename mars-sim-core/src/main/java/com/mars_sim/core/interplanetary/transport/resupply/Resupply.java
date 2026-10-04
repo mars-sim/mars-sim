@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.building.Building;
@@ -44,6 +43,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 import com.mars_sim.core.structure.SettlementSupplies;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -164,9 +164,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	public synchronized HistoricalEvent performArrival(SimulationConfig sc, Simulation sim) {
 		// Deliver buildings to the destination settlement.
 		logger.info(this, "Preparing for the arrival of a resupply mission.");
+		var context = new MsgContext("entityhistory.transport", getName());
 
 		// Deliver buildings to the destination settlement.
-		boolean hasBuildings = deliverBuildings(sc.getBuildingConfiguration());
+		boolean hasBuildings = deliverBuildings(sc.getBuildingConfiguration(), context);
 		
 		if (hasBuildings) {
 			// Interrupts everyone's task (Walking tasks can cause issues) 
@@ -174,7 +175,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		}
 		
 		// Deliver the rest of the supplies and add people.
-		deliverOthers(sim, sc);
+		deliverOthers(sim, sc, context);
 
 		// If there are new immigrients then have a welcome meeting
 		if (newImmigrantNum > 0) {
@@ -201,14 +202,12 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * 
 	 * @return
 	 */
-	private boolean deliverBuildings(BuildingConfig buildingConfig) {
+	private boolean deliverBuildings(BuildingConfig buildingConfig, MsgContext context) {
 		List<BuildingTemplate> orderedBuildings = orderNewBuildings(buildingConfig);
 
 		if (!orderedBuildings.isEmpty()) {
 
 			BuildingManager buildingManager = settlement.getBuildingManager();
-
-			settlement.fireUnitUpdate(EntityEventType.START_BUILDING_PLACEMENT_EVENT, buildingManager.getABuilding());
 
 			Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
 
@@ -231,7 +230,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, zone,
 						buildingType, uniqueName, correctedBounds);
 
-				checkTemplateAddBuilding(spec, correctedTemplate, buildingManager);
+				checkTemplateAddBuilding(spec, correctedTemplate, buildingManager, context);
 			}
 			
 			return true;
@@ -274,9 +273,11 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * creates the building based on the template to the settlement
 	 * 
 	 * @param bt a building template
+	 * @param historyEntry Initial history entry for the building
 	 * @param bc 
 	 */
-	public static void checkTemplateAddBuilding(BuildingSpec spec, BuildingTemplate bt, BuildingManager buildingManager) {
+	public static void checkTemplateAddBuilding(BuildingSpec spec, BuildingTemplate bt,
+						BuildingManager buildingManager, MsgContext historyEntry) {
 		// Check if building template position/facing collides with any existing
 		// buildings/vehicles/construction sites.
 		if (!isTemplatePositionClear(spec, bt, buildingManager)) {
@@ -284,8 +285,11 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		}
 
 		if (bt != null) {
-			buildingManager.addBuilding(
-					Building.createBuilding(bt, buildingManager.getSettlement()), bt, true);
+			var b = Building.createBuilding(bt, buildingManager.getSettlement());
+			buildingManager.addBuilding(b, bt, true);
+
+			if (historyEntry != null)
+				b.addHistoryEntry(historyEntry);
 		}
 	}
 
@@ -407,14 +411,16 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * Delivers vehicles, resources, bots and immigrants to a settlement on a resupply
 	 * mission.
 	 * 
-	 * @param timings 
+	 * @param sim Simulation instance
+	 * @param sc Simulation configuration
+	 * @param context History entry for the delivery of other supplies
 	 */
-	private void deliverOthers(Simulation sim, SimulationConfig sc) {
+	private void deliverOthers(Simulation sim, SimulationConfig sc, MsgContext context) {
 		SettlementBuilder builder = new SettlementBuilder(sim, sc, null);
 		
-		builder.createSupplies(this, settlement);
+		builder.createSupplies(this, settlement, context);
 		
-		builder.createPeople(settlement, settlement.getNumCitizens() + getNewImmigrantNum(), true);
+		builder.createPeople(settlement, settlement.getNumCitizens() + getNewImmigrantNum(), true, context);
 
 	}
 
@@ -430,7 +436,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		List<BuildingTemplate> result = new ArrayList<>();
 		
 		List<BuildingTemplate> list = getBuildings().stream()
-				.sorted(Comparator.comparing(bt -> bt.getID()))
+				.sorted(Comparator.comparing(bt -> bt.getStreetNum()))
 				.collect(Collectors.toList());
 		
 		Iterator<BuildingTemplate> i = list.iterator();
@@ -976,6 +982,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 					// Check line rect between positions for obstacle collision.
 					Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(),
 							secondBuildingPos.getX(), secondBuildingPos.getY());
+
+					// Note: May need to change collision if checking for underground buildings or tunnels
 					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, 
 							buildingManager.getSettlement().getCoordinates(), buildingManager.getSettlement(), false);
 					if (clearPath) {

@@ -147,6 +147,11 @@ public class BuildingManager implements Serializable {
 		this.settlementID = settlement.getIdentifier();
 		this.buildings = new UnitSet<>();
 		this.buildingTemplates = buildingTemplates;
+		
+		this.buildingValueMap = new HashMap<>();
+//		this.functionSetOfBuildings = new EnumMap<>(FunctionType.class);
+		this.buildingsOfFunctionTypeValues = new HashMap<>();
+//		this.adjacentBuildingMap = new HashMap<>();
 	}
 
 	/**
@@ -162,7 +167,7 @@ public class BuildingManager implements Serializable {
 				// Check for possibility of collision
 				if (!Resupply.isTemplatePositionClear(spec, bt, this)) {
 					throw new IllegalArgumentException(settlement.getName() + " - Type: " + bt.getBuildingType() 
-						+ ". ID: " + bt.getID() + ". Name: " + bt.getBuildingName() + ". This buildingTemplate collides with an existing BuildingTemplate.");
+						+ ". ID: " + bt.getStreetNum() + ". Name: " + bt.getBuildingName() + ". This buildingTemplate collides with an existing BuildingTemplate.");
 					// May relocate with bt = Resupply.clearCollision(spec, bt,
 					// Resupply.MAX_COUNTDOWN, this);
 				}
@@ -1870,7 +1875,9 @@ public class BuildingManager implements Serializable {
 		if (totalBuildingValues == 0D || (lastVPUpdateTime == null)
 				|| (now.getTimeDiff(lastVPUpdateTime) > BUILDING_VALUES_UPDATE)) {
 
-			buildingValueMap.clear();
+			if (buildingValueMap != null)
+				buildingValueMap.clear();
+			
 			lastVPUpdateTime = now;
 
 			computeAllFunctionTypeValues();
@@ -1946,8 +1953,16 @@ public class BuildingManager implements Serializable {
 			functionTypeValues.put(ft, value);
 		}
 
+		if (buildingsOfFunctionTypeValues == null) {
+			buildingsOfFunctionTypeValues = new HashMap<>();
+		}
+		
 		buildingsOfFunctionTypeValues.put(building, functionTypeValues);
 
+		if (buildingValueMap == null) {
+			buildingValueMap = new HashMap<>();
+		}
+		
 		buildingValueMap.put(building, totalValue);
 
 		return totalValue;

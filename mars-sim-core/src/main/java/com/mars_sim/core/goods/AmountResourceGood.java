@@ -85,12 +85,12 @@ class AmountResourceGood extends Good {
 	
 	// Water related flattening factors
 	private static final double ICE_FLATTENING_FACTOR = 1.25;
-	private static final double WATER_FLATTENING_FACTOR = 0.7;
+	private static final double WATER_FLATTENING_FACTOR = 0.6;
 	
 	// Gases flattening factors
 	private static final double METHANOL_FLATTENING_FACTOR = 1.1;
 	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 1.1;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 0.7;
 	private static final double OXYGEN_FLATTENING_FACTOR = 0.7;	
 	
 
@@ -156,8 +156,8 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_VALUE_MODIFIER = 0.02;
 	
 	// Demand Modifiers
-    private static final double ICE_VALUE_MODIFIER = 1.05;
-	private static final double WATER_VALUE_MODIFIER = 0.5;
+    private static final double ICE_VALUE_MODIFIER = 0.7;
+	private static final double WATER_VALUE_MODIFIER = 0.1;
 	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
@@ -176,10 +176,10 @@ class AmountResourceGood extends Good {
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = 1.15;
-	private static final double METHANE_VALUE_MODIFIER = 1.25;
+	private static final double OXYGEN_VALUE_MODIFIER = 0.75;
+	private static final double METHANE_VALUE_MODIFIER = 1.45;
 	private static final double HYDROGEN_VALUE_MODIFIER = 1.25;
-	private static final double METHANOL_VALUE_MODIFIER = 1.25;
+	private static final double METHANOL_VALUE_MODIFIER = 1.55;
 	
 	// Chemicals
 	private static final int CLEANING_AGENT_MODIFIER = 1;

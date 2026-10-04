@@ -68,7 +68,7 @@ public class MealConfig {
 		int sideDish = dishList.size() - mainDish;
 		dishList.addAll(parseDishList(root, DishCategory.DESSERT, cropConfig));
 		int dessert = dishList.size() - mainDish - sideDish;
-		logger.info("main dishes: " + mainDish + "  side dishes: " + sideDish + "   desserts: " + dessert);
+		logger.config("Loading from meals.xml - main dishes: " + mainDish + ". side dishes: " + sideDish + ".  desserts: " + dessert + ".");
 	}
 
 	/**

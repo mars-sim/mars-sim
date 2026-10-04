@@ -1,19 +1,21 @@
 /*
  * Mars Simulation Project
  * ResourceProcess.java
- * @date 2024-06-09
+ * @date 2026-09-27
  * @author Scott Davis
  */
 package com.mars_sim.core.resourceprocess;
 
 import java.util.Set;
 
-import com.mars_sim.core.building.Building;
-import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.ScheduledEventHandler;
+import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.resourceprocess.task.ToggleResourceProcessMeta;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -25,7 +27,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	// May add back: private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName())
+	private static SimLogger logger = SimLogger.getLogger(ResourceProcess.class.getName());
 
 	private static final double SMALL_AMOUNT = 0.000001;
 	
@@ -41,44 +43,93 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private boolean isRunning;
 	private boolean isLockOn;
 	
-	private double percentEffort = 100.0;
 	private int modules;
+
+	private int settlementMaxModules;
 	
+	private double percentEffort = 100.0;
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
 	private double dutyTime;
 	private double cumulativeMillisols;
 	
 	private ResourceProcessAssessment assessment;
-
 	private MarsTime toggleDue = null; 
-
 	private ResourceProcessEngine engine;
 	private ResourceProcessSpec processSpec;
-	private Building building;
-
+//	private Building building;
+	private Settlement settlement;
+	private ResourceHolder host;
+	
 	public static final ResourceProcessAssessment DEFAULT_ASSESSMENT = new ResourceProcessAssessment(0, 0, 0, false);
 	
+//	/**
+//	 * Constructor 1.
+//	 *
+//	 * @param engine The processing engine that this process manages
+//	 * @param building
+//	 */
+//	public ResourceProcess(ResourceProcessEngine engine, Building building) {
+//		this.processSpec = engine.getProcessSpec();
+//		isRunning = processSpec.getDefaultOn();
+//		currentProductionLevel = 1D;
+//		this.canToggle = false;
+//		this.engine = engine;
+//		this.building = building;
+//		this.assessment = DEFAULT_ASSESSMENT;
+//		
+//		this.modules = (int)MathUtils.between(engine.getMaxModules() / 3.0, 1, engine.getMaxModules());
+//
+//		this.host = building.getAssociatedSettlement().getEquipmentInventory();
+//		
+//		// Add some randomness at the start of the sim
+//		int delay = RandomUtil.getRandomInt(0, 50);
+//		resetToggleWait(delay);
+//	}
+
 	/**
-	 * Constructor.
+	 * Constructor 2.
 	 *
 	 * @param engine The processing engine that this process manages
+	 * @param settlement
 	 */
-	public ResourceProcess(ResourceProcessEngine engine, Building building) {
+	public ResourceProcess(ResourceProcessEngine engine, Settlement settlement) {
 		this.processSpec = engine.getProcessSpec();
 		isRunning = processSpec.getDefaultOn();
 		currentProductionLevel = 1D;
 		this.canToggle = false;
 		this.engine = engine;
-		this.building = building;
+		this.settlement = settlement;
 		this.assessment = DEFAULT_ASSESSMENT;
-		this.modules = 1; // engine.getMaxModules();
-
-		// Add some randomness, today is sol 1
+		
+		int numM = 1;
+		
+		int maxMod = engine.getMaxModules();
+		if (maxMod == 4)
+			numM = 2;
+		else if (maxMod > 4)
+			numM = RandomUtil.getRandomInt((int)MathUtils.between(maxMod/4, 2, maxMod/2), (int)MathUtils.between(maxMod/2, 2, maxMod));
+		
+		this.modules += numM;
+		
+		addMaxModules(maxMod);
+		
+		this.host = settlement.getEquipmentInventory();
+		
+		// Add some randomness at the start of the sim
 		int delay = RandomUtil.getRandomInt(0, 50);
 		resetToggleWait(delay);
 	}
 
+	/**
+	 * Adds a resource process.
+	 * 
+	 * @param max
+	 */
+	public void addMaxModules(int max) {
+		settlementMaxModules += max;
+	}
+	
 	/**
 	 * Processes resources for a given amount of time.
 	 *
@@ -96,34 +147,29 @@ public class ResourceProcess implements ScheduledEventHandler {
 			return;
 
 		if (isRunning) {
-			
-			var host = building.getAssociatedSettlement().getEquipmentInventory();
-			
-			double newProdLevel = productionLevel;
 			// Set the current production level.
-			currentProductionLevel = newProdLevel * (percentEffort / 100);
-
+			currentProductionLevel = productionLevel * (percentEffort / 100);
 			// Increment the duty time here
 			dutyTime += time;
 
-			processInputResources(host);
+			processInputResources(time);
 
-			processOutputResources(host);
+			processOutputResources(time);
 		}
 	}
 
 	/**
 	 * Processes the input resources.
 	 * 
-	 * @param host
+	 * @param time in millisols
 	 */
-	private void processInputResources(ResourceHolder host) {
+	private void processInputResources(double time) {
 		// Input resources from inventory.
 		for (Integer resource : processSpec.getInputResources()) {
 			
 			if (!processSpec.isAmbientInputResource(resource)) {
-				
-				double currentRate = getCurrentInputRate(resource);
+				// getCurrentInputRate factors in the number of modules
+				double currentRate = getCurrentInputRate(resource) * time;
 				double resourceRate = currentRate * currentProductionLevel;
 				double required = resourceRate;
 				if (required == 0D)
@@ -159,15 +205,15 @@ public class ResourceProcess implements ScheduledEventHandler {
 	/**
 	 * Processes the output resources.
 	 * 
-	 * @param host
+	 * @param time in millisols
 	 */
-	private void processOutputResources(EquipmentInventory host) {
+	private void processOutputResources(double time) {
 		// Output resources to inventory.
 		for (Integer resource : processSpec.getOutputResources()) {
 			
 			if (!isWasteOutputResource(resource)) {	
-				
-				double currentRate = getCurrentOutputRate(resource);
+				// getCurrentOutputRate factors in the number of modules
+				double currentRate = getCurrentOutputRate(resource) * time;
 				double resourceRate = currentRate * currentProductionLevel;
 				double required = resourceRate;
 				double remainingCap = host.getRemainingCombinedCapacity(resource);
@@ -388,7 +434,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @return
 	 */
 	public final int getMaxModules() {
-		return engine.getMaxModules();
+		return settlementMaxModules;
 	}
 	
 	/**
@@ -569,28 +615,49 @@ public class ResourceProcess implements ScheduledEventHandler {
     	else if (selected == ProcessState.INPUTS_UNAVAILABLE) {
     		newRunning = false;
     		isLockOn = false;
+    		
+//    		if (modules > 0) {
+//    			increaseInputResourceDemand();
+//				logger.info(building, getProcessName() + "'s # of modules : " + modules + " -> " + --modules);
+//			}
     	}
 			
 		// If it used to be running and now it has stopped
 		if (isRunning && !newRunning) {
 			// Record the completion
-			building.getAssociatedSettlement().recordProcess(processSpec.getName(), "Resource", building);
+			settlement.recordProcess(processSpec.getName(), "Resource", settlement.getName());
 		}
-
-		this.isRunning = newRunning;
 
 		int delay = 0;
 		
-		if (isRunning) {
-			delay = processSpec.getProcessTime();
-			resetToggleWait(delay);
+		if (newRunning) {
+//			delay = processSpec.getProcessTime();
+//			resetToggleWait(delay);
+			
+			// Q: when is it appropriate to call reduceOutputResourceDemand() to tone down the output resource demand ?
+			
+			if (modules == 0) {
+				logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + ++modules);
+			}
+			else if (modules < engine.getMaxModules())  {
+				int diff = (int)(getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
+				int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
+				if (rand <= diff) {
+					logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + ++modules);
+				}
+			}
+			else if ((getOverallScore() <= 20.0 || getOutputScore() <= 20) 
+						&& modules > 1) {
+				logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + --modules);
+			}
 		}
 		
 		else {		
-			delay = 10;
+			delay = 20;
+			resetToggleWait(delay);
 		}
 		
-		resetToggleWait(delay);
+		this.isRunning = newRunning;
 	}
 
 	/**
@@ -599,10 +666,30 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @param delay
 	 */
 	private void resetToggleWait(int delay) {
-		var event = building.getAssociatedSettlement().getFutureManager().addEvent(delay, this);
+		var event = settlement.getFutureManager().addEvent(delay, this);
 		toggleDue = event.getWhen();
 	}
 
+	/**
+	 * Reduces the demand score of the output resource.
+	 */
+	private void reduceOutputResourceDemand() {
+		Set<Integer> resources = getOutputResources();
+		for (int r: resources) {
+			settlement.getGoodsManager().reduceDemandScore(r, 1);
+		}
+	}
+	
+	/**
+	 * Increases the demand score of the input resource.
+	 */
+	private void increaseInputResourceDemand() {
+		Set<Integer> resources = getInputResources();
+		for (int r: resources) {
+			settlement.getGoodsManager().increaseDemandScore(r, 1);
+		}
+	}
+	
 	/**
 	 * Gets the string value for this object.
 	 *
@@ -617,7 +704,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 		canToggle = true;
 		return 0;
 	}
-
 
 	@Override
 	public String getEventDescription() {
