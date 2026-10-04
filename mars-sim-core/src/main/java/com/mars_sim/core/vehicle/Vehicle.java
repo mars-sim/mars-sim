@@ -1992,7 +1992,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		fireUnitUpdate(MISSION_EVENT);
 
 		if (newMission != null) {
-			addHistoryEntry(new MsgContext("entityhistory.mission", newMission.getName()));
+			addHistoryEntry(new MsgContext(Mission.HISTORY_START, newMission.getName()));
 		}
 	}
 		

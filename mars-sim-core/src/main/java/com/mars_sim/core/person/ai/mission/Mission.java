@@ -34,6 +34,9 @@ public interface Mission extends MonitorableEntity {
 	static final String STARTING_SETTLEMENT_EVENT = "starting settlement";
 	static final String END_MISSION_EVENT = "end mission";
 
+	// The key to the entry for the mission history start
+    static final String HISTORY_START = "entityhistory.mission";
+
 	/**
 	 * Aborts the mission via custom reasons. Will stop current phase.
 	 * 

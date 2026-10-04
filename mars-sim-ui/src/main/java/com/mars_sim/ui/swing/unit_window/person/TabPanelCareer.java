@@ -81,7 +81,6 @@ class TabPanelCareer extends EntityTabPanel<Person>
 	private JComboBox<RoleType> roleComboBox;
 
 	private JobHistoryTableModel jobHistoryTableModel;
-	private RoleHistoryTableModel roleHistoryTableModel;
 
 	private StarRater starRater;
 	private JLabel changeNotice;
@@ -212,19 +211,6 @@ class TabPanelCareer extends EntityTabPanel<Person>
 		tc.getColumn(4).setPreferredWidth(50);
 
 		scrollPanel.setViewportView(table);
-		
-		// Role history
-		JPanel roleHistoryPanel = new JPanel(new BorderLayout(0, 0));
-		historyPanel.add(roleHistoryPanel, BorderLayout.SOUTH);
-		JLabel roleLabel = new JLabel("Role History", SwingConstants.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(roleLabel);
-		roleHistoryPanel.add(roleLabel, BorderLayout.NORTH);
-		roleHistoryTableModel = new RoleHistoryTableModel(person);
-		JScrollPane rscrollPanel = new JScrollPane();
-		roleHistoryPanel.add(rscrollPanel, BorderLayout.CENTER);
-		JTable rtable = new JTable(roleHistoryTableModel);
-		rtable.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		rscrollPanel.setViewportView(rtable);
 
 		updateDetails();
 	}
@@ -284,11 +270,11 @@ class TabPanelCareer extends EntityTabPanel<Person>
 	 * @param assignmentHistory
 	 * @return
 	 */
-	private static int calculateAveRating(AssignmentHistory assignmentHistory) {
+	private static float calculateAveRating(AssignmentHistory assignmentHistory) {
 		double score = assignmentHistory.getCummulativeJobRating();
 		if (score > 5)
 			score = 5;
-		return (int) score;
+		return (float) score;
 	}
 
 
@@ -425,7 +411,6 @@ class TabPanelCareer extends EntityTabPanel<Person>
 			checkJobReassignment(person, list);
 
 			jobHistoryTableModel.update();
-			roleHistoryTableModel.update();
 		} // end of else if not dead
 	}
 
@@ -556,72 +541,6 @@ class TabPanelCareer extends EntityTabPanel<Person>
 		}
 		else
 			jobComboBox.setSelectedItem(currentJob);
-	}
-
-	/**
-	 * Internal class used as model for the attribute table.
-	 */
-	private static class RoleHistoryTableModel extends AbstractTableModel {
-
-		private static final long serialVersionUID = 1L;
-
-		private Role role;
-		private int origSize;
-		private List<HistoryItem<RoleType>> roleChanges;
-
-		/**
-		 * hidden constructor.
-		 *
-		 * @param unit {@link Unit}
-		 */
-		RoleHistoryTableModel(Person p) {
-			role = p.getRole();
-			roleChanges = role.getChanges();
-			origSize = roleChanges.size();
-		}
-
-		@Override
-		public int getRowCount() {
-			return roleChanges.size();
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 2;
-		}
-
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			return String.class;
-		}
-
-		@Override
-		public String getColumnName(int columnIndex) {
-			return switch(columnIndex) {
-				case 0 -> Msg.getString("Time");
-				case 1 -> Msg.getString("person.role");
-				default -> null;
-			};
-		}
-
-		public Object getValueAt(int row, int column) {
-			HistoryItem<RoleType> ja = roleChanges.get(row);
-			return switch(column) {
-				case 0 -> ja.getWhen().getTruncatedDateTimeStamp(); 
-				case 1 -> ja.getWhat().getName();
-				default -> null;
-			};
-		}
-
-		/**
-		 * Prepares the job history of the person.
-		 */
-		void update() {
-			if (roleChanges.size() != origSize) {
-				origSize = roleChanges.size();
-				fireTableDataChanged();
-			}
-		}
 	}
 
 	/**

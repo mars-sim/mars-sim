@@ -642,6 +642,10 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	@Override
 	public void setMission(Mission newMission) {
 		getBotMind().setMission(newMission);
+		
+		if (newMission != null) {
+			addHistoryEntry(new MsgContext(Mission.HISTORY_START, newMission.getName()));
+		}
 	}
 
 	public int getProduceFoodSkill() {

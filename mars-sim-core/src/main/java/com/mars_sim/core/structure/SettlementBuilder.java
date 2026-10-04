@@ -55,9 +55,7 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotConfig;
-import com.mars_sim.core.robot.RobotDemand;
 import com.mars_sim.core.robot.RobotSpec;
-import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
@@ -465,8 +463,8 @@ public final class SettlementBuilder {
 	/**
 	 * Creates all pre-configured people as listed in people.xml.
 	 * 
-	 * @param settlement
-	 * @param crewName
+	 * @param settlement Settlement to which the pre-configured people will be added.
+	 * @param crewName Name of the crew to be added to the settlement.
 	 * @param historyEntry the history entry to associate with the created people
 	 */
 	private void createPreconfiguredPeople(Settlement settlement, String crewName, MsgContext historyEntry) {

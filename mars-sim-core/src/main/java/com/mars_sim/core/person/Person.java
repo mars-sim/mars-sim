@@ -983,6 +983,10 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	@Override
 	public void setMission(Mission newMission) {
 		getMind().setMission(newMission);
+
+		if (newMission != null) {
+			addHistoryEntry(new MsgContext(Mission.HISTORY_START, newMission.getName()));
+		}
 	}
 
 	public int[] getPreferredSleepHours() {
