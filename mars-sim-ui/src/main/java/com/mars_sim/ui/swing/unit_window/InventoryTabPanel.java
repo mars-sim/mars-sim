@@ -211,7 +211,7 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> implements TemporalC
 			
 			for (AmountResource resource : arItems) {
 				stored.put(resource, holder.getAllAmountResourceStored(resource.getID()));
-				cap.put(resource, holder.getSpecificCapacity(resource.getID()));
+				cap.put(resource, holder.getRemainingSpecificCapacity(resource.getID()));
 			}
         }
 

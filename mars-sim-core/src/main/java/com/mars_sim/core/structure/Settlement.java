@@ -622,8 +622,8 @@ public class Settlement extends Unit implements Temporal,
 		
 		logger.config(this, "Areothermal Potential: " + Math.round(areothermalPotential * 100.0)/100.0 + " %.");
 
-		// Create EquipmentInventory instance
-		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
+		// Create EquipmentInventory instance with a 10% stock allowance for amount resources
+		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP, MAX_STOCK_CAP * 0.1D);
 
 		// Store limited amount of oxygen in this settlement
 		eqmInventory.storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN_AMOUNT);
@@ -1198,7 +1198,9 @@ public class Settlement extends Unit implements Temporal,
 		for (ResourceProcess p : wasteProcesses) {
 			p.processResources(pulse, 1, cumulativeMillisols);
 		}
-		
+
+		eqmInventory.fireChanges();
+
 		return true;
 	}
 	

@@ -8,6 +8,8 @@ package com.mars_sim.core.equipment;
 
 import java.util.Set;
 
+import com.mars_sim.core.building.Building;
+
 /**
  * Represents an entity that can hold item resources.
  *
@@ -69,11 +71,10 @@ public interface ItemHolder {
 	 * @return ItemHolder or null if not found.
 	 */
     static ItemHolder getAttached(Object source) {
-		if (source instanceof ItemHolder ih) {
-			return ih;
-		}
-
-		// Not nice having this in place but it will eventually be replaced with a more generic interface
-		return EquipmentOwner.getAttached(source);
+		return switch(source) {
+			case Building b -> b.getAssociatedSettlement().getEquipmentInventory();
+			case ItemHolder ih -> ih;
+			default -> EquipmentOwner.getAttached(source);
+		};
     }
 }

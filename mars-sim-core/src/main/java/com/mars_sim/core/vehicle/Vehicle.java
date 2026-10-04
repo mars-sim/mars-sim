@@ -1553,6 +1553,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 			}
 		}
 		
+		// Fire changes
+		eqmInventory.fireChanges();
+
 		return true;
 	}
 

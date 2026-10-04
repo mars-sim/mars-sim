@@ -204,10 +204,12 @@ public class ClassicAirlock extends Airlock {
     	
     	else if (person.isOutside()) {
 
-			Settlement settlement = building.getSettlement();
+			Settlement settlement = building.getAssociatedSettlement();
 
             // 1.0. Pump air into the airlock to make it breathable
-			building.getLifeSupport().getAir().releaseOrRecaptureAir(AIRLOCK_VOLUME_IN_LITER, true, building);
+			building.getLifeSupport().getAir().releaseOrRecaptureAir(AIRLOCK_VOLUME_IN_LITER, true, 
+				settlement.getEquipmentInventory()
+			);
 
             // 1.1. Transfer a person from the surface of Mars to the building inventory
 			successful = person.transfer(settlement);
@@ -251,7 +253,7 @@ public class ClassicAirlock extends Airlock {
 
     	if (person.isInSettlement()) {
 
-			Settlement settlement = building.getSettlement();
+			Settlement settlement = building.getAssociatedSettlement();
 
             // Upon depressurization, there is heat loss to the Martian air in Heating class
   			var heating = building.getThermalGeneration();
@@ -260,7 +262,9 @@ public class ClassicAirlock extends Airlock {
 			}
 
             // 5.0. Recapture air from the airlock before depressurizing it
-			building.getLifeSupport().getAir().releaseOrRecaptureAir(AIRLOCK_VOLUME_IN_LITER, false, building);
+			building.getLifeSupport().getAir().releaseOrRecaptureAir(AIRLOCK_VOLUME_IN_LITER, false, 
+				settlement.getEquipmentInventory()
+			);
 
             // 5.1. Transfer a person from the building to the surface of Mars to the vehicle
             successful = person.transfer(marsSurface);
