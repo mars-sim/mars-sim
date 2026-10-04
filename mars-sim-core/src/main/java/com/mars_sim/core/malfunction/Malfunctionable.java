@@ -37,4 +37,11 @@ public interface Malfunctionable extends Entity {
 	 * @return
 	 */
 	Settlement getAssociatedSettlement();
+
+	/**
+	 * Adds an entry to the history. This is normally triggered by a malfunction or maintenance.
+	 * @param key   the key for the history entry.
+	 * @param param the parameter associated with the history entry.
+	 */
+	void addHistoryEntry(String key, String param);
 }

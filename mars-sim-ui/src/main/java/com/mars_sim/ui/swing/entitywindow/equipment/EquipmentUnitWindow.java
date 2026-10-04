@@ -8,17 +8,20 @@ package com.mars_sim.ui.swing.entitywindow.equipment;
 
 import java.util.Properties;
 
+import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
+import com.mars_sim.ui.swing.unit_window.HistoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.InventoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.LocationTabPanel;
 import com.mars_sim.ui.swing.unit_window.MaintenanceTabPanel;
 import com.mars_sim.ui.swing.unit_window.MalfunctionTabPanel;
 import com.mars_sim.ui.swing.unit_window.NotesTabPanel;
 import com.mars_sim.ui.swing.unit_window.SalvageTabPanel;
+
 
 
 /**
@@ -51,6 +54,9 @@ public class EquipmentUnitWindow extends EntityContentPanel<Equipment> {
             addTabPanel(new MalfunctionTabPanel(m, context));
         }
         
+        if (equipment instanceof EVASuit es) {
+            addTabPanel(new HistoryTabPanel(es, es.getHistory(), context));
+        }
 		addTabPanel(new NotesTabPanel(equipment, context));
 
         salvaged = equipment.isSalvaged();

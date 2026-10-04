@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
@@ -423,6 +424,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		numberMalfunctions++;
 
 		getUnit().fireUnitUpdate(MalfunctionManager.MALFUNCTION_EVENT, malfunction);
+		entity.addHistoryEntry("entityhistory.malfunction", malfunction.getName());
 
 		if (registerEvent) {
 			registerAMalfunction(malfunction, actor);
@@ -893,6 +895,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			u.fireUnitUpdate(MALFUNCTION_EVENT, fixed);
 
 			u.registerHistoricalEvent(HistoricalEventType.MALFUNCTION_FIXED, fixed.getName(), null, null, null);
+			entity.addHistoryEntry("entityhistory.fixed", fixed.getName());
 
 			Simulation.instance().getMetricManager().addValue(entity.getAssociatedSettlement(),
 							MALFUNCTION_CAT, FIXED_MEASURE, 1);
@@ -1137,6 +1140,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 				currentWearLifeTime = maxWearLifeTime;
 			
 			needsMore = false;
+
+			entity.addHistoryEntry("entityhistory.maintenance", null);
 		}
 
 		// Question: when should numberMaintenances be lower ?
@@ -1534,25 +1539,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public static String getPartsString(Map<MaintenanceScope, Integer> parts) {
 
-		StringBuilder buf = new StringBuilder();
 		if (!parts.isEmpty()) {
-			boolean first = true;
-			for(Entry<MaintenanceScope, Integer> entry : parts.entrySet()) {
-				if (!first) {
-					buf.append(", ");
-				}
-				first = false;
-				MaintenanceScope ms = entry.getKey();
-				Part part = ms.getPart();
-				int number = entry.getValue();
-				buf.append(number).append(" ")
-						.append(part.getName());
-			}
-			buf.append(".");
-		} else
-			buf.append("Empty.");
-		
-		return buf.toString();
+			return parts.entrySet().stream()
+					.map(entry -> entry.getValue() + " " + entry.getKey().getPart().getName())
+					.collect(Collectors.joining(", "));
+		}
+		return "Empty";
 	}
 	
 	/**
@@ -1572,7 +1564,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return number of malfunctions.
 	 */
 	public double getEstimatedNumberOfMalfunctionsPerOrbit() {
-		double avgMalfunctionsPerOrbit = 0D;
+		double avgMalfunctionsPerOrbit;
 		double totalTimeOrbits = getElapsedOrbits();
 
 		if (totalTimeOrbits < 1D) {

@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * TabPanelHistory.java
+ * HistoryTabPanel.java
  * @date 2026-09-30
  * @author Barry Evans
  */
@@ -38,7 +38,7 @@ public class HistoryTabPanel extends EntityTabPanel<Entity> implements EntityLis
 	public HistoryTabPanel(Entity entity, History<MsgContext> history, UIContext context) {
 		// Use TabPanel constructor.
 		super(
-			Msg.getString("TabPanelLog.title"),
+			Msg.getString("HistoryTabPanel.title"),
 			ImageLoader.getIconByName(LOG_ICON), null,
 			context, entity
 		);

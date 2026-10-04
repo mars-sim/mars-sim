@@ -57,6 +57,7 @@ import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerMonitor;
 import com.mars_sim.core.building.utility.power.PowerStorage;
+import com.mars_sim.core.data.History;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -78,6 +79,7 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.unit.UnitHolder;
@@ -131,6 +133,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
+	/** The building's event history. */
+	private History<MsgContext> eventHistory = new History<>(28);
 
 	private PowerMonitor powerMonitor;
 	private EVA eva;
@@ -1056,6 +1060,26 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
+	}
+
+	/**
+	 * Gets the building history.
+	 *
+	 * @return List of interesting events for this building.
+	 */
+	public History<MsgContext> getHistory() {
+		return eventHistory;
+	}
+
+	/**
+	 * Adds an entry to the building's history.
+	 * @param key   the key for the history entry.
+	 * @param param the parameter associated with the history entry.
+	 */
+	@Override
+	public void addHistoryEntry(String key, String param) {
+		eventHistory.add(new MsgContext(key, param));
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
 	}
 
 	/**

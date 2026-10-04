@@ -1291,7 +1291,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 		odometerMileage += distance;
 		lastDistance = distance;
 		cumEnergyUsedKWH += cumEnergyUsed/1000;
-		cumFuelUsedKG += cumFuelUsedKG;
 	}
 
 	/**
@@ -2011,6 +2010,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @param key   the key for the history entry.
 	 * @param param the parameter associated with the history entry.
 	 */
+	@Override
 	public void addHistoryEntry(String key, String param) {
 		history.add(new MsgContext(key, param));
 		fireUnitUpdate(EntityEventType.HISTORY_EVENT);

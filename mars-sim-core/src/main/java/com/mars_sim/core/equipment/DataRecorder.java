@@ -11,11 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
+import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.collection.DataType;
 import com.mars_sim.core.data.collection.FieldDataSet;
 import com.mars_sim.core.data.collection.WaterIceData;
@@ -28,6 +30,7 @@ import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MsgContext;
 
 public class DataRecorder extends Equipment implements Malfunctionable, Temporal {
 
@@ -60,6 +63,8 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
+	/** The recorder's event history. */
+	private History<MsgContext> eventHistory = new History<>(28);
 	
 	
 	/**
@@ -236,6 +241,26 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	@Override
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
+	}
+
+	/**
+	 * Gets the data recorder history.
+	 *
+	 * @return List of interesting events for this data recorder.
+	 */
+	public History<MsgContext> getHistory() {
+		return eventHistory;
+	}
+
+	/**
+	 * Adds an entry to the data recorder's history.
+	 * @param key   the key for the history entry.
+	 * @param param the parameter associated with the history entry.
+	 */
+	@Override
+	public void addHistoryEntry(String key, String param) {
+		eventHistory.add(new MsgContext(key, param));
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
 	}
 
 	@Override

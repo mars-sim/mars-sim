@@ -28,6 +28,7 @@ import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.building.function.SystemType;
+import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.EquipmentInventory;
@@ -51,6 +52,7 @@ import com.mars_sim.core.robot.ai.BotMind;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
@@ -131,6 +133,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	private MalfunctionManager malfunctionManager;
 	/** The EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
+	/** The robot's event history. */
+	private History<MsgContext> eventHistory = new History<>(28);
 
 	/** List of status modes. */
 	private Set<BotMode> botModes = new HashSet<>();
@@ -150,9 +154,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 */
 	public Robot(String name, Settlement settlement, RobotSpec spec) {
 		super(name, settlement);
-		
-		// Call Robot's setContainerUnit to set up coordinates and related states
-//		setContainerUnit(getContainerUnit());
 		
 		// Initialize data members.
 		this.robotType = spec.getRobotType();
@@ -326,7 +327,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		}
 
 		if (doEvent) {
-//			writeLog();
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, newStatus);
 		}
 	}
@@ -344,7 +344,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		// Update status based on current situation.
 		if (!botModes.contains(newStatus)) {
 			botModes.add(newStatus);
-//			writeLog();
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, newStatus);
 		}
 	}
@@ -358,7 +357,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		// Update status based on current situation.
 		if (botModes.contains(oldStatus)) {
 			botModes.remove(oldStatus);
-//			writeLog();
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, oldStatus);
 		}
 	}
@@ -609,6 +607,26 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 */
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
+	}
+
+	/**
+	 * Gets the robot history.
+	 *
+	 * @return List of interesting events for this robot.
+	 */
+	public History<MsgContext> getHistory() {
+		return eventHistory;
+	}
+
+	/**
+	 * Adds an entry to the robot's history.
+	 * @param key   the key for the history entry.
+	 * @param param the parameter associated with the history entry.
+	 */
+	@Override
+	public void addHistoryEntry(String key, String param) {
+		eventHistory.add(new MsgContext(key, param));
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
 	}
 
 	@Override
