@@ -14,6 +14,7 @@ import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
+import com.mars_sim.ui.swing.unit_window.HistoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.MaintenanceTabPanel;
 import com.mars_sim.ui.swing.unit_window.MalfunctionTabPanel;
 
@@ -42,6 +43,7 @@ public class BuildingUnitWindow extends EntityContentPanel<Building> {
         addTabPanel(new MaintenanceTabPanel(building, context));
         addTabPanel(new MalfunctionTabPanel(building, context));
 		addTabPanel(new BuildingPanelPowerGen(building, context));
+		addTabPanel(new HistoryTabPanel(building, context));
         
         for (Function f : building.getFunctions()) {
         	switch (f.getFunctionType()) {

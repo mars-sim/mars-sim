@@ -18,7 +18,7 @@ public class MaintenanceUtil {
 	private static final double BASE = 10D;
 	
 	// Minimum %age of the inspection window to trigger maintenance
-	public static final double INSPECTION_PERCENTAGE = 0.0625;
+	public static final double INSPECTION_PERCENTAGE = 0.8D;
 	
 	private MaintenanceUtil() {
 	}
@@ -97,18 +97,21 @@ public class MaintenanceUtil {
 			double effectiveTime, double inspectionWindow, boolean partsPosted) {
 		
 		double condition = manager.getAdjustedCondition();
-		
-		score.addBase("maintenance", BASE);
-		// Score is based on condition plus %age overdue
-		score.addModifier("condition", 5 * (100D - condition));
-		
-		score.addModifier("maint.win", 5 * (effectiveTime / inspectionWindow));
-		
-		if (partsPosted) {
-			// If needed parts are available, double up the speed of the maintenance
-			score.addModifier("parts", 2);
+		double inspectionPercentage = (effectiveTime / inspectionWindow);
+
+		// Add a lower threshold
+		if (inspectionPercentage > INSPECTION_PERCENTAGE || condition < 20D) {
+			score.addBase("maintenance", BASE);
+			// Score is based on condition plus %age overdue
+			score.addModifier("condition", 5 * (100D - condition));
+			
+			score.addModifier("maint.win", 5 * inspectionPercentage);
+			
+			if (partsPosted) {
+				// If needed parts are available, double up the speed of the maintenance
+				score.addModifier("parts", 2);
+			}
 		}
-		
 		return score;
 	}
 	

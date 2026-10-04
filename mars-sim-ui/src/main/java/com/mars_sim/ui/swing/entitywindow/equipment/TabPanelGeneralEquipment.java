@@ -15,7 +15,6 @@ import com.mars_sim.core.data.History;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
@@ -33,7 +32,7 @@ import com.mars_sim.ui.swing.utils.JHistoryPanel;
 class TabPanelGeneralEquipment extends EntityTabPanel<Equipment> 
 	implements TemporalComponent {
 
-	private HistoryPanel historyPanel;
+	private LocnHistoryPanel historyPanel;
 
 	private EntityLabel ownerLabel;
 		
@@ -68,7 +67,7 @@ class TabPanelGeneralEquipment extends EntityTabPanel<Equipment>
 		infoPanel.addLabelledItem("Registered Owner", ownerLabel, null);
 		
 		if (eqm instanceof EVASuit suit) {	
-			historyPanel = new HistoryPanel(suit.getHistory());
+			historyPanel = new LocnHistoryPanel(suit.getLocnHistory());
 			historyPanel.setPreferredSize(new Dimension(225, 200));
 	
 			content.add(historyPanel, BorderLayout.CENTER);
@@ -90,16 +89,16 @@ class TabPanelGeneralEquipment extends EntityTabPanel<Equipment>
 	/**
 	 * Internal class used as model for the attribute table.
 	 */
-	private static class HistoryPanel extends JHistoryPanel<UnitHolder> {
+	private static class LocnHistoryPanel extends JHistoryPanel<String> {
 		private static final ColumnSpec[] COLUMNS = {new ColumnSpec("Location", String.class)};
 
-		HistoryPanel(History<UnitHolder> source) {
+		LocnHistoryPanel(History<String> source) {
 			super(source, COLUMNS);
 		}
 
 		@Override
-		protected Object getValueFrom(UnitHolder value, int columnIndex) {
-			return value.getName();
+		protected Object getValueFrom(String value, int columnIndex) {
+			return value;
 		}
 	}
 }

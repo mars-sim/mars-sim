@@ -51,8 +51,6 @@ public class EntityEventType {
 	public static final String ADD_BUILDING_EVENT = "add building";
 	public static final String REMOVE_BUILDING_EVENT = "remove building";
 
-	public static final String START_BUILDING_PLACEMENT_EVENT = "start building placement";
-
 	// For Mind
 	public static final String JOB_EVENT = "job event";
 	public static final String MISSION_EVENT = "mission event";
@@ -88,6 +86,9 @@ public class EntityEventType {
 	public static final String BASELINE_EVENT = "baseline radiation event";
 	public static final String SEP_EVENT = "SEP event";
 	public static final String GCR_EVENT = "GCR event";
+
+	// For changes to an entity's history
+    public static final String HISTORY_EVENT = "entity history";
 
 	// Private constructor to prevent instantiation
 	private EntityEventType() {

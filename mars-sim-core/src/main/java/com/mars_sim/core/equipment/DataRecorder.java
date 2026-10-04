@@ -11,15 +11,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
+import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.collection.DataType;
 import com.mars_sim.core.data.collection.FieldDataSet;
 import com.mars_sim.core.data.collection.WaterIceData;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.malfunction.MalfunctionManager.MaintenanceParameters;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
@@ -27,6 +30,7 @@ import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MsgContext;
 
 public class DataRecorder extends Equipment implements Malfunctionable, Temporal {
 
@@ -37,10 +41,10 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	// Will add back: private static final SimLogger logger = SimLogger.getLogger(DataRecorder.class.getName())
 	
 	// Static members
-	/** The wear lifetime value is 1 orbit. */
-	private static final double WEAR_LIFETIME = 668_000;
-	/** The maintenance time in millisols. */
-	private static final double MAINTENANCE_TIME = 20D;
+	/** The wear lifetime value is 1 orbit, maintenance time is 20 millisols. */
+	private static final MaintenanceParameters MAINT_PARAMS = new MaintenanceParameters(668_000,
+						20D, 0.5D, false);
+	
 	
 	public static final String INSTRUMENT = "Instrument";
 	
@@ -59,6 +63,8 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
+	/** The recorder's event history. */
+	private History<MsgContext> eventHistory = new History<>(28);
 	
 	
 	/**
@@ -75,7 +81,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		setDescription("A standard data recorder.");
 
 		// Add scope to malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+		malfunctionManager = new MalfunctionManager(this, MAINT_PARAMS);
 		
 		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 		
@@ -236,6 +242,26 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	@Override
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
+	}
+
+	/**
+	 * Gets the data recorder history.
+	 *
+	 * @return List of interesting events for this data recorder.
+	 */
+	@Override
+	public History<MsgContext> getHistory() {
+		return eventHistory;
+	}
+
+	/**
+	 * Adds an entry to the data recorder's history.
+	 * @param entry the history entry to add.
+	 */
+	@Override
+	public void addHistoryEntry(MsgContext entry) {
+		eventHistory.add(entry);
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
 	}
 
 	@Override

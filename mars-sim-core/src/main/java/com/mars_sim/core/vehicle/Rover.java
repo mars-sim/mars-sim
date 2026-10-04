@@ -196,7 +196,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	protected void setupScopeString() {
 		super.setupScopeString();
 		
-		malfunctionManager.addScopeString(SystemType.ROVER.getName());
+		getMalfunctionManager().addScopeString(SystemType.ROVER.getName());
 	}
 
 	/**

@@ -57,6 +57,7 @@ import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerMonitor;
 import com.mars_sim.core.building.utility.power.PowerStorage;
+import com.mars_sim.core.data.History;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -78,6 +79,7 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.unit.UnitHolder;
@@ -130,6 +132,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
+	/** The building's event history. */
+	private History<MsgContext> eventHistory = new History<>(28);
 
 	private PowerMonitor powerMonitor;
 	private EVA eva;
@@ -169,7 +173,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @param name         the building's name.
 	 * @param bounds       the physical position of this Building
 	 */
-	public Building(Settlement owner, String id, int zone, String name,
+	protected Building(Settlement owner, String id, int zone, String name,
 					BoundedObject bounds, String buildingType, BuildingCategory category) {
 		super(name, owner);
 
@@ -241,8 +245,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 			totalMaintenanceTime += addFunction(buildingSpec.getFunctionSpec(supported)).getMaintenanceTime();
 		}
 
-		// Set up malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, buildingSpec.getWearLifeTime(), totalMaintenanceTime);
+		// Set up malfunction manager. Maintenance parameters should be derived from the building specification.
+		var params = new MalfunctionManager.MaintenanceParameters(buildingSpec.getWearLifeTime(), totalMaintenanceTime,
+				calculateInspectionMod(buildingSpec.getCategory()), true);
+		malfunctionManager = new MalfunctionManager(this, params);
 	
 		malfunctionManager.addScopeString(buildingSpec.getName());
 		
@@ -265,6 +271,20 @@ public class Building extends FixedUnit implements Malfunctionable,
 		
 		// Initialize the scope map.
 		malfunctionManager.initScopes();
+	}
+
+	/**
+	 * Get the associated inspection modifier for a given building category.
+	 * @param sourceCat the building category for which to calculate the inspection modifier
+	 * @return the inspection modifier associated with the given building category
+	 */
+	private static double calculateInspectionMod(BuildingCategory sourceCat) {
+		return switch(sourceCat) {
+				case BuildingCategory.POWER -> 0.5;
+				case BuildingCategory.ERV -> 0.75;
+				case BuildingCategory.CONNECTION -> 1.5;
+				default -> 1.0;
+			};
 	}
 
 	/**
@@ -403,11 +423,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public WasteProcessing getWasteProcessing() {
 		return getFunction(FunctionType.WASTE_PROCESSING);
 	}
-	
-	private int getNumEmptyFlyerCap() {
-		return getVehicleMaintenance().getAvailableFlyerCapacity();
-	}
-	
+
 	/**
 	 * Gets the temperature of a building.
 	 *
@@ -487,9 +503,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		for (Function f : getFunctions()) {
 			if (f.getFunctionType() != FunctionType.EVA) {
-				LocalPosition loc = f.getAvailableActivitySpot();
-				if (loc != null)
-					return loc;
+				LocalPosition spotLoc = f.getAvailableActivitySpot();
+				if (spotLoc != null)
+					return spotLoc;
 			}
 		}
 
@@ -1043,6 +1059,26 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
+	}
+
+	/**
+	 * Gets the building history.
+	 *
+	 * @return List of interesting events for this building.
+	 */
+	@Override
+	public History<MsgContext> getHistory() {
+		return eventHistory;
+	}
+
+	/**
+	 * Adds an entry to the building's history.
+	 * @param entry the history entry to add.
+	 */
+	@Override
+	public void addHistoryEntry(MsgContext entry) {
+		eventHistory.add(entry);
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
 	}
 
 	/**

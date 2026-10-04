@@ -286,7 +286,7 @@ public class SimulationBuilder {
 			
 			// Is the a specific template requested?
 			if (spec !=  null) {
-				builder.createFullSettlement(spec);
+				builder.createFullSettlement(spec, null);
 			}
 			else {
 				String defaultName = (scenarioName != null) ? scenarioName : ScenarioConfig.DEFAULT_SCENARIO;

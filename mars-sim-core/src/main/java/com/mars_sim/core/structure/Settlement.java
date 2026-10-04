@@ -40,6 +40,7 @@ import com.mars_sim.core.building.function.cooking.MealSchedule;
 import com.mars_sim.core.building.utility.heating.ThermalSystem;
 import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.data.History;
+import com.mars_sim.core.data.HistoryTracable;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.data.collection.DataCollectionSite;
@@ -94,6 +95,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsZone;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Drone;
@@ -107,7 +109,7 @@ import com.mars_sim.core.vehicle.VehicleType;
  * contains information related to the state of the settlement.
  */
 public class Settlement extends Unit implements Temporal,
-	LifeSupportInterface, UnitHolder, Appraiser, SurfacePOI {
+	LifeSupportInterface, UnitHolder, Appraiser, SurfacePOI, HistoryTracable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -363,6 +365,8 @@ public class Settlement extends Unit implements Temporal,
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(80);
 	private MissionControl missionControl;
+	private History<MsgContext> history = new History<>(28);
+
 	
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 	private static SurfaceFeatures surfaceFeatures;
@@ -747,6 +751,27 @@ public class Settlement extends Unit implements Temporal,
 							+ scheduledTime.getMissionSol() + " (delay: " + plan.delayInSols() + " sols)");
 			}
 		}
+	}
+
+			
+	/**
+	 * Gets the vehicle history.
+	 *
+	 * @return List of interesting events for this vehicle.
+	 */
+	@Override
+	public History<MsgContext> getHistory() {
+		return history;
+	}
+
+	/**
+	 * Adds an entry to the vehicle's history.
+	 * @param entry history entry.
+	 */
+	@Override 
+	public void addHistoryEntry(MsgContext entry) {
+		history.add(entry);
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
 	}
 
 	/**

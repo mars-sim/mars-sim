@@ -28,11 +28,13 @@ import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.building.function.SystemType;
+import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.malfunction.MalfunctionManager.MaintenanceParameters;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
@@ -50,6 +52,7 @@ import com.mars_sim.core.robot.ai.BotMind;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
@@ -72,10 +75,10 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	private static final double BASE_CAPACITY = 60D;
 	/** The estimate base mass in kg. */
 	public static final double EMPTY_MASS = 61.36;
-	/** life time in number of sols. */
-	private static final double WEAR_LIFETIME = 334_000D;
-	/** 100 millisols. */
-	private static final double MAINTENANCE_TIME = 50D;
+	/** life time is 334 sols and maintenance time is 50 millisols. */
+	private static final MaintenanceParameters MAINT_PARAMS = new MaintenanceParameters(334_000D,
+				50D, 1D, false);
+
 	/** A small amount. */
 	private static final double SMALL_AMOUNT = 0.00001D;
 
@@ -130,6 +133,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	private MalfunctionManager malfunctionManager;
 	/** The EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
+	/** The robot's event history. */
+	private History<MsgContext> eventHistory = new History<>(28);
 
 	/** List of status modes. */
 	private Set<BotMode> botModes = new HashSet<>();
@@ -149,9 +154,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 */
 	public Robot(String name, Settlement settlement, RobotSpec spec) {
 		super(name, settlement);
-		
-		// Call Robot's setContainerUnit to set up coordinates and related states
-//		setContainerUnit(getContainerUnit());
 		
 		// Initialize data members.
 		this.robotType = spec.getRobotType();
@@ -188,7 +190,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		botMind = new BotMind(this);
 
 		// Add scope to malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+		malfunctionManager = new MalfunctionManager(this, MAINT_PARAMS);
 		// Add system type to malfunction manager scope
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
 		// Initialize the scope map.
@@ -325,7 +327,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		}
 
 		if (doEvent) {
-//			writeLog();
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, newStatus);
 		}
 	}
@@ -343,7 +344,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		// Update status based on current situation.
 		if (!botModes.contains(newStatus)) {
 			botModes.add(newStatus);
-//			writeLog();
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, newStatus);
 		}
 	}
@@ -357,7 +357,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		// Update status based on current situation.
 		if (botModes.contains(oldStatus)) {
 			botModes.remove(oldStatus);
-//			writeLog();
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, oldStatus);
 		}
 	}
@@ -610,6 +609,26 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		return malfunctionManager;
 	}
 
+	/**
+	 * Gets the robot history.
+	 *
+	 * @return List of interesting events for this robot.
+	 */
+	@Override
+	public History<MsgContext> getHistory() {
+		return eventHistory;
+	}
+
+	/**
+	 * Adds an entry to the robot's history.
+	 * @param entry the history entry to add.
+	 */
+	@Override
+	public void addHistoryEntry(MsgContext entry) {
+		eventHistory.add(entry);
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
+	}
+
 	@Override
 	public String getTaskDescription() {
 		return getBotMind().getBotTaskManager().getTaskDescription(false);
@@ -623,6 +642,10 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	@Override
 	public void setMission(Mission newMission) {
 		getBotMind().setMission(newMission);
+		
+		if (newMission != null) {
+			addHistoryEntry(new MsgContext(Mission.HISTORY_START, newMission.getName()));
+		}
 	}
 
 	public int getProduceFoodSkill() {

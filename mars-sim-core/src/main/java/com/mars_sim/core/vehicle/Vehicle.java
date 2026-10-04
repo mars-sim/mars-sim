@@ -58,6 +58,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MsgContext;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
@@ -113,7 +114,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 			StatusType.TOWING
 			);
 
-	private boolean isReady;
 	/** True if the vehicle is currently inside a building, a vehicle, or a settlement. */
 	private boolean isInside;
 	/** True if the vehicle is currently outside on Mars Surface, in a settlement/vehicle vicinity. */
@@ -122,7 +122,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private boolean isInGarage;
 	/** True if the vehicle is currently inside a building or a settlement. */
 	private boolean isInSettlement;
-//	/** True if the state has been updated */
+	/** True if the state has been updated */
 	private boolean isStateUpdated = false;
 	/** True if vehicle is currently reserved for a mission. */
 	protected boolean isReservedMission;
@@ -173,12 +173,12 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private RadiationStatus exposed = RadiationStatus.calculateChance(0D);
 
 	/** The vehicle type. */
-	protected VehicleType vehicleType;
+	private VehicleType vehicleType;
 	/** The primary status type. */
 	private StatusType primaryStatus;
 
 	/** The malfunction manager for the vehicle. */
-	protected MalfunctionManager malfunctionManager;
+	private MalfunctionManager malfunctionManager;
 	/** Direction vehicle is traveling */
 	private Direction direction;
 	/** The operator of the vehicle. */
@@ -206,7 +206,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private Set<StatusType> statusTypes = new HashSet<>();
 	
 	/** The vehicle's status log. */
-	private History<Set<StatusType>> vehicleLog = new History<>(28);
+	private History<MsgContext> history = new History<>(28);
 	/** The vehicle's road speed history. */
 	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
 	/** The vehicle's road power history. */	
@@ -278,16 +278,16 @@ public abstract class Vehicle extends AbstractMobileUnit
 		
 		baseWearLifetime = spec.getWearLifetime();
 
-		// Initialize malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, baseWearLifetime, maintenanceWorkTime);
+		// Initialize malfunction manager; the parameters should come from the VehicleSpec
+		var params = new MalfunctionManager.MaintenanceParameters(baseWearLifetime, maintenanceWorkTime,
+					 0.75D, false);
+		malfunctionManager = new MalfunctionManager(this, params);
 
 		setupScopeString();
 		// Initialize the scope map.
 		malfunctionManager.initScopes();
 		
 		primaryStatus = StatusType.PARKED;
-		
-		writeLog();
 
 		// Instantiate the motor controller
 		vehicleController = new VehicleController(this);
@@ -673,7 +673,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 		}
 
 		if (doEvent) {
-			writeLog();
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, newStatus);
 		}
 	}
@@ -691,7 +690,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 		// Update status based on current situation.
 		if (!statusTypes.contains(newStatus)) {
 			statusTypes.add(newStatus);
-			writeLog();
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, newStatus);
 		}
 	}
@@ -705,27 +703,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 		// Update status based on current situation.
 		if (statusTypes.contains(oldStatus)) {
 			statusTypes.remove(oldStatus);
-			writeLog();
 			fireUnitUpdate(EntityEventType.STATUS_EVENT, oldStatus);
 		}
-	}
-	
-	/**
-	 * Records the status in the vehicle log.
-	 */
-	private void writeLog() {
-		Set<StatusType> entry = new HashSet<>(statusTypes);
-		entry.add(primaryStatus);
-		vehicleLog.add(entry);
-	}
-
-	/**
-	 * Gets the vehicle log.
-	 *
-	 * @return List of changes ot the status
-	 */
-	public History<Set<StatusType>> getVehicleLog() {
-		return vehicleLog;
 	}
 
 	/**
@@ -1303,7 +1282,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 		odometerMileage += distance;
 		lastDistance = distance;
 		cumEnergyUsedKWH += cumEnergyUsed/1000;
-		cumFuelUsedKG += cumFuelUsedKG;
 	}
 
 	/**
@@ -2012,6 +1990,31 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public void setMission(Mission newMission) {
 		this.mission = newMission;
 		fireUnitUpdate(MISSION_EVENT);
+
+		if (newMission != null) {
+			addHistoryEntry(new MsgContext(Mission.HISTORY_START, newMission.getName()));
+		}
+	}
+		
+	/**
+	 * Gets the vehicle history.
+	 *
+	 * @return List of interesting events for this vehicle.
+	 */
+	@Override
+	public History<MsgContext> getHistory() {
+		return history;
+	}
+
+	/**
+	 * Adds an entry to the vehicle's history.
+	 * @param key   the key for the history entry.
+	 * @param param the parameter associated with the history entry.
+	 */
+	@Override
+	public void addHistoryEntry(MsgContext entry) {
+		history.add(entry);
+		fireUnitUpdate(EntityEventType.HISTORY_EVENT);
 	}
 
 	/**
