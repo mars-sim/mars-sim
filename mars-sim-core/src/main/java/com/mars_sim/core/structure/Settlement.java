@@ -86,7 +86,6 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
 import com.mars_sim.core.resourceprocess.ResourceProcessSpec;
-import com.mars_sim.core.resourceprocess.task.ToggleResourceProcessMeta;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
@@ -1212,37 +1211,7 @@ public class Settlement extends Unit implements Temporal,
 	private void reviewProcessNumModules(List<ResourceProcess> processes) {
 		// Evaluate each resource process.
 		for (ResourceProcess p : processes) {
-			int modules = p.getNumModules();
-			double dutyPercent = p.getPercentDuty();
-			if (dutyPercent > 50) {
-
-				if (modules == 0) {
-//					logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + ++modules);
-					p.setModules(modules);
-				}
-				else if (modules < p.getMaxModules())  {
-					int diff = (int)(p.getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
-					int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
-					if (rand <= diff) {
-//						logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + ++modules);
-						p.setModules(modules);
-					}
-				}
-			}
-			else if (modules > 1) {
-				if ((p.getOverallScore() <= 20.0 || p.getOutputScore() <= 20)) {
-//					logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + --modules);
-					p.setModules(modules);
-				}
-				else {
-					int diff = (int)(p.getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
-					int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
-					if (rand >= diff) {
-//						logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + --modules);
-						p.setModules(modules);
-					}
-				}
-			}
+			p.adjustNumModules();
 		}
 	}
 	

@@ -343,6 +343,8 @@ public class MainWindow extends ContentManager implements ClockListener, ClockPu
 		masterClock.removeClockListener(this);
 
 		speedControls.unregister();
+		getAudio().unregister();
+		
 		desktop.destroy();
 	}
 

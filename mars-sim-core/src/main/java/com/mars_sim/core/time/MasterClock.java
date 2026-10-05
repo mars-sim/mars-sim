@@ -727,7 +727,7 @@ public class MasterClock implements Serializable {
 
 		try {
 			// Wait for it to complete so the listeners doesn't get queued up if the MasterClock races ahead
-			result.get();
+			result.get();	
 		} catch (ExecutionException ee) {
 			logger.severe( "Execution Exception. Problem with clock listener tasks: ", ee);
 		} catch (InterruptedException | RejectedExecutionException ie) {

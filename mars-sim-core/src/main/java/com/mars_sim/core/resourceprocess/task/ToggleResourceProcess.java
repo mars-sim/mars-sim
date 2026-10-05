@@ -256,9 +256,16 @@ public class ToggleResourceProcess extends Task {
 	 */
 	protected double finishedPhase(double time) {
 
-		if (!isFinished) {			
+		if (!isFinished) {
+			boolean isRunning = process.isProcessRunning();
+			
+			if (isRunning) {
+				// Adjust the number of modules
+				process.adjustNumModules();
+			}
+
 			// Print logs 
-			String toggle = (process.isProcessRunning() ? ON : OFF);
+			String toggle = (isRunning ? ON : OFF);
 //			if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
 //				logger.info(resourceProcessBuilding, process 
 //						+ ". Just toggled it " + toggle + " manually by " + worker + ".");

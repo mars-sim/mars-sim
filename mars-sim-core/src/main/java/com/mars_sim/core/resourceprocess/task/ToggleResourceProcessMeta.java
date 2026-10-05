@@ -129,7 +129,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //	private static final String TOGGLE_TIME = "toggleTime";
 	
 	private static final double MIN_SCORE = 0.05;
-	public static final double MAX_SCORE = 500;
+	public static final int MAX_SCORE = 500;
 	
 	private static final double WASTE_THRESHOLD = 0.3; // % waste need to be available to toggle
 	
@@ -203,7 +203,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @param assessed 
 	 */
 	private void selectToggableProcesses(Settlement settlement, boolean isWaste, List<SettlementTask> results,
-			Map<ResourceProcessSpec, ResourceProcessAssessment> assessed) {
+			Map<ResourceProcessSpec, ResourceProcessAssessment> mapToAssess) {
 
 		List<SettlementTask> toggleOffTasks = new ArrayList<>();
 		Map<SettlementTask, Double> scoreMap = new HashMap<>();
@@ -219,8 +219,42 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		// Shuffle the list random to vary which process to pick first
 		Collections.shuffle(processes);
 	
-//		int count = 0;
+		prepareAssessment(processes,
+				toggleOffTasks,
+				mapToAssess,
+				scoreMap, 
+				settlement, isWaste);
+
+		// Select one toggleOnTask
+		SettlementTask toggleOnTask = null;
+		
+		if (!scoreMap.isEmpty())
+			toggleOnTask = RandomUtil.getWeightedRandomObject(scoreMap);
+		
+		// Add the selected toggleOnTask
+		if (toggleOnTask != null)
+			results.add(toggleOnTask);
+		
+		// Add all toggleOffTasks
+		results.addAll(toggleOffTasks);
+		
+	}
 	
+	/**
+	 * Prepares to take an assessment.
+	 * 
+	 * @param processes
+	 * @param toggleOffTasks
+	 * @param mapToAssess
+	 * @param scoreMap
+	 * @param settlement
+	 * @param isWaste
+	 */
+	public void prepareAssessment(List<ResourceProcess> processes,
+			List<SettlementTask> toggleOffTasks,
+			Map<ResourceProcessSpec, ResourceProcessAssessment> mapToAssess,
+			Map<SettlementTask, Double> scoreMap, 
+			Settlement settlement, boolean isWaste) {
 		for (ResourceProcess process : processes) {
 			// Avoid process that can't be toggled or no point toggling
 			if (process.canToggle() && !process.isWorkerAssigned()) {
@@ -258,26 +292,12 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //					}
 				}
 				else {
-					computeAssessment(assessed, scoreMap, settlement, process, isWaste);
+					computeAssessment(mapToAssess, scoreMap, settlement, process, isWaste);
 				}
 			}
 		}
-		
-		// Select one toggleOnTask
-		SettlementTask toggleOnTask = null;
-		
-		if (!scoreMap.isEmpty())
-			toggleOnTask = RandomUtil.getWeightedRandomObject(scoreMap);
-		
-		// Add the selected toggleOnTask
-		if (toggleOnTask != null)
-			results.add(toggleOnTask);
-		
-		// Add all toggleOffTasks
-		results.addAll(toggleOffTasks);
-		
 	}
-		
+	
 	/**
 	 * Computes the assessment.
 	 * 
@@ -327,9 +347,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				double inputValue = MathUtils.between(computeResourcesValue(settlement, spec, modules, true), MIN_SCORE, MAX_SCORE);
 				// Compute the output score		
 				double outputValue = MathUtils.between(computeResourcesValue(settlement, spec, modules, false), MIN_SCORE, MAX_SCORE);
-						
+				// Compute the overall score			
 				double overallValue = MathUtils.between(outputValue/inputValue, MIN_SCORE, 2 * MAX_SCORE);
+				// Generate the assessment	
 				a = new ResourceProcessAssessment(inputValue, outputValue, overallValue, true);
+				
 				score = new RatingScore("inputs", 1D / inputValue);
 				score.addModifier("outputs", outputValue); //'.addBase("inputs", -inputValue);
 			}
@@ -343,6 +365,27 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		return a;
 	}
 	
+	/**
+	 * Generates an assessment.
+	 * 
+	 * @param settlement
+	 * @param modules
+	 * @param process
+	 */
+	public static void generateAssessment(Settlement settlement, int modules, ResourceProcess process) {
+		
+		ResourceProcessSpec spec = process.getSpec();
+		// Compute the input score
+		double inputValue = MathUtils.between(computeResourcesValue(settlement, spec, modules, true), MIN_SCORE, MAX_SCORE);
+		// Compute the output score		
+		double outputValue = MathUtils.between(computeResourcesValue(settlement, spec, modules, false), MIN_SCORE, MAX_SCORE);
+		// Compute the overall score			
+		double overallValue = MathUtils.between(outputValue/inputValue, MIN_SCORE, 2 * MAX_SCORE);
+		// Generate the assessment	
+		ResourceProcessAssessment a = new ResourceProcessAssessment(inputValue, outputValue, overallValue, true);
+		
+		process.setAssessment(a);
+	}
 	
 	/**
 	 * Checks if a resource process spec has all input resources.

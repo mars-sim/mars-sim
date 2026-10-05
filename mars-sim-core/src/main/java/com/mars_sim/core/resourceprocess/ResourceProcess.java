@@ -636,20 +636,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 			
 			// Q: when is it appropriate to call reduceOutputResourceDemand() to tone down the output resource demand ?
 			
-			if (modules == 0) {
-				logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + ++modules);
-			}
-			else if (modules < engine.getMaxModules())  {
-				int diff = (int)(getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
-				int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
-				if (rand <= diff) {
-					logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + ++modules);
-				}
-			}
-			else if ((getOverallScore() <= 20.0 || getOutputScore() <= 20) 
-						&& modules > 1) {
-				logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + --modules);
-			}
+			adjustNumModules();
 		}
 		
 		else {		
@@ -660,6 +647,62 @@ public class ResourceProcess implements ScheduledEventHandler {
 		this.isRunning = newRunning;
 	}
 
+	
+	/**
+	 * Adjusts the number of modules.
+	 */
+	public void adjustNumModules() {
+		int overallScore = (int)getOverallScore();
+		int outputScore = (int)getOutputScore();
+		
+		if (overallScore == 0 || outputScore == 0) {
+//			logger.info(settlement, this + " - overallScore: " + overallScore + ". outputScore: " + outputScore);
+			ToggleResourceProcessMeta.generateAssessment(settlement, modules, this);
+		}
+		
+		if (getProcessName().equalsIgnoreCase("Melt Ice")) {
+			System.out.println(this + ". overallScore: " + overallScore + ". outputScore: " + outputScore);
+		}
+		
+		if (modules == 0) {
+			logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + ++modules);
+		}
+		else if ((getOverallScore() <= ToggleResourceProcessMeta.MAX_SCORE / 4 
+				|| getOutputScore() <= ToggleResourceProcessMeta.MAX_SCORE / 8) 
+					&& modules > 1) {
+//			logger.info(settlement, " - " + this + ". rand: " + rand);
+			int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE / 4);
+			if (rand > overallScore / 2 || rand > outputScore) {
+				logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + --modules);
+			}
+		}
+		else { // if (modules < engine.getMaxModules()) {
+			
+			if (modules < engine.getMaxModules()
+					&& (overallScore > ToggleResourceProcessMeta.MAX_SCORE 
+					 || (outputScore > ToggleResourceProcessMeta.MAX_SCORE / 2))) {
+				int rand = RandomUtil.getRandomInt(ToggleResourceProcessMeta.MAX_SCORE);
+//				logger.info(settlement, " - " + this + ". rand: " + rand);
+				if (getProcessName().equalsIgnoreCase("Melt Ice")) {
+					System.out.println(this + ". rand: " + rand);
+				}
+				if (rand < overallScore / 2 || rand < outputScore) {
+					if (getProcessName().equalsIgnoreCase("Melt Ice")) {
+						System.out.println(this + ". IN !");
+					}
+					logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + ++modules);
+				}
+			}
+			else if (modules > 1) {
+				int rand = RandomUtil.getRandomInt(ToggleResourceProcessMeta.MAX_SCORE);
+//				logger.info(settlement, " - " + this + ". rand: " + rand);
+				if (rand > overallScore / 2 || rand > outputScore) {
+					logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + --modules);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Resets the toggle wait.
 	 * 

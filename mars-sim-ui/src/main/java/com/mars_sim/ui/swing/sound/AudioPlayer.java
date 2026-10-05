@@ -22,15 +22,17 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.UIConfig;
 
 /**
  * A class to dispatch playback of OGG files to OGGSoundClip.
  */
-public class AudioPlayer {
+public class AudioPlayer implements ClockListener {
 	
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(AudioPlayer.class.getName());
@@ -62,6 +64,7 @@ public class AudioPlayer {
 
 		/**
 		 * Creates an audio feed.
+		 * 
 		 * @param isMuted Initial muted setting.
 		 * @param volume Initial volume.
 		 * @param callback Callback when the any clip finishes playing
@@ -84,11 +87,11 @@ public class AudioPlayer {
 			this.isMuted = muted;
 			if (currentClip != null) {
 				if (muted) {
-					currentClip.stop();
-					currentClip.setStopped(true);
+//					currentClip.stop();
+					currentClip.setMute(true);
 				}
 				else {
-					currentClip.setStopped(false);
+					currentClip.setMute(false);
 					currentClip.play(volume, callback);
 				}
 			}
@@ -118,13 +121,16 @@ public class AudioPlayer {
 
 	private AudioFeed musicFeed;
 	private AudioFeed soundEffectFeed;
-
+	private AudioControl audioControl;
+	
 	/**
 	 * The class for managing the audio.
 	 * 
 	 * @param props the properties to initialize the audio player.
 	 */
 	public AudioPlayer(Properties props) {
+		
+		Simulation.instance().getMasterClock().addClockListener(this);
 		
 		loadMusicTracks();
 
@@ -137,6 +143,14 @@ public class AudioPlayer {
 		soundEffectFeed = new AudioFeed(soundMute, soundVol, null);
 	}
 		
+	public void setAudioControl(AudioControl audioControl) {
+		this.audioControl = audioControl;
+	}
+	
+	public AudioControl getAudioControl() {
+		return this.audioControl;
+	}
+	
 	/**
 	 * Plays random music tracks on repeat.
 	 */
@@ -408,4 +422,27 @@ public class AudioPlayer {
 
 		return result;
     }
+	
+
+	@Override
+	public void desiredTimeRatioChange(int desiredTR) {
+		// TODO Auto-generated method stub
+	}
+	
+	/**
+	 * The pause state of the clock has changed, update the play/pause button and enable/disable speed controls accordingly.
+	 * @param isPaused true if the clock is paused, false otherwise.
+	 */
+	@Override
+	public void pauseChange(boolean isPaused) {
+		setMusicMute(isPaused);
+		setSoundEffectMute(isPaused);
+	}
+	
+	/**
+	 * Unregister the listener from the clock to prevent memory leaks when this component is no longer needed.
+	 */
+    public void unregister() {
+    	Simulation.instance().getMasterClock().removeClockListener(this);
+	}
 }

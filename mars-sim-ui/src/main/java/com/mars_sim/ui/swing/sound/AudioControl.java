@@ -35,6 +35,9 @@ public class AudioControl extends JPanel {
     public static final String ICON = "sound";
 
 	private final AudioPlayer audioPlayer;
+	private JToggleButton musicToggle;
+	private JToggleButton soundEffectToggle;
+	
 
 	/**
 	 * Creates a control panel bound to an audio player.
@@ -46,7 +49,7 @@ public class AudioControl extends JPanel {
 
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.audioPlayer = audioPlayer;
-
+        
 		add(createMusicControls());
 		add(createSoundEffectControls());
 	}
@@ -54,9 +57,9 @@ public class AudioControl extends JPanel {
 	private JPanel createMusicControls() {
 		var iconOn = ImageLoader.getIconByName("music");
 		var iconOff = ImageLoader.getIconByName("music_mute");
-		JToggleButton toggle = new JToggleButton(iconOn, audioPlayer.isMusicMute());
-		toggle.setSelectedIcon(iconOff);
-		toggle.setToolTipText("Mute music");
+		musicToggle = new JToggleButton(iconOn, audioPlayer.isMusicMute());
+		musicToggle.setSelectedIcon(iconOff);
+		musicToggle.setToolTipText("Mute music");
 
 		JSlider volumeSlider = createVolumeSlider(audioPlayer.getMusicVolume());
 		if (audioPlayer.isMusicMute()) {
@@ -67,17 +70,17 @@ public class AudioControl extends JPanel {
 		}
 		
 		volumeSlider.addChangeListener(e -> audioPlayer.setMusicVolume(toVolume(volumeSlider.getValue())));
-		toggle.addActionListener(e -> musicMute(toggle.isSelected(), volumeSlider));
+		musicToggle.addActionListener(e -> musicMute(musicToggle.isSelected(), volumeSlider));
 
-		return createControlRow("Music", toggle, volumeSlider);
+		return createControlRow("Music", musicToggle, volumeSlider);
 	}
 
 	private JPanel createSoundEffectControls() {
 		var iconOn = ImageLoader.getIconByName("sound");
 		var iconOff = ImageLoader.getIconByName("sound_mute");
-		JToggleButton toggle = new JToggleButton(iconOn, audioPlayer.isSoundEffectMute());
-		toggle.setSelectedIcon(iconOff);
-		toggle.setToolTipText("Mute sound effects");
+		soundEffectToggle = new JToggleButton(iconOn, audioPlayer.isSoundEffectMute());
+		soundEffectToggle.setSelectedIcon(iconOff);
+		soundEffectToggle.setToolTipText("Mute sound effects");
 
 		JSlider volumeSlider = createVolumeSlider(audioPlayer.getSoundEffectVolume());
 		if (audioPlayer.isSoundEffectMute()) {
@@ -88,9 +91,9 @@ public class AudioControl extends JPanel {
 		}
 		
 		volumeSlider.addChangeListener(e -> audioPlayer.setSoundEffectVolume(toVolume(volumeSlider.getValue())));
-		toggle.addActionListener(e -> soundEffectMute(toggle.isSelected(), volumeSlider));
+		soundEffectToggle.addActionListener(e -> soundEffectMute(soundEffectToggle.isSelected(), volumeSlider));
 
-		return createControlRow("Sound Effect", toggle, volumeSlider);
+		return createControlRow("Sound Effect", soundEffectToggle, volumeSlider);
 	}
 
 	private void soundEffectMute(boolean isMuted, JSlider slider) {
@@ -143,7 +146,9 @@ public class AudioControl extends JPanel {
 			openDialog.toFront();
 		}
 		else {
-			JDialog frame = SwingHelper.createPopupWindow(new AudioControl(audioPlayer), -1, -1, 0, 0);
+			AudioControl control = new AudioControl(audioPlayer);
+			audioPlayer.setAudioControl(control);
+			JDialog frame = SwingHelper.createPopupWindow(control, -1, -1, 0, 0);
 //			var frame = new JDialog();
 			frame.setTitle("Audio Control");
 			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

@@ -69,12 +69,32 @@
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.19</version>
 		</dependency>
-		<dependency>
+		
+		<!-- dependency>
 		    <groupId>com.googlecode.soundlibs</groupId>
 		    <artifactId>jorbis</artifactId>
 		    <version>0.0.17.4</version>
 		</dependency>
-
+		<dependency>
+		    <groupId>com.googlecode.soundlibs</groupId>
+		    <artifactId>vorbisspi</artifactId>
+		    <version>1.0.3.3</version>
+		</dependency  -->
+		
+		<!-- Source: https://mvnrepository.com/artifact/com.github.nullnoname/jorbis -->
+		<dependency>
+		    <groupId>com.github.nullnoname</groupId>
+		    <artifactId>jorbis</artifactId>
+		    <version>master-0.0.18-gc7a30a0-1</version>
+		    <scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.github.trilarion</groupId>
+		    <artifactId>java-vorbis-support</artifactId>
+		    <version>1.2.1</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.swinglabs.swingx</groupId>
 			<artifactId>swingx-all</artifactId>
@@ -119,6 +139,14 @@
 		    <version>${slf4j.version}</version>
 		</dependency>
 	</dependencies>
+	
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+    
   	<build>
 		<plugins>
 			<!-- Build the executable JAR file -->

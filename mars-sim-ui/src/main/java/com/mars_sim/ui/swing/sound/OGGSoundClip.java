@@ -32,6 +32,7 @@ import com.jcraft.jorbis.Block;
 import com.jcraft.jorbis.Comment;
 import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
+import com.jcraft.jorbis.JOrbisException;
 
 /**
  * A class that creates a sound clip. A complete rewrite for OGG based on JOrbisPlayer example source
@@ -45,21 +46,19 @@ class OGGSoundClip {
 	private int convsize = BUFFER_SIZE * 2;
 	private int rate;
 	private int channels;
-
+	
 	private boolean isStopped = false;
 	private boolean isMasterGainSupported;
 	
 	private byte[] convbuffer = new byte[convsize];
 
 	private String name;
-
+	private String trackTitle;
+	
 	private FloatControl floatControl;
-
 	private SourceDataLine outputLine;
 
 	private BufferedInputStream bitStream = null;
-
-	private String trackTitle;
 
 	private static ExecutorService virtualThreadExecutor = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -70,6 +69,8 @@ class OGGSoundClip {
 	 * @param filename
 	 * @param music true if it is a background music file (Not a sound effect clip)
 	 * @throws IOException Indicated a failure to find the resource
+	 * @throws JOrbisException 
+	 * @throws LineUnavailableException 
 	 */
 	public OGGSoundClip(String name, InputStream soundStream) throws IOException {
 		this.name = name;
@@ -87,6 +88,7 @@ class OGGSoundClip {
 			logger.log(Level.SEVERE, "Couldn't find the input source");
 			disableSound();
 		}
+		
 		bitStream = new BufferedInputStream(in);
 		bitStream.mark(Integer.MAX_VALUE);
 	}
@@ -179,18 +181,17 @@ class OGGSoundClip {
 			}
 		} catch (IOException e) {
 			// ignore if no mark
-			logger.log(Level.SEVERE, "IOException in OGGSoundClip's play(). ", e);
+			logger.log(Level.SEVERE, "Unable to reset bit stream: ", e);
+			
+			stop();
 		}
-
+		
 		virtualThreadExecutor.execute(new Runnable() {
 			@Override
 			public void run() {
 				 try {
 					 playStream(vol);
 
-					if (bitStream != null) {
-						bitStream.reset();
-					}
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, "Trouble setting up a bit stream to play the sound of " 
 							+ name, e);
@@ -213,7 +214,7 @@ class OGGSoundClip {
 			if (bitStream != null)
 				bitStream.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Cannot close the bitstream: " ,
+			logger.log(Level.SEVERE, "Cannot close the bit stream: " ,
 					e);
 		}
 	}
@@ -542,7 +543,7 @@ class OGGSoundClip {
 	 * 
 	 * @param mute
 	 */
-	public void setStopped(boolean mute) {
+	public void setMute(boolean mute) {
 		// Set mute value.
 		this.isStopped = mute;
 
@@ -555,7 +556,8 @@ class OGGSoundClip {
 	}
 
 	/**
-	 * Get the name of the track/clip
+	 * Gets the name of the track/clip.
+	 * 
 	 * @return Contents of the 'title' comment
 	 */
 	public String getTitle() {
