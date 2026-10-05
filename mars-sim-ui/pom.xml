@@ -86,7 +86,6 @@
 		    <groupId>com.github.nullnoname</groupId>
 		    <artifactId>jorbis</artifactId>
 		    <version>master-0.0.18-gc7a30a0-1</version>
-		    <scope>compile</scope>
 		</dependency>
 		
 		<dependency>
