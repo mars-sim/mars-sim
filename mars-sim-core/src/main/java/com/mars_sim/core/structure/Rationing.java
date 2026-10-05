@@ -45,17 +45,17 @@ public class Rationing implements Serializable {
 		}
 
 		/**
-		 * Convert from ration leveling to emergency Level
+		 * Convert from ration level to emergency Level
 		 * 
 		 * @param name
 		 * @return type id
 		 */
 		private static EmergencyLevel convertInt2Enum(int level) {
 		    for (int i = 0; i < 6; i++) {
-		    	EmergencyLevel e = EmergencyLevel.values()[i-1];
+		    	EmergencyLevel e = EmergencyLevel.values()[i];
 		    	if (level <= e.rationLevel) {
 		    		if (i > 0)
-		    			return EmergencyLevel.values()[i];
+		    			return EmergencyLevel.values()[i-1];
 		    		else {
 		    			return EmergencyLevel.NONE;
 		    		}

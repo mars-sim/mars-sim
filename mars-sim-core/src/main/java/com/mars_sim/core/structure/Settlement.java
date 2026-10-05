@@ -1217,28 +1217,28 @@ public class Settlement extends Unit implements Temporal,
 			if (dutyPercent > 50) {
 
 				if (modules == 0) {
-					logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + ++modules);
+//					logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + ++modules);
 					p.setModules(modules);
 				}
 				else if (modules < p.getMaxModules())  {
 					int diff = (int)(p.getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
 					int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
 					if (rand <= diff) {
-						logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + ++modules);
+//						logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + ++modules);
 						p.setModules(modules);
 					}
 				}
 			}
 			else if (modules > 1) {
 				if ((p.getOverallScore() <= 20.0 || p.getOutputScore() <= 20)) {
-					logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + --modules);
+//					logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + --modules);
 					p.setModules(modules);
 				}
 				else {
 					int diff = (int)(p.getOverallScore() - ToggleResourceProcessMeta.MAX_SCORE);
 					int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE);
 					if (rand >= diff) {
-						logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + --modules);
+//						logger.info(this, "Evaluating " + p + "'s # of modules : " + modules + " -> " + --modules);
 						p.setModules(modules);
 					}
 				}

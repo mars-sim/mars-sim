@@ -28,7 +28,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.DataRecorder;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentOwner;
-import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
@@ -856,10 +855,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (parameters.lifeSupportImpacted()) {
 			double time = pulse.getElapsed();
 
-			// Check if life support modifiers are still in effect.
-			setLifeSupportModifiers(time);
-			// Check if resources is still draining
-			depleteResources(time);
+			if (entity instanceof Building building
+				&& building.isInhabitable()) {
+				// If this entity is a building and it has no life support,
+				// there is no need to look at life support leaking
+				return true;
+			}
+			else {
+				// Check if life support modifiers are still in effect.
+				setLifeSupportModifiers(time);
+				// Check if resources is still draining
+				depleteResources(time);
+			}
 		}
 
 		return true;
@@ -919,12 +926,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 			for (Malfunction malfunction : malfunctions) {
 				if (!malfunction.isFixed()) {
 				
-					if (entity instanceof Building building
-						 && building.isInhabitable()) {
-							// If this entity is a building and it has no life support,
-							// there is no need to look at life support leaking
-							return;
-					}
+//					if (entity instanceof Building building
+//						 && building.isInhabitable()) {
+//							// If this entity is a building and it has no life support,
+//							// there is no need to look at life support leaking
+//							return;
+//					}
 					
 					Map<String, Double> effects = malfunction.getLifeSupportEffects();
 					
@@ -965,14 +972,17 @@ public class MalfunctionManager implements Serializable, Temporal {
 					Integer resource = entry.getKey();
 					double amount = entry.getValue();
 					double amountDepleted = amount * time * percent / 100;
-					ResourceHolder rh = (ResourceHolder)entity;
-					double amountStored = rh.getSpecificAmountResourceStored(resource);
+					
+					var eo = entity.getAssociatedSettlement().getEquipmentInventory();
+//					ResourceHolder rh = (ResourceHolder)entity;
+					
+					double amountStored = eo.getSpecificAmountResourceStored(resource);
 
 					if (amountStored < amountDepleted) {
 						amountDepleted = amountStored;
 					}
 					if (amountDepleted >= 0) {
-						rh.retrieveAmountResource(resource, amountDepleted);
+						eo.retrieveAmountResource(resource, amountDepleted);
 						logger.log(entity, Level.WARNING, 15_000L, "Leaking "
 										+ Math.round(amountDepleted * 100.0)/100.0 + " kg of  "
 										+ ResourceUtil.findAmountResource(resource) + ".");
