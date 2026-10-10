@@ -9,6 +9,8 @@
 
  import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Simulation;
@@ -17,6 +19,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.NavPoint;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.RandomUtil;
  
  /**
@@ -34,7 +37,7 @@ import com.mars_sim.core.tool.RandomUtil;
  
 	 private static final int CABLE_GAUGE_SIZE = 40;    
 	 /** The standard hovering height for a drone. */
-	 public static final int STANDARD_HOVERING_HEIGHT = (int) (Flyer.ELEVATION_ABOVE_GROUND * 1000);
+	 private static final int STANDARD_HOVERING_HEIGHT = (int) (Flyer.ELEVATION_ABOVE_GROUND * 1000);
 	 /** The standard stepping up height for a drone. */
 	 public static final double STEP_UP_HEIGHT = STANDARD_HOVERING_HEIGHT / 64D;
 	 /** The standard stepping down height for a drone. */
@@ -42,9 +45,9 @@ import com.mars_sim.core.tool.RandomUtil;
 	 /** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
 	 private static final double LEAST_AMOUNT = GroundVehicle.LEAST_AMOUNT;
 	 /** The ratio of the amount of oxidizer to methane fuel. */
-	 public static final double RATIO_OXIDIZER_METHANE = 1;
+	 private static final double RATIO_OXIDIZER_METHANE = 1;
 	 /** The ratio of the amount of oxidizer to methanol fuel. */
-	 public static final double RATIO_OXIDIZER_METHANOL = 1.5;
+	 private static final double RATIO_OXIDIZER_METHANOL = 1.5;
 
 	 /** The factor for estimating the adjusted fuel economy [km/kg]. */
 	 public static final double FUEL_ECONOMY_FACTOR = .85;
@@ -651,28 +654,39 @@ import com.mars_sim.core.tool.RandomUtil;
 	  * @param tripDistance   the distance (km) of the trip.
 	  * @param fuelEconomy the vehicle's fuel economy (km/kg).
 	  * @param useMargin      Apply safety margin when loading resources before embarking if true.
-	  * @return amount of fuel needed for trip (kg)
+	  * @return amount of resources needed for trip (kg) as a map with resource ID as key and amount as value.
 	  */
-	 public double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
+	 public Map<Integer, Double> getFuelNeededForTrip(double tripDistance, double fuelEconomy, boolean useMargin) {
 		 // The amount of "fuel" covered by the energy in the battery 
-		 double batterydistance = vehicle.getController().getBattery().getStoredEnergy() 
+		 double batterydistance = battery.getStoredEnergy() 
 				 / vehicle.getEstimatedFuelConsumption();
 		 
-		 double amountFuel = (tripDistance - batterydistance) / fuelEconomy;
+		Map<Integer, Double> fuelNeeded = new HashMap<>();
+		double amountFuel = (tripDistance - batterydistance) / fuelEconomy;
 		 
-		 double factor = 1;
-		 if (useMargin) {
-			 if (tripDistance < 100) {
-				 // Note: use formula below to add more extra fuel for short travel distance on top of the fuel margin
-				 // in case of getting stranded due to difficult local terrain around the settlement
-				 factor = 3 - tripDistance / 50.0;
-			 }	
-			 factor *= Vehicle.getFuelRangeErrorMargin();
-			 amountFuel *= factor;
-			 
-		 }
+		double factor = 1;
+		if (useMargin) {
+			if (tripDistance < 100) {
+				// Note: use formula below to add more extra fuel for short travel distance on top of the fuel margin
+				// in case of getting stranded due to difficult local terrain around the settlement
+				factor = 3 - tripDistance / 50.0;
+			}	
+			factor *= Vehicle.getFuelRangeErrorMargin();
+			amountFuel *= factor;	 
+		}
 
-		 return amountFuel;
+		fuelNeeded.put(fuelTypeID, amountFuel);
+
+		// Add corresponding oxidizer for the fuel if needed
+		switch(fuelTypeID) {
+			case ResourceUtil.METHANOL_ID ->
+					fuelNeeded.put(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANOL * amountFuel);
+			case ResourceUtil.METHANE_ID ->
+					fuelNeeded.put(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANE * amountFuel);
+			default -> {}
+		}
+			
+		 return fuelNeeded;
 	 }
 		
 	/** 

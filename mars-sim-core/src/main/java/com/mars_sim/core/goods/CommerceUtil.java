@@ -426,11 +426,9 @@ public final class CommerceUtil {
 		var deliverySpec = delivery.getVehicleSpec();
 
 		// Get required fuel.
-		int fuelTypeID = deliverySpec.getFuelType();
-		Good fuelGood = null;
-		if (fuelTypeID != -1) {
-			fuelGood = GoodsUtil.getGood(fuelTypeID);
-			neededResources.put(fuelGood, (int) delivery.getFuelNeededForTrip(distance, false));
+		var requiredFuel = delivery.getFuelNeededForTrip(distance, false);
+		for(var f : requiredFuel.entrySet()) {
+			neededResources.put(GoodsUtil.getGood(f.getKey()), f.getValue().intValue());
 		}
 
 		if (delivery instanceof Crewable) {

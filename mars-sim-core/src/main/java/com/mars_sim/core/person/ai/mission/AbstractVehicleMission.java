@@ -58,7 +58,6 @@ import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleController;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.task.DriveGroundVehicle;
 import com.mars_sim.core.vehicle.task.LoadVehicleGarage;
@@ -1004,28 +1003,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin, double distance) {
 		Map<Integer, Number> result = new HashMap<>();
 		if (vehicle != null) {
-			double amount = 0;
-
 			// Must use the same logic in all cases otherwise too few fuel will be loaded
-			amount = vehicle.getFuelNeededForTrip(distance, useMargin);
-	
-			int fuelTypeID = vehicle.getVehicleSpec().getFuelType();
-			double amountOxygen = 0;
-			
-			if (fuelTypeID == ResourceUtil.METHANOL_ID) {
-				// if useMargin is true, include more oxygen
-				amountOxygen = VehicleController.RATIO_OXIDIZER_METHANOL * amount;
-			}
-			else if (fuelTypeID == ResourceUtil.METHANE_ID) {
-				// if useMargin is true, include more oxygen
-				amountOxygen = VehicleController.RATIO_OXIDIZER_METHANE * amount;
-			}
-			
-			if (!useMargin)	
-				amountOxygen = amount;
-			
-			result.put(fuelTypeID, amount);
-			result.put(ResourceUtil.OXYGEN_ID, amountOxygen);
+			result.putAll(vehicle.getFuelNeededForTrip(distance, useMargin));
 		}
 		
 		return result;

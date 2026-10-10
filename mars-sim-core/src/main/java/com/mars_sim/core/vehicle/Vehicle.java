@@ -1727,36 +1727,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 				}
 			}
 		}
-		
-//		if (isInGarage()) {
-//			BuildingManager.removeFromGarage(this);
-//			// Note: removeVehicle or removeFlyer will automatically call 
-//			// parkInVicinity which will in turns call findNewParkingLoc
-//			logger.info(this, 0, "Left garage and parked outside as instructed.");
-//		}
-//		else {
-//			if (reservedForMaintenance) {
-//				// If it's under maintenance, go to a garage if possible
-//				// else park outside
-//				logger.info(this, 0, "Reserved for maintenance. Will relocate automatically.");
-//			}
-//			else if (reservedForMaintenance || getPrimaryStatus() == StatusType.MAINTENANCE
-//					|| getPrimaryStatus() == StatusType.TOWED 
-//					|| getPrimaryStatus() == StatusType.TOWING
-//					|| getPrimaryStatus() == StatusType.MALFUNCTION) {
-//				logger.info(this, 0, "Status: " + getPrimaryStatus().getName() + ". Unable to relocate.");
-//			}
-//			else {
-//				boolean done = addToAGarage();
-//				if (done) {
-//					logger.info(this, 0, "Garage space found. Parked inside.");
-//				}
-//				else {
-//					logger.info(this, 0, "Looking for another spot to park outside.");
-//					findNewParkingLoc();
-//				}
-//			}
-//		}
 	}
 
 	public static double getFuelRangeErrorMargin() {
@@ -2094,9 +2064,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @param useMargin      Apply safety margin when loading resources before embarking if true.
 	 * @return amount of fuel needed for trip (kg)
 	 */
-	public double getFuelNeededForTrip(double tripDistance, boolean useMargin) {
-		return vehicleController.getFuelNeededForTrip(this, tripDistance, 
-				getEstimatedFuelEconomy(), useMargin);
+	public Map<Integer, Double> getFuelNeededForTrip(double tripDistance, boolean useMargin) {
+		return vehicleController.getFuelNeededForTrip(tripDistance, 
+										getEstimatedFuelEconomy(), useMargin);
 	}
 	
 	/**
