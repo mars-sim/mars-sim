@@ -91,13 +91,23 @@ public abstract class EVAMissionStep extends MissionStep {
      */
     protected abstract boolean executeEVA(Person worker);
 
+    
+    /**
+     * This closes any active EVA operations and completes the mission step if appropriate.
+     */
+    @Override 
+    public boolean requestToComplete() {
+        return endAllEVAs();
+    }
+
     /**
      * End all active EVA operations. 
      * if all crew members are on board, the mission step will be completed.
      * If any crew members are not on board, the EVA will be ended and the step will remain active until all crew members are on board.
      * Crew members are informed to end EVA via the {@link EVAOperation#requestEndEVA()} method.
+     * @return true if all crew members are on board and the mission step was completed, false otherwise
      */
-    protected void endAllEVAs() {
+    protected boolean endAllEVAs() {
         var ms = getMission();
         if (evaAllowed) {
             // First time through so log the end of EVA and add a mission log entry
@@ -123,6 +133,8 @@ public abstract class EVAMissionStep extends MissionStep {
         if (allOnBoard) {
             logger.info(ms, "All crew members are on board, completing EVA mission step");
             complete();
+            return true;
         }    
+        return false;
     }
 }

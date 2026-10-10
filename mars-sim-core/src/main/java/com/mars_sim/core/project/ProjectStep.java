@@ -21,6 +21,11 @@ public abstract class ProjectStep implements Serializable {
     private String description;
     private boolean completed = false;
 
+    protected ProjectStep(Project parent, Stage stage, String description) {
+        this(stage, description);
+        this.parent = parent;
+    }
+
     protected ProjectStep(Stage stage, String description) {
         if ((stage == Stage.WAITING) || (stage == Stage.DONE) || (stage == Stage.ABORTED)) {
             throw new IllegalArgumentException("The step can not used the internal Stage " + stage);

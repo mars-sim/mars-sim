@@ -36,13 +36,16 @@ public interface Mission extends MonitorableEntity {
 
 	// The key to the entry for the mission history start
     static final String HISTORY_START = "entityhistory.mission";
+    static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
 
 	/**
-	 * Aborts the mission via custom reasons. Will stop current phase.
+	 * Aborts the mission via established reasons and/or events.
+	 * If possible return to the starting Settlement.
 	 * 
-	 * @param reason MissionStatus Reason to abort
+	 * @param status Reason for the abort.
+	 * @param instigator The worker who instigated the abort.
 	 */
-	void abortMission(MissionStatus reason);
+	void abortMission(MissionStatus status, Worker instigator);
 
 	/**
 	 * Aborts just the current phase, the next phase will be started.

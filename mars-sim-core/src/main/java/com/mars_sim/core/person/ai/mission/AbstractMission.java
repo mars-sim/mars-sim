@@ -70,11 +70,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 	
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	protected static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
-	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
-	protected static final MissionStatus MISSION_MEDICAL_EMERGENCY = new MissionStatus("Mission.status.medicalEmergency");
+	protected static final MissionStatus MISSION_MEDICAL_EMERGENCY = new MissionStatus("Mission.status.medicalEmergency",
+													HistoricalEventType.MISSION_MEDICAL_EMERGENCY);
 
 	public static final String DISBANDING = "Disbanding ";
-	public static final String MEMBERS_ = " member(s): ";
+	private static final String MEMBERS = " member(s): ";
 	
 	// Data members
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
@@ -615,28 +615,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * Aborts the mission. Will stop current phase.
 	 * 
 	 * @param endStatus Cause for abort
+	 * @param instigator The worker who instigated the abort.
 	 */
 	@Override
-	public final void abortMission(MissionStatus endStatus) {
+	public void abortMission(MissionStatus endStatus, Worker instigator) {
 		aborted = true;
-		
-		if (endStatus == null) {
-			
-			if (this instanceof AbstractVehicleMission avm) {
-				avm.endMission(MISSION_ABORTED_BY_PLAYER);
-			}
-			else {
-				endMission(MISSION_ABORTED_BY_PLAYER);
-			}
-		}
-		else {
-			if (this instanceof AbstractVehicleMission avm) {
-				avm.endMission(endStatus);
-			}
-			else {
-				endMission(endStatus);
-			}
-		}
+	
+		endMission(endStatus);
 	}
 
 	/**
@@ -673,15 +658,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param reason
 	 */
 	protected void endMissionProblem(Entity source, String reason) {
-		MissionStatus status = MissionStatus.createResourceStatus(reason);
+		MissionStatus status = MissionStatus.createProblemStatus(reason);
 		logger.severe(this, "Ended with " + status.getName() + "; source was " + source.getName());
 		
-		if (this instanceof AbstractVehicleMission avm) {
-			avm.endMission(status);
-		}
-		else {
-			endMission(status);
-		}
+		endMission(status);
 	}
 	
 	/** 
@@ -711,12 +691,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// If no mission flags have been added then it was accomplished
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
-		MissionPhase finalPhase = ABORTED_PHASE;
+		MissionPhase finalPhase = null;
 
 		 if (aborted) {
 			finalPhase = ABORTED_PHASE;
 		}
-		else if (endStatus == MISSION_ABORTED_BY_PLAYER) {
+		else if (endStatus == Mission.MISSION_ABORTED_BY_PLAYER) {
 			finalPhase = ABORTED_PHASE;
 		}
 		else if (endStatus == MISSION_ACCOMPLISHED) {
@@ -752,7 +732,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Disband the members
 		if (members != null && !members.isEmpty()) {
 			String listOfMembers = members.stream().map(Worker::getName).collect(Collectors.joining(", "));
-			logger.info(startingMember, DISBANDING + getFullMissionDesignation() + MEMBERS_ + listOfMembers);
+			logger.info(startingMember, DISBANDING + getFullMissionDesignation() + MEMBERS + listOfMembers);
 			
 			removeAllMembers();
 		}
@@ -804,10 +784,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 				logger.info(p, 20_000L, "Already donned an EVA Suit. Unable to perform '" + newTask.getName() + "' as assigned.");
 				return false;
 			}
-//			else if (p.getPhysicalCondition().computeHealthScore() <= 2 && !newTask.getName().equals(Sleep.NAME)) {
-//				logger.info(p, 20_000L, "Low health score. Unable to perform '" + newTask.getName() + "' as assigned.");
-//				return false;
-//			}
 		}
 		
 		return worker.getTaskManager().directlyAssignTask(newTask, allowSameTask);
@@ -829,14 +805,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		if (patient != null) {
-			if (this instanceof AbstractVehicleMission avm) {
-				// Generate historical event by calling AbstractVehicleMission's abortMission
-				avm.abortMission(MISSION_MEDICAL_EMERGENCY, HistoricalEventType.MISSION_MEDICAL_EMERGENCY);
-			}
-			else {
-				// Abort the mission and return home
-				abortMission(MISSION_MEDICAL_EMERGENCY);
-			}
+			// Abort the mission and return home
+			abortMission(MISSION_MEDICAL_EMERGENCY, patient);
 			
 			addMissionLog(MISSION_MEDICAL_EMERGENCY.getName(), patient.getName());
 		}
@@ -1076,10 +1046,16 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 *
 	 * @param status
 	 */
-	protected boolean addMissionStatus(MissionStatus status, Person person) {
+	protected boolean addMissionStatus(MissionStatus status, Worker instigator) {
 		boolean newStatus = missionStatus.add(status);
 		if (newStatus) {
-			addMissionLog(status.getName(), person.getName());
+			addMissionLog(status.getName(), instigator.getName());
+	
+			// Create an event if needed
+			var eventType = status.getEventType();
+			if (eventType != null) {
+				registerHistoricalEvent(instigator, eventType, status.getName());
+			}
 		}
 		return newStatus;
 	}

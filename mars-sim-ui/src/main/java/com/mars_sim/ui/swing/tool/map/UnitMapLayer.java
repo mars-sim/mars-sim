@@ -59,7 +59,6 @@ public class UnitMapLayer implements FilteredMapLayer {
 	
 	private static final String LABEL_SETTLEMENTS = "Settlement(s)";
 	private static final String LABEL_VEHICLES = "Vehicle(s)";
-	private static final String LAYER_NAME = "Units";
 
 	// Domain data
 	private boolean blinkFlag = false;
@@ -115,35 +114,32 @@ public class UnitMapLayer implements FilteredMapLayer {
 	@Override
 	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g2d, Dimension d) {	
 		List<MapHotspot> hotspots = new ArrayList<>();
-
 					
 		Collection<Settlement> settlements = unitsToDisplay;
-		List<Vehicle> vehicles = new ArrayList<>();
-				
+
+		// Display Settlements first
 		if (settlements == null) {
 			settlements = unitManager.getSettlements();
-			for (Settlement s: settlements) {
+		}
+
+		// Display settlements if the filter is active
+		if (isFilterActive(LABEL_SETTLEMENTS)) {
+			settlements.forEach(s -> renderUnit(s, s.getCoordinates(), mapCenter, baseMap, g2d, d, hotspots));
+		}
+
+		// Display vehicles if the filter is active
+		if (isFilterActive(LABEL_VEHICLES)) {
+			List<Vehicle> vehicles = new ArrayList<>();
+			for (Settlement s : settlements) {
 				for (Vehicle v: s.getMissionVehicles()) {
 					vehicles.add(v);
 				}
 			}
-		}
-
-		// Display Settlements first
-		settlements.forEach(s -> {
-			if (isFilterActive(LABEL_SETTLEMENTS)) {
-				renderUnit(s, s.getCoordinates(), mapCenter, baseMap, g2d, d, hotspots);
-			}
-		});
-
-		if (vehicles != null) {
+	
 			for (Vehicle v : vehicles) {
-				if (v.isOutsideOnMarsMission() 
-						&& v.getContainerUnit() instanceof MarsSurface) {
+				if (v.getMission() != null && v.getContainerUnit() instanceof MarsSurface) {
 					// Check against filters
-					if (isFilterActive(LABEL_VEHICLES)) {
-						renderUnit(v, v.getCoordinates(), mapCenter, baseMap, g2d, d, hotspots);
-					}
+					renderUnit(v, v.getCoordinates(), mapCenter, baseMap, g2d, d, hotspots);
 				}
 			}
 		}
@@ -192,27 +188,23 @@ public class UnitMapLayer implements FilteredMapLayer {
 	private MapHotspot displayUnit(Unit unit, MapEntityDisplayInfo displayInfo, IntPoint location,
 							MapDisplay baseMap, Graphics2D g) {
 
-		if (isFilterActive(LABEL_SETTLEMENTS) && unit instanceof Settlement
-			|| isFilterActive(LABEL_VEHICLES) && unit instanceof Vehicle) {
-			
-			if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
-				MapMetaData mapType = baseMap.getMapMetaData();
-				Icon displayIcon = displayInfo.getMapIcon(unit, mapType);	
-	
-				int locX = location.getiX() - (displayIcon.getIconWidth() / 2);
-				int locY =  location.getiY() - (displayIcon.getIconHeight() / 2);
-				displayIcon.paintIcon(displayComponent, g, locX, locY);
-	
-				//Draw label
-				if (displayLabel) {
-					g.setColor(displayInfo.getMapLabelColor(baseMap.getMapMetaData()));
-					g.setFont(displayInfo.getMapLabelFont());
-					g.drawString(unit.getName(), locX + displayIcon.getIconWidth() + LABEL_HORIZONTAL_OFFSET,
-												locY + (displayIcon.getIconHeight()/2));
-				}
-	
-				return new UnitHotspot(location, unit);
+		if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
+			MapMetaData mapType = baseMap.getMapMetaData();
+			Icon displayIcon = displayInfo.getMapIcon(unit, mapType);	
+
+			int locX = location.getiX() - (displayIcon.getIconWidth() / 2);
+			int locY =  location.getiY() - (displayIcon.getIconHeight() / 2);
+			displayIcon.paintIcon(displayComponent, g, locX, locY);
+
+			//Draw label
+			if (displayLabel) {
+				g.setColor(displayInfo.getMapLabelColor(baseMap.getMapMetaData()));
+				g.setFont(displayInfo.getMapLabelFont());
+				g.drawString(unit.getName(), locX + displayIcon.getIconWidth() + LABEL_HORIZONTAL_OFFSET,
+											locY + (displayIcon.getIconHeight()/2));
 			}
+
+			return new UnitHotspot(location, unit);
 		}
 		
 		return null;
@@ -221,12 +213,9 @@ public class UnitMapLayer implements FilteredMapLayer {
 	@Override
 	public List<MapFilter> getFilterDetails() {
 		List<MapFilter> filters = new ArrayList<>();
-//		if (isFilterActive(LABEL_SETTLEMENTS)) {
-			filters.add(new MapFilter(LABEL_SETTLEMENTS, LABEL_SETTLEMENTS, labelIcon));
-//		}
-//		if (isFilterActive(LABEL_VEHICLES)) {
-			filters.add(new MapFilter(LABEL_VEHICLES, LABEL_VEHICLES, labelIcon));
-//		}
+		filters.add(new MapFilter(LABEL_SETTLEMENTS, LABEL_SETTLEMENTS, labelIcon));
+		filters.add(new MapFilter(LABEL_VEHICLES, LABEL_VEHICLES, labelIcon));
+
 		return filters;
 	}
 

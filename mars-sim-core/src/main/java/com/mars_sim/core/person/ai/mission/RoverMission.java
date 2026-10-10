@@ -65,8 +65,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	
 	private static final String MEMBERSHIP_CHECKED = "Membership Checked";
 	
-//	private static final String MISSION_CANCELLED = "Mission Cancelled";
-	
 	private static final String PHASE_1_CARGO_READY = "Phase 1: Cargoes/Equipment Ready";
 	
 	private static final String PHASE_2_ALL_BOARD = "Phase 2: All Boarded";
@@ -148,10 +146,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			if (m instanceof Person p) {
 
 				if (!crew.contains(p)) {
-//					logger.warning(p, 20_000L, "Case 0: " + p.getTaskDescription()
-//						+ ". Not boarded inside " + r.getName() + ".");
-					
-//					addMissionLog("Member not inside: " + p.getName(), ((Person)member).getName());
 					result = false;
 				}
 				
@@ -358,12 +352,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			outProcessMember((Person)member, r, ONLY_ONE_MEMBER.getName());
 
-			if (this instanceof AbstractVehicleMission avm) {
-				avm.abortMission(ONLY_ONE_MEMBER, HistoricalEventType.MISSION_ONLY_ONE_MEMBER, (Person)member);
-			}
-			else {
-				abortMission(ONLY_ONE_MEMBER, HistoricalEventType.MISSION_ONLY_ONE_MEMBER, (Person)member);
-			}
+			abortMission(ONLY_ONE_MEMBER, member);
 
 			canDepart = false;
 		}
@@ -490,12 +479,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			logger.info(member, 10_000, getName() + " on " + v + ". Cancelling departing " 
 					+ settlement.getName() + " in " + Math.round(getPhaseTimeElapsed() * 10.0)/10.0 + ".");
 			
-			if (this instanceof AbstractVehicleMission avm) {
-				avm.abortMission(TIMEOUT, HistoricalEventType.MISSION_TIMEOUT, (Person)member);
-			}
-			else {
-				abortMission(TIMEOUT, HistoricalEventType.MISSION_TIMEOUT, (Person)member);
-			}
+			abortMission(TIMEOUT, member);
 			
 			return;
 		}

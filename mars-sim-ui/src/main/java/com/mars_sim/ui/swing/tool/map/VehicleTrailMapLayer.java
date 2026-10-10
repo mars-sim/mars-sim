@@ -63,7 +63,9 @@ public class VehicleTrailMapLayer implements MapLayer {
 			displayTrail(singleVehicle, mapCenter, baseMap, g, d);
 		else {
 			for(var v : unitManager.getVehicles()) {
-				displayTrail(v, mapCenter, baseMap, g, d);
+				if (v.getMission() != null) {
+					displayTrail(v, mapCenter, baseMap, g, d);
+				}
 			}
 		}
 

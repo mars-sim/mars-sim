@@ -61,7 +61,7 @@ public class MissionDisembarkStep extends MissionStep {
         Vehicle v = getVehicle();
 
         boolean workOn = false;
-         boolean vehicleEmpty = !v.haveStatusType(StatusType.UNLOADING);
+        boolean vehicleEmpty = !v.haveStatusType(StatusType.UNLOADING);
         // Check end state as vehicle must be unloaded
         if (!vehicleEmpty && RandomUtil.lessThanRandPercent(50)) {
 			workOn = unloadCargo(worker, v);

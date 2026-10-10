@@ -66,8 +66,12 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 		
 		@Override
 		public String toString() {
-			return "ItemStored [quantity=" + quantity + " massPerItem: " + massPerItem
-					+ " totalMass: " + totalMass + "]";
+			return "ItemStored [quantity=" + quantity + " massPerItem: " + massPerItem + "]";
+		}
+
+		public void updateQuantity(int i) {
+			quantity += i;
+			totalMass = quantity * massPerItem;
 		}
 	}
 
@@ -290,12 +294,10 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 		ItemStored s = itemStorage.computeIfAbsent(resource, k -> {
 			var is = new ItemStored();
 			is.massPerItem = ItemResourceUtil.findItemResource(k).getMassPerItem();
-			is.totalMass = 0;
 			return is;
 		});
 
 		double massPerItem = s.massPerItem;
-		double totalMass = s.totalMass;
 		
 		double rCap = getRemainingTotalCapacity();
 		int itemCap = (int)Math.floor(rCap / massPerItem);
@@ -305,23 +307,17 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 			
 			if (quantity > itemCap) {
 
-				s.quantity += itemCap;
 				excessQ = quantity - itemCap;
+				quantity = itemCap;
 	
 				
 				logger.warning(owner, "Storing " + itemCap + "x "
 						+ ItemResourceUtil.findItemResource(resource).getName()
 						+ ", returning the surplus " + excessQ + ".");
 			}
-			else {
-				s.quantity += quantity;
-				excessQ = 0;
-			}
-
-			s.totalMass = s.quantity * s.massPerItem;
-
-			// Update the item total mass
-			itemTotalMass += s.totalMass;
+			
+			s.updateQuantity(quantity);
+			refreshItemTotals();
 
 			// Fire the unit event type
 			owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
@@ -334,8 +330,7 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 					+ " itemCap: " + itemCap
 					+ " excessQ: " + excessQ
 					+ " quantity: " + quantity
-					+ " sharedCapacity: " + totalCapcity
-					+ " itemStored: " + totalMass);
+					+ " sharedCapacity: " + totalCapcity);
 			
 			logger.warning(owner, "No space to store " + ItemResourceUtil.findItemResource(resource).getName() 
 					+ " [quantity: " + quantity + "].");
@@ -401,6 +396,13 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 		amountStockAvailable = Math.max(0, amountStockCapacity - visitor.stockUsed);
 	}
 
+	private void refreshItemTotals() {
+		itemTotalMass = itemStorage.values()
+				.stream()
+				.mapToDouble(s -> s.totalMass)
+				.sum();
+	}
+
 	/**
 	 * Retrieves the item resource.
 	 *
@@ -416,27 +418,19 @@ public class MicroInventory implements ItemHolder, ResourceHolder, Serializable 
 		}
 
 		int shortfall = 0;
-		int remainingQ = s.quantity - quantity;
-
-		if (remainingQ < 0) {
-			shortfall = -remainingQ;
-			if (shortfall > 0) {
-				String name = ItemResourceUtil.findItemResourceName(resource);
-				logger.warning(owner, 10_000L, "Attempting to retrieve " + quantity + "x " + name
-					+ " but lacking " + shortfall + "x " + name + ".");
-			}
-			remainingQ = 0;
+		if (s.quantity < quantity) {
+			shortfall = quantity - s.quantity;
 			
-			// Update the total mass
-			itemTotalMass -= s.quantity * s.massPerItem;
-		}
-		else {
-			// Update the total mass
-			itemTotalMass -= quantity * s.massPerItem;
+			String name = ItemResourceUtil.findItemResourceName(resource);
+			logger.warning(owner, 10_000L, "Attempting to retrieve " + quantity + "x " + name
+					+ " but lacking " + shortfall + "x " + name + ".");
+			quantity = s.quantity;
 		}
 		
 		// Update the quantity
-		s.quantity = remainingQ;
+		s.updateQuantity(-quantity);
+
+		refreshItemTotals();
 
 		// Fire the unit event type
 		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);

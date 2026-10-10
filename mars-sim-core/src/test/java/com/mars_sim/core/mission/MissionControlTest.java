@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.TestEntityListener;
 import com.mars_sim.core.building.construction.MockMission;
+import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -130,7 +131,7 @@ class MissionControlTest extends MarsSimUnitTest{
         var active = mc1.getActiveMissions();
         assertFalse(active.isEmpty(), "There should be one active mission");
 
-        m.abortMission(null);
+        m.abortMission(Mission.MISSION_ABORTED_BY_PLAYER, null);
         assertTrue(mc1.getActiveMissions().isEmpty(), "There should be no active mission");
         assertEquals(1, mc1.getAllMissions().size(), "There should be one mission");
     }

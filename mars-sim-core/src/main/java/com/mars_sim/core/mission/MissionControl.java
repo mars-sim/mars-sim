@@ -184,7 +184,7 @@ public class MissionControl implements ScheduledEventHandler {
 		if (state == PlanType.NOT_APPROVED) {
 			// Failure needs a bit more work
 			Mission m = mp.getMission();
-			m.abortMission(MISSION_PLAN_NOT_APPROVED);
+			m.abortMission(MISSION_PLAN_NOT_APPROVED, null);
 
 			removeMission(m);
 		}

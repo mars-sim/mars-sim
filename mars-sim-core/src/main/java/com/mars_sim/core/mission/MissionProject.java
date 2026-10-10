@@ -143,13 +143,17 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
      * Aborts the mission for a reason.
      * 
      * @param reason MissionStatus why the mission aborted
+     * @param instigator Worker who initiated the abort
      */
     @Override
-    public void abortMission(MissionStatus reason) {
+    public void abortMission(MissionStatus reason, Worker instigator) {
         if (!isDone()) {
-            logger.warning(leader, "Mission aborted : " + reason.getName());
+            if (instigator == null) {
+                instigator = leader;
+            }
+            logger.warning(instigator, "Mission aborted : " + reason.getName());
 
-            log.addEntry("Aborted:" + reason.getName());
+            log.addEntry("Aborted : " + reason.getName(), instigator.getName());
             abort(reason.getName());
         }
     }

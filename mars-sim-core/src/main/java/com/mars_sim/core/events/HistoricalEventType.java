@@ -43,6 +43,7 @@ public enum HistoricalEventType implements Named {
 	MISSION_TIMEOUT					(HistoricalEventCategory.MISSION),
 	MISSION_ABORTED_BY_PLAYER		(HistoricalEventCategory.MISSION),
 	MISSION_INVALID_SITE			(HistoricalEventCategory.MISSION),
+	MISSION_PROBLEM					(HistoricalEventCategory.MISSION),
 	
 	STUDY_START_PHASE				(HistoricalEventCategory.SCIENCE_STUDY),
 	STUDY_FINISH					(HistoricalEventCategory.SCIENCE_STUDY),

@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -192,7 +194,36 @@ class ProjectTest {
         assertEquals(0, step3.expectedCount, "Step3 fully expected");
     }
 
+    
+    @Test
+    void testReplanStep() {
+        Project<TestStep> p = new Project<>("Test");
 
+        TestStep step1 = new TestStep(Stage.PREPARATION, 2, "Step 1");
+        TestStep step2 = new TestStep(Stage.ACTIVE, 1, "Old Step");
+        TestStep step3 = new TestStep(Stage.CLOSEDOWN, 1, "New Step");
+        TestStep step4 = new TestStep(Stage.ACTIVE, 1, "Replace Step");
+
+
+        p.addStep(step1);
+        p.addStep(step2);
+        p.addStep(step3);
+
+        assertEquals(3, p.getSteps().size(), "Project should have 3 steps initially");
+        
+        // Execute once
+        Worker worker = null;
+        p.execute(worker);
+        assertEquals(Stage.PREPARATION, p.getStage(), "Stage is Active");
+        assertEquals("Step 1", p.getCurrentStep().getDescription(), "Project step");
+
+        // Swap last step
+        List<TestStep> replacements = List.of(step4);
+        p.replanSteps(replacements);
+        assertEquals(1 + replacements.size(), p.getSteps().size(), "Project should have 2 steps after replanning");
+        assertEquals(step1, p.getCurrentStep(), "Project step1 is active");
+
+    }
 
     @Test
     void testCreateBadStep() {
