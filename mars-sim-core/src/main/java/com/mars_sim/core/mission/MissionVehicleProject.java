@@ -212,7 +212,7 @@ public class MissionVehicleProject extends MissionProject
      */
     public double getEstimateTravelTime(double distance) {
         double result = 0D;
-        double averageSpeed = vehicle.getBaseSpeed() * 0.8D;
+        double averageSpeed = vehicle.getVehicleSpec().getBaseSpeed() * 0.8D;
 		if (averageSpeed > 0) {
 			result = distance / averageSpeed * MarsTime.MILLISOLS_PER_HOUR;
 		}

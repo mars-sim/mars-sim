@@ -272,12 +272,7 @@ public abstract class MarsSimUnitTest {
 
 		return settlement;
 	}
-
-	@Deprecated
-	public static void loadSettlementAmounts(Settlement source, Map<Integer, Double> resourcesMap) {
-		loadAmounts(source.getEquipmentInventory(), resourcesMap);
-	}
-
+	
 	public static void loadAmounts(ResourceHolder store, Map<Integer, Double> resourcesMap) {
 		for (Entry<Integer, Double> resource : resourcesMap.entrySet()) {
 			// Add extra to the stored to give a tolerance

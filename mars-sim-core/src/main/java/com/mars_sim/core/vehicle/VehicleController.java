@@ -57,29 +57,25 @@ import com.mars_sim.core.tool.RandomUtil;
 	 /** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
 	 public static final double KPH_CONV = 3.6;
 
-	 public static final String TWO_WHITESPACES = "  ";
+	 private static final String TWO_WHITESPACES = "  ";
 		
-	 public static final DecimalFormat DECIMAL3_KPH = new DecimalFormat("#,##0.000 kph");
-	 public static final DecimalFormat DECIMAL3_SEC = new DecimalFormat("#,##0.000 secs");
-	 public static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");
-	 public static final DecimalFormat DECIMAL2_N = new DecimalFormat("#,##0.00 N");
-	 public static final DecimalFormat DECIMAL2_W = new DecimalFormat("#,##0.00 W");
-	 public static final DecimalFormat DECIMAL2_J = new DecimalFormat("#,##0.00 J");
-	 public static final DecimalFormat DECIMAL3_M_S = new DecimalFormat("#,##0.000 m/s");
-	 public static final DecimalFormat DECIMAL3_M_S2 = new DecimalFormat("#,##0.000 m/s2");
-	 public static final DecimalFormat DECIMAL3_WH = new DecimalFormat("#,##0.000 Wh");
-	 public static final DecimalFormat DECIMAL3_KWH = new DecimalFormat("#,##0.000 kWh");
-	 public static final DecimalFormat DECIMAL3_KG = new DecimalFormat("#,##0.000 kg");
-	 public static final DecimalFormat DECIMAL3_KM = new DecimalFormat("#,##0.000 km");
+	 private static final DecimalFormat DECIMAL3_KPH = new DecimalFormat("#,##0.000 kph");
+	 private static final DecimalFormat DECIMAL3_SEC = new DecimalFormat("#,##0.000 secs");
+	 private static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");
+	 private static final DecimalFormat DECIMAL2_N = new DecimalFormat("#,##0.00 N");
+	 private static final DecimalFormat DECIMAL2_W = new DecimalFormat("#,##0.00 W");
+	 private static final DecimalFormat DECIMAL2_J = new DecimalFormat("#,##0.00 J");
+	 private static final DecimalFormat DECIMAL3_M_S = new DecimalFormat("#,##0.000 m/s");
+	 private static final DecimalFormat DECIMAL3_M_S2 = new DecimalFormat("#,##0.000 m/s2");
+	 private static final DecimalFormat DECIMAL3_WH = new DecimalFormat("#,##0.000 Wh");
+	 private static final DecimalFormat DECIMAL3_KWH = new DecimalFormat("#,##0.000 kWh");
+	 private static final DecimalFormat DECIMAL3_KG = new DecimalFormat("#,##0.000 kg");
+	 private static final DecimalFormat DECIMAL3_KM = new DecimalFormat("#,##0.000 km");
 	 
 	 
 	 // Data members
 	 /** The fuel type id of this vehicle. */
 	 private int fuelTypeID;
-	 /**  Cache the time in hr. */ 
-	 private double hrsTimeCache;
-	 /** Cache the distance traveled in km. */ 
-	 private double distanceCache;
 
 	 /** The vehicle to operate. */ 
 	 private Vehicle vehicle;
@@ -106,11 +102,12 @@ import com.mars_sim.core.tool.RandomUtil;
 			 propulsion = new AirPropulsion(vehicle);
 		 }
 		 
-		 int numModule = vehicle.getVehicleSpec().getBatteryModule();
-		 double energyPerModule = vehicle.getVehicleSpec().getEnergyPerModule();
+		 var vs = vehicle.getVehicleSpec();
+		 int numModule = vs.getBatteryModule();
+		 double energyPerModule = vs.getEnergyPerModule();
 		 
 		 battery = new Battery(vehicle, CABLE_GAUGE_SIZE, numModule, energyPerModule);
-		 fuelTypeID = vehicle.getFuelTypeID();
+		 fuelTypeID = vs.getFuelType();
 	 }
  
 
@@ -381,7 +378,7 @@ import com.mars_sim.core.tool.RandomUtil;
 				 // Get energy [in Wh] from the fuel
 				 energyByFuel = overallEnergyUsed;			 		 
 				 // Derive the mass of fuel needed kg = Wh / [Wh/kg]
-				 fuelNeeded = energyByFuel / vehicle.getFuelConv();
+				 fuelNeeded = energyByFuel / vehicle.getVehicleSpec().getFuel2DriveEnergy();
 				 
 				/*
 				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
@@ -414,7 +411,7 @@ import com.mars_sim.core.tool.RandomUtil;
 					 // Limit the fuel to be used
 					 fuelNeeded = remainingFuel;				 
 					 // Calculate the new energy provided by the fuel [in Wh]
-					 energyByFuel = fuelNeeded * vehicle.getFuelConv();			 			 
+					 energyByFuel = fuelNeeded * vehicle.getVehicleSpec().getFuel2DriveEnergy();		 		 
 					 // Calculate needed energy from battery [in Wh] 
 					 energyByBattery = overallEnergyUsed - energyByFuel;
 				 }
@@ -511,9 +508,9 @@ import com.mars_sim.core.tool.RandomUtil;
 
 			 // Derive the instantaneous fuel economy [km/kg]
 			 // [km/kg] = [km] / [Wh] *  [Wh/kg]
-			 //  energyByFuel = fuelNeeded * vehicle.getFuelConv()
-			 // getFuelConv() is [Wh/kg]
-			 iFE = distanceTravelled / (energyByFuel * vehicle.getFuelConv() + energyByBattery / 1000);	        
+			 //  energyByFuel = fuelNeeded * vehicle.getVehicleSpec().getFuel2DriveEnergy()
+			 // getFuel2DriveEnergy() is [Wh/kg]
+			 iFE = distanceTravelled / (energyByFuel * vehicle.getVehicleSpec().getFuel2DriveEnergy() + energyByBattery / 1000);	        
 			 // Set the instantaneous fuel economy [km/kg]
 			 vehicle.setIFuelEconomy(iFE);
 		 }
@@ -677,31 +674,6 @@ import com.mars_sim.core.tool.RandomUtil;
 
 		 return amountFuel;
 	 }
-	 
-	 /**
-	  * Gets the HrsTime cache in hr.
-	  * 
-	  * @return
-	  */
-	 public double getHrsTimeCache() {
-		 return hrsTimeCache;
-	 }
-	 
-	 /** 
-	  * Gets the distance cache in km.
-	  * 
-	  * @return
-	  */
-	 public double getDistanceCache() {
-		 return distanceCache;
-	 }
-	 
-	/** 
-	 * Charges up the battery in no time. 
-	 */
-	public void topUpBatteryEnergy() {
-		battery.topUpBatteryEnergy();
-	}
 		
 	/** 
 	 * Charges up the battery in no time. 

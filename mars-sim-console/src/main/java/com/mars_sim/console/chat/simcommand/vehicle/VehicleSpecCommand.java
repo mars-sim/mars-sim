@@ -16,7 +16,6 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Lab;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Medical;
 import com.mars_sim.core.vehicle.Rover;
@@ -47,10 +46,7 @@ public class VehicleSpecCommand extends ChatCommand {
 	public boolean execute(Conversation context, String input) {
 		VehicleChat parent = (VehicleChat) context.getCurrentCommand();
 		Vehicle source = parent.getVehicle();
-		
-		// Rovers has more capabilities.
-		boolean isRover = (source instanceof Rover);
-		boolean isDrone = (source instanceof Flyer);
+		var sourceSpec = source.getVehicleSpec();
 		
 		StructuredResponse buffer = new StructuredResponse();
 		buffer.appendLabeledString("Name", source.getName());
@@ -59,40 +55,40 @@ public class VehicleSpecCommand extends ChatCommand {
 		buffer.appendLabeledString("Model", source.getModelName());
 		buffer.appendLabeledString("Description", source.getDescription());
 		buffer.appendLabeledString("Base Mass", String.format(CommandHelper.KG_FORMAT, source.getBaseMass()));
-		buffer.appendLabeledString("Base Speed", String.format(CommandHelper.KMPH_FORMAT,source.getBaseSpeed()));
-		buffer.appendLabeledString("Drivetrain Efficiency", source.getDrivetrainEfficiency() + "");
-		buffer.appendLabeledString("# of Battery Modules", source.getBatteryModule() + "");
+		buffer.appendLabeledString("Base Speed", String.format(CommandHelper.KMPH_FORMAT,sourceSpec.getBaseSpeed()));
+		buffer.appendLabeledString("Drivetrain Efficiency", sourceSpec.getDrivetrainEfficiency() + "");
+		buffer.appendLabeledString("# of Battery Modules", sourceSpec.getBatteryModule() + "");
 
-		int fuelTypeID = source.getFuelTypeID();
+		int fuelTypeID = sourceSpec.getFuelType();
 		String fuelTypeStr;
 		if (fuelTypeID < 0) {
-			fuelTypeStr = source.getFuelTypeStr();
+			fuelTypeStr = sourceSpec.getFuelTypeStr();
 		}
 		else {
 			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
 		}
 		
 		buffer.appendLabeledString("Fuel Type", fuelTypeStr);
-		buffer.appendLabeledString("# of Fuel Cell Stacks", source.getFuellCellStack() + "");
-		buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, source.getFuelCapacity()));
-		buffer.appendLabeledString("Full Tank Fuel Energy Capacity", String.format(CommandHelper.KWH_FORMAT, source.getFullTankFuelEnergyCapacity()));		
-		buffer.appendLabeledString("Drivetrain Energy", String.format(CommandHelper.KWH_FORMAT, source.getDrivetrainEnergy()));
+		buffer.appendLabeledString("# of Fuel Cell Stacks", sourceSpec.getFuelCellStack() + "");
+		buffer.appendLabeledString("Fuel Capacity", String.format(CommandHelper.KG_FORMAT, sourceSpec.getFuelCapacity()));
+		buffer.appendLabeledString("Full Tank Fuel Energy Capacity", String.format(CommandHelper.KWH_FORMAT, sourceSpec.getFullTankFuelEnergyCapacity()));		
+		buffer.appendLabeledString("Drivetrain Energy", String.format(CommandHelper.KWH_FORMAT, sourceSpec.getDrivetrainFuelEnergy()));
 		buffer.appendLabeledString("Base Acceleration", String.format(M_PER_S_FORMAT, source.getAccel()));
-		buffer.appendLabeledString("averagePower", String.format(CommandHelper.KW_FORMAT, source.getBasePower()));
-		buffer.appendLabeledString("Base Range", String.format(CommandHelper.KM_FORMAT, source.getBaseRange()));
+		buffer.appendLabeledString("averagePower", String.format(CommandHelper.KW_FORMAT, sourceSpec.getBasePower()));
+		buffer.appendLabeledString("Base Range", String.format(CommandHelper.KM_FORMAT, sourceSpec.getBaseRange()));
 	
 		if (source instanceof GroundVehicle gv) {
 			buffer.appendLabeledString("Terrain Handling", String.format("%.2f", gv.getTerrainHandlingCapability()));
 		}
 		
-		buffer.appendLabeledString("Base Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getBaseFuelEconomy()));
-		buffer.appendLabeledString("Initial Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getInitialFuelEconomy()));
+		buffer.appendLabeledString("Base Fuel Economy", String.format(KM_PER_KG_FORMAT, sourceSpec.getBaseFuelEconomy()));
+		buffer.appendLabeledString("Initial Fuel Economy", String.format(KM_PER_KG_FORMAT, sourceSpec.getInitialFuelEconomy()));
 		buffer.appendLabeledString("Estimated Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getEstimatedFuelEconomy()));
 		buffer.appendLabeledString("Instantaneous Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getIFuelEconomy()));
 		buffer.appendLabeledString("Cumulative Fuel Economy", String.format(KM_PER_KG_FORMAT, source.getCumFuelEconomy()));
 		
-		buffer.appendLabeledString("Base Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getBaseFuelConsumption()));
-		buffer.appendLabeledString("Initial Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getInitialFuelConsumption()));
+		buffer.appendLabeledString("Base Fuel Consumption", String.format(WH_PER_KM_FORMAT, sourceSpec.getBaseFuelConsumption()));
+		buffer.appendLabeledString("Initial Fuel Consumption", String.format(WH_PER_KM_FORMAT, sourceSpec.getInitialFuelConsumption()));
 		buffer.appendLabeledString("Estimated Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getEstimatedFuelConsumption()));		
 		buffer.appendLabeledString("Instantaneous Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getIFuelConsumption()));
 		buffer.appendLabeledString("Cumulative Fuel Consumption", String.format(WH_PER_KM_FORMAT, source.getCumFuelConsumption()));	
@@ -102,11 +98,10 @@ public class VehicleSpecCommand extends ChatCommand {
 			buffer.appendLabelledDigit("Crew Size", crewSize);
 		}	
 
-		if (isRover || isDrone) {
-			buffer.appendLabeledString("Odometer Distance", String.format(CommandHelper.KM_FORMAT, source.getOdometerMileage()));	
-			buffer.appendLabeledString("Cumulative Energy Usage", String.format(CommandHelper.KWH_FORMAT, source.getCumEnergyUsage()));	
-		}
-		 var inv = EquipmentOwner.getAttached(source);
+		buffer.appendLabeledString("Odometer Distance", String.format(CommandHelper.KM_FORMAT, source.getOdometerMileage()));	
+		buffer.appendLabeledString("Cumulative Energy Usage", String.format(CommandHelper.KWH_FORMAT, source.getCumEnergyUsage()));	
+		
+		var inv = EquipmentOwner.getAttached(source);
 		if (inv != null) {
 			buffer.appendLabeledString("Cargo Capacity", String.format(CommandHelper.KG_FORMAT, inv.getCargoCapacity()));
 		}
@@ -120,8 +115,8 @@ public class VehicleSpecCommand extends ChatCommand {
 			}
 		}
 		
-		if (isRover) {
-			Lab lab = ((Rover)source).getLab();
+		if (source instanceof Rover r) {
+			Lab lab = r.getLab();
 			if (lab != null) {
 				buffer.appendLabelledDigit("Tech Level (Lab)", lab.getTechnologyLevel());
 				buffer.appendLabelledDigit("Lab Size", lab.getLaboratorySize());

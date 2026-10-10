@@ -315,7 +315,7 @@ public class ExplorationManager implements Serializable {
 				
 		double roverRange = rover.getEstimatedRange();
 		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
-		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
+		double tripRange = getTripTimeRange(tripTimeLimit, rover.getVehicleSpec().getBaseSpeed() / 1.25D);
 		double range = roverRange;
 		if (tripRange < range)
 			range = tripRange;

@@ -46,8 +46,6 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 	private JDoubleLabel cumFC;
 	private JDoubleLabel estFC;
 	private JDoubleLabel estFE;
-	private JDoubleLabel adjFC;
-	private JDoubleLabel adjFE;
 	private JDoubleLabel instantFE;
 	private JDoubleLabel instantFC;
 	private JDoubleLabel estFCFECoef;
@@ -109,9 +107,9 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		grid.addRow( "Initial FC", StyleManager.DECIMAL_KWH_KM.format(vSpec.getInitialFuelConsumption()/1000));
 		grid.addRow( "Initial FE", StyleManager.DECIMAL_KM_KG.format(vSpec.getInitialFuelEconomy()));			
 
-		adjFC = new JDoubleLabel(StyleManager.DECIMAL_KWH_KM);
+		var adjFC = new JDoubleLabel(StyleManager.DECIMAL_KWH_KM, vSpec.getAdjustedFuelConsumption()/1000);
 		grid.addLabelledItem("Adj FC", adjFC, null);
-		adjFE = new JDoubleLabel(StyleManager.DECIMAL_KM_KG);
+		var adjFE = new JDoubleLabel(StyleManager.DECIMAL_KM_KG, vSpec.getAdjustedFuelEconomy());
 		grid.addLabelledItem("Adj FE", adjFE, null);
 	
 		cumFC = new JDoubleLabel(StyleManager.DECIMAL_KWH_KM);
@@ -136,14 +134,14 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		bottomPanel.add(grid2, BorderLayout.NORTH);
 		bottomPanel.setBorder(SwingHelper.createLabelBorder("Range / Fuel / Energy"));
 	
-		grid2.addRow( "Fuel", Conversion.capitalize(v.getFuelTypeStr()));
+		grid2.addRow( "Fuel", Conversion.capitalize(vSpec.getFuelTypeStr()));
 		grid2.addRow( "Fuel-to-Drive", StyleManager.DECIMAL_KWH_KG.format(vSpec.getFuel2DriveEnergy()/1000));
 		
-		grid2.addRow( "Full Tank", StyleManager.DECIMAL_KWH.format(v.getFullTankFuelEnergyCapacity()));
+		grid2.addRow( "Full Tank", StyleManager.DECIMAL_KWH.format(vSpec.getFullTankFuelEnergyCapacity()));
 		grid2.addRow( "DT Efficiency", StyleManager.DECIMAL_PERC.format(100*vSpec.getDrivetrainEfficiency()));
 
 		grid2.addRow( "DT Fuel Energy", StyleManager.DECIMAL_KWH.format(vSpec.getDrivetrainFuelEnergy()));
-		grid2.addRow( "Base Range", StyleManager.DECIMAL2_KM.format(v.getBaseRange()));
+		grid2.addRow( "Base Range", StyleManager.DECIMAL2_KM.format(vSpec.getBaseRange()));
 
 		cumEnergyUsage = new JDoubleLabel(StyleManager.DECIMAL2_KWH);
 		grid2.addLabelledItem("Cum Energy Used", cumEnergyUsage, null);
@@ -177,9 +175,6 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		
 		cumFE.setValue(v.getCumFuelEconomy());
 		cumFC.setValue(v.getCumFuelConsumption()/1000);
-		
-		adjFE.setValue(v.getAdjustedFuelEconomy());
-		adjFC.setValue(v.getAdjustedFuelConsumption()/1000);
 		
 		estFE.setValue(v.getEstimatedFuelEconomy());
 		estFC.setValue(v.getEstimatedFuelConsumption()/1000);

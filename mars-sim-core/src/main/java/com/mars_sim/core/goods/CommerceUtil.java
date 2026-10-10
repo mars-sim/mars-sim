@@ -423,9 +423,10 @@ public final class CommerceUtil {
 	 */
 	private static double getEstimatedMissionCost(Settlement startingSettlement, Vehicle delivery, double distance) {
 		Map<Good, Integer> neededResources = new HashMap<>();
+		var deliverySpec = delivery.getVehicleSpec();
 
 		// Get required fuel.
-		int fuelTypeID = delivery.getFuelTypeID();
+		int fuelTypeID = deliverySpec.getFuelType();
 		Good fuelGood = null;
 		if (fuelTypeID != -1) {
 			fuelGood = GoodsUtil.getGood(fuelTypeID);
@@ -435,7 +436,7 @@ public final class CommerceUtil {
 		if (delivery instanceof Crewable) {
 			// Needs a crew
 			// Get estimated trip time.
-			double averageSpeed = delivery.getBaseSpeed(); // Life support supplies are reloaded on the return trip
+			double averageSpeed = deliverySpec.getBaseSpeed(); // Life support supplies are reloaded on the return trip
 			double averageSpeedMillisol = averageSpeed / MarsTime.convertSecondsToMillisols(60D * 60D);
 			double tripTimeSols = ((distance / averageSpeedMillisol) + 1000D) / 1000D;
 

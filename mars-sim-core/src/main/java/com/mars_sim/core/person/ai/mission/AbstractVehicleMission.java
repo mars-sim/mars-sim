@@ -213,7 +213,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
      */
     public double getEstimateTravelTime(double distance) {
         double result = 0D;
-        double averageSpeed = getVehicle().getBaseSpeed() * 0.8D;
+		double averageSpeed = getVehicle().getVehicleSpec().getBaseSpeed() * 0.8D;
 		if (averageSpeed > 0) {
 			result = distance / averageSpeed * MarsTime.MILLISOLS_PER_HOUR;
 		}
@@ -958,7 +958,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			result = totalSpeed / count;
 		}
 		if (result == 0) {
-			result = vehicle.getBaseSpeed();
+			result = vehicle.getVehicleSpec().getBaseSpeed();
 		}
 	
 		return result;
@@ -1009,7 +1009,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// Must use the same logic in all cases otherwise too few fuel will be loaded
 			amount = vehicle.getFuelNeededForTrip(distance, useMargin);
 	
-			int fuelTypeID = vehicle.getFuelTypeID();
+			int fuelTypeID = vehicle.getVehicleSpec().getFuelType();
 			double amountOxygen = 0;
 			
 			if (fuelTypeID == ResourceUtil.METHANOL_ID) {

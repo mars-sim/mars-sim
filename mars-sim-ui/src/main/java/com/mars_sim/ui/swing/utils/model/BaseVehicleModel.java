@@ -276,7 +276,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
             return StyleManager.DECIMAL_PERC.format(entity.getController().getBattery().getBatteryPercent());
         }
         else if (valueIndex == FUEL_VAL) {
-            return entity.getFuelTypeStr();
+            return entity.getVehicleSpec().getFuelTypeStr();
         }
         return null;
     }

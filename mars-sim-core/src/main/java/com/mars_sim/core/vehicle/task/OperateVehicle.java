@@ -133,16 +133,6 @@ public abstract class OperateVehicle extends Task {
 		// Use Task constructor
 		super(name, operator, false, IMPACT, duration);
 		
-		// Initialize data members.
-		this.vehicle = vehicle;
-		this.destination = destination;
-		this.startTripTime = startTripTime;
-		this.startTripDistance = startTripDistance;
-		
-        fuelTypeID = vehicle.getFuelTypeID();
-		
-		malfunctionManager = vehicle.getMalfunctionManager();
-		
 		if (destination == null) {
 		    throw new IllegalArgumentException("destination is null");
 		}
@@ -154,6 +144,17 @@ public abstract class OperateVehicle extends Task {
 		if (startTripDistance < 0D) {
 		    throw new IllegalArgumentException("startTripDistance is < 0");
 		}
+
+		// Initialize data members.
+		this.vehicle = vehicle;
+		this.destination = destination;
+		this.startTripTime = startTripTime;
+		this.startTripDistance = startTripDistance;
+		
+	    fuelTypeID = vehicle.getVehicleSpec().getFuelType();
+		
+		malfunctionManager = vehicle.getMalfunctionManager();
+
 		
 		// Select the vehicle operator
 		Worker vo = vehicle.getOperator();
@@ -409,7 +410,7 @@ public abstract class OperateVehicle extends Task {
 	 */
 	protected double mobilizeVehicle(double time) {
       
-		// Note: sometimes no one are fit to drive but they still want to come home : if (!checkQualification(time)) return time
+		// Note: sometimes no one are fit to drive but they still want to come home
   	
         double remainingFuel = -1;
         
@@ -610,12 +611,12 @@ public abstract class OperateVehicle extends Task {
 
     	if (vehicle instanceof Drone) {
          	// Allow only 50% impact from lightMod
-    		topSpeedKPH = vehicle.getBaseSpeed() * (1 + speedFactor) / 2 * getSkillMod() * (0.5 + 0.5 * lightMod);
+	    		topSpeedKPH = vehicle.getVehicleSpec().getBaseSpeed() * (1 + speedFactor) / 2 * getSkillMod() * (0.5 + 0.5 * lightMod);
     	}
     	else {
         	// Gets top speed in kph allowed by this pilot 
     		// Allow only 30% impact from lightMod and 30% from terrain
-        	topSpeedKPH = vehicle.getBaseSpeed() * (1 + speedFactor) / 2 * getSkillMod() * (0.4 + 0.3 * lightMod + 0.3 * terrainMod);
+	        	topSpeedKPH = vehicle.getVehicleSpec().getBaseSpeed() * (1 + speedFactor) / 2 * getSkillMod() * (0.4 + 0.3 * lightMod + 0.3 * terrainMod);
     	}
     	
     	// Gets the ideal speed with acceleration. may use v^2 = u^2 + 2*a*d
@@ -886,7 +887,7 @@ public abstract class OperateVehicle extends Task {
     public static double getAverageVehicleSpeed(Vehicle vehicle, Worker operator) {
     	if (vehicle != null) {
  
-    		double baseSpeed = vehicle.getBaseSpeed();
+	    		double baseSpeed = vehicle.getVehicleSpec().getBaseSpeed();
     		double mod = 1;
     		
     		if (operator instanceof Person p) {

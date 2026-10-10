@@ -323,15 +323,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 	
 	/**
-	 * Gets the base image for this Vehicle.
-	 * 
-	 * @return Name of base image for this vehicle
-	 */
-	public String getBaseImage() {
-		return spec.getBaseImage();
-	}
-	
-	/**
 	 * Gets the spec name of the vehicle.
 	 * 
 	 * @return spec name
@@ -797,15 +788,6 @@ public abstract class Vehicle extends AbstractMobileUnit
     }
 
 	/**
-	 * Gets the average base power of the vehicle when operating [kW].
-	 * 
-	 * @return
-	 */
-	public double getBasePower() {
-		return spec.getBasePower();
-	}
-	
-	/**
 	 * Gets the speed of vehicle.
 	 *
 	 * @return the vehicle's speed (in kph)
@@ -850,22 +832,13 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
-	 * Gets the base speed of vehicle
-	 *
-	 * @return the vehicle's base speed (in kph)
-	 */
-	public double getBaseSpeed() {
-		return spec.getBaseSpeed();
-	}
-
-	/**
 	 * Gets the estimated fuel range of the vehicle.
 	 *
 	 * @return the estimated fuel range of the vehicle (in km)
 	 */
 	public double getEstimatedRange() {
 		// Before the mission is created, the range would be based on vehicle's fuel capacity
-		return .5 * (getBaseRange() + getEstimatedFuelEconomy() * getFuelCapacity());
+		return .5 * (spec.getBaseRange() + getEstimatedFuelEconomy() * spec.getFuelCapacity());
 	}
 	
 	/**
@@ -884,7 +857,7 @@ public abstract class Vehicle extends AbstractMobileUnit
         }
         else {
         	
-    		int fuelTypeID = getFuelTypeID();
+			int fuelTypeID = spec.getFuelType();
     		if (fuelTypeID < 0) {
     			range = MAXIMUM_RANGE;
     		}
@@ -897,32 +870,14 @@ public abstract class Vehicle extends AbstractMobileUnit
         return (int) range;
 	}
 
-	/**
-	 * Gets the base range of the vehicle.
-	 *
-	 * @return the base range of the vehicle [km]
-	 * @throws Exception if error getting range.
-	 */
-	public double getBaseRange() {
-		return spec.getBaseRange();
-	}
-
-	/**
-	 * Gets the fuel capacity of the vehicle [kg].
-	 *
-	 * @return
-	 */
-	public double getFuelCapacity() {
-		return spec.getFuelCapacity();
-	}
-
     /**
      * Returns the percentage of the fuel.
      * 
      * @return
      */
     public double getFuelPercent() {
-    	return getEquipmentInventory().getSpecificAmountResourceStored(getFuelTypeID()) / getFuelCapacity() * 100;
+	    return getEquipmentInventory().getSpecificAmountResourceStored(spec.getFuelType())
+	    		/ spec.getFuelCapacity() * 100;
     }
     
 	/**
@@ -980,33 +935,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 	
 	/**
-	 * Gets the total fuel energy available at the full tank [kWh].
-	 *
-	 * @return
-	 */
-	public double getFullTankFuelEnergyCapacity() {
-		return spec.getFullTankFuelEnergyCapacity();
-	}
-
-	/**
-	 * Gets the estimated energy available for the drivetrain [kWh].
-	 *
-	 * @return
-	 */
-	public double getDrivetrainEnergy() {
-		return spec.getDrivetrainFuelEnergy();
-	}
-	
-	/**
-	 * Gets the fuel to energy conversion factor [Wh/kg].
-	 * 
-	 * @return
-	 */
-	public double getFuelConv() {
-		return spec.getFuel2DriveEnergy();
-	}
-	
-	/**
 	 * Gets the cumulative fuel economy [km/kg].
 	 * 
 	 * @return
@@ -1030,7 +958,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		if (odometerMileage == 0.0 || (cumFuelUsedKG == 0.0 && cumEnergyUsedKWH == 0.0))
 			return 0.0;
 		// Wh = kg * Wh / kg
-		double fuelWh = cumFuelUsedKG * getVehicleSpec().getFuel2DriveEnergy();
+		double fuelWh = cumFuelUsedKG * spec.getFuel2DriveEnergy();
 		// Wh  / km
 		return (fuelWh + cumEnergyUsedKWH * 1000) / odometerMileage;
 	}
@@ -1050,24 +978,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 		return 0;
 	}
 	
-	
-	/**
-	 * Gets the base fuel economy of the vehicle [km/kg].
-	 * 
-	 * @return
-	 */
-	public double getBaseFuelEconomy() {
-		return spec.getBaseFuelEconomy();
-	}
-
-	/**
-	 * Gets the base fuel consumption of the vehicle [Wh/km].
-	 * 
-	 * @return
-	 */
-	public double getBaseFuelConsumption() {
-		return spec.getBaseFuelConsumption();
-	}
 	
 	/**
 	 * Gets the instantaneous fuel consumption of the vehicle [Wh/km].
@@ -1114,18 +1024,11 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 	
 	/**
-	 * Gets the estimated beginning mass [kg].
-	 */
-	public double getBeginningMass() {
-		return spec.getBeginningMass();
-	}
-	
-	/**
 	 * Gets the last starting mass [kg].
 	 */
 	public double getStartingMass() {
 		if (startingMass == 0.0) {
-			return getBeginningMass();
+			return spec.getBeginningMass();
 		}
 		return startingMass;
 	}
@@ -1140,33 +1043,15 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 	
 	/**
-	 * Gets the initial fuel economy of the vehicle [km/kg] for a trip.
-	 *
-	 * @return
-	 */
-	public double getInitialFuelEconomy() {
-		return spec.getInitialFuelEconomy();
-	}
-	
-	/**
-	 * Gets the adjusted fuel economy of the vehicle [km/kg] for a trip.
-	 *
-	 * @return
-	 */
-	public double getAdjustedFuelEconomy() {
-		return spec.getAdjustedFuelEconomy();
-	}
-
-	/**
 	 * Gets the estimated fuel economy of the vehicle [km/kg] for a trip.
 	 *
 	 * @return
 	 */
 	public double getEstimatedFuelEconomy() {
-		double base = getBaseFuelEconomy();
+		double base = spec.getBaseFuelEconomy();
 		double cum = getCumFuelEconomy();
-		double init = getInitialFuelEconomy();
-		double adj = getAdjustedFuelEconomy();
+		double init = spec.getInitialFuelEconomy();
+		double adj = spec.getAdjustedFuelEconomy();
 		// Note: init < base always
 		// Note: if cum < base, then trip is less economical more than expected
 		// Note: if cum > base, then trip is more economical than expected
@@ -1178,34 +1063,15 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
-	 * Gets the initial fuel consumption of the vehicle [Wh/km] for a trip.
-	 *
-	 * @return
-	 */
-	public double getInitialFuelConsumption() {
-		return spec.getInitialFuelConsumption();
-	}
-	
-	/**
-	 * Gets the adjusted fuel consumption of the vehicle [Wh/km] for a trip.
-	 *
-	 * @return
-	 */
-	public double getAdjustedFuelConsumption() {
-		return spec.getAdjustedFuelConsumption();
-	}
-	
-	
-	/**
 	 * Gets the estimated fuel consumption of the vehicle [Wh/km] for a trip.
 	 *
 	 * @return
 	 */
 	public double getEstimatedFuelConsumption() {
-		double base = getBaseFuelConsumption();
+		double base = spec.getBaseFuelConsumption();
 		double cum = getCumFuelConsumption();
-		double init = getInitialFuelConsumption();
-		double adj = getAdjustedFuelConsumption();
+		double init = spec.getInitialFuelConsumption();
+		double adj = spec.getAdjustedFuelConsumption();
 		// Note: init > base always
 		// Note: if cum > base, then vehicle consumes more than expected
 		// Note: if cum < base, then vehicle consumes less than expected		
@@ -1217,24 +1083,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 	
 	/**
-	 * Gets the number of battery modules of the vehicle.
-	 *
-	 * @return
-	 */
-	public int getBatteryModule() {
-		return spec.getBatteryModule();
-	}
-	
-	/**
-	 * Gets the total battery capacity of the vehicle.
-	 *
-	 * @return
-	 */
-	public double getBatteryCapacity() {
-		return spec.getBatteryCapacity();
-	}
-	
-	/**
 	 * Gets the percent of remaining battery energy of the vehicle.
 	 *
 	 * @return
@@ -1243,24 +1091,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 		return getController().getBattery().getBatteryPercent();
 	}
 		
-	/**
-	 * Gets the number of fuel cell stacks of the vehicle.
-	 *
-	 * @return
-	 */
-	public int getFuellCellStack() {
-		return spec.getFuelCellStack();
-	}
-			
-	/**
-	 * Gets the drivetrain efficiency of the vehicle.
-	 *
-	 * @return drivetrain efficiency
-	 */
-	public double getDrivetrainEfficiency() {
-		return spec.getDrivetrainEfficiency();
-	}
-
 	/**
 	 * Returns total distance traveled by vehicle [km].
 	 *
@@ -1363,18 +1193,10 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return
 	 */
 	public double getAllowedAccel() {
+		double baseAccel = spec.getBaseAccel();
 		if (speed <= 1)
-			return getBaseAccel();
-		return getBaseAccel() * getStartingMass() / getMass();
-	}
-	
-	/**
-	 * Gets the base acceleration of the vehicle [m/s2].
-	 * 
-	 * @return
-	 */
-	public double getBaseAccel() {
-		return spec.getBaseAccel();
+			return baseAccel;
+		return baseAccel * getStartingMass() / getMass();
 	}
 	
 	/**
@@ -1697,31 +1519,13 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
-	 * Gets the resource type id that this vehicle uses for fuel.
-	 *
-	 * @return resource type id
-	 */
-	public int getFuelTypeID() {
-		return spec.getFuelType();
-	}
-	
-	/**
-	 * Gets the fuel type of this vehicle.
-	 *
-	 * @return fuel type string
-	 */
-	public String getFuelTypeStr() {
-		return spec.getFuelTypeStr();
-	}
-	
-	/**
 	 * Gets the estimated distance traveled in one sol.
 	 *
 	 * @return distance traveled (km)
 	 */
 	public double getEstimatedTravelDistancePerSol() {
 		// Return estimated average speed in km / sol.
-		return getBaseSpeed() * VehicleSpec.ESTIMATED_TRAVEL_HOURS_PER_SOL;
+		return spec.getBaseSpeed() * VehicleSpec.ESTIMATED_TRAVEL_HOURS_PER_SOL;
 	}
 
 	/**

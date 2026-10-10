@@ -35,7 +35,7 @@ class DriveGroundVehicleTest extends MarsSimUnitTest {
     void testDriveVehicle() {
         var s = buildSettlement("Test Settlement");
         var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+        var res = Map.of(ResourceUtil.METHANOL_ID, METHANOL_AMOUNT,
                         ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         loadAmounts(v.getEquipmentInventory(), res);
 
@@ -76,7 +76,7 @@ class DriveGroundVehicleTest extends MarsSimUnitTest {
     void testDriveVehicleNoFuel() {
         var s = buildSettlement("Test Settlement");
         var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+        var res = Map.of(ResourceUtil.METHANOL_ID, METHANOL_AMOUNT,
                         ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         var vechEO = v.getEquipmentInventory();
         loadAmounts(vechEO, res);
@@ -100,11 +100,11 @@ class DriveGroundVehicleTest extends MarsSimUnitTest {
         
         // If Battery power is used, instead of fuel
         assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, vechEO.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
-        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, vechEO.getSpecificAmountResourceStored(v.getFuelTypeID()));
+        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, vechEO.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID));
         
         // Remove methanol
-        vechEO.retrieveAmountResource(v.getFuelTypeID(), vechEO.getSpecificAmountResourceStored(v.getFuelTypeID()));
-        assertEquals(0.0D, vechEO.getSpecificAmountResourceStored(v.getFuelTypeID()), "Fuel emptied");
+        vechEO.retrieveAmountResource(ResourceUtil.METHANOL_ID, vechEO.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID));
+        assertEquals(0.0D, vechEO.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID), "Fuel emptied");
 
         var b = v.getController().getBattery();
         b.dischargeAll();
