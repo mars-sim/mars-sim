@@ -747,6 +747,17 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Manufacture pry bar" tech="0" skill="0" work-time="20" process-time="80" tooling="metalwork"
+			power-required="1.0">
+		<inputs>
+			<resource name="Nickel" amount=".1" />
+			<part name="Steel ingot" number="1" />
+		</inputs>
+		<outputs>
+			<part name="Pry bar" number="5.1" />
+		</outputs>
+	</process>
+
 	<!-- Using reinforced fiberglass wrapped in aluminum sheeting to make satellite dish. -->
 	<process name="Make satellite dish" tech="2" skill="3" work-time="200" process-time="200"
 			tooling="Soldering" power-required="0.4">

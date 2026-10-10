@@ -53,6 +53,10 @@ public class AudioPlayer implements ClockListener {
 
 	private static final int PLAYLIST_SIZE = 3;
 
+	private boolean userChoiceMusicMuted;
+	private boolean userChoiceSoundEffectMuted;
+	
+	
 	/**
 	 * The control a stream of audio.
 	 */
@@ -431,12 +435,32 @@ public class AudioPlayer implements ClockListener {
 	
 	/**
 	 * The pause state of the clock has changed, update the play/pause button and enable/disable speed controls accordingly.
+	 * 
 	 * @param isPaused true if the clock is paused, false otherwise.
 	 */
 	@Override
 	public void pauseChange(boolean isPaused) {
-		setMusicMute(isPaused);
-		setSoundEffectMute(isPaused);
+		if (isPaused) {
+			setMusicMute(true);
+		}
+		else if (!userChoiceMusicMuted) {
+			setMusicMute(false);
+		}
+		
+		if (isPaused) {
+			setSoundEffectMute(true);
+		}
+		else if (!userChoiceSoundEffectMuted) {
+			setSoundEffectMute(false);
+		}
+	}
+	
+	public void setUserChoiceMusicMuted(boolean value) {
+		userChoiceMusicMuted = value;
+	}
+	
+	public void setUuserChoiceSoundEffectMuted(boolean value) {
+		userChoiceSoundEffectMuted = value;
 	}
 	
 	/**

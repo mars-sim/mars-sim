@@ -1394,6 +1394,10 @@
 		</maintenance-entity-list>
 	</part>
 
+	<part name="Pry bar" type="utility" mass="5">
+		<description>A 1.37m (or 54 inch) pry bar, 5 kg or 11 lb</description>
+	</part>
+	
 	<part name="Floodlight" type="electrical" mass="3">
 		<description>a LED outdoor weather-proof, adjustable floodlight with tripod stand</description>
 	</part>

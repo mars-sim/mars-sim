@@ -97,11 +97,13 @@ public class AudioControl extends JPanel {
 	}
 
 	private void soundEffectMute(boolean isMuted, JSlider slider) {
+		audioPlayer.setUuserChoiceSoundEffectMuted(isMuted);
 		audioPlayer.setSoundEffectMute(isMuted);
 		slider.setEnabled(!isMuted);
 	}
 
 	private void musicMute(boolean isMuted, JSlider slider) {
+		audioPlayer.setUserChoiceMusicMuted(isMuted);
 		audioPlayer.setMusicMute(isMuted);
 		slider.setEnabled(!isMuted);
 	}

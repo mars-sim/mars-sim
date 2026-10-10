@@ -42,11 +42,11 @@ public class SplashWindow extends JComponent {
 	private static final long serialVersionUID = 1L;
 
 	// Constant data member
-	private static final String SPLASH_FOLDER = "splash/";
-	private static final String VERSION_STRING = SimulationRuntime.VERSION.getVersionTag();
-	private static final String BUILD_STRING = "Build " + SimulationRuntime.VERSION.getBuild();
-	private static final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
-	private static final SplashImage[] IMAGES = {
+	private final String SPLASH_FOLDER = "splash/";
+	private final String VERSION_STRING = SimulationRuntime.VERSION.getVersionTag();
+	private final String BUILD_STRING = "Build " + SimulationRuntime.VERSION.getBuild();
+	private final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
+	private final SplashImage[] IMAGES = {
 			new SplashImage("Mars_Canyon.jpg", "A picture from NASA Ames Research Center. 2005"), 
 			new SplashImage("nasa_langley_advanced_concepts_lab.jpg", "Water Ice drilling. NASA Langley Advanced Concepts Lab AMA"),
 			new SplashImage("News_Terraforming_Mars.jpg", "Family Watching News on Terraforming Mars. Tiago da Silva"),
@@ -57,42 +57,41 @@ public class SplashWindow extends JComponent {
 			new SplashImage("MSC-AgriDomes-on-Mars.jpg", "Agridome for growing food on Mars. Mars Society. 2020"), 
 			new SplashImage("Cyanobacteria_terraforming.jpg", "Cyanobacteria help detoxify the environment"),
 			new SplashImage("Bjarke_Ingels_Group.jpg", "UAE Mars 2117 initiative, Mars Science City project by Bjarke Ingels Group"),
-			new SplashImage("Mars_Module_Landed.jpg", "Notes from the Red Planet. 2026")
+			new SplashImage("Mars_Module_Landed.jpg", "A Mars base camp just landed, Notes from the Red Planet. YT, 2026"),
+			new SplashImage("Rover_Arriving.jpg", "A rover just arrived at a base camp, Notes from the Red Planet. YT, 2026"),
+			new SplashImage("Rover_Track.jpg", "A rover leaving track marks, Notes from the Red Planet. YT, 2026"),
 	};
-
-	private static final int STATUS_BOX_H = 30;
-	private static final int STATUS_BOX_W = 450;
-
-	private JFrame window;
-	private int w;
-	private int h;
-
-	private Font authorStringFont = new Font("Bell MT", Font.ITALIC, 17);
-	private int authorY;
-
-	private Font buildStringFont = new Font("Bell MT", Font.BOLD, 16);
-	private int buildX;
-	private int buildY;
-
-	private int versionY;
-	private int versionX;
-	private Color versionColour;
-	private Font versionFont;
-
-	private Font titleFont = new Font("Bookman Old Style", Font.PLAIN, 42);
-	private Color titleColour;
-	private int titleX;
-
-	private String imageSource;
-
-	private String statusMessage = null;
-	private Font statusFont;
-	private Color statusColour;
-	private int statusX;
-	private int statusY;
 
 	private boolean firstDraw = true;
 	private boolean drawImage = true;
+	
+	private final int STATUS_BOX_H = 30;
+	private final int STATUS_BOX_W = 450;
+	private final int w;
+	private final int h;
+	private final int statusX;
+	private final int statusY;
+	private final int buildX;
+	private final int buildY;
+	private final int versionY;
+	private final int versionX;
+	private final int authorY;
+	private final int titleX;
+	
+	private String imageSource;
+	private String statusMessage = null;
+	
+	private final Font authorStringFont = new Font("Bell MT", Font.ITALIC, 17);
+	private final Font buildStringFont = new Font("Bell MT", Font.BOLD, 16);
+	private final Font titleFont = new Font("Bookman Old Style", Font.PLAIN, 42);
+	private final Font statusFont;
+	private final Font versionFont;
+	
+	private final Color titleColour;
+	private final Color versionColour;
+	private final Color statusColour;
+
+	private JFrame window;
 
 	/**
 	 * Gets the width of a string in pixels for the specified font.
@@ -101,7 +100,7 @@ public class SplashWindow extends JComponent {
 	 * @param text
 	 * @return
 	 */
-	private  int getStringWidth(Font font, String text) {
+	private int getStringWidth(Font font, String text) {
 		FontMetrics metrics = getFontMetrics(font);
 		return metrics.stringWidth(text);
 	}
@@ -178,13 +177,10 @@ public class SplashWindow extends JComponent {
 		window.setBackground(Color.black);
 
 		window.setUndecorated(true);
-
 		// Set icon image for window.
 		window.setIconImage(StyleManager.getIconImage());
-
 		// Set cursor style.
 		window.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-
 		// Display the splash window.
 		window.setVisible(true);
 	}
