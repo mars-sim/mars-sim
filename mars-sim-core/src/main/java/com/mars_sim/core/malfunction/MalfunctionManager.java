@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.DataRecorder;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentOwner;
+import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
@@ -359,14 +359,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getAllInsideMalfunctions() {
-		List<Malfunction> result = new ArrayList<>();
-		for (Malfunction malfunction : malfunctions) {
-			if (malfunction.hasWorkType(MalfunctionRepairWork.INSIDE)
-					&& !malfunction.isWorkDone(MalfunctionRepairWork.INSIDE))
-				result.add(malfunction);
-		}
-		Collections.sort(result, new MalfunctionSeverityComparator());
-		return result;
+		return malfunctions.stream()
+				.filter(malfunction -> malfunction.hasWorkType(MalfunctionRepairWork.INSIDE)
+						&& !malfunction.isWorkDone(MalfunctionRepairWork.INSIDE))
+				.sorted(new MalfunctionSeverityComparator())
+				.toList();
 	}
 
 	/**
@@ -375,14 +372,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getAllEVAMalfunctions() {
-		List<Malfunction> result = new ArrayList<>();
-		for (Malfunction malfunction : malfunctions) {
-			if (malfunction.hasWorkType(MalfunctionRepairWork.EVA)
-					&& !malfunction.isWorkDone(MalfunctionRepairWork.EVA))
-				result.add(malfunction);
-		}
-		Collections.sort(result, new MalfunctionSeverityComparator());
-		return result;
+		return malfunctions.stream()
+				.filter(malfunction -> malfunction.hasWorkType(MalfunctionRepairWork.EVA)
+						&& !malfunction.isWorkDone(MalfunctionRepairWork.EVA))
+				.sorted(new MalfunctionSeverityComparator())
+				.toList();
 	}
 
 	/**
@@ -852,20 +846,15 @@ public class MalfunctionManager implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 
-		if (parameters.lifeSupportImpacted()) {
-			double time = pulse.getElapsed();
+		if (hasMalfunction() && parameters.lifeSupportImpacted()) {
+			var rh = ResourceHolder.getAttached(entity);
+			if (rh != null) {
+				double time = pulse.getElapsed();
 
-			if (entity instanceof Building building
-				&& building.isInhabitable()) {
-				// If this entity is a building and it has no life support,
-				// there is no need to look at life support leaking
-				return true;
-			}
-			else {
 				// Check if life support modifiers are still in effect.
 				setLifeSupportModifiers(time);
 				// Check if resources is still draining
-				depleteResources(time);
+				depleteResources(time, rh);
 			}
 		}
 
@@ -922,33 +911,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 		double tempOxygenFlowModifier = 0D;
 
 		// Make any life support modifications.
-		if (hasMalfunction()) {
-			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isFixed()) {
+		for (Malfunction malfunction : malfunctions) {
+			if (!malfunction.isFixed()) {
+				Map<String, Double> effects = malfunction.getLifeSupportEffects();
 				
-//					if (entity instanceof Building building
-//						 && building.isInhabitable()) {
-//							// If this entity is a building and it has no life support,
-//							// there is no need to look at life support leaking
-//							return;
-//					}
-					
-					Map<String, Double> effects = malfunction.getLifeSupportEffects();
-					
-					if (effects.get(OXYGEN) != null)
-						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed())/100D;
-				}
+				if (effects.get(OXYGEN) != null)
+					tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed())/100D;
 			}
+		}
 
-			if (tempOxygenFlowModifier < 0D) {
-				oxygenFlowModifier += tempOxygenFlowModifier * time ;
-				if (oxygenFlowModifier < 0)
-					oxygenFlowModifier = 0;
-				if (oxygenFlowModifier < 100) {
-					logger.log(entity, Level.WARNING, 20_000, "Oxygen flow restricted to "
-								+ Math.round(oxygenFlowModifier * 10.0)/10.0 + " % capacity.");
-				}
-			}
+		if (tempOxygenFlowModifier < 0D) {
+			oxygenFlowModifier += tempOxygenFlowModifier * time ;
+			oxygenFlowModifier = Math.clamp(oxygenFlowModifier, 0, 100);
 		}
 	}
 
@@ -956,35 +930,27 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * Depletes resources due to malfunctions.
 	 *
 	 * @param time amount of time passing (in millisols)
-	 * @throws Exception if error depleting resources.
+	 * @param inventory the inventory from which resources are depleted.
 	 */
-	private void depleteResources(double time) {
-
-		if (!hasMalfunction()) {
-			return;
-		}
+	private void depleteResources(double time, ResourceHolder inventory) {
 
 		for (Malfunction malfunction : malfunctions) {
 			if (!malfunction.isFixed() && !malfunction.getResourceEffects().isEmpty()) {
 				// Resources are depleted according to how much of the repair is remaining
-				double percent = (100.0 - malfunction.getPercentageFixed())/100D;
+				double modifier = (time * (100.0 - malfunction.getPercentageFixed())) / 100.0;
 				for (Entry<Integer, Double> entry : malfunction.getResourceEffects().entrySet()) {
 					Integer resource = entry.getKey();
-					double amount = entry.getValue();
-					double amountDepleted = amount * time * percent / 100;
-					
-					var eo = entity.getAssociatedSettlement().getEquipmentInventory();
-//					ResourceHolder rh = (ResourceHolder)entity;
-					
-					double amountStored = eo.getSpecificAmountResourceStored(resource);
+					double leakRate = entry.getValue();
 
-					if (amountStored < amountDepleted) {
-						amountDepleted = amountStored;
-					}
+					// Calculate the amount of resource to be depleted based on the malfunction severity and time.
+					double amountDepleted = -(leakRate * modifier);
+					
+					amountDepleted = Math.min(amountDepleted, inventory.getSpecificAmountResourceStored(resource));
+
 					if (amountDepleted >= 0) {
-						eo.retrieveAmountResource(resource, amountDepleted);
+						inventory.retrieveAmountResource(resource, amountDepleted);
 						logger.log(entity, Level.WARNING, 15_000L, "Leaking "
-										+ Math.round(amountDepleted * 100.0)/100.0 + " kg of  "
+										+ Math.round(amountDepleted * 10000.0)/10000.0 + " kg of  "
 										+ ResourceUtil.findAmountResource(resource) + ".");
 					}
 				}
@@ -1463,9 +1429,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			int number = entry.getValue();
 			if (number > 0) {
 				if (partStore.getItemResourceStored(id) >= number) {
-					logger.info(entity, 30_000L, "Maintenance parts available: " 
-							+ getPartsString(parts));
-					result = result && true;
+					result = true;
 				}
 				else {
 					Good good = GoodsUtil.getGood(id);
