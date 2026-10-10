@@ -66,6 +66,11 @@ public class TableTab extends MonitorTab {
             public String getToolTipText(MouseEvent e) {
 				return ToolTipTableModel.extractToolTip(e, this);
             }
+            @Override
+            public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
+                // Force toggle behavior for single selection
+                super.changeSelection(rowIndex, columnIndex, true, false);
+            }
 		};
 
 		// Apply renderers as the model is an EnhancedTableModel.
