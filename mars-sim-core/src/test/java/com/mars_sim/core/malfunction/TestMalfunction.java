@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.malfunction.MalfunctionMeta.EffortSpec;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.Rover;
 
 public class TestMalfunction extends MarsSimUnitTest {
@@ -22,6 +24,7 @@ public class TestMalfunction extends MarsSimUnitTest {
 	private MalfunctionMeta insideMeta;
 
 	private MalfunctionManager mgr;
+	private Rover testRover;
 
 	
         @BeforeEach
@@ -41,6 +44,7 @@ public class TestMalfunction extends MarsSimUnitTest {
 		buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
 		Rover r = buildRover(s, "Test", null, EXPLORER_ROVER);
+		testRover = r;
 		mgr = r.getMalfunctionManager();
 		mgr.initScopes();
     }
@@ -78,7 +82,7 @@ public class TestMalfunction extends MarsSimUnitTest {
         	mal.addWorkTime(MalfunctionRepairWork.INSIDE, 0.001D, "Worker" + i);
         	int expectedSlots = desiredWorkers - (i + 1);
         	assertEquals(expectedSlots, mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE), "Available slots after worker #" + i);
-        	
+          	
         	// Remove others
             mal.leaveWork(MalfunctionRepairWork.INSIDE, "Worker" + i);
             assertEquals(expectedSlots + 1,
@@ -89,5 +93,31 @@ public class TestMalfunction extends MarsSimUnitTest {
         	mal.addWorkTime(MalfunctionRepairWork.INSIDE, 0.001D, "Worker" + i);
         	assertEquals(expectedSlots, mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE), "Available slots after re-adding worker #" + i);
     	}
+    }
+
+    @Test
+    public void testAirLeakDepletesOxygen() {
+        MalfunctionManager.setNoFailures(false);
+        try {
+            var oxygen = ResourceUtil.OXYGEN_ID;
+            var inventory = testRover.getEquipmentInventory();
+            inventory.storeAmountResource(oxygen, 100D);
+
+            var lifeSupportMgr = new MalfunctionManager(testRover,
+                    new MalfunctionManager.MaintenanceParameters(1_000D, 1D, 1D, true));
+            lifeSupportMgr.initScopes();
+
+            var malfunction = lifeSupportMgr.triggerMalfunction(insideMeta, false, testRover);
+            assertTrue(malfunction != null, "Air leak triggered");
+
+            var pulse = new ClockPulse(1, 1D, getSim().getMasterClock().getMarsTime(), getSim().getMasterClock(), false, false, false, true, false);
+            lifeSupportMgr.timePassing(pulse);
+
+            double expected = 99.99D;
+            assertEquals(expected, inventory.getSpecificAmountResourceStored(oxygen), 0.0001D, "Air leak depletes oxygen");
+        }
+        finally {
+            MalfunctionManager.setNoFailures(true);
+        }
     }
 }
