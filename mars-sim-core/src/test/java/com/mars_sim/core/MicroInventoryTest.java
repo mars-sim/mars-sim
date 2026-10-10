@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 import com.mars_sim.core.equipment.MicroInventory;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
@@ -220,5 +221,36 @@ class MicroInventoryTest {
 		inv.storeAmountResource(resource, CAPACITY_AMOUNT/2);
 		inv.storeAmountResource(resource2, 100D);
 		assertEquals((CAPACITY_AMOUNT/2 + 100D), inv.getStoredMass(), "Total mass after combined load");
+	}
+
+		
+	/*
+	 * Test method unloading ItemResource
+	 */
+	@Test
+	void testUnloadingItemResource()  {
+		var garmentID = ItemResourceUtil.findItemResource(ItemResourceUtil.GARMENT_ID);
+		var gloveID = ItemResourceUtil.findItemResource(ItemResourceUtil.WORK_GLOVES_ID);
+		MicroInventory inv = new MicroInventory(settlement, 2*CAPACITY_AMOUNT, 0);
+		
+		inv.storeItemResource(garmentID.getID(), 1);
+		inv.storeItemResource(gloveID.getID(), 2);
+
+		assertTrue(inv.getStoredMass() > 0, "Stored mass should be greater than 0 after storing items");
+		assertEquals(1, inv.getItemResourceStored(garmentID.getID()), "Stored quantity of garment after storing");
+		assertEquals(2, inv.getItemResourceStored(gloveID.getID()), "Stored quantity of gloves after storing");
+		
+		inv.retrieveItemResource(garmentID.getID(), 1);		
+		inv.retrieveItemResource(gloveID.getID(), 1);
+		assertEquals(0, inv.getItemResourceStored(garmentID.getID()), "Stored quantity of garment after retrieving");
+		assertEquals(1, inv.getItemResourceStored(gloveID.getID()), "Stored quantity of gloves after retrieving");
+		
+		assertEquals(gloveID.getMassPerItem(), inv.getStoredMass(), "Stored mass should match the mass of the remaining glove item");
+
+		inv.retrieveItemResource(gloveID.getID(), 1);
+		assertEquals(0, inv.getItemResourceStored(gloveID.getID()), "Stored quantity of gloves after unloading");
+
+		assertEquals(0D, inv.getStoredMass(), "Total mass after unloading all items");
+		assertTrue(inv.isEmpty(), "Inventory should be empty after unloading all items");
 	}
 }

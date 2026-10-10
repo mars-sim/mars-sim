@@ -130,7 +130,7 @@ class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener 
 	private void abortMission() {
 		var m = getEntity();
 
-		m.abortMission(Mission.MISSION_ABORTED_BY_PLAYER);
+		m.abortMission(Mission.MISSION_ABORTED_BY_PLAYER, null);
 
 		updateFields(m);
 	}

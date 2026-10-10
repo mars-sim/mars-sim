@@ -21,7 +21,9 @@ import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.ProjectStep;
+import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -88,6 +90,35 @@ public class MissionVehicleProject extends MissionProject
     @Override
     public Vehicle getVehicle() {
         return vehicle;
+    }
+
+    /**
+     * Aborts the vehicle mission for a reason. If the mission is on the surface, prepare to return to
+     * the home Settlement.
+     * 
+     * @param reason MissionStatus why the mission aborted
+     * @param instigator Worker who initiated the abort
+     */
+    @Override
+    public void abortMission(MissionStatus reason, Worker instigator) {
+        var currentStep = getCurrentStep();
+        var home = getAssociatedSettlement();
+        if (currentStep != null && !home.equals(vehicle.getSettlement())) {
+            instigator = (instigator == null ? getStartingPerson() : instigator);
+            addMissionLog("Aborted and returning : " + reason.getName(), instigator.getName());
+
+            // Stop the current step and change the plan
+            currentStep.requestToComplete();
+            var returnStep = List.of(new MissionTravelStep(this, new NavPoint(getAssociatedSettlement(),
+                                                            getVehicle().getCoordinates())),
+                                    new MissionDisembarkStep(this));
+
+            // Remove uncompleted steps
+            replanSteps(returnStep);
+        }
+        else {
+            super.abortMission(reason, instigator);
+        }
     }
 
     /**

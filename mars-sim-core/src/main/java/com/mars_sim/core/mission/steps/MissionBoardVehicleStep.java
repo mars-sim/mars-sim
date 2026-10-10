@@ -102,7 +102,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 		
         // Embark from settlement
 		if (!v.transfer(getUnitManager().getMarsSurface())) {
-		    m.abortMission(MissionStatus.createResourceStatus("Vehicle Unable to Exit Settlement"));
+		    m.abortMission(MissionStatus.createProblemStatus("Vehicle Unable to Exit Settlement"), getLeader());
 		}
 
         // Marks everyone departed

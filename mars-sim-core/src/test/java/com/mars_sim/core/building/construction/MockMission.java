@@ -41,7 +41,7 @@ public class MockMission implements Mission {
     }
 
     @Override
-    public void abortMission(MissionStatus reason) {
+    public void abortMission(MissionStatus reason, Worker instigator) {
         done = true;        
     }
 

@@ -154,6 +154,19 @@ public class Project<T extends ProjectStep> implements Serializable {
     }
 
     /**
+     * Remove the unexecuted steps and add a new step to the project.
+     * @param newSteps Step to replace unexecuted
+     */
+    public void replanSteps(List<T> newSteps) {
+        // Remove all uncompleted steps
+        int currentIdx = (currentStepIdx < 0 ? 0 : currentStepIdx);
+        steps = new ArrayList<>(steps.subList(0, currentIdx+1));
+
+        // Add the new step
+        steps.addAll(newSteps);
+    }
+
+    /**
      * Removes a registered step. Can not be a step already executed.
      * 
      * @param oldStep

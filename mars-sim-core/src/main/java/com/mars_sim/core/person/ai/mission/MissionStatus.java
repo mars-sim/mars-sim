@@ -7,6 +7,7 @@
 
 package com.mars_sim.core.person.ai.mission;
 
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.tool.Msg;
 
@@ -24,33 +25,31 @@ public class MissionStatus implements Serializable {
 	 */
 	public static MissionStatus createResourceStatus(int missingResourceId) {
 		String resourceName = GoodsUtil.getGood(missingResourceId).getName();
-		return new MissionStatus("mission.status.noResources", resourceName);
+		return new MissionStatus("mission.status.noResources", HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES, resourceName);
 	}
 
 	/**
 	 * Factory helper method to create a status.
 	 */
-	public static MissionStatus createResourceStatus(String reason) {
-		return new MissionStatus(reason, false);
+	public static MissionStatus createProblemStatus(String reason) {
+		return new MissionStatus("mission.status.abortedReason", HistoricalEventType.MISSION_PROBLEM, reason);
 	}
 	
 	private String name;
+	private HistoricalEventType eventType;
 
 	public MissionStatus(String key) {
-		this.name = Msg.getString(correctKey(key));
-	}
-	
-	public MissionStatus(String key, String argument) {
-		this.name  = Msg.getString(correctKey(key), argument);
+		this(key, null);
 	}
 
-	public MissionStatus(String key, boolean useMsg) {
-		if (!useMsg) {
-			this.name  = key;
-		}
-		else {
-			this.name = Msg.getString(correctKey(key));
-		}
+	public MissionStatus(String key, HistoricalEventType associatedEvent) {
+		this.name = Msg.getString(correctKey(key));
+		this.eventType = associatedEvent;
+	}
+	
+	public MissionStatus(String key, HistoricalEventType associatedEvent, String argument) {
+		this.name  = Msg.getString(correctKey(key), argument);
+		this.eventType = associatedEvent;
 	}
 	
 	/**
@@ -75,6 +74,14 @@ public class MissionStatus implements Serializable {
 
 	public String getName() {
 		return this.name;
+	}
+
+	/**
+	 * Is there an associated historical event type for this mission status.
+	 * @return the associated historical event type, or null if none.
+	 */
+	public HistoricalEventType getEventType() {
+		return this.eventType;
 	}
 
 	@Override

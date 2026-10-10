@@ -34,7 +34,7 @@ public abstract class MissionStep extends ProjectStep {
     private MissionProject mission;
 
     protected MissionStep(MissionProject project, Stage stage, String description) {
-        super(stage, description);
+        super(project, stage, description);
         this.mission = project;
     }
     
@@ -115,5 +115,14 @@ public abstract class MissionStep extends ProjectStep {
      */
     public MissionObjective getObjective() {
         return null;
+    }
+
+    /**
+     * By default the reqeusting to be completed will immediately complete the step.
+     * @return true if the request to complete was successful, false otherwise
+     */
+    public boolean requestToComplete() {
+        complete();
+        return true;
     }
 }

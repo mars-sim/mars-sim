@@ -110,10 +110,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("loadResources");
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("unrepairable");
 	protected static final MissionStatus LEADER_NO_SHOW = new MissionStatus("leaderNoShow");
-	protected static final MissionStatus ONLY_ONE_MEMBER = new MissionStatus("onlyOneMember");
+	protected static final MissionStatus ONLY_ONE_MEMBER = new MissionStatus("onlyOneMember", HistoricalEventType.MISSION_ONLY_ONE_MEMBER);
 	protected static final MissionStatus VEHICLE_NOT_IN_SETTLEMENT = new MissionStatus("vehicleNotInSettlement");
 	protected static final MissionStatus TRAVEL_BACK_TO_SETTLEMENT = new MissionStatus("travelBackToSettlement");
-	protected static final MissionStatus TIMEOUT = new MissionStatus("timeout");
+	protected static final MissionStatus TIMEOUT = new MissionStatus("timeout",  HistoricalEventType.MISSION_TIMEOUT);
 	
 	
 	// Static members
@@ -1099,8 +1099,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			int missingResourceId = hasEnoughResources(getResourcesNeededForRemainingMission(false));
 			if (missingResourceId >= 0) {
 				// Create Mission Flag
-				MissionStatus status = MissionStatus.createResourceStatus(missingResourceId);
-				abortMission(status, HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES);
+				var status = MissionStatus.createResourceStatus(missingResourceId);
+				abortMission(status, getStartingPerson());
 				addMissionLog(HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES.getName(), getStartingPerson().getName());
 			}
 		}
@@ -1658,44 +1658,27 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		setTravelStatus(AT_NAVPOINT);
 		lastStopNavpoint = getCurrentNavpoint();
 	}
-
-	/**
-	 * Aborts the mission via established reasons and/or events.
-	 * If possible return to the starting Settlement.
-	 * 
-	 * @param status
-	 * @param eventType
-	 */
-	public void abortMission(MissionStatus status, HistoricalEventType eventType) {
-		abortMission(status, eventType, getStartingPerson());
-	}
 	
 	/**
 	 * Aborts the mission via established reasons and/or events.
 	 * If possible return to the starting Settlement.
 	 * 
 	 * @param status Reason for the abort.
-	 * @param eventType Optional register an event
+	 * @param instigator The worker who instigated the abort.
 	 */
-	public void abortMission(MissionStatus status, HistoricalEventType eventType, Person person) {
+	@Override 
+	public void abortMission(MissionStatus status, Worker instigator) {
 
-		addMissionStatus(status, person);
-		// If the MissionFlag is not present then do it
-			
-		// Create an event if needed
-		if (eventType != null) {
-			registerHistoricalEvent(getStartingPerson(), eventType, status.getName());
-		}
-		
 		// If mission is still at home then leave the vehicle
 		if (getStage() != Stage.PREPARATION) {
+			addMissionStatus(status, instigator);
 
 			addMissionStatus(TRAVEL_BACK_TO_SETTLEMENT);
 			travelDirectToSettlement(startingSettlement);
 		}
 		else {
 			// Already at home
-			super.abortMission(status);
+			super.abortMission(status, instigator);
 		}
 	}
 

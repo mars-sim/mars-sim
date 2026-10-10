@@ -28,7 +28,7 @@ import com.mars_sim.core.vehicle.task.LoadingController;
 public class MissionLoadVehicleStep extends MissionStep {
 
     private static final long serialVersionUID = 1L;
-	private static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
+	private static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("mission.status.loadResources");
     private LoadingController loadingPlan;
 
     /**
@@ -68,7 +68,7 @@ public class MissionLoadVehicleStep extends MissionStep {
         // Loading still active
         boolean workOn = false;
         if (loadingPlan.isFailure()) {
-            getMission().abortMission(CANNOT_LOAD_RESOURCES);
+            getMission().abortMission(CANNOT_LOAD_RESOURCES, getLeader());
         }
         else if (!loadingPlan.isCompleted()) {
 			// Load vehicle if not fully loaded.
