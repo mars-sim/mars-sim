@@ -70,11 +70,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	protected static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
-	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
 	protected static final MissionStatus MISSION_MEDICAL_EMERGENCY = new MissionStatus("Mission.status.medicalEmergency");
 
 	public static final String DISBANDING = "Disbanding ";
-	public static final String MEMBERS_ = " member(s): ";
+	private static final String MEMBERS = " member(s): ";
 	
 	// Data members
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
@@ -623,10 +622,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (endStatus == null) {
 			
 			if (this instanceof AbstractVehicleMission avm) {
-				avm.endMission(MISSION_ABORTED_BY_PLAYER);
+				avm.endMission(Mission.MISSION_ABORTED_BY_PLAYER);
 			}
 			else {
-				endMission(MISSION_ABORTED_BY_PLAYER);
+				endMission(Mission.MISSION_ABORTED_BY_PLAYER);
 			}
 		}
 		else {
@@ -711,12 +710,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// If no mission flags have been added then it was accomplished
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
-		MissionPhase finalPhase = ABORTED_PHASE;
+		MissionPhase finalPhase = null;
 
 		 if (aborted) {
 			finalPhase = ABORTED_PHASE;
 		}
-		else if (endStatus == MISSION_ABORTED_BY_PLAYER) {
+		else if (endStatus == Mission.MISSION_ABORTED_BY_PLAYER) {
 			finalPhase = ABORTED_PHASE;
 		}
 		else if (endStatus == MISSION_ACCOMPLISHED) {
@@ -752,7 +751,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Disband the members
 		if (members != null && !members.isEmpty()) {
 			String listOfMembers = members.stream().map(Worker::getName).collect(Collectors.joining(", "));
-			logger.info(startingMember, DISBANDING + getFullMissionDesignation() + MEMBERS_ + listOfMembers);
+			logger.info(startingMember, DISBANDING + getFullMissionDesignation() + MEMBERS + listOfMembers);
 			
 			removeAllMembers();
 		}
@@ -804,10 +803,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 				logger.info(p, 20_000L, "Already donned an EVA Suit. Unable to perform '" + newTask.getName() + "' as assigned.");
 				return false;
 			}
-//			else if (p.getPhysicalCondition().computeHealthScore() <= 2 && !newTask.getName().equals(Sleep.NAME)) {
-//				logger.info(p, 20_000L, "Low health score. Unable to perform '" + newTask.getName() + "' as assigned.");
-//				return false;
-//			}
 		}
 		
 		return worker.getTaskManager().directlyAssignTask(newTask, allowSameTask);

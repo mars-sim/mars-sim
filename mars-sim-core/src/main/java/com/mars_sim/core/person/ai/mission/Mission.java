@@ -36,6 +36,7 @@ public interface Mission extends MonitorableEntity {
 
 	// The key to the entry for the mission history start
     static final String HISTORY_START = "entityhistory.mission";
+    static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
 
 	/**
 	 * Aborts the mission via custom reasons. Will stop current phase.

@@ -24,9 +24,6 @@ import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
-import com.mars_sim.core.events.HistoricalEventType;
-import com.mars_sim.core.person.ai.mission.AbstractMission;
-import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
@@ -132,10 +129,9 @@ class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener 
 
 	private void abortMission() {
 		var m = getEntity();
-		if (m instanceof AbstractVehicleMission avm) {
-			// Calling AbstractVehicleMission's abortMission, not AbstractMission's abortMission
-			avm.abortMission(AbstractMission.MISSION_ABORTED_BY_PLAYER, HistoricalEventType.MISSION_ABORTED_BY_PLAYER, null);
-		}
+
+		m.abortMission(Mission.MISSION_ABORTED_BY_PLAYER);
+
 		updateFields(m);
 	}
 
