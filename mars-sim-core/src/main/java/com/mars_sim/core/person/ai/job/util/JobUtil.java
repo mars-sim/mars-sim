@@ -47,7 +47,6 @@ import com.mars_sim.core.robot.ai.job.Medicbot;
 import com.mars_sim.core.robot.ai.job.Repairbot;
 import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The JobUtil class keeps track of the settler jobs in a simulation.
@@ -213,37 +212,61 @@ public final class JobUtil {
 		JobType selectedJob = originalJob;
 		// Determine person's associated settlement.
 		Settlement settlement = person.getAssociatedSettlement();
-		
-		int pop = settlement.getIndoorPeopleCount();
-		if (pop == 0)
-			// At the start of the game, pop = 0
-			pop = settlement.getInitialPopulation();
 
-		// Set limits on # of position available for a job, based on settlement's population
-		// e.g. rather not having 3 botanists when the settlement has only 8 people
-		int numberOfJobs = JobType.values().length;
-		while (selectedJob == originalJob) {
-			Iterator<JobSpec> i = getJobs().iterator();
-			while (i.hasNext()) {
-				JobSpec job = i.next();
-				if (job.getType() != JobType.POLITICIAN) {
-					// Exclude politician job which is reserved for Mayor only
-					double rand = RandomUtil.getRandomDouble(0.8);
-					double t = 1.0 * pop / numberOfJobs  + rand;
-					int maxPos = (int)(Math.ceil(t));
-					int numPositions = numJobs(job.getType(), settlement);
-					if (numPositions < maxPos) {
-						double jobProspect = getJobProspect(person, job.getType(), settlement, true);
-						if (jobProspect > selectedJobProspect) {
-							selectedJob = job.getType();
-							selectedJobProspect = jobProspect;
-						}
-					}
+		// Count the person too, as a new person is not a citizen yet
+		int pop = settlement.getNumCitizens();
+		if (!settlement.getAllAssociatedPeople().contains(person))
+			pop++;
+
+		// Exclude politician job which is reserved for Mayor only
+		Map<JobType, Double> needs = new EnumMap<>(JobType.class);
+		for (JobSpec job : getJobs()) {
+			if (job.getType() != JobType.POLITICIAN) {
+				needs.put(job.getType(), job.getSettlementNeed(settlement));
+			}
+		}
+
+		// Set limits on # of position available for a job, based on the settlement's need
+		// e.g. rather not having as many tourists as engineers
+		Map<JobType, Integer> maxPositions = getMaxPositions(needs, pop);
+		for (Map.Entry<JobType, Integer> entry : maxPositions.entrySet()) {
+			JobType job = entry.getKey();
+			if (numJobs(job, settlement) < entry.getValue()) {
+				double jobProspect = getJobProspect(person, job, settlement, true);
+				if (jobProspect > selectedJobProspect) {
+					selectedJob = job;
+					selectedJobProspect = jobProspect;
 				}
-			} 
+			}
 		}
 
 		return selectedJob;
+	}
+
+	/**
+	 * Shares out the job positions in proportion to the settlement need of each job.
+	 * The total number of positions is never less than the population.
+	 *
+	 * @param needs the settlement need of each job
+	 * @param pop the population to share the positions
+	 * @return the max number of positions for each job
+	 */
+	static Map<JobType, Integer> getMaxPositions(Map<JobType, Double> needs, int pop) {
+		double totalNeed = needs.values().stream()
+						.mapToDouble(n -> Math.max(n, 0))
+						.sum();
+
+		Map<JobType, Integer> result = new EnumMap<>(JobType.class);
+		for (Map.Entry<JobType, Double> entry : needs.entrySet()) {
+			double share;
+			if (totalNeed > 0)
+				share = Math.max(entry.getValue(), 0) / totalNeed;
+			else
+				// No need at all so share out equally
+				share = 1.0 / needs.size();
+			result.put(entry.getKey(), (int) Math.ceil(pop * share));
+		}
+		return result;
 	}
 
 	/**
