@@ -313,7 +313,7 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
 	public double getAverageSupply(double supplyStored) {
-		return MathUtils.between(Math.log(MIN_SUPPLY + supplyStored), MIN_SUPPLY, MAX_SUPPLY);
+		return MathUtils.between(Math.log(MIN_SUPPLY + supplyStored) / 2, MIN_SUPPLY, MAX_SUPPLY);
 	}
 	
     

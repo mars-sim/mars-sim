@@ -19,6 +19,7 @@ public class ResourceProcessEngine implements Serializable {
 	private static final long serialVersionUID = 1L;
 
     private final int maxModules;
+    
     private ResourceProcessSpec processSpec;
 
     public ResourceProcessEngine(ResourceProcessSpec processSpec, int modules) {
@@ -27,7 +28,8 @@ public class ResourceProcessEngine implements Serializable {
     }
 
     /**
-     * What process does this engine support
+     * Gets the process spec this engine supports.
+     * 
      * @return
      */
     public ResourceProcessSpec getProcessSpec() {

@@ -15,7 +15,6 @@ import com.mars_sim.core.resourceprocess.task.ToggleResourceProcessMeta;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -44,7 +43,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private boolean isLockOn;
 	
 	private int modules;
-
 	private int settlementMaxModules;
 	
 	private double percentEffort = 100.0;
@@ -57,38 +55,13 @@ public class ResourceProcess implements ScheduledEventHandler {
 	private MarsTime toggleDue = null; 
 	private ResourceProcessEngine engine;
 	private ResourceProcessSpec processSpec;
-//	private Building building;
 	private Settlement settlement;
 	private ResourceHolder host;
 	
 	public static final ResourceProcessAssessment DEFAULT_ASSESSMENT = new ResourceProcessAssessment(0, 0, 0, false);
-	
-//	/**
-//	 * Constructor 1.
-//	 *
-//	 * @param engine The processing engine that this process manages
-//	 * @param building
-//	 */
-//	public ResourceProcess(ResourceProcessEngine engine, Building building) {
-//		this.processSpec = engine.getProcessSpec();
-//		isRunning = processSpec.getDefaultOn();
-//		currentProductionLevel = 1D;
-//		this.canToggle = false;
-//		this.engine = engine;
-//		this.building = building;
-//		this.assessment = DEFAULT_ASSESSMENT;
-//		
-//		this.modules = (int)MathUtils.between(engine.getMaxModules() / 3.0, 1, engine.getMaxModules());
-//
-//		this.host = building.getAssociatedSettlement().getEquipmentInventory();
-//		
-//		// Add some randomness at the start of the sim
-//		int delay = RandomUtil.getRandomInt(0, 50);
-//		resetToggleWait(delay);
-//	}
 
 	/**
-	 * Constructor 2.
+	 * Constructor 1.
 	 *
 	 * @param engine The processing engine that this process manages
 	 * @param settlement
@@ -105,10 +78,14 @@ public class ResourceProcess implements ScheduledEventHandler {
 		int numM = 1;
 		
 		int maxMod = engine.getMaxModules();
-		if (maxMod == 4)
+		if (maxMod == 1)
+			numM = 1;
+		else if (maxMod == 2)
+			numM = 1;
+		else if (maxMod == 3)
 			numM = 2;
 		else if (maxMod > 4)
-			numM = RandomUtil.getRandomInt((int)MathUtils.between(maxMod/4, 2, maxMod/2), (int)MathUtils.between(maxMod/2, 2, maxMod));
+			numM = (int)(maxMod * .5); //RandomUtil.getRandomInt((int)(maxMod * .25), (int)(maxMod * .75));
 		
 		this.modules += numM;
 		
@@ -660,47 +637,45 @@ public class ResourceProcess implements ScheduledEventHandler {
 			ToggleResourceProcessMeta.generateAssessment(settlement, modules, this);
 		}
 		
-		if (getProcessName().equalsIgnoreCase("Melt Ice")) {
-			System.out.println(this + ". overallScore: " + overallScore + ". outputScore: " + outputScore);
-		}
+		int max = ToggleResourceProcessMeta.MAX_SCORE;
+		int maxModules = getMaxModules();
+		
+//		if (getProcessName().equalsIgnoreCase("Melt Ice")
+//				|| getProcessName().equalsIgnoreCase("Filter Brine Water")) {
+//				logger.info(settlement, 10_000, "Case 0. " + getProcessName() 
+//				+ " - outputScore: " + outputScore + ". overallScore: " + overallScore
+//				+ ". max: " + max
+//				+ ". engine.getMaxModules(): " + maxModules); // - rand: " + rand);
+//		}
 		
 		if (modules == 0) {
-			logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + ++modules);
+			logger.info(settlement, 10_000, "Case 1. " + getProcessName() + " - # of modules : " + modules + " -> " + ++modules);
 		}
-		else if ((getOverallScore() <= ToggleResourceProcessMeta.MAX_SCORE / 4 
-				|| getOutputScore() <= ToggleResourceProcessMeta.MAX_SCORE / 8) 
-					&& modules > 1) {
+		else if (modules > 1
+				&& (overallScore <= max / 4 
+				 || outputScore <= max / 8)) {
 //			logger.info(settlement, " - " + this + ". rand: " + rand);
-			int rand = RandomUtil.getRandomInt((int)ToggleResourceProcessMeta.MAX_SCORE / 4);
-			if (rand > overallScore / 2 || rand > outputScore) {
-				logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + --modules);
+			int rand = RandomUtil.getRandomInt(max / 4);
+			if (overallScore / 2 < rand || outputScore < rand) {
+				logger.info(settlement, 10_000, "Case 2. " + getProcessName() + " - # of modules : " + modules + " -> " + --modules);
 			}
 		}
-		else { // if (modules < engine.getMaxModules()) {
-			
-			if (modules < engine.getMaxModules()
-					&& (overallScore > ToggleResourceProcessMeta.MAX_SCORE 
-					 || (outputScore > ToggleResourceProcessMeta.MAX_SCORE / 2))) {
-				int rand = RandomUtil.getRandomInt(ToggleResourceProcessMeta.MAX_SCORE);
-//				logger.info(settlement, " - " + this + ". rand: " + rand);
-				if (getProcessName().equalsIgnoreCase("Melt Ice")) {
-					System.out.println(this + ". rand: " + rand);
-				}
-				if (rand < overallScore / 2 || rand < outputScore) {
-					if (getProcessName().equalsIgnoreCase("Melt Ice")) {
-						System.out.println(this + ". IN !");
-					}
-					logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + ++modules);
-				}
-			}
-			else if (modules > 1) {
-				int rand = RandomUtil.getRandomInt(ToggleResourceProcessMeta.MAX_SCORE);
-//				logger.info(settlement, " - " + this + ". rand: " + rand);
-				if (rand > overallScore / 2 || rand > outputScore) {
-					logger.info(settlement, getProcessName() + "'s # of modules : " + modules + " -> " + --modules);
-				}
+		else if (modules < maxModules
+				&& (overallScore > max 
+				|| outputScore > max / 2)) {
+			int rand = RandomUtil.getRandomInt(max);
+//			logger.info(settlement, " - " + this + ". rand: " + rand);
+			if (overallScore / 2 > rand || outputScore > rand) {
+				logger.info(settlement, 10_000, "Case 3. " + getProcessName() + " - # of modules : " + modules + " -> " + ++modules);
 			}
 		}
+//		else if (modules > 1) {
+//			int rand = RandomUtil.getRandomInt(max);
+////				logger.info(settlement, " - " + this + ". rand: " + rand);
+//			if (overallScore < rand || outputScore < rand * 2) {
+//				logger.info(settlement, 10_000, "Case 4. " + getProcessName() + " - # of modules : " + modules + " -> " + --modules);
+//			}
+//		}
 	}
 	
 	/**

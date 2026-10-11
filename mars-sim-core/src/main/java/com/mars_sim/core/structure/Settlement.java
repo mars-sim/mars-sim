@@ -128,7 +128,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
 
-	private static final int ICE_PROB_FACTOR = 8;
+	private static final int ICE_PROB_FACTOR = 12;
 	private static final int REGOLITH_PROB_FACTOR = 25;
 	
 	private static final int MAX_PROB = 10_000;
@@ -670,7 +670,6 @@ public class Settlement extends Unit implements Temporal,
 		Map<ResourceProcessSpec, ResourceProcess> resourceSpecs = new HashMap<>();
 		Map<ResourceProcessSpec, ResourceProcess> wasteSpecs = new HashMap<>();
 		
-		
 		for (ResourceProcess rp: resourceProcesses) {
 			ResourceProcessSpec spec = rp.getSpec();
 			resourceSpecs.put(spec, rp);
@@ -682,7 +681,6 @@ public class Settlement extends Unit implements Temporal,
 		}
 		
 		for (AmountResource ar: map.keySet()) {
-			
 			List<ResourceProcessSpec> specs = map.get(ar);
 			List<ResourceProcess> resourceProcesses = new ArrayList<>();
 			List<ResourceProcess> wasteProcesses = new ArrayList<>();
@@ -704,9 +702,7 @@ public class Settlement extends Unit implements Temporal,
 			if (!wasteProcesses.isEmpty())
 				outputWasteProcessMap.put(ar, wasteProcesses);
 		}		
-		
-//		System.out.println(outputResourceProcessMap.toString().replaceAll("null", "\n[NULL]"));
-//		System.out.println(outputWasteProcessMap.toString().replaceAll("null", "\n[NULL]"));
+
 	}
 
 	/**
@@ -799,7 +795,8 @@ public class Settlement extends Unit implements Temporal,
 		}
 		
 		if (!found)  {
-			resourceProcesses.add(new ResourceProcess(engine, this));
+			ResourceProcess rp = new ResourceProcess(engine, this);
+			resourceProcesses.add(rp);
 		}
 	}
 	
@@ -2853,7 +2850,19 @@ public class Settlement extends Unit implements Temporal,
 			result = 0;
 		else if (result > MAX_PROB)
 			result = MAX_PROB;
-	
+
+		int popFactor = numCitizens;
+		
+		if (popFactor <= 4) {
+			result = 2 * result;
+		}
+		else if (popFactor <= 6) {
+			result = 1.5 * result;
+		}
+		else if (popFactor <= 8) {
+			result = 1.25 * result;
+		}
+		
 		return result;
 	}
 

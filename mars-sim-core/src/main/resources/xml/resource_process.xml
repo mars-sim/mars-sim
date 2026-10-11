@@ -130,11 +130,11 @@
 	          uses up power.
 	 
 		</description>						
-		<input resource="Carbon dioxide" rate="88.0" ambient="true" />
-		<input resource="hydrogen" rate="4.0" />
+		<input resource="Carbon dioxide" rate="176.0" ambient="true" />
+		<input resource="hydrogen" rate="8.0" />
 		
-		<output resource="ethylene" rate="28.0" core="true" />
-		<output resource="oxygen" rate="64.0" />
+		<output resource="ethylene" rate="56.0" core="true" />
+		<output resource="oxygen" rate="128.0" />
 	</process> <!--"Photosynthetic Conversion of CO2 to Ethylene"-->
 	
 	<process name="Glucose Fermentation" kW-required="0.0" >
@@ -417,7 +417,7 @@
 		<input resource="hydrogen" rate="30" />
 		
 		<output resource="methane" rate="80" core="true" />
-		<output resource="water" rate="90" />
+		<output resource="water" rate="90" core="true" />
 	</process> <!-- "CO Methanation" -->
 
 		
@@ -494,7 +494,7 @@
 		make the process energy-intensive in practice.
 		
 		</description> 
-		<input resource="Carbon monoxide" rate="140.0" ambient="false" />
+		<input resource="Carbon monoxide" rate="140.0" />
 		<input resource="hydrogen" rate="10.0" ambient="false" />
 		
 		<output resource="water" rate="90.0" />
@@ -548,7 +548,7 @@
 	2. https://www.sciencedirect.com/science/article/abs/pii/S0016236102000741
 	-->
 	
-	<process name="Electrochemical reduction of CO2" kW-required="0.05" >
+	<process name="Electrochemical reduction of CO2" kW-required="0.05" defaultOn="true" >
 		<description>
 			This reaction produces acetylene utilizing the electrochemical reduction
 			of CO2 by high-temperature molten salts, namely chloride melts. 
@@ -597,17 +597,17 @@
 			2. https://pubs.acs.org/doi/epdf/10.1021/acssuschemeng.3c08139
  
 		</description> 
-		<input resource="Carbon dioxide" rate="176.0" ambient="true"/>
+		<input resource="Carbon dioxide" rate="352.0" ambient="true"/>
 		<!-- Assume lime contains CaO (molecular weight : 56 g/mol)-->
-		<input resource="lime" rate="11.2" />
+		<input resource="lime" rate="22.4" />
 		<!-- Assume rock salt contains CaCl2 (molecular weight : 111 g/mol)-->
-		<input resource="Rock salt" rate="22.0" />
-		<input resource="Water" rate="36.0"  />
+		<input resource="Rock salt" rate="44.0" />
+		<input resource="Water" rate="72.0" />
 				
-		<output resource="lime" rate="11.2" />
-		<output resource="Rock salt" rate="22.0" />
-		<output resource="Acetylene" rate="52.0"  />
-		<output resource="Oxygen" rate="160.0"  core="true" />
+		<output resource="lime" rate="22.4" />
+		<output resource="Rock salt" rate="44.0" />
+		<output resource="Acetylene" rate="104.0"  />
+		<output resource="Oxygen" rate="320.0" core="true" />
 	</process> <!--"Electrochemical reduction of CO2"-->
 
 	<process name="Selective Partial Oxidation (SPO) of Methane to Methanol" kW-required="0.01" >
@@ -784,11 +784,11 @@
 		<input resource="water" rate="180.0" />
 		
 		<output resource="Carbon dioxide" rate="440.0" waste="true" />
-		<output resource="hydrogen" rate="20.0"  core="true" />
+		<output resource="hydrogen" rate="20.0" core="true" />
 	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
 
 
-	<process name="Oxygen Generation System (OGS)" kW-required="0.15625" defaultOn="false" >
+	<process name="Oxygen Generation System (OGS)" kW-required="0.15625" defaultOn="true" >
 	<description> 
 	
 		Oxygen Generation System can split water into H2 and O2.
@@ -899,7 +899,7 @@
 
 	</process> <!-- Catalytic Recombination into Water -->
 		
-	<process name="Low Temperature Plasma CO2 Decomposition" kW-required="0.02" defaultOn="false" >
+	<process name="Low Temperature Plasma CO2 Decomposition" kW-required="0.02" defaultOn="true" >
 		<description> 
 			CO₂ (reactant): 12.01 + 2(16.00) = 44.01 g/mol
 			CO: 12.01 + 16.00 = 28.01 g/mol
@@ -918,14 +918,14 @@
 			
 			See https://www.europhysicsnews.org/articles/epn/pdf/2018/03/epn2018493p15.pdf
 		</description>
-		<input resource="Carbon dioxide" rate="440.0" ambient="true" />
+		<input resource="Carbon dioxide" rate="880.0" ambient="true" />
 		
-		<output resource="Carbon monoxide" rate="280.0" core="true" />
-		<output resource="oxygen" rate="160.0" core="true" />
+		<output resource="Carbon monoxide" rate="560.0" core="true" />
+		<output resource="oxygen" rate="320.0" core="true" />
 	</process> <!-- "Low Temperature Plasma CO2 Decomposition" -->
 	
 	     
-	<process name="Microwave Plasma Conversion of Air" kW-required="0.005" defaultOn="false" >
+	<process name="Microwave Plasma Conversion of Air" kW-required="0.005" defaultOn="true" >
 		<description> 	 
 		 Microwave (MW)-plasma-based conversion of Martian air involves using 
 		 high-frequency electromagnetic waves to ionize atmospheric gases, 
@@ -1716,7 +1716,7 @@
 		<output resource="concrete" rate="94.0" core="true" waste="false" />
 	</process>
 		
-	<process name="CO2 Electroreduction from H2 to Ethylene and H2O" kW-required="0.005" >
+	<process name="CO2 Electroreduction from H2 to Ethylene and H2O" kW-required="0.005" defaultOn="true" >
 		<description>
 			See https://www.sciencedaily.com/releases/2020/09/200917084058.htm
 			
@@ -1773,13 +1773,13 @@
 			used to manage proton availability and stabilize intermediates.
 			
 		</description>
-		<input resource="Carbon dioxide" rate="176.0" ambient="true" />
-		<input resource="water" rate="72.0" />
-		<input resource="Potash lye" rate="0.02" />
-		<input resource="copper" rate="0.02" />
+		<input resource="Carbon dioxide" rate="352.0" ambient="true" />
+		<input resource="water" rate="144.0" />
+		<input resource="Potash lye" rate="0.04" />
+		<input resource="copper" rate="0.04" />
 		
-		<output resource="ethylene" rate="56.0" core="true" />
-		<output resource="oxygen" rate="192.0" />
+		<output resource="ethylene" rate="112.0" core="true" />
+		<output resource="oxygen" rate="384.0" />
 	</process> <!-- "CO2 Electroreduction from H2O to Ethylene and O2" -->
 
 	<process name="Produce Polyethylene from Ethylene" kW-required="0.01" >
