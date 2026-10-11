@@ -14,6 +14,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MetaMission.Roster;
 import com.mars_sim.core.mission.steps.MissionBoardVehicleStep;
+import com.mars_sim.core.mission.steps.MissionCloseStep;
 import com.mars_sim.core.mission.steps.MissionDisembarkStep;
 import com.mars_sim.core.mission.steps.MissionLoadVehicleStep;
 import com.mars_sim.core.mission.steps.MissionTravelStep;
@@ -23,7 +24,6 @@ import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.ProjectStep;
-import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -111,7 +111,8 @@ public class MissionVehicleProject extends MissionProject
             currentStep.requestToComplete();
             var returnStep = List.of(new MissionTravelStep(this, new NavPoint(getAssociatedSettlement(),
                                                             getVehicle().getCoordinates())),
-                                    new MissionDisembarkStep(this));
+                                    new MissionDisembarkStep(this),
+                                    new MissionCloseStep(this));
 
             // Remove uncompleted steps
             replanSteps(returnStep);

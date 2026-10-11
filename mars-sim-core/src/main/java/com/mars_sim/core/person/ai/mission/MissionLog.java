@@ -170,7 +170,7 @@ public class MissionLog implements Serializable  {
 		return null;
 	}
 
-    void setDone() {
+    public void setDone() {
         done = true;
     }
 

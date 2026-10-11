@@ -22,7 +22,6 @@ import com.mars_sim.core.person.ai.task.WalkingSteps;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.person.health.task.RequestMedicalTreatment;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
@@ -60,22 +59,23 @@ public class MissionDisembarkStep extends MissionStep {
     protected boolean execute(Worker worker) {
         Vehicle v = getVehicle();
 
-        boolean workOn = false;
-        boolean vehicleEmpty = !v.haveStatusType(StatusType.UNLOADING);
+        boolean unloadNeeded = v.haveStatusType(StatusType.UNLOADING);
         // Check end state as vehicle must be unloaded
-        if (!vehicleEmpty && RandomUtil.lessThanRandPercent(50)) {
-			workOn = unloadCargo(worker, v);
+        if (unloadNeeded && RandomUtil.lessThanRandPercent(50)
+                    && unloadCargo(worker, v)) {
+            return true;
         }
         
         // If not unloading; then leave Vehicle
-        if (worker.isInVehicle() && !workOn) {
+        boolean leaveVehicle = false;
+        if (worker.isInVehicle()) {
             // leave Vehicle
             boolean inGarage = v.isInGarage();
             if (!inGarage) {
                 var settlement = v.getSettlement();
                 if (settlement != null) {
                     // Not in garage so walking to airlock
-                    workOn = walkToAirLock(worker, v.getSettlement());
+                    leaveVehicle = walkToAirLock(worker, v.getSettlement());
                 }
                 else {
                     logger.warning(worker, "Vehicle is not in a settlement so cannot disembark.");
@@ -83,16 +83,16 @@ public class MissionDisembarkStep extends MissionStep {
             }
 
             // No on the way out of vehicle yet
-            if (!workOn) {
-                workOn = walkToGarage(worker, v);
+            if (!leaveVehicle) {
+                leaveVehicle = walkToGarage(worker, v);
             }            
         }
 
         // Check everyone is out
-        if (vehicleEmpty && everyoneLeft(getMission(), v)) {
+        if (!unloadNeeded && everyoneLeft(getMission(), v)) {
             complete();
         }
-        return workOn;
+        return leaveVehicle;
     }
 
     /**
@@ -164,20 +164,13 @@ public class MissionDisembarkStep extends MissionStep {
 			logger.info(person, 10_000, ""
 					+ "Currently at "
 					+ person.getLocationTag().getExtendedLocation()); 
-			
-			// Note: how to force the person to receive some form of medical treatment ?
-	
-			Task currentTask = person.getMind().getTaskManager().getTask();
-			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
-				person.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
-			}
-			
+
 			return false;
 		}
 	
 		Set<Building> airlocks = disembarkSettlement.getBuildingManager().getAirlocks();
 			
-		if (airlocks != null && airlocks.isEmpty()) {
+		if (airlocks.isEmpty()) {
 			logger.severe(person, 10_000, "No airlock found at " + disembarkSettlement);
 		}
 		
@@ -185,9 +178,6 @@ public class MissionDisembarkStep extends MissionStep {
 				
 		for (Building destinationBuilding: airlocks) {
 			
-			// Get random airlock building at settlement.
-	//		Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
-		
 			if (destinationBuilding != null) {
 				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
 	
@@ -210,27 +200,6 @@ public class MissionDisembarkStep extends MissionStep {
 		}
 		
 		return canDo;
-//		
-//    	
-//        Building destinationBuilding = target.getBuildingManager().getRandomAirlockBuilding();
-//        if (destinationBuilding == null) {
-//            logger.warning(w, "Cannot find an airlock in " + target.getName());
-//            return false;
-//        }
-//
-//        if (w instanceof Person p) {
-//			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
-//            Walk walk = Walk.createWalkingTask(p, adjustedLoc, destinationBuilding, true);
-//            if (walk != null) {
-//                // walk back home
-//                return assignTask(p, walk);
-//            }
-//            else {
-//                logger.warning(w, "No path to EVA from vehicle.");
-//            }
-//        }
-//        
-//        return false;
     }
 
     /**
