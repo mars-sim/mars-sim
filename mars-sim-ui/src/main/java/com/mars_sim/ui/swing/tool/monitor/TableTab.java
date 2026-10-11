@@ -7,6 +7,8 @@
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -66,13 +68,8 @@ public class TableTab extends MonitorTab {
             public String getToolTipText(MouseEvent e) {
 				return ToolTipTableModel.extractToolTip(e, this);
             }
-            @Override
-            public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
-                // Force toggle behavior for single selection
-                super.changeSelection(rowIndex, columnIndex, true, false);
-            }
 		};
-
+		
 		// Apply renderers as the model is an EnhancedTableModel.
 		ColumnSpecHelper.applyRenderers(table, model);
 
@@ -84,6 +81,13 @@ public class TableTab extends MonitorTab {
 					window.displayDetails();
 				}
 			}
+		});
+		
+		table.addFocusListener(new FocusAdapter() {
+		    @Override
+		    public void focusLost(FocusEvent e) {
+		        table.clearSelection();
+		    }
 		});
 		
 		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted

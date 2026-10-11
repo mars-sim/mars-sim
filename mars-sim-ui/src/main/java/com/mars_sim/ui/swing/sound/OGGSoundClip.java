@@ -354,10 +354,10 @@ class OGGSoundClip {
 			} 
             else {
                 if (oy.pageout(og) != 1) {
-                	logger.log(Level.SEVERE, "oy.pageout(og) != 1");
+                	logger.log(Level.SEVERE, "oy.pageout(og) : " + oy.pageout(og));
                     if (bytes < BUFFER_SIZE) {
-                    	logger.log(Level.SEVERE, "bytes < BUFFER_SIZE.");
-                        break;
+                    	logger.log(Level.SEVERE, "bytes < BUFFER_SIZE :" + bytes + " < " + BUFFER_SIZE);
+                        return;
                     }
                     logger.log(Level.SEVERE, "Input does not appear to be an Ogg bitstream.");
                     return;

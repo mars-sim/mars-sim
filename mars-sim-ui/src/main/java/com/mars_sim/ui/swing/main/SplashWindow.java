@@ -60,6 +60,9 @@ public class SplashWindow extends JComponent {
 			new SplashImage("Mars_Module_Landed.jpg", "A Mars base camp just landed, Notes from the Red Planet. YT, 2026"),
 			new SplashImage("Rover_Arriving.jpg", "A rover just arrived at a base camp, Notes from the Red Planet. YT, 2026"),
 			new SplashImage("Rover_Track.jpg", "A rover leaving track marks, Notes from the Red Planet. YT, 2026"),
+			new SplashImage("Greenhouse_Stock.jpg", "A billboard in a greenhouse. Meridian Futures. YT, 2026"),
+			new SplashImage("Cargo_Ship_Descending.jpg", "A cargo ship descending with service men waiting. Meridian Futures. YT, 2026"),
+			new SplashImage("Base_Command_Control.jpg", "Base camp command control duty. Meridian Futures. YT, 2026"),
 	};
 
 	private boolean firstDraw = true;
