@@ -64,12 +64,12 @@ public class RoleUtil {
 								.filter(rt -> rt.getLevel() == RoleLevel.CREW)
 								.toList();
 		
-		// Cache the crew roles
+		// Cache the chief roles
 		chiefRoles = Arrays.stream(RoleType.values())
 								.filter(RoleType::isChief)
 								.toList();	
 		
-		// Cache the council roles
+		// Cache the leadership roles
 		leadershipRoles = Arrays.stream(RoleType.values())
 								.filter(RoleType::isLeadership)
 								.toList();

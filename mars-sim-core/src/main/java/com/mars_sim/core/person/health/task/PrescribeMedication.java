@@ -30,7 +30,7 @@ import com.mars_sim.core.tool.RandomUtil;
 /**
  * A task in which a doctor prescribes (and provides) a medication to a patient.
  */
-public class PrescribeMedication extends Task { //MedicalAidTask {
+public class PrescribeMedication extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -65,7 +65,7 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
 	PrescribeMedication(Worker pharmacist) {
         // Use task constructor.
 //		super(NAME, pharmacist, aid, IMPACT, 0D);
-        super(NAME, pharmacist, false, IMPACT, 20D);
+        super(NAME, pharmacist, false, IMPACT, 30D);
 
 //       	if (worker instanceof Person person && person.isSuperUnfit()) {
 //    		logger.info(worker, "Super Unfit.");
@@ -77,7 +77,7 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         patient = determinePatient(pharmacist);
         
         if (patient == null) {
-        	logger.warning(pharmacist, 10_000, "No patient found.");
+        	logger.warning(pharmacist, 5_000, "No patient found.");
         	endTask();
         	return;
         }
@@ -86,7 +86,7 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         patient.getPhysicalCondition().setPrescribingMedication(true);
         
         if (pharmacist.isInVehicleInGarage()) {
-        	logger.info(pharmacist, 10_000, "Starting in-garaged-vehicle prescribing medication to " + patient.getName() + ".");
+        	logger.info(pharmacist, 5_000, "Starting in-garaged-vehicle prescribing medication to " + patient.getName() + ".");
         }
         
         else if (pharmacist.isInSettlement() && patient.getBuildingLocation() != null) {
@@ -120,7 +120,7 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         }
         
         else if (pharmacist.isInVehicle()) {
-        	logger.info(pharmacist, 10_000, "Starting in-vehicle prescribing medication to " + patient.getName() + ".");
+        	logger.info(pharmacist, 5_000, "Starting in-vehicle prescribing medication to " + patient.getName() + ".");
         }
         
         else {
@@ -129,9 +129,21 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         	return;
         }
 
-        String des = "Prescribing medication for " + patient;
-        logger.log(pharmacist, Level.INFO, 10_000, des + ".");
-        setDescription(des);
+        StringBuilder des = new StringBuilder();
+        
+        if (!pharmacist.equals(patient)) {
+            des = des.append("Prescribing medication to ").append(patient.getName())
+                .append("."); 
+        }
+        else {
+            des = des.append("Self-prescribing medication."); 
+        }
+        
+        String log = des.toString();
+        
+        logger.info(pharmacist, 5_000, log);
+        
+        setDescription(log);
         
         // Initialize phase
         setPhase(MEDICATING);
@@ -208,8 +220,11 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         }
         
         RadiationExposure exposure = condition.getRadiationExposure();
+        
+        boolean hasPanicAttack = condition.hasPanicAttack();
+        
         return (!condition.isDead()
-            && ((condition.getStressLevel().isStressedOut() && !condition.hasMedication(AnxietyMedication.NAME))
+            && ((condition.getStressLevel().isStressedOut() && hasPanicAttack && !condition.hasMedication(AnxietyMedication.NAME))
                 || (exposure.isSick() && !condition.hasMedication(RadioProtectiveAgent.NAME))));
     }
 
@@ -231,44 +246,69 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         // Add experience.
         addExperience(time);
 
-        // If duration, provide medication.
-        if (getDuration() <= (getTimeCompleted() + time)) {
+        // If enough time has been spent, provide the medication.
+        if (getTimeCompleted() + time >= getDuration()) {
         	
         	// Note: for now, allow remote prescription until the walking bug is fixed.
-        	
+
 //            var patientLocn = patient.getBuildingLocation();
             
 //            if (patientLocn != null) {
                 PhysicalCondition condition = patient.getPhysicalCondition();
 
+               	// if the patient has done prescribing medication, end task
+                if (!condition.isPrescribingMedication()) {
+                	logger.log(worker, Level.INFO, 0, patient + " already done with prescribing medication.");
+                    endTask();
+                    return 0D;
+                }
+                
+                boolean hasPanicAttack = condition.hasPanicAttack();
+                
                 Medication medication = null;
                 if (condition.isRadiationPoisoned()) {
                 	medication = new RadioProtectiveAgent(patient);                    
                 }
-                else if (condition.getStressLevel().isStressedOut()) {
-                	medication = new AnxietyMedication(patient); 
+                else if (hasPanicAttack) {
+                	
+                	if (condition.getStressLevel().isStressedOut()) {
+                    	medication = new AnxietyMedication(patient); 
+                	}
+                	else {
+                    	logger.log(worker, Level.INFO, 0, "Stress already subsided. No need of prescribing anxiety medication for " + patient + ".");
+                        endTask();
+                        return 0D;
+                	}
                 }
 
+                // Check if medication can be properly identified.
+                if (medication == null) {
+                	logger.log(worker, Level.INFO, 0, "No propert medication found for " + patient + ".");
+                    endTask();
+                    return 0D;
+                }
+                
                 // Check if patient already has taken medication.
-                if ((medication == null) || condition.hasMedication(medication.getName())) {
+                if (condition.hasMedication(medication.getName())) {
+                	logger.log(worker, Level.INFO, 0, patient + " already had " 
+                			+ medication.getName() + " prescribed. No need for more.");
                     endTask();
                     return 0D;
                 }
 
                 // Medicate patient.
                 condition.addMedication(medication);
- 
+
                 StringBuilder des = new StringBuilder();
                 
                 if (!worker.equals(patient)) {
-                    des = des.append("Prescribing ").append(medication.getName())
+                    des = des.append("Done prescribing ").append(medication.getName())
                         .append(" to ").append(patient.getName())
 //                        .append(" in ").append(patientLocn.getName())
                         .append("."); 
                 }
                 else {
-                    des = des.append("Self-prescribing ").append(medication.getName()).append("."); 
-                    
+                    des = des.append("Done self-prescribing ").append(medication.getName()).append("."); 
 
 //                    MedicalCare care = null;
 //                    
@@ -280,7 +320,7 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
 
                 }
                 
-                logger.log(worker, Level.INFO, 10_000, des.toString());
+                logger.log(worker, Level.INFO, 0, des.toString());
                 
                 setDescription(des.toString());
                 
@@ -320,7 +360,8 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
      * Ends the task.
      */
     public void endTask() {
-    	patient.getPhysicalCondition().setPrescribingMedication(false);
+    	if (patient != null)
+    		patient.getPhysicalCondition().setPrescribingMedication(false);
     	super.endTask();
     }
 }

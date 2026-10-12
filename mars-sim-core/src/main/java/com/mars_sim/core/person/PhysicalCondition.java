@@ -1232,6 +1232,18 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	/**
+	 * Checks if a person has panic attack.
+	 * 
+	 * @return
+	 */
+	public boolean hasPanicAttack() {
+		if (getProblemByComplaint(medicalManager.getComplaintByID(MedicalManager.PANIC_ATTACK)) != null) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * Processes stress related illness.
 	 */
 	private void processStress() {

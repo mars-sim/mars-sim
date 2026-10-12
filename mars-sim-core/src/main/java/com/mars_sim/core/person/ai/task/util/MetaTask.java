@@ -249,7 +249,7 @@ public abstract class MetaTask {
 	}
 
 	/**
-	 * Adds all chief roles for this Task.
+	 * Adds all crew roles for this Task.
 	 * 
 	 * @param jobs
 	 */

@@ -12,6 +12,7 @@ import java.util.List;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
@@ -34,11 +35,11 @@ public class PrescribeMedicationMeta extends FactoryMetaTask {
     public PrescribeMedicationMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		
-		setTrait(TaskTrait.MEDICAL);
+		setTrait(TaskTrait.MEDICAL, TaskTrait.TREATMENT);
         addPreferredRobot(RobotType.MEDICBOT);
     	setPreferredJob(JobType.MEDICS);
-//		setPreferredJob(JobType.ACADEMICS);
 		addAllCrewRoles();	
+		setPreferredRole(RoleType.SAFETY_SPECIALIST, RoleType.CHIEF_OF_SAFETY_HEALTH_SECURITY);
 	}
     
     @Override
