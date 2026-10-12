@@ -76,10 +76,15 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         // Determine patient needing medication
         patient = determinePatient(pharmacist);
         
-        if (patient != null) {
+        if (patient == null) {
         	logger.warning(pharmacist, 10_000, "No patient found.");
+        	endTask();
+        	return;
         }
         	
+        // Set this flag to avoid having to assign another pharmacist to serve the same patient
+        patient.getPhysicalCondition().setPrescribingMedication(true);
+        
         if (pharmacist.isInVehicleInGarage()) {
         	logger.info(pharmacist, 10_000, "Starting in-garaged-vehicle prescribing medication to " + patient.getName() + ".");
         }
@@ -190,7 +195,18 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
      * Does this person need medication ?
      */
     static boolean needsMedication(Person patient) {
+    	// if a person is in the process of self-prescribing medicine, return false; 
+    	if (patient.getTaskManager().getTaskClassName().equalsIgnoreCase(NAME)) {
+    		return false;
+    	}
+    	
         PhysicalCondition condition = patient.getPhysicalCondition();
+        
+       	// if the patient has already been assigned a doctor/pharmacist for prescribing medication, return false; 
+        if (condition.isPrescribingMedication()) {
+        	return false;
+        }
+        
         RadiationExposure exposure = condition.getRadiationExposure();
         return (!condition.isDead()
             && ((condition.getStressLevel().isStressedOut() && !condition.hasMedication(AnxietyMedication.NAME))
@@ -220,7 +236,7 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         	
         	// Note: for now, allow remote prescription until the walking bug is fixed.
         	
-            var patientLocn = patient.getBuildingLocation();
+//            var patientLocn = patient.getBuildingLocation();
             
 //            if (patientLocn != null) {
                 PhysicalCondition condition = patient.getPhysicalCondition();
@@ -298,5 +314,13 @@ public class PrescribeMedication extends Task { //MedicalAidTask {
         else {
             return time;
         }
+    }
+    
+    /**
+     * Ends the task.
+     */
+    public void endTask() {
+    	patient.getPhysicalCondition().setPrescribingMedication(false);
+    	super.endTask();
     }
 }

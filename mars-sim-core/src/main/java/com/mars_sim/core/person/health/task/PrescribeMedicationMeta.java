@@ -37,7 +37,7 @@ public class PrescribeMedicationMeta extends FactoryMetaTask {
 		setTrait(TaskTrait.MEDICAL);
         addPreferredRobot(RobotType.MEDICBOT);
     	setPreferredJob(JobType.MEDICS);
-		setPreferredJob(JobType.ACADEMICS);
+//		setPreferredJob(JobType.ACADEMICS);
 		addAllCrewRoles();	
 	}
     

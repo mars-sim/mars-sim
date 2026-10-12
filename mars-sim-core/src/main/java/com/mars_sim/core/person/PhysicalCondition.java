@@ -126,6 +126,8 @@ public class PhysicalCondition implements Serializable {
 	private boolean alive;
 	/** True if person is radiation Poisoned. */
 	private boolean isRadiationPoisoned;
+	/** The flag indicating if a person is prescribing medication. */
+	private boolean prescribingMedication;
 
 	private int endurance;
 	private int strength;
@@ -2137,6 +2139,24 @@ public class PhysicalCondition implements Serializable {
 		return history;
 	}
 
+	/**
+	 * Sets the flag indicating if a person is prescribing medication.
+	 * 
+	 * @param value
+	 */
+	public void setPrescribingMedication(boolean value) {
+		prescribingMedication = value;
+	}
+	
+	/**
+	 * Is the person prescribing medication ?
+	 * 
+	 * @return
+	 */
+	public boolean isPrescribingMedication() {
+		return prescribingMedication;
+	}
+	
 	/**
 	 * Initializes that static instances.
 	 * 
