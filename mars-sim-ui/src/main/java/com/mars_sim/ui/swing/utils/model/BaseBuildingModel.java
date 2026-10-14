@@ -52,7 +52,8 @@ public abstract class BaseBuildingModel extends AbstractEntityModel<Building> {
                                 Set.of(Heating.TEMPERATURE_EVENT));
 
     /**
-     * Create a generic building model with the specified columns.
+     * Creates a generic building model with the specified columns.
+     * 
      * @param columns Columns to show.
      */
     protected BaseBuildingModel(EntityColumnSpec... columns) {
@@ -60,8 +61,9 @@ public abstract class BaseBuildingModel extends AbstractEntityModel<Building> {
     }
 
     /**
-     * Get a cell value for the associated Building. Column index maps to the associated ColumnSpec where the id
+     * Gets a cell value for the associated Building. Column index maps to the associated ColumnSpec where the id
      * is used to determine the value to return.
+     * 
      * @param entity The Building entity.
      * @param valueIndex Column index.
      * @return Associated value.

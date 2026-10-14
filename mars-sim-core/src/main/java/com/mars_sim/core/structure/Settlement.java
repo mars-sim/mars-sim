@@ -3426,30 +3426,26 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Gets the number of sites.
 	 * 
-	 * @param local Should we count the sites only in settlement vicinity ?
 	 * @return
 	 */
-	public int getNumDataCollectionSite(boolean local) {
+	public int[] getNumDataCollectionSite() {
+		int numLocal = 0;
+		int numRemote = 0;
 		if (dataCollectionSiteMap.isEmpty()) {
-			return 0;
+			return new int[2];
 		}
 		
 		// Note: for now, must force the distance to be 0.0 if in settlement vicinity
-		if (local && dataCollectionSiteMap.containsKey(0.0)) {
-			return dataCollectionSiteMap.get(0.0).size();
+		if (dataCollectionSiteMap.containsKey(0.0)) {
+			numLocal = dataCollectionSiteMap.get(0.0).size();
 		}
-		else {
-			
-			return dataCollectionSiteMap.entrySet().stream()
+		
+		numRemote = dataCollectionSiteMap.entrySet().stream()
 					.filter(entry -> entry.getKey() != 0.0)
 					.mapToInt(entry -> entry.getValue() != null ? entry.getValue().size() : 0)
 	                .sum();
-			
-//			return dataCollectionSiteMap.values().stream()
-//					.filter(entry -> entry.getKey().startsWith("group1") || entry.getKey().startsWith("group2"))
-//					.mapToInt(list -> list != null ? list.size() : 0)
-//	                .sum();
-		}
+
+		return new int[] {numLocal, numRemote};
 	}
 	
 	/**

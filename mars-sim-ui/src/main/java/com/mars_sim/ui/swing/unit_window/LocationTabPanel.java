@@ -441,8 +441,11 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 		iceLabel.setText(Math.round(s.getIceCollectionRate() * 100.0)/100.0 + "");
 		regolithLabel.setText(Math.round(s.getRegolithCollectionRate() * 100.0)/100.0 + "");
 		areothermalLabel.setText(Math.round(s.getAreothermalPotential() * 100.0)/100.0 + " %");
-		localDataCollectionSitesLabel.setText(s.getNumDataCollectionSite(true) + "");
-		remoteDataCollectionSitesLabel.setText(s.getNumDataCollectionSite(false) + "");
+		int[] array = s.getNumDataCollectionSite();
+		int numLocal = array[0];
+		int numRemote = array[1];
+		localDataCollectionSitesLabel.setText(numLocal + "");
+		remoteDataCollectionSitesLabel.setText(numRemote + "");
 	}
 	
 	/**

@@ -23,7 +23,7 @@ public class MissionLog implements Serializable  {
 	/**
 	 * The maximum number of log entries to compare for duplicates.
 	 */
-	static final int MAX_COMPARE = 2;
+	static final int MAX_COMPARE = 4;
 
 	/**
      * POJO class for a log entry.
@@ -104,7 +104,8 @@ public class MissionLog implements Serializable  {
 				String entry0 = log0.getEntry();
 				String enterBy0 = log0.getEnterBy();
 				
-				if (entry0.equals(entry) && enterBy0.equals(enterBy) ) {
+				if (entry0 != null && enterBy0 != null 
+					&& entry0.equals(entry) && enterBy0.equals(enterBy) ) {
 					// Same as one of the chosen ones, do not add
 					return;
 				}

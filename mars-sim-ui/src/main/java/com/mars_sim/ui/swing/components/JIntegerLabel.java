@@ -15,6 +15,7 @@ import javax.swing.JLabel;
  * The current numerical value is cached to avoid unnecessary updates to the label text.
  * The label updates its text only when the value changes, to minimize unnecessary updates.
  */
+@SuppressWarnings("serial")
 public class JIntegerLabel extends JLabel {
 
     private static final DecimalFormat DECIMAL_PLACES0 = new DecimalFormat("#,###,###,###");

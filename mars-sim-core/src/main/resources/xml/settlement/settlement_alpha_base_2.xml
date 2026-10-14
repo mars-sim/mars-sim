@@ -2,7 +2,7 @@
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Alpha Base 2" shift-pattern="Long 3 Shift" 
         default-population="48" sponsor="SPACEX"
-        description="Alpha Base 2" objective="CROP_FARM">
+        description="Alpha Base 2 (8*3 + 12*3 = 24 + 36 = 50)" objective="CROP_FARM">
         
     <!-- row 0 -->               
     <building id="LH0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -62,7 +62,7 @@
     <building id="B3" type="Brickcore3x3" xloc="-6.0"
         yloc="38" facing="270.0">
         <connection-list>
-            <connection id="H7" hatch-facing="east" />
+            <connection id="LONG_H" hatch-facing="east" />
             <connection id="H5" hatch-facing="south" />
         </connection-list>
     </building>
@@ -70,7 +70,7 @@
     <building id="RQ0" type="Residential Quarters" xloc="-12.5" 
     	yloc="42.5" facing="270.0">
         <connection-list>
-            <connection id="H7" hatch-facing="south" />
+            <connection id="LONG_H" hatch-facing="south" />
         </connection-list>
     </building>
     
@@ -78,25 +78,25 @@
     <building id="RQ1" type="Residential Quarters" xloc="-21.5"
         yloc="42.5" facing="270.0">
         <connection-list>
-            <connection id="H7" hatch-facing="south" />
+            <connection id="LONG_H" hatch-facing="south" />
         </connection-list>
     </building>
        
     <building id="IN" type="Infirmary" xloc="-30.5" yloc="42.5"
         facing="270.0">
         <connection-list>
-            <connection id="H7" hatch-facing="south" />
+            <connection id="LONG_H" hatch-facing="south" />
         </connection-list>
     </building>  
     
     <building id="LOU" type="Lounge" xloc="-41.5" yloc="42.5"
         facing="270.0">
         <connection-list>
-            <connection id="H7" hatch-facing="south" />
+            <connection id="LONG_H" hatch-facing="south" />
         </connection-list>
     </building>  
     
-    <building id="H7" type="Hallway" length="57.0" xloc="-36.0"
+    <building id="LONG_H" type="Hallway" length="57.0" xloc="-36.0"
         yloc="38" facing="270.0">
         <connection-list>
             <connection id="B3" hatch-facing="west" />
@@ -116,28 +116,28 @@
    <building id="LAB" type="Laboratory" xloc="-12.5"
         yloc="33.5" facing="90.0">
         <connection-list>
-            <connection id="H7" hatch-facing="north" />
+            <connection id="LONG_H" hatch-facing="north" />
         </connection-list>
     </building>
     
     <building id="WS" type="Workshop" xloc="-21.5" 
     	yloc="33.5" facing="270.0">
         <connection-list>
-            <connection id="H7" hatch-facing="north" />
+            <connection id="LONG_H" hatch-facing="north" />
         </connection-list>
     </building>
 
     <building id="COM" type="Command Center" xloc="-30.5" 
     	yloc="33.5" facing="270.0">
         <connection-list>
-            <connection id="H7" hatch-facing="north" />
+            <connection id="LONG_H" hatch-facing="north" />
         </connection-list>
     </building>
     
      <building id="SF" type="Server Farm" xloc="-41.5" yloc="33.5"
         facing="0.0">
         <connection-list>
-            <connection id="H7" hatch-facing="north" />
+            <connection id="LONG_H" hatch-facing="north" />
         </connection-list>
     </building>
 
@@ -145,7 +145,7 @@
         yloc="42.5" facing="0.0">
         <connection-list>
             <connection id="LGH" hatch-facing="north"/>
-            <connection id="H7" hatch-facing="south" />
+            <connection id="LONG_H" hatch-facing="south" />
         </connection-list>
     </building>
     
@@ -160,7 +160,7 @@
         yloc="42.25" facing="0.0">
         <connection-list>
             <connection id="G0" hatch-facing="north" />
-            <connection id="H7" hatch-facing="south" />
+            <connection id="LONG_H" hatch-facing="south" />
         </connection-list>
     </building>
     

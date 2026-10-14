@@ -7,7 +7,11 @@
 package com.mars_sim.core.data.collection;
 
 import java.util.Map;
+import java.util.Set;
 
+import com.mars_sim.core.EntityIdentifier;
+import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.Person;
@@ -15,8 +19,10 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
-public abstract class FieldDataSet implements SurfacePOI {
+public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	
+	private static final long serialVersionUID = 1L;
+
 	private static int currentIdentifier;
 
 	// Unique identifier
@@ -44,7 +50,8 @@ public abstract class FieldDataSet implements SurfacePOI {
 	
 	private MarsTime startTimpstamp;
 	
-	public FieldDataSet(DataType dataType, MarsTime timeCollected, int initialQuality) {
+	public FieldDataSet(Settlement settlement, DataType dataType, MarsTime timeCollected, int initialQuality) {
+		this.owningSettlement = settlement;
 		this.dataType = dataType;
 		this.startTimpstamp = timeCollected;
 		this.initialQuality = initialQuality;
@@ -88,7 +95,11 @@ public abstract class FieldDataSet implements SurfacePOI {
 		workTime += time;
 	}
 	
-	private Person getOwner() {
+	public double getWorkTime() {
+		return workTime;
+	}
+	
+	public Person getOwner() {
 		return owner;
 	}
 	
@@ -110,6 +121,35 @@ public abstract class FieldDataSet implements SurfacePOI {
 	public String getName() {
 		// To be overridden by subclass.
 		return "FieldData" + getIdentifier();
+	}
+	
+	public String getContext() {
+		return "FieldDataSet";
+	}
+	
+
+	@Override
+	public void addEntityListener(EntityListener newListener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeEntityListener(EntityListener oldListener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Set<EntityListener> getEntityListeners() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

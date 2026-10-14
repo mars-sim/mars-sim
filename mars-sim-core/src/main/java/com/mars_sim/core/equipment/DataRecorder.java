@@ -61,6 +61,8 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	
 	private Map<Worker, List<FieldDataSet>> dataSetMap = new HashMap<>();
 	
+	private Settlement settlement;
+	
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
 	/** The recorder's event history. */
@@ -78,6 +80,8 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		// Use Equipment constructor.
 		super(name, TYPE, settlement);
 			
+		this.settlement = settlement;
+		
 		setDescription("A standard data recorder.");
 
 		// Add scope to malfunction manager.
@@ -157,11 +161,11 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * @param isNewRecording
 	 */
 	public void recordData(Worker worker, double workTime, int initialQuality, boolean isNewRecording) {
+		FieldDataSet data = null;
 		if (dataSetMap.isEmpty()) {
-			createNewFieldDataSet(worker, workTime, initialQuality);
+			data = createNewFieldDataSet(worker, workTime, initialQuality);
 		}
 		else {
-			FieldDataSet data = null;
 			List<FieldDataSet> list = dataSetMap.get(worker);
 			if (list.isEmpty()) {
 				data = createNewFieldDataSet(worker, workTime, initialQuality);
@@ -178,6 +182,35 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 			list.add(data);
 			dataSetMap.put(worker, list);
 		}
+		
+		// Write to the data recorder
+		writeToDataRecorder(worker, data);
+		// Write onto the global data manager
+		writeToDataManager(data);
+	}
+	
+	/**
+	 * Writes the data onto the data manager.
+	 * 
+	 * @param data
+	 */
+	private void writeToDataManager(FieldDataSet data) {
+		List<FieldDataSet> existingList = Simulation.instance().getDataManager().getDataArchive().get(settlement);
+		if (existingList == null) {
+			existingList = new ArrayList<>();
+		}
+		if (existingList.isEmpty()) {
+			existingList.add(data);
+			return;
+		}
+		
+		for (FieldDataSet fds: existingList) {
+			if (fds.getIdentifier() == data.getIdentifier()) {
+				// Overwrite the dataset
+				fds = data;
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -190,6 +223,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 */
 	private FieldDataSet createNewFieldDataSet(Worker worker, double workTime, int initialQuality) {
 		FieldDataSet data = new WaterIceData(
+				settlement,
 				DataType.GROUND_DATA,
 				masterClock.getMarsTime(), 
 				initialQuality);
@@ -198,19 +232,19 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	}
 	
 	/**
-	 * Adds a dataset.
+	 * Write the dataset to data recorder.
 	 *  
 	 * @param person
-	 * @param dataSet
+	 * @param data
 	 */
-	public void addDataset(Worker worker, FieldDataSet dataSet) {
+	public void writeToDataRecorder(Worker worker, FieldDataSet data) {
 		List<FieldDataSet> list = null;
 		if (dataSetMap.containsKey(worker)) {
 			list = dataSetMap.get(worker);
 			for (FieldDataSet fds: list) {
-				if (fds.getIdentifier() == dataSet.getIdentifier()) {
+				if (fds.getIdentifier() == data.getIdentifier()) {
 					// Overwrite the dataset
-					fds = dataSet;
+					fds = data;
 					break;
 				}
 			}
@@ -219,7 +253,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 			list = new ArrayList<>();
 		}
 		// Add the dataset
-		list.add(dataSet);
+		list.add(data);
 		// Add the list
 		dataSetMap.put(worker, list);
 	}

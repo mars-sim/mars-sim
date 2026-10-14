@@ -281,7 +281,7 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 	}
 
 	/**
-	 * Remove the trackign on mission when destroying the panel.
+	 * Removes the tracking on mission when destroying the panel.
 	 */
 	@Override
 	public void destroy() {

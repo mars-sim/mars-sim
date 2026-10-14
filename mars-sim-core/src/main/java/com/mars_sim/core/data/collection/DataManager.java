@@ -22,6 +22,7 @@ public class DataManager implements Serializable {
 
 	/** The settlement's data library. */
 	private Map<Settlement, List<FieldDataSet>> dataArchive;
+	
 	/**
 	 * Constructor for a {@link DataManager}.
 	 */

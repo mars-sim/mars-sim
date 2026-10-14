@@ -1535,7 +1535,7 @@ public class Crop implements Comparable<Crop>, Entity {
 	}
 
 	/**
-	 * The context of a Crop is always th context of the parent Building.
+	 * The context of a Crop is always the context of the parent Building.
 	 */
 	@Override
 	public String getContext() {

@@ -2,7 +2,7 @@
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Alpha Base 3" shift-pattern="Long 3 Shift" 
         default-population="48" sponsor="MS"
-        description="Alpha Base 3" objective="CROP_FARM">
+        description="Alpha Base 3 (8*3 + 12*3 = 24 + 36 = 50)" objective="CROP_FARM">
         
     <!-- row 0 -->               
     <building id="LH0" type="Lander Hab" xloc="0.0" yloc="0.0"
@@ -43,18 +43,34 @@
         </connection-list>
     </building>
     
-    <building id="AP0" type="Algae Pond" xloc="-12.0"
+    <building id="CQ0" type="Compact Quarters" xloc="-12.0"
         yloc="13.0" facing="270.0">
         <connection-list>
             <connection id="B3" hatch-facing="west" />
-            <connection id="AP1" hatch-facing="east" />
+            <connection id="CQ1" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="AP1" type="Algae Pond" xloc="-21.0"
+    <building id="CQ1" type="Compact Quarters" xloc="-21.0"
         yloc="13.0" facing="270.0">
         <connection-list>
-            <connection id="AP0" hatch-facing="west" />
+            <connection id="CQ0" hatch-facing="west" />
+            <connection id="CQ2" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="CQ2" type="Compact Quarters" xloc="-30.0"
+        yloc="13.0" facing="270.0">
+        <connection-list>
+            <connection id="CQ1" hatch-facing="west" />
+            <connection id="CQ3" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="CQ3" type="Compact Quarters" xloc="-39.0"
+        yloc="13.0" facing="270.0">
+        <connection-list>
+            <connection id="CQ2" hatch-facing="west" />
         </connection-list>
     </building>
     
@@ -82,34 +98,23 @@
     </building>
     
     <!-- row 3 -->
+ 
     <building id="B1" type="Brickcore3x3" xloc="-6.0"
-        yloc="38" facing="270.0">
+        yloc="39.0" facing="270.0">
         <connection-list>
-            <connection id="LONGH" hatch-facing="east" />
             <connection id="HALL4" hatch-facing="south" />
+            <connection id="IN" hatch-facing="west" />
         </connection-list>
     </building>
     
-    <building id="RQ0" type="Residential Quarters" xloc="-12.5" 
-    	yloc="42.5" facing="270.0">
-        <connection-list>
-            <connection id="LONGH" hatch-facing="south" />
-        </connection-list>
-    </building>
-    
-    <building id="RQ1" type="Residential Quarters" xloc="-21.5"
-        yloc="42.5" facing="270.0">
-        <connection-list>
-            <connection id="LONGH" hatch-facing="south" />
-        </connection-list>
-    </building>
-       
-    <building id="IN" type="Infirmary" xloc="-30.5" yloc="42.5"
+    <building id="IN" type="Infirmary" xloc="0.0" yloc="39.0"
         facing="270.0">
         <connection-list>
-            <connection id="LONGH" hatch-facing="south" />
+            <connection id="B1" hatch-facing="east" />
         </connection-list>
     </building>  
+    
+<!--
     
     <building id="LOU" type="Lounge" xloc="-41.5" yloc="42.5"
         facing="270.0">
@@ -153,6 +158,7 @@
             <connection id="LONGH" hatch-facing="south" />
         </connection-list>
     </building>
+-->
     
     <!-- building id="LGH" type="Large Greenhouse" xloc="-36.0"
         yloc="55.0" facing="0.0">
@@ -161,6 +167,7 @@
         </connection-list>
     </! building  -->
     
+<!--
     <building id="G1" type="Garage" xloc="-36.0" yloc="54.0"
         facing="0.0">
         <connection-list>
@@ -182,6 +189,7 @@
             <connection id="HALL6" hatch-facing="south" />
         </connection-list>
     </building>
+-->
 
     <building id="EVA0" type="EVA Airlock" xloc="-2.0" yloc="6.5" facing="0.0">
         <connection-list>
@@ -224,7 +232,7 @@
         yloc="13.0" facing="270.0">
         <connection-list>
             <connection id="LH1" hatch-facing="west"  />
-            <connection id="AP0" hatch-facing="east"  />
+            <connection id="CQ0" hatch-facing="east"  />
             <connection id="HALL1" hatch-facing="south" />
             <connection id="HALL2" hatch-facing="north" />
         </connection-list>
@@ -249,8 +257,8 @@
         </connection-list>
     </building>
 
-    <building id="HALL4" type="Hallway" length="9.0" xloc="-6.0"
-        yloc="32.0" facing="0.0">
+    <building id="HALL4" type="Hallway" length="10.0" xloc="-6.0"
+        yloc="32.5" facing="0.0">
         <connection-list>
             <connection id="EVA2" hatch-facing="west" />
             <connection id="B4" hatch-facing="south" />
@@ -273,7 +281,7 @@
         </connection-list>
     </building>
 
-   
+<!--   
     <building id="B5" type="Brickcore3x3" length="3.0" xloc="-66.0"
         yloc="38.0" facing="0.0">
         <connection-list>
@@ -281,7 +289,7 @@
         </connection-list>
     </building>
      
-    <building id="LONGH" type="Hallway" length="57.0" xloc="-36"
+    <building id="LONGH" type="Hallway" length="57.0" xloc="-36.0"
         yloc="38.0" facing="270.0">
         <connection-list>
             <connection id="B1" hatch-facing="west" />
@@ -302,7 +310,7 @@
             
         </connection-list>
     </building>
-   
+-->   
  
 	<!-- Building Packages -->
     <building-package name="Storage Set 1"/>

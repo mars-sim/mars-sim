@@ -28,7 +28,6 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.PlanType;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
@@ -204,11 +203,12 @@ class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener 
 	}
 
 	/**
-	 * Update the dynamic fields
+	 * Updates the dynamic fields.
+	 * 
 	 * @param mission
 	 */
 	private void updateFields(Mission mission) {
-		phaseTextField.setText(Conversion.trim(mission.getPhaseDescription(), MAX_PHASE_LENGTH));
+		phaseTextField.setText(mission.getPhaseDescription()); //Conversion.trim(mission.getPhaseDescription(), MAX_PHASE_LENGTH));
 		designationTextField.setText(mission.getFullMissionDesignation());
 
 		var status = mission.getMissionStatus().stream()
