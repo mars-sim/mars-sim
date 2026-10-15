@@ -6,15 +6,18 @@
  */
 package com.mars_sim.core.data.collection;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.EntityListenerManager;
 import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
-import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -42,7 +45,7 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	
 	private Map<ScienceType, Integer> scienceTypes;
 	
-	private Person owner;
+	private Worker owner;
 	
 	private Settlement owningSettlement;
 	
@@ -50,8 +53,13 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	
 	private MarsTime startTimpstamp;
 	
-	public FieldDataSet(Settlement settlement, DataType dataType, MarsTime timeCollected, int initialQuality) {
+	/** A set of listeners for this scientific study. */
+	private transient EntityListenerManager listeners;
+	
+	
+	public FieldDataSet(Settlement settlement, Worker owner, DataType dataType, MarsTime timeCollected, int initialQuality) {
 		this.owningSettlement = settlement;
+		this.owner = owner;
 		this.dataType = dataType;
 		this.startTimpstamp = timeCollected;
 		this.initialQuality = initialQuality;
@@ -99,11 +107,11 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 		return workTime;
 	}
 	
-	public Person getOwner() {
+	public Worker getOwner() {
 		return owner;
 	}
 	
-	private Settlement getOwningSettlement() {
+	public Settlement getOwningSettlement() {
 		return owningSettlement;
 	}
 	
@@ -128,28 +136,61 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	}
 	
 
+	/**
+	 * Adds a listener.
+	 * 
+	 * @param newListener the listener to add.
+	 */
 	@Override
 	public void addEntityListener(EntityListener newListener) {
-		// TODO Auto-generated method stub
-		
+		if (newListener == null)
+			throw new IllegalArgumentException();
+		if (listeners == null)
+			listeners = new EntityListenerManager();
+
+		listeners.addEntityListener(newListener);
 	}
 
+	/**
+	 * Removes a listener.
+	 * 
+	 * @param oldListener the listener to remove.
+	 */
 	@Override
 	public void removeEntityListener(EntityListener oldListener) {
-		// TODO Auto-generated method stub
-		
+		if (listeners != null)
+			listeners.removeEntityListener(oldListener);
 	}
 
+	/**
+	 * Gets an unmodifiable set of the active listeners on this entity.
+	 * 
+	 * @return unmodifiable set of entity listeners.
+	 */
 	@Override
 	public Set<EntityListener> getEntityListeners() {
-		// TODO Auto-generated method stub
-		return null;
+		if (listeners == null) {
+			return Collections.emptySet();
+		}
+		return listeners.getEntityListeners();
 	}
 
 	@Override
 	public EntityIdentifier getEntityIdentifier() {
-		// TODO Auto-generated method stub
-		return null;
+		return new EntityIdentifier("DATA", String.valueOf(identifier));
+	}
+	
+	/**
+	 * Fires an update event.
+	 * 
+	 * @param updateType the update type.
+	 */
+	public void fireUpdate(String updateType) {
+		if (listeners == null) {
+			return;
+		}
+		final EntityEvent studyEvent = new EntityEvent(this, updateType, owner);
+		listeners.fireEvent(studyEvent);
 	}
 }
 

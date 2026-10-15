@@ -44,7 +44,8 @@ public class ScienceStudyTableModel extends BaseScienceStudyModel
     }
 
     /**
-     * Set the settlement filter for the model. This will select the Scientific Studies associated with the selected settlements.
+     * Sets the settlement filter for the model. This will select the Scientific Studies associated with the selected settlements.
+     * 
      * @param selectedSettlement Selected settlements to filter by.
      * @return true if the filter was applied, false otherwise.
      */
@@ -77,7 +78,7 @@ public class ScienceStudyTableModel extends BaseScienceStudyModel
     }
 
     /**
-     * Remove listener on Scientific Study Manager when releasing the model.
+     * Removes listener on Scientific Study Manager when releasing the model.
      */
     @Override
     public void release() {
@@ -91,7 +92,7 @@ public class ScienceStudyTableModel extends BaseScienceStudyModel
     }
 
     /**
-     * Settlement column is the second column in the model.
+     * Gets the settlement column. Here it is the second column of the model.
      */
     @Override
     public int getSettlementColumn() {

@@ -182,7 +182,8 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 			list.add(data);
 			dataSetMap.put(worker, list);
 		}
-		
+		// Fire the data update
+		data.fireUpdate(null);
 		// Write to the data recorder
 		writeToDataRecorder(worker, data);
 		// Write onto the global data manager
@@ -223,7 +224,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 */
 	private FieldDataSet createNewFieldDataSet(Worker worker, double workTime, int initialQuality) {
 		FieldDataSet data = new WaterIceData(
-				settlement,
+				settlement, worker,
 				DataType.GROUND_DATA,
 				masterClock.getMarsTime(), 
 				initialQuality);
@@ -290,6 +291,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 
 	/**
 	 * Adds an entry to the data recorder's history.
+	 * 
 	 * @param entry the history entry to add.
 	 */
 	@Override

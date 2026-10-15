@@ -1125,13 +1125,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 *
-	 * @param si {@link Simulation}
+	 * @param sim {@link Simulation}
 	 * @param c {@link MarsClock}
 	 * @param e {@link HistoricalEventManager}
 	 * @param u {@link UnitManager}
 	 * @param sf {@link SurfaceFeatures}
 	 */
-	public static void initializeInstances(Simulation si, HistoricalEventManager e,
+	public static void initializeInstances(Simulation sim, HistoricalEventManager e,
 			UnitManager u, SurfaceFeatures sf, 
 			PersonConfig pc) {
 		eventManager = e;
@@ -1139,7 +1139,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		surfaceFeatures = sf;
 		personConfig = pc;
 
-		clock = si.getMasterClock();
+		clock = sim.getMasterClock();
 
 		MissionLog.initialise(clock);
 		MissionUtil.initializeInstances(u);

@@ -71,6 +71,7 @@ public class MonitorWindow extends ContentPanel
 	private static final String BUILDING_ICON = "building"; 
 	private static final String SCIENCE_ICON = "science"; 
 	private static final String TASK_ICON = "task";
+	private static final String DATA_ICON = "data";
 	private static final String TRASH_ICON = "action/trash";
 	private static final String LOCATE_ICON = "action/locate";
 	private static final String DETAILS_ICON = "action/details";
@@ -188,6 +189,7 @@ public class MonitorWindow extends ContentPanel
 		newTabs.add(new TableTab(this, new SettlementTableModel(), true, false, COLONY_ICON));
 		newTabs.add(new TableTab(this, new PersonTableModel(), true, false, PEOPLE_ICON));
 		newTabs.add(new TableTab(this, new RobotTableModel(), true, false, BOT_ICON));
+		newTabs.add(new TableTab(this, new DataTableModel(context.getSimulation().getDataManager()), true, false, DATA_ICON));
 		newTabs.add(new TableTab(this, new BuildingTableModel(), true, false, BUILDING_ICON));
 		newTabs.add(new TableTab(this, new CropTableModel(context.getSimulation().getConfig()), true, false, CROP_ICON));
 		

@@ -20,7 +20,8 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
 @SuppressWarnings("serial")
 public abstract class BaseDataModel extends AbstractEntityModel<FieldDataSet> {
 
-	private static final int ID_VAL = 301;
+	private static final int ID_VAL = 300;
+	private static final int SETTLEMENT_VAL = 301;
 	private static final int TYPE_VAL = 302;
 	private static final int TIME_VAL = 303;
 	private static final int QUALITY_VAL = 304;
@@ -28,19 +29,21 @@ public abstract class BaseDataModel extends AbstractEntityModel<FieldDataSet> {
 	private static final int WORKTIME_VAL = 306;
 	private static final int COORD_VAL = 307;
 	
-	private static final EntityColumnSpec ID = new EntityColumnSpec(
+	protected static final EntityColumnSpec ID = new EntityColumnSpec(
 					new ColumnSpec(ID_VAL, Msg.getString("TabPanelData.column.id"), Integer.class), null);
-	private static final EntityColumnSpec TYPE = new EntityColumnSpec(
+	protected static final EntityColumnSpec SETTLEMENT = new EntityColumnSpec(
+					new ColumnSpec(SETTLEMENT_VAL, Msg.getString("TabPanelData.column.settlement"), String.class), null);
+	protected static final EntityColumnSpec TYPE = new EntityColumnSpec(
 					new ColumnSpec(TYPE_VAL, Msg.getString("TabPanelData.column.type"), String.class), null);
-	private static final EntityColumnSpec TIME = new EntityColumnSpec(
+	protected static final EntityColumnSpec TIME = new EntityColumnSpec(
 					new ColumnSpec(TIME_VAL, Msg.getString("TabPanelData.column.time"), MarsTime.class), null);
-	private static final EntityColumnSpec QUALITY = new EntityColumnSpec(
+	protected static final EntityColumnSpec QUALITY = new EntityColumnSpec(
 					new ColumnSpec(QUALITY_VAL, Msg.getString("TabPanelData.column.quality"), Integer.class), null);
-	private static final EntityColumnSpec OWNER = new EntityColumnSpec(
+	protected static final EntityColumnSpec OWNER = new EntityColumnSpec(
 					new ColumnSpec(OWNER_VAL, Msg.getString("TabPanelData.column.owner"), String.class), null);
-	private static final EntityColumnSpec WORKTIME = new EntityColumnSpec(
+	protected static final EntityColumnSpec WORKTIME = new EntityColumnSpec(
 					new ColumnSpec(WORKTIME_VAL, Msg.getString("TabPanelData.column.workTime"), Double.class), null);
-	private static final EntityColumnSpec COORD = new EntityColumnSpec(
+	protected static final EntityColumnSpec COORD = new EntityColumnSpec(
 					new ColumnSpec(COORD_VAL, Msg.getString("TabPanelData.column.coordinates"), Coordinates.class), null);
 	
     /**
@@ -64,6 +67,7 @@ public abstract class BaseDataModel extends AbstractEntityModel<FieldDataSet> {
     protected Object getEntityValue(FieldDataSet entity, int valueIndex) {
         return switch (valueIndex) {
             case ID_VAL -> entity.getIdentifier();
+            case SETTLEMENT_VAL  -> entity.getOwningSettlement().getName();
             case TYPE_VAL -> entity.getDataType().toString();
             case QUALITY_VAL -> entity.getQuality();
             case OWNER_VAL -> entity.getOwner().getName();

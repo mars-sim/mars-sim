@@ -42,6 +42,7 @@ public class ScientificStudyManager
 
 	private transient Set<EntityManagerListener> listeners;
 	
+	
 	/**
 	 * Constructor.
 	 */

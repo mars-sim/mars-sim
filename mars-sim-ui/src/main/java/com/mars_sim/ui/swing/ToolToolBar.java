@@ -66,7 +66,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String MAIN_WIKI = "main-wiki";
 	private static final String WHITESPACE = " ";
 
-	private static final int HEIGHT = 27;
+	private static final int HEIGHT = 25;
 	private static final String SOL = " Sol ";
 	
 	private static final String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //-NLS-1$
@@ -172,13 +172,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private void createDatePanel() {
 		
 		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));	
-
-		missionSol = createCircleLabel(HEIGHT, HEIGHT, FONT_SANS_SERIF, "Simulation Mission Sol");
-		timePanel.add(missionSol);
 	
 		marsTime = createTextLabel(FONT_MONOSPACED, true, true, "Mars Coordinated Time (MCT) for Mars. Format: 'Weeksol Orbit-Month-Sol:Millisols'");
 		timePanel.add(marsTime);		
 
+		missionSol = createCircleLabel(HEIGHT * 3, HEIGHT, FONT_SANS_SERIF, "Simulation Mission Sol");
+		timePanel.add(missionSol);
+		
 		add(timePanel);
 	}
 	
@@ -250,13 +250,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 			        Point2D start  = new Point2D.Float(0f, 0f);
 			        Point2D end    = new Point2D.Float(99f, 0f);
 			        float[] dist   = {0.0f, 0.5f, 1.0f};
-			        Color[] colors = { Color.YELLOW, Color.ORANGE, Color.WHITE};
+			        Color[] colors = { Color.ORANGE.darker(), Color.YELLOW, Color.WHITE};
 			        g2.setPaint(new LinearGradientPaint(start, end, dist, colors));
-			        g2.fillRect(x, y, 100, 10);
+			        g2.drawRoundRect(x, y, 200, 20, 2, 2);
 			        g2.dispose();
 				}
-			      @Override public int getIconWidth()  { return 10; }
-			      @Override public int getIconHeight() { return 10; }
+			      @Override public int getIconWidth()  { return 200; }
+			      @Override public int getIconHeight() { return 20; }
 			};
 		}
 		
