@@ -123,7 +123,7 @@ public abstract class EVAMissionStep extends MissionStep {
 
             // Check EVAOperation for this crew member; do not use inVehicle 
             // because it does not catch edge case of someone egressing via an airlock
-            if (task instanceof EVAOperation eo) {
+            if (task instanceof EVAOperation eo && !eo.isDone()) {
                 allOnBoard = false;
                 logger.info(member, "Ordered to end EVA for " + getMission().getName());
                 eo.requestEndEVA();

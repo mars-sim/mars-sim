@@ -27,7 +27,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
 
         var s = buildSettlement("Test");
 
-        var crew = MissionTestHelper.buildEVACrew(getContext(), s, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
+        var crew = MissionTestHelper.buildEVACrew(getContext(), s, 1, false, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
 
         List<MineralSite> sites = buildSites(s, 2);
         var m = (VehicleMission) mt.constructInstance(crew, false, sites);
@@ -52,7 +52,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
 
         var s = buildSettlement("Test");
 
-        var crew = MissionTestHelper.buildEVACrew(getContext(), s, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
+        var crew = MissionTestHelper.buildEVACrew(getContext(), s, 1, false, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
 
         var sites = buildSites(s, mt.getExpectedSites(s) + 1);
 

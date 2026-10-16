@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.equipment.EquipmentFactory;
+import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -53,29 +54,40 @@ public class MissionTestHelper {
      * This builds a Roster crew for an EVA mission needing an optional set of Containers.
      * @param context The test context to build the crew.
      * @param s The settlement to build the crew in.
+     * @param workerNum The number of workers to include in the crew.
+     * @param onVehicle Whether the workers should be placed on the vehicle initially.
      * @param containterType The type of container to build for the mission; optional if containerCount is 0.
      * @param containerCount The number of containers to build for the mission.
      * @param roverType The type of rover to build for the mission.
      * @return A Roster of crew members for the EVA mission.
      */
-    public static MetaMission.Roster buildEVACrew(MarsSimContext context, Settlement s, EquipmentType containterType,
+    public static MetaMission.Roster buildEVACrew(MarsSimContext context, Settlement s, int workerNum, boolean onVehicle, EquipmentType containterType,
         int containerCount, String roverType) {
     
-        var crew = buildRoster(context, s, 1, roverType, true);
+        var crew = buildRoster(context, s, workerNum, roverType, onVehicle);
     
+        // If on vehcile then resources go there
+        EquipmentInventory owner = onVehicle ? crew.vehicle().getEquipmentInventory() : s.getEquipmentInventory();
+
         // Build EVA suite to support mission
         for(int i = 0; i < crew.members().size() + 1; i++) {
-            EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
+            var co = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
+            if (onVehicle) {
+                co.transfer(crew.vehicle());
+            }
         }
     
         var resources = Map.of(ResourceUtil.OXYGEN_ID, 200D,
                 ResourceUtil.WATER_ID, 200D,
                 ResourceUtil.FOOD_ID, 200D,
                 ResourceUtil.METHANOL_ID, 200D);
-        MarsSimUnitTest.loadAmounts(s.getEquipmentInventory(), resources);
+        MarsSimUnitTest.loadAmounts(owner, resources);
     
         for(int c = 0; c < containerCount; c++) {
-            EquipmentFactory.createEquipment(containterType, s);
+            var co = EquipmentFactory.createEquipment(containterType, s);
+            if (onVehicle) {
+                co.transfer(crew.vehicle());
+            }
         }
     
         return crew;
