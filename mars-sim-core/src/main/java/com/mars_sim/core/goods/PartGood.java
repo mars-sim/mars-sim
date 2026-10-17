@@ -59,11 +59,12 @@ public class PartGood extends Good {
 	private static final String AEROGEL_TILE = "aerogel tile";
 	private static final String DRILLING_RIG = "drilling rig";
 	
-	private static final String PIPE = "pipe";
-	private static final String VALVE = "valve";
-	private static final String PLASTIC = "plastic";
-	private static final String TANK = "tank";
-	private static final String DUCT = "duct";
+//	private static final String PIPE = "pipe";
+//	private static final String VALVE = "valve";
+//	private static final String PLASTIC = "plastic";
+//	private static final String TANK = "tank";
+//	private static final String DUCT = "duct";
+	
 	private static final String GASKET = "gasket";
 	private static final String LOGIC_BOARD = "logic board";
 	private static final String RESISTOR = "resistor";
@@ -86,9 +87,9 @@ public class PartGood extends Good {
 	private static final double RAW_BASE_DEMAND = 1D;
 
 	private static final double DRILL_DEMAND  = .75;
-	private static final double BOTTLE_DEMAND = .02;
+	private static final double BOTTLE_DEMAND = .075;
 	private static final double FIBERGLASS_DEMAND = .00005;
-	private static final double GASKET_DEMAND = .05;
+	private static final double GASKET_DEMAND = .1;
 	private static final double VEHICLE_PART_DEMAND = .4;
 	private static final int EVA_PART_DEMAND = 1;
     private static final int KITCHEN_DEMAND = 1;
@@ -106,10 +107,12 @@ public class PartGood extends Good {
 	private static final double METALLIC_DEMAND = 0.8;
 	private static final double UTILITY_DEMAND = 0.75;
 	private static final double TOOL_DEMAND = 0.75;
+	
+	private static final double ATTACHMENT_DEMAND = 1.05;
 	private static final double CONSTRUCTION_DEMAND = 1.2;
 	private static final double GLASS_SHEET_DEMAND = 0.025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
-	private static final double LOGIC_BOARD_DEMAND = 0.5;
+	private static final double LOGIC_BOARD_DEMAND = 0.75;
 	private static final double ELECTRICAL_WIRE_DEMAND = .5;
 	private static final double WIRE_DEMAND = 1.05;
 	
@@ -177,6 +180,29 @@ public class PartGood extends Good {
 		String name = part.getName();
 
 		switch(part.getGoodType()) {
+			case ATTACHMENT:
+				if (name.equalsIgnoreCase(DRILLING_RIG)) {
+					return DRILL_DEMAND * 1.2;
+				}
+				if (name.equalsIgnoreCase("backhoe")) {
+					return DRILL_DEMAND * 0.2;
+				}
+				if (name.equalsIgnoreCase("pneumatic drill")) {
+					return DRILL_DEMAND * 0.2;
+				}
+				return ATTACHMENT_DEMAND;
+
+			case CONSTRUCTION:
+				if (name.equalsIgnoreCase(AEROGEL_TILE)) {
+					return AEROGEL_TILE_DEMAND * CONSTRUCTION_DEMAND;
+				}
+				
+				if (name.equalsIgnoreCase(BRICK)) {
+					return BRICK_DEMAND;
+				}
+				
+				return CONSTRUCTION_DEMAND;
+				
 			case ELECTRICAL: {
 				if (name.contains(RESISTOR)
 					|| name.contains(CAPACITOR)
@@ -199,14 +225,29 @@ public class PartGood extends Good {
 
 			case ELECTRONIC:
 				return ELECTRONIC_DEMAND;
+
+			case EVA:
+				return EVA_PART_DEMAND;
 				
 			case INSTRUMENT:
+//				if (name.contains(HEAT_PROBE))
+//				return .02;
+				
 				return INSTRUMENT_DEMAND;
 
 			case METALLIC:
 				return METALLIC_DEMAND;
-		
+
+			case TOOL:
+				if (name.contains(DRILL)) {
+					return DRILL_DEMAND;
+				}
+				
+				return TOOL_DEMAND;
+				
 			case UTILITY:
+				if (name.contains(BOTTLE))
+					return BOTTLE_DEMAND;
 				if (name.contains(FIBERGLASS)) {
 					return FIBERGLASS_DEMAND;
 				}
@@ -216,50 +257,25 @@ public class PartGood extends Good {
 				if (name.equalsIgnoreCase(PLASTIC_PIPE)) {
 					return PLASTIC_PIPE_DEMAND;
 				}				
-
+//				if (name.contains(VALVE))
+//				return .02;
+				
+				
 				return UTILITY_DEMAND;
-		
-			case TOOL:
-				if (name.equalsIgnoreCase(DRILLING_RIG)) {
-					return DRILL_DEMAND * 1.2;
-				}
-				if (name.contains(DRILL)) {
-					return DRILL_DEMAND;
-				}
-				return TOOL_DEMAND;
-
-			case CONSTRUCTION:
-				if (name.equalsIgnoreCase(AEROGEL_TILE)) {
-					return AEROGEL_TILE_DEMAND * CONSTRUCTION_DEMAND;
-				}
 				
-				if (name.equalsIgnoreCase(BRICK)) {
-					return BRICK_DEMAND;
-				}
-				
-				return CONSTRUCTION_DEMAND;
-
-			case EVA:
-				return EVA_PART_DEMAND;
-			
 			default:
 		}
-
+//		
+//		if (name.contains(PIPE))
+//			return .4;
+//
+//		if (name.contains(PLASTIC))
+//			return .2;
+//		
+//		if (name.contains(TANK) || name.contains(DUCT))
+//			return .1;
 		
-		if (name.contains(PIPE))
-			return .4;
-		
-		if (name.contains(VALVE) || name.contains(HEAT_PROBE))
-			return .02;
 
-		if (name.contains(PLASTIC))
-			return .2;
-		
-		if (name.contains(TANK) || name.contains(DUCT))
-			return .1;
-
-		if (name.contains(BOTTLE))
-			return BOTTLE_DEMAND;
 		
 		return 1;
 	}

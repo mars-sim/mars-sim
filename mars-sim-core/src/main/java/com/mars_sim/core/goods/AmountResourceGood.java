@@ -162,9 +162,10 @@ class AmountResourceGood extends Good {
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
 	private static final double SAND_VALUE_MODIFIER = 2.5;
-	private static final double ORES_VALUE_MODIFIER = 0.9;
 	
-	private static final double MINERAL_VALUE_MODIFIER = 0.9;
+	private static final double ORES_VALUE_MODIFIER = 0.2;
+	private static final double MINERAL_VALUE_MODIFIER = 0.2;
+	
 	private static final double ROCK_VALUE_MODIFIER = 0.2;
 	private static final double METEORITE_VALUE_MODIFIER = 100;
 	
@@ -1444,7 +1445,7 @@ class AmountResourceGood extends Good {
 		for (int id : ResourceUtil.MINERAL_CONC_IDs) {
 			if (resourceID == id) {
 				double mineralDemand = owner.getDemandScoreWithID(id);
-				return base * (.3 * regolithDemand + .7 * mineralDemand) 
+				return base * (.7 * regolithDemand + .3 * mineralDemand) 
 						 * MINERAL_VALUE_MODIFIER;
 			}
 		}
@@ -1453,7 +1454,7 @@ class AmountResourceGood extends Good {
 			if (resourceID == id) {
 				double oreDemand = owner.getDemandScoreWithID(id);
 				// loses 10% by default
-				return base * (.4 * regolithDemand + .6 * oreDemand) 
+				return base * (.7 * regolithDemand + .3 * oreDemand) 
 						 * ORES_VALUE_MODIFIER;
 			}
 		}
