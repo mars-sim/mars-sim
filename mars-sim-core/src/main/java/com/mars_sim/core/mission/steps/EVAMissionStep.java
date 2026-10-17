@@ -119,14 +119,14 @@ public abstract class EVAMissionStep extends MissionStep {
 
         boolean allOnBoard = true;
         for(var member : ms.getMembers()) {
-            if (!member.isInVehicle()) {
-                allOnBoard = false;
+            var task = member.getTaskManager().getTask();
 
-                var task = member.getTaskManager().getTask();
-                if (task instanceof EVAOperation eo) {
-                    logger.info(member, "Ordered to end EVA for " + this);
-                    eo.requestEndEVA();
-                }
+            // Check EVAOperation for this crew member; do not use inVehicle 
+            // because it does not catch edge case of someone egressing via an airlock
+            if (task instanceof EVAOperation eo && !eo.isDone()) {
+                allOnBoard = false;
+                logger.info(member, "Ordered to end EVA for " + getMission().getName());
+                eo.requestEndEVA();
             }
         }
 

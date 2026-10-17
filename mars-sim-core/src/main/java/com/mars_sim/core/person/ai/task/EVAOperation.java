@@ -959,7 +959,6 @@ public abstract class EVAOperation extends Task {
 			if (e != null) {
 				boolean done = e.transfer(destination);
 				if (done) {
-					logger.info(person, 5000, "Transferring " + e.getName() + " from person back to rover.");
 					if (e instanceof Container c) {
 						for (int resource: c.getAllAmountResourceStoredIDs()) {
 							double amount = c.getSpecificAmountResourceStored(resource);
@@ -967,7 +966,6 @@ public abstract class EVAOperation extends Task {
 								// Retrieve this amount from the container
 								c.retrieveAmountResource(resource, amount);
 								vehRH.storeAmountResource(resource, amount);
-								logger.info(person, 5000, "Done unloading all resources from person back to rover.");
 							}
 						}
 					}

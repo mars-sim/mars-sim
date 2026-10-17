@@ -119,6 +119,7 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
             log.addEntry("Completed");
             status.add(ACCOMPLISHED);
         }
+        log.setDone();
 
         // Update stats
         fireMissionUpdate(Mission.END_MISSION_EVENT, this);

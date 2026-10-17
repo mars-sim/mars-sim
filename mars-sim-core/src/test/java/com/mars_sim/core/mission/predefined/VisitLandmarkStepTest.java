@@ -26,7 +26,7 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
         assertFalse(landmarks.isEmpty(), "No landmarks found in test config");
         var landmark = landmarks.get(0);
 
-        var roster = MissionTestHelper.buildRoster(getContext(), s, 1, CARGO_ROVER, true);
+        var roster = MissionTestHelper.buildEVACrew(getContext(), s, 1, true, null, 0, CARGO_ROVER);
         
 		var project = new MissionVehicleProject(null, MissionType.VISIT_LANDMARK, 10, roster);
         var st = new VisitLandmarkStep(project, landmark);
@@ -46,19 +46,13 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
 
         var task = w.getTaskManager().getTask();
         assertTrue(task instanceof LandmarkEVA, "Worker should be doing the visit task");   
+        executeTask(w, task, 10);
+        assertFalse(task.isDone(), "Worker should not have completed EVA yet");
         
-        // Worker does EVA visit
-        executeTask(w, task, 100);
-
         // Simulate time on site
         var clock = getSim().getMasterClock();
         clock.setMarsTime(clock.getMarsTime().addTime(landObj.getMSolViewing() + 1));
-        executeTask(w, task, 1000);
 
-        task.endTask();
-        assertTrue(task.isDone(), "Worker should have completed EVA");
-
-        assertTrue(times.get(w.getName()) > 0D, "Worker should have completed EVA");
         assertEquals(0D, times.get(l.getName()), "Leader still no EVA");
 
         // Simulate end of visit time
@@ -69,7 +63,11 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
         assertFalse(st.isCompleted(), "Step need everyone back on board");
         assertTrue(((EVAOperation)task).isRequestEndEVATrue(), "Worker recalled to rover after EVA");
 
+        // Simulate end of EVA
         w.transfer(roster.vehicle());
+        task.endTask();
+        assertTrue(times.get(w.getName()) > 0D, "Worker should have completed EVA");
+
         project.execute(l);
 
         assertTrue(st.isCompleted(), "Step should be complete after EVA");
