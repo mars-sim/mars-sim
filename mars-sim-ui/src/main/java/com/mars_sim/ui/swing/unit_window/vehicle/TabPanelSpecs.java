@@ -167,8 +167,9 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 
 		estFCFECoef.setValue(v.getCoeffEstFCFE()/1000);
 		
-		roadSpeed.setValue(v.getRoadSpeedHistoryAverage());
-		roadPower.setValue(v.getRoadPowerHistoryAverage());
+		var averages = v.getRoadHistoryAverage();
+		roadSpeed.setValue(averages.speed());
+		roadPower.setValue(averages.power());
 	
 		cumEnergyUsage.setValue(v.getCumEnergyUsage());
 		cumFuelUsage.setValue(v.getCumFuelUsage());

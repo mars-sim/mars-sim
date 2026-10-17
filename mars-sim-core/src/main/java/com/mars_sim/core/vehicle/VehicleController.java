@@ -538,11 +538,8 @@ import com.mars_sim.core.tool.RandomUtil;
 		 // overallEnergyUsed [in Wh], not in kWh
 	 
 		 if (vKPH > 1 && avePower > 0) {
-			 // update average road load speed in kph
-			 vehicle.setAverageRoadLoadSpeed((int)Math.round(vKPH));
-			 // update average road load power
-			 // avePower is in W, not kW. Divide by 1000 to get kW
-			 vehicle.setAverageRoadLoadPower((int)Math.round(avePower/1000));
+			 // update average road load speed in kph and power in k
+			 vehicle.updateRoadSpeed((float)vKPH, (float)(avePower/1000));
 		 }
 
 		 // Determine new position

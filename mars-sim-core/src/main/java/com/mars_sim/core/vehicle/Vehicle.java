@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.vehicle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 
 import com.mars_sim.core.EntityEventType;
@@ -163,11 +165,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private double iFuelConsumption;
 	/** The starting mass [kg] of the vehicle from the last mission. */
 	private double startingMass;
-	
-	/** The vehicle specification */
-	private String specName;
-	/** The vehicle model */
-	private String modelName;
 
 	/** The radiation status instance that capture if the settlement has been exposed to a radiation event. */
 	private RadiationStatus exposed = RadiationStatus.calculateChance(0D);
@@ -208,9 +205,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	/** The vehicle's status log. */
 	private History<MsgContext> history = new History<>(28);
 	/** The vehicle's road speed history. */
-	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
-	/** The vehicle's road power history. */	
-	private MSolDataLogger<Integer> roadPowerHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
+	private MSolDataLogger<SpeedRecord> roadHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
 
 	private LoadingController loadingController;
 	
@@ -238,8 +233,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 		super(name, settlement);
 		
 		this.spec = spec;
-		this.specName = spec.getName();
-		this.modelName = spec.getModelName();
 		this.vehicleType = spec.getType();
 		setBaseMass(spec.getEmptyMass());
 		
@@ -328,7 +321,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return spec name
 	 */
 	public String getSpecName() {
-		return specName;
+		return spec.getName();
 	}
 	
 	/**
@@ -337,7 +330,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return Name of the model
 	 */
 	public String getModelName() {
-		return modelName;
+		return spec.getModelName();
 	}
 
 	/**
@@ -881,21 +874,39 @@ public abstract class Vehicle extends AbstractMobileUnit
     }
     
 	/**
+	 * Represents a record of the vehicle's speed and power at a given point in time.
+	 */
+	public static record SpeedRecord(float speed, float power) implements Serializable {}
+
+	/**
 	 * Sets the average road load speed of the vehicle [kph].
 	 * 
-	 * @return
+	 * @param roadSpeed the average road load speed of the vehicle [kph]
+	 * @param roadPower the average road load power of the vehicle [kph]
 	 */
-	public void setAverageRoadLoadSpeed(int value) {
-		roadSpeedHistory.addDataPoint(value);
+	public void updateRoadSpeed(float roadSpeed, float roadPower) {
+		roadHistory.addDataPoint(new SpeedRecord(roadSpeed, roadPower));
 	}
 	
 	/**
-	 * Sets the average road load power of the vehicle [kW].
-	 * 
-	 * @return
+	 * Visitor for calculating the average speed and power from the road history.
 	 */
-	public void setAverageRoadLoadPower(int value) {
-		roadPowerHistory.addDataPoint(value);
+	private class AverageSpeedVisitor implements BiConsumer<Integer, SpeedRecord> {
+		private float totalRoadSpeed = 0;
+		private float totalRoadPower = 0;
+		private int count = 0;
+
+		@Override
+		public void accept(Integer sol, SpeedRecord dataPoint) {
+			totalRoadSpeed += dataPoint.speed();
+			totalRoadPower += dataPoint.power();
+			count++;
+		}
+
+		public SpeedRecord getAverage() {
+			if (count == 0) return new SpeedRecord(0, 0);
+			return new SpeedRecord(totalRoadSpeed / count, totalRoadPower / count);
+		}
 	}
 	
 	/**
@@ -903,17 +914,11 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * 
 	 * @return
 	 */
-	public double getRoadPowerHistoryAverage() {
-		return roadPowerHistory.getAverageDouble();
-	}
-	
-	/**
-	 * Gets the average road speed power of the vehicle [kph].
-	 * 
-	 * @return
-	 */
-	public double getRoadSpeedHistoryAverage() {
-		return roadSpeedHistory.getAverageDouble();
+	public SpeedRecord getRoadHistoryAverage() {
+
+		AverageSpeedVisitor visitor = new AverageSpeedVisitor();
+		roadHistory.visit(visitor);
+		return visitor.getAverage();
 	}
 	
 	/**
