@@ -150,7 +150,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 		Color selectedColor = (vehicle.equals(selectedVehicle) ? VEHICLE_SELECTED_COLOR : null);
         
 		// Use SVG image for vehicle if available.
-		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
+		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getVehicleSpec().getBaseImage());
 		if (svg != null) {
 			
 			// Draw base SVG image for vehicle.
@@ -216,7 +216,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	 */
 	private void drawSVGRepairMaint(Vehicle vehicle, GraphicsNode vehicleSvg, MapViewPoint viewpoint) {
 		// Use SVG image for vehicle maintenance overlay if available.
-		GraphicsNode maintOverlaySvg = SVGMapUtil.getMaintenanceOverlaySVG(vehicle.getBaseImage());
+		GraphicsNode maintOverlaySvg = SVGMapUtil.getMaintenanceOverlaySVG(vehicle.getVehicleSpec().getBaseImage());
 		if ((maintOverlaySvg != null) && (vehicleSvg != null)) {
 			drawVehicleOverlay(vehicle, vehicleSvg, maintOverlaySvg, viewpoint);
 		}
@@ -230,7 +230,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 	private void drawSVGLoading(Vehicle vehicle, GraphicsNode vehicleSvg, MapViewPoint viewpoint) {
 
 		// Use SVG image for vehicle loading overlay if available.
-		GraphicsNode loadOverlaySvg = SVGMapUtil.getLoadingOverlaySVG(vehicle.getBaseImage());
+		GraphicsNode loadOverlaySvg = SVGMapUtil.getLoadingOverlaySVG(vehicle.getVehicleSpec().getBaseImage());
 		if ((loadOverlaySvg != null) && (vehicleSvg != null)) {
 			drawVehicleOverlay(vehicle, vehicleSvg, loadOverlaySvg, viewpoint);
 		}

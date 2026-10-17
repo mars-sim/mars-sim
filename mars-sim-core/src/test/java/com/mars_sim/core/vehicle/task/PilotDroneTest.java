@@ -48,8 +48,8 @@ class PilotDroneTest extends MarsSimUnitTest {
 	double potentialEnergyDrone = 0 + gainPotentialEnergy;	
 	//  g/m3 -> kg /m3
 	double airDensity = 14.76 / 1000; 
-	// 1 m/s = 3.6 km/h (or kph). KPH_CONV = 3.6;
-	double vMS = 0; //60 /  VehicleController.KPH_CONV;
+	// 1 m/s = 3.6 km/h (or kph). KPH_CONV = 3.6
+	double vMS = 0;
 		
 	double weight = mg;
 	// Assume a constant voltage
@@ -74,7 +74,7 @@ class PilotDroneTest extends MarsSimUnitTest {
     void testFlyDrone() {
         var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+        var res = Map.of(v.getVehicleSpec().getFuelType(), METHANOL_AMOUNT,
                     ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         loadAmounts(v.getEquipmentInventory(), res);
 
@@ -110,14 +110,9 @@ class PilotDroneTest extends MarsSimUnitTest {
 
         assertGreaterThan("Vehicle speed", 0D, v.getSpeed());
         assertEquals(StatusType.MOVING, v.getPrimaryStatus(), "Vehicle primary status");
-
-//        assertEquals(Math.round(DIST), Math.round(v.getOdometerMileage() * 10.0) / 10.0, "Vehicle oddmeter");
-//        assertEquals(dest, v.getCoordinates(), "Vehicle at destination");
       
         // Drive the rest
         executeTaskUntilPhase(p, task, 100);
-           
-//        assertEquals(StatusType.PARKED, v.getPrimaryStatus(), "Vehicle end primary status");
 
         // There is a problem in the VehicleController because it does not consume fuel or oxygen
         // Need to move the fuel logic into the VehicleController which should be rename VehicleEngine
@@ -129,7 +124,7 @@ class PilotDroneTest extends MarsSimUnitTest {
     void testDroneNoFuel() {
         var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+        var res = Map.of(v.getVehicleSpec().getFuelType(), METHANOL_AMOUNT,
                     ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         var vehEO = v.getEquipmentInventory();
         loadAmounts(vehEO, res);
@@ -149,42 +144,26 @@ class PilotDroneTest extends MarsSimUnitTest {
 
         // Execute few calls to get driver positioned and moving then remove fuel
         executeTask(p, task, 7);
-
-    
-        // Now that regen is possible for recharging the battery, the line below won't work
-//        assertEqualLessThan("Battery Percent", originalBatteryPercent, nowBatteryPercent);
             
         assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, vehEO.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
-        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, vehEO.getSpecificAmountResourceStored(v.getFuelTypeID()));
+        assertEqualLessThan("Fuel stored", METHANOL_AMOUNT, vehEO.getSpecificAmountResourceStored(v.getVehicleSpec().getFuelType()));
        
         // Now it will rely on its battery to power the flight
 
         executeTask(p, task, 7);     
-
-        // Need to find out in what situation a pilot may stop operating the drone, thus
-        // causing task.getPhase() to be null from time to time
-//        if (task.getPhase() != null)
-//        	assertEquals(StatusType.MOVING, v.getPrimaryStatus(), "Vehicle end primary status");
-//        else 
-//        	assertEquals(StatusType.PARKED, v.getPrimaryStatus(), "Vehicle end primary status");
         
         // Pilot
         executeTask(p, task, 7);  
 
         // Take away the fuel
-        vehEO.retrieveAmountResource(v.getFuelTypeID(), vehEO.getSpecificAmountResourceStored(v.getFuelTypeID()));
-        assertEquals(0.0D, vehEO.getSpecificAmountResourceStored(v.getFuelTypeID()), "Fuel emptied");
+        vehEO.retrieveAmountResource(v.getVehicleSpec().getFuelType(), vehEO.getSpecificAmountResourceStored(v.getVehicleSpec().getFuelType()));
+        assertEquals(0.0D, vehEO.getSpecificAmountResourceStored(v.getVehicleSpec().getFuelType()), "Fuel emptied");
       
         // Pilot
         executeTask(p, task, 8);
-
-
-//        assertTrue(v.haveStatusType(StatusType.OUT_OF_FUEL), "Marked out of fuel");
        
         // Pilot the rest
         executeTaskUntilPhase(p, task, 10);
-        
-//        assertTrue(task.isDone(), "Task complete");
     }
     
     /**
@@ -195,7 +174,7 @@ class PilotDroneTest extends MarsSimUnitTest {
     	
       	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+        var res = Map.of(v.getVehicleSpec().getFuelType(), METHANOL_AMOUNT,
                     ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         loadAmounts(v.getEquipmentInventory(), res);
         
@@ -229,7 +208,7 @@ class PilotDroneTest extends MarsSimUnitTest {
     	
       	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+        var res = Map.of(v.getVehicleSpec().getFuelType(), METHANOL_AMOUNT,
                     ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         loadAmounts(v.getEquipmentInventory(), res);
         
@@ -270,7 +249,7 @@ class PilotDroneTest extends MarsSimUnitTest {
     void testHoverThrust() {
     	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+		var res = Map.of(v.getVehicleSpec().getFuelType(), METHANOL_AMOUNT,
                     ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         loadAmounts(v.getEquipmentInventory(), res);
         
@@ -312,7 +291,7 @@ class PilotDroneTest extends MarsSimUnitTest {
     	
       	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
-        var res = Map.of(v.getFuelTypeID(), METHANOL_AMOUNT,
+        var res = Map.of(v.getVehicleSpec().getFuelType(), METHANOL_AMOUNT,
         					ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
         loadAmounts(v.getEquipmentInventory(), res);
 

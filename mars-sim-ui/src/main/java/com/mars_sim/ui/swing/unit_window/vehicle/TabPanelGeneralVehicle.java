@@ -62,15 +62,16 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 		content.add(panel, BorderLayout.NORTH);
 
 		var vehicle = getEntity();
+		var vehicleSpec = vehicle.getVehicleSpec();
 
 		// Add SVG Image loading for the vehicle
-		var svgPanel = SVGMapUtil.createVehiclePanel(vehicle.getBaseImage(), 128, 64);
+		var svgPanel = SVGMapUtil.createVehiclePanel(vehicleSpec.getBaseImage(), 128, 64);
 		panel.add(svgPanel, BorderLayout.NORTH);
 		
-		fuelTypeID = vehicle.getFuelTypeID();
+		fuelTypeID = vehicleSpec.getFuelType();
 		String fuelTypeStr = "";
 		if (fuelTypeID < 0) {
-			fuelTypeStr = vehicle.getFuelTypeStr();
+			fuelTypeStr = vehicleSpec.getFuelTypeStr();
 		}
 		else {
 			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
@@ -103,7 +104,7 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 		remainCapLabel = infoPanel.addTextField("Remaining Capacity", StyleManager.DECIMAL_KG.format(vehEO.getRemainingCargoCapacity()), null);
 		infoPanel.addTextField("Cargo Capacity", StyleManager.DECIMAL_KG.format(vehEO.getCargoCapacity()), null);
 
-		fuelCap = vehicle.getFuelCapacity();
+		fuelCap = vehicleSpec.getFuelCapacity();
 		
 		infoPanel.addTextField(Msg.getString("vehicle.fuelType"), fuelTypeStr, null);
 		
@@ -114,11 +115,11 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 		
 		infoPanel.addTextField("Fuel Cap", StyleManager.DECIMAL_KG.format(fuelCap), null);
 		
-		infoPanel.addTextField("Cell Stack", vehicle.getFuellCellStack() + "", null);	
-		infoPanel.addTextField("Battery Module", vehicle.getBatteryModule() + "", null);	
+		infoPanel.addTextField("Cell Stack", vehicleSpec.getFuelCellStack() + "", null);	
+		infoPanel.addTextField("Battery Module", vehicleSpec.getBatteryModule() + "", null);	
 		batteryPercentLabel = infoPanel.addTextField("Battery Percent", 
 				StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()), null);
-		infoPanel.addTextField("Battery Cap", StyleManager.DECIMAL_KWH.format(vehicle.getBatteryCapacity()), null);	
+		infoPanel.addTextField("Battery Cap", StyleManager.DECIMAL_KWH.format(vehicleSpec.getBatteryCapacity()), null);	
 	}
 
 	/**

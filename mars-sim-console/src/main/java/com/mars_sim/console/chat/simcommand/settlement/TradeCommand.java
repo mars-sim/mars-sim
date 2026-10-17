@@ -92,7 +92,7 @@ public class TradeCommand extends AbstractSettlementCommand {
 			response.appendLabeledString("Drone Range", String.format(CommandHelper.KM_FORMAT,
 										drone.getRange()));
 			response.appendLabeledString("Drone Base Range", String.format(CommandHelper.KM_FORMAT,
-										drone.getBaseRange()));
+										drone.getVehicleSpec().getBaseRange()));
 		}
 
 		var tradeMeta = MetaMissionRegistry.getMetaMission(MissionType.TRADE);
@@ -101,7 +101,7 @@ public class TradeCommand extends AbstractSettlementCommand {
 			response.appendLabeledString("Rover Range", String.format(CommandHelper.KM_FORMAT,
 										rover.getRange()));
 			response.appendLabeledString("Rover Base Range", String.format(CommandHelper.KM_FORMAT,
-										rover.getBaseRange()));
+										rover.getVehicleSpec().getBaseRange()));
 		}
 
 		// Get deals for all other settlements

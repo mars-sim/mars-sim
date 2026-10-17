@@ -248,9 +248,9 @@ class MissionBuilderTest extends MarsSimUnitTest {
 
         Map<Integer, Double> resources = Map.of(ResourceUtil.OXYGEN_ID, 100D,
                                                 ResourceUtil.FOOD_ID, 100D,
-                                                r.getFuelTypeID(), 100D,
+	                                                r.getVehicleSpec().getFuelType(), 100D,
                                                 ResourceUtil.WATER_ID, 100D);
-        loadSettlementAmounts(settlement, resources);  
+        loadAmounts(settlement.getEquipmentInventory(), resources);  
         
         return settlement;
     }
