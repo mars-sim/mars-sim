@@ -282,8 +282,9 @@ public class ExitAirlock extends Task {
 			boolean canWalk = walkToEVASpot(b, newPos, false);
 						
 			if (canWalk) {
-				// Convert the local activity spot to the settlement reference coordinate
+				// Note: Already converted the local activity spot to the settlement reference coordinate
 				// Set the person's new position
+//				logger.info(person, "Changing position: " + person.getPosition() + " -> " + newPos);
 				person.setPosition(newPos);
 				
 //				May add back for future testing: logger.log(person, Level.FINE, 4000, "Arrived at " + newPos.getShortFormat() + " in " + newZone + ".");
@@ -296,6 +297,7 @@ public class ExitAirlock extends Task {
 		}
 
 		else {
+//			logger.info(person, "Changing position: " + person.getPosition() + " -> " + newPos);
 			// Set the person's new position
 			person.setPosition(newPos);
 			

@@ -595,8 +595,15 @@ extends Airlock {
 			}
 		}
 		
-		if (isEmpty())
+		if (isEmpty()) {
 			setAirlockMode(AirlockMode.NOT_IN_USE);
+		}
+		else if (hasAwaitingOuterDoor()){
+			setAirlockMode(AirlockMode.INGRESS);
+		}
+		else if (hasAwaitingInnerDoor()){
+			setAirlockMode(AirlockMode.EGRESS);
+		}
 	}
 	
 	/**

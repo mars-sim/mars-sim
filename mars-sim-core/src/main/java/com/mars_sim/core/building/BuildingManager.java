@@ -1792,7 +1792,7 @@ public class BuildingManager implements Serializable {
 		if (result) {
 			// Load the claimed spot
 			AllocatedSpot as = worker.getActivitySpot();
-			// Set robot's location
+			// Set worker's location
 			worker.setPosition(as.getAllocated().getPos());
 
 //			if (originBuilding != null && !originBuilding.equals(building)) {

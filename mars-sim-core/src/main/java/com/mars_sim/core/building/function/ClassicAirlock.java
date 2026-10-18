@@ -318,6 +318,7 @@ public class ClassicAirlock extends Airlock {
     @Override
     public LocalPosition getAvailableInteriorPosition(boolean inside) {
     	if (inside) {
+    		// in Zone 1
     		for (Entry<LocalPosition, Integer> i : insideInteriorDoorMap.entrySet()) {
     			if (i.getValue() == -1) {
     				return i.getKey();
@@ -326,6 +327,7 @@ public class ClassicAirlock extends Airlock {
     	}
 
     	else {
+    		// in Zone 0
     		for (Entry<LocalPosition, Integer> i : outsideInteriorDoorMap.entrySet()) {
     			if (i.getValue() == -1) {
     				return i.getKey();
@@ -766,7 +768,7 @@ public class ClassicAirlock extends Airlock {
 	@Override
 	public void timePassing(ClockPulse pulse) {
 			
-		if (activated) {
+		if (activated || (getAirlockMode() != AirlockMode.NOT_IN_USE)) {
 
 			double time = pulse.getElapsed();
 			
@@ -785,6 +787,12 @@ public class ClassicAirlock extends Airlock {
 		
 		if (isEmpty())
 			setAirlockMode(AirlockMode.NOT_IN_USE);
+		else if (hasAwaitingOuterDoor()){
+			setAirlockMode(AirlockMode.INGRESS);
+		}
+		else if (hasAwaitingInnerDoor()){
+			setAirlockMode(AirlockMode.EGRESS);
+		}
 	}
 	
 	/**

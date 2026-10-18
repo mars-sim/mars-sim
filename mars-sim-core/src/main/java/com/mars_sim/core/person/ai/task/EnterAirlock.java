@@ -237,6 +237,7 @@ public class EnterAirlock extends Task {
 
 			if (canWalk) {
 				// Convert the local activity spot to the settlement reference coordinate
+//				LocalPosition settlementLoc = LocalAreaUtil.convert2SettlementPos(newPos, this);
 				// Set the person's new position
 				person.setPosition(newPos);
 
