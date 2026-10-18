@@ -2066,7 +2066,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		double fatigue = person.getPhysicalCondition().getFatigue();
 //		if (person.getPhysicalCondition().getFatigueLevel().getMaxValue() >= FatigueLevel.RESTED.getMaxValue()) {
 		if (fatigue > 1000 && person.isInside()) {				
-			boolean canSleep = assignTask(person, new Sleep(person, 100));
+			boolean canSleep = person.getTaskManager().getTask().addSubTask(new Sleep(person, 100));
+					// assignTask(person, new Sleep(person, 100));
         	if (canSleep) {
         		logger.log(person, Level.INFO, 4_000,
             			"Instructed to sleep before piloting " + getVehicle() + ".  Fatigue: " + Math.round(fatigue) + ".");
@@ -2090,7 +2091,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 			
 			if (foodAmount > EatDrink.MIN) {
-				boolean canEatDrink = assignTask(person, new EatDrink(person, getVehicle()));
+				boolean canEatDrink = person.getTaskManager().getTask().addSubTask(new EatDrink(person, getVehicle()));
+						// assignTask(person, new EatDrink(person, getVehicle()));
 	        	if (canEatDrink) {
 	        		logger.log(person, Level.INFO, 4_000,
 	            			"Instructed to eat before piloting " + getVehicle() 
@@ -2119,7 +2121,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			}
 			
 			if (waterAmount > EatDrink.MIN) {
-				boolean canEatDrink = assignTask(person, new EatDrink(person, getVehicle()));
+				boolean canEatDrink = person.getTaskManager().getTask().addSubTask(new EatDrink(person, getVehicle()));
+						// assignTask(person, new EatDrink(person, getVehicle()));
 	        	if (canEatDrink) {
 	        		logger.log(person, Level.INFO, 4_000,
 	            			"Instructed to drink before piloting " + getVehicle() 
