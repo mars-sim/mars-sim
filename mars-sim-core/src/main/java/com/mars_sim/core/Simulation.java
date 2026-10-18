@@ -1,4 +1,4 @@
-/**
+/*
  * Mars Simulation Project
  * Simulation.java
  * @date 2026-08-11
@@ -214,35 +214,15 @@ public class Simulation implements ClockPulseListener, Serializable {
 	}
 
 	/**
-	 * Checks if the simulation is in a state of creating a new simulation or
-	 * loading a saved simulation.
-	 *
-	 * @return true is simulation is in updating state.
-	 */
-	public boolean isUpdating() {
-		return isUpdating;
-	}
-
-	
-	public void loadSim() {
-		Simulation sim = instance();
-
-		// Destroy old simulation.
-		if (sim.initialSimulationCreated) {
-			sim.destroyOldSimulation();
-		}
-	}
-	
-	
-	/**
 	 * Creates a new simulation instance.
 	 */
-	public void createNewSimulation(int timeRatio, String timestamp) {
-		isUpdating = true;
-
-		logger.config(Msg.getString("Simulation.log.createNewSim")); //-NLS-1$
-
+	public static Simulation createNewSimulation(int timeRatio, String timestamp) {
 		Simulation sim = instance();
+
+		sim.isUpdating = true;
+
+		logger.config("Initiating the simulation core engine...");
+
 
 		// Destroy old simulation.
 		if (sim.initialSimulationCreated) {
@@ -256,10 +236,12 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		// Preserve the build version tag for future build
 		// comparison when loading a saved sim
-		unitManager.setOriginalBuild(SimulationRuntime.VERSION.getDescription());
+		sim.unitManager.setOriginalBuild(SimulationRuntime.VERSION.getDescription());
 		
 		// Set this flag to false
-		isUpdating = false;
+		sim.isUpdating = false;
+
+		return sim;
 	}
 
 	public void runSocietySim() {
@@ -677,12 +659,12 @@ public class Simulation implements ClockPulseListener, Serializable {
 	 *
 	 * @param file the file to be loaded from.
 	 */
-	public void loadSimulation(final File file) {
-		isUpdating = true;
+	public static Simulation loadSimulation(final File file) {
+		Simulation sim = instance();
+
+		sim.isUpdating = true;
 
 		File f = file;
-
-		Simulation sim = instance();
 		if (f == null) {
 			// Try the default file path if file is null.
 			f = new File(SimulationRuntime.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
@@ -707,7 +689,8 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 					
 		// Re-initialize instances
-		reinitializeInstances();
+		sim.reinitializeInstances();
+		return sim;
 	}
 
     /**

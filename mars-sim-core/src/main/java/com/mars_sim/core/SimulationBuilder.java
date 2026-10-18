@@ -259,22 +259,16 @@ public class SimulationBuilder {
 		// Load xml files but not until arguments parsed since it may change 
 		// the data directory
 		SimulationConfig simConfig = SimulationConfig.loadConfig();
-		Simulation sim = Simulation.instance();
+		Simulation sim = null;
 			
-		boolean loaded = false;
 		if (simFile != null) {
-			loaded = loadSimulation();
+			sim = loadSimulation();
 		}
 
-		InitialSettlement spec = null;
-		if (template != null) {
-			spec = loadSettlementTemplate(simConfig);
-		}
-		
 		// If unable to load, create a new simulation
-		if (!loaded) {
+		if (sim == null) {
 			// Create a new simulation
-			sim.createNewSimulation(userTimeRatio, timestamp); 
+			sim = Simulation.createNewSimulation(userTimeRatio, timestamp); 
 			
 			SettlementBuilder builder = new SettlementBuilder(sim,
 					simConfig, statusConsumer);
@@ -285,6 +279,11 @@ public class SimulationBuilder {
 			builder.setCrew(crewConfig);
 			
 			// Is the a specific template requested?
+			InitialSettlement spec = null;
+			if (template != null) {
+				spec = loadSettlementTemplate(simConfig);
+			}
+		
 			if (spec !=  null) {
 				builder.createFullSettlement(spec, null);
 			}
@@ -323,32 +322,21 @@ public class SimulationBuilder {
 	 * 
 	 * @return true if loaded
 	 */
-	private boolean loadSimulation() {
-		
-		boolean result = false;
-	
+	private Simulation loadSimulation() {
+			
 		if (simFile.exists()) {
 			if (!simFile.canRead()) {
 				throw new IllegalArgumentException("Problem: simulation file can not be opened: " + simFile.getAbsolutePath());
 			}
 			logger.config("Loading from " + simFile.getAbsolutePath());
 
-			Simulation sim = Simulation.instance();
-			
-			// Question : Why does it have to create some of the class instances in recreateSomeInstances(), 
-			// only later be rewritten in loadSimulation() ?
-			sim.recreateSomeInstances(userTimeRatio, timestamp);
-			// Note: if skipping createNewSimulation(), it would not be deserialized correctly
-			sim.loadSimulation(simFile);		
-			
-			result = true;			
-
+			return Simulation.loadSimulation(simFile);
 		}
 		else if (!newAllowed) {
 			// Not allowed to create a new simulation so throw error
 			throw new IllegalArgumentException("Problem: simulation file does not exist: " + simFile.getAbsolutePath());			
 		}
-		return result;
+		return null;
 	}
 
 	/**
