@@ -61,10 +61,10 @@ public class ClassicAirlock extends Airlock {
 	/** The EVA building function. */
     private EVA eva;
     
-    // Between Zone 0 and Zone 1
-    private LocalPosition airlockInteriorPos;
-    // Between Zone 3 and Zone 3
-    private LocalPosition airlockExteriorPos;
+    // The position of the inner door. Between Zone 0 and Zone 1
+    private LocalPosition innerDoorPos;
+    // The position of the outer door. Between Zone 3 and Zone 4
+    private LocalPosition outerDoorPos;
 
     // For Zone 0
     private Map<LocalPosition, Integer> outsideInteriorDoorMap;
@@ -102,13 +102,13 @@ public class ClassicAirlock extends Airlock {
 		if (slots == 4) {
 			// In case of EVA Airlock,
 	        // Determine airlock inner/interior door position.
-	        airlockInteriorPos = interiorPos.toPosition(building);
+	        innerDoorPos = interiorPos.toPosition(building);
 	        // For Zone 0
 	        outsideInteriorDoorMap = buildDoorEastWestMap(interiorPos, building, -0.33, -0.66, 0.4);
 	        // For Zone 1
 	        insideInteriorDoorMap = buildDoorEastWestMap(interiorPos, building, 0.33, 0.66, 0.4);
 	        // Determine airlock outer/exterior door position.
-	        airlockExteriorPos = exteriorPos.toPosition(building);
+	        outerDoorPos = exteriorPos.toPosition(building);
 	        // For Zone 3
 	        insideExteriorDoorMap = buildDoorEastWestMap(exteriorPos, building, -0.33, -0.66, 0.4);
 	        // For Zone 4
@@ -117,13 +117,13 @@ public class ClassicAirlock extends Airlock {
 		else {
 			// In case of Suit Port,
 	        // Determine airlock inner/interior door position.
-	        airlockInteriorPos = interiorPos.toPosition(building);
+	        innerDoorPos = interiorPos.toPosition(building);
 	        // For Zone 0
 	        outsideInteriorDoorMap = buildDoorNorthSouthMap(interiorPos, building, 0.25, -0.25);
 	        // For Zone 1
 	        insideInteriorDoorMap = buildDoorNorthSouthMap(interiorPos, building, 0.25, 0.25);
 	        // Determine airlock outer/exterior door position.
-	        airlockExteriorPos = exteriorPos.toPosition(building);
+	        outerDoorPos = exteriorPos.toPosition(building);
 	        // For Zone 3
 	        insideExteriorDoorMap = buildDoorNorthSouthMap(exteriorPos, building, 0.25, -0.25);
 	        // For Zone 4
@@ -311,8 +311,8 @@ public class ClassicAirlock extends Airlock {
     }
     
     @Override
-    public LocalPosition getAvailableInteriorPosition() {
-        return airlockInteriorPos;
+    public LocalPosition getInnerDoorPos() {
+        return innerDoorPos;
     }
 
     @Override
@@ -320,6 +320,7 @@ public class ClassicAirlock extends Airlock {
     	if (inside) {
     		// in Zone 1
     		for (Entry<LocalPosition, Integer> i : insideInteriorDoorMap.entrySet()) {
+    			// find the key in which its value is -1
     			if (i.getValue() == -1) {
     				return i.getKey();
     			}
@@ -328,9 +329,9 @@ public class ClassicAirlock extends Airlock {
 
     	else {
     		// in Zone 0
-    		for (Entry<LocalPosition, Integer> i : outsideInteriorDoorMap.entrySet()) {
-    			if (i.getValue() == -1) {
-    				return i.getKey();
+    		for (Entry<LocalPosition, Integer> j: outsideInteriorDoorMap.entrySet()) {
+    			if (j.getValue() == -1) {
+    				return j.getKey();
     			}
     		}
     	}
@@ -339,8 +340,8 @@ public class ClassicAirlock extends Airlock {
     }
 
     @Override
-    public LocalPosition getAvailableExteriorPosition() {
-        return airlockExteriorPos;
+    public LocalPosition getOuterDoorPos() {
+        return outerDoorPos;
     }
 
     @Override
@@ -354,9 +355,9 @@ public class ClassicAirlock extends Airlock {
     	}
 
     	else {
-    		for( Entry<LocalPosition, Integer> i : outsideExteriorDoorMap.entrySet()) {
-    			if (i.getValue() == -1) {
-    				return i.getKey();
+    		for( Entry<LocalPosition, Integer> j : outsideExteriorDoorMap.entrySet()) {
+    			if (j.getValue() == -1) {
+    				return j.getKey();
     			}
     		}
     	}
@@ -383,8 +384,10 @@ public class ClassicAirlock extends Airlock {
     		if (outsideInteriorDoorMap.get(pos) != -1)
     			return false;
 
-    		outsideInteriorDoorMap.put(pos, id);
-    		return true;
+    		if (outsideInteriorDoorMap.put(pos, id) == -1)
+    			return true;
+    		
+    		return false;
     	}
 
     	else if (zone == AirlockZone.ZONE_1) {
@@ -396,8 +399,10 @@ public class ClassicAirlock extends Airlock {
     		if (insideInteriorDoorMap.get(pos) != -1)
     			return false;
     		
-    		insideInteriorDoorMap.put(pos, id);
-    		return true;
+    		if (insideInteriorDoorMap.put(pos, id) == -1)
+    			return true;
+    		
+    		return false;
     	}
     	
     	else if (zone == AirlockZone.ZONE_2) {
@@ -413,9 +418,10 @@ public class ClassicAirlock extends Airlock {
     		if (insideExteriorDoorMap.get(pos) != -1)
     			return false;
     		
-    		insideExteriorDoorMap.put(pos, id);
-    		return true;
-
+    		if (insideExteriorDoorMap.put(pos, id) == -1)
+    			return true;
+    		
+    		return false;
     	}
 
     	else if (zone == AirlockZone.ZONE_4) {
@@ -427,9 +433,10 @@ public class ClassicAirlock extends Airlock {
     		if (outsideExteriorDoorMap.get(pos) != -1)
     			return false;
     		
-    		outsideExteriorDoorMap.put(pos, id);
-    		return true;
+    		if (outsideExteriorDoorMap.put(pos, id) == -1)
+    			return true;
 
+    		return false;
     	}
     	return false;
     }
@@ -823,8 +830,8 @@ public class ClassicAirlock extends Airlock {
 	public void destroy() {
 	    building = null;
 	
-	    airlockInteriorPos = null;
-	    airlockExteriorPos = null;
+	    innerDoorPos = null;
+	    outerDoorPos = null;
 
 	    outsideInteriorDoorMap = null;
 	    outsideExteriorDoorMap = null;

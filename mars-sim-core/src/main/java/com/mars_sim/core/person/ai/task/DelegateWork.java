@@ -62,25 +62,22 @@ public class DelegateWork extends Task {
 
 			// If person is in a settlement, try to find an office building.
 			Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
+			
+			boolean canWalk = false;
+			
+			// Note: office building is optional
 			if (officeBuilding != null) {
-				// Walk to the office building.
-				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, false);
-				office = officeBuilding.getAdministration();
+				office = officeBuilding.getAdministration();	
 				if (!useOffice && !office.isFull()) {
 					office.addStaff();
 					useOffice = true;
-					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
+					// Walk to the office building.
+					canWalk = walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 				}
 			}
-			else {
-				Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
-				// Note: dining building is optional
-				if (dining != null) {
-					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
-				}
-				// or else work anywhere			
+			
+			if (!canWalk) {
+				walkToWorkPlace();
 			}
 			 
 			// Initialize phase

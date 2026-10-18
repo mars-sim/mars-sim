@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.building.function.task;
 
-import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
@@ -14,7 +13,6 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.utility.power.FuelPowerSource;
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
@@ -102,6 +100,7 @@ public class ToggleFuelPowerSource extends Task {
         // If habitable building, send person there.
         if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
             
+	
             int rand = RandomUtil.getRandomInt(5);     
             if (rand == 0) {
                 // Yes it requires EVA
@@ -110,68 +109,21 @@ public class ToggleFuelPowerSource extends Task {
                 walkToPowerSourceBuilding(building);              
             }
             else { // 5 out of 6 cases requires no EVA
-                // Looks for management function for toggling power source.
-                checkManagement();
+            	
+            	walkToWorkPlace();
             }
+
         }
         else {
-
-            // Looks for management function for toggling power source.
-            checkManagement();
+        	walkToWorkPlace();
+        	
         }
+        
         setPhase(TOGGLE_POWER_SOURCE);
 
     }
 
-	/**
-	 * Checks if any management function is available.
-	 */
-	private void checkManagement() {
 
-		boolean done = false;
-		// Pick an administrative building for remote access to the resource building
-		Set<Building> mgtBuildings = person.getSettlement().getBuildingManager()
-				.getBuildingSet(FunctionType.MANAGEMENT);
-
-		if (!mgtBuildings.isEmpty()) {
-
-			Set<Building> notFull = new UnitSet<>();
-
-			for (Building b : mgtBuildings) {
-				if (b.hasFunction(FunctionType.ADMINISTRATION)) {
-					walkToMgtBldg(b);
-					done = true;
-					break;
-				}
-				else if (b.getManagement() != null && !b.getManagement().isFull()) {
-					notFull.add(b);
-				}
-			}
-
-			if (!done) {
-				if (!notFull.isEmpty()) {
-					walkToMgtBldg(RandomUtil.getARandSet(mgtBuildings));
-				}
-				else {
-					endTask(powerSource.getType().getName() + ": Management space unavailable.");
-				}
-			}
-		}
-		else {
-			endTask("Management space unavailable.");
-		}
-	}
-
-    /**
-     * Walks to the building with management function.
-     *
-     * @param b the building
-     */
-	private void walkToMgtBldg(Building b) {
-		walkToTaskSpecificActivitySpotInBuilding(b,
-				FunctionType.MANAGEMENT,
-				false);
-	}
 
 	/**
 	 * Ends the task.

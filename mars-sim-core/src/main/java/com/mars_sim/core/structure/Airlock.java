@@ -978,11 +978,11 @@ public abstract class Airlock implements Serializable {
 	public abstract LocalPosition getAvailableInteriorPosition(boolean inside);
 
 	/**
-	 * Gets an available position inside the airlock entity.
+	 * Gets the position of the inner door.
 	 *
 	 * @return available local position.
 	 */
-	public abstract LocalPosition getAvailableInteriorPosition();
+	public abstract LocalPosition getInnerDoorPos();
 
 	/**
 	 * Gets an available position outside the airlock entity.
@@ -993,11 +993,11 @@ public abstract class Airlock implements Serializable {
 	public abstract LocalPosition getAvailableExteriorPosition(boolean inside);
 
 	/**
-	 * Gets an available position outside the airlock entity.
+	 * Gets the position of the outer door.
 	 *
 	 * @return available local position.
 	 */
-	public abstract LocalPosition getAvailableExteriorPosition();
+	public abstract LocalPosition getOuterDoorPos();
 
 	/**
 	 * Gets an available airlock position.

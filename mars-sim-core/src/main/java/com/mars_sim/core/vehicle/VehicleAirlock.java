@@ -232,17 +232,17 @@ extends Airlock {
 	@Override
 	public LocalPosition getAvailableInteriorPosition(boolean pos) {
 		// Note: the param pos is not needed
-		return getAvailableInteriorPosition();
+		return getInnerDoorPos();
 	}
 
 	@Override
 	public LocalPosition getAvailableExteriorPosition(boolean pos) {
 		// Note: the param pos is not needed
-		return getAvailableExteriorPosition();
+		return getOuterDoorPos();
 	}
 
 	@Override
-	public LocalPosition getAvailableInteriorPosition() {
+	public LocalPosition getInnerDoorPos() {
 		for (Entry<LocalPosition, Integer> i : airlockInteriorPosMap.entrySet()) {
 			if (i.getValue() == -1) {
 				return i.getKey();
@@ -253,7 +253,7 @@ extends Airlock {
 	}
 
 	@Override
-	public LocalPosition getAvailableExteriorPosition() {
+	public LocalPosition getOuterDoorPos() {
 		for (Entry<LocalPosition, Integer> i : airlockExteriorPosMap.entrySet()) {
 			if (i.getValue() == -1) {
 				return i.getKey();

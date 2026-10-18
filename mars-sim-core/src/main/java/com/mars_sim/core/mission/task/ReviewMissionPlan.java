@@ -93,6 +93,8 @@ public class ReviewMissionPlan extends Task {
 		// If person is in a settlement, try to find an office building.
 		Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
 
+		boolean canWalk = false;
+		
 		// Note: office building is optional
 		if (officeBuilding != null) {
 			office = officeBuilding.getAdministration();	
@@ -121,9 +123,12 @@ public class ReviewMissionPlan extends Task {
 
 		// Walk to the choosen building.
 		if (choosenBuilding != null) {
-			walkToTaskSpecificActivitySpotInBuilding(choosenBuilding, choosenFunction, true);
+			canWalk = walkToTaskSpecificActivitySpotInBuilding(choosenBuilding, choosenFunction, true);
 		}
 
+		if (!canWalk) {
+			walkToWorkPlace();
+		}
 		// Initialize phase	
 		setPhase(REVIEWING);
 	}

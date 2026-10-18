@@ -324,7 +324,9 @@ implements Serializable {
             }
 
             Building airlockBuilding = (Building) airlock.getEntity();
-            LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+            // Question: how to have more than just one local position available for
+            // others to step into ?
+            LocalPosition interiorAirlockPosition = airlock.getInnerDoorPos();
 
             // Add settlement interior walk step to starting airlock.
             createWalkSettlementInteriorStep(interiorAirlockPosition, airlockBuilding);
@@ -384,7 +386,7 @@ implements Serializable {
             }
 
             Building airlockBuilding = (Building) airlock.getEntity();
-            LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+            LocalPosition interiorAirlockPosition = airlock.getInnerDoorPos();
 
             // Add settlement interior walk step to starting airlock.
             createWalkSettlementInteriorStep(interiorAirlockPosition, airlockBuilding);
@@ -424,7 +426,7 @@ implements Serializable {
         }
 
         Building airlockBuilding = (Building) airlock.getEntity();
-        LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+        LocalPosition interiorAirlockPosition = airlock.getInnerDoorPos();
 
         // Add settlement interior walk step to starting airlock.
         createWalkSettlementInteriorStep(interiorAirlockPosition, airlockBuilding);
@@ -495,7 +497,7 @@ implements Serializable {
         else {
             // Walk to rover airlock.
             Airlock airlock = initialRover.getAirlock();
-            LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+            LocalPosition interiorAirlockPosition = airlock.getInnerDoorPos();
 
             // Add rover interior walk step to starting airlock.
             createWalkRoverInteriorStep(interiorAirlockPosition, initialRover);
@@ -550,7 +552,7 @@ implements Serializable {
             else {
                 // Walk to rover airlock.
                 Airlock airlock = initialRover.getAirlock();
-                LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+                LocalPosition interiorAirlockPosition = airlock.getInnerDoorPos();
 
                 // Add rover interior walk step to starting airlock.
                 createWalkRoverInteriorStep(interiorAirlockPosition, initialRover);
@@ -600,7 +602,7 @@ implements Serializable {
 
             // Walk to rover airlock.
             Airlock airlock = initialRover.getAirlock();
-            LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+            LocalPosition interiorAirlockPosition = airlock.getInnerDoorPos();
 
             // Add rover interior walk step to starting airlock.
             createWalkRoverInteriorStep(interiorAirlockPosition, initialRover);
@@ -672,7 +674,7 @@ implements Serializable {
                 // Create exterior airlock walk state.
                 WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
                 exteriorAirlockState.airlock = airlock;
-                LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+                LocalPosition exteriorAirlockPosition = airlock.getOuterDoorPos();
                 exteriorAirlockState.loc = exteriorAirlockPosition;
 
                 determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -686,7 +688,7 @@ implements Serializable {
             // Create exterior airlock walk state.
             WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
             exteriorAirlockState.airlock = airlock;
-            LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+            LocalPosition exteriorAirlockPosition = airlock.getOuterDoorPos();
             exteriorAirlockState.loc = exteriorAirlockPosition;
 
             determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -736,7 +738,7 @@ implements Serializable {
                     // Create exterior airlock walk state.
                     WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
                     exteriorAirlockState.airlock = airlock;
-                    LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+                    LocalPosition exteriorAirlockPosition = airlock.getOuterDoorPos();
                     exteriorAirlockState.loc = exteriorAirlockPosition;
 
                     determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -750,7 +752,7 @@ implements Serializable {
                 // Create exterior airlock walk state.
                 WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
                 exteriorAirlockState.airlock = airlock;
-                LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+                LocalPosition exteriorAirlockPosition = airlock.getOuterDoorPos();
                 exteriorAirlockState.loc = exteriorAirlockPosition;
 
                 determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -774,7 +776,7 @@ implements Serializable {
                 // Create exterior airlock walk state.
                 WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
                 exteriorAirlockState.airlock = airlock;
-                LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+                LocalPosition exteriorAirlockPosition = airlock.getOuterDoorPos();
                 exteriorAirlockState.loc = exteriorAirlockPosition;
 
                 determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -799,7 +801,7 @@ implements Serializable {
         // Create exterior airlock walk state.
         WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
         exteriorAirlockState.airlock = airlock;
-        LocalPosition exteriorAirlockPosition = airlock.getAvailableExteriorPosition();
+        LocalPosition exteriorAirlockPosition = airlock.getOuterDoorPos();
         exteriorAirlockState.loc = exteriorAirlockPosition;
 
         determineWalkingSteps(exteriorAirlockState, destinationWalkState);
@@ -859,7 +861,7 @@ implements Serializable {
                 WalkState interiorAirlockState = new WalkState(WalkState.INTERIOR_AIRLOCK);
                 interiorAirlockState.airlock = airlock;
                 interiorAirlockState.building = airlockBuilding;
-                LocalPosition interiorAirlockPosition = airlock.getAvailableInteriorPosition();
+                LocalPosition interiorAirlockPosition = airlock.getInnerDoorPos();
                 interiorAirlockState.loc = interiorAirlockPosition;
 
                 determineWalkingSteps(interiorAirlockState, destinationWalkState);
@@ -873,7 +875,7 @@ implements Serializable {
                 if (destinationAirlock != null) {
 
                     // Create walk step to exterior airlock position.
-                    LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+                    LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getOuterDoorPos();
                     createWalkExteriorStep(destinationAirlockExteriorPosition);
 
                     // Create exterior airlock walk state.
@@ -905,7 +907,7 @@ implements Serializable {
             if (destinationAirlock != null) {
 
                 // Create walk step to exterior airlock position.
-                LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+                LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getOuterDoorPos();
                 createWalkExteriorStep(destinationAirlockExteriorPosition);
 
                 // Create exterior airlock walk state.
@@ -957,7 +959,7 @@ implements Serializable {
                     WalkState interiorAirlockState = new WalkState(WalkState.INTERIOR_AIRLOCK);
                     interiorAirlockState.airlock = initialAirlock;
                     interiorAirlockState.building = (Building) initialAirlock.getEntity();
-                    LocalPosition interiorAirlockPosition = initialAirlock.getAvailableInteriorPosition();
+                    LocalPosition interiorAirlockPosition = initialAirlock.getInnerDoorPos();
                     interiorAirlockState.loc = interiorAirlockPosition;
 
                     determineWalkingSteps(interiorAirlockState, destinationWalkState);
@@ -965,7 +967,7 @@ implements Serializable {
                 else {
 
                     // Create walk step to exterior airlock position.
-                    LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+                    LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getOuterDoorPos();
                     createWalkExteriorStep(destinationAirlockExteriorPosition);
 
                     // Create exterior airlock walk state.
@@ -998,7 +1000,7 @@ implements Serializable {
                 WalkState interiorAirlockState = new WalkState(WalkState.INTERIOR_AIRLOCK);
                 interiorAirlockState.airlock = initialAirlock;
                 interiorAirlockState.rover = destinationRover;
-                LocalPosition interiorAirlockPosition = initialAirlock.getAvailableInteriorPosition();
+                LocalPosition interiorAirlockPosition = initialAirlock.getInnerDoorPos();
                 interiorAirlockState.loc = interiorAirlockPosition;
 
                 determineWalkingSteps(interiorAirlockState, destinationWalkState);
@@ -1008,7 +1010,7 @@ implements Serializable {
                 Airlock destinationAirlock = destinationRover.getAirlock();
 
                 // Create walk step to exterior airlock position.
-                LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+                LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getOuterDoorPos();
                 createWalkExteriorStep(destinationAirlockExteriorPosition);
 
                 // Create exterior airlock walk state.
@@ -1076,7 +1078,7 @@ implements Serializable {
         if (destinationAirlock != null) {
 
             // Create walk step to exterior airlock position.
-            LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+            LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getOuterDoorPos();
             createWalkExteriorStep(destinationAirlockExteriorPosition);
 
             // Create exterior airlock walk state.
@@ -1118,7 +1120,7 @@ implements Serializable {
             if (destinationAirlock != null) {
 
                 // Create walk step to exterior airlock position.
-                LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+                LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getOuterDoorPos();
                 createWalkExteriorStep(destinationAirlockExteriorPosition);
 
                 // Create exterior airlock walk state.
@@ -1142,7 +1144,7 @@ implements Serializable {
             Airlock destinationAirlock = destinationRover.getAirlock();
 
             // Create walk step to exterior airlock position.
-            LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+            LocalPosition destinationAirlockExteriorPosition = destinationAirlock.getOuterDoorPos();
             createWalkExteriorStep(destinationAirlockExteriorPosition);
 
             // Create exterior airlock walk state.
