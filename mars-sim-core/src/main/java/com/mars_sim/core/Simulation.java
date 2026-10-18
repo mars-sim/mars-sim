@@ -94,20 +94,20 @@ import com.mars_sim.core.tool.Msg;
  */
 public class Simulation implements ClockPulseListener, Serializable {
 
-	private static class AutoSaveTrigger implements ClockPulseListener {
-		private Simulation sim;
+	/**
+	 * Triggers an autosave of the simulation
+	 */
+	private class AutoSaveTrigger implements ClockPulseListener {
 		private SaveType type;
 		
-		public AutoSaveTrigger(Simulation sim, SaveType type) {
-			super();
-			this.sim = sim;
+		public AutoSaveTrigger(SaveType type) {
 			this.type = type;
 		}
 
 		@Override
 		public void clockPulse(ClockPulse currentPulse) {
 			// Set the pending save flag for an auto save
-			sim.savePending = type;
+			savePending = type;
 		}
 	}
 	
@@ -666,12 +666,11 @@ public class Simulation implements ClockPulseListener, Serializable {
 		masterClock.addClockPulseListener(this);
 		
 		// Add a listener to trigger the auto save
-		ClockPulseListener autoSaver = new AutoSaveTrigger(this, autosaveDefault ? SaveType.AUTOSAVE_AS_DEFAULT : SaveType.AUTOSAVE);
-		long autoSaveDuration = simulationConfig.getAutosaveInterval() * 60000L;
+		ClockPulseListener autoSaver = new AutoSaveTrigger(autosaveDefault ? SaveType.AUTOSAVE_AS_DEFAULT : SaveType.AUTOSAVE);
+		long autoSaveMins = simulationConfig.getAutosaveInterval() ;
 
-		autoSaveHandler = new CompressedClockListener(autoSaver, autoSaveDuration);
-		logger.config("Setting up autosave to be triggered every " + autoSaveDuration + " ms (" +
-				autoSaveDuration/60.0/1000.0 + " mins).");
+		autoSaveHandler = new CompressedClockListener(autoSaver, autoSaveMins * 60000L);
+		logger.config("Setting up autosave to be triggered every " + autoSaveMins  + " mins.");
 		masterClock.addClockPulseListener(autoSaveHandler);
 		masterClock.start();
 		
@@ -1460,19 +1459,14 @@ public class Simulation implements ClockPulseListener, Serializable {
 			}
 		}
 		malfunctionFactory = null;
+		lunarWorld = null;
+		lunarColonyManager = null;
+		orbitInfo = null;
+		medicalManager = null;
+		dataManager = null;
+		marketManager = null;
+		eventManager = null;
 
-		if (lunarWorld != null) {
-			lunarWorld = null;
-		}
-		
-		if (lunarColonyManager != null) {
-			lunarColonyManager = null;
-		}
-		
-		if (orbitInfo != null) {
-			orbitInfo = null;
-		}
-		
 		if (weather != null) {
 			weather.destroy();
 			weather = null;
@@ -1481,18 +1475,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		if (surfaceFeatures != null) {
 			surfaceFeatures.destroy();
 			surfaceFeatures = null;
-		}
-
-		if (medicalManager != null) {
-			medicalManager = null;
-		}
-		
-		if (dataManager != null) {
-			dataManager = null;
-		}
-		
-		if (marketManager != null) {
-			marketManager = null;
 		}
 
 		if (masterClock != null) {
@@ -1509,8 +1491,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 			scientificStudyManager.destroy();
 			scientificStudyManager = null;
 		}
-
-		eventManager = null;
 
 		 logger.config("Done with Simulation's destroyOldSimulation()");
 	}

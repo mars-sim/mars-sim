@@ -28,7 +28,7 @@ public class CompressedClockListener implements ClockPulseListener {
     public CompressedClockListener(ClockPulseListener listener, long minInterval) {
         this.listener = listener;
         this.minInterval = minInterval;
-        this.lastForward = 0;
+        this.lastForward = System.currentTimeMillis();
         this.msolsSkipped = 0D;
     }
 
