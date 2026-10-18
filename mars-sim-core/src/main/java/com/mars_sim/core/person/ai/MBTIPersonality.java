@@ -16,9 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.tool.RandomUtil;
@@ -101,12 +99,6 @@ public class MBTIPersonality implements Serializable {
 	private static Map<String, Double> personalityDistribution = null;
 	/** The person's score map */
 	private Map<Integer, Integer> scores = null;
-	/** The person's MBTI */
-//	private String personalityType;
-	/** The person's ID. */
-	private Integer personID;
-	/** The unit manager instance. */
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	/** The person config instance. */
 	private static PersonConfig config = SimulationConfig.instance().getPersonConfig();
 
@@ -142,8 +134,7 @@ public class MBTIPersonality implements Serializable {
 	/**
 	 * Constructor
 	 */
-	MBTIPersonality(Person person) {
-		personID = person.getIdentifier();
+	MBTIPersonality() {
 	}
 
 	/**
@@ -374,26 +365,25 @@ public class MBTIPersonality implements Serializable {
 	/**
 	 * Updates a person's stress based on his/her personality.
 	 * 
+	 * @param person the person whose stress is being updated
 	 * @param time the time passing (millisols)
 	 * @throws Exception if problem updating stress.
 	 */
-	public void updateStress(double time) {
-		Person p = getPerson();
-		if (p == null) return; // TODO: why getting NPE when loading from a sim ?
+	public void updateStress(Person person, double time) {
 		
-		Collection<Person> localGroup = p.getLocalGroup();
+		Collection<Person> localGroup = person.getLocalGroup();
 		int groupSize = localGroup.size();
 
 		// Introverts reduce stress when alone (just me in group).
 		if (isIntrovert() && (groupSize == 1)) {
 			double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
-			p.getPhysicalCondition().reduceStress(solitudeStressModifier);
+			person.getPhysicalCondition().reduceStress(solitudeStressModifier);
 		}
 
 		// Extroverts reduce stress when with company, i.e. mor ethan me
 		if (isExtrovert() && (groupSize > 1)) {
 			double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;
-			p.getPhysicalCondition().reduceStress(companyStressModifier);
+			person.getPhysicalCondition().reduceStress(companyStressModifier);
 		}
 
 	}
@@ -474,15 +464,6 @@ public class MBTIPersonality implements Serializable {
 	}
 
 	/**
-	 * Gets the person's reference.
-	 * 
-	 * @return {@link Person}
-	 */
-	public Person getPerson() {
-		return unitManager.getPersonByID(personID);
-	}
-	
-	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
@@ -492,6 +473,5 @@ public class MBTIPersonality implements Serializable {
 		mbtiType = null;
 		scores = null;
 		config = null;
-		unitManager = null;
 	}
 }

@@ -1,7 +1,7 @@
-/*
+/**
  * Mars Simulation Project
  * Simulation.java
-  * @date 2026-08-11
+ * @date 2026-08-11
  * @author Scott Davis
  */
 package com.mars_sim.core;
@@ -136,14 +136,10 @@ public class Simulation implements ClockPulseListener, Serializable {
 	public static final String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //-NLS-1$
 
 
-	/** true if displaying graphic user interface. */
-	private transient boolean useGUI = true;
 	/** Flag to indicate that a new simulation is being created or loaded. */
 	private transient boolean isUpdating = false;
 	/** Flag to keep track of whether the initial state of simulation has been initialized. */
 	private transient boolean doneInitializing = false;
-
-	private transient boolean justSaved = true;
 
 	private boolean initialSimulationCreated = false;
 
@@ -404,7 +400,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
-		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 		
 		// Clock is always first
 		masterClock = new MasterClock(simulationConfig, timeRatio, timestamp);
@@ -565,7 +560,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
-//		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 		
 		// Re-initialize the data logger
 		DataLogger.changeTime(masterClock.getMarsTime());
@@ -1053,7 +1047,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		finally {
 			if (oos != null)
 				oos.close();
-			justSaved = true;
 		}
 
 		return success;
@@ -1337,32 +1330,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 	public SimulationConfig getConfig() {
 		return simulationConfig;
-	}
-	
-	/**
-	 * Sets if simulation was loaded with GUI.
-	 *
-	 * @param value is true if GUI is in use.
-	 */
-	public void setUseGUI(boolean value) {
-		useGUI = value;
-	}
-
-	/**
-	 * Checks if simulation was loaded with GUI.
-	 *
-	 * @return true if GUI is in use.
-	 */
-	public boolean getUseGUI() {
-		return useGUI;
-	}
-
-	public boolean getJustSaved() {
-		return justSaved;
-	}
-
-	public void setJustSaved(boolean value) {
-		justSaved = value;
 	}
 
 	/**

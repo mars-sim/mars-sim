@@ -83,9 +83,9 @@ public class Mind implements Serializable, Temporal {
 		jobLock = false;
 
 		// Construct the Big Five personality trait.
-		trait = new PersonalityTraitManager(person);
+		trait = new PersonalityTraitManager();
 		// Construct the MBTI personality type.
-		mbti = new MBTIPersonality(person);
+		mbti = new MBTIPersonality();
 		// Construct the emotion states.
 		emotionMgr = new EmotionManager(person);
 		// Construct the task manager.
@@ -124,7 +124,7 @@ public class Mind implements Serializable, Temporal {
 		double time = pulse.getElapsed();
 		
 		// Update stress based on personality.
-		mbti.updateStress(time);
+		mbti.updateStress(person, time);
 		
 		int msol = pulse.getMarsTime().getMillisolInt();
 		if (msol % RELATION_UPDATE_CYCLE == relationUpdate
@@ -523,7 +523,7 @@ public class Mind implements Serializable, Temporal {
 		return jobLock;
 	}
 
-	/*
+	/**
 	 * Sets the value of jobLock so that the job can or cannot be changed.
 	 * 
 	 * @param value

@@ -66,7 +66,7 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	// File for diagnostics output
 	private static PrintWriter diagnosticFile = null;
 	
-	protected static SimulationConfig simulationConfig = Simulation.instance().getConfig();
+	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
 
 	/**
 	 * Enable the detailed diagnostics
