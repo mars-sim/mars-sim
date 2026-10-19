@@ -379,23 +379,23 @@ public class CollisionPathFinder implements OutsidePathFinder {
 		while (i.hasNext()) {
 
 			// Determine bounding rectangle for local bounded object with facing.
-			Rectangle2D bounds = LocalAreaUtil.getBoundingRectangle(i.next());
+			Rectangle2D obj = LocalAreaUtil.getBoundingRectangle(i.next());
 
 			// Extend result boundaries to enclose bounding rectangle's limits.
-			if (result[0] < bounds.getMaxX()) {
-				result[0] = bounds.getMaxX();
+			if (result[0] < obj.getMaxX()) {
+				result[0] = obj.getMaxX();
 			}
 
-			if (result[1] > bounds.getMinX()) {
-				result[1] = bounds.getMinX();
+			if (result[1] > obj.getMinX()) {
+				result[1] = obj.getMinX();
 			}
 
-			if (result[2] < bounds.getMaxY()) {
-				result[2] = bounds.getMaxY();
+			if (result[2] < obj.getMaxY()) {
+				result[2] = obj.getMaxY();
 			}
 
-			if (result[3] > bounds.getMinY()) {
-				result[3] = bounds.getMinY();
+			if (result[3] > obj.getMinY()) {
+				result[3] = obj.getMinY();
 			}
 		}
 

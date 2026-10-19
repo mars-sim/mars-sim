@@ -38,7 +38,7 @@ class ConstructionSiteTest extends MarsSimUnitTest {
     private static final String WORKSHOP = "Workshop";
     private static final int BUILDING_WIDTH = 10;
     private static final int BUILDING_LENGTH = 20;
-    private static final BoundedObject PLACE = new BoundedObject(LocalPosition.DEFAULT_POSITION,
+    private static final BoundedObject PLACE = new BoundedObject(LocalPosition.DEFAULT_POSITION, false, 
                                         BUILDING_WIDTH, BUILDING_LENGTH, 0);
     private static final double PARTIAL_LOAD = 1D;
 

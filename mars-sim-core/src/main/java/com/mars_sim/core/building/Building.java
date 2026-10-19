@@ -107,6 +107,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	boolean isImpactImminent = false;
 	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
 	boolean inTransportMode = true;
+	/** Is this building circular. */
+	boolean isCircular = false;
 	
 	private int momentOfImpact = 999;
 	/** The designated zone where this building is located at. */
@@ -184,6 +186,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		this.facing = bounds.getFacing();
 		this.width = bounds.getWidth();
 		this.length = bounds.getLength();
+		this.isCircular = bounds.isCircular();
 
 		if (length != 1D && width != 1D) {
 			this.floorArea = length * width;			
@@ -210,6 +213,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 						BuildingSpec buildingSpec) {
 		this(owner, id, zone, name, buildingSpec.getValidBounds(bounds), buildingSpec.getName(), buildingSpec.getCategory());
 		
+		this.isCircular = buildingSpec.isCircular();
 		this.floorArea = buildingSpec.getArea();
 		
 		if (floorArea <= 0.0) {
@@ -1485,6 +1489,15 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public boolean isInhabitable() {
 		return getLifeSupport() == null;
+	}
+	
+	/**
+	 * Is this building circular ?
+	 * 
+	 * @return
+	 */
+	public boolean isCircular() {
+		return isCircular;
 	}
 	
 	@Override

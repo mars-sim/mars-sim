@@ -277,6 +277,11 @@ public class DataCollectionSite extends CollectionSite
 	}
 
 	@Override
+	public boolean isCircular() {
+		return true;
+	}
+	
+	@Override
 	public double getFacing() {
 		return 0;
 	}

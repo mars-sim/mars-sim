@@ -167,7 +167,7 @@ public class ConstructionSite extends FixedUnit {
         this.unstarted = false;
         this.activeWork = activeWork;
 
-        String eventType = ((activeWork != null)  ? ConstructionSite.START_CONSTRUCTION_SITE_EVENT
+        String eventType = ((activeWork != null) ? ConstructionSite.START_CONSTRUCTION_SITE_EVENT
                                         : ConstructionSite.END_CONSTRUCTION_SITE_EVENT);
         fireUnitUpdate(eventType);
     }
@@ -248,9 +248,10 @@ public class ConstructionSite extends FixedUnit {
         int zone = 0;
         var spec = getBuildingSpec(buildingType);
         int id = manager.getNextTemplateID(buildingType);      
+        boolean isCircular = spec.isCircular();
         
         Building newBuilding = new Building(settlement, Integer.toString(id), zone, uniqueName,
-        		new BoundedObject(position, width, length, facing), spec);
+        		new BoundedObject(position, isCircular, width, length, facing), spec);
         
         manager.addBuilding(newBuilding, true);
 
@@ -382,6 +383,12 @@ public class ConstructionSite extends FixedUnit {
         return result;
     }
 
+	@Override
+	public boolean isCircular() {
+		// Note: currently, all sites are assumed rectangular in shape. 
+		return false;
+	}
+	
 	/**
 	 * Is this object the same as another object ?
 	 */
@@ -408,5 +415,6 @@ public class ConstructionSite extends FixedUnit {
         super.destroy();
 	    currentStage = null;
 	}
+
 
 }

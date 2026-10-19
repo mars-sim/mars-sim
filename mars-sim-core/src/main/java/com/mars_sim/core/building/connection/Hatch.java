@@ -101,6 +101,11 @@ public class Hatch implements LocalBoundedObject, InsidePathLocation {
 	}
 
 	@Override
+	public boolean isCircular() {
+		return false;
+	}
+	
+	@Override
 	public boolean equals(Object other) {
 
 		boolean result = false;
@@ -130,4 +135,5 @@ public class Hatch implements LocalBoundedObject, InsidePathLocation {
 		building = null;
 		connector = null;
 	}
+
 }

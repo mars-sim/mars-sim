@@ -121,7 +121,8 @@ public class BuildingPlacement {
 		// If no buildings at settlement, position new construction site at (0, 0) with
 		// random facing.
 		int angle = RandomUtil.getRandomInt(4) * 90;
-		return new BoundedObject(LocalPosition.DEFAULT_POSITION, spec.getWidth(), spec.getLength(), angle);
+		return new BoundedObject(LocalPosition.DEFAULT_POSITION, spec.isCircular(), 
+				spec.getWidth(), spec.getLength(), angle);
 	}
 
     /**
@@ -260,6 +261,7 @@ public class BuildingPlacement {
 	 * Positions a new construction site near an existing building.
 	 *
 	 * @param building           the existing building.
+	 * @param spec
 	 * @param gapDistance the separation distance (meters) from the wall of one building to the wall of another building.
 	 * @param faceAway           true if new building should face away from other
 	 *                           building.
@@ -325,7 +327,10 @@ public class BuildingPlacement {
 			// Check to see if proposed new site position intersects with any existing
 			// buildings
 			// or construction sites.
-			BoundedObject sitePosition = new BoundedObject(rectCenter, spec.getWidth(), spec.getLength(), rectRotation);
+			
+			// Note: currently, all sites are assumed rectangular in shape. 
+			BoundedObject sitePosition = new BoundedObject(rectCenter, false, 
+					spec.getWidth(), spec.getLength(), rectRotation);
 			if (bldMgr.isBuildingLocationOpen(sitePosition)) {
 				return sitePosition;
 			}
@@ -376,13 +381,22 @@ public class BuildingPlacement {
 		}
 
 		if (!validLines.isEmpty()) {
-			return isLineValid(validLines, firstBuilding, secondBuilding, spec.getWidth());
+			return deriveConnectorWithLines(validLines, firstBuilding, secondBuilding, spec.getWidth());
 		}
 
 		return null;
 	}
 	
-	private BoundedObject isLineValid(List<Line2D> validLines,
+	/**
+	 * Derives the connector building between two existing buildings.
+	 * 
+	 * @param validLines
+	 * @param firstBuilding
+	 * @param secondBuilding
+	 * @param width
+	 * @return
+	 */
+	private BoundedObject deriveConnectorWithLines(List<Line2D> validLines,
 			Building firstBuilding, Building secondBuilding, double width) {
 		
 		// Find shortest valid line.
@@ -413,7 +427,7 @@ public class BuildingPlacement {
 		double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
 
 		// Provide the site the position, facing and length
-		return new BoundedObject(new LocalPosition(centerX, centerY), width, newLength, facingDegrees);
+		return new BoundedObject(new LocalPosition(centerX, centerY), false, width, newLength, facingDegrees);
 	}
 
 

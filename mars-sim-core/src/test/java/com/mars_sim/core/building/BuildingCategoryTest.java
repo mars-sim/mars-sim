@@ -8,7 +8,7 @@ import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.BoundedObject;
 
 public class BuildingCategoryTest extends MarsSimUnitTest {
-    private static final BoundedObject BOUNDS = new BoundedObject(0, 0, 20, 10, 0D);
+    private static final BoundedObject BOUNDS = new BoundedObject(0, 0, false, 20, 10, 0D);
 
     @Test
     public void testGarage() {

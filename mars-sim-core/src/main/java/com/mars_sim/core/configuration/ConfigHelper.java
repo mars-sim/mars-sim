@@ -45,6 +45,7 @@ public class ConfigHelper {
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String FACING = "facing";
+	private static final String TYPE = "type";
 	private static final String NAME = "name";
 	private static final String NUMBER = "number";	
 	private static final String AMOUNT = "amount";
@@ -113,7 +114,15 @@ public class ConfigHelper {
 		LocalPosition loc = ConfigHelper.parseLocalPosition(element);
 		double facing = Double.parseDouble(element.getAttributeValue(FACING));
 		
-		return new BoundedObject(loc, width, length, facing);
+		String buildingType = element.getAttributeValue(TYPE);
+        boolean isCircular = false;
+        if (buildingType.toLowerCase().contains(" hab")
+        	|| buildingType.toLowerCase().contains(" dome")
+        		) {
+        	isCircular = true;
+        }
+		
+		return new BoundedObject(loc, isCircular, width, length, facing);
 	}
 
 	/**

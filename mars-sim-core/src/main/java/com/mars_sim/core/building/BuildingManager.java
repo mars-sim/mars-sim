@@ -1998,7 +1998,7 @@ public class BuildingManager implements Serializable {
 	public boolean isBuildingLocationOpen(BoundedObject position) {
 		boolean goodLocation = true;
 
-		goodLocation = LocalAreaUtil.isObjectCollisionFree(position, position.getWidth(), position.getLength(),
+		goodLocation = LocalAreaUtil.isObjectCollisionFree(position, position.isCircular(), position.getWidth(), position.getLength(),
 				position.getXLocation(), position.getYLocation(), position.getFacing(), settlement.getCoordinates(), settlement);
 
 		return goodLocation;

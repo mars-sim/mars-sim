@@ -59,4 +59,11 @@ public interface LocalBoundedObject extends Serializable {
 	 * @return facing (degrees from North clockwise).
 	 */
 	public double getFacing();
+	
+	/**
+	 * Is this object circular ?
+	 * 
+	 * @return
+	 */
+	public boolean isCircular();
 }

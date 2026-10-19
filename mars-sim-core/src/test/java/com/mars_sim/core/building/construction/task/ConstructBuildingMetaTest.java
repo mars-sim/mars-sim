@@ -24,7 +24,7 @@ class ConstructBuildingMetaTest extends MarsSimUnitTest {
                 .toList();
 
         return s.getConstructionManager().createNewConstructionSite(buildingName,
-                    new BoundedObject(1,1,10,10, 0), phases);
+                    new BoundedObject(1, 1, false, 10, 10, 0), phases);
     }
 
     

@@ -22,8 +22,8 @@ public class BuildingConnectorTest extends MarsSimUnitTest{
     public void testNonSplitBuildingConnector() {
         
         MockSettlement settlement = new MockSettlement();
-        MockBuilding building1 = new MockBuilding(settlement, "1", new BoundedObject(0D, 0D, 10D, 10D, 0D));
-        MockBuilding building2 = new MockBuilding(settlement, "2", new BoundedObject(0D, 0D, 10D, 10D, 0D));
+        MockBuilding building1 = new MockBuilding(settlement, "1", new BoundedObject(0D, 0D, false, 10D, 10D, 0D));
+        MockBuilding building2 = new MockBuilding(settlement, "2", new BoundedObject(0D, 0D, false, 10D, 10D, 0D));
 
         
         BuildingConnector connector = new BuildingConnector(building1, 
@@ -61,8 +61,8 @@ public class BuildingConnectorTest extends MarsSimUnitTest{
     public void testSplitBuildingConnector() {
         
         MockSettlement settlement = new MockSettlement();
-        MockBuilding building1 = new MockBuilding(settlement, "1", new BoundedObject(0D, 0D, 10D, 10D, 0D));
-        MockBuilding building2 = new MockBuilding(settlement, "2", new BoundedObject(0D, 12D, 10D, 10D, 0D));
+        MockBuilding building1 = new MockBuilding(settlement, "1", new BoundedObject(0D, 0D, false, 10D, 10D, 0D));
+        MockBuilding building2 = new MockBuilding(settlement, "2", new BoundedObject(0D, 12D, false, 10D, 10D, 0D));
 
         BuildingConnector connector = new BuildingConnector(building1, 
                 BUILDING2_POSITION, 0D, building2, BUILDING3_POSITION, 180D);
