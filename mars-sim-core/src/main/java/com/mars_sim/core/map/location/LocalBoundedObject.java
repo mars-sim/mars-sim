@@ -65,5 +65,7 @@ public interface LocalBoundedObject extends Serializable {
 	 * 
 	 * @return
 	 */
-	public boolean isCircular();
+	public default boolean isCircular() {
+		return false;
+	}
 }

@@ -2124,11 +2124,6 @@ public abstract class Vehicle extends AbstractMobileUnit
     public String getChildContext() {
         return getContext() + ENTITY_SEPERATOR + getName();
     }
-    
-	@Override
-	public boolean isCircular() {
-		return false;
-	}
 	
 	/**
 	 * Compares if an object is the same as this unit.

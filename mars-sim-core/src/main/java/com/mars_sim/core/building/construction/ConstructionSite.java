@@ -383,11 +383,12 @@ public class ConstructionSite extends FixedUnit {
         return result;
     }
 
-	@Override
-	public boolean isCircular() {
-		// Note: currently, all sites are assumed rectangular in shape. 
-		return false;
-	}
+//	@Override
+//	public boolean isCircular() {
+		// Note: isCircular is a default method in LocalBoundedObject.
+    	// Currently, all sites are assumed rectangular in shape. 
+//		return false;
+//	}
 	
 	/**
 	 * Is this object the same as another object ?

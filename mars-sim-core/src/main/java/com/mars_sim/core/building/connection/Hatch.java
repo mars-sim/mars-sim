@@ -99,11 +99,6 @@ public class Hatch implements LocalBoundedObject, InsidePathLocation {
 	public double getFacing() {
 		return facing;
 	}
-
-	@Override
-	public boolean isCircular() {
-		return false;
-	}
 	
 	@Override
 	public boolean equals(Object other) {
