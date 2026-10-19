@@ -185,21 +185,23 @@ public class MonitorWindow extends ContentPanel
 	private void addAllTabs(String defaultTabName) {
 		List<MonitorTab> newTabs = new ArrayList<>();
 
+		var sim = context.getSimulation();
+
 		// Add tabs into the table	
 		newTabs.add(new TableTab(this, new SettlementTableModel(), true, false, COLONY_ICON));
 		newTabs.add(new TableTab(this, new PersonTableModel(), true, false, PEOPLE_ICON));
 		newTabs.add(new TableTab(this, new RobotTableModel(), true, false, BOT_ICON));
-		newTabs.add(new TableTab(this, new DataTableModel(context.getSimulation().getDataManager()), true, false, DATA_ICON));
+		newTabs.add(new TableTab(this, new DataTableModel(sim.getDataManager()), true, false, DATA_ICON));
 		newTabs.add(new TableTab(this, new BuildingTableModel(), true, false, BUILDING_ICON));
-		newTabs.add(new TableTab(this, new CropTableModel(context.getSimulation().getConfig()), true, false, CROP_ICON));
+		newTabs.add(new TableTab(this, new CropTableModel(sim.getConfig()), true, false, CROP_ICON));
 		
 		newTabs.add(new TableTab(this, new FoodTableModel(), true, false, FOOD_ICON));
 
 		newTabs.add(new TableTab(this, new BacklogTableModel(), true, false, TASK_ICON));
 		
-		newTabs.add(new TableTab(this, new TradeTableModel(), true, false, TRADE_ICON));
+		newTabs.add(new TableTab(this, new TradeTableModel(sim.getMarketManager()), true, false, TRADE_ICON));
 
-		newTabs.add(new TableTab(this, new ScienceStudyTableModel(context.getSimulation().getScientificStudyManager()), true, false, SCIENCE_ICON));
+		newTabs.add(new TableTab(this, new ScienceStudyTableModel(sim.getScientificStudyManager()), true, false, SCIENCE_ICON));
 
 		newTabs.add(new TableTab(this, new MissionTableModel(), true, false, "mission"));
 		newTabs.add(new TableTab(this, new VehicleTableModel(), true, false, VEHICLE_ICON));

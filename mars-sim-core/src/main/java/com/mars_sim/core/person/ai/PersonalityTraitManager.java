@@ -11,9 +11,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -28,20 +25,14 @@ public class PersonalityTraitManager implements Serializable {
 	private static final int RANGE = 100;
 	/** The person's personality vector. */
 	private double[] pVector = null;
-	/** The person's ID. */
-	private Integer personID;
+
 	/** List of the person's big five personalities keyed by unique name. */
 	private Map<PersonalityTraitType, Integer> personalityTraits;
-	/** The unit manager instance. */
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Constructor.
-	 * 
-	 * @param person.
 	 */
-	public PersonalityTraitManager(Person person) {
-		personID = person.getIdentifier();
+	public PersonalityTraitManager() {
 		personalityTraits = new ConcurrentHashMap<PersonalityTraitType, Integer>();
 	}
 	
@@ -77,22 +68,8 @@ public class PersonalityTraitManager implements Serializable {
 	 * Sync up with the I-E pair score in MBTI 
 	 */
 	 public void syncUpExtraversionScore(int value) { 
-//		 int value = getPerson().getMind().getMBTI().getScores().get(0); 
 		 personalityTraits.put(PersonalityTraitType.EXTRAVERSION, value + 50); 
 	 }
-
-
-//	/**
-//	 * Adds a random modifier to an personality trait.
-//	 * @param type the name of the personality trait
-//	 * @param modifier the random ceiling of the modifier
-//
-//	private void addPersonalityTraitModifier(PersonalityTraitType type, int modifier) {
-//		int random = RandomUtil.getRandomInt(Math.abs(modifier));
-//		if (modifier < 0) random *= -1;
-//		setPersonalityTrait(type, getPersonalityTrait(type) + random);
-//	}
-//	 */
 
 	/**
 	 * Returns the number of big five personalities.
@@ -129,17 +106,16 @@ public class PersonalityTraitManager implements Serializable {
 	public double[] getPersonalityVector() {
 		if (pVector == null) {
 			pVector = new double[5];
-			for (PersonalityTraitType t : personalityTraits.keySet()) {
-				if (t == PersonalityTraitType.OPENNESS)
-					pVector[0] = personalityTraits.get(t)/100D;
-				else if (t == PersonalityTraitType.CONSCIENTIOUSNESS)
-					pVector[1] = personalityTraits.get(t)/100D;
-				else if (t == PersonalityTraitType.EXTRAVERSION)
-					pVector[2] = personalityTraits.get(t)/100D;
-				else if (t == PersonalityTraitType.AGREEABLENESS)
-					pVector[3] = personalityTraits.get(t)/100D;
-				else if (t == PersonalityTraitType.NEUROTICISM)
-					pVector[4] = personalityTraits.get(t)/100D;
+			for (var t : personalityTraits.entrySet()) {
+				var newValue = t.getValue()/100D;
+				int idx = switch (t.getKey()) {
+					case OPENNESS -> 0;
+					case CONSCIENTIOUSNESS -> 1;
+					case EXTRAVERSION -> 2;
+					case AGREEABLENESS -> 3;
+					case NEUROTICISM -> 4;
+				};
+				pVector[idx] = newValue;
 			}
 			return pVector;
 		}
@@ -164,21 +140,11 @@ public class PersonalityTraitManager implements Serializable {
 	}
 
 	/**
-	 * Gets the person's reference.
-	 * 
-	 * @return {@link Person}
-	 */
-	public Person getPerson() {
-		return unitManager.getPersonByID(personID);
-	}
-	
-	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		personalityTraits.clear();
 		personalityTraits = null;
 		pVector = null;
-		unitManager = null;
 	}
 }

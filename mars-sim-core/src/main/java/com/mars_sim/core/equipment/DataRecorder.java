@@ -59,7 +59,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		ItemResourceUtil.initDataRecorder();
 	}
 	
-	private Map<Worker, List<FieldDataSet>> dataSetMap = new HashMap<>();
+	private Map<Integer, List<FieldDataSet>> dataSetMap = new HashMap<>();
 	
 	private Settlement settlement;
 	
@@ -129,7 +129,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * 
 	 * @return
 	 */
-	public Map<Worker, List<FieldDataSet>> getDataSetMap() {
+	public Map<Integer, List<FieldDataSet>> getDataSetMap() {
 		return dataSetMap;
 	}
 	
@@ -140,7 +140,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * @return
 	 */
 	public boolean checkRegisteredOwnerID(int ownerID) {
-		return dataSetMap.keySet().stream().anyMatch(p -> p.getIdentifier() == ownerID);
+		return dataSetMap.keySet().stream().anyMatch(p -> p == ownerID);
 
 //		Set<Integer> ids = dataset.keySet().stream()
 //				.map(p -> p.getIdentifier()) 
@@ -166,7 +166,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 			data = createNewFieldDataSet(worker, workTime, initialQuality);
 		}
 		else {
-			List<FieldDataSet> list = dataSetMap.get(worker);
+			List<FieldDataSet> list = dataSetMap.get(worker.getIdentifier());
 			if (list.isEmpty()) {
 				data = createNewFieldDataSet(worker, workTime, initialQuality);
 				list = new ArrayList<>();
@@ -180,7 +180,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 			}
 			data.addWorkTime(workTime);
 			list.add(data);
-			dataSetMap.put(worker, list);
+			dataSetMap.put(worker.getIdentifier(), list);
 		}
 		// Fire the data update
 		data.fireUpdate(null);
@@ -240,8 +240,8 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 */
 	public void writeToDataRecorder(Worker worker, FieldDataSet data) {
 		List<FieldDataSet> list = null;
-		if (dataSetMap.containsKey(worker)) {
-			list = dataSetMap.get(worker);
+		if (dataSetMap.containsKey(worker.getIdentifier())) {
+			list = dataSetMap.get(worker.getIdentifier());
 			for (FieldDataSet fds: list) {
 				if (fds.getIdentifier() == data.getIdentifier()) {
 					// Overwrite the dataset
@@ -256,7 +256,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		// Add the dataset
 		list.add(data);
 		// Add the list
-		dataSetMap.put(worker, list);
+		dataSetMap.put(worker.getIdentifier(), list);
 	}
 	
 	/**

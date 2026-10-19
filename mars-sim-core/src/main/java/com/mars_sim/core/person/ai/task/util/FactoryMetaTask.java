@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
@@ -25,8 +23,6 @@ import com.mars_sim.core.robot.Robot;
  */
 public abstract class FactoryMetaTask extends MetaTask 
 	implements TaskFactory {
-    
-	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	protected static final List<TaskJob> EMPTY_TASKLIST = Collections.emptyList();
 	

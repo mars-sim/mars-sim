@@ -13,7 +13,6 @@ import java.util.Set;
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
@@ -90,20 +89,22 @@ class TradeTableModel extends CategoryTableModel<Good> implements FilteredTableM
 	private boolean lifeResourcesCB = false;
 
 	/** The market manager instance. */
-	private static MarketManager marketManager = Simulation.instance().getMarketManager();
+	private MarketManager marketManager;
 	
 	private List<Good> lifeResources = new ArrayList<>();
 
 	/**
 	 * Constructor 1.
 	 */
-	public TradeTableModel() {
+	public TradeTableModel(MarketManager marketManager) {
 		super(Msg.getString("TradeTableModel.tabName"), "TradeTableModel.counting", COLUMNS,
 						GoodsUtil.getGoodsList());
 		// Cache the data columns
 		setCachedColumns(NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 		setSettlementColumn(SETTLEMENT_COL);
 		
+		this.marketManager = marketManager;
+
 		Set<Integer> resources = SimulationConfig.instance().getSettlementConfiguration().getEssentialResources().keySet();
 		for (int resource: resources) {
 			Good g = GoodsUtil.getGood(resource);

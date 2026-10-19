@@ -31,8 +31,7 @@ public class MetricFrame extends JFrame {
 
                         
         SimulationConfig.loadConfig();
-        sim = Simulation.instance();
-        sim.testRun();
+        sim = Simulation.createTestRun();
 
         metricManager = new DatabaseMetricManager("./framedb");
             

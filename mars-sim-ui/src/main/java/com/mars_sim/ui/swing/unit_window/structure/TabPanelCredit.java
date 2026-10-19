@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -31,6 +30,7 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 @SuppressWarnings("serial")
 class TabPanelCredit extends EntityTableTabPanel<Settlement> {
@@ -55,8 +55,10 @@ class TabPanelCredit extends EntityTableTabPanel<Settlement> {
 
 	@Override
 	protected TableModel createModel() {
+		var sim = getContext().getSimulation();
+
 		// Prepare credit table model.
-		creditTableModel = new CreditTableModel(getEntity());
+		creditTableModel = new CreditTableModel(sim, getEntity());
 		return creditTableModel;
 	}
 
@@ -88,14 +90,16 @@ class TabPanelCredit extends EntityTableTabPanel<Settlement> {
 		// Data members
 		private List<Settlement> settlements;
 		private Settlement thisSettlement;
-		private UnitManager unitManager = Simulation.instance().getUnitManager();
+		private UnitManager unitManager;
 
 		/**
 		 * hidden constructor.
+		 * @param sim 
 		 * @param thisSettlement {@link Settlement}
 		 */
-		private CreditTableModel(Settlement thisSettlement) {
+		private CreditTableModel(Simulation sim, Settlement thisSettlement) {
 			this.thisSettlement = thisSettlement;
+			this.unitManager = sim.getUnitManager();
 
 			// Get collection of all other settlements.
 			settlements = new ArrayList<>();
@@ -163,18 +167,13 @@ class TabPanelCredit extends EntityTableTabPanel<Settlement> {
 		 */
 		@Override
 		public void creditUpdate(CreditEvent event) {
+			var sourceSettlementId = thisSettlement.getIdentifier();
 			if (
-				thisSettlement.equals(event.getSettlement1()) ||
-				thisSettlement.equals(event.getSettlement2())
+				sourceSettlementId == event.getSettlement1() ||
+				sourceSettlementId == event.getSettlement2()
 			) {
-				SwingUtilities.invokeLater(
-					new Runnable() {
-						@Override
-						public void run() {
-							fireTableDataChanged();
-							// FUTURE : update only the affected row
-						}
-					}
+				SwingHelper.runInEDT(
+					CreditTableModel.this::fireTableDataChanged
 				);
 			}
 		}
@@ -185,14 +184,8 @@ class TabPanelCredit extends EntityTableTabPanel<Settlement> {
 					&& !settlements.contains(newSettlement)) {
 				addSettlement(newSettlement);
 
-				SwingUtilities.invokeLater(
-					new Runnable() {
-						@Override
-						public void run() {
-							fireTableDataChanged();
-							// FUTURE : update only the affected row
-						}
-					}
+				SwingHelper.runInEDT(
+					CreditTableModel.this::fireTableDataChanged
 				);
 			}
 		}
@@ -215,14 +208,8 @@ class TabPanelCredit extends EntityTableTabPanel<Settlement> {
 				settlements.remove(s);
 				s.getCreditManager().removeListener(this);
 
-				SwingUtilities.invokeLater(
-					new Runnable() {
-						@Override
-						public void run() {
-							fireTableDataChanged();
-							// FUTURE : update only the affected row
-						}
-					}
+				SwingHelper.runInEDT(
+					CreditTableModel.this::fireTableDataChanged
 				);
 			}
 		}

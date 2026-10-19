@@ -41,8 +41,7 @@ class TestSaving implements SimulationListener {
 
     @Test
     void testSaving() throws IOException {
-        Simulation sim = Simulation.instance();
-        sim.createNewSimulation(64, null); 
+        Simulation sim = Simulation.createNewSimulation(64, null); 
 
         // Build a realistic simulation with entities to save
         SettlementBuilder builder = new SettlementBuilder(sim, simConfig, null);

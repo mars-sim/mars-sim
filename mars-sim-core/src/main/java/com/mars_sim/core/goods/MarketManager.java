@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
@@ -24,15 +23,10 @@ public class MarketManager implements Serializable, Temporal {
 	/** default serial identifier. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	// May add back private static SimLogger logger = SimLogger.getLogger(MarketManager.class.getName());
-
 	static final int FREQUENCY = 13;
 	
 	/** A map of Goods and the global market data. */
 	private Map<Good, MarketData> globalMarketBook;
-
-	private UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Constructor.
@@ -73,7 +67,7 @@ public class MarketManager implements Serializable, Temporal {
 	 * Updates the global demand and vp.  
 	 */
 	private void updateMarket() {
-		for (Settlement s: unitManager.getSettlements()) {
+		for (Settlement s: Simulation.instance().getUnitManager().getSettlements()) {
 			
 			for (Good g: GoodsUtil.getGoodsList()) {
 				MarketData data = globalMarketBook.get(g);

@@ -52,8 +52,7 @@ public class MarsSimContextImpl implements MarsSimContext {
 	    
         PhysicalCondition.usePerfectHealth(); // Ensure perfect health for unit tests
         
-	    sim = Simulation.instance();
-	    sim.testRun();
+	    sim = Simulation.createTestRun();
 
         unitManager = sim.getUnitManager();
         surface = unitManager.getMarsSurface();

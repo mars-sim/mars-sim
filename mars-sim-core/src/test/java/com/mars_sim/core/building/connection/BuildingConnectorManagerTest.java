@@ -39,8 +39,7 @@ class BuildingConnectorManagerTest {
 	    // Create new simulation instance.
         simConfig = SimulationConfig.loadConfig();
         
-        Simulation sim = Simulation.instance();
-        sim.testRun();
+        Simulation sim = Simulation.createTestRun();
         
         Function.initializeInstances(simConfig.getBuildingConfiguration(), sim.getMasterClock(),
         							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
