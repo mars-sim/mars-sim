@@ -1992,14 +1992,14 @@ public class BuildingManager implements Serializable {
 	 * Checks if a proposed building location is open and without intersecting with
 	 * any existing buildings or construction sites.
 	 *
-	 * @param position New building position
+	 * @param bo New building object position
 	 * @return true if new building location is open.
 	 */
-	public boolean isBuildingLocationOpen(BoundedObject position) {
+	public boolean isBuildingLocationOpen(BoundedObject bo) {
 		boolean goodLocation = true;
 
-		goodLocation = LocalAreaUtil.isObjectCollisionFree(position, position.isCircular(), position.getWidth(), position.getLength(),
-				position.getXLocation(), position.getYLocation(), position.getFacing(), settlement.getCoordinates(), settlement);
+		goodLocation = LocalAreaUtil.isObjectCollisionFree(bo, bo.isCircular(), bo.getWidth(), bo.getLength(),
+				bo.getXLocation(), bo.getYLocation(), bo.getFacing(), settlement.getCoordinates(), settlement);
 
 		return goodLocation;
 	}

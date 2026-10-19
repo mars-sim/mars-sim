@@ -499,7 +499,7 @@ public class LocalAreaUtil {
 		return box.getPosition().getShortFormat() + "  Object: " + box.getWidth() + " W x " + box.getLength()
 				+ " L at facing " + Math.round(box.getFacing() * 10.0)/10.0 + " deg.";
 	} 
-
+	
 	/**
 	 * Checks if a position is within a local bounded object's bounds.
 	 *
@@ -508,19 +508,7 @@ public class LocalAreaUtil {
 	 * @return true if position is within object bounds.
 	 */
 	public static boolean isPositionWithinLocalBoundedObject(LocalPosition position, LocalBoundedObject object) {
-		Path2D path = null;
-		
-		if (object.isCircular()) {
-			Ellipse2D cir = new Ellipse2D.Double(object.getPosition().getX() - (object.getWidth() / 2D),
-				object.getPosition().getY() - (object.getLength() / 2D), object.getWidth(), object.getLength());
-			path = new Path2D.Double(cir);
-		}
-		else {
-			Rectangle2D rect = getUnrotatedRectangle(object);
-				path = getPathFromRectangleRotation(rect, object.getFacing());
-		}
-		
-		Area area = new Area(path);
+		Area area = getBoundedObjectArea(object);
 		return area.contains(position.getX(), position.getY());
 	}
 
@@ -573,14 +561,12 @@ public class LocalAreaUtil {
 		Path2D objectPath = null;
 		
 		if (isCircular) {
-			Ellipse2D cir = new Ellipse2D.Double(object.getPosition().getX() - (object.getWidth() / 2D),
-					object.getPosition().getY() - (object.getLength() / 2D), object.getWidth(), object.getLength());
+			Ellipse2D cir = new Ellipse2D.Double(xLoc - (width / 2D), yLoc - (length / 2D), width, length);
 			objectPath = new Path2D.Double(cir);
 		}
 		else {
 			// Create path for object.
 			Rectangle2D objectRect = new Rectangle2D.Double(xLoc - (width / 2D), yLoc - (length / 2D), width, length);
-
 			objectPath = getPathFromRectangleRotation(objectRect, facing);
 		}
 		
@@ -590,7 +576,7 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Checks if a path between 2 points collides with any existing vehicle, building, or
+	 * Checks if a line path between the start and destination points (from CollisionPathFinder) collides with any existing vehicle, building, or
 	 * construction site at a settlement.
 	 *
 	 * @param start	   the starting point.
@@ -600,12 +586,13 @@ public class LocalAreaUtil {
 	 * @return true if line path doesn't collide with anything.
 	 */
 	public static boolean isLinePathCollisionFree(LocalPosition start, LocalPosition destination, Coordinates coordinates, Settlement settlement) {
+		// Create line path
 		Line2D line = new Line2D.Double(start.getX(), start.getY(), destination.getX(), destination.getY());
 		return isPathCollisionFree(null, createLinePath(line), coordinates, settlement, true);
 	}
 
 	/**
-	 * Checks if a line path collides with any existing vehicle, building, or
+	 * Checks if a line path (from BuildingPlacement and Resupply) collides with any existing vehicle, building, or
 	 * construction site at a settlement.
 	 *
 	 * @param line        the line.
@@ -615,9 +602,7 @@ public class LocalAreaUtil {
 	 * @return true if line path doesn't collide with anything.
 	 */
 	public static boolean isLinePathCollisionFree(Line2D line, Coordinates coordinates, Settlement settlement, boolean useCache) {
-		// Create line path
 		return isPathCollisionFree(null, createLinePath(line), coordinates, settlement, useCache);
-
 	}
 
 	/**
@@ -814,7 +799,7 @@ public class LocalAreaUtil {
 	 */
 	private static Set<Line2D> getLocalBoundedObjectLineSegments(LocalBoundedObject object) {
 
-		Set<Line2D> result = new HashSet<>(4);// ConcurrentHashMap.newKeySet(4);
+		Set<Line2D> result = new HashSet<>(4);
 
 		double width = object.getWidth();
 		double length = object.getLength();
@@ -887,14 +872,14 @@ public class LocalAreaUtil {
 	 * Checks if a path collides with an existing building, construction site, or
 	 * vehicle at a location.
 	 *
-	 * @param object      the object being checked (may be null if no object).
+	 * @param object      LocalBoundedObject being checked (may be null if no object).
 	 * @param path        the path to check.
 	 * @param coordinates the global coordinate location to check.
 	 * @param settlement
 	 * @param useCache    true if caching should be used.
 	 * @return true if path doesn't collide with anything.
 	 */
-	private static boolean isPathCollisionFree(Object object, Path2D path, Coordinates coordinates, Settlement settlement, boolean useCache) {
+	private static boolean isPathCollisionFree(LocalBoundedObject object, Path2D path, Coordinates coordinates, Settlement settlement, boolean useCache) {
 
 		boolean result = true;
 
@@ -924,10 +909,9 @@ public class LocalAreaUtil {
 			while (i.hasNext()) {
 				LocalBoundedObject lbo = i.next();
 				if (object == null || lbo != object) {
-					Rectangle2D objectRect = new Rectangle2D.Double(lbo.getXLocation() - (lbo.getWidth() / 2D),
-							lbo.getYLocation() - (lbo.getLength() / 2D), lbo.getWidth(), lbo.getLength());
-					Path2D objectPath = getPathFromRectangleRotation(objectRect, lbo.getFacing());
-					Area objectArea = new Area(objectPath);
+		
+					Area objectArea = getBoundedObjectArea(lbo);
+					
 					if (obstacleArea == null) {
 						obstacleArea = objectArea;
 					} else {

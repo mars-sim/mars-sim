@@ -81,8 +81,9 @@ public class CollisionPathFinder implements OutsidePathFinder {
 
 	/**
 	 * Determines obstacle avoidance path.
-	 * @param maxAttempts 
-	 *
+	 * 
+	 * @param destination 
+	 * @param maxAttempts
 	 * @return path as list of points or null if no path found.
 	 */
 	private List<LocalPosition> determineObstacleAvoidancePath(LocalPosition destination, int maxAttempts) {
