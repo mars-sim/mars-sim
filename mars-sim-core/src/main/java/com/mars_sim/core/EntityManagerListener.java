@@ -14,13 +14,15 @@ package com.mars_sim.core;
 public interface EntityManagerListener {
 
     /**
-     * An Entity has been added to the parent manager
+     * An Entity has been added to the parent manager.
+     * 
      * @param newEntity
      */
     void entityAdded(Entity newEntity);
 
     /**
-     * An Entity has been removed from the parent manager
+     * An Entity has been removed from the parent manager.
+     * 
      * @param removedEntity
      */
     void entityRemoved(Entity removedEntity);

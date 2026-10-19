@@ -75,6 +75,10 @@ public abstract class GatherData extends EVAOperation {
 	private boolean dataRecorderDropped = false;
 	private boolean isNewRecording = true;
 
+	private double mechanicalSkill;
+	private double areologySkill;
+	private double computeSkill;
+	
 	private final double preparationTimeLimit;
 	private final double collectionTimeLimit;
 	private final double teardownTimeLimit;
@@ -669,18 +673,46 @@ public abstract class GatherData extends EVAOperation {
 	protected void determineCollectionFactors(double collectionRate) {
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int acad = nManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-        int areo = person.getSkillManager().getSkillLevel(SkillType.AREOLOGY);
         int meti = nManager.getAttribute(NaturalAttributeType.METICULOUSNESS);
         
         int creat = nManager.getAttribute(NaturalAttributeType.CREATIVITY);
         int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
         
+       	mechanicalSkill = 1;
+		int mec = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+		if (mec >= 1) {
+			mechanicalSkill = mechanicalSkill + .1 * mechanicalSkill * mec;
+		}
+		else {
+			mechanicalSkill /= 1.5D;
+		}
+        
+		areologySkill = 1;
+		int areo = person.getSkillManager().getSkillLevel(SkillType.AREOLOGY);
+		if (areo >= 1) {
+			areologySkill = areologySkill + .1 * areologySkill * areo;
+		}
+		else {
+			areologySkill /= 1.5D;
+		}
+		
+	    computeSkill = 1;
+
+		int compute = person.getSkillManager().getEffectiveSkillLevel(SkillType.COMPUTING);
+		if (compute >= 1) {
+			computeSkill = computeSkill + .1 * computeSkill * compute;
+		}
+		else {
+			computeSkill /= 1.5D;
+		}
+		
         // Increase the duration of this task based upon one's attribute
         setDuration(getDuration() * (1 + meti/200.0));
         
-        fatigueFactor = .5 * (1 - (agility + creat) / 200D) / (1 + collectionRate);
+        fatigueFactor = (1 - (agility + creat) / 200D / mechanicalSkill);
         // The higher the collection rate, the faster the data can be gathered
-		compositeRate = collectionRate * ((acad + meti) / 100D) * areo / 50;
+		compositeRate = (.5 + collectionRate / 2) * (1 + (acad + meti) / 100D) * areologySkill;
+//		logger.info(person, " fatigueFactor: " + fatigueFactor + ". collectionRate: " + collectionRate + ". compositeRate: " + compositeRate);
 	}
 
     /**
@@ -761,27 +793,16 @@ public abstract class GatherData extends EVAOperation {
 	    	}
 		}
 
-       	double skillFactor = 1;
-
-		// Modify collection rate by skill.
-		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-		if (skill >= 1) {
-			skillFactor = skillFactor + .1 * skillFactor * skill;
-		}
-		else {
-			skillFactor /= 1.5D;
-		}
-
         boolean finishedPreparing = false;
-
-        preparationTime += time * (skillFactor + compositeRate);
+    	
+        preparationTime += time * (mechanicalSkill + compositeRate);
 
         // See if it exceeds the prescribed preparation time limit
 		finishedPreparing = preparationTime >= preparationTimeLimit || getTimeCompleted() >= preparationTimeLimit;
 
         PhysicalCondition condition = person.getPhysicalCondition();
         double strengthMod = condition.getStrengthMod();
-        double skillMod = 1.0 + skill;		
+        double skillMod = 1.0 + mechanicalSkill;		
         		
         // Add penalty to the fatigue
         condition.increaseFatigue(time / 2 * fatigueFactor * (1.1D - strengthMod)/skillMod);
@@ -825,32 +846,22 @@ public abstract class GatherData extends EVAOperation {
 		if (!siteVisit.getInstrumentAvailability().isEmpty()
 			&& !siteVisit.getDataRecorders().isEmpty()) {
 		
-	       double skillFactor = 1;
-
-			// Modify collection rate by skill.
-			int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.COMPUTING);
-			if (skill >= 1) {
-				skillFactor = skillFactor + .1 * skillFactor * skill;
-			}
-			else {
-				skillFactor /= 1.5D;
-			}
-
 	        boolean finishedPreparing = false;
-
-	        double addTime = time * (skillFactor + compositeRate);
+	        
+	        double addTime = time * computeSkill * compositeRate;
 	        
 	        collectionTime += addTime;
 
 	        if (isNewRecording) {
+	        	double initialQuality = (computeSkill + areologySkill + mechanicalSkill) / 1.5;
 	        	// Start a new data session and record data
-	        	selectedDataRecorder.recordData(worker, addTime, (int)skillFactor, true);
+	        	selectedDataRecorder.recordData(worker, addTime, initialQuality, true);
 	        	
 	        	isNewRecording = false;
 	        }
 	        else {
 	        	// Record data
-	        	selectedDataRecorder.recordData(worker, addTime, (int)skillFactor, false);
+	        	selectedDataRecorder.recordData(worker, addTime, addTime / 200, false);
 	        }
 
 	        // See if it exceeds the prescribed collection time limit
@@ -858,11 +869,10 @@ public abstract class GatherData extends EVAOperation {
 					|| getTimeCompleted() >= preparationTimeLimit + collectionTimeLimit;
 
 	        PhysicalCondition condition = person.getPhysicalCondition();
-	        double strengthMod = condition.getStrengthMod();
-	        double skillMod = 1.0 + skill;		
+	        double strengthMod = condition.getStrengthMod();	
 	        		
 	        // Add penalty to the fatigue
-	        condition.increaseFatigue(time / 2 * fatigueFactor * (1.1D - strengthMod)/skillMod);
+	        condition.increaseFatigue(time / 2 * fatigueFactor * (1.1D - strengthMod));
 
 	        // Account for hormone regulation, musculosketetal impact and record exercise time
 	        condition.trackExercise(time / 2);

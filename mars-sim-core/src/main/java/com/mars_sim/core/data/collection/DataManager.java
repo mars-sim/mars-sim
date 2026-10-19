@@ -27,13 +27,22 @@ public class DataManager implements Serializable {
 	/** The settlement's data library. */
 	private Map<Settlement, List<FieldDataSet>> dataArchive;
 	
-	private transient Set<EntityManagerListener> listeners;
+	private Set<EntityManagerListener> listeners;
 	
 	/**
 	 * Constructor for a {@link DataManager}.
 	 */
 	public DataManager() {
 		dataArchive = new ConcurrentHashMap<>();	
+	}
+	
+	public void addListener(FieldDataSet data) {
+		// Notify listeners
+		if (listeners != null) {
+			synchronized (listeners) {
+				listeners.forEach(l -> l.entityAdded(data));
+			}
+		}
 	}
 	
 	/**

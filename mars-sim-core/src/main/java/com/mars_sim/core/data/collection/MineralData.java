@@ -14,7 +14,7 @@ public class MineralData extends FieldDataSet {
 
 	private static final long serialVersionUID = 1L;
 
-	public MineralData(Settlement settlement, Worker owner, DataType dataType, MarsTime timeCollected, int initialQuality) {
+	public MineralData(Settlement settlement, Worker owner, DataType dataType, MarsTime timeCollected, double initialQuality) {
 		super(settlement, owner, dataType, timeCollected, initialQuality);
 	}
 }
