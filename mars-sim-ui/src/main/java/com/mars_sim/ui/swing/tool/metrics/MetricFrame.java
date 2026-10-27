@@ -6,6 +6,7 @@ import javax.swing.WindowConstants;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.metrics.Metric;
 import com.mars_sim.core.metrics.MetricCategory;
@@ -15,7 +16,12 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 
+@SuppressWarnings("serial")
 public class MetricFrame extends JFrame {
+	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(MetricFrame.class.getName());
+	
     private static final int INITIAL_POINTS = 10;
     private static final double D1_STEP = 75D;
     private static final MetricCategory FULL_CAT = new MetricCategory("Full");
@@ -27,7 +33,7 @@ public class MetricFrame extends JFrame {
     private MetricManager metricManager;
     
     private MetricFrame() {
-        super("Mars Sim - Metric Chart Viewer");
+        super("Metric Chart Viewer");
 
                         
         SimulationConfig.loadConfig();
@@ -109,7 +115,7 @@ public class MetricFrame extends JFrame {
                     viewer.clockUpdate((ClockPulse)null); // Use null because viewer does not read pulse currently
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+            	logger.severe("Unable to update the metric, " + e);
             }
         }
     }
