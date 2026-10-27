@@ -62,8 +62,10 @@ class LoadEVASuitTest extends MarsSimUnitTest {
 		assertEquals(suitSettlement.getName(), suitPerson.getName(), "EVA suit name not matched.");
 		
 		double mass = Math.round(suitPerson.getBaseMass() * 100D)/100D;
-				
-		assertEquals(16.18, mass, "EVA suit's empty mass is incorrect.");
+		
+		double massEVASuit = EquipmentFactory.getEquipmentMass(EquipmentType.EVA_SUIT); 
+		
+		assertEquals(massEVASuit, mass, "EVA suit's empty mass is incorrect.");
 
 		// 1. Transfer the EVA suit from settlement/vehicle to person
 		suitSettlement.transfer(person);
