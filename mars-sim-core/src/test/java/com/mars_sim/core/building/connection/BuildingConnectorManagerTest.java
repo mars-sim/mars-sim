@@ -65,13 +65,13 @@ class BuildingConnectorManagerTest {
 
         Settlement settlement = new MockSettlement();
 
-        BuildingTemplate buildingTemplate0 = new BuildingTemplate("0", 0, "building 0", "building 0", new BoundedObject(0D, 0D, 9D, 9D, 0D));
+        BuildingTemplate buildingTemplate0 = new BuildingTemplate("0", 0, "building 0", "building 0", new BoundedObject(0D, 0D, false, 9D, 9D, 0D));
         buildingTemplate0.addBuildingConnection("2", new LocalPosition(-4.5D, 0D));
 
-        BuildingTemplate buildingTemplate1 = new BuildingTemplate("1", 0, "building 1","building 1", new BoundedObject(-12D, 0D, 6D, 9D, 270D));
+        BuildingTemplate buildingTemplate1 = new BuildingTemplate("1", 0, "building 1","building 1", new BoundedObject(-12D, 0D, false, 6D, 9D, 270D));
         buildingTemplate1.addBuildingConnection("2", new LocalPosition(0D, 4.5D));
 
-        BuildingTemplate buildingTemplate2 = new BuildingTemplate("2", 0, "building 2","building 2", new BoundedObject(-6D, 0D, 6D, 9D, 270D));
+        BuildingTemplate buildingTemplate2 = new BuildingTemplate("2", 0, "building 2","building 2", new BoundedObject(-6D, 0D, false, 6D, 9D, 270D));
         buildingTemplate2.addBuildingConnection("0", new LocalPosition(0D, 1.5D));
         buildingTemplate2.addBuildingConnection("1", new LocalPosition(0D, -1.5D));
 
@@ -136,14 +136,14 @@ class BuildingConnectorManagerTest {
         
         Settlement settlement = new MockSettlement();
 
-        BuildingTemplate buildingTemplate0 = new BuildingTemplate("0", 0, "building 0", "building 0", new BoundedObject(0D, 0D, 9D, 9D, 0D));
+        BuildingTemplate buildingTemplate0 = new BuildingTemplate("0", 0, "building 0", "building 0", new BoundedObject(0D, 0D, false, 9D, 9D, 0D));
         var connectorB0B2 = new LocalPosition(-4.5D, 0D);
         buildingTemplate0.addBuildingConnection("2", connectorB0B2);
 
-        BuildingTemplate buildingTemplate1 = new BuildingTemplate("1", 0, "building 1", "building 1", new BoundedObject(-12D, 0D, 6D, 9D, 270D));
+        BuildingTemplate buildingTemplate1 = new BuildingTemplate("1", 0, "building 1", "building 1", new BoundedObject(-12D, 0D, false, 6D, 9D, 270D));
         buildingTemplate1.addBuildingConnection("2", new LocalPosition(0D, 4.5D));
 
-        BuildingTemplate buildingTemplate2 = new BuildingTemplate("2", 0, "building 2", "building 2", new BoundedObject(-6D, 0D, 6D, 9D, 270D));
+        BuildingTemplate buildingTemplate2 = new BuildingTemplate("2", 0, "building 2", "building 2", new BoundedObject(-6D, 0D, false, 6D, 9D, 270D));
         buildingTemplate2.addBuildingConnection("0", new LocalPosition(0D, 1.5D));
         buildingTemplate2.addBuildingConnection("1", new LocalPosition(0D, -1.5D));
 
@@ -193,15 +193,15 @@ class BuildingConnectorManagerTest {
         
         Settlement settlement = new MockSettlement();
 
-        BuildingTemplate buildingTemplate0 = new BuildingTemplate("0", 0, "building 0", "building 0", new BoundedObject(0D, 0D, 9D, 9D, 0D));
+        BuildingTemplate buildingTemplate0 = new BuildingTemplate("0", 0, "building 0", "building 0", new BoundedObject(0D, 0D, false, 9D, 9D, 0D));
         var connectorB0B2 = new LocalPosition(-4.5D, 0D);
         buildingTemplate0.addBuildingConnection("2", connectorB0B2);
 
-        BuildingTemplate buildingTemplate1 = new BuildingTemplate("1", 0, "building 1", "building 1", new BoundedObject(-12D, 0D, 6D, 9D, 270D));
+        BuildingTemplate buildingTemplate1 = new BuildingTemplate("1", 0, "building 1", "building 1", new BoundedObject(-12D, 0D, false, 6D, 9D, 270D));
         var connectorB1B2 = new LocalPosition(0D, 4.5D);
         buildingTemplate1.addBuildingConnection("2", connectorB1B2);
 
-        BuildingTemplate buildingTemplate2 = new BuildingTemplate("2", 0, "building 2", "building 2", new BoundedObject(-6D, 0D, 6D, 9D, 270D));
+        BuildingTemplate buildingTemplate2 = new BuildingTemplate("2", 0, "building 2", "building 2", new BoundedObject(-6D, 0D, false, 6D, 9D, 270D));
         var connectorB2B0 = new LocalPosition(0D, 1.5D);
         var connectorB2B1 = new LocalPosition(0D, -1.5D);
         buildingTemplate2.addBuildingConnection("0", connectorB2B0);
@@ -269,7 +269,7 @@ class BuildingConnectorManagerTest {
         
         Settlement settlement = new MockSettlement();
 
-        BuildingTemplate buildingTemplate0 = new BuildingTemplate("0", 0, "building 0", "building 0", new BoundedObject(0D, 0D, 9D, 9D, 0D));
+        BuildingTemplate buildingTemplate0 = new BuildingTemplate("0", 0, "building 0", "building 0", new BoundedObject(0D, 0D, false, 9D, 9D, 0D));
 
         List<BuildingTemplate> buildingTemplates = new ArrayList<BuildingTemplate>();
         buildingTemplates.add(buildingTemplate0);

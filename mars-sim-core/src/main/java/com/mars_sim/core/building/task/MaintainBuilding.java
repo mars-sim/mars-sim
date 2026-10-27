@@ -86,12 +86,11 @@ public class MaintainBuilding extends Task  {
 			Settlement s = worker.getSettlement();
 			if (s != null) {
 				List<Building> buildingList = new ArrayList<>(
-						BuildingManager.getBuildingsinSameZone(worker, FunctionType.ADMINISTRATION));
+						BuildingManager.getBuildingsinSameZone(worker, FunctionType.LIFE_SUPPORT));
 				int size = buildingList.size();
 				boolean success = false;
 				for (int i=0; i<size && !success; i++) {
-					success = walkToActivitySpotInBuilding(buildingList.get(i), 
-							FunctionType.ADMINISTRATION, false);
+					success = walkToWorkSpotInBuilding(buildingList.get(i), true);
 				}
 			}
 		}

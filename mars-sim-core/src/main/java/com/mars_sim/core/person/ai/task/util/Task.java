@@ -24,6 +24,7 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.construction.ConstructionConfig;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.Management;
 import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
@@ -905,6 +906,36 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 	
 	/**
+	 * Walks to an available work place activity spot.
+	 */
+	protected void walkToWorkPlace() {
+
+		boolean canWalk = false;
+		
+		Building managementBuilding = Management.getAvailableStation(person);
+		if (managementBuilding != null) {
+			// Walk to the management building.
+			canWalk = walkToTaskSpecificActivitySpotInBuilding(managementBuilding, FunctionType.MANAGEMENT, true);
+		}
+		else {	
+			Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
+			// Note: dining building is optional
+			if (dining != null) {
+				// Walk to the dining building.
+				canWalk = walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
+			}
+		}
+
+		if (!canWalk) {
+			canWalk = walkToRandomLocation(true);
+		}
+		
+		if (!canWalk) {
+			walkToBed(person, true);
+		}
+	}
+	
+	/**
 	 * Walks to an available activity spot for a specific task in a building.
 	 * 
 	 * @param building  the destination building.
@@ -926,9 +957,26 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected boolean walkToResearchSpotInBuilding(Building building, boolean allowFail) {
 		
 		boolean success = walkToActivitySpotInBuilding(building, FunctionType.RESEARCH, allowFail);
-		
 		if (!success) {
-			success = walkToActivitySpotInBuilding(building, FunctionType.ADMINISTRATION, allowFail);
+			return walkToWorkSpotInBuilding(building, allowFail);
+		} 
+		
+		return success;
+	}
+	
+	/**
+	 * Walks to an available work spot in a building.
+	 * 
+	 * @param building  the destination building.
+	 * @param allowFail true if walking is allowed to fail.
+	 * @return
+	 */
+	protected boolean walkToWorkSpotInBuilding(Building building, boolean allowFail) {
+		
+		boolean success = walkToActivitySpotInBuilding(building, FunctionType.ADMINISTRATION, allowFail);
+
+		if (!success) {
+			success = walkToActivitySpotInBuilding(building, FunctionType.MANAGEMENT, allowFail);
 		} 
 		if (!success) {
 			success = walkToActivitySpotInBuilding(building, FunctionType.DINING, allowFail);
@@ -1267,9 +1315,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Walks to a random location.
 	 * 
 	 * @param allowFail true if walking is allowed to fail.
+	 * @return
 	 */
-	public void walkToRandomLocation(boolean allowFail) {
-
+	public boolean walkToRandomLocation(boolean allowFail) {
+		boolean success = false;
+		
 		if (person != null) {
 			// If person is in a settlement, walk to random building.
 			Settlement s = person.getSettlement();
@@ -1279,22 +1329,26 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				for (Building b : buildingList) {
 					FunctionType ft = b.getEmptyActivitySpotFunctionType();
 					if (ft != null) {
-						walkToEmptyActivitySpotInBuilding(b, allowFail);
-						return;
+						success = walkToEmptyActivitySpotInBuilding(b, allowFail);
+						if (success) {
+							break;
+						}
 					}
 				}
 			}
 			// If person is in a vehicle, walk to random location within vehicle.
 			else if (person.isInVehicle() && (person.getVehicle() instanceof Rover rover)) {
-				walkToRandomLocInRover(rover, allowFail);
+				success = walkToRandomLocInRover(rover, allowFail);
 			}
 		} 
 		else {
 			// If robot is in a settlement, walk to random building.
 			if (robot.isInSettlement()) {
-				walkToAssignedDutyLocation(robot, false);
+				success = walkToAssignedDutyLocation(robot, false);
 			}
 		}
+		
+		return success;
 	}
 
 	/**

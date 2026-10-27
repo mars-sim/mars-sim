@@ -52,7 +52,7 @@ class TestLocalAreaUtil {
         
         Settlement settlement = new MockSettlement();
  
-        var bounds = new BoundedObject(0D, 0D, 10, 10, 0);
+        var bounds = new BoundedObject(0D, 0D, false, 10, 10, 0);
         MockBuilding mb0 = new MockBuilding(settlement, "Mock B0", "1", bounds, "Mock", BuildingCategory.COMMAND, false);
         
         assertTrue(LocalAreaUtil.isPositionWithinLocalBoundedObject(new LocalPosition(0D, 0D), mb0));
@@ -81,7 +81,7 @@ class TestLocalAreaUtil {
         Settlement settlement = new MockSettlement();
  
         // Rotate building 45 degrees.
-        var bounds = new BoundedObject(0D, 0D, 10, 10, 45D);
+        var bounds = new BoundedObject(0D, 0D, false, 10, 10, 45D);
         var mb0 = new MockBuilding(settlement, "Mock B0", "1", bounds, "Mock", BuildingCategory.COMMAND, false);
                 
         assertTrue(LocalAreaUtil.isPositionWithinLocalBoundedObject(new LocalPosition(0D, 0D), mb0));

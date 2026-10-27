@@ -8,7 +8,6 @@ package com.mars_sim.core.person.ai.task;
 
 
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.Administration;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Management;
@@ -58,6 +57,9 @@ public class ReportMissionControl extends Task {
 
 			// If person is in a settlement, try to find an office building.
 			Building officeBuilding = Management.getAvailableStation(person);
+			
+			boolean canWalk = false;
+			
 			if (officeBuilding != null) {
 				// Walk to the office building.
 				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, false);
@@ -66,19 +68,12 @@ public class ReportMissionControl extends Task {
 					office.addStaff();
 					useOffice = true;
 					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
+					canWalk = walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 				}
 			}
-			else {
-				Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
-				// Note: dining building is optional
-				if (dining != null) {
-					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
-				}
-//				else {
-//					// work anywhere
-//				}				
+
+			if (!canWalk) {
+				walkToWorkPlace();
 			}
 			// Initialize phase
 			setPhase(REPORTING);

@@ -366,7 +366,7 @@ public class Walk extends Task {
 	}
 
 	/**
-	 * Checks if a worker can exit all airlocks in walking steps.
+	 * Checks if a worker can exit all involved airlocks in walking steps.
 	 *
 	 * @return true is all airlocks can be exited (or no airlocks in walk steps).
 	 */
@@ -378,13 +378,11 @@ public class Walk extends Task {
 				WalkingSteps.WalkStep step = i.next();
 				if (step.stepType == WalkingSteps.WalkStep.EXIT_AIRLOCK) {
 					Airlock airlock = step.airlock;
-					
-					// Question: can it be more than one airlock ?
+					// Question: how can it involved more than one airlock ?
 					// Answer: it may involve a vehicle airlock and a building airlock
 					
-					// But is it realistic to check beyond the immediate airlock
-					// such as the faraway (second airlock)	?	 
-					
+					// Note: the walk path potentially involved more than just 
+					// two airlocks. Thus it needs iterator to check on all involved airlocks.
 					if (ExitAirlock.isFull(airlock)) {
 						return false;
 					}

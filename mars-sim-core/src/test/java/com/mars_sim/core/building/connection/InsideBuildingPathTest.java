@@ -22,7 +22,7 @@ public class InsideBuildingPathTest extends MarsSimUnitTest {
     private static final LocalPosition POSITION_5X5 = new LocalPosition(5D, 5D);
 	private static final LocalPosition POSITION_10X5 = new LocalPosition(10D, 5D);
 	private static final LocalPosition POSITION_10X10 = new LocalPosition(10D, 10D);
-    private static final BoundedObject BUILDING_POSN = new BoundedObject(0, 0, 20, 20, 0);
+    private static final BoundedObject BUILDING_POSN = new BoundedObject(0, 0, false, 20, 20, 0);
 
 	@Test
 	public void testEmptyPath() {

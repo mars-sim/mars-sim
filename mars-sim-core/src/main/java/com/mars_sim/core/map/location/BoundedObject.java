@@ -16,6 +16,8 @@ public class BoundedObject implements LocalBoundedObject {
 	double w;
 	double l;
 	double f;
+	boolean isCircular;
+	
 	private LocalPosition loc;
 
 	/**
@@ -27,8 +29,8 @@ public class BoundedObject implements LocalBoundedObject {
 	 * @param l
 	 * @param f
 	 */
-	public BoundedObject(double x, double y, double w, double l, double f) {
-		this(new LocalPosition(x, y), w, l, f);
+	public BoundedObject(double x, double y, boolean isCircular, double w, double l, double f) {
+		this(new LocalPosition(x, y), isCircular, w, l, f);
 	}
 
 	/**
@@ -39,8 +41,9 @@ public class BoundedObject implements LocalBoundedObject {
 	 * @param l
 	 * @param f
 	 */
-	public BoundedObject(LocalPosition loc, double w, double l, double f) {
+	public BoundedObject(LocalPosition loc, boolean isCircular, double w, double l, double f) {
 		this.loc = loc;
+		this.isCircular = isCircular;
 		this.w = w;
 		this.l = l;
 		this.f = f;
@@ -61,6 +64,11 @@ public class BoundedObject implements LocalBoundedObject {
 		return f;
 	}
 
+	@Override
+	public boolean isCircular() {
+		return isCircular;
+	}
+	
 	/**
 	 * Gets the local position within the context of an existing Unit.
 	 * 

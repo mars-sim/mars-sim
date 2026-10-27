@@ -15,7 +15,7 @@ public class HatchTest extends MarsSimUnitTest {
 	
     private static final LocalPosition BUILDING_POSITION = new LocalPosition(0D, 0D);
     private static final LocalPosition HATCH_POSITION = new LocalPosition(5D, 12D);
-    private static final BoundedObject BUILDING_POSN = new BoundedObject(0, 0, 10, 10, 0);
+    private static final BoundedObject BUILDING_POSN = new BoundedObject(0, 0, false, 10, 10, 0);
 
 
 	@Test

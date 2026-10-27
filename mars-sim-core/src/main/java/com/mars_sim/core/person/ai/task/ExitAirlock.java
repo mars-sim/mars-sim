@@ -542,19 +542,21 @@ public class ExitAirlock extends Task {
 				return 0;
 			}
 				
-			if (transitionTo(AirlockZone.ZONE_0) && (!airlock.isInnerDoorLocked() || airlock.isEmpty())) {
-				// The inner door will stay locked if the chamber is NOT pressurized
-				canProceed = true;
-				logger.fine(person, 4_000, "Just transitioned into zone 0.");
+			if (!airlock.isInnerDoorLocked() || airlock.isEmpty()) {
+				
+				if (transitionTo(AirlockZone.ZONE_0)) {
+					// The inner door will stay locked if the chamber is NOT pressurized
+					canProceed = true;
+					
+					logger.fine(person, 4_000, "Just transitioned into zone 0.");
+				}
+
 			}
 			
-			else if (airlock.isEmpty()) {
-				// If the airlock is empty, it means no one is using it
-				logger.fine(person, 60_000,
-						"No one is at " + airlock.getEntityName() + ".");
-				// Go to the next phase in order for the inner door to be unlocked.
-				// After the pressurization has finished, it should be open.
-				canProceed = true;
+			else {
+				walkAway(person, "Couldn't egress in " + airlock.getEntityName() + ". " + INNER_DOOR_LOCKED
+						+ " Current task: " + person.getTaskDescription() + ".");
+				return 0;
 			}
 		}
 

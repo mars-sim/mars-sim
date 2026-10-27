@@ -6,9 +6,24 @@
  */
 package com.mars_sim.core.data.collection;
 
-public enum DataType {
+import com.mars_sim.core.Named;
+import com.mars_sim.core.tool.Msg;
+
+public enum DataType implements Named{
 	GROUND_DATA,
 	AERIAL_DATA,
 	GROUND_PHOTO,
-	AERIAL_PHOTO
+	AERIAL_PHOTO;
+	
+	private String name;
+
+	/** Hidden constructor. */
+	private DataType() {
+		this.name = Msg.getStringOptional("DataType", name());
+	}
+
+	@Override
+	public final String getName() {
+		return this.name;
+	}
 }

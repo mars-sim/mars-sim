@@ -277,6 +277,11 @@ public class DataCollectionSite extends CollectionSite
 	}
 
 	@Override
+	public boolean isCircular() {
+		return true;
+	}
+	
+	@Override
 	public double getFacing() {
 		return 0;
 	}
@@ -292,7 +297,7 @@ public class DataCollectionSite extends CollectionSite
 	}
 	
 	/**
-	 * Returns true if the collection site have the same coordinates
+	 * Returns true if the collection site have the same signature
 	 *
 	 * @param o
 	 * @return true if matched, false otherwise

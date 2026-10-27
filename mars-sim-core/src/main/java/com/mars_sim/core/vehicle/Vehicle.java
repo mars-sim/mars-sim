@@ -1663,7 +1663,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 				// Check if new vehicle location collides with anything.
 				
 				// Note: excessive calling increase CPU Util
-				foundGoodLocation = LocalAreaUtil.isObjectCollisionFree(this, w, l,
+				foundGoodLocation = LocalAreaUtil.isObjectCollisionFree(this, false, w, l,
 								newLoc.getX(), newLoc.getY(), 
 								newFacing, getCoordinates(), settlement);
 				
@@ -2124,7 +2124,7 @@ public abstract class Vehicle extends AbstractMobileUnit
     public String getChildContext() {
         return getContext() + ENTITY_SEPERATOR + getName();
     }
-    
+	
 	/**
 	 * Compares if an object is the same as this unit.
 	 *

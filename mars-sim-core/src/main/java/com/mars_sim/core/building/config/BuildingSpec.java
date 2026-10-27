@@ -27,6 +27,7 @@ public class BuildingSpec {
 	
 	/** is the building non-habitable. */
 	private boolean isInhabitable = true;
+	private boolean isCircular = false;
 	
 	private int baseLevel;
 	private int maintenanceTime;
@@ -65,6 +66,7 @@ public class BuildingSpec {
 	 * @param buildingType
 	 * @param description
 	 * @param category
+	 * @param isCircular
 	 * @param width
 	 * @param length
 	 * @param alignment
@@ -79,7 +81,7 @@ public class BuildingSpec {
 	 * @param baseLowPower
 	 * @param supportedFunctions
 	 */
-	BuildingSpec(String buildingType, String description, BuildingCategory category, 
+	BuildingSpec(String buildingType, String description, BuildingCategory category, boolean isCircular,
 			double width, double length, String alignment, ConstructionType constructionType, 
 			Set<String> scopeNames, int baseLevel,
 			double presetTemperature, int maintenanceTime, int wearLifeTime, 
@@ -91,6 +93,7 @@ public class BuildingSpec {
 		this.buildingType = buildingType;
 		this.description = description;
 		this.category = category;
+		this.isCircular = isCircular;
 		this.width = width;
 		this.length = length;
 		this.alignment = alignment;
@@ -133,6 +136,16 @@ public class BuildingSpec {
 	public boolean isInhabitable() {
 		return isInhabitable;
 	}
+	
+	/**
+	 * Checks if this building is circular.
+	 * 
+	 * @return
+	 */
+	public boolean isCircular() {
+		return isCircular;
+	}
+
 	
 	/**
 	 * What functions are supported by this building type.
@@ -235,20 +248,21 @@ public class BuildingSpec {
 	}
 	
 	/**
-	 * Combines a custom bounds definition with what is validate for this building.
+	 * Combines a custom bound definition with what is validate for this building.
 	 * 
-	 * @param bounds Request bounds
-	 * @return Combined valid bounds
+	 * @param bound Request bound
+	 * @return Combined valid bound
 	 */
-    public BoundedObject getValidBounds(BoundedObject bounds) {
+    public BoundedObject getValidBounds(BoundedObject bound) {
 		var newWidth = width;
 		if (newWidth < 0) {
-			newWidth = bounds.getWidth();
+			newWidth = bound.getWidth();
 		}
 		var newLength = length;
 		if (newLength < 0) {
-			newLength = bounds.getLength();
+			newLength = bound.getLength();
 		}
-        return new BoundedObject(bounds.getPosition(), newWidth, newLength, bounds.getFacing());
+		
+        return new BoundedObject(bound.getPosition(), bound.isCircular(), newWidth, newLength, bound.getFacing());
     }
 }

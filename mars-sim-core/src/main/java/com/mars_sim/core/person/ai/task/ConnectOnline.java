@@ -60,21 +60,22 @@ public class ConnectOnline extends Task {
 
 		if (person.isInSettlement()) {
 			// set the boolean to true so that it won't be done again today			
-			List<FunctionType> types = List.of(FunctionType.COMMUNICATION, 
-											FunctionType.ADMINISTRATION,
-											FunctionType.MANAGEMENT,
+			List<FunctionType> types = List.of(FunctionType.COMMUNICATION,
+											FunctionType.LIFE_SUPPORT,
 											FunctionType.RECREATION,
 											FunctionType.DINING);
-			
+			boolean canWalk = false;
 			Building selected = null;			
 			for (var type : types) {
 				// Find a facility.
 				var bldg = BuildingManager.getAvailableFunctionTypeBuilding(person, type);
 				if (bldg != null) {
 					// Walk to the facility
-					walkToTaskSpecificActivitySpotInBuilding(bldg, type, false);
-					selected = bldg;
-					break;
+					canWalk = walkToTaskSpecificActivitySpotInBuilding(bldg, type, false);
+					if (canWalk) {
+						selected = bldg;
+						break;
+					}
 				} 
 			}
 			

@@ -264,8 +264,9 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		if (length <= 0D) {
 			length = DEFAULT_VARIABLE_BUILDING_LENGTH;
 		}
+		boolean isCircular = spec.isCircular();
 		
-		return new BoundedObject(bounds.getPosition(), width, length, bounds.getFacing());
+		return new BoundedObject(bounds.getPosition(), isCircular, width, length, bounds.getFacing());
 	}
 
 	/**
@@ -597,9 +598,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				int zone = 0;
 				
 				String uniqueName = buildingManager.getUniqueName(spec.getName());
+				boolean isCircular = spec.isCircular();
 				// Note : ask for user to define the location for the new building as well
 				newPosition = new BuildingTemplate(buildingID, zone,
-						spec.getName(), uniqueName, new BoundedObject(0,  0, width, length, 0));
+						spec.getName(), uniqueName, new BoundedObject(0, 0, isCircular, width, length, 0));
 
 				logger.config("Case 5: " + POSITIONING + uniqueName + " at (0, 0)");
 				return newPosition;
@@ -920,8 +922,9 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 			// Check to see if proposed new building position intersects with any existing
 			// buildings
+			boolean isCircular = spec.isCircular();
 			// or construction sites.
-			BoundedObject position =  new BoundedObject(rectCenterX, rectCenterY, width, length, rectRotation);
+			BoundedObject position =  new BoundedObject(rectCenterX, rectCenterY, isCircular, width, length, rectRotation);
 			if (buildingManager.isBuildingLocationOpen(position)) {
 				// Set the new building here.
 				
@@ -1030,9 +1033,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			int zone = 0;
 			
 			String uniqueName = buildingManager.getUniqueName(spec.getName());
-
+			boolean isCircular = spec.isCircular();
+			
 			newPosition = new BuildingTemplate(buildingID, zone, spec.getName(), uniqueName, 
-					new BoundedObject(centerX, centerY, width, newLength, facingDegrees));
+					new BoundedObject(centerX, centerY, isCircular, width, newLength, facingDegrees));
 		}
 
 		return newPosition;

@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.building.connection;
 
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
 
@@ -794,7 +796,19 @@ public class BuildingConnectorManager implements Serializable {
 			if (!building.equals(newBuilding)
 				&& getBuildingConnections(newBuilding, building).isEmpty()) {
 
-				Set<Point2D> collisionPoints = LocalAreaUtil.getLinePathCollisionPoints(line, building);
+				Set<Point2D> collisionPoints = null;
+				
+				if (building.isCircular()) {
+					LocalBoundedObject object = (LocalBoundedObject)building;
+					Ellipse2D cir = new Ellipse2D.Double(object.getPosition().getX() - (object.getWidth() / 2D),
+							object.getPosition().getY() - (object.getLength() / 2D), object.getWidth(), object.getLength());
+					collisionPoints = LocalAreaUtil.getinePathCollisionPointsEllipse(line, cir);
+				}
+				else {
+					collisionPoints = LocalAreaUtil.getLinePathCollisionPoints(line, building);
+				}
+
+				
 				if (!collisionPoints.isEmpty()) {
 
 					// Determine closest collision point.

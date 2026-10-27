@@ -63,22 +63,26 @@ public class PlayHoloGame extends Task {
 		}
 
 		if (person.isInSettlement()) {
+			boolean canWalk = false;
+			
 			// If person is in a settlement, try to find a place to relax.
 			FunctionType target = (RandomUtil.getRandomInt(3) == 0 ? FunctionType.EXERCISE
 												: FunctionType.RECREATION);
 			Building rec = BuildingManager.getAvailableFunctionTypeBuilding(person, target);
 			if (rec != null) {
-				walkToActivitySpotInBuilding(rec, target, true);
+				canWalk = walkToActivitySpotInBuilding(rec, target, true);
 			}
 			
 			// Still not got a destination, go back to bed
-			else if (person.hasBed()) {
+			if (!canWalk && person.hasBed()) {
 				// Walk to the bed
-				walkToBed(person, true);
+				canWalk = walkToBed(person, true);
 			}
-			else 
+			
+			if (!canWalk) { 
 				// Walk to random location.
 				walkToRandomLocation(true);
+			}
 		}
 		else {
 			// If person is in rover, walk to passenger activity spot.

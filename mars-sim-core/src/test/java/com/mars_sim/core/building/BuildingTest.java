@@ -19,7 +19,7 @@ class BuildingTest extends MarsSimUnitTest {
         var habSpec = getConfig().getBuildingConfiguration().getBuildingSpec(LANDER_HAB);
 
         Settlement s = buildSettlement("S1");
-        BoundedObject bounds = new BoundedObject(LocalPosition.DEFAULT_POSITION, -1, -1, 90D);
+        BoundedObject bounds = new BoundedObject(LocalPosition.DEFAULT_POSITION, true, -1, -1, 90D);
         BuildingTemplate template = new BuildingTemplate("1", 0, LANDER_HAB, "B1", bounds);
         var b = Building.createBuilding(template, s);
 

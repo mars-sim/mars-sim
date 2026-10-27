@@ -63,6 +63,7 @@ public class Sleep extends Task {
 
 	private int numREMCycles;
 	private int cycleLength;
+	
 	/**
 	 * Constructor 1. This will require a person to walk to a bed first.
 	 * Note: choose constructor 2 if walking is not required.

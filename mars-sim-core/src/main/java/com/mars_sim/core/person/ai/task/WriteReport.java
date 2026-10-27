@@ -56,6 +56,9 @@ public class WriteReport extends Task {
 
 			// If person is in a settlement, try to find an office building.
 			Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
+
+			boolean canWalk = false;
+			
 			if (officeBuilding != null) {
 				// Walk to the office building.
 				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, false);
@@ -64,20 +67,13 @@ public class WriteReport extends Task {
 					office.addStaff();
 					useOffice = true;
 					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
+					canWalk = walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 				}
 			}
-			else {
-				Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
-				// Note: dining building is optional
-				if (dining != null) {
-					// Walk to the dining building.
-					walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
-				}		
+			
+			if (!canWalk) {
+				walkToWorkPlace();
 			}
-			
-			// May work anywhere
-			
 			// Initialize phase
 			setPhase(WRITING_REPORT);
 		}

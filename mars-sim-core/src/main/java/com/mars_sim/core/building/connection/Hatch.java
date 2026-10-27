@@ -99,7 +99,7 @@ public class Hatch implements LocalBoundedObject, InsidePathLocation {
 	public double getFacing() {
 		return facing;
 	}
-
+	
 	@Override
 	public boolean equals(Object other) {
 
@@ -130,4 +130,5 @@ public class Hatch implements LocalBoundedObject, InsidePathLocation {
 		building = null;
 		connector = null;
 	}
+
 }

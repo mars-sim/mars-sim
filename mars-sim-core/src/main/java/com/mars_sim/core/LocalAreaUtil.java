@@ -9,6 +9,7 @@ package com.mars_sim.core;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -16,6 +17,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -497,7 +499,7 @@ public class LocalAreaUtil {
 		return box.getPosition().getShortFormat() + "  Object: " + box.getWidth() + " W x " + box.getLength()
 				+ " L at facing " + Math.round(box.getFacing() * 10.0)/10.0 + " deg.";
 	} 
-
+	
 	/**
 	 * Checks if a position is within a local bounded object's bounds.
 	 *
@@ -506,10 +508,7 @@ public class LocalAreaUtil {
 	 * @return true if position is within object bounds.
 	 */
 	public static boolean isPositionWithinLocalBoundedObject(LocalPosition position, LocalBoundedObject object) {
-		Rectangle2D rect = new Rectangle2D.Double(object.getPosition().getX() - (object.getWidth() / 2D),
-				object.getPosition().getY() - (object.getLength() / 2D), object.getWidth(), object.getLength());
-		Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
-		Area area = new Area(path);
+		Area area = getBoundedObjectArea(object);
 		return area.contains(position.getX(), position.getY());
 	}
 
@@ -521,18 +520,31 @@ public class LocalAreaUtil {
 	 */
 	public static Rectangle2D getBoundingRectangle(LocalBoundedObject object) {
 
-		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
-				object.getYLocation() - (object.getLength() / 2D), object.getWidth(), object.getLength());
+		Rectangle2D rect = getUnrotatedRectangle(object);
 		Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
 
 		return path.getBounds2D();
 	}
 
 	/**
+	 * Gets the unrotated rectangle around a local bounded object.
+	 *
+	 * @param object the local bounded object.
+	 * @return unrotated rectangle.
+	 */
+	public static Rectangle2D getUnrotatedRectangle(LocalBoundedObject object) {
+
+		return new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
+				object.getYLocation() - (object.getLength() / 2D), object.getWidth(), object.getLength());
+	}
+	
+	
+	/**
 	 * Checks if an object with a given position, facing, and dimensions collides
 	 * with any existing vehicle, building, or construction site at a settlement.
 	 *
 	 * @param object      the boundedObject to be moved.
+	 * @param isCircular
 	 * @param width       the object's width.
 	 * @param length      the object's length.
 	 * @param xLoc        the object's future x location.
@@ -542,22 +554,29 @@ public class LocalAreaUtil {
 	 * @param settlement
 	 * @return true if object doesn't collide with anything.
 	 */
-	public static boolean isObjectCollisionFree(Object object, double width, double length, double xLoc, double yLoc,
+	public static boolean isObjectCollisionFree(LocalBoundedObject object, boolean isCircular, double width, double length, double xLoc, double yLoc,
 			double facing, Coordinates coordinates, Settlement settlement) {
 
 		boolean result = true;
-
-		// Create path for object.
-		Rectangle2D objectRect = new Rectangle2D.Double(xLoc - (width / 2D), yLoc - (length / 2D), width, length);
-		Path2D objectPath = getPathFromRectangleRotation(objectRect, facing);
-
+		Path2D objectPath = null;
+		
+		if (isCircular) {
+			Ellipse2D cir = new Ellipse2D.Double(xLoc - (width / 2D), yLoc - (length / 2D), width, length);
+			objectPath = new Path2D.Double(cir);
+		}
+		else {
+			// Create path for object.
+			Rectangle2D objectRect = new Rectangle2D.Double(xLoc - (width / 2D), yLoc - (length / 2D), width, length);
+			objectPath = getPathFromRectangleRotation(objectRect, facing);
+		}
+		
 		result = isPathCollisionFree(object, objectPath, coordinates, settlement, false);
 
 		return result;
 	}
 
 	/**
-	 * Checks if a path between 2 points collides with any existing vehicle, building, or
+	 * Checks if a line path between the start and destination points (from CollisionPathFinder) collides with any existing vehicle, building, or
 	 * construction site at a settlement.
 	 *
 	 * @param start	   the starting point.
@@ -567,12 +586,13 @@ public class LocalAreaUtil {
 	 * @return true if line path doesn't collide with anything.
 	 */
 	public static boolean isLinePathCollisionFree(LocalPosition start, LocalPosition destination, Coordinates coordinates, Settlement settlement) {
+		// Create line path
 		Line2D line = new Line2D.Double(start.getX(), start.getY(), destination.getX(), destination.getY());
 		return isPathCollisionFree(null, createLinePath(line), coordinates, settlement, true);
 	}
 
 	/**
-	 * Checks if a line path collides with any existing vehicle, building, or
+	 * Checks if a line path (from BuildingPlacement and Resupply) collides with any existing vehicle, building, or
 	 * construction site at a settlement.
 	 *
 	 * @param line        the line.
@@ -582,13 +602,11 @@ public class LocalAreaUtil {
 	 * @return true if line path doesn't collide with anything.
 	 */
 	public static boolean isLinePathCollisionFree(Line2D line, Coordinates coordinates, Settlement settlement, boolean useCache) {
-		// Create line path
 		return isPathCollisionFree(null, createLinePath(line), coordinates, settlement, useCache);
-
 	}
 
 	/**
-	 * Gets the line path collision points.
+	 * Gets the line path collision points for a rectangular object.
 	 * 
 	 * @param line
 	 * @param object
@@ -596,7 +614,7 @@ public class LocalAreaUtil {
 	 */
 	public static Set<Point2D> getLinePathCollisionPoints(Line2D line, LocalBoundedObject object) {
 
-		Set<Point2D> result = new HashSet<>();// ConcurrentHashMap.newKeySet();
+		Set<Point2D> result = new HashSet<>();
 
 		Iterator<Line2D> i = getLocalBoundedObjectLineSegments(object).iterator();
 		while (i.hasNext()) {
@@ -638,17 +656,93 @@ public class LocalAreaUtil {
 	}
 
 	/**
+	 * Gets the line path collision points for an ellipse or circular object.
+	 * 
+	 * @param line
+	 * @param ellipse
+	 * @return
+	 */
+	public static Set<Point2D> getinePathCollisionPointsEllipse(Line2D line, Ellipse2D ellipse) {
+	    Set<Point2D> result = new LinkedHashSet<>();
+
+	    double cx = ellipse.getCenterX();
+	    double cy = ellipse.getCenterY();
+	    double a = ellipse.getWidth() / 2.0;   // semi-major axis (x)
+	    double b = ellipse.getHeight() / 2.0;  // semi-minor axis (y)
+
+	    double x1 = line.getX1(), y1 = line.getY1();
+	    double x2 = line.getX2(), y2 = line.getY2();
+
+	    if (Math.abs(x2 - x1) < 1e-10) {
+	        // Vertical line: x = x1
+	        double x = x1;
+	        double A = 1.0 / (b * b);
+	        double B = -2.0 * cy / (b * b);
+	        double C = (x - cx) * (x - cx) / (a * a) + cy * cy / (b * b) - 1.0;
+
+	        double disc = B * B - 4 * A * C;
+	        if (disc < 0) return result;
+
+	        double sqrtDisc = Math.sqrt(disc);
+	        double yA = (-B - sqrtDisc) / (2 * A);
+	        double yB = (-B + sqrtDisc) / (2 * A);
+
+	        if (isOnSegment(x1, y1, x2, y2, x, yA)) result.add(new Point2D.Double(x, yA));
+	        if (isOnSegment(x1, y1, x2, y2, x, yB)) result.add(new Point2D.Double(x, yB));
+	    } else {
+	        // y = mx + c
+	        double m = (y2 - y1) / (x2 - x1);
+	        double c = y1 - m * x1;
+
+	        // Substitute into ((x-cx)/a)^2 + ((mx+c-cy)/b)^2 = 1
+	        // Expand to get Ax^2 + Bx + C = 0
+	        double A = 1.0 / (a * a) + (m * m) / (b * b);
+	        double B = 2.0 * (cx) / (a * a) + 2.0 * m * (c - cy) / (b * b);
+	        double C = (cx * cx) / (a * a) + ((c - cy) * (c - cy)) / (b * b) - 1.0;
+
+	        double disc = B * B - 4 * A * C;
+	        if (disc < 0) return result;
+
+	        double sqrtDisc = Math.sqrt(disc);
+	        double xA = (-B - sqrtDisc) / (2 * A);
+	        double xB = (-B + sqrtDisc) / (2 * A);
+	        double yA = m * xA + c;
+	        double yB = m * xB + c;
+
+	        if (isOnSegment(x1, y1, x2, y2, xA, yA)) result.add(new Point2D.Double(xA, yA));
+	        if (isOnSegment(x1, y1, x2, y2, xB, yB)) result.add(new Point2D.Double(xB, yB));
+	    }
+
+	    return result;
+	}
+
+	private static boolean isOnSegment(double x1, double y1, double x2, double y2, double px, double py) {
+	    double minX = Math.min(x1, x2) - 1e-9;
+	    double maxX = Math.max(x1, x2) + 1e-9;
+	    double minY = Math.min(y1, y2) - 1e-9;
+	    double maxY = Math.max(y1, y2) + 1e-9;
+	    return px >= minX && px <= maxX && py >= minY && py <= maxY;
+	}
+	
+	/**
 	 * Gets the bounded object area.
 	 * 
 	 * @param object
 	 * @return
 	 */
 	private static Area getBoundedObjectArea(LocalBoundedObject object) {
-
-		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
-				object.getYLocation() - (object.getLength() / 2D), object.getWidth(), object.getLength());
-		Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
-		return new Area(path);
+		if (object.isCircular()) {
+			Ellipse2D cir = new Ellipse2D.Double(object.getPosition().getX() - (object.getWidth() / 2D),
+					object.getPosition().getY() - (object.getLength() / 2D), object.getWidth(), object.getLength());
+			Path2D path = new Path2D.Double(cir);
+			return new Area(path);
+		}
+		else {
+			Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
+					object.getYLocation() - (object.getLength() / 2D), object.getWidth(), object.getLength());
+			Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
+			return new Area(path);
+		}
 	}
 
 	/**
@@ -659,11 +753,20 @@ public class LocalAreaUtil {
 	 * @return
 	 */
 	private static Area getExtendedBOArea(LocalBoundedObject object, int extendedRadius) {
-		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
-				object.getYLocation() - (object.getLength() / 2D), 
-				object.getWidth() + extendedRadius, object.getLength() + extendedRadius);
-		Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
-		return new Area(path);
+		if (object.isCircular()) {
+			Ellipse2D cir = new Ellipse2D.Double(object.getPosition().getX() - (object.getWidth() / 2D),
+					object.getPosition().getY() - (object.getLength() / 2D), 
+					object.getWidth() + extendedRadius, object.getLength() + extendedRadius);
+			Path2D path = new Path2D.Double(cir);
+			return new Area(path);
+		}
+		else {
+			Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
+					object.getYLocation() - (object.getLength() / 2D), 
+					object.getWidth() + extendedRadius, object.getLength() + extendedRadius);
+			Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
+			return new Area(path);
+		}
 	}
 	
 	/**
@@ -696,7 +799,7 @@ public class LocalAreaUtil {
 	 */
 	private static Set<Line2D> getLocalBoundedObjectLineSegments(LocalBoundedObject object) {
 
-		Set<Line2D> result = new HashSet<>(4);// ConcurrentHashMap.newKeySet(4);
+		Set<Line2D> result = new HashSet<>(4);
 
 		double width = object.getWidth();
 		double length = object.getLength();
@@ -769,14 +872,14 @@ public class LocalAreaUtil {
 	 * Checks if a path collides with an existing building, construction site, or
 	 * vehicle at a location.
 	 *
-	 * @param object      the object being checked (may be null if no object).
+	 * @param object      LocalBoundedObject being checked (may be null if no object).
 	 * @param path        the path to check.
 	 * @param coordinates the global coordinate location to check.
 	 * @param settlement
 	 * @param useCache    true if caching should be used.
 	 * @return true if path doesn't collide with anything.
 	 */
-	private static boolean isPathCollisionFree(Object object, Path2D path, Coordinates coordinates, Settlement settlement, boolean useCache) {
+	private static boolean isPathCollisionFree(LocalBoundedObject object, Path2D path, Coordinates coordinates, Settlement settlement, boolean useCache) {
 
 		boolean result = true;
 
@@ -806,10 +909,9 @@ public class LocalAreaUtil {
 			while (i.hasNext()) {
 				LocalBoundedObject lbo = i.next();
 				if (object == null || lbo != object) {
-					Rectangle2D objectRect = new Rectangle2D.Double(lbo.getXLocation() - (lbo.getWidth() / 2D),
-							lbo.getYLocation() - (lbo.getLength() / 2D), lbo.getWidth(), lbo.getLength());
-					Path2D objectPath = getPathFromRectangleRotation(objectRect, lbo.getFacing());
-					Area objectArea = new Area(objectPath);
+		
+					Area objectArea = getBoundedObjectArea(lbo);
+					
 					if (obstacleArea == null) {
 						obstacleArea = objectArea;
 					} else {
@@ -875,7 +977,7 @@ public class LocalAreaUtil {
 				rectangle.getCenterY());
 		return new Path2D.Double(rectangle, at);
 	}
-
+	
 	/**
 	 * Initializes the simulation globals.
 	 * 

@@ -31,9 +31,9 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	// Unique identifier
 	private int identifier;
 	/** What is the starting quality of the data at the time of collection. from 0 to 100. */
-	private final int initialQuality;
+	private final double initialQuality;
 	/** What is the quality of the data. from 0 to 100. */
-	private int quality;
+	private double quality = -1;
 	/** How difficult is it in processing the data. from 0 to 100. */
 	private int difficultyLevel;
 	/** researchTime in millisols. */
@@ -54,22 +54,38 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	private MarsTime startTimpstamp;
 	
 	/** A set of listeners for this scientific study. */
-	private transient EntityListenerManager listeners;
+	private transient EntityListenerManager listenerManager;
 	
 	
-	public FieldDataSet(Settlement settlement, Worker owner, DataType dataType, MarsTime timeCollected, int initialQuality) {
+	public FieldDataSet(Settlement settlement, Worker owner, DataType dataType, MarsTime timeCollected, double initialQuality) {
 		this.owningSettlement = settlement;
 		this.owner = owner;
 		this.dataType = dataType;
 		this.startTimpstamp = timeCollected;
 		this.initialQuality = initialQuality;
 		
+		this.location = settlement.getCoordinates();
+		
 		identifier = currentIdentifier;
 		currentIdentifier++;
 	}
 	
+	/**
+	 * Gets the data type.
+	 * 
+	 * @return
+	 */
 	public DataType getDataType() {
 		return dataType;
+	}
+	
+	/**
+	 * Gets the start timestamp.
+	 * 
+	 * @return
+	 */
+	public MarsTime getTimpstamp() {
+		return startTimpstamp;
 	}
 	
 	/**
@@ -81,11 +97,21 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 		return identifier;
 	}
 	
-	public int getQuality() {
+	public double getInitialQuality() {
+		return initialQuality;
+	}
+	
+	public double getQuality() {
+		if (quality == -1) {
+			quality = initialQuality;
+		}
 		return quality;
 	}
 	
-	public void addQuality(int q) {
+	public void addQuality(double q) {
+		if (quality == -1) {
+			quality = 0;
+		}
 		quality += q;
 		if (quality > 100)
 			quality = 100;
@@ -145,10 +171,10 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	public void addEntityListener(EntityListener newListener) {
 		if (newListener == null)
 			throw new IllegalArgumentException();
-		if (listeners == null)
-			listeners = new EntityListenerManager();
+		if (listenerManager == null)
+			listenerManager = new EntityListenerManager();
 
-		listeners.addEntityListener(newListener);
+		listenerManager.addEntityListener(newListener);
 	}
 
 	/**
@@ -158,8 +184,8 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	 */
 	@Override
 	public void removeEntityListener(EntityListener oldListener) {
-		if (listeners != null)
-			listeners.removeEntityListener(oldListener);
+		if (listenerManager != null)
+			listenerManager.removeEntityListener(oldListener);
 	}
 
 	/**
@@ -169,10 +195,10 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	 */
 	@Override
 	public Set<EntityListener> getEntityListeners() {
-		if (listeners == null) {
+		if (listenerManager == null) {
 			return Collections.emptySet();
 		}
-		return listeners.getEntityListeners();
+		return listenerManager.getEntityListeners();
 	}
 
 	@Override
@@ -186,11 +212,40 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	 * @param updateType the update type.
 	 */
 	public void fireUpdate(String updateType) {
-		if (listeners == null) {
+		if (listenerManager == null) {
 			return;
 		}
 		final EntityEvent studyEvent = new EntityEvent(this, updateType, owner);
-		listeners.fireEvent(studyEvent);
+		listenerManager.fireEvent(studyEvent);
+	}
+	
+	
+	/**
+	 * Returns true if the dataset have the same signature.
+	 *
+	 * @param o
+	 * @return true if matched, false otherwise
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o instanceof FieldDataSet s) {
+            return this.location.equals(s.getLocation())
+            		&& this.startTimpstamp == s.getTimpstamp()
+                    && this.identifier == s.getIdentifier();
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Gets the hash code for this object.
+	 *
+	 * @return hash code.
+	 */
+	@Override
+	public int hashCode() {
+		return (startTimpstamp.hashCode() + owner.hashCode() + location.hashCode());
 	}
 }
 

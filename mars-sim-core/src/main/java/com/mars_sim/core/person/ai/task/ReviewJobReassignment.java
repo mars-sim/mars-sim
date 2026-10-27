@@ -80,27 +80,21 @@ public class ReviewJobReassignment extends Task {
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
 
+				boolean canWalk = false;
+				
 				// Note: office building is optional
 				if (officeBuilding != null) {
-					// Walk to the office building.
-					office = officeBuilding.getAdministration();
+					office = officeBuilding.getAdministration();	
 					if (!useOffice && !office.isFull()) {
 						office.addStaff();
 						useOffice = true;
 						// Walk to the office building.
-						walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
+						canWalk = walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 					}
 				}
-				else {
-					Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
-					// Note: dining building is optional
-					if (dining != null) {
-						// Walk to the dining building.
-						walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
-					}
-//					else {
-//						// work anywhere
-//					}				
+				
+				if (!canWalk) {
+					walkToWorkPlace();
 				}
 				
 				// if administration building is not available, go to 

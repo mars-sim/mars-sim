@@ -182,7 +182,7 @@ public class MarsSimContextImpl implements MarsSimContext {
         int id = buildingManager.getNumBuildings();
         String name = "B" + (id + 1);
         var building0 = new MockBuilding(buildingManager.getSettlement(), name, Integer.toString(id),
-                                        new BoundedObject(pos, BUILDING_WIDTH, BUILDING_LENGTH, facing),
+                                        new BoundedObject(pos, false, BUILDING_WIDTH, BUILDING_LENGTH, facing),
                                         type, cat, lifeSupport);
         buildingManager.addMockBuilding(building0);    
         

@@ -11,7 +11,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.Administration;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.Management;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -126,6 +125,8 @@ public class BudgetResources extends Task {
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
 	
+				boolean canWalk = false;
+				
 				// Note: office building is optional
 				if (officeBuilding != null) {
 					office = officeBuilding.getAdministration();	
@@ -133,24 +134,12 @@ public class BudgetResources extends Task {
 						office.addStaff();
 						useOffice = true;
 						// Walk to the office building.
-						walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
+						canWalk = walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
 					}
 				}
-	
-				else {
-					Building managementBuilding = Management.getAvailableStation(person);
-					if (managementBuilding != null) {
-						// Walk to the management building.
-						walkToTaskSpecificActivitySpotInBuilding(managementBuilding, FunctionType.MANAGEMENT, true);
-					}
-					else {	
-						Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
-						// Note: dining building is optional
-						if (dining != null) {
-							// Walk to the dining building.
-							walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
-						}
-					}
+				
+				if (!canWalk) {
+					walkToWorkPlace();
 				}
 			}
 		}

@@ -38,7 +38,7 @@ public abstract class BaseDataModel extends AbstractEntityModel<FieldDataSet> {
 	protected static final EntityColumnSpec TIME = new EntityColumnSpec(
 					new ColumnSpec(TIME_VAL, Msg.getString("TabPanelData.column.time"), MarsTime.class), null);
 	protected static final EntityColumnSpec QUALITY = new EntityColumnSpec(
-					new ColumnSpec(QUALITY_VAL, Msg.getString("TabPanelData.column.quality"), Integer.class), null);
+					new ColumnSpec(QUALITY_VAL, Msg.getString("TabPanelData.column.quality"), Double.class), null);
 	protected static final EntityColumnSpec OWNER = new EntityColumnSpec(
 					new ColumnSpec(OWNER_VAL, Msg.getString("TabPanelData.column.owner"), String.class), null);
 	protected static final EntityColumnSpec WORKTIME = new EntityColumnSpec(
@@ -68,7 +68,8 @@ public abstract class BaseDataModel extends AbstractEntityModel<FieldDataSet> {
         return switch (valueIndex) {
             case ID_VAL -> entity.getIdentifier();
             case SETTLEMENT_VAL  -> entity.getOwningSettlement().getName();
-            case TYPE_VAL -> entity.getDataType().toString();
+            case TYPE_VAL -> entity.getDataType().getName();
+            case TIME_VAL -> entity.getTimpstamp();
             case QUALITY_VAL -> entity.getQuality();
             case OWNER_VAL -> entity.getOwner().getName();
             case WORKTIME_VAL -> entity.getWorkTime();

@@ -161,9 +161,11 @@ public class BuildingConfig {
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
 		String shape = buildingElement.getAttributeValue(SHAPE);
+		boolean isCircular = false;
 		double area;
 		if (shape != null && shape.equalsIgnoreCase(CIRCULAR)) {
 			area = Math.PI * (length / 2.0) * (length / 2.0);
+			isCircular = true;
 		} else {
 			area = width * length;
 		}
@@ -221,7 +223,7 @@ public class BuildingConfig {
 			category = deriveCategory(supportedFunctions.keySet());
 		}
 
-		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, category, 
+		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, category, isCircular,
 				width, length, alignment, constructionType, scopeNames, baseLevel,
 			 	presetTemp, maintenanceTime, wearLifeTime,
 			 	powerPriority, baseFullPowerLoad, baseLowPowerLoad,
