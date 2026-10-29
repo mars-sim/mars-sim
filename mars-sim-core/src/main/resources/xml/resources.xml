@@ -47,11 +47,17 @@
 	  </resource>
 	 
 <!-- Other Gas/Liquid Resources -->	 
-	<resource name="Nitrogen" type="element" phase="gas" demand="0.25" >N2 is an odorless gas </resource>
 	<resource name="Argon" type="element" phase="gas"/>
 	
 	<resource name="Carbon monoxide" type="compound" phase="gas" demand="1.0" />
 	<resource name="Chlorine" type="element" phase="gas"/>
+	
+	<resource name="Fluorine" type="chemical" phase="gas" demand="1.5">
+		Fluorine is essential in modern display liquid crystals. It makes the LC Electrically Switchable.
+	</resource> 
+	
+	<resource name="Nitrogen" type="element" phase="gas" demand="0.25" >N2 is an odorless gas </resource>
+
 
 <!-- Wastes -->
 	<resource name="Soil" type="waste" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
@@ -576,7 +582,7 @@
 		to the polyester PET, used to make clothing and plastic bottles. 
 	</resource>
 
-
+	
 <!-- Regolith and its directly derived ore deposits
      https://en.wikipedia.org/wiki/Martian_soil
      https://www.pnas.org/content/117/50/31685
@@ -773,6 +779,14 @@
 		Hydraulic Fluid is used for the subsurface robotic excavator to drill through the ice layer. 
 		It lubricates the drill bits.
 	</resource>			 					 		 
+		
+	<resource name="Liquid crystal" type="utility" phase="liquid" demand="1.5"> 
+		Liquid crystals are synthetic organic molecules, typically nematic (rod-shaped) compounds. 
+		It's for making LCD screens, temperature sensing, optics, phtonics, smart windows, 
+		biomedical/drug delivery, Industrial and Non-Destructive Testing.
+		Carbon ~75–85% of all atoms (~55–65% of molecular mass). Fluorine ~10–15% of all atoms 
+		(~20–30% of molecular mass). H + O + N + S for the remainder.
+	</resource>	
 				 		 
 <!-- 12 types of Mineral concentrations.
 
@@ -895,6 +909,7 @@
 	<resource name="Cobalt" type="element" phase="solid">An element.</resource>
 	<resource name="Copper" type="element" phase="solid">An elemen.</resource>
 	<resource name="Gold" type="element" phase="solid">An element.</resource>
+	<resource name="Iodine" type="element" phase="solid">An element.</resource>
 	<resource name="Iron powder" type="element" phase="solid" demand="1.1">An element.</resource>
 	<resource name="Lithium" type="element" phase="solid">An element.</resource>
 	<resource name="Magnesium" type="element" phase="solid">An element.</resource>

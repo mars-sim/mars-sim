@@ -159,12 +159,12 @@
 			<part name="refrigerator" number="1" />
 			<resource name="soybean" amount="3.0" />
 			<resource name="water" amount="3.0" />
-			<resource name="sodium hypochlorite" amount="0.003" />
+			<resource name="sodium hypochlorite" amount="0.001" />
 		</inputs>
 
 		<outputs>
 			<part name="refrigerator" number="1" />
-			<resource name="soy Sprout" amount="15.0" />
+			<resource name="soy Sprout" amount="6.0" />
 		</outputs>
 	</process>
 
@@ -187,7 +187,7 @@
 		</inputs>
 
 		<outputs>
-			<resource name="quinoa sprout" amount="15.0" />
+			<resource name="quinoa sprout" amount="6.0" />
 		</outputs>
 	</process>
 
@@ -226,7 +226,7 @@
 			<part name="blender" number="1" />
 			<resource name="sesame seed" amount="0.5" />
 			<resource name="soymilk" amount="4.3" />
-			<resource name="soymilk" amount="0.2">
+			<resource name="soybean" amount="0.2">
 				<alternative name="Spirulina" amount="0.2" />
 			</resource>
 		</inputs>
@@ -555,8 +555,10 @@
 
 		<inputs>
 			<part name="autoclave" number="1" />
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
 			<resource name="soybean" amount="1.7" />
-			<resource name="water" amount="18.7" />
+			<resource name="water" amount="11.8671" />
 			<resource name="rice vinegar" amount="0.181" />
 			<resource name="Rhizopus oligosporus" amount="0.0019" />
 		</inputs>
@@ -580,8 +582,10 @@
 
 		<inputs>
 			<part name="autoclave" number="1" />
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
 			<resource name="soybean" amount="1.7" />
-			<resource name="water" amount="18.7" />
+			<resource name="water" amount="11.8671" />
 			<resource name="rice vinegar" amount="0.112" />
 			<resource name="Rhizopus oligosporus" amount="0.0019" />
 			<resource name="Epsom Salt" amount="0.0962" />
@@ -606,6 +610,8 @@
 
 		<inputs>
 			<part name="autoclave" number="1" />
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
 			<resource name="soybean" amount="1.25" />
 			<resource name="water" amount="13.75" />
 			<resource name="rice vinegar" amount="0.133" />
@@ -633,6 +639,8 @@
 		
 		<inputs>
 			<part name="autoclave" number="1" />
+			<part name="blender" number="1" />
+			<part name="stove" number="1" />
 			<resource name="soybean" amount="1.25" />
 			<resource name="water" amount="13.75" />
 			<resource name="rice vinegar" amount="0.0825" />
@@ -1220,7 +1228,7 @@
 		<inputs>
 			<part name="blender" number="1" />
 			<resource name="Cranberry" amount="1.8" />
-			<resource name="Cranberry" amount="0.2" >
+			<resource name="Cranberry sauce" amount="0.2" >
 				<alternative name="spirulina" amount="0.2" />
 			</resource>
 			<resource name="water" amount="7.0" />
@@ -1241,18 +1249,18 @@
 		</description>
 		<inputs>
 			<part name="blender" number="1" />
-			<resource name="Cranberry" amount="1.8" />
-			<resource name="Cranberry" amount="0.2" >
+			<resource name="Cranberry" amount="0.8" />
+			<resource name="Cranberry juice" amount="0.2" >
 				<alternative name="spirulina" amount="0.2" />
 			</resource>
-			<resource name="water" amount="1.0" />
+			<resource name="water" amount="0.2" />
 			<resource name="glucose" amount=".5" />
-			<resource name="table salt" amount=".15" />
+			<resource name="table salt" amount=".1" />
 			<resource name="Ginger" amount=".2" />
 		</inputs>
 		<outputs>
 			<part name="blender" number="1" />
-			<resource name="Cranberry Sauce" amount="2" />
+			<resource name="Cranberry Sauce" amount="2.0" />
 		</outputs>
 	</process>
 

@@ -108,7 +108,7 @@ public class RobotConfig {
 			double lowPower = ConfigHelper.getOptionalAttributeDouble(listElement, LOW_POWER_MODE, 20D);
 			double maxCapacity = ConfigHelper.getOptionalAttributeDouble(listElement, MAX_CAPACITY, 15D);
 			int height = ConfigHelper.getOptionalAttributeInt(listElement, HEIGHT, 150);
-			double mass = ConfigHelper.getOptionalAttributeDouble(listElement, MASS, 61.36);
+			double mass = ConfigHelper.getOptionalAttributeDouble(listElement, MASS, Robot.EMPTY_MASS);
 
 			// Description
 			Element descriptionListElement = listElement.getChild(DESCRIPTION);

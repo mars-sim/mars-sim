@@ -683,7 +683,7 @@
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" frame="Array Frame" >
 			<part type="aerogel tile" number="16" />
-			<part type="solar panel" number="6" />
+			<part type="solar panel" number="20" />
 			<part type="power cable" number="2" />
 			<part type="Stepper Motor" number="4" />
 			<part type="electrical wire" number="20" />
@@ -698,7 +698,7 @@
 		 salvagable="true" work-time="1.0" skill-required="3" frame="Array Frame" >
 			<resource type="water" amount="200.0" />
 			<part type="aerogel tile" number="32" />
-			<part type="solar parabolic mirror" number="3" />
+			<part type="solar parabolic mirror" number="20" />
 			<part type="power cable" number="2" />
 			<part type="glass tube" number="6" />
 			<part type="steel pipe" number="10" />

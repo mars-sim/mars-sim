@@ -56,7 +56,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Plastic bottle" type="utility" mass=".2">
+	<part name="Plastic bottle" type="utility" mass=".1">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="5" max-number="6" />
 			<entity name="farming" probability="5" max-number="12" />
@@ -162,7 +162,7 @@
 	</part>
 
 	<!-- a small spool of thin copper wire -->
-	<part name="Copper wire" type="electrical" mass="0.526" />
+	<part name="Copper wire" type="electrical" mass="0.496667" />
 
 	<!-- a small spool of thick steel wire -->
 	<part name="Steel wire" type="electrical" mass="0.52" />
@@ -482,6 +482,10 @@
 		</maintenance-entity-list>
 	</part>
 	
+	<part name="Steering wheel" type="vehicle" mass="1.6" >
+		<description>Vehicle steering wheel</description>
+	</part>
+	
 	<part name="Rover wheel" type="vehicle" mass="8.9">
 		<description>Rover wheels are made of durable steel wires and Nickel-titanium alloy wires.
 			See 'kinky' wire wheel at https://www.youtube.com/watch?v=vSNtifE0Z2Q
@@ -709,7 +713,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Pneumatic drill" type="attachment" mass="25.0">
+	<part name="Pneumatic drill" type="attachment" mass="21.66">
 		<description>Attachment part for LUV. A pneumatic rock drill is used for breaking, drilling, or cutting through hard ground.</description>
 	</part>
 
@@ -729,12 +733,25 @@
 		<description>Attachment part for LUV. A long, telescopic or fixed arm for moving objects.</description>
 	</part>
 
-	<part name="Wheel small" type="vehicle"  mass="4.45" >
+	<part name="Wheel small" type="vehicle" mass="4.45" >
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability=".5" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
+	<part name="Polarizer film" type="electronic" mass="0.05" >
+		<description>Standard 10 inch film. Polarizer films are for LCD and OLED displays on smartphone, TV, 
+		laptop, tablet, automotive display, and medical monitor. The standard polarizer is a 
+		PVA-iodine film laminated between TAC (triacetyl cellulose) protective films.</description>
+	</part>
+	
+	<part name="Screen" type="electronic" mass="1.0" >
+		<maintenance-entity-list>
+			<entity name="vehicle" probability=".5" max-number="1" />
+			<entity name="computation" probability=".5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
 	<part name="Utility vehicle control panel" type="vehicle" mass="10" >
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability=".5" max-number="1" />
@@ -772,7 +789,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Solar panel" type="electrical" mass="30.0" >
+	<part name="Solar panel" type="electrical" mass="21.86" >
 		<description>Solar photovoltaic panel.</description>
 		<maintenance-entity-list>
 			<entity name="solar power source" probability=".3" max-number="1" />
@@ -780,7 +797,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Solar parabolic mirror" type="electrical" mass="50.0" >
+	<part name="Solar parabolic mirror" type="electrical" mass="22.72" >
 		<description>Mirror for solar thermal power source.</description>
 		<maintenance-entity-list>
 			<entity name="solar thermal power source" probability=".3" max-number="1" />
@@ -792,9 +809,6 @@
 		<description>Long transparent glass tube.</description>
 		<maintenance-entity-list>
 			<entity name="solar thermal power source" probability=".2" max-number="1" />
-<!--
-			<entity name="large algae greenhouse" probability="5" max-number="1" />
--->
 		</maintenance-entity-list>
 	</part>
 <!--
@@ -833,7 +847,7 @@
 		</description>
 	</part>
 
-	<part name="Condenser coil" type="electrical" mass="10.0" >
+	<part name="Condenser coil" type="electrical" mass="2.022" >
 		<description>Copper tube coil used to condense steam into liquid water.</description>
 		<maintenance-entity-list>
 			<entity name="areothermal power source" probability="2" max-number="1" />
@@ -906,7 +920,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Refrigerator" type="kitchen" mass="70.0">
+	<part name="Refrigerator" type="kitchen" mass="29.428">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
@@ -1200,6 +1214,14 @@
 		to produce a high pressure fluid for feeding a combustion chamber. </description>
 	</part>
 
+	<part name="Mud pump" type="utility" mass="10.911">
+		<description>A mud pump (or drilling mud pump) is a reciprocating positive-displacement 
+		pump that circulates drilling fluid under high pressure (up to ~7,500 psi) 
+		down the drill string and back up the annulus.  It is the heart of the 
+		rig's circulating system, responsible for cooling the bit, carrying 
+		cuttings to the surface, and maintaining wellbore pressure. </description>
+	</part>
+	
 	<!-- An large electric water pump. -->
 	<part name="Water pump large" type="utility" mass="5.0" >
 		<maintenance-entity-list>
@@ -1318,7 +1340,7 @@
 		<description>a basic electrical component.</description>
 	</part>
 
-	<part name="Memory module" type="electronic" mass="0.2">
+	<part name="Memory module" type="electronic" mass="0.1">
 		<description>For storing data.</description>
 	</part>
 	
@@ -1384,7 +1406,7 @@
 		<description>a small dish shaped like a cylinder for growing cells. Made of polystyrene.</description>
 	</part>
 
-	<part name="Plasma cutter" type="utility" mass="20">
+	<part name="Plasma cutter" type="utility" mass="14.61">
 		<description> Plasma is electrified gas. a plasma cutter will cut any material 
 			that conducts electricity. Aluminum, steel, stainless, brass, copper, etc.
 		</description>
@@ -1394,7 +1416,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Pry bar" type="utility" mass="5">
+	<part name="Pry bar" type="utility" mass="5.1">
 		<description>A 1.37m (or 54 inch) pry bar, 5 kg or 11 lb</description>
 	</part>
 	
@@ -1485,7 +1507,7 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="Metal oxide varistor" type="electronic" mass=".2" />				
+	<part name="Metal oxide varistor" type="electronic" mass="0.3" />				
 	
 	<!-- For cleaning the air -->
 	
@@ -1503,7 +1525,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Charcoal filter" type="utility" mass="0.5">
+	<part name="Charcoal filter" type="utility" mass="0.42">
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="dining" probability="2" max-number="2" />
@@ -1557,6 +1579,10 @@
 		<description>A towel for a person after shower.</description>
 	</part>
 
+	<part name="Utility towel" type="utility" mass="0.05" >
+		<description>A small utility towel for everyday use.</description>
+	</part>
+	
 	<part name="Hand brush" type="utility" mass="0.1" >
 		<description>A small utility brush for everyday use.</description>
 	</part>
@@ -1565,9 +1591,6 @@
 		<description>A medium-size brush for vehicle cleaning.</description>
 	</part>
 
-	<part name="Utility towel" type="utility" mass="0.05" >
-		<description>A small utility towel for everyday use.</description>
-	</part>
 	
 	<part name="Pressure washer" type="utility" mass="8.0" >
 		<description>A electric pressure washer provides 2.5 GPM. consumes 1.5 kW</description>
