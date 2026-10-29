@@ -143,17 +143,18 @@ public class ManufactureConfigTest {
 
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
-        expectedInputs.add(createAmount("Polyester resin", 0.5D));
-        expectedInputs.add(createAmount("styrene", 0.5D));
+        expectedInputs.add(createAmount("Polyester resin", 0.12D));
+        expectedInputs.add(createAmount("styrene", 0.1D));
         expectedInputs.add(createPart("fiberglass", 1D));
         expectedInputs.add(createPart("aluminum sheet", 1D));
         expectedInputs.add(createPart("electrical wire", 1D));
         expectedInputs.add(createPart("wire connector", 3D));
         expectedInputs.add(createPart("optical cable", 1D));
+        
         assertEquals(expectedInputs, process.getInputList(), "Antenna expected inputs");
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
-        expectedOutputs.add(createPart("radio antenna", 5D));
+        expectedOutputs.add(createPart("radio antenna", 2D));
         assertEquals(expectedOutputs, process.getOutputList(), "Antenna expected outputs");
     }
 
