@@ -32,7 +32,7 @@ public class PersonBuilderTest extends MarsSimUnitTest {
         assertEquals(TEST_NAME, p.getName(), "Person name");
         assertEquals(GenderType.MALE, p.getGender(), "Person gender");
         assertTrue(p.getAge() > 20, "Person minimum age");
-        assertTrue(p.getCarryingCapacity() > EVASuit.getEmptyMass(), "Person can carry at least EVA");
+        assertTrue(p.getCarryingCapacity() > EVASuit.getUsualMass(), "Person can carry at least EVA");
     }
 
     @Test

@@ -1,7 +1,6 @@
 package com.mars_sim.core.vehicle;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
@@ -16,11 +15,12 @@ class VehicleSpecTest {
 				"fuel_power", "methanol", 5D,
 				2, 1D, 1,
 				.85D, 30D, 90D,
-				1234D, 2);
+				2);
 		spec.setCargoCapacity(1000D, Map.of());
 
 		assertDoesNotThrow(() -> spec.calculateDetails(null));
-		assertEquals(1234D, spec.getEmptyMass(), "Should use configured empty mass");
+		// Note: no longer use predefined mass
+//		assertEquals(1234D, spec.getEmptyMass(), "Should use configured empty mass");
 		assertTrue(spec.getParts().isEmpty(), "Parts list should be empty when process is unavailable");
 	}
 }

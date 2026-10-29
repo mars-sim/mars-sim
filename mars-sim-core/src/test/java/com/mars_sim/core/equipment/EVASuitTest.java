@@ -45,12 +45,15 @@ class EVASuitTest extends MarsSimUnitTest {
  
         assertEquals(suit03, suit01, "Found the EVA Suit that the person has registered with.");
         
-        double mass0 = EVASuit.getEmptyMass();
+        double usualMass = EVASuit.getUsualMass();
+        // Note: for now, do not use base mass
+		double baseMass = Math.round(suit00.getBaseMass() * 1000D)/1000D;
+
+		System.out.println("base mass: " + baseMass);
+        assertEquals(baseMass, usualMass, "The base mass equals EVA suit's usual mass");
         
-        assertEquals(suit00.getBaseMass(), mass0, "The base mass0 of a EVA Suit");
+        double equipmentUsualMass = EquipmentFactory.getUsualMass(EquipmentType.EVA_SUIT);
         
-        double mass1 = EquipmentFactory.getEquipmentMass(EquipmentType.EVA_SUIT);
-        
-        assertEquals(suit00.getBaseMass(), mass1, "The base mass1 of a EVA Suit");
+        assertEquals(usualMass, equipmentUsualMass, "EVA suit's usual mass equals equipment usual mass.");
     }
 }

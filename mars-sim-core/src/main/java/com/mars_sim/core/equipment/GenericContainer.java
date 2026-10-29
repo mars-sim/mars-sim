@@ -49,7 +49,7 @@ class GenericContainer extends Equipment implements Container {
 		this.reusable = reusable;
 		this.totalCapacity = ContainerUtil.getContainerCapacity(type);
 		
-		setBaseMass(type);
+//		setBaseMass(type);
 	}
 		
 	/**
@@ -61,15 +61,15 @@ class GenericContainer extends Equipment implements Container {
 		return DESCRIPTION_CACHE.computeIfAbsent(type, t -> "A standard " + t.getName() + ".");
 	}
 
-	/**
-	 * Sets the base mass of this container type.
-	 * 
-	 * @param type
-	 */
-	public void setBaseMass(EquipmentType type) {
-		// Sets the base mass of the bag.
-		setBaseMass(EquipmentFactory.getEquipmentMass(type));
-	}
+//	/**
+//	 * Sets the base mass of this container type.
+//	 * 
+//	 * @param type
+//	 */
+//	public void setBaseMass(EquipmentType type) {
+//		// Sets the base mass of the bag.
+//		setBaseMass(EquipmentFactory.getUsualMass(type));
+//	}
 	
 	/**
 	 * Gets the total capacity of resource that this container can hold.

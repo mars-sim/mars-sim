@@ -115,7 +115,6 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		var manifest = new SuppliesManifest();
 		manifest.setMinEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
 		manifest.setMinEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
-
 		manifest.setMinEquipment(EquipmentType.GAS_CANISTER.getResourceID(), 10, false);
 
 		// Load the manifest
@@ -130,7 +129,6 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		var manifest = new SuppliesManifest();
 		manifest.setMinEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
 		manifest.setMinEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
-
 		manifest.setMinEquipment(EquipmentType.GAS_CANISTER.getResourceID(), 10, false);
 
 		loadSettlement(settlement, manifest);

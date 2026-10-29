@@ -152,7 +152,7 @@ class CharacteristicsCreator {
 
 		// Set inventory total mass capacity based on the person's weight and strength.
 		// Must be able to carry an EVA suit
-		return Math.max((int)(EVASuit.getEmptyMass() * 2),
+		return Math.max((int)(EVASuit.getUsualMass() * 2),
 						(int)(load + Math.max(20, weight/6.0) + (strength - 50)/1.5 + (endurance - 50)/2.0
 				+ RandomUtil.getRandomRegressionInteger(10)));
 	}

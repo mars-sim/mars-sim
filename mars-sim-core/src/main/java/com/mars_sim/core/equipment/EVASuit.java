@@ -126,7 +126,7 @@ public class EVASuit extends Equipment
 	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
 	private static double massO2MinimumLimit;
 
-	private static double usualMass = -1;
+	private static double usualMass = 0;
 
 	// Data members
 	/** The equipment's malfunction manager. */
@@ -140,8 +140,8 @@ public class EVASuit extends Equipment
 	
 	static {
 
-		// Initialize the parts
-		ItemResourceUtil.initEVASuit();
+		// Initialize the usual/empty mass based on the mass of all parts
+		usualMass = ItemResourceUtil.initEVASuit();
 		
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		
@@ -245,8 +245,8 @@ public class EVASuit extends Equipment
 													ResourceUtil.WATER_ID, WATER_CAPACITY,
 													ResourceUtil.CO2_ID, CO2_CAPACITY));
 		
-		// Sets the base mass of the bag.
-		setBaseMass(getEmptyMass());
+//		// Sets the base mass of the bag.
+//		setBaseMass(getUsualMass());
 	}
 
 	/**
@@ -254,10 +254,7 @@ public class EVASuit extends Equipment
 	 * 
 	 * @return
 	 */
-	public static double getEmptyMass() {
-		if (usualMass < 0) {
-			usualMass = EquipmentFactory.getEquipmentMass(EquipmentType.EVA_SUIT);
-		}
+	public static double getUsualMass() {
 		return usualMass;
 	}
 	

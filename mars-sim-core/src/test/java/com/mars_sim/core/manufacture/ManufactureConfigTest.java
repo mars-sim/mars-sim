@@ -7,7 +7,10 @@
 
 package com.mars_sim.core.manufacture;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,10 +25,13 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.vehicle.VehicleType;
 
 public class ManufactureConfigTest {
 
+    private static final String ASSEMBLE_PASSENGER_DRONE ="Assemble Passenger Drone";
     private static final String MAKE_FERTILIZERS = "Make crop fertilizers";
     private static final String MAKE_RADIO_ANTENNA ="Make radio antenna";
     private static final String[] FERTILIZER_ORIGINAL_NAMES = {
@@ -158,14 +164,37 @@ public class ManufactureConfigTest {
         assertEquals(expectedOutputs, process.getOutputList(), "Antenna expected outputs");
     }
 
+    @Test
+    void testAssembleVehicle() {
+        // Build mapped key on process name
+        var processByName =
+                    Maps.uniqueIndex(manuConfig.getManufactureProcessList(),
+                        ManufactureProcessInfo::getName);
+        var process = processByName.get(ASSEMBLE_PASSENGER_DRONE);
+        assertNotNull(process, "Manufacturng processes defined");
+        assertEquals(process.getTooling().name(), "Lifting");
+
+
+        List<ProcessItem> expectedOutputs = new ArrayList<>();
+        expectedOutputs.add(createEquipment("passenger drone", 1));
+        assertEquals(expectedOutputs, process.getOutputList(), "passenger drone expected output");
+        double mass = process.getOutputList().get(0).getMass();
+        System.out.println("mass: " + mass);
+    }
     
-    public static ProcessItem createPart(String name, double amount) {
-        int id = ItemResourceUtil.findIDbyItemResourceName(name);
-        return new ProcessItem(id, name, ItemType.PART, amount);
+    
+    public static ProcessItem createPart(String name, double num) {
+    	Part part = (Part) ItemResourceUtil.findItemResource(name);
+        int id = part.getID();
+        return new ProcessItem(id, name, ItemType.PART, num, part.getMassPerItem());
     }
 
     public static ProcessItem createAmount(String name, double amount) {
         int id = ResourceUtil.findIDbyAmountResourceName(name);
-        return new ProcessItem(id, name, ItemType.AMOUNT_RESOURCE, amount);
+        return new ProcessItem(id, name, ItemType.AMOUNT_RESOURCE, amount, amount);
+    }
+    
+    public static ProcessItem createEquipment(String name, double number) {
+        return new ProcessItem(VehicleType.convertName2ID(name), name, ItemType.VEHICLE, number, 0);
     }
 }

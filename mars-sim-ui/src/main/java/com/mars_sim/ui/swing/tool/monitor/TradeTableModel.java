@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.SimulationConfig;
@@ -27,6 +26,7 @@ import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.vehicle.VehicleFactory;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 
@@ -313,18 +313,18 @@ class TradeTableModel extends CategoryTableModel<Good> implements FilteredTableM
 				if (settlement.getAVehicle(vehicleType) == null)
 					return 0.0;
 				
-    			return settlement.findNumVehiclesOfType(vehicleType) * CollectionUtils.getVehicleTypeBaseMass(vehicleType); 
+    			return settlement.findNumVehiclesOfType(vehicleType) * VehicleFactory.getUsualMass(vehicleType); 
 }
 			case ResourceType.EQUIPMENT_RESOURCE: {
 				// For Equipment   		
 				EquipmentType type = EquipmentType.convertID2Type(id);
 
 				if (type == EquipmentType.EVA_SUIT)
-					return eo.getSuitSet().size() * EquipmentFactory.getEquipmentMass(type);
+					return eo.getSuitSet().size() * EquipmentFactory.getUsualMass(type);
 				else if (type == EquipmentType.DATA_RECORDER)
-					return eo.getRecorderSet().size() * EquipmentFactory.getEquipmentMass(type);
+					return eo.getRecorderSet().size() * EquipmentFactory.getUsualMass(type);
 				
-				return eo.findNumContainersOfType(type) * EquipmentFactory.getEquipmentMass(type);		
+				return eo.findNumContainersOfType(type) * EquipmentFactory.getUsualMass(type);		
 			}
 			case ResourceType.ROBOT_RESOURCE: {
 				// For Robots   
@@ -334,7 +334,7 @@ class TradeTableModel extends CategoryTableModel<Good> implements FilteredTableM
 			case ResourceType.BIN_RESOURCE: {
 				// For Bins   		
 				BinType type = BinType.convertID2Type(id);
-				return eo.findNumBinsOfType(type) * BinFactory.getBinMass(type);	
+				return eo.findNumBinsOfType(type) * BinFactory.getUsualMass(type);	
 			}
 			default: return null;
 		}

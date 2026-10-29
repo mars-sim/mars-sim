@@ -130,7 +130,7 @@ public class EquipmentGood extends Good {
 
     @Override
     public double getMassPerItem() {
-        return EquipmentFactory.getEquipmentMass(equipmentType);
+        return EquipmentFactory.getUsualMass(equipmentType);
     }
 
     @Override
@@ -194,17 +194,17 @@ public class EquipmentGood extends Good {
     	double factor = 0;
 		double supply = settlement.getGoodsManager().getSupplyScore(getID());
         if (equipmentType == EquipmentType.EVA_SUIT) {
-    		mass = EquipmentFactory.getEquipmentMass(equipmentType);
+    		mass = EquipmentFactory.getUsualMass(equipmentType);
             // Need to increase the value for EVA
     		factor = 2.4 * Math.log(mass/80.0 + 1) / supply;
     	}
         else if (equipmentType == EquipmentType.DATA_RECORDER) {
-    		mass = EquipmentFactory.getEquipmentMass(equipmentType);
+    		mass = EquipmentFactory.getUsualMass(equipmentType);
     		factor = 2.3 * Math.log(mass/80.0 + 1) / supply;
     	}
     	else {
     		// For containers
-    		mass = EquipmentFactory.getEquipmentMass(equipmentType);
+    		mass = EquipmentFactory.getUsualMass(equipmentType);
     		factor = 2.0 * Math.log(mass/5 + 1) / supply;
     	}
         

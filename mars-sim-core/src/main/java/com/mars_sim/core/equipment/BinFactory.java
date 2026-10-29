@@ -6,8 +6,7 @@
  */
 package com.mars_sim.core.equipment;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
@@ -25,13 +24,11 @@ import com.mars_sim.core.structure.Settlement;
 public final class BinFactory {
 
 	// default logger.
-	// May bring back private static final SimLogger logger = SimLogger.getLogger(BinFactory.class.getName())
+	// May bring back private static finsal SimLogger logger = SimLogger.getLogger(BinFactory.class.getName())
+	// Default mass for uncalculated types
+	protected static final double DEFAULT_MASS = 0.0001;
 	
-	private static final String CRATE = "make crate";
-	private static final String BASKET = "make basket";
-	private static final String POT = "make pot";
-	
-	private static Map<String, Double> weights = new HashMap<>();
+	private static final EnumMap<BinType, Double> massMap = new EnumMap<>(BinType.class);
 	
 	private static ManufactureConfig manufactureConfig;
 	
@@ -62,38 +59,21 @@ public final class BinFactory {
 		
 		return null;
 	}
-	
-	/**
-	 * Gets the empty mass of the bin.
-	 *
-	 * @param type the bin type.
-	 * @return empty mass (kg).
-	 * @throws Exception if bin mass could not be determined.
-	 */
-	public static double getBinMass(BinType type) {
-		String productName = type.getName();
-		
-		switch (type) {
-					
-			case BASKET:
-				return calculateMass(BASKET, productName);
-			case CRATE:
-				return calculateMass(CRATE, productName);
-			case POT:
-				return calculateMass(POT, productName);
-			default:
-				throw new IllegalStateException("Class for bin '" + type + "' could not be found.");
-		}		
-	}
 
 	/**
 	 * Calculates the mass of the output of a process.
 	 * 
+	 * @param type
 	 * @param processName
+	 * @param productName
 	 * @return
 	 */
-    public static double calculateMass(String processName, String productName) {	
-		if (weights.isEmpty() || !weights.containsKey(processName)) {
+    public static double calculateUsualMass(BinType type, String processName, String productName) {	
+		double massPerItem = 0;
+		BinType binType = BinType.convertName2Enum(productName);
+		
+		if (massMap.isEmpty() || !massMap.containsKey(binType)) {
+
 			double mass = 0;
 			double quantity = 0;
 	    	ManufactureProcessInfo manufactureProcessInfo = null;
@@ -116,15 +96,13 @@ public final class BinFactory {
 				quantity = manufactureProcessInfo.calculateOutputQuantity(productName);		
 				
 				// mass/quantity is mass per unit e.g. need 7.8 kg of polyethylene in order to make 12 baskets 
-				
+				massPerItem = mass/quantity;
 				// Save the key value pair onto the weights Map
-				weights.put(processName, mass/quantity);
+				massMap.put(binType, massPerItem);
 	    	}
-
-			return mass;
 		}
 
-		return weights.get(processName);
+		return massPerItem;
     }
 	
 	/**
@@ -136,12 +114,22 @@ public final class BinFactory {
 	 * @return
 	 */
 	public static synchronized Bin createBins(String binName, Settlement settlement) {
-		
+
 		BinType type = BinType.convertName2Enum(binName);
 
 		AmountResourceBin binMap = findBinMap(settlement,
 											settlement.getEquipmentInventory().getAmountResourceBinSet(), type);
-	
+    	
+		double usualMass = 0;
+		
+		if (massMap.isEmpty() || !massMap.containsKey(type)) {
+			usualMass = calculateUsualMass(type, "Make " + type.getName(), type.getName());
+    		massMap.put(type, usualMass);
+    	}
+		else {
+    		usualMass = massMap.get(type);
+    	}
+    	
 		// Add this new bin to the bin map
 		int id = binMap.addBin(type, null, 0.0);
 		// Get the instance of this new bin
@@ -208,6 +196,18 @@ public final class BinFactory {
 		default:
 			throw new IllegalArgumentException("'" + type + "' is not a bin.");
 		}
+	}
+	
+	/**
+	 * Gets the empty/usual mass.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static double getUsualMass(BinType type) {
+		if (massMap.containsKey(type))
+			return massMap.get(type);
+		return DEFAULT_MASS;
 	}
 	
 //	/**

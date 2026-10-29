@@ -2,12 +2,12 @@
 <!DOCTYPE vehicle-configuration [
 	<!ELEMENT vehicle-configuration (vehicle*)>
 	<!ELEMENT vehicle (description?, power-source, battery-module, energy-per-module, fuel-cell-stack, drivetrain-efficiency, base-speed, base-power,
-	empty-mass, terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
+	terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
 	airlock?, activity?)>
 	<!-- These are aligned with VehicleType enum-->
 	<!ATTLIST vehicle name CDATA #REQUIRED>
 
-	<!ATTLIST vehicle type (LUV|DELIVERY_DRONE|CARGO_DRONE|EXPLORER_ROVER|LONG_RANGE_EXPLORER|TRANSPORT_ROVER|CARGO_ROVER) #REQUIRED>
+	<!ATTLIST vehicle type (LUV|DELIVERY_DRONE|CARGO_DRONE|PASSENGER_DRONE|EXPLORER_ROVER|LONG_RANGE_EXPLORER|TRANSPORT_ROVER|CARGO_ROVER) #REQUIRED>
 	<!ATTLIST vehicle model CDATA #REQUIRED>
 
 	<!ATTLIST vehicle width CDATA #REQUIRED>
@@ -33,8 +33,6 @@
 	<!ATTLIST base-speed value CDATA #REQUIRED>
 	<!ELEMENT base-power EMPTY>
 	<!ATTLIST base-power value CDATA #REQUIRED>
-	<!ELEMENT empty-mass EMPTY>
-	<!ATTLIST empty-mass value CDATA #REQUIRED>
 	<!ELEMENT crew-size EMPTY>
 	<!ATTLIST crew-size value CDATA #REQUIRED>
 	<!ELEMENT terrain-handling EMPTY>
@@ -142,10 +140,6 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- Default: varies according to the type of vehicle -->
 		<base-power value="90.0" />
 		
-		<!-- Empty mass of rover [kg] (required) -->
-		<!-- Default: varies according to the type of vehicle  -->
-		<empty-mass value="842.04" />
-
 		<!-- How well does this vehicle handle terrain -->
 		<terrain-handling value="6.0"/>
 		
@@ -254,7 +248,6 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="40.0" />
 		<base-power value="90" />
-		<empty-mass value="877.04" />
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
 		<cargo total-capacity="2400.0">
@@ -311,7 +304,6 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="30.0" />
 		<base-power value="150" />
-		<empty-mass value="1256.13" />
 		<terrain-handling value="3.0"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
@@ -362,7 +354,6 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".9" />
 		<base-speed value="30.0" />
 		<base-power value="150" />		
-		<empty-mass value="1306.20" />
 		<terrain-handling value="2"/>
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
@@ -409,7 +400,6 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".9" />
 		<base-speed value="30.0" />
 		<base-power value="20" />		
-		<empty-mass value="245.04" />
 		<terrain-handling value="10.0"/>
 		<crew-size value="1" />
 		<cargo total-capacity="300.0">
@@ -435,11 +425,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="2.0"/>
 		<battery-module number="1" />
 		<energy-per-module value="15" />
-		<fuel-cell-stack number="2" />
+		<fuel-cell-stack number="1" />
 		<drivetrain-efficiency value=".95" />
 		<base-speed value="40.0" />
 		<base-power value ="40.0" />		
-		<empty-mass value="156.81" />
 		<crew-size value="0" />
 		<cargo total-capacity="1000.0">
 			<capacity type="methanol" amount="150.0" />
@@ -457,9 +446,25 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<drivetrain-efficiency value=".95" />
 		<base-speed value="40.0" />
 		<base-power value ="40.0" />		
-		<empty-mass value="171.53" />
 		<crew-size value="0" />
 		<cargo total-capacity="1500.0">
+			<capacity type="methane" amount="300.0" />
+			<capacity type="oxygen" amount="300.0" />
+			<capacity type="water" amount="600.0" />			
+		</cargo>
+	</vehicle>
+	
+		<vehicle name="Passenger Drone" type="PASSENGER_DRONE" model="A" width="1.75" length="1.75">
+		<description>The Passenger Drone is an unmanned aerial vehicle for transporting up to 3 passengers between destinations.</description>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANE" value="2.0"/>
+		<battery-module number="2" />
+		<energy-per-module value="15" />
+		<fuel-cell-stack number="2" />
+		<drivetrain-efficiency value=".95" />
+		<base-speed value="40.0" />
+		<base-power value ="40.0" />		
+		<crew-size value="0" />
+		<cargo total-capacity="500.0">
 			<capacity type="methane" amount="300.0" />
 			<capacity type="oxygen" amount="300.0" />
 			<capacity type="water" amount="600.0" />			

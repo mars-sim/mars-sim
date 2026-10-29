@@ -39,13 +39,15 @@ public class ProcessItem implements Serializable {
 	private String name;
 	private ItemType type;
 	private double amount;
+	private double mass;
     private int id;
 
     
-	public ProcessItem(int id, String name, ItemType type, double amount) {
+	public ProcessItem(int id, String name, ItemType type, double amount, double mass) {
         this.name = name;
         this.type = type;
         this.amount = amount;
+        this.mass = mass;
         this.id = id;
     }
 
@@ -65,6 +67,10 @@ public class ProcessItem implements Serializable {
 		return amount;
 	}
 
+	public double getMass() {
+		return mass;
+	}
+	
     /**
      * Deposits the item into the settlement.
      * 

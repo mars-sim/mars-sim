@@ -296,7 +296,8 @@ public class ConfigHelper {
 
 	
 	/**
-	 * Parse a XML node that follows the ProcessItem convention
+	 * Parses a XML node that follows the ProcessItem convention.
+	 * 
 	 * @param resourceElement
 	 * @param type
 	 * @return

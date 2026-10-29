@@ -14,7 +14,6 @@
 	<!ATTLIST robot consumption-rate CDATA #IMPLIED>
 	<!ATTLIST robot low-power-mode CDATA #IMPLIED>
 	<!ATTLIST robot max-capacity CDATA #IMPLIED>
-	<!ATTLIST robot mass CDATA #IMPLIED>
 	<!ATTLIST robot height CDATA #IMPLIED>
 	
 	<!ELEMENT description (#PCDATA)>
@@ -39,7 +38,7 @@
 	<!-- List of robot type -->
 	<robot-list>
 
-		<robot type="GardenBot" make="Standard" mass="60" height="100"
+		<robot type="GardenBot" make="Standard" height="100"
 				standby-power-consumption="0.1" consumption-rate="0.4" low-power-mode="20">
 			<description>A gardening robot that tends greenhouses, algae ponds, and fish farms.</description>
 			<robotic-attribute-list>
@@ -56,7 +55,7 @@
 			</skill-list>
 		</robot>
 
-		<robot type="GardenBot" make="Advanced" mass="60" height="100"
+		<robot type="GardenBot" make="Advanced" height="100"
 				standby-power-consumption="0.1" consumption-rate="0.35" low-power-mode="15"
 				max-capacity="15">
 			<description>A more advanced gardening robot with higher battery capacity.</description>
@@ -176,7 +175,7 @@
 			</skill-list>
 		</robot>
 	
-		<robot type="MedicBot" make="Standard" mass="90"
+		<robot type="MedicBot" make="Standard"
 					standby-power-consumption="0.1" consumption-rate="0.3" low-power-mode="20">
 			<description>A robot that provides medical treatment and aid.</description>
 			<robotic-attribute-list>
@@ -194,7 +193,7 @@
 			</skill-list>
 		</robot>				
 		
-		<robot type="MedicBot" make="Advanced" mass="90"
+		<robot type="MedicBot" make="Advanced"
 					standby-power-consumption="0.1" consumption-rate="0.25" low-power-mode="15">
 			<description>A robot that provides medical treatment and aid.</description>
 			<robotic-attribute-list>
@@ -213,7 +212,7 @@
 		</robot>				
 		
 		
-		<robot type="ConstructionBot" make="Standard" mass="120" height="160"
+		<robot type="ConstructionBot" make="Standard" height="160"
 				standby-power-consumption="0.15" consumption-rate="0.55" low-power-mode="20">
 			<description>A robot that provides construction missions.</description>
 			<robotic-attribute-list>
@@ -231,7 +230,7 @@
 			</skill-list>
 		</robot>
 		
-		<robot type="DeliveryBot" make="Standard" mass="50" height="80" max-capacity="15"
+		<robot type="DeliveryBot" make="Standard" height="80" max-capacity="15"
 					standby-power-consumption="0.1" consumption-rate=".3" low-power-mode="20">
 			<description>A robot that functions as a pilot and loads and unloads cargoes.</description>
 			<robotic-attribute-list>
@@ -249,7 +248,7 @@
 			</skill-list>
 		</robot>
 
-		<robot type="DeliveryBot" make="Advanced" mass="50" height="80" max-capacity="15"
+		<robot type="DeliveryBot" make="Advanced" height="80" max-capacity="15"
 					standby-power-consumption="0.1" consumption-rate="0.25" low-power-mode="15">
 			<description>A robot that functions as a pilot and loads and unloads cargoes.</description>
 			<robotic-attribute-list>

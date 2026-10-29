@@ -127,7 +127,7 @@ public final class BaseMassReporter {
 				type.getName());
 		String processName = process.map(ManufactureProcessInfo::getName).orElse("not found");
 		Double calculated = process.map(info -> calculateOutputMass(info, type.getName())).orElse(null);
-		printResult(type.getName(), processName, EquipmentFactory.getEquipmentMass(type), calculated, out);
+		printResult(type.getName(), processName, EquipmentFactory.getUsualMass(type), calculated, out);
 	}
 
 	private static Optional<ManufactureProcessInfo> findProcessByOutputName(

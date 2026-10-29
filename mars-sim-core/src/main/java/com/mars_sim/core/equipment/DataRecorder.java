@@ -51,9 +51,6 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	/** String name. */	
 	public static final String TYPE = SystemType.DATA_RECORDER.getName();
 	
-	// Data members
-	private static double usualMass = -1;
-	
 	static {
 		// Initialize the parts
 		ItemResourceUtil.initDataRecorder();
@@ -105,22 +102,6 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	
 		// Initialize the scope map.
 		malfunctionManager.initScopes();
-		
-		// Sets the base mass.
-		setBaseMass(getEmptyMass());
-	}
-
-	
-	/**
-	 * Gets the usual mass of a data recorder.
-	 * 
-	 * @return
-	 */
-	public static double getEmptyMass() {
-		if (usualMass < 0) {
-			usualMass = EquipmentFactory.getEquipmentMass(EquipmentType.DATA_RECORDER);
-		}
-		return usualMass;
 	}
 	
 	/**

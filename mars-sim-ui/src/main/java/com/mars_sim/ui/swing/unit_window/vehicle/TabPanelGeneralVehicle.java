@@ -97,8 +97,8 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 		
 		infoPanel.addTextField("Max Crew", vehicle.getVehicleSpec().getCrewSize() + "", null);
 
-		currentMassLabel = infoPanel.addTextField("Current Mass", StyleManager.DECIMAL_KG.format(vehicle.getMass()), null);
-		infoPanel.addTextField("Base Mass", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()), null);
+		currentMassLabel = infoPanel.addTextField("Current Mass", StyleManager.DECIMAL2_KG.format(vehicle.getMass()), null);
+		infoPanel.addTextField("Base Mass", StyleManager.DECIMAL2_KG.format(vehicle.getBaseMass()), null);
 		
 		var vehEO = vehicle.getEquipmentInventory();
 		remainCapLabel = infoPanel.addTextField("Remaining Capacity", StyleManager.DECIMAL_KG.format(vehEO.getRemainingCargoCapacity()), null);
@@ -129,7 +129,7 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
     @Override
     public void clockUpdate(ClockPulse pulse) {
 		var vehicle = getEntity();
-		currentMassLabel.setText(StyleManager.DECIMAL_KG.format(vehicle.getMass()));
+		currentMassLabel.setText(StyleManager.DECIMAL2_KG.format(vehicle.getMass()));
 
 		var vehEO = vehicle.getEquipmentInventory();
 		remainCapLabel.setText(StyleManager.DECIMAL_KG.format(vehEO.getRemainingCargoCapacity()));

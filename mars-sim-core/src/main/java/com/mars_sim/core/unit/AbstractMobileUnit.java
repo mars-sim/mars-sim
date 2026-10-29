@@ -45,7 +45,7 @@ public abstract class AbstractMobileUnit extends Unit
 	protected AbstractMobileUnit(String name, Settlement owner) {
 		super(name); 
         this.owner = owner;
-		this.location = owner.getCoordinates();
+        this.location = owner.getCoordinates();
 		this.tag = new LocationTag(this);
 		setContainer(owner);
 	}
@@ -440,7 +440,7 @@ public abstract class AbstractMobileUnit extends Unit
 	 *
 	 * @param base mass (kg)
 	 */
-	protected void setBaseMass(double baseMass) {
+	public void setBaseMass(double baseMass) {
 		this.baseMass = baseMass;
 	}
 

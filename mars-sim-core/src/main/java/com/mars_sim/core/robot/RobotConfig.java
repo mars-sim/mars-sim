@@ -50,7 +50,6 @@ public class RobotConfig {
 	private static final String LEVEL = "level";
 	private static final String MAX_CAPACITY = "max-capacity";
 	private static final String HEIGHT = "height";
-	private static final String MASS = "mass";
 	private static final String DESCRIPTION = "description";
 	
 	// min-air-pressure
@@ -65,7 +64,7 @@ public class RobotConfig {
 	private List<RobotSpec> specs;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param robotDoc the robot config DOM document.
 	 */
@@ -108,7 +107,7 @@ public class RobotConfig {
 			double lowPower = ConfigHelper.getOptionalAttributeDouble(listElement, LOW_POWER_MODE, 20D);
 			double maxCapacity = ConfigHelper.getOptionalAttributeDouble(listElement, MAX_CAPACITY, 15D);
 			int height = ConfigHelper.getOptionalAttributeInt(listElement, HEIGHT, 150);
-			double mass = ConfigHelper.getOptionalAttributeDouble(listElement, MASS, Robot.EMPTY_MASS);
+			double mass = Robot.EMPTY_MASS;
 
 			// Description
 			Element descriptionListElement = listElement.getChild(DESCRIPTION);
@@ -152,7 +151,7 @@ public class RobotConfig {
 		}
 
 		// Check all types are defined
-		for( RobotType rt : RobotType.values()) {
+		for (RobotType rt : RobotType.values()) {
 			// THis will trigger a exception if not defined
 			getRobotSpec(rt, null);
 		}
@@ -160,6 +159,7 @@ public class RobotConfig {
 	
 	/**
 	 * Gets the robot spec for a type and optional model. It is the format <type>-<make>.
+	 * 
 	 * @param type String of the type
 	 * @return Matched RobotSpec
 	 */

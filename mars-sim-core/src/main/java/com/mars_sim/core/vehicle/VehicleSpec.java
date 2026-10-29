@@ -335,7 +335,6 @@ public class VehicleSpec implements Serializable {
 	 * @param drivetrainEff
 	 * @param baseSpeed
 	 * @param basePower
-	 * @param emptyMass
 	 * @param crewSize
 	 */
 	public VehicleSpec(String name, VehicleType type, String model, String description, String baseImage,
@@ -343,12 +342,13 @@ public class VehicleSpec implements Serializable {
 			int batteryModule, double energyPerModule, int fuelCellStack,
 			double drivetrainEff, 
 			double baseSpeed, double basePower,
-			double emptyMass, int crewSize) {
+			int crewSize) {
 		this.name = name;
 		this.modelName = model;
 		this.type = type;
 		this.description = description;
 		this.baseImage = baseImage;
+		this.emptyMass = VehicleFactory.getUsualMass(type);
 		
 		if (VehicleType.isRover(type)) {
 			// Add crew cabin as a system scope
@@ -411,7 +411,6 @@ public class VehicleSpec implements Serializable {
 	
 		// Get estimated total crew weight
 		this.estimatedTotalCrewWeight = crewSize * 68.5D;
-		this.emptyMass = emptyMass;
 		this.partIDs = Collections.emptySet();
 	}
 	
@@ -573,7 +572,17 @@ public class VehicleSpec implements Serializable {
 				// Accounts for the occupants and their personal possession
 				additionalEndMass = estimatedTotalCrewWeight + crewSize * 5 + 2500;				
 			} break;
-		case PASSENGER_DRONE:
+		
+			case PASSENGER_DRONE: {
+				
+				roadLoadPowerFactor = 0.3;
+				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
+				// Accounts for the occupants and their consumables and traded goods 
+				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 80;
+				// Accounts for the occupants and traded goods
+				additionalEndMass = estimatedTotalCrewWeight + crewSize * 5 + 2000;				
+			} break;
 			
 		default:
 			break;
@@ -804,7 +813,11 @@ public class VehicleSpec implements Serializable {
 	}
 	
 
-	/** @return the emptyMass */
+	/** 
+	 * Returns the empty mass.
+	 * 
+	 * @return
+	 */
 	public final double getEmptyMass() {
 		return emptyMass;
 	}

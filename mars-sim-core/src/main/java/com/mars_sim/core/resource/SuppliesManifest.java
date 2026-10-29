@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a manifest of Supplies covering mandatory and optional reources & items.
+ * Represents a manifest of Supplies covering mandatory and optional resources & items.
  */
 public class SuppliesManifest {
 
@@ -22,7 +22,8 @@ public class SuppliesManifest {
     private Map<Integer, Integer> optionalItem;
     
     /**
-     * Preload the manifest. This constructor is only used by the old AbstractVehicleMission class
+     * Preloads the manifest. This constructor is only used by the old AbstractVehicleMission class.
+     * 
      * @param mandatoryResources
      * @param optionalResources
      * @param mandatoryEqm
@@ -30,7 +31,7 @@ public class SuppliesManifest {
      */
     public SuppliesManifest(Map<Integer, Number> mandatoryResources, Map<Integer, Number> optionalResources,
             Map<Integer, Integer> mandatoryEqm, Map<Integer, Integer> optionalEqm) {
-        // Split the mandatory into seperate maps
+        // Split the mandatory into separate maps
         this.mandatoryAmount = new HashMap<>();
         this.mandatoryItem = new HashMap<>();
         for(var m : mandatoryResources.entrySet())  {
@@ -57,6 +58,7 @@ public class SuppliesManifest {
 
     /**
      * Deep copy of an existing manifest.
+     * 
      * @param source Source manifest
      */
     public SuppliesManifest(SuppliesManifest source) {
@@ -78,8 +80,9 @@ public class SuppliesManifest {
     }
 
     /**
-     * Add an amount of resource to the manifest. This is cummulative and will increase what resoruce
+     * Adds an amount of resource to the manifest. This is cumulative and will increase what resource
      * total is already present.
+     * 
      * @param resourceId ID of the resource added
      * @param amount Amount of resource to add
      * @param mandatory Is it mandatory
@@ -90,8 +93,9 @@ public class SuppliesManifest {
     }
 
     /**
-     * Set the number of an part to load. This is an absolute value and if it is already defined
-     * then it will take the mximum
+     * Sets the number of an part to load. This is an absolute value and if it is already defined
+     * then it will take the maximum.
+     * 
      * @param resourceId ID of the item added
      * @param count Number of items to load
      * @param mandatory Is it mandatory
@@ -102,8 +106,9 @@ public class SuppliesManifest {
     }
 
     /**
-     * Set the minimum number of equipment to load. This is an absolute value and if it is already defined
+     * Sets the minimum number of equipment to load. This is an absolute value and if it is already defined
      * then it will take the maximum of the two.
+     * 
      * @param equipmentId ID of the item added
      * @param count Number of equipment to load
      * @param mandatory Is it mandatory
@@ -116,8 +121,9 @@ public class SuppliesManifest {
     }
 
     /**
-     * The amount resources needed in the manifest.
-     * @param mandatory Get mandatory resoruces
+     * Gets the amount resources needed in the manifest.
+     * 
+     * @param mandatory Get mandatory resources
      * @return
      */
     public Map<Integer, Double> getAmounts(boolean mandatory) {
@@ -125,7 +131,8 @@ public class SuppliesManifest {
     }
 
     /**
-     * The Items needed in the manifest.
+     * Gets the items needed in the manifest.
+     * 
      * @param mandatory Get mandatory items
      * @return
      */
@@ -134,8 +141,9 @@ public class SuppliesManifest {
     }
 
     /**
-     * The equipment needed in the manifest.
-     * @param mandatory Get mandatory resoruces
+     * Gets the equipment needed in the manifest.
+     * 
+     * @param mandatory Get mandatory resources
      * @return
      */
     public Map<Integer, Integer> getEquipment(boolean mandatory) {

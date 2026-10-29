@@ -217,9 +217,13 @@ public class ItemResourceUtil {
 	
 	/**
 	 * Initializes the EVA suit parts.
+	 * 
+	 * @return mass
 	 */
-	public static void initEVASuit() {
+	public static double initEVASuit() {
 		if (evaSuitPartIDs == null || evaSuitPartIDs.isEmpty()) {
+			
+			double usualMass = 0;
 
 			ManufactureProcessInfo manufactureProcessInfo = null;
 			
@@ -229,13 +233,19 @@ public class ItemResourceUtil {
 				if (info.getName().equalsIgnoreCase(ASSEMBLE_EVA_SUIT)) {
 		        	manufactureProcessInfo = info;
 					evaSuitPartIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
+					usualMass = info.getInputList().stream().mapToDouble(ProcessItem::getMass).sum();
 		        	break;
 				}
 			}
 
 			if (manufactureProcessInfo == null)
 				logger.config("Unable to find EVA suit part IDs.");
+			else {
+				return usualMass;
+			}
 		}
+		
+		return 0;
 	}
 	
 	/**

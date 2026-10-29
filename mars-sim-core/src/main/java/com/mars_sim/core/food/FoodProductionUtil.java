@@ -284,7 +284,7 @@ public final class FoodProductionUtil {
 
 			else if (ItemType.EQUIPMENT == item.getType()) {
 				int number = (int) item.getAmount();
-				double mass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName())) * number;
+				double mass = EquipmentFactory.getUsualMass(EquipmentType.convertName2Enum(item.getName())) * number;
 				double capacity = rh.getCargoCapacity();
 				if (mass > capacity)
 					return false;
@@ -292,7 +292,7 @@ public final class FoodProductionUtil {
 			
 			else if (ItemType.BIN == item.getType()) {
 				int number = (int) item.getAmount();
-				double mass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName())) * number;
+				double mass = BinFactory.getUsualMass(BinType.convertName2Enum(item.getName())) * number;
 				double capacity = rh.getCargoCapacity();
 				if (mass > capacity)
 					return false;
@@ -373,10 +373,10 @@ public final class FoodProductionUtil {
 		} else if (ItemType.PART == item.getType()) {
 			mass = item.getAmount() * ((Part) ItemResourceUtil.findItemResource(item.getName())).getMassPerItem();
 		} else if (ItemType.EQUIPMENT == item.getType()) {
-			double equipmentMass = EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName()));
+			double equipmentMass = EquipmentFactory.getUsualMass(EquipmentType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * equipmentMass;
 		} else if (ItemType.BIN == item.getType()) {
-			double binMass = BinFactory.getBinMass(BinType.convertName2Enum(item.getName()));
+			double binMass = BinFactory.getUsualMass(BinType.convertName2Enum(item.getName()));
 			mass = item.getAmount() * binMass;
 		}
 		

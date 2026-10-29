@@ -52,7 +52,7 @@ public class BinGood extends Good {
 
     @Override
     public double getMassPerItem() {
-        return BinFactory.getBinMass(binType);
+        return BinFactory.getUsualMass(binType);
     }
 
     @Override

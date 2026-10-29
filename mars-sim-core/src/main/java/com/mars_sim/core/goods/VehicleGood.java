@@ -74,8 +74,8 @@ class VehicleGood extends Good {
         this.vs = vs;
         this.vehicleType = vs.getType();
         this.goodType = switch(vehicleType) {
-			case DELIVERY_DRONE, CARGO_DRONE, LUV -> GoodType.VEHICLE_SMALL;
-			case EXPLORER_ROVER, LONG_RANGE_EXPLORER, PASSENGER_DRONE -> GoodType.VEHICLE_MEDIUM;
+			case DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE, LUV -> GoodType.VEHICLE_SMALL;
+			case EXPLORER_ROVER, LONG_RANGE_EXPLORER -> GoodType.VEHICLE_MEDIUM;
 			case TRANSPORT_ROVER, CARGO_ROVER -> GoodType.VEHICLE_HEAVY;
         };
 

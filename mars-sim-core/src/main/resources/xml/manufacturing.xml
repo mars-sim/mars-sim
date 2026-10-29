@@ -777,18 +777,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make plastic barrel" tech="1" skill="1" work-time="10" process-time="10"
-			tooling="3d printer" power-required="0.1">
-		<inputs>
-			<resource name="Polyethylene" amount="7.8">
-				<alternative name="Polypropylene" amount="7.8" />
-			</resource>
-		</inputs>
-		<outputs>
-			<equipment name="barrel" number="6" />
-		</outputs>
-	</process>
-	
 	<process name="Make Polypropylene rope" tech="1" skill="1" work-time="10" process-time="10" tooling="3D Printer"
 			power-required="0.1">
 		<inputs>
@@ -799,54 +787,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make pot" tech="1" skill="1" work-time="10" process-time="10" tooling="3d printer"
-			power-required=".1">
-		<inputs>
-			<resource name="Polyethylene" amount="0.8">
-				<alternative name="Polypropylene" amount="0.8" />
-			</resource>
-		</inputs>
-		<outputs>
-			<bin name="pot" number="1" />
-		</outputs>
-	</process>
-	
-	<process name="Make basket" tech="1" skill="1" work-time="10" process-time="10" tooling="3d printer"
-			power-required=".1">
-		<inputs>
-			<resource name="Polyethylene" amount="0.5"> 
-				<alternative name="Polypropylene" amount="0.5" />
-			</resource>
-		</inputs>
-		<outputs>
-			<bin name="basket" number="1" />
-		</outputs>
-	</process>
-	
-	<process name="Make crate" tech="1" skill="1" work-time="10" process-time="10" tooling="3d printer"
-			power-required=".1">
-		<inputs>
-			<resource name="Polyethylene" amount="1.0">
-				<alternative name="Polypropylene" amount="1.0" />
-			</resource>
-		</inputs>
-		<outputs>
-			<bin name="crate" number="1" />
-		</outputs>
-	</process>
-	
-	<process name="Make plastic specimen box" tech="1" skill="1" work-time="10" process-time="10" tooling="3d printer"
-			power-required=".1">
-		<inputs>
-			<resource name="Polyethylene" amount="7.8">
-				<alternative name="Polypropylene" amount="7.8" />
-			</resource>
-		</inputs>
-		<outputs>
-			<equipment name="specimen box" number="12" />
-		</outputs>
-	</process>
-	
 	<!-- Produces 10kg steel canister. -->
 	<process name="Make steel canister" tech="1" skill="1" work-time="10" process-time="10" tooling="Welding"
 			 power-required=".1">
@@ -859,20 +799,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="steel canister" number="2" />
 		</outputs>
 	</process>
-
-	<process name="Make gas canister" tech="1" skill="1" work-time="5" process-time="5" tooling="Welding"
-			power-required="0.1">
-		<inputs>
-			<part name="steel canister" number="1" />
-			<part name="valve" number="2" />
-			<part name="gasket" number="1" />
-		</inputs>
-		<outputs>
-			<!-- one gas canister weighs 4 kg -->
-			<equipment name="gas canister" number="1" />
-		</outputs>
-	</process>
-
+	
 	<!-- Using reinforced fiberglass wrapped in aluminum sheeting to make antenna. -->
 	<process name="Make radio antenna" tech="2" skill="2" work-time="100" process-time="100"
 			tooling="3d printer" power-required=".3">
@@ -1249,65 +1176,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="Polyethylene UHMW board" number="5" />
 		</outputs>
 	</process>
-
-	<process name="Manufacture bag" tech="1" skill="1" work-time="10" process-time="50"
-			power-required="0.2">
-		<description> 
-			Use blown film extrusion with the following steps:
-
-			1. Extrusion: Polyethylene resin pellets are melted and forced through a 
-			   circular die to form a continuous tube. 
-			2. Inflation: Air is pumped into the molten plastic, inflating it into a 
-			   thin, balloon-like film bubble to stretch it to the desired thickness. 
-			3. Cooling and Flattening: The film is cooled, flattened using nip rollers, 
-			   and wound into large rolls. 
-			4. Conversion: The film is cut, heat-sealed, and printed to create the final
-			   bag shape. 
-
-			To further enhance durability, manufacturers may add plasticizers, stabilizers, 
-			UV inhibitors, and mineral fillers (like calcium carbonate) to the resin 
-			before extrusion.
-		</description>
-
-		<inputs>
-			<resource name="Polyethylene" amount="1.0" >
-				<alternative name="Polyester resin" amount="1.0"/>
-			</resource>
-		</inputs>
-		<outputs>
-			<equipment name="bag" number="10" />
-			<!-- a bag is 0.1 kg each -->
-		</outputs>
-	</process>
-
-	<process name="Manufacture large bag" tech="1" skill="1" work-time="15" process-time="50"
-			power-required="0.2">
-		<inputs>
-			<resource name="Polyethylene" amount="1.0" >
-				<alternative name="Polyester resin" amount="1.0"/>
-			</resource>
-		</inputs>
-		<outputs>
-			<equipment name="large bag" number="5" />
-			<!-- a large bag is 0.2 kg each -->
-		</outputs>
-	</process>
-
-	<process name="Manufacture thermal bottle" tech="1" skill="1" work-time="20" process-time="20"
-			power-required="0.2">
-		<inputs>
-			<resource name="Aluminum" amount="0.8" >
-				<alternative name="Aluminum oxide" amount="1.512"/>
-			</resource>		
-			<resource name="Polypropylene" amount="0.1" />	
-			<resource name="Silicone elastomer" amount="0.1" >
-				<alternative name="Thermoplastic elastomer" amount="0.1"/>
-			</resource>		
-		</inputs>
-		<outputs>
-			<equipment name="thermal bottle" number="2" />
-		</outputs>
-	</process>
 	
 	<!-- Produces 1m x 1m x 1cm (26kg) sheet of glass. -->
 	<process name="Make glass sheet" tech="2" skill="1" work-time="10" process-time="300"
@@ -1534,88 +1402,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<part name="EVA antenna" number="20" />
-		</outputs>
-	</process>
-
-
-	<process name="Assemble repairBot" tech="4" skill="4" work-time="2000"
-			tooling="Fabrication" power-required="1.0">
-		<description>The parts list for assembling the hardware of a repair bot. </description>
-		<inputs>
-			<part name="Bot Head" number="1" />
-			<part name="Bot Torso" number="1" />
-			<part name="Bot Arm" number="2" />
-			<part name="Bot Leg" number="2" />
-			
-			<part name="EVA antenna" number="1" />
-			<part name="EVA radio" number="1" />
-			<part name="EVA battery" number="2" />
-			
-			<part name="Battery Module" number="1" />
-			<part name="Actuator" number="14" />
-			<part name="Gearbox" number="6" />
-			<part name="Servo Motor" number="8" />
-			
-			<part name="copper wire" number="8" />
-			<part name="aluminum wire" number="10" />
-			<part name="electrical wire" number="16" />
-			<part name="wire connector" number="21" />
-			<part name="biosensor" number="2" />
-		</inputs>
-		<outputs>
-			<robot name="RepairBot-standard" number="1" />
-		</outputs>
-	</process>
-
-
-
-	<process name="Assemble EVA suit" tech="2" skill="3" work-time="500"
-			tooling="Fabrication" power-required="0.5">
-		<description>
-		http://www.madehow.com/Volume-5/Spacesuit.html. Raw Materials for making EVA suits
-	     Numerous raw materials are used for constructing a spacesuit. Fabric materials 
-	     include a variety of different synthetic polymers. 
-	     
-	     - The innermost layer is made up of a Nylon tricot material. 
-	     - Another layer is composed of spandex, an elastic wearable polymer.  
-	     - There is also a layer of urethane-coated nylon, which is involved in pressurization.  
-	     - Dacron—a type of polyester—is used for a pressure-restraining layer. 
-	     - Other synthetic fabrics used include Neoprene that is a type of sponge rubber, 
-	       aluminized Mylar, Gortex, Kevlar, and Nomex.
-
-		 Beyond synthetic fibers other raw materials have important roles. 
-		 - Fiberglass is the primary material for the hard upper torso segment. 
-		 - Lithium hydroxide is used in making the filter which removes carbon dioxide and 
-		   water vapor during a space walk. 
-		 - A silver zinc blend comprises the battery that powers the suit. 
-		 - Gas Tubing is woven into the fabric to transport cooling water throughout the suit. 
-		 - A polycarbonate material is used for constructing the shell of the helmet. 
-		 
-		 Various other components are used to make up the electronic circuitry and suit controls.
-		</description>
-		<inputs>
-			<part name="EVA helmet" number="1" />
-			<part name="helmet visor" number="1" />
-			<part name="pressure suit" number="1" />
-			<part name="coverall" number="1" />
-			<part name="Liquid Cooling Garment" number="1" />
-			
-			<part name="EVA glove" number="1" />
-			<part name="EVA boot" number="1" />
-			<part name="EVA pad" number="1" />
-			<part name="EVA backpack" number="1" />
-			
-			<part name="EVA antenna" number="1" />
-			<part name="EVA radio" number="1" />
-			<part name="EVA battery" number="1" />
-			<part name="suit heating unit" number="1" />
-			
-			<part name="electrical wire" number="2" />
-			<part name="wire connector" number="10" />
-			<part name="biosensor" number="6" />
-		</inputs>
-		<outputs>
-			<equipment name="EVA suit" number="1" />
 		</outputs>
 	</process>
 
@@ -2201,292 +1987,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Hydraulic fluid" amount="4" />
 		</outputs>
 	</process>
-
-	<!-- values are not based on fact but pure conjecture
-	<process name="algae tank manufacturing" tech="2" skill="2" work-time="200" process-time="200" power-required="5.0">
-		<inputs>
-			<resource name="water" amount="150.0" />
-			<part name="glass tube" number="5" />
-			<part name="oxygen pump" number="1" />
-			<part name="plastic pipe" number="2" />
-			<part name="steel truss" number="1" />
-		</inputs>
-		<outputs>
-			<part name="algae tank" number="1" />
-		</outputs>
-	</process>-->
-
-	<!--process name="vehicle assembly remote controlled prospector"
-			tech="3" skill="3"
-			work-time="1000"
-			process-time="0"
-			power-required="0.0">
-		<inputs>
-			<part name="vehicle frame small" number="1" />
-			<part name="motor large" number="1" />
-			<part name="battery module" number="1" />
-			<part name="utility vehicle control panel" number="1" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-			<part name="plastic bottle" number="1" />
-			<part name="lubricant bottle" number="1" />
-			<part name="wheel small" number="4" />
-			<part name="radio antenna" number="1" />
-			<part name="satellite dish" number="1" />
-		</inputs>
-		<outputs>
-			<vehicle name="remote controlled prospector" number="1" />
-		</outputs>
-	</process>-->
-
-	<process name="Assemble Cargo Drone" tech="4" skill="3" work-time="1000" process-time="750"
-			tooling="lifting" power-required="2.5">
-		<inputs>
-			<resource name="acetylene" amount="2.0" />			
-			<part name="navigation circuit board" number="1" />
-			<part name="communications circuit board" number="1" />
-			<part name="Optical lens" number="2" />
-			<part name="vehicle frame small" number="1" />
-			<part name="aluminum sheet" number="3" />
-			<part name="drone chassis panel" number="3" />
-			<part name="Motor 10 kW" number="4" />
-			<part name="methane fuel cell stack" number="1" />
-			<part name="battery module" number="1" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-			<part name="Gas tubing" number="2" />
-			<part name="plastic pipe" number="1" />
-			<part name="radio antenna" number="1" />
-			<part name="optical cable" number="2" />
-			<part name="gas tank" number="1" />	
-			<part name="fuel tank" number="1" />
-			<part name="water tank" number="1" />
-			<part name="fuel pump" number="1" />
-			<part name="propeller" number="4" />	
-			<part name="CMOS sensor" number="8" />						
-		</inputs>
-		<outputs>
-			<vehicle name="cargo drone" number="1" />
-		</outputs>
-	</process>
-	
-	<process name="Assemble Delivery Drone" tech="4" skill="3" work-time="750" process-time="750"
-			tooling="lifting" power-required="2.0">
-		<inputs>
-			<resource name="acetylene" amount="2.0" />			
-			<part name="navigation circuit board" number="1" />
-			<part name="communications circuit board" number="1" />
-			<part name="Optical lens" number="2" />
-			<part name="vehicle frame small" number="1" />
-			<part name="aluminum sheet" number="2" />
-			<part name="drone chassis panel" number="2" />
-			<part name="Motor 10 kW" number="4" />
-			<part name="methanol fuel cell stack" number="1" />
-			<part name="battery module" number="1" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-			<part name="Gas tubing" number="2" />
-			<part name="plastic pipe" number="1" />
-			<part name="radio antenna" number="1" />
-			<part name="optical cable" number="2" />
-			<part name="gas tank" number="1" />	
-			<part name="fuel tank" number="1" />
-			<part name="water tank" number="1" />	
-			<part name="fuel pump" number="1" />
-			<part name="propeller" number="4" />	
-			<part name="CMOS sensor" number="8" />
-		</inputs>
-		<outputs>
-			<vehicle name="delivery drone" number="1" />
-		</outputs>
-	</process>
-
-	<process name="Assemble LUV" tech="4" skill="3" work-time="1000" process-time="500" 
-			tooling="lifting" power-required="1.5">
-		<inputs>
-			<resource name="acetylene" amount="1.1" />
-			<resource name="polystyrene" amount="5" />	
-			<part name="Aerogel tile" number="20" />
-			<part name="utility vehicle control panel" number="1" />		
-			<part name="vehicle frame small" number="2" />
-			<part name="vehicle chassis panel" number="3" />
-			<part name="aluminum sheet" number="5" />			
-			<part name="Motor 10 kW" number="2" />
-			<part name="methanol fuel cell stack" number="2" />
-			<part name="battery module" number="1" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-			<part name="Gas tubing" number="3" />
-			<part name="plastic pipe" number="2" />
-			<part name="plastic bottle" number="1" />
-			<part name="lubricant bottle" number="1" />
-			<part name="wheel small" number="4" />
-			<part name="radio antenna" number="1" />
-			<part name="optical cable" number="4" />
-			<part name="gas tank" number="1" />	
-			<part name="fuel tank" number="1" />
-			<part name="water tank" number="1" />
-			<part name="fuel pump" number="1" />
-			<part name="oxygen pump" number="1" />	
-			<part name="CMOS sensor" number="4" />						
-		</inputs>
-		<outputs>
-			<vehicle name="light utility vehicle" number="1" />
-		</outputs>
-	</process>
-
-	<process name="Assemble Explorer Rover" tech="4" skill="4" work-time="2000" process-time="1000"	
-			tooling="lifting" power-required="4.0">
-		<inputs>
-			<resource name="acetylene" amount="2.304" />		
-			<resource name="polystyrene" amount="15" />			
-			<part name="Aerogel tile" number="80" />					
-			<part name="rover control panel" number="1" />			
-			<part name="vehicle frame large" number="3" />
-			<part name="vehicle chassis panel" number="6" />
-			<part name="rover windshield" number="2" />
-			<part name="window" number="2" />
-			<part name="winch" number="1" />
-			<part name="Motor 30 kW" number="3" />			
-			<part name="methanol fuel cell stack" number="4" />
-			<part name="battery module" number="2" />
-			<part name="gas tank" number="2" />	
-			<part name="fuel tank" number="2" />
-			<part name="water tank" number="2" />
-			<part name="fuel pump" number="2" />
-			<part name="oxygen pump" number="2" />
-			<part name="satellite dish" number="1" />
-			<part name="radio antenna" number="1" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
-			<part name="Gas tubing" number="3" />
-			<part name="plastic pipe" number="3" />
-			<part name="steel pipe" number="3" />
-			<part name="plastic bottle" number="3" />
-			<part name="lubricant bottle" number="3" />
-			<part name="rover wheel" number="12" />
-			<part name="optical cable" number="6" />
-			<part name="CMOS sensor" number="6" />	
-		</inputs>
-		<outputs>
-			<vehicle name="Explorer Rover" number="1" />
-		</outputs>
-	</process>
-
-	<process name="Assemble Long Range Explorer" tech="4" skill="4" work-time="2100" process-time="1000"	
-			tooling="lifting" power-required="4.0">
-		<inputs>
-			<resource name="acetylene" amount="2.304" />		
-			<resource name="polystyrene" amount="15" />			
-			<part name="Aerogel tile" number="80" />					
-			<part name="rover control panel" number="1" />			
-			<part name="vehicle frame large" number="3" />
-			<part name="vehicle chassis panel" number="6" />
-			<part name="rover windshield" number="2" />
-			<part name="window" number="2" />
-			<part name="winch" number="1" />
-			<part name="Motor 30 kW" number="3" />			
-			<part name="methanol fuel cell stack" number="4" />
-			<part name="battery module" number="3" />
-			<part name="gas tank" number="3" />	
-			<part name="fuel tank" number="3" />
-			<part name="water tank" number="2" />
-			<part name="fuel pump" number="2" />
-			<part name="oxygen pump" number="2" />
-			<part name="satellite dish" number="1" />
-			<part name="radio antenna" number="1" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
-			<part name="Gas tubing" number="3" />
-			<part name="plastic pipe" number="3" />
-			<part name="steel pipe" number="3" />
-			<part name="plastic bottle" number="3" />
-			<part name="lubricant bottle" number="3" />
-			<part name="rover wheel" number="12" />
-			<part name="optical cable" number="6" />
-			<part name="CMOS sensor" number="6" />	
-		</inputs>
-		<outputs>
-			<vehicle name="Long Range Explorer" number="1" />
-		</outputs>
-	</process>
-		
-	<process name="Assemble Transport Rover" tech="4" skill="4" work-time="2500" process-time="1000" 
-			tooling="lifting" power-required="5.0">
-		<inputs>
-			<resource name="acetylene" amount="3.0" />		
-			<resource name="polystyrene" amount="20" />	
-			<part name="Aerogel tile" number="120" />
-			<part name="rover control panel" number="1" />			
-			<part name="vehicle frame large" number="5" />
-			<part name="vehicle chassis panel" number="10" />
-			<part name="rover windshield" number="1" />
-			<part name="window" number="5" />
-			<part name="winch" number="1" />
-			<part name="Motor 30 kW" number="5" />			
-			<part name="methanol fuel cell stack" number="5" />
-			<part name="battery module" number="4" />
-			<part name="gas tank" number="4" />
-			<part name="fuel tank" number="4" />
-			<part name="water tank" number="4" />
-			<part name="fuel pump" number="2" />
-			<part name="oxygen pump" number="2" />
-			<part name="satellite dish" number="1" />
-			<part name="radio antenna" number="1" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
-			<part name="Gas tubing" number="5" />
-			<part name="plastic pipe" number="5" />
-			<part name="steel pipe" number="5" />
-			<part name="plastic bottle" number="5" />
-			<part name="lubricant bottle" number="5" />
-			<part name="rover wheel" number="18" />
-			<part name="optical cable" number="8" />
-			<part name="CMOS sensor" number="10" />				
-		</inputs>
-		<outputs>
-			<vehicle name="Transport Rover" number="1" />
-		</outputs>
-	</process>
-
-	<process name="Assemble Cargo Rover" tech="4" skill="4" work-time="2500" process-time="1000" 
-			tooling="lifting" power-required="6.0">
-		<inputs>
-			<resource name="acetylene" amount="3.5" />
-			<resource name="polystyrene" amount="30" />	
-			<part name="Aerogel tile" number="120" />
-			<part name="rover control panel" number="1" />
-			<part name="vehicle frame large" number="5" />
-			<part name="vehicle chassis panel" number="12" />
-			<part name="rover windshield" number="1" />
-			<part name="window" number="2" />
-			<part name="winch" number="1" />
-			<part name="Motor 30 kW" number="5" />			
-			<part name="methanol fuel cell stack" number="6" />
-			<part name="battery module" number="5" />
-			<part name="gas tank" number="4" />
-			<part name="fuel tank" number="4" />
-			<part name="water tank" number="4" />
-			<part name="fuel pump" number="2" />
-			<part name="oxygen pump" number="2" />
-			<part name="satellite dish" number="1" />
-			<part name="radio antenna" number="1" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
-			<part name="Gas tubing" number="5" />
-			<part name="plastic pipe" number="5" />
-			<part name="steel pipe" number="5" />
-			<part name="plastic bottle" number="5" />
-			<part name="lubricant bottle" number="5" />
-			<part name="rover wheel" number="18" />
-			<part name="optical cable" number="10" />
-			<part name="CMOS sensor" number="8" />				
-		</inputs>
-		<outputs>
-			<vehicle name="Cargo Rover" number="1" />
-		</outputs>
-	</process>
-
 
 	<!-- Produces 5 5kg ingots of steel. -->
 	<process name="Do steel ingot nickel alloying" tech="1" skill="1" work-time="10" process-time="50"
@@ -3548,21 +3048,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="memory module" number="10" />
 		</outputs>
 	</process>
-			
-	<process name="Manufacture data recorder" tech="4" skill="4" work-time="100" process-time="200"
-			tooling="Fabrication" power-required=".01">
-		<inputs>
-			<resource name="epoxy resin" amount="0.25"/>
-			<part name="logic board" number="1" />
-			<part name="capacitor" number="4" />	
-			<part name="resistor" number="4" />	
-			<part name="diode" number="5" />
-			<part name="memory module" number="3" />
-		</inputs>
-		<outputs>
-			<equipment name="Data recorder" number="1" />
-		</outputs>
-	</process>
 	
 	<!-- 2015-05-19 Added manufacturing led bulb. -->
 	<process name="Manufacture light emitting diode bulb" tech="3" skill="2" work-time="150" process-time="300"
@@ -4264,18 +3749,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<!-- Small wheels are made with steel sheets and steel wires. -->
-	<process name="Make wheelbarrow" tech="1" skill="1" work-time="50" process-time="20"
-			power-required="0.75">
-		<inputs>
-			<resource name="Carbon" amount=".15" />		
-			<part name="iron sheet" number="1" />
-			<part name="steel wire" number="8" />
-		</inputs>
-		<outputs>
-			<equipment name="wheelbarrow" number="1" />
-		</outputs>
-	</process>
 
 	<process name="Make aerogel tile" tech="3" skill="3" work-time="20" process-time="80"
 			power-required=".75">
@@ -4455,6 +3928,564 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="Metal oxide varistor" number="10" />
 		</outputs>
 	</process>
+	
+	<!-- Make a list of bins -->
+	<process name="Make pot" tech="1" skill="1" work-time="10" process-time="10" tooling="3d printer"
+			power-required=".1">
+		<inputs>
+			<resource name="Polyethylene" amount="0.8">
+				<alternative name="Polypropylene" amount="0.8" />
+			</resource>
+		</inputs>
+		<outputs>
+			<bin name="pot" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="Make basket" tech="1" skill="1" work-time="10" process-time="10" tooling="3d printer"
+			power-required=".1">
+		<inputs>
+			<resource name="Polyethylene" amount="0.5"> 
+				<alternative name="Polypropylene" amount="0.5" />
+			</resource>
+		</inputs>
+		<outputs>
+			<bin name="basket" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="Make crate" tech="1" skill="1" work-time="10" process-time="10" tooling="3d printer"
+			power-required=".1">
+		<inputs>
+			<resource name="Polyethylene" amount="1.0">
+				<alternative name="Polypropylene" amount="1.0" />
+			</resource>
+		</inputs>
+		<outputs>
+			<bin name="crate" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- Manufacture a list of equipjment -->
+	<process name="Manufacture bag" tech="1" skill="1" work-time="10" process-time="50"
+			power-required="0.2">
+		<description> 
+			Use blown film extrusion with the following steps:
+
+			1. Extrusion: Polyethylene resin pellets are melted and forced through a 
+			   circular die to form a continuous tube. 
+			2. Inflation: Air is pumped into the molten plastic, inflating it into a 
+			   thin, balloon-like film bubble to stretch it to the desired thickness. 
+			3. Cooling and Flattening: The film is cooled, flattened using nip rollers, 
+			   and wound into large rolls. 
+			4. Conversion: The film is cut, heat-sealed, and printed to create the final
+			   bag shape. 
+
+			To further enhance durability, manufacturers may add plasticizers, stabilizers, 
+			UV inhibitors, and mineral fillers (like calcium carbonate) to the resin 
+			before extrusion.
+		</description>
+
+		<inputs>
+			<resource name="Polyethylene" amount="1.0" >
+				<alternative name="Polyester resin" amount="1.0"/>
+			</resource>
+		</inputs>
+		<outputs>
+			<equipment name="bag" number="10" />
+			<!-- a bag is 0.1 kg each -->
+		</outputs>
+	</process>
+
+	<process name="Manufacture large bag" tech="1" skill="1" work-time="15" process-time="50"
+			power-required="0.2">
+		<inputs>
+			<resource name="Polyethylene" amount="1.0" >
+				<alternative name="Polyester resin" amount="1.0"/>
+			</resource>
+		</inputs>
+		<outputs>
+			<equipment name="large bag" number="5" />
+			<!-- a large bag is 0.2 kg each -->
+		</outputs>
+	</process>
+
+	<process name="Manufacture thermal bottle" tech="1" skill="1" work-time="20" process-time="20"
+			power-required="0.2">
+		<inputs>
+			<resource name="Aluminum" amount="0.8" >
+				<alternative name="Aluminum oxide" amount="1.512"/>
+			</resource>		
+			<resource name="Polypropylene" amount="0.1" />	
+			<resource name="Silicone elastomer" amount="0.1" >
+				<alternative name="Thermoplastic elastomer" amount="0.1"/>
+			</resource>		
+		</inputs>
+		<outputs>
+			<equipment name="thermal bottle" number="2" />
+		</outputs>
+	</process>
+	
+	<process name="Manufacture barrel" tech="1" skill="1" work-time="10" process-time="10"
+			tooling="3d printer" power-required="0.1">
+		<inputs>
+			<resource name="Polyethylene" amount="7.8">
+				<alternative name="Polypropylene" amount="7.8" />
+			</resource>
+		</inputs>
+		<outputs>
+			<equipment name="barrel" number="6" />
+		</outputs>
+	</process>
+	
+	<process name="Manufacture specimen box" tech="1" skill="1" work-time="10" process-time="10" tooling="3d printer"
+			power-required=".1">
+		<inputs>
+			<resource name="Polyethylene" amount="7.8">
+				<alternative name="Polypropylene" amount="7.8" />
+			</resource>
+		</inputs>
+		<outputs>
+			<equipment name="specimen box" number="12" />
+		</outputs>
+	</process>
+
+	<!-- Small wheels are made with steel sheets and steel wires. -->
+	<process name="Manufacture wheelbarrow" tech="1" skill="1" work-time="50" process-time="20"
+			power-required="0.75">
+		<inputs>
+			<resource name="Carbon" amount=".15" />		
+			<part name="iron sheet" number="1" />
+			<part name="steel wire" number="8" />
+		</inputs>
+		<outputs>
+			<equipment name="wheelbarrow" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="Manufacture gas canister" tech="1" skill="1" work-time="5" process-time="5" tooling="Welding"
+			power-required="0.1">
+		<inputs>
+			<part name="steel canister" number="1" />
+			<part name="valve" number="2" />
+			<part name="gasket" number="1" />
+		</inputs>
+		<outputs>
+			<!-- one gas canister weighs 4 kg -->
+			<equipment name="gas canister" number="1" />
+		</outputs>
+	</process>
+				
+	<process name="Manufacture data recorder" tech="4" skill="4" work-time="100" process-time="200"
+			tooling="Fabrication" power-required=".01">
+		<inputs>
+			<resource name="epoxy resin" amount="0.25"/>
+			<part name="logic board" number="1" />
+			<part name="capacitor" number="4" />	
+			<part name="resistor" number="4" />	
+			<part name="diode" number="5" />
+			<part name="memory module" number="3" />
+		</inputs>
+		<outputs>
+			<equipment name="Data recorder" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="Assemble repairBot" tech="4" skill="4" work-time="2000"
+			tooling="Fabrication" power-required="1.0">
+		<description>The parts list for assembling the hardware of a repair bot. </description>
+		<inputs>
+			<part name="Bot Head" number="1" />
+			<part name="Bot Torso" number="1" />
+			<part name="Bot Arm" number="2" />
+			<part name="Bot Leg" number="2" />
+			
+			<part name="EVA antenna" number="1" />
+			<part name="EVA radio" number="1" />
+			<part name="EVA battery" number="2" />
+			
+			<part name="Battery Module" number="1" />
+			<part name="Actuator" number="14" />
+			<part name="Gearbox" number="6" />
+			<part name="Servo Motor" number="8" />
+			
+			<part name="copper wire" number="8" />
+			<part name="aluminum wire" number="10" />
+			<part name="electrical wire" number="16" />
+			<part name="wire connector" number="21" />
+			<part name="biosensor" number="2" />
+		</inputs>
+		<outputs>
+			<robot name="RepairBot-standard" number="1" />
+		</outputs>
+	</process>
+
+	<process name="Assemble EVA suit" tech="2" skill="3" work-time="500"
+			tooling="Fabrication" power-required="0.5">
+		<description>
+		http://www.madehow.com/Volume-5/Spacesuit.html. Raw Materials for making EVA suits
+	     Numerous raw materials are used for constructing a spacesuit. Fabric materials 
+	     include a variety of different synthetic polymers. 
+	     
+	     - The innermost layer is made up of a Nylon tricot material. 
+	     - Another layer is composed of spandex, an elastic wearable polymer.  
+	     - There is also a layer of urethane-coated nylon, which is involved in pressurization.  
+	     - Dacron—a type of polyester—is used for a pressure-restraining layer. 
+	     - Other synthetic fabrics used include Neoprene that is a type of sponge rubber, 
+	       aluminized Mylar, Gortex, Kevlar, and Nomex.
+
+		 Beyond synthetic fibers other raw materials have important roles. 
+		 - Fiberglass is the primary material for the hard upper torso segment. 
+		 - Lithium hydroxide is used in making the filter which removes carbon dioxide and 
+		   water vapor during a space walk. 
+		 - A silver zinc blend comprises the battery that powers the suit. 
+		 - Gas Tubing is woven into the fabric to transport cooling water throughout the suit. 
+		 - A polycarbonate material is used for constructing the shell of the helmet. 
+		 
+		 Various other components are used to make up the electronic circuitry and suit controls.
+		</description>
+		<inputs>
+			<part name="EVA helmet" number="1" />
+			<part name="helmet visor" number="1" />
+			<part name="pressure suit" number="1" />
+			<part name="coverall" number="1" />
+			<part name="Liquid Cooling Garment" number="1" />
+			
+			<part name="EVA glove" number="1" />
+			<part name="EVA boot" number="1" />
+			<part name="EVA pad" number="1" />
+			<part name="EVA backpack" number="1" />
+			
+			<part name="EVA antenna" number="1" />
+			<part name="EVA radio" number="1" />
+			<part name="EVA battery" number="1" />
+			<part name="suit heating unit" number="1" />
+			
+			<part name="electrical wire" number="2" />
+			<part name="wire connector" number="10" />
+			<part name="biosensor" number="6" />
+		</inputs>
+		<outputs>
+			<equipment name="EVA suit" number="1" />
+		</outputs>
+	</process>
+		
+	<!-- values are not based on fact but pure conjecture
+	<process name="algae tank manufacturing" tech="2" skill="2" work-time="200" process-time="200" power-required="5.0">
+		<inputs>
+			<resource name="water" amount="150.0" />
+			<part name="glass tube" number="5" />
+			<part name="oxygen pump" number="1" />
+			<part name="plastic pipe" number="2" />
+			<part name="steel truss" number="1" />
+		</inputs>
+		<outputs>
+			<part name="algae tank" number="1" />
+		</outputs>
+	</process>-->
+
+	<!--process name="vehicle assembly remote controlled prospector"
+			tech="3" skill="3"
+			work-time="1000"
+			process-time="0"
+			power-required="0.0">
+		<inputs>
+			<part name="vehicle frame small" number="1" />
+			<part name="motor large" number="1" />
+			<part name="battery module" number="1" />
+			<part name="utility vehicle control panel" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="plastic bottle" number="1" />
+			<part name="lubricant bottle" number="1" />
+			<part name="wheel small" number="4" />
+			<part name="radio antenna" number="1" />
+			<part name="satellite dish" number="1" />
+		</inputs>
+		<outputs>
+			<vehicle name="remote controlled prospector" number="1" />
+		</outputs>
+	</process>-->
+
+	<process name="Assemble Passenger Drone" tech="4" skill="3" work-time="1250" process-time="750"
+			tooling="lifting" power-required="2.5">
+		<inputs>
+			<resource name="acetylene" amount="2.0" />			
+			<part name="navigation circuit board" number="1" />
+			<part name="communications circuit board" number="1" />
+			<part name="Optical lens" number="2" />
+			<part name="vehicle frame small" number="1" />
+			<part name="aluminum sheet" number="3" />
+			<part name="drone chassis panel" number="3" />
+			<part name="Motor 10 kW" number="4" />
+			<part name="methane fuel cell stack" number="2" />
+			<part name="battery module" number="2" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="Gas tubing" number="2" />
+			<part name="plastic pipe" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="optical cable" number="2" />
+			<part name="gas tank" number="1" />	
+			<part name="fuel tank" number="1" />
+			<part name="water tank" number="1" />
+			<part name="fuel pump" number="1" />
+			<part name="propeller" number="4" />	
+			<part name="CMOS sensor" number="8" />						
+		</inputs>
+		<outputs>
+			<vehicle name="passenger drone" number="1" />
+		</outputs>
+	</process>
+
+	<process name="Assemble Cargo Drone" tech="4" skill="3" work-time="1000" process-time="750"
+			tooling="lifting" power-required="2.5">
+		<inputs>
+			<resource name="acetylene" amount="2.0" />			
+			<part name="navigation circuit board" number="1" />
+			<part name="communications circuit board" number="1" />
+			<part name="Optical lens" number="2" />
+			<part name="vehicle frame small" number="1" />
+			<part name="aluminum sheet" number="3" />
+			<part name="drone chassis panel" number="3" />
+			<part name="Motor 10 kW" number="4" />
+			<part name="methane fuel cell stack" number="2" />
+			<part name="battery module" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="Gas tubing" number="2" />
+			<part name="plastic pipe" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="optical cable" number="2" />
+			<part name="gas tank" number="1" />	
+			<part name="fuel tank" number="1" />
+			<part name="water tank" number="1" />
+			<part name="fuel pump" number="1" />
+			<part name="propeller" number="4" />	
+			<part name="CMOS sensor" number="8" />						
+		</inputs>
+		<outputs>
+			<vehicle name="cargo drone" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="Assemble Delivery Drone" tech="4" skill="3" work-time="750" process-time="750"
+			tooling="lifting" power-required="2.0">
+		<inputs>
+			<resource name="acetylene" amount="2.0" />			
+			<part name="navigation circuit board" number="1" />
+			<part name="communications circuit board" number="1" />
+			<part name="Optical lens" number="2" />
+			<part name="vehicle frame small" number="1" />
+			<part name="aluminum sheet" number="2" />
+			<part name="drone chassis panel" number="2" />
+			<part name="Motor 10 kW" number="4" />
+			<part name="methanol fuel cell stack" number="1" />
+			<part name="battery module" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="Gas tubing" number="2" />
+			<part name="plastic pipe" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="optical cable" number="2" />
+			<part name="gas tank" number="1" />	
+			<part name="fuel tank" number="1" />
+			<part name="water tank" number="1" />	
+			<part name="fuel pump" number="1" />
+			<part name="propeller" number="4" />	
+			<part name="CMOS sensor" number="8" />
+		</inputs>
+		<outputs>
+			<vehicle name="delivery drone" number="1" />
+		</outputs>
+	</process>
+
+	<process name="Assemble LUV" tech="4" skill="3" work-time="1000" process-time="500" 
+			tooling="lifting" power-required="1.5">
+		<inputs>
+			<resource name="acetylene" amount="1.1" />
+			<resource name="polystyrene" amount="5" />	
+			<part name="Aerogel tile" number="20" />
+			<part name="utility vehicle control panel" number="1" />		
+			<part name="vehicle frame small" number="2" />
+			<part name="vehicle chassis panel" number="3" />
+			<part name="aluminum sheet" number="5" />			
+			<part name="Motor 10 kW" number="2" />
+			<part name="methanol fuel cell stack" number="2" />
+			<part name="battery module" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="Gas tubing" number="3" />
+			<part name="plastic pipe" number="2" />
+			<part name="plastic bottle" number="1" />
+			<part name="lubricant bottle" number="1" />
+			<part name="wheel small" number="4" />
+			<part name="radio antenna" number="1" />
+			<part name="optical cable" number="4" />
+			<part name="gas tank" number="1" />	
+			<part name="fuel tank" number="1" />
+			<part name="water tank" number="1" />
+			<part name="fuel pump" number="1" />
+			<part name="oxygen pump" number="1" />	
+			<part name="CMOS sensor" number="4" />						
+		</inputs>
+		<outputs>
+			<vehicle name="light utility vehicle" number="1" />
+		</outputs>
+	</process>
+
+	<process name="Assemble Explorer Rover" tech="4" skill="4" work-time="2000" process-time="1000"	
+			tooling="lifting" power-required="4.0">
+		<inputs>
+			<resource name="acetylene" amount="2.304" />		
+			<resource name="polystyrene" amount="15" />			
+			<part name="Aerogel tile" number="80" />					
+			<part name="rover control panel" number="1" />			
+			<part name="vehicle frame large" number="3" />
+			<part name="vehicle chassis panel" number="6" />
+			<part name="rover windshield" number="2" />
+			<part name="window" number="2" />
+			<part name="winch" number="1" />
+			<part name="Motor 30 kW" number="3" />			
+			<part name="methanol fuel cell stack" number="4" />
+			<part name="battery module" number="2" />
+			<part name="gas tank" number="2" />	
+			<part name="fuel tank" number="2" />
+			<part name="water tank" number="2" />
+			<part name="fuel pump" number="2" />
+			<part name="oxygen pump" number="2" />
+			<part name="satellite dish" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<part name="Gas tubing" number="3" />
+			<part name="plastic pipe" number="3" />
+			<part name="steel pipe" number="3" />
+			<part name="plastic bottle" number="3" />
+			<part name="lubricant bottle" number="3" />
+			<part name="rover wheel" number="12" />
+			<part name="optical cable" number="6" />
+			<part name="CMOS sensor" number="6" />	
+		</inputs>
+		<outputs>
+			<vehicle name="Explorer Rover" number="1" />
+		</outputs>
+	</process>
+
+	<process name="Assemble Long Range Explorer" tech="4" skill="4" work-time="2100" process-time="1000"	
+			tooling="lifting" power-required="4.0">
+		<inputs>
+			<resource name="acetylene" amount="2.304" />		
+			<resource name="polystyrene" amount="15" />			
+			<part name="Aerogel tile" number="80" />					
+			<part name="rover control panel" number="1" />			
+			<part name="vehicle frame large" number="3" />
+			<part name="vehicle chassis panel" number="6" />
+			<part name="rover windshield" number="2" />
+			<part name="window" number="2" />
+			<part name="winch" number="1" />
+			<part name="Motor 30 kW" number="3" />			
+			<part name="methanol fuel cell stack" number="4" />
+			<part name="battery module" number="3" />
+			<part name="gas tank" number="3" />	
+			<part name="fuel tank" number="3" />
+			<part name="water tank" number="2" />
+			<part name="fuel pump" number="2" />
+			<part name="oxygen pump" number="2" />
+			<part name="satellite dish" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<part name="Gas tubing" number="3" />
+			<part name="plastic pipe" number="3" />
+			<part name="steel pipe" number="3" />
+			<part name="plastic bottle" number="3" />
+			<part name="lubricant bottle" number="3" />
+			<part name="rover wheel" number="12" />
+			<part name="optical cable" number="6" />
+			<part name="CMOS sensor" number="6" />	
+		</inputs>
+		<outputs>
+			<vehicle name="Long Range Explorer" number="1" />
+		</outputs>
+	</process>
+		
+	<process name="Assemble Transport Rover" tech="4" skill="4" work-time="2500" process-time="1000" 
+			tooling="lifting" power-required="5.0">
+		<inputs>
+			<resource name="acetylene" amount="3.0" />		
+			<resource name="polystyrene" amount="20" />	
+			<part name="Aerogel tile" number="120" />
+			<part name="rover control panel" number="1" />			
+			<part name="vehicle frame large" number="5" />
+			<part name="vehicle chassis panel" number="10" />
+			<part name="rover windshield" number="1" />
+			<part name="window" number="5" />
+			<part name="winch" number="1" />
+			<part name="Motor 30 kW" number="5" />			
+			<part name="methanol fuel cell stack" number="5" />
+			<part name="battery module" number="4" />
+			<part name="gas tank" number="4" />
+			<part name="fuel tank" number="4" />
+			<part name="water tank" number="4" />
+			<part name="fuel pump" number="2" />
+			<part name="oxygen pump" number="2" />
+			<part name="satellite dish" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<part name="Gas tubing" number="5" />
+			<part name="plastic pipe" number="5" />
+			<part name="steel pipe" number="5" />
+			<part name="plastic bottle" number="5" />
+			<part name="lubricant bottle" number="5" />
+			<part name="rover wheel" number="18" />
+			<part name="optical cable" number="8" />
+			<part name="CMOS sensor" number="10" />				
+		</inputs>
+		<outputs>
+			<vehicle name="Transport Rover" number="1" />
+		</outputs>
+	</process>
+
+	<process name="Assemble Cargo Rover" tech="4" skill="4" work-time="2500" process-time="1000" 
+			tooling="lifting" power-required="6.0">
+		<inputs>
+			<resource name="acetylene" amount="3.5" />
+			<resource name="polystyrene" amount="30" />	
+			<part name="Aerogel tile" number="120" />
+			<part name="rover control panel" number="1" />
+			<part name="vehicle frame large" number="5" />
+			<part name="vehicle chassis panel" number="12" />
+			<part name="rover windshield" number="1" />
+			<part name="window" number="2" />
+			<part name="winch" number="1" />
+			<part name="Motor 30 kW" number="5" />			
+			<part name="methanol fuel cell stack" number="6" />
+			<part name="battery module" number="5" />
+			<part name="gas tank" number="4" />
+			<part name="fuel tank" number="4" />
+			<part name="water tank" number="4" />
+			<part name="fuel pump" number="2" />
+			<part name="oxygen pump" number="2" />
+			<part name="satellite dish" number="1" />
+			<part name="radio antenna" number="1" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<part name="Gas tubing" number="5" />
+			<part name="plastic pipe" number="5" />
+			<part name="steel pipe" number="5" />
+			<part name="plastic bottle" number="5" />
+			<part name="lubricant bottle" number="5" />
+			<part name="rover wheel" number="18" />
+			<part name="optical cable" number="10" />
+			<part name="CMOS sensor" number="8" />				
+		</inputs>
+		<outputs>
+			<vehicle name="Cargo Rover" number="1" />
+		</outputs>
+	</process>
+
 	
 	<!-- To be added :
 

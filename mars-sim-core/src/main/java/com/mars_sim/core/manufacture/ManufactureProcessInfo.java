@@ -86,13 +86,13 @@ public class ManufactureProcessInfo extends WorkshopProcessInfo {
 			else if (ItemType.EQUIPMENT == item.getType()) {
 				 String name = item.getName();
 				 var equipmentType = EquipmentType.convertName2Enum(name);
-				 double massPerItem = EquipmentFactory.getEquipmentMass(equipmentType);
+				 double massPerItem = EquipmentFactory.getUsualMass(equipmentType);
 				 int number = (int) item.getAmount();
 				 mass += number * massPerItem;
 			}
 			else if (ItemType.BIN == item.getType()) {
 				int number = (int) item.getAmount();
-				double massPerItem = BinFactory.getBinMass(BinType.convertName2Enum(item.getName())) * number;
+				double massPerItem = BinFactory.getUsualMass(BinType.convertName2Enum(item.getName())) * number;
 				mass += number * massPerItem;
 			}
 			

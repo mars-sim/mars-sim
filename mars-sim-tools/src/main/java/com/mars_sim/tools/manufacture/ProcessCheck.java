@@ -292,11 +292,11 @@ public final class ProcessCheck {
 					return new MassValue(amount * part.getMassPerItem(), null);
 
 				case EQUIPMENT:
-					return new MassValue(amount * EquipmentFactory.getEquipmentMass(EquipmentType.convertName2Enum(item.getName())),
+					return new MassValue(amount * EquipmentFactory.getUsualMass(EquipmentType.convertName2Enum(item.getName())),
 							null);
 
 				case BIN:
-					return new MassValue(amount * BinFactory.getBinMass(BinType.convertName2Enum(item.getName())), null);
+					return new MassValue(amount * BinFactory.getUsualMass(BinType.convertName2Enum(item.getName())), null);
 
 				case VEHICLE:
 					VehicleSpec vehicleSpec = config.getVehicleConfiguration().getVehicleSpec(item.getName());
