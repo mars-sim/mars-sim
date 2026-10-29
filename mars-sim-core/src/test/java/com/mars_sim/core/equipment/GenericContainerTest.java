@@ -26,23 +26,17 @@ import com.mars_sim.core.structure.Settlement;
 /**
  * Tests the logic of a Generic container
  */
-public class GenericContainerTest {
+class GenericContainerTest {
 
 	// Extra amount to add to resource to handle double arithmetic mismatch
 	private Settlement settlement;
 	
-	@BeforeEach
-
-	
-
-
-	
-	public void setUp() {
+	@BeforeEach	
+	void setUp() {
 		// Create new simulation instance.
         SimulationConfig.loadConfig();
         
-        Simulation sim = Simulation.instance();
-        sim.testRun();
+        Simulation sim = Simulation.createTestRun();
 
         UnitManager unitManager = sim.getUnitManager();
         

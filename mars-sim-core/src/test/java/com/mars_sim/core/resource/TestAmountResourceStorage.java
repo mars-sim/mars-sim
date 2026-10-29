@@ -16,19 +16,14 @@ import com.mars_sim.core.structure.Settlement;
 
 
 
-public class TestAmountResourceStorage {
+class TestAmountResourceStorage {
 
 	private Settlement settlement;
 	
-    @BeforeEach
-
-	
-
-
-	
-    public void setUp() {
+    @BeforeEach	
+    void setUp() {
         SimulationConfig.loadConfig();
-        Simulation.instance().testRun();
+        Simulation.createTestRun();
         settlement = new MockSettlement();
     }
 

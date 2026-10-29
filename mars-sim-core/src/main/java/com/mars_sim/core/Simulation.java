@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Simulation.java
-  * @date 2026-08-11
+ * @date 2026-08-11
  * @author Scott Davis
  */
 package com.mars_sim.core;
@@ -72,7 +72,6 @@ import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
-import com.mars_sim.core.person.health.MedicalConfig;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
@@ -136,14 +135,10 @@ public class Simulation implements ClockPulseListener, Serializable {
 	public static final String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //-NLS-1$
 
 
-	/** true if displaying graphic user interface. */
-	private transient boolean useGUI = true;
 	/** Flag to indicate that a new simulation is being created or loaded. */
 	private transient boolean isUpdating = false;
 	/** Flag to keep track of whether the initial state of simulation has been initialized. */
 	private transient boolean doneInitializing = false;
-
-	private transient boolean justSaved = true;
 
 	private boolean initialSimulationCreated = false;
 
@@ -219,35 +214,15 @@ public class Simulation implements ClockPulseListener, Serializable {
 	}
 
 	/**
-	 * Checks if the simulation is in a state of creating a new simulation or
-	 * loading a saved simulation.
-	 *
-	 * @return true is simulation is in updating state.
-	 */
-	public boolean isUpdating() {
-		return isUpdating;
-	}
-
-	
-	public void loadSim() {
-		Simulation sim = instance();
-
-		// Destroy old simulation.
-		if (sim.initialSimulationCreated) {
-			sim.destroyOldSimulation();
-		}
-	}
-	
-	
-	/**
 	 * Creates a new simulation instance.
 	 */
-	public void createNewSimulation(int timeRatio, String timestamp) {
-		isUpdating = true;
-
-		logger.config(Msg.getString("Simulation.log.createNewSim")); //-NLS-1$
-
+	public static Simulation createNewSimulation(int timeRatio, String timestamp) {
 		Simulation sim = instance();
+
+		sim.isUpdating = true;
+
+		logger.config("Initiating the simulation core engine...");
+
 
 		// Destroy old simulation.
 		if (sim.initialSimulationCreated) {
@@ -261,10 +236,12 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		// Preserve the build version tag for future build
 		// comparison when loading a saved sim
-		unitManager.setOriginalBuild(SimulationRuntime.VERSION.getDescription());
+		sim.unitManager.setOriginalBuild(SimulationRuntime.VERSION.getDescription());
 		
 		// Set this flag to false
-		isUpdating = false;
+		sim.isUpdating = false;
+
+		return sim;
 	}
 
 	public void runSocietySim() {
@@ -289,106 +266,108 @@ public class Simulation implements ClockPulseListener, Serializable {
 	}
 		
 	/**
-	 * Initializes instance for the maven test.
+	 * Create a Simulation instance for testing purposes.
+	 * @return a new Simulation instance for testing purposes.
 	 */
-	public void testRun() {
-				
-		simulationConfig = SimulationConfig.instance();
-		
-		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
+	public static Simulation createTestRun() {
+		// This should be replaced in a later commit with a constructor call
+		var sim = instance();
 
+		sim.simulationConfig = SimulationConfig.instance();
+		
 		// Should this method call the initialiseTransient method ?
 
 		// Create marsClock instance
-		masterClock = new MasterClock(simulationConfig, 256, null);
-		scheduledEvents = new ScheduledEventManager(masterClock);
-		metricManager = new MemoryMetricManager(2);
+		sim.masterClock = new MasterClock(sim.simulationConfig, 256, null);
+		sim.scheduledEvents = new ScheduledEventManager(sim.masterClock);
+		sim.metricManager = new MemoryMetricManager(2);
 
 		// Set instances for logging
-		SimuLoggingFormatter.initializeInstances(masterClock);
-		History.initializeInstances(masterClock);
+		SimuLoggingFormatter.initializeInstances(sim.masterClock);
+		History.initializeInstances(sim.masterClock);
 		
 		// Create lunar world instance
-		lunarWorld = new LunarWorld(); 
+		sim.lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
-		lunarColonyManager = new LunarColonyManager(lunarWorld, scheduledEvents);
+		sim.lunarColonyManager = new LunarColonyManager(sim.lunarWorld, sim.scheduledEvents);
 		
 		// Create orbit info
-		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
+		sim.orbitInfo = new OrbitInfo(sim.masterClock, sim.simulationConfig);
 		// Create weather
-		weather = new Weather(masterClock, orbitInfo);
+		sim.weather = new Weather(sim.masterClock, sim.orbitInfo);
 		
 		// Create surface features
-		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
+		sim.surfaceFeatures = new SurfaceFeatures(sim.orbitInfo, sim.weather);
 
 		
-		unitManager = new UnitManager();
-		EquipmentFactory.initialise(unitManager);
+		sim.unitManager = new UnitManager();
+		EquipmentFactory.initialise(sim.unitManager);
 
 		// Initialize OuterSpace instance
 		OuterSpace outerSpace = new OuterSpace();
 		// Add it to unitManager
-		unitManager.addUnit(outerSpace);
+		sim.unitManager.addUnit(outerSpace);
 		
 		// Initialize Moon instance
 		Moon moon = new Moon();
 		// Add it to unitManager
-		unitManager.addUnit(moon);
+		sim.unitManager.addUnit(moon);
 		
 		// Build planetary objects
 		MarsSurface marsSurface = new MarsSurface();
 		// Add it to unitManager
-		unitManager.addUnit(marsSurface);
+		sim.unitManager.addUnit(marsSurface);
 	
-		marketManager = new MarketManager();
+		sim.marketManager = new MarketManager();
 		
-		transportManager = new TransportManager();
+		sim.transportManager = new TransportManager();
 	
         // Initialize RoleUtil
         RoleUtil.initialize();
 		
 		MetaTaskUtil.initializeMetaTasks();
 		
-		GoodsManager.initializeInstances(masterClock, unitManager, marketManager);
+		GoodsManager.initializeInstances(sim.masterClock, sim.unitManager, sim.marketManager);
 					
-		medicalManager = new MedicalManager();
+		sim.medicalManager = new MedicalManager();
 	
-		dataManager = new DataManager();
+		sim.dataManager = new DataManager();
 
-		malfunctionFactory = new MalfunctionFactory();
+		sim.malfunctionFactory = new MalfunctionFactory();
 		
-		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
-												medicalManager,
-												simulationConfig.getPartConfiguration());
+		MalfunctionManager.initializeInstances(sim.masterClock, sim.malfunctionFactory,
+												sim.medicalManager,
+												sim.simulationConfig.getPartConfiguration());
 
 		// Initialize ScientificStudy
-		scientificStudyManager = new ScientificStudyManager(masterClock);
-		ScientificStudy.initializeInstances(masterClock, simulationConfig.getScienceConfig());
+		sim.scientificStudyManager = new ScientificStudyManager(sim.masterClock);
+		ScientificStudy.initializeInstances(sim.masterClock, sim.simulationConfig.getScienceConfig());
 		// Initialize ScientificStudyUtil
-		ScientificStudyUtil.initializeInstances(unitManager);
+		ScientificStudyUtil.initializeInstances(sim.unitManager);
 
-		Unit.initializeInstances(masterClock, unitManager, weather);
+		Unit.initializeInstances(sim.masterClock, sim.unitManager, sim.weather);
 		
-		LocalAreaUtil.initializeInstances(unitManager, masterClock);
+		LocalAreaUtil.initializeInstances(sim.unitManager, sim.masterClock);
 
 		// Initialize instances in Airlock
-		Airlock.initializeInstances(unitManager, marsSurface, masterClock);
+		Airlock.initializeInstances(sim.unitManager, marsSurface, sim.masterClock);
 
-		eventManager = new HistoricalEventManager(masterClock);
-		PhysicalCondition.initializeInstances(masterClock, medicalManager,
-							simulationConfig.getPersonConfig(), eventManager);
+		sim.eventManager = new HistoricalEventManager(sim.masterClock);
+		PhysicalCondition.initializeInstances(sim.masterClock, sim.medicalManager,
+							sim.simulationConfig.getPersonConfig(), sim.eventManager);
 
-		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
-		ExplorationManager.initialise(surfaceFeatures);
+		BuildingManager.initializeInstances(sim.simulationConfig, sim.masterClock, sim.unitManager);
+		ExplorationManager.initialise(sim.surfaceFeatures);
 
-		AbstractMission.initializeInstances(this, eventManager, unitManager,
-			surfaceFeatures, simulationConfig.getPersonConfig());
-		MissionStep.initializeInstances(masterClock, unitManager);
+		AbstractMission.initializeInstances(sim, sim.eventManager, sim.unitManager,
+			sim.surfaceFeatures, sim.simulationConfig.getPersonConfig());
+		MissionStep.initializeInstances(sim.masterClock, sim.unitManager);
 
-		TaskManager.initializeInstances(this);
-		JobSpec.initializeInstances(unitManager);
-		
-		doneInitializing = true;
+		TaskManager.initializeInstances(sim);
+		JobSpec.initializeInstances(sim.unitManager);
+		sim.doneInitializing = true;
+
+		return sim;
 	}
 
 	/**
@@ -404,7 +383,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
-		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 		
 		// Clock is always first
 		masterClock = new MasterClock(simulationConfig, timeRatio, timestamp);
@@ -565,7 +543,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 		CropConfig cc = simulationConfig.getCropConfiguration();
-//		MedicalConfig mc = simulationConfig.getMedicalConfiguration();
 		
 		// Re-initialize the data logger
 		DataLogger.changeTime(masterClock.getMarsTime());
@@ -682,12 +659,12 @@ public class Simulation implements ClockPulseListener, Serializable {
 	 *
 	 * @param file the file to be loaded from.
 	 */
-	public void loadSimulation(final File file) {
-		isUpdating = true;
+	public static Simulation loadSimulation(final File file) {
+		Simulation sim = instance();
+
+		sim.isUpdating = true;
 
 		File f = file;
-
-		Simulation sim = instance();
 		if (f == null) {
 			// Try the default file path if file is null.
 			f = new File(SimulationRuntime.getSaveDir(), SAVE_FILE + SAVE_FILE_EXTENSION);
@@ -712,7 +689,8 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 					
 		// Re-initialize instances
-		reinitializeInstances();
+		sim.reinitializeInstances();
+		return sim;
 	}
 
     /**
@@ -1053,7 +1031,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		finally {
 			if (oos != null)
 				oos.close();
-			justSaved = true;
 		}
 
 		return success;
@@ -1337,32 +1314,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 	public SimulationConfig getConfig() {
 		return simulationConfig;
-	}
-	
-	/**
-	 * Sets if simulation was loaded with GUI.
-	 *
-	 * @param value is true if GUI is in use.
-	 */
-	public void setUseGUI(boolean value) {
-		useGUI = value;
-	}
-
-	/**
-	 * Checks if simulation was loaded with GUI.
-	 *
-	 * @return true if GUI is in use.
-	 */
-	public boolean getUseGUI() {
-		return useGUI;
-	}
-
-	public boolean getJustSaved() {
-		return justSaved;
-	}
-
-	public void setJustSaved(boolean value) {
-		justSaved = value;
 	}
 
 	/**

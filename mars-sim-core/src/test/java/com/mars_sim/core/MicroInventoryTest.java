@@ -37,9 +37,9 @@ class MicroInventoryTest {
 	@BeforeEach
 	void setUp() {
         SimulationConfig.loadConfig();
-        Simulation.instance().testRun();
+        var sim = Simulation.createTestRun();
         
-        UnitManager unitManager = Simulation.instance().getUnitManager();
+        UnitManager unitManager = sim.getUnitManager();
 	
 		// Create test settlement.
 		settlement = new MockSettlement();	

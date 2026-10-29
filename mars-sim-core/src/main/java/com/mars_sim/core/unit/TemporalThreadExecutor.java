@@ -10,8 +10,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.Temporal;
 
@@ -52,7 +53,7 @@ public class TemporalThreadExecutor implements TemporalExecutor {
 					// Application is shutting down, no need to log this exception
 					return;
 				}
-				logger.severe(target + ": Problem waiting for pulse", e);
+				logger.log(Level.SEVERE, target + ": Problem waiting for pulse", e);
 				Thread.currentThread().interrupt();
 			}
 		}
@@ -69,7 +70,7 @@ public class TemporalThreadExecutor implements TemporalExecutor {
 				try {
 					startLock.acquire();
 				} catch (InterruptedException e) {
-				    logger.severe(target + ": Problem waiting for startLock", e);
+				    logger.log(Level.SEVERE, target + ": Problem waiting for startLock", e);
 					Thread.currentThread().interrupt();
 				} // Wait for the pulse
 
@@ -82,14 +83,14 @@ public class TemporalThreadExecutor implements TemporalExecutor {
 					target.timePassing(currentPulse);
 				}
 				catch (RuntimeException rte) {
-					logger.severe(target + ": Problem with Pulse", rte);
+					logger.log(Level.SEVERE, target + ": Problem with Pulse", rte);
 				}
 				doneLock.release();  // Notify parent pulse has been applied
 			}
 		}
 	}
     
-    private static final SimLogger logger = SimLogger.getLogger(TemporalThreadExecutor.class.getName());
+    private static final Logger logger = Logger.getLogger(TemporalThreadExecutor.class.getName());
     private Set<TemporalRunnable> tasks = new HashSet<>();
 
     @Override

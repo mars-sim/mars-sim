@@ -18,7 +18,6 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.data.History;
-import com.mars_sim.core.data.collection.DataManager;
 import com.mars_sim.core.data.collection.DataType;
 import com.mars_sim.core.data.collection.FieldDataSet;
 import com.mars_sim.core.data.collection.WaterIceData;
@@ -60,7 +59,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 		ItemResourceUtil.initDataRecorder();
 	}
 	
-	private Map<Worker, List<FieldDataSet>> dataSetMap = new HashMap<>();
+	private Map<Integer, List<FieldDataSet>> dataSetMap = new HashMap<>();
 	
 	private Settlement settlement;
 	
@@ -68,9 +67,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	private MalfunctionManager malfunctionManager;
 	/** The recorder's event history. */
 	private History<MsgContext> eventHistory = new History<>(28);
-	
-	private static DataManager dataManager; 
-	
+		
 	/**
 	 * Constructor 1.
 	 * 
@@ -131,7 +128,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * 
 	 * @return
 	 */
-	public Map<Worker, List<FieldDataSet>> getDataSetMap() {
+	public Map<Integer, List<FieldDataSet>> getDataSetMap() {
 		return dataSetMap;
 	}
 	
@@ -142,16 +139,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * @return
 	 */
 	public boolean checkRegisteredOwnerID(int ownerID) {
-		return dataSetMap.keySet().stream().anyMatch(p -> p.getIdentifier() == ownerID);
-
-//		Set<Integer> ids = dataset.keySet().stream()
-//				.map(p -> p.getIdentifier()) 
-//			    .collect(Collectors.toSet());
-//		
-//		if (ids.contains(ownerID))
-//			return true;
-//		
-//		return false;
+		return dataSetMap.containsKey(ownerID);
 	}
 	
 	/**
@@ -172,10 +160,10 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 			list = new ArrayList<>();
 			
 			list.add(data);
-			dataSetMap.put(worker, list);
+			dataSetMap.put(worker.getIdentifier(), list);
 		}
 		else {
-			list = dataSetMap.get(worker);
+			list = dataSetMap.get(worker.getIdentifier());
 			if (list == null)
 				list = new ArrayList<>();
 			
@@ -183,7 +171,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 				data = createNewFieldDataSet(worker, workTime, quality);
 				
 				list.add(data);
-				dataSetMap.put(worker, list);
+				dataSetMap.put(worker.getIdentifier(), list);
 			}
 			else if (isNewRecording) {
 				boolean found = false;
@@ -198,7 +186,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 					data = createNewFieldDataSet(worker, workTime, quality);
 					
 					list.add(data);
-					dataSetMap.put(worker, list);
+					dataSetMap.put(worker.getIdentifier(), list);
 				}
 			}
 			else {
@@ -241,8 +229,7 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 * @param data
 	 */
 	private void writeToDataManager(FieldDataSet data) {
-		if (dataManager == null)
-			dataManager = Simulation.instance().getDataManager();
+		var dataManager = Simulation.instance().getDataManager();
 		
 		List<FieldDataSet> existingList = dataManager.getDataArchive().get(settlement);
 		if (existingList == null) {

@@ -9,8 +9,6 @@ package com.mars_sim.core.goods;
 
 import java.util.EventObject;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -24,9 +22,6 @@ public class CreditEvent extends EventObject {
 	private int settlement1;
 	private int settlement2;
 	private double credit;
-	
-	private static Simulation sim = Simulation.instance();
-	private static UnitManager unitManager = sim.getUnitManager();
 	
 	/**
 	 * Constructor.
@@ -49,8 +44,8 @@ public class CreditEvent extends EventObject {
 	 * 
 	 * @return settlement.
 	 */
-	public Settlement getSettlement1() {
-		return unitManager.getSettlementByID(settlement1);
+	public int getSettlement1() {
+		return settlement1;
 	}
 	
 	/**
@@ -58,8 +53,8 @@ public class CreditEvent extends EventObject {
 	 * 
 	 * @return settlement.
 	 */
-	public Settlement getSettlement2() {
-		return unitManager.getSettlementByID(settlement2);
+	public int getSettlement2() {
+		return settlement2;
 	}
 	
 	/**

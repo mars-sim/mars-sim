@@ -74,8 +74,7 @@ class MetricDatasetTest {
 
     @BeforeEach
     void setup() {
-        var sim = Simulation.instance();
-        sim.testRun();
+        var sim = Simulation.createTestRun();
         var clock = sim.getMasterClock();
         manager = new MemoryMetricManager(2);
         

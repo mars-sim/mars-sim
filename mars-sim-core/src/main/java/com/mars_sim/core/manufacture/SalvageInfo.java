@@ -8,7 +8,6 @@
 package com.mars_sim.core.manufacture;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
@@ -32,8 +31,6 @@ public class SalvageInfo implements Serializable {
 
     private Map<Integer, Integer> partsSalvaged;
     
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
     /**
      * Constructor.
      * 
@@ -111,7 +108,7 @@ public class SalvageInfo implements Serializable {
      * @return settlement
      */
     public Settlement getSettlement() {
-        return unitManager.getSettlementByID(settlementID);
+        return Simulation.instance().getUnitManager().getSettlementByID(settlementID);
     }
 	
     /**

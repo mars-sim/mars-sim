@@ -15,12 +15,12 @@ import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 
-public class TestCreditManager {
+class TestCreditManager {
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp(){
         SimulationConfig.loadConfig();
-        Simulation.instance().testRun();
+        Simulation.createTestRun();
     }
 
     @Test
@@ -39,7 +39,7 @@ public class TestCreditManager {
         try {
             Thread.sleep(100L);
         }
-        catch (InterruptedException e) {
+        catch (InterruptedException _) {
             fail();
         }
         

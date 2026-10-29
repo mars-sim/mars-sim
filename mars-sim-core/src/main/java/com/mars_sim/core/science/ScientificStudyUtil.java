@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -23,7 +22,7 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
  */
 public class ScientificStudyUtil {
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private static UnitManager unitManager = null;
 	
 	/**
 	 * Private constructor for utility class.

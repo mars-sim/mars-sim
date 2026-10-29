@@ -15,8 +15,6 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.events.HistoricalEvent;
-
-import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
@@ -26,7 +24,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -41,11 +38,6 @@ public class TransportManager implements Serializable {
 	private static final SimLogger logger = SimLogger.getLogger(TransportManager.class.getName());
 
 	private List<Transportable> transportItems;
-
-	private static Simulation sim 						= Simulation.instance();
-	private static HistoricalEventManager eventManager 	= sim.getEventManager();
-	private static ScheduledEventManager futures 		= sim.getScheduleManager();
-	private static MasterClock clock 					= sim.getMasterClock();
 
 	/**
 	 * Constructor.
@@ -132,7 +124,7 @@ public class TransportManager implements Serializable {
 	 * 
 	 */
 	void fireEvent(HistoricalEvent event) {
-		eventManager.registerNewEvent(event);
+		Simulation.instance().getEventManager().registerNewEvent(event);
 
 		var transportItem = (Transportable) event.getSource();
 		logger.info(transportItem.getSettlementName() + " - A transport item was launched on "
@@ -152,15 +144,19 @@ public class TransportManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Get the global scheduled events manager associated with the Simulation.
+	 * @return Scheduled manager
+	 */
 	public ScheduledEventManager getFutureEvents() {
-		return futures;
+		return Simulation.instance().getScheduleManager();
 	}
 
 	/**
 	 * Get the current mars time
-	 * @return
+	 * @return Current mars time
 	 */
 	public MarsTime getMarsTime() {
-		return clock.getMarsTime();
+		return Simulation.instance().getMasterClock().getMarsTime();
 	}
 }

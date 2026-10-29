@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.equipment.Battery;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
@@ -87,8 +88,6 @@ import com.mars_sim.core.tool.RandomUtil;
 	 
 	 private Propulsion propulsion;
 	 
-	 private Simulation sim = Simulation.instance();
-	 
 	 /**
 	  * Constructor.
 	  * 
@@ -113,6 +112,13 @@ import com.mars_sim.core.tool.RandomUtil;
 		 fuelTypeID = vs.getFuelType();
 	 }
  
+	 /**
+	  * Helper method to get the current weather from the simulation.
+	  * @return the current weather instance from the simulation.
+	  */
+	 private static Weather getWeather() {
+		 return Simulation.instance().getWeather();
+	 }
 
 	 /**
 	  * Consumes the fuel and/or battery power to propel the vehicle.
@@ -184,7 +190,7 @@ import com.mars_sim.core.tool.RandomUtil;
 		  
 		 double powerThrustDrone = 0;
 		 //  g/m3 -> kg /m3;  14.76 g/m3 / 1000 -> kg /m3
-		 double airDensity = sim.getWeather().getAirDensity(vehicle.getCoordinates()) / 1000;
+		 double airDensity = getWeather().getAirDensity(vehicle.getCoordinates()) / 1000;
 			
 		 if (VehicleType.isRover(vehicle.getVehicleType())) {
 			 // Calculates forces and power

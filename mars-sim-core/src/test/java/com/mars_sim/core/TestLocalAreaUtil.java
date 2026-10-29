@@ -20,23 +20,17 @@ import com.mars_sim.core.structure.Settlement;
 /**
  * Unit test suite for the LocalAreaUtil class.
  */
-public class TestLocalAreaUtil {
+class TestLocalAreaUtil {
     
     // Comparison to indicate a small but non-zero amount.
 	private UnitManager unitManager;
     
-	@BeforeEach
-
-    
-
-
-    
-	public void setUp() {
+	@BeforeEach    
+	void setUp() {
 	    // Create new simulation instance.
         SimulationConfig simConfig = SimulationConfig.loadConfig();
         
-        Simulation sim = Simulation.instance();
-        sim.testRun();
+        Simulation sim = Simulation.createTestRun();
         
         // Clear out existing settlements in simulation.
         unitManager = sim.getUnitManager();

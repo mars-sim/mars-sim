@@ -27,7 +27,6 @@ import com.mars_sim.core.vehicle.VehicleType;
  */
 public class CollectionUtils {
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 
 	private CollectionUtils() {
@@ -57,8 +56,7 @@ public class CollectionUtils {
 		// Use LocationTag's findSettlementVicinity() for faster search
 		// if the unit is known
 		
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
+		var unitManager = Simulation.instance().getUnitManager();
 	
 		Collection<Vehicle> list = unitManager.getVehicles();
 		for (Vehicle v : list) {
@@ -76,8 +74,7 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static Settlement findSettlement(Coordinates c) {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
+		var unitManager = Simulation.instance().getUnitManager();
 
 		return unitManager.findSettlement(c);
 	}
@@ -91,8 +88,6 @@ public class CollectionUtils {
 	 * @return list of people to display.
 	 */
 	public static List<Person> getPeopleInSettlementVicinity(Settlement settlement, boolean isCitizen) {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
 
 		List<Person> result = new ArrayList<>();
 
@@ -116,6 +111,7 @@ public class CollectionUtils {
 				}
 			}
 			else {
+				var unitManager = Simulation.instance().getUnitManager();
 				Iterator<Person> i = unitManager.getPeople().iterator();
 				while (i.hasNext()) {
 					Person person = i.next();
@@ -144,8 +140,6 @@ public class CollectionUtils {
 	 * @return list of people to display.
 	 */
 	public static List<Person> getPeopleInVehicleVicinity(Vehicle vehicle, boolean isCitizen) {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
 
 		List<Person> result = new ArrayList<>();
 
@@ -170,6 +164,7 @@ public class CollectionUtils {
 				}
 			}
 			else {
+				var unitManager = Simulation.instance().getUnitManager();
 				Iterator<Person> i = unitManager.getPeople().iterator();
 				while (i.hasNext()) {
 					Person person = i.next();
@@ -199,9 +194,8 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static Set<Person> getOtherPeople(Settlement settlement) {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
 		
+		var unitManager = Simulation.instance().getUnitManager();
 		Set<Person> group0 = new UnitSet<>();
 		group0.addAll(unitManager.getPeople());
 		Set<Person> group1 = new UnitSet<>();
@@ -217,8 +211,7 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static Collection<DataCollectionSite> getDataCollectionSites() {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
+		var unitManager = Simulation.instance().getUnitManager();
 	
 		Set<DataCollectionSite> sites = new HashSet<>();
 		
@@ -249,8 +242,7 @@ public class CollectionUtils {
 	 * @return
 	 */
 	public static int getTotalNumPart(int id) {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
+		var unitManager = Simulation.instance().getUnitManager();
 		
 		int result = 0;
 		// Obtain the total # of this part in used from all settlements
