@@ -144,6 +144,9 @@
 
 		<!-- The normal average amount of water drank by a person on each sol -->
 		<!-- Default: 2.5 -->
+		<!-- Reference: NASA BVAD Rev2 (NASA/TP-2015-218570 Rev2, 2022), Table 4-20,
+			ISS column: 2.0 kg drinking + 0.5 kg food rehydration = 2.5 kg per
+			crewmember per Earth day. One sol is about 1.027 Earth days. -->
 		<water-consumption-rate value="2.5" />
 
 		<!-- The normal average amount (kg) of hygiene water (toilet, shower, clothing
@@ -153,6 +156,11 @@
 		<!-- Instead of consuming an average of 50 liters to take a shower (typical
 			on Earth), denizens of the ISS uses 4 liters to bathe. -->
 		<!-- Default: 20.0 -->
+		<!-- Reference: NASA BVAD Rev2, Table 4-20, ISS column: 0.4 kg personal
+			hygiene + 0.3 kg urinal flush per crewmember per Earth day, with no
+			shower or laundry. The 20.0 default reflects a settlement that has them. -->
+		<!-- Reference: NASA (2023) reported ISS total water recovery of 93 to 94%,
+			rising to 98% with the Brine Processor Assembly. -->
 		<water-usage-rate value="20.0" />
 
 		<!-- The fictitious ratio denoting the amount of grey water and black water
