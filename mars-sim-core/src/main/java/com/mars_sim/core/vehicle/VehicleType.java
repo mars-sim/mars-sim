@@ -17,9 +17,11 @@ import com.mars_sim.core.tool.Msg;
 public enum VehicleType implements Named {
 			
 	// Note: these vehicle types must also match those in vehicles.xml.
-	LUV,DELIVERY_DRONE,CARGO_DRONE,PASSENGER_DRONE,EXPLORER_ROVER,TRANSPORT_ROVER,CARGO_ROVER;
+	LUV,
+	DELIVERY_DRONE,CARGO_DRONE,PASSENGER_DRONE,
+	EXPLORER_ROVER,LONG_RANGE_EXPLORER,TRANSPORT_ROVER,CARGO_ROVER;
 
-	public static final Set<VehicleType> ROVER_TYPES = Set.of(EXPLORER_ROVER, TRANSPORT_ROVER, CARGO_ROVER);
+	public static final Set<VehicleType> ROVER_TYPES = Set.of(EXPLORER_ROVER, LONG_RANGE_EXPLORER, TRANSPORT_ROVER, CARGO_ROVER);
 
 	private String name;
 

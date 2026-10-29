@@ -2445,7 +2445,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="CMOS sensor" number="10" />				
 		</inputs>
 		<outputs>
-			<vehicle name="Rransport Rover" number="1" />
+			<vehicle name="Transport Rover" number="1" />
 		</outputs>
 	</process>
 

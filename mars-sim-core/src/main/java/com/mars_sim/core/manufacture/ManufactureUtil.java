@@ -210,7 +210,8 @@ public final class ManufactureUtil {
 			} break;
 
 			case ItemType.VEHICLE: {
-				result = manager.getGoodValuePoint(GoodsUtil.getVehicleGood(item.getName()).getID()) * item.getAmount();
+				int id = GoodsUtil.getVehicleGoodID(item.getName());
+				result = manager.getGoodValuePoint(id) * item.getAmount();
 				if (isOutput)
 					result *= VEHICLE_VALUE;
 			} break;

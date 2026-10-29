@@ -760,6 +760,7 @@ public class PartGood extends Good {
 	
     /**
      * Calculates the constant manufacturing demand.
+     * 
      * @Note: if a new building is being put in place, must call this method again
      * to update constantManufacturingDemand
      * 

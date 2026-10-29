@@ -76,7 +76,7 @@ public final class EntityDisplayInfoFactory {
 			case Building building -> buildingBean;
 			case Robot robot -> robotBean;
 			case Vehicle vehicle -> switch (vehicle.getVehicleType()) {
-				case EXPLORER_ROVER -> explorerRoverBean;
+				case EXPLORER_ROVER, LONG_RANGE_EXPLORER -> explorerRoverBean;
 				case TRANSPORT_ROVER -> transportRoverBean;
 				case CARGO_ROVER -> cargoRoverBean;
 				case LUV -> luvBean;

@@ -1147,7 +1147,7 @@ public class VehicleSpec implements Serializable {
 		return switch(type) {
 			case DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE -> .85;
 			case LUV -> 2D;
-			case EXPLORER_ROVER -> 1D;
+			case EXPLORER_ROVER, LONG_RANGE_EXPLORER -> 1D;
 			case TRANSPORT_ROVER -> 1.25D;
 			case CARGO_ROVER -> 1.25D;
 		};
