@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.nullable;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.CollectIce;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
@@ -219,6 +221,11 @@ class MissionBuilderTest extends MarsSimUnitTest {
         // Enable ice collection mission
         MissionBuilder builder = new MissionBuilder(meta, leader);
         mission = builder.buildMission(false);
+        Vehicle vehicle = null;
+        if (mission instanceof AbstractVehicleMission avm) {
+        	vehicle = avm.getVehicle();
+        }
+        assertNotNull(vehicle, "Vehicle is not null.");
         assertNotNull(mission, "Mission should be created");
         assertNull(mission.getPlan(), "Mission plan should be null since no review is requested");
         assertEquals(MissionType.COLLECT_ICE, mission.getMissionType(), "Mission type created");
