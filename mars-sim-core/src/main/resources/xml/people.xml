@@ -115,6 +115,12 @@
 		<!-- The average amount of oxygen breathed in by a person on each Sol for
 			low, nominal & high metabolic activities -->
 		<!-- Default: 0.78, 0.84, 0.96 [in kg] -->
+		<!-- Reference: NASA BVAD Rev2 (NASA/TP-2015-218570 Rev2, 2022), Table 3-23,
+			HIDH reference crewmember, short mission: 0.84 kg O2 per crewmember per
+			Earth day, which matches the nominal default. Table 3-25 (long mission,
+			with daily aerobic and resistive exercise) gives 0.90 kg. Table 3-27 gives
+			0.61 kg for a 5th percentile and 1.08 kg for a 95th percentile
+			crewmember. One sol is about 1.027 Earth days. -->
 		<low-activity-metaboic-load-o2-consumption-rate
 			value="0.78" />
 		<nominal-activity-metaboic-load-o2-consumption-rate
@@ -127,6 +133,11 @@
 		<!-- The average amount of carbon dioxide expelled by a person on each Sol
 			for high metabolic activities -->
 		<!-- Default: 1.0433 [in kg/sol] -->
+		<!-- Reference: NASA BVAD Rev2, Table 3-23 (short mission): 1.01 kg CO2 per
+			crewmember per Earth day; Table 3-25 (long mission): 1.08 kg. Table 3-27
+			gives 0.74 kg for a 5th percentile and 1.31 kg for a 95th percentile
+			crewmember. The 1.0433 default falls between the short and long mission
+			values. -->
 		<co2-expelled-rate value="1.0433" />
 		<!--
 
