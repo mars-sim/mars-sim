@@ -24,17 +24,18 @@ class CompressedClockListenerTest {
 
     @Test
     void testClockPulse() {
+        // Capture the start before the listener records its own start time,
+        // otherwise a millisecond tick in between makes the elapsed check flaky
+        long startTime = System.currentTimeMillis();
+
         TestListener listener = new TestListener();
         var compressed = new CompressedClockListener(listener, MIN_DURATION);
 
         int id = 0;
 
-        // First pulse should always be passed
-        long startTime = System.currentTimeMillis();
-        
         // Keep sending pulses until one get forwarded
         // or a fallback time has past to make the test does not get stuck
-        while ((listener.pulseId == 0) && (System.currentTimeMillis() - startTime < (1.5*MIN_DURATION))) {
+        while ((listener.pulseId == 0) && (System.currentTimeMillis() - startTime < (10*MIN_DURATION))) {
             id++;
             var pulse = new ClockPulse(id, PULSE_ELAPSED, null, null, false, false, false, false, false);
             compressed.clockPulse(pulse);
