@@ -48,6 +48,16 @@ public final class RandomUtil {
 	public static UniformRandomProvider getRNG() {
 		return rng;
 	}
+
+	/**
+	 * Reseeds the random number generator so a run can be repeated.
+	 * Intended for unit tests.
+	 *
+	 * @param seed the seed value
+	 */
+	public static void setSeed(long seed) {
+		rng = RandomSource.SPLIT_MIX_64.create(seed);
+	}
 	
 	/**
 	 * Uses Apache Commons RNG library to get a double.

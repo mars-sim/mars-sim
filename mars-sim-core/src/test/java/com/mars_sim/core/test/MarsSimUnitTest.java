@@ -57,10 +57,16 @@ public abstract class MarsSimUnitTest {
 
     protected static final double MSOLS_PER_EXECUTE = 0.1D;
 
+    private static final long TEST_SEED = 2026L;
+
     private MarsSimContextImpl context;
 
     @BeforeEach
     public void init() {
+		// Fixed seed so each test sees the same random numbers on every run.
+		// Override with -Dmars-sim.test.seed=N to try other sequences.
+		RandomUtil.setSeed(Long.getLong("mars-sim.test.seed", TEST_SEED));
+
 		SimulationRuntime.initialiseLogging();
     	SimulationRuntime.enableFileLogging(null);
     	
