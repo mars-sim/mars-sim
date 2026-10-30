@@ -34,7 +34,7 @@ import com.mars_sim.core.vehicle.VehicleType;
  */
 public class CollectRegolithMeta extends AbstractMetaMission {
 
-	private static final Set<JobType> PREFERRED_LEADER_JOBS = Set.of(JobType.ARCHITECT, JobType.CHEMIST);
+	private static final Set<JobType> PREFERRED_LEADER_JOBS = Set.of(JobType.ARCHITECT, JobType.CHEMIST, JobType.ENGINEER);
 	private static final Set<JobType> PREFERRED_WORKER_JOBS = Collections.emptySet();
 
 	private static final int VALUE = 500;
@@ -84,6 +84,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 		if (roleType.isCouncil()
 					|| person.getMind().getJobType() == JobType.AREOLOGIST
 					|| person.getMind().getJobType() == JobType.CHEMIST
+					|| person.getMind().getJobType() == JobType.ENGINEER
 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
 					|| RoleType.MISSION_SPECIALIST == roleType

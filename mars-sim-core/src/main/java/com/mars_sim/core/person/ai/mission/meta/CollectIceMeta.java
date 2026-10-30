@@ -34,7 +34,8 @@ import com.mars_sim.core.vehicle.VehicleType;
  */
 public class CollectIceMeta extends AbstractMetaMission {
 
-	private static final Set<JobType> PREFERRED_LEADER_JOBS = Set.of(JobType.CHEMIST, JobType.BOTANIST);
+	private static final Set<JobType> PREFERRED_LEADER_JOBS = Set.of(JobType.CHEMIST, JobType.ASTROBIOLOGIST,
+			JobType.METEOROLOGIST, JobType.AREOLOGIST);
 	private static final Set<JobType> PREFERRED_WORKER_JOBS = Collections.emptySet();
 	private static final int VALUE = 750;
 
@@ -51,6 +52,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 
 	/**
 	 * Constructs a new instance of the CollectIce mission with the given crew and review status.
+	 * 
 	 * @param crew the roster of crew members for the mission.
 	 * @param needsReview whether the mission requires review before execution.
 	 * @return a new instance of the CollectIce mission.
@@ -88,8 +90,8 @@ public class CollectIceMeta extends AbstractMetaMission {
 		if (roleType.isCouncil()
 				|| person.getMind().getJobType() == JobType.AREOLOGIST
 				|| person.getMind().getJobType() == JobType.CHEMIST
-				|| person.getMind().getJobType() == JobType.BOTANIST
-				|| person.getMind().getJobType() == JobType.CHEF
+				|| person.getMind().getJobType() == JobType.ASTROBIOLOGIST
+				|| person.getMind().getJobType() == JobType.METEOROLOGIST
 				|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 				|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
 				|| RoleType.MISSION_SPECIALIST == roleType

@@ -180,10 +180,12 @@ class MissionBuilderTest extends MarsSimUnitTest {
         var leader = buildPerson("leader", home, JobType.TRADER, null, null);
 
         var explorer = buildRover(home, "Explorer", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
+        var longExplorer = buildRover(home, "Long Range Explorer", LocalPosition.DEFAULT_POSITION, LONG_RANGE_EXPLORER);
         var transport = buildRover(home, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var cargo = buildRover(home, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
 
         // Double check the expected range ordering of the rovers to ensure the test is valid
+        assertTrue(explorer.getRange() < longExplorer.getRange(), "Explorer has less range than Long Range Explorer");
         assertTrue(explorer.getRange() < transport.getRange(), "Explorer has less range than Transport");
         assertTrue(transport.getRange() < cargo.getRange(), "Transport has less range than Cargo");
 
@@ -195,7 +197,7 @@ class MissionBuilderTest extends MarsSimUnitTest {
         var secondVehicle = builder.selectBestVehicle();
 
         assertEquals(cargo, firstVehicle, "Should choose the best rover available at the leader's settlement");
-        assertEquals(transport, secondVehicle, "Should skip the reserved explorer and choose the next best rover");
+        assertEquals(longExplorer, secondVehicle, "Should skip the reserved explorer and choose the next best rover");
     }
 
     @DisplayName("Test ice collection mission can be created")
@@ -212,7 +214,7 @@ class MissionBuilderTest extends MarsSimUnitTest {
         // Advance sol pass threshold
         var meta = MetaMissionRegistry.getMetaMission(MissionType.COLLECT_ICE);
         var clock = getSim().getMasterClock();
-        clock.setMarsTime(clock.getMarsTime().addTime(meta.getSolThreshold() * 1000D));
+        clock.setMarsTime(clock.getMarsTime().addTime(meta.getSolThreshold() * 500D));
 
         // Enable ice collection mission
         MissionBuilder builder = new MissionBuilder(meta, leader);
@@ -223,20 +225,20 @@ class MissionBuilderTest extends MarsSimUnitTest {
 
         var tm = leader.getMind().getMission();
         assertNotNull(tm, "Mission created and assigned");
-        assertEquals(tm, mission, "Selected mission should be Ice");
+        assertEquals(tm, mission, "Selected mission should be Ice Collection");
     }
     
     private Settlement buildIcePreRequisites() {
-        var settlement = buildSettlement("Test", true, 5);
+        var settlement = buildSettlement("Ice Settlement", true, 5);
 
         // Add workers
         for(var p = 0; p < 4; p++) {
             buildPerson("Worker" + p, settlement);
         }
 
-        var r = buildRover(settlement, "Rover", new LocalPosition(0, 0), CARGO_ROVER);
+        var r = buildRover(settlement, "Rover", new LocalPosition(0, 0), EXPLORER_ROVER);
 
-        // Build resoruces for collection ice mission
+        // Build resources for collection ice mission
         for(int i = 0; i < CollectIce.REQUIRED_BARRELS+1; i++) {
             EquipmentFactory.createEquipment(EquipmentType.BARREL, settlement);
         }

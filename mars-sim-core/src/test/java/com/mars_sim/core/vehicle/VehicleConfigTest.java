@@ -54,7 +54,7 @@ public class VehicleConfigTest {
 
         assertEquals(1, found.getLabTechLevel(), "Lab level");
         assertEquals(2, found.getLabCapacity(), "Lab Capacity");
-        assertEquals(2, found.getLabTechSpecialties().size(),"Lab Speciality");
+        assertEquals(4, found.getLabTechSpecialties().size(),"Lab Speciality");
 
         assertEquals(3, found.getPassengerActivitySpots().size(), "Passenger Activity Spots");
     }

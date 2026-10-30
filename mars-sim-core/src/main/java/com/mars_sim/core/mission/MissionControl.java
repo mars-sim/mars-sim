@@ -78,7 +78,7 @@ public class MissionControl implements ScheduledEventHandler {
         settlement.getFutureManager().addEvent(startOfNextSol, this);
     }
 
-	// The naming conventino to apply to a new Mission
+	// The naming convention to apply to a new Mission
 	public record MissionNaming(String name, String callSign) {}
 
 	/**

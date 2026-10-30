@@ -20,13 +20,14 @@ class ComparatorTest extends MarsSimUnitTest {
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
         var e = buildRover(s, "Explorer", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-
-        var v = new ArrayList<>(List.of(t,c,e));
+        var l = buildRover(s, "Long Range Explorer", LocalPosition.DEFAULT_POSITION, LONG_RANGE_EXPLORER);
+        
+        var v = new ArrayList<>(List.of(t,c,e,l));
 
         Collections.sort(v, new LabRangeComparator());
         
         assertEquals(t, v.get(0), "Worst lab");
-        assertEquals(e, v.get(2), "Best lab");
+        assertEquals(l, v.get(3), "Best lab");
 
     }
 
@@ -37,15 +38,16 @@ class ComparatorTest extends MarsSimUnitTest {
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
         var e = buildRover(s, "Explorer", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-
+        var l = buildRover(s, "Long Range Explorer", LocalPosition.DEFAULT_POSITION, LONG_RANGE_EXPLORER);
+        
         assertTrue(e.getRange() < c.getRange(), "Explorer has less range than Cargo");
 
-        var v = new ArrayList<>(List.of(t,c,e));
+        var v = new ArrayList<>(List.of(t,c,e,l));
 
         Collections.sort(v, new RangeComparator());
         
         assertEquals(e, v.get(0), "Shortest range");
-        assertEquals(c, v.get(2), "Longest range");
+        assertEquals(c, v.get(3), "Longest range");
 
     }
 
@@ -56,16 +58,17 @@ class ComparatorTest extends MarsSimUnitTest {
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
         var e = buildRover(s, "Explorer", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-
+        var l = buildRover(s, "Long Range Explorer", LocalPosition.DEFAULT_POSITION, LONG_RANGE_EXPLORER);
+        
         assertTrue(e.getEquipmentInventory().getCargoCapacity()
                     < c.getEquipmentInventory().getCargoCapacity(), "Explorer has less cargo capacity than Cargo");
 
-        var v = new ArrayList<>(List.of(t,c,e));
+        var v = new ArrayList<>(List.of(t,c,e,l));
 
         Collections.sort(v, new CargoRangeComparator());
         
         assertEquals(e, v.get(0), "Smallest cargo");
-        assertEquals(c, v.get(2), "Largest cargo");
+        assertEquals(c, v.get(3), "Largest cargo");
     }
 
     @Test
@@ -75,13 +78,17 @@ class ComparatorTest extends MarsSimUnitTest {
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
         var e = buildRover(s, "Explorer", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
+        var l = buildRover(s, "Long Range Explorer", LocalPosition.DEFAULT_POSITION, LONG_RANGE_EXPLORER);
 
         assertTrue(c.getCrewCapacity() < t.getCrewCapacity(), "Cargo has less crew capacity than Transport");
-        var v = new ArrayList<>(List.of(t,c,e));
+        var v = new ArrayList<>(List.of(t,c,e,l));
 
         Collections.sort(v, new CrewRangeComparator());
         
-        assertEquals(c, v.get(0), "Smallest crew");
-        assertEquals(t, v.get(2), "Largest crew");
+        // Note: both the regular explorer or long range explorer has a size of 4. 
+        boolean smallest = c == v.get(0) || c == v.get(1);
+        
+        assertTrue(smallest, "Smallest crew");
+        assertEquals(t, v.get(3), "Largest crew");
     }
 }

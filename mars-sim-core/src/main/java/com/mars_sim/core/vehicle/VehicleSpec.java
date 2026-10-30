@@ -550,7 +550,18 @@ public class VehicleSpec implements Serializable {
 				// Accounts for the occupant and rock sample, ice or regolith collected
 				additionalEndMass = estimatedTotalCrewWeight + crewSize * 5 + 1400;	
 			} break;
-
+			
+			case LONG_RANGE_EXPLORER: {
+				
+				roadLoadPowerFactor = 0.4;
+				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 3 + numFuelCellStack * 2);
+				// Accounts for the occupants and their consumables
+				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 60;
+				// Accounts for the occupant and rock sample, ice or regolith collected
+				additionalEndMass = estimatedTotalCrewWeight + crewSize * 5 + 1600;	
+			} break;
+			
 			case CARGO_ROVER: {
 				
 				roadLoadPowerFactor = 0.3;

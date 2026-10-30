@@ -109,6 +109,7 @@ public final class EquipmentFactory {
 
 		// Add this equipment as being placed in this settlement
 		settlement.getEquipmentInventory().addEquipment(newEqm);
+		
 		return newEqm;
 	}
 

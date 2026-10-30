@@ -48,6 +48,7 @@ public abstract class MarsSimUnitTest {
     public static final String ALPHA_BASE_1 = "Alpha Base 1";
 
     protected static final String EXPLORER_ROVER = "explorer rover";
+    protected static final String LONG_RANGE_EXPLORER = "long range explorer";
     protected static final String TRANSPORT_ROVER = "transport rover";
     protected static final String CARGO_ROVER = "cargo rover";
 

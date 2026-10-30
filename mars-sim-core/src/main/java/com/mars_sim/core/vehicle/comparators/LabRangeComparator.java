@@ -18,8 +18,8 @@ public class LabRangeComparator extends RangeComparator {
 	@Override
 	public int compare(Vehicle o1, Vehicle o2) {
 		// Check of one rover has a research lab and the other one doesn't.
-		int firstLab = ((o1 instanceof Rover r1) && r1.hasLab()) ?  r1.getLab().getTechnologyLevel() : -1;
-		int secondLab = ((o2 instanceof Rover r2) && r2.hasLab()) ?  r2.getLab().getTechnologyLevel() : -1;
+		int firstLab = ((o1 instanceof Rover r1) && r1.hasLab()) ?  r1.getLab().getTechnologyLevel() * r1.getLab().getLaboratorySize() : -1;
+		int secondLab = ((o2 instanceof Rover r2) && r2.hasLab()) ?  r2.getLab().getTechnologyLevel() * r2.getLab().getLaboratorySize() : -1;
 		if (firstLab > secondLab)
 			return 1;
 		else if (firstLab < secondLab)

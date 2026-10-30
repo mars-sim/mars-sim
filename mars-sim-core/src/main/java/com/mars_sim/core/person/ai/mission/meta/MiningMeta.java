@@ -51,7 +51,7 @@ public class MiningMeta extends AbstractMetaMission {
     public MiningMeta() {
     	super(MissionType.MINING, 6, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 
-		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER, VehicleType.EXPLORER_ROVER));
+		setPreferredVehicle(Set.of(VehicleType.EXPLORER_ROVER, VehicleType.LONG_RANGE_EXPLORER));
 		setPopulationRatio(8);
 		setSolThreshold(MIN_STARTING_SOL);
     }

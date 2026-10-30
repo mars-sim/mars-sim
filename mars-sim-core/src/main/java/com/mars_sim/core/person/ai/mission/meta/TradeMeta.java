@@ -37,7 +37,7 @@ import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
  */
 public class TradeMeta extends AbstractMetaMission {
 	
-	private static final Set<JobType> LEADER_JOBS = Set.of(JobType.POLITICIAN, JobType.TRADER, JobType.REPORTER);
+	private static final Set<JobType> LEADER_JOBS = Set.of(JobType.POLITICIAN, JobType.TRADER, JobType.REPORTER, JobType.TOURIST);
 	private static final Set<JobType> WORKER_JOBS = Set.of(JobType.PILOT);
 
 	/** Starting sol for this mission to commence. */

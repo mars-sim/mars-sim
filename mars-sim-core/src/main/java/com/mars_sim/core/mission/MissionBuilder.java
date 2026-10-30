@@ -52,7 +52,8 @@ public class MissionBuilder {
 	private List<MsgContext> messages = Collections.emptyList();
 
 	/**
-	 * Create a mission builder for a leader wanting to start a certain Mission type.
+	 * Creates a mission builder for a leader wanting to start a certain Mission type.
+	 * 
 	 * @param target the mission type to be started.
 	 * @param startingMember the person who will lead the mission.
 	 */
@@ -68,7 +69,8 @@ public class MissionBuilder {
     }
 
 	/**
-	 * Select the best vehicle for the mission.
+	 * Selects the best vehicle for the mission.
+	 * 
 	 * @return Null if no suitable vehicle is available.
 	 */
 	public Vehicle selectBestVehicle() {
@@ -78,6 +80,7 @@ public class MissionBuilder {
 
     /**
      * Attempts to recruit members for a potential mission from a collection of possible candidates.
+     * 
      * @param possibles Possible candidates for recruitment.
      * @return Selected for recruitment members.
      */
@@ -113,7 +116,8 @@ public class MissionBuilder {
     }
 
 	/**
-	 * Rate all the possibles and removes any not suitable. The remaining are ordered according to decreasing suitability.
+	 * Rates all the possibles and removes any not suitable. The remaining are ordered according to decreasing suitability.
+	 * 
 	 * @param possibles Potential candidates for recruitment.
 	 * @return Ordered list of suitable candidates with their scores.
 	 */
@@ -176,7 +180,8 @@ public class MissionBuilder {
 	}
 	
 	/**
-	 * Finally build the mission according to the parameters.
+	 * Finally builds the mission according to the parameters.
+	 * 
 	 * @param needsReview whether the mission requires a review.
 	 * @return the constructed mission instance, or null if construction failed.
 	 */
@@ -224,7 +229,8 @@ public class MissionBuilder {
 	}
 
 	/**
-	 * Get the messages generated during the mission building process.
+	 * Gets the messages generated during the mission building process.
+	 * 
 	 * @return List of message contexts.
 	 */
 	public List<MsgContext> getMessages() {

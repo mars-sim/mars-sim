@@ -39,7 +39,7 @@ public abstract class FieldStudyMeta extends AbstractMetaMission {
 		super(type, 3, preferredLeaderJob, PREFERRED_WORKER_JOBS);
 		this.scienceType = scienceType;
 
-		setPreferredVehicle(Set.of(VehicleType.EXPLORER_ROVER));
+		setPreferredVehicle(Set.of(VehicleType.EXPLORER_ROVER, VehicleType.LONG_RANGE_EXPLORER));
 		setPopulationRatio(6);
 		setSolThreshold(2);
 	}

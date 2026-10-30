@@ -45,7 +45,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     
     private static final int EARLIEST_SOL_TRAVEL = 28;
     private static final Set<JobType> WORKER_JOBS = Collections.emptySet();
-    private static final Set<JobType> LEADER_JOBS = Set.of(JobType.PILOT, JobType.POLITICIAN, JobType.REPORTER);
+    private static final Set<JobType> LEADER_JOBS = Set.of(JobType.PILOT, JobType.POLITICIAN, JobType.REPORTER, JobType.TOURIST);
 
     private static final double BASE_MISSION_WEIGHT = 1D;
 	private static final double RANGE_BUFFER = .8D;
@@ -57,7 +57,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 	public TravelToSettlementMeta() {
     	super(MissionType.TRAVEL_TO_SETTLEMENT, 8, LEADER_JOBS, WORKER_JOBS);
 
-        setPreferredVehicle(Set.of(VehicleType.TRANSPORT_ROVER, VehicleType.EXPLORER_ROVER));
+        setPreferredVehicle(Set.of(VehicleType.TRANSPORT_ROVER));
         setPopulationRatio(20);
         setPopulationThreshold(20);
         setSolThreshold(EARLIEST_SOL_TRAVEL);

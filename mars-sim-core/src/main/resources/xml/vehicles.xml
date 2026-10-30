@@ -214,7 +214,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<lab tech-level="1" capacity="2" >
 			<!-- Science tech specialty -->
 			<tech-specialty value="AREOLOGY" />
+			<tech-specialty value="ASTROBIOLOGY" />
 			<tech-specialty value="CHEMISTRY" />
+			<tech-specialty value="METEOROLOGY" />
 		</lab>
 
 		<!-- Airlock locations (optional) -->
@@ -272,10 +274,12 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 		<sickbay tech-level="2" beds="1" />
 
-		<lab tech-level="1" capacity="2" >
+		<lab tech-level="2" capacity="2" >
 			<!-- Science tech specialty -->
 			<tech-specialty value="AREOLOGY" />
+			<tech-specialty value="ASTROBIOLOGY" />
 			<tech-specialty value="CHEMISTRY" />
+			<tech-specialty value="METEOROLOGY" />
 		</lab>
 
 		<airlock xloc="-1.25" yloc="0.0">
