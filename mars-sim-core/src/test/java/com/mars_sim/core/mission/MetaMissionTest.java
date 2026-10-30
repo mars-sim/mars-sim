@@ -23,6 +23,10 @@ class MetaMissionTest extends MarsSimUnitTest {
         var l = buildPerson("leader", s, JobType.TRADER, b, null);
         var w = buildPerson("worker", s, JobType.CHEF, b, null);
 
+        // Leadership is random per person; equalise it so only the job type differs
+        l.getNaturalAttributeManager().setAttribute(NaturalAttributeType.LEADERSHIP, 50);
+        w.getNaturalAttributeManager().setAttribute(NaturalAttributeType.LEADERSHIP, 50);
+
         var meta = new MockMetaMission(2, 3, Set.of(JobType.TRADER), Set.of(JobType.PILOT));
 
         var lScore = meta.getLeaderSuitability(l);
