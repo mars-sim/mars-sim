@@ -1,4 +1,5 @@
 package com.mars_sim.core.process;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -11,7 +12,7 @@ import com.mars_sim.core.tool.RandomUtil;
 
 public class ProcessInfoTest extends MarsSimUnitTest {
     @Test
-    public void testIsResourcesAvailable() {
+    void testIsResourcesAvailable() {
         var s = buildSettlement("mock");
 
         var processes = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(1);
@@ -25,7 +26,7 @@ public class ProcessInfoTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testIsInput() {
+    void testIsInput() {
         var p = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(1).get(0);
 
         for(var o : p.getInputList()) {
@@ -37,7 +38,7 @@ public class ProcessInfoTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testIsOutput() {
+    void testIsOutput() {
         var p = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(1).get(0);
 
         for(var o : p.getOutputList()) {
@@ -46,6 +47,12 @@ public class ProcessInfoTest extends MarsSimUnitTest {
         }
 
         assertFalse(p.isOutput("Not exists"), "Process does not output");
+    }
+
+    @Test
+    void testConstructorRejectsNullNameOrType() {
+        assertThrows(NullPointerException.class, () -> new ProcessItem(1, null, ItemType.AMOUNT_RESOURCE, 1.0D));
+        assertThrows(NullPointerException.class, () -> new ProcessItem(1, "water", null, 1.0D));
     }
 
     /**

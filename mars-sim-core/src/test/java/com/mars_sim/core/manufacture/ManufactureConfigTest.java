@@ -28,7 +28,6 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.vehicle.VehicleType;
 
 public class ManufactureConfigTest {
 
@@ -63,7 +62,7 @@ public class ManufactureConfigTest {
     void testTooling() {
         var f = manuConfig.getTooling("furnace");
         assertNotNull(f, "Furnace Tooling defined");
-        assertEquals(f.name(), "Furnace", "Has correct name");
+        assertEquals("Furnace", f.name(), "Has correct name");
         assertNotNull(f.description(), "Furnace description");
     }
 
@@ -146,7 +145,7 @@ public class ManufactureConfigTest {
                         ManufactureProcessInfo::getName);
         var process = processByName.get(MAKE_RADIO_ANTENNA);
         assertNotNull(process, "Manufacturng processes defined");
-        assertEquals(process.getTooling().name(), "3D Printer", "Tool");
+        assertEquals("3D Printer", process.getTooling().name(), "Tool");
 
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
@@ -184,7 +183,7 @@ public class ManufactureConfigTest {
                         ManufactureProcessInfo::getName);
         var process = processByName.get(ASSEMBLE_PASSENGER_DRONE);
         assertNotNull(process, "Manufacturng processes defined");
-        assertEquals(process.getTooling().name(), "Lifting");
+        assertEquals("Lifting", process.getTooling().name());
 
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
@@ -205,6 +204,6 @@ public class ManufactureConfigTest {
     }
     
     public static ProcessItem createVehicle(String name, double number) {
-        return new ProcessItem(VehicleType.convertName2ID(name), name, ItemType.VEHICLE, number);
+        return new ProcessItem(-1, name, ItemType.VEHICLE, number);
     }
 }

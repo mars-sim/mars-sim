@@ -46,7 +46,7 @@ public final class VehicleFactory {
 		Vehicle vehicle = switch(spec.getType()) {
 			case LUV -> new LightUtilityVehicle(name, spec, owner);
 			case PASSENGER_DRONE, DELIVERY_DRONE, CARGO_DRONE -> new Drone(name, spec, owner);
-			case EXPLORER_ROVER, LONG_RANGE_EXPLORER, TRANSPORT_ROVER, CARGO_ROVER -> new Rover(name, spec, owner);
+			case EXPLORER_ROVER, TRANSPORT_ROVER, CARGO_ROVER -> new Rover(name, spec, owner);
         };
 
         unitMgr.addUnit(vehicle);
@@ -97,7 +97,6 @@ public final class VehicleFactory {
 			case DELIVERY_DRONE -> 150;
 			case CARGO_DRONE -> 150;
 			case EXPLORER_ROVER -> 500;
-			case LONG_RANGE_EXPLORER -> 900;
 			case TRANSPORT_ROVER -> 1300;
 			case CARGO_ROVER -> 1300;
 		};

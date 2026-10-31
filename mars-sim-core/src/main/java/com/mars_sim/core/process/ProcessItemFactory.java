@@ -61,9 +61,6 @@ public final class ProcessItemFactory {
 			case EQUIPMENT:
 				id = EquipmentType.valueOf(ConfigHelper.convertToEnumName(name)).getResourceID();
 				break;
-			case VEHICLE:
-				id = VehicleType.convertName2ID(name);
-				break;
 			default:
 		}
 

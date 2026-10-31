@@ -7,6 +7,7 @@
 package com.mars_sim.core.process;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.equipment.Bin;
@@ -36,15 +37,14 @@ public class ProcessItem implements Serializable {
     private static final SimLogger logger = SimLogger.getLogger(ProcessItem.class.getName());
 
 	// Data members
-	private String name;
-	private ItemType type;
-	private double amount;
-    private int id;
+	private final String name;
+	private final ItemType type;
+	private final double amount;
+    private final int id;
 
-    
 	public ProcessItem(int id, String name, ItemType type, double amount) {
-        this.name = name;
-        this.type = type;
+		this.name = Objects.requireNonNull(name, "Name cannot be null");
+		this.type = Objects.requireNonNull(type, "Type cannot be null");
         this.amount = amount;
         this.id = id;
     }
@@ -161,7 +161,7 @@ public class ProcessItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return name;
+		return "ProcessItem [id=" + id + ", name=" + name + ", type=" + type + ", amount=" + amount + "]";
 	}
 
     /**
@@ -171,9 +171,9 @@ public class ProcessItem implements Serializable {
     public boolean equals(Object object) {
         boolean result = false;
         if (object instanceof ProcessItem item) {
-            result = ((id == item.getId())
-                    && type.equals(item.getType())
-                    && (amount == item.getAmount()));
+            result = type.equals(item.type)
+					&& name.equals(item.name)
+                    && (amount == item.amount);
         }
 
         return result;
@@ -186,6 +186,6 @@ public class ProcessItem implements Serializable {
      */
 	@Override 
     public int hashCode() {
-        return id % 32;
+        return name.hashCode();
     }
 }
