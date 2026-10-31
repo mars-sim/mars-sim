@@ -12,17 +12,17 @@ import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.vehicle.VehicleFactory;
-import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Factory class to create ProcessItem objects
  */
 public final class ProcessItemFactory {
+    private static final SimLogger logger = SimLogger.getLogger(ProcessItemFactory.class);
 
     private ProcessItemFactory() {
         // Blocks instantiation
@@ -83,7 +83,8 @@ public final class ProcessItemFactory {
 				var vc = SimulationConfig.instance().getVehicleConfiguration();
 				var spec = vc.getVehicleSpec(item.getName());
 				if (spec == null) {
-					yield VehicleFactory.getUsualMass(VehicleType.convertID2Type(item.getId()));
+					logger.warning("Vehicle spec not found for " + item.getName());
+					yield 1000D;
 				}
 				yield spec.getEmptyMass();
 			}

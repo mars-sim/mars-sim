@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.process.ProcessItemFactory;
 
 
 /**
@@ -58,10 +59,10 @@ public class SimLogger {
 
 
 	/**
-	 * Gets the logger instance.
+	 * Gets the logger instance associated with the given name.
 	 * 
-	 * @param name
-	 * @return
+	 * @param name Name of the logger.
+	 * @return The SimLogger instance associated with the given name.
 	 */
 	public static SimLogger getLogger(String name) {
 		SimLogger result = null;
@@ -69,6 +70,16 @@ public class SimLogger {
 			result = loggers.computeIfAbsent(name, k -> new SimLogger(name));
 		}
 		return result;
+	}
+
+	/**
+	 * Get the logger instance associated with the given class.
+	 * @param class1 The class for which to get the logger.
+	 * @return The SimLogger instance associated with the given class.
+	 */
+	public static SimLogger getLogger(Class<?> class1) {
+		// Get the logger by the class name
+		return getLogger(class1.getName());
 	}
 
 	/**
@@ -447,5 +458,4 @@ public class SimLogger {
 	public boolean isLoggable(Level level) {
 		return rootLogger.isLoggable(level);
 	}
-
 }
