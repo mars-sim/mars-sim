@@ -8,14 +8,9 @@
 package com.mars_sim.core.data.collection;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.structure.Settlement;
 
 
@@ -24,25 +19,25 @@ public class DataManager implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public static final String FIELDDATA_ADDED = "fieldDataAdded";
+
 	/** The settlement's data library. */
-	private Map<Settlement, List<FieldDataSet>> dataArchive;
-	
-	private transient Set<EntityManagerListener> listeners;
+	private List<FieldDataSet> dataArchive;
+	private Settlement owner;
 	
 	/**
 	 * Constructor for a {@link DataManager}.
 	 */
-	public DataManager() {
-		dataArchive = new ConcurrentHashMap<>();	
+	public DataManager(Settlement owner) {
+		this.owner = owner;
+		this.dataArchive = new ArrayList<>();
 	}
 	
-	public void addListener(FieldDataSet data) {
+	public void addFieldData(FieldDataSet data) {
+		dataArchive.add(data);
+
 		// Notify listeners
-		if (listeners != null) {
-			synchronized (listeners) {
-				listeners.forEach(l -> l.entityAdded(data));
-			}
-		}
+		owner.fireUnitUpdate(FIELDDATA_ADDED, data);
 	}
 	
 	/**
@@ -50,53 +45,8 @@ public class DataManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Map<Settlement, List<FieldDataSet>> getDataArchive() {
-		if (dataArchive.isEmpty())
-			return Collections.emptyMap();
+	public List<FieldDataSet> getDataArchive() {
 		return dataArchive;
 	}
-	
-	/**
-	 * Gets the settlement set.
-	 * 
-	 * @return
-	 */
-	public Set<Settlement> getSettlementSet() {
-		if (dataArchive.isEmpty())
-			return Collections.emptySet();
-		
-		Set<Settlement> set = dataArchive.keySet();
-		if (set.isEmpty())
-			return Collections.emptySet();
-		
-		return set;
-	}
-	
-	
-	/**
-	 * Adds a listener.
-	 * 
-	 * @param listener the listener.
-	 */
-	public void addListener(EntityManagerListener listener) {
-		if (listeners == null) {
-			listeners = new HashSet<>();
-		}
-		synchronized (listeners) {
-			listeners.add(listener);
-		}
-	}
 
-	/**
-	 * Removes a previously registered listener.
-	 * 
-	 * @param listener
-	 */
-	public void removeListener(EntityManagerListener listener) {
-		if (listeners != null) {
-			synchronized (listeners) {
-				listeners.remove(listener);
-			}
-		}
-	}
 }
