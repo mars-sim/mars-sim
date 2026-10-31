@@ -11,15 +11,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -348,7 +345,6 @@ public class VehicleSpec implements Serializable {
 		this.type = type;
 		this.description = description;
 		this.baseImage = baseImage;
-		this.emptyMass = VehicleFactory.getUsualMass(type);
 		
 		if (VehicleType.isRover(type)) {
 			// Add crew cabin as a system scope
@@ -452,20 +448,22 @@ public class VehicleSpec implements Serializable {
 			return;
 		}
 
-		partIDs = findBuildProcess(manuConfig)
-					.map(info -> info.getInputList().stream()
-						.filter(p -> p.getType() == ItemType.PART)
-						.map(ProcessItem::getId)
-						.collect(Collectors.toSet()))
-					.orElse(Collections.emptySet());
+		var vehicleBuildProcess = findBuildProcess(manuConfig);
+		if (vehicleBuildProcess == null) {
+			partIDs = Collections.emptySet();
+			emptyMass = VehicleFactory.getUsualMass(type);
+			return;
+		}
+		partIDs = vehicleBuildProcess.getInputPartIDs();
+		emptyMass = vehicleBuildProcess.calculateTotalInputMass();
 	}
 
-	private Optional<ManufactureProcessInfo> findBuildProcess(ManufactureConfig manuConfig) {
+	private ManufactureProcessInfo findBuildProcess(ManufactureConfig manuConfig) {
 		return manuConfig.getManufactureProcessList().stream()
 					.filter(info -> info.getOutputList().stream()
 							.anyMatch(item -> (item.getType() == ItemType.VEHICLE)
 									&& item.getName().equalsIgnoreCase(name)))
-					.findFirst();
+					.findFirst().orElse(null);
 	}
 	
 	/**
@@ -549,17 +547,6 @@ public class VehicleSpec implements Serializable {
 				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 60;
 				// Accounts for the occupant and rock sample, ice or regolith collected
 				additionalEndMass = estimatedTotalCrewWeight + crewSize * 5 + 1400;	
-			} break;
-			
-			case LONG_RANGE_EXPLORER: {
-				
-				roadLoadPowerFactor = 0.4;
-				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 3 + numFuelCellStack * 2);
-				// Accounts for the occupants and their consumables
-				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 60;
-				// Accounts for the occupant and rock sample, ice or regolith collected
-				additionalEndMass = estimatedTotalCrewWeight + crewSize * 5 + 1600;	
 			} break;
 			
 			case CARGO_ROVER: {
@@ -996,7 +983,6 @@ public class VehicleSpec implements Serializable {
 	 * Gets the base range of the vehicle.
 	 *
 	 * @return the base range of the vehicle [km]
-	 * @throws Exception if error getting range.
 	 */
 	public double getBaseRange() {
 		return baseRange;
@@ -1171,7 +1157,7 @@ public class VehicleSpec implements Serializable {
 		return switch(type) {
 			case DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE -> .85;
 			case LUV -> 2D;
-			case EXPLORER_ROVER, LONG_RANGE_EXPLORER -> 1D;
+			case EXPLORER_ROVER -> 1D;
 			case TRANSPORT_ROVER -> 1.25D;
 			case CARGO_ROVER -> 1.25D;
 		};

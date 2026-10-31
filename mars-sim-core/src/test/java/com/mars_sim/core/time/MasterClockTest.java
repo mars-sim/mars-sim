@@ -1,5 +1,6 @@
 package com.mars_sim.core.time;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,7 +32,7 @@ public class MasterClockTest {
     private SimulationConfig config;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         config = SimulationConfig.loadConfig();
     }
 
@@ -73,7 +74,7 @@ public class MasterClockTest {
         waitForPulses(clock);
 
         assertTrue(baseline.lastPulse > 1, "Pulse received");
-        assertTrue(removed.lastPulse == -1, "Removed listener should not receive pulses");
+        assertEquals(-1, removed.lastPulse, "Removed listener should not receive pulses");
 
         clock.stop();
     }
@@ -92,17 +93,25 @@ public class MasterClockTest {
 
         // Pause the clock but it might take one pulse
         clock.setPaused(true);
+        // Wait for current pulse to flip round
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } 
+
+        // Clock should now be paused
         assertTrue(clock.isPaused(), "Clock is paused");
         long pausedPulse = baseline.lastPulse;
 
-        // Wait for a few pulses to pass
+        // Wait for some time to ensure no pulses are received while paused
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }     
 
-        assertTrue(baseline.lastPulse == pausedPulse, "No pulses received while paused");
+        assertEquals(pausedPulse, baseline.lastPulse, "No pulses received while paused");
 
         clock.setPaused(false);
         assertFalse(clock.isPaused(), "Clock is resumed");

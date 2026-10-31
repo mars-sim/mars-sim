@@ -68,24 +68,24 @@ public final class EntityDisplayInfoFactory {
 	 */
 	public static EntityDisplayInfo getDisplayInfo(Entity focus) {
 		return switch (focus) {
-			case Authority authority -> authorityBean;
-			case ScientificStudy study -> studyBean;
-			case Settlement settlement -> settlementBean;
-			case Mission mission -> missionBean;
-			case Person person -> personBean;
-			case Building building -> buildingBean;
-			case Robot robot -> robotBean;
+			case Authority _ -> authorityBean;
+			case ScientificStudy _ -> studyBean;
+			case Settlement _ -> settlementBean;
+			case Mission _ -> missionBean;
+			case Person _ -> personBean;
+			case Building _ -> buildingBean;
+			case Robot _ -> robotBean;
 			case Vehicle vehicle -> switch (vehicle.getVehicleType()) {
-				case EXPLORER_ROVER, LONG_RANGE_EXPLORER -> explorerRoverBean;
+				case EXPLORER_ROVER -> explorerRoverBean;
 				case TRANSPORT_ROVER -> transportRoverBean;
 				case CARGO_ROVER -> cargoRoverBean;
 				case LUV -> luvBean;
 				case PASSENGER_DRONE, DELIVERY_DRONE, CARGO_DRONE -> deliveryDroneBean;
 			};
-			case Equipment equipment -> equipmentBean;
-			case ConstructionSite constructionSite -> constructionBean;
-			case DataCollectionSite dataCollectionSite -> dataCollectionBean;
-			case Transportable transportable -> transportBean;
+			case Equipment _ -> equipmentBean;
+			case ConstructionSite _ -> constructionBean;
+			case DataCollectionSite _ -> dataCollectionBean;
+			case Transportable _ -> transportBean;
 			default -> null;
 		};
 	}

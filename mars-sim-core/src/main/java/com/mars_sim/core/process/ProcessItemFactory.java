@@ -6,22 +6,23 @@
  */
 package com.mars_sim.core.process;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.vehicle.VehicleFactory;
-import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * Factory class to create ProcessItem objects
  */
 public final class ProcessItemFactory {
+    private static final SimLogger logger = SimLogger.getLogger(ProcessItemFactory.class);
 
     private ProcessItemFactory() {
         // Blocks instantiation
@@ -35,11 +36,9 @@ public final class ProcessItemFactory {
      * @param type Type of the item
      * @param amount The amount of the item
      * @return
-     * @throws IllegalArgumentException if the item name or type is not recognized.
      */
     public static ProcessItem createByName(String name, ItemType type, double amount) {
 		int id = -1;
-		double mass = 0;
 		switch(type) {
 			case AMOUNT_RESOURCE:
 				AmountResource ar = ResourceUtil.findAmountResource(name);
@@ -47,7 +46,6 @@ public final class ProcessItemFactory {
 					throw new IllegalArgumentException(name + " is not a known Resource");
 				}
 				id = ar.getID();
-				mass = amount;
 				break;
 			case PART:
 				var p = ItemResourceUtil.findItemResource(name);
@@ -55,30 +53,42 @@ public final class ProcessItemFactory {
 					throw new IllegalArgumentException(name + " is not a known Part");	
 				}
 				id = p.getID();
-				mass = p.getMassPerItem();
 				break;
 			case BIN:
-				if (BinType.valueOf(ConfigHelper.convertToEnumName(name)) == null) {
-					throw new IllegalArgumentException(name + " is not a known Bin");	
-				}
+				BinType.valueOf(ConfigHelper.convertToEnumName(name));
 				id = BinType.convertName2ID(name);
-				mass = BinFactory.getUsualMass(BinType.convertID2Type(id));
 				break;
 			case EQUIPMENT:
-				if (EquipmentType.valueOf(ConfigHelper.convertToEnumName(name)) == null) {
-					throw new IllegalArgumentException(name + " is not a known Equipment");	
-				}
-				id = EquipmentType.convertName2ID(name);
-				mass = EquipmentFactory.getUsualMass(EquipmentType.convertID2Type(id));
-				break;
-			case VEHICLE:
-				id = VehicleType.convertName2ID(name);
-				mass = VehicleFactory.getUsualMass(VehicleType.convertID2Type(id));
+				id = EquipmentType.valueOf(ConfigHelper.convertToEnumName(name)).getResourceID();
 				break;
 			default:
 		}
 
-        return new ProcessItem(id, name, type, amount, mass);
+        return new ProcessItem(id, name, type, amount);
 	}
 
+	/**
+     * Get the total mass for a process item that contributes to the process.
+
+     * @param item The process item to get the mass for.
+     * @return
+     */
+    public static double getMass(ProcessItem item) {
+		return item.getAmount() * switch(item.getType()) {
+			case AMOUNT_RESOURCE -> 1D;
+			case PART -> ItemResourceUtil.findItemResource(item.getId()).getMassPerItem();
+			case BIN -> BinFactory.getUsualMass(BinType.convertID2Type(item.getId()));
+			case EQUIPMENT -> EquipmentFactory.getUsualMass(EquipmentType.convertID2Type(item.getId()));
+			case VEHICLE -> {
+				var vc = SimulationConfig.instance().getVehicleConfiguration();
+				var spec = vc.getVehicleSpec(item.getName());
+				if (spec == null) {
+					logger.warning("Vehicle spec not found for " + item.getName());
+					yield 1000D;
+				}
+				yield spec.getEmptyMass();
+			}
+			default -> throw new IllegalArgumentException(item.getName() + " is not a known type");
+		};
+	}
 }

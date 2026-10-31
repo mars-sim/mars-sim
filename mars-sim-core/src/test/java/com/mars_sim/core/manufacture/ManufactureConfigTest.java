@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,6 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.vehicle.VehicleType;
 
 public class ManufactureConfigTest {
 
@@ -62,7 +62,7 @@ public class ManufactureConfigTest {
     void testTooling() {
         var f = manuConfig.getTooling("furnace");
         assertNotNull(f, "Furnace Tooling defined");
-        assertEquals(f.name(), "Furnace", "Has correct name");
+        assertEquals("Furnace", f.name(), "Has correct name");
         assertNotNull(f.description(), "Furnace description");
     }
 
@@ -90,7 +90,7 @@ public class ManufactureConfigTest {
     }
 
     @Test
-    void testPlasticBottle() {
+    void testMakeFertilizers() {
         // Build mapped key on process name
         var processByName =
                     Maps.uniqueIndex(manuConfig.getManufactureProcessList(),
@@ -145,7 +145,7 @@ public class ManufactureConfigTest {
                         ManufactureProcessInfo::getName);
         var process = processByName.get(MAKE_RADIO_ANTENNA);
         assertNotNull(process, "Manufacturng processes defined");
-        assertEquals(process.getTooling().name(), "3D Printer", "Tool");
+        assertEquals("3D Printer", process.getTooling().name(), "Tool");
 
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
@@ -156,8 +156,19 @@ public class ManufactureConfigTest {
         expectedInputs.add(createPart("electrical wire", 1D));
         expectedInputs.add(createPart("wire connector", 3D));
         expectedInputs.add(createPart("optical cable", 1D));
+
+        var expectedPartIDs = expectedInputs.stream()
+                .filter(p -> p.getType() == ItemType.PART)
+                .map(ProcessItem::getId)
+                .collect(Collectors.toSet());
         
+        var partsID = process.getInputPartIDs();
+        assertEquals(expectedPartIDs, partsID, "Antenna expected input part IDs");
+        assertEquals(4.015D, process.calculateTotalInputMass(), "Antenna expected input mass");
+
         assertEquals(expectedInputs, process.getInputList(), "Antenna expected inputs");
+
+
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
         expectedOutputs.add(createPart("radio antenna", 2D));
@@ -172,29 +183,27 @@ public class ManufactureConfigTest {
                         ManufactureProcessInfo::getName);
         var process = processByName.get(ASSEMBLE_PASSENGER_DRONE);
         assertNotNull(process, "Manufacturng processes defined");
-        assertEquals(process.getTooling().name(), "Lifting");
+        assertEquals("Lifting", process.getTooling().name());
 
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
-        expectedOutputs.add(createEquipment("passenger drone", 1));
+        expectedOutputs.add(createVehicle("passenger drone", 1));
         assertEquals(expectedOutputs, process.getOutputList(), "passenger drone expected output");
-        double mass = process.getOutputList().get(0).getMass();
-        System.out.println("mass: " + mass);
     }
     
     
     public static ProcessItem createPart(String name, double num) {
     	Part part = (Part) ItemResourceUtil.findItemResource(name);
         int id = part.getID();
-        return new ProcessItem(id, name, ItemType.PART, num, part.getMassPerItem());
+        return new ProcessItem(id, name, ItemType.PART, num);
     }
 
     public static ProcessItem createAmount(String name, double amount) {
         int id = ResourceUtil.findIDbyAmountResourceName(name);
-        return new ProcessItem(id, name, ItemType.AMOUNT_RESOURCE, amount, amount);
+        return new ProcessItem(id, name, ItemType.AMOUNT_RESOURCE, amount);
     }
     
-    public static ProcessItem createEquipment(String name, double number) {
-        return new ProcessItem(VehicleType.convertName2ID(name), name, ItemType.VEHICLE, number, 0);
+    public static ProcessItem createVehicle(String name, double number) {
+        return new ProcessItem(-1, name, ItemType.VEHICLE, number);
     }
 }

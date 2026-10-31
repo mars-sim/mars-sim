@@ -131,21 +131,6 @@ public class GoodsUtil {
 
         return VehicleType.convertName2ID(vehicleType);
     }
-    
-    /**
-     * Gets a good object for the given vehicle type.
-     *
-     * @param vehicleType the vehicle type string.
-     * @return good for the vehicle type.
-     */
-    public static Good getVehicleGood(String vehicleType) {
-        if ((vehicleType == null) || vehicleType.trim().isEmpty()) {
-            logger.severe("vehicleType is NOT supposed to be blank or null.");
-        }
-
-        int id = VehicleType.convertName2ID(vehicleType);
-        return getGoodsMap().get(id);
-    }
 
     /**
      * Gets a good object for the given vehicle type.
