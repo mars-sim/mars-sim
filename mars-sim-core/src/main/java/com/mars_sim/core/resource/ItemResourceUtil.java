@@ -232,8 +232,8 @@ public class ItemResourceUtil {
 			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
 				if (info.getName().equalsIgnoreCase(ASSEMBLE_EVA_SUIT)) {
 		        	manufactureProcessInfo = info;
-					evaSuitPartIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
-					usualMass = info.getInputList().stream().mapToDouble(ProcessItem::getMass).sum();
+					evaSuitPartIDs = info.getInputPartIDs();
+					usualMass = info.calculateTotalInputMass();
 		        	break;
 				}
 			}

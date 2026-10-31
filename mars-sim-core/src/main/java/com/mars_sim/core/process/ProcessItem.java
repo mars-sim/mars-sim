@@ -39,15 +39,13 @@ public class ProcessItem implements Serializable {
 	private String name;
 	private ItemType type;
 	private double amount;
-	private double mass;
     private int id;
 
     
-	public ProcessItem(int id, String name, ItemType type, double amount, double mass) {
+	public ProcessItem(int id, String name, ItemType type, double amount) {
         this.name = name;
         this.type = type;
         this.amount = amount;
-        this.mass = mass;
         this.id = id;
     }
 
@@ -67,10 +65,6 @@ public class ProcessItem implements Serializable {
 		return amount;
 	}
 
-	public double getMass() {
-		return mass;
-	}
-	
     /**
      * Deposits the item into the settlement.
      * 
@@ -173,6 +167,7 @@ public class ProcessItem implements Serializable {
     /**
      * Checks if another object is equal to this one.
      */
+    @Override
     public boolean equals(Object object) {
         boolean result = false;
         if (object instanceof ProcessItem item) {
@@ -189,7 +184,8 @@ public class ProcessItem implements Serializable {
      * 
      * @return hash code.
      */
+	@Override 
     public int hashCode() {
-        return name.hashCode();
+        return id % 32;
     }
 }
