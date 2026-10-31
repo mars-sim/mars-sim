@@ -11,8 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.Entity;
-import com.mars_sim.core.EntityManagerListener;
+import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.data.collection.DataManager;
 import com.mars_sim.core.data.collection.FieldDataSet;
 import com.mars_sim.core.structure.Settlement;
@@ -23,24 +22,20 @@ import com.mars_sim.ui.swing.utils.model.BaseDataModel;
  * Table model for handling data.
  */
 public class DataTableModel extends BaseDataModel
-       implements EntityManagerListener, MonitorModel {
+       implements MonitorModel {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     private static final String DATA = Msg.getString("data.plural");
 
     private Set<Settlement> settlements = Collections.emptySet();
-    private DataManager mgr;
 
     /**
      * Constructor.
      * 
-     * @param mgr the data manager
      */
-    public DataTableModel(DataManager mgr) {
+    public DataTableModel() {
     	super(ID, SETTLEMENT, TYPE, TIME, QUALITY, OWNER, WORKTIME, COORD);
-        this.mgr = mgr;
-        mgr.addListener(this);
     }
 
 	/**
@@ -51,32 +46,38 @@ public class DataTableModel extends BaseDataModel
      */
     @Override
     public boolean setSettlementFilter(Set<Settlement> selectedSettlement) {
+        settlements.forEach(s -> s.removeEntityListener(this));
+
         List<FieldDataSet> set = new ArrayList<>();
-        if (!selectedSettlement.isEmpty() && !mgr.getSettlementSet().isEmpty()) {
-	        for (Settlement settlement : selectedSettlement) {
-	        	if (mgr.getSettlementSet().contains(settlement)) {
-	        		set.addAll(mgr.getDataArchive().get(settlement));
-	        	}
-	        }
-        }
+        selectedSettlement.forEach(s -> {
+            set.addAll(s.getFieldDataManager().getDataArchive());
+        });
 
 		setEntities(set);
         settlements = selectedSettlement;
+        settlements.forEach(s -> s.addEntityListener(this));
+
 		return true;
     }
 
+    
+    /**
+     * Handle entity updates for a Settlement.
+     * This is used to update the model when a settlement is added or removed from the filter.
+     * If Event source is not a Settlement, then the event is passed to the super class for handling.
+     * @param event The entity event.
+     */
     @Override
-    public void entityAdded(Entity newEntity) {
-        if (newEntity instanceof FieldDataSet d
-                && settlements.contains(d.getOwningSettlement())) {
-            addEntity(d);
-        } 
-    }
-
-    @Override
-    public void entityRemoved(Entity removedEntity) {
-        if (removedEntity instanceof FieldDataSet d) {
-            removeEntity(d);
+    public void entityUpdate(EntityEvent event) {
+        if (event.getSource() instanceof Settlement settlement) {
+            // Events from Settlemetns go no further
+            if ((settlements.contains(settlement))
+                && (event.getType().equals(DataManager.FIELDDATA_ADDED))) {
+                addEntity((FieldDataSet) event.getTarget());
+            }
+        }
+        else {
+            super.entityUpdate(event);
         }
     }
 
@@ -85,7 +86,7 @@ public class DataTableModel extends BaseDataModel
      */
     @Override
     public void release() {
-        mgr.removeListener(this);
+        settlements.forEach(s -> s.removeEntityListener(this));
         super.release();
     }
 

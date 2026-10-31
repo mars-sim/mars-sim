@@ -6,6 +6,8 @@
  */
 package com.mars_sim.ui.swing.utils.model;
 
+import java.util.Set;
+
 import com.mars_sim.core.data.collection.FieldDataSet;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.time.MarsTime;
@@ -38,11 +40,13 @@ public abstract class BaseDataModel extends AbstractEntityModel<FieldDataSet> {
 	protected static final EntityColumnSpec TIME = new EntityColumnSpec(
 					new ColumnSpec(TIME_VAL, Msg.getString("TabPanelData.column.time"), MarsTime.class), null);
 	protected static final EntityColumnSpec QUALITY = new EntityColumnSpec(
-					new ColumnSpec(QUALITY_VAL, Msg.getString("TabPanelData.column.quality"), Double.class), null);
+					new ColumnSpec(QUALITY_VAL, Msg.getString("TabPanelData.column.quality"), Double.class),
+                                        Set.of(FieldDataSet.UPDATE));
 	protected static final EntityColumnSpec OWNER = new EntityColumnSpec(
 					new ColumnSpec(OWNER_VAL, Msg.getString("TabPanelData.column.owner"), String.class), null);
 	protected static final EntityColumnSpec WORKTIME = new EntityColumnSpec(
-					new ColumnSpec(WORKTIME_VAL, Msg.getString("TabPanelData.column.workTime"), Double.class), null);
+					new ColumnSpec(WORKTIME_VAL, Msg.getString("TabPanelData.column.workTime"), Double.class), 
+                                Set.of(FieldDataSet.UPDATE));
 	protected static final EntityColumnSpec COORD = new EntityColumnSpec(
 					new ColumnSpec(COORD_VAL, Msg.getString("TabPanelData.column.coordinates"), Coordinates.class), null);
 	

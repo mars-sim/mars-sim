@@ -44,6 +44,7 @@ import com.mars_sim.core.data.HistoryTracable;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.data.collection.DataCollectionSite;
+import com.mars_sim.core.data.collection.DataManager;
 import com.mars_sim.core.environment.DustStorm;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.SurfaceFeatures;
@@ -365,6 +366,7 @@ public class Settlement extends Unit implements Temporal,
 	private History<CompletedProcess> processHistory = new History<>(80);
 	private MissionControl missionControl;
 	private History<MsgContext> history = new History<>(28);
+	private DataManager fieldDataManager;
 
 	
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
@@ -427,6 +429,7 @@ public class Settlement extends Unit implements Temporal,
 							masterClock.getMarsTime().getMillisolInt());
 
 		missionControl = new MissionControl(this);
+		fieldDataManager = new DataManager(this);
 	}
 	
 	/**
@@ -481,6 +484,7 @@ public class Settlement extends Unit implements Temporal,
 		rationing = new Rationing(this);
 
 		missionControl = new MissionControl(this);
+		fieldDataManager = new DataManager(this);
 
 		explorations = new ExplorationManager(this);
 	}
@@ -544,6 +548,7 @@ public class Settlement extends Unit implements Temporal,
 		relation = new Relation(this);
 
 		missionControl = new MissionControl(this);
+		fieldDataManager = new DataManager(this);	
 	}
 
 
@@ -3392,6 +3397,10 @@ public class Settlement extends Unit implements Temporal,
 		return missionControl;
 	}
 	
+    public DataManager getFieldDataManager() {
+        return fieldDataManager;
+    }
+
 	/** 
 	 * Gets the settlement's data collection site map. 
 	 */

@@ -191,7 +191,7 @@ public class MonitorWindow extends ContentPanel
 		newTabs.add(new TableTab(this, new SettlementTableModel(), true, false, COLONY_ICON));
 		newTabs.add(new TableTab(this, new PersonTableModel(), true, false, PEOPLE_ICON));
 		newTabs.add(new TableTab(this, new RobotTableModel(), true, false, BOT_ICON));
-		newTabs.add(new TableTab(this, new DataTableModel(sim.getDataManager()), true, false, DATA_ICON));
+		newTabs.add(new TableTab(this, new DataTableModel(), true, false, DATA_ICON));
 		newTabs.add(new TableTab(this, new BuildingTableModel(), true, false, BUILDING_ICON));
 		newTabs.add(new TableTab(this, new CropTableModel(sim.getConfig()), true, false, CROP_ICON));
 		

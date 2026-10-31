@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.function.FunctionType;
@@ -133,41 +132,24 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	 */
 	public void recordData(Worker worker, double workTime, double quality, boolean isNewRecording) {
 		FieldDataSet data = null;
-		List<FieldDataSet> list = null;
+		List<FieldDataSet> list = dataSetMap.computeIfAbsent(worker.getIdentifier(), k -> new ArrayList<>());
 		
-		if (dataSetMap.isEmpty()) {
-
-			data = createNewFieldDataSet(worker, workTime, quality);
-			list = new ArrayList<>();
-			
+		if (list.isEmpty()) {
+			data = createNewFieldDataSet(worker, workTime, quality);			
 			list.add(data);
-			dataSetMap.put(worker.getIdentifier(), list);
 		}
 		else {
-			list = dataSetMap.get(worker.getIdentifier());
-			if (list == null)
-				list = new ArrayList<>();
-			
-			if (list.isEmpty()) {
-				data = createNewFieldDataSet(worker, workTime, quality);
-				
-				list.add(data);
-				dataSetMap.put(worker.getIdentifier(), list);
-			}
-			else if (isNewRecording) {
-				boolean found = false;
+			if (isNewRecording) {
 				for (FieldDataSet s: list) {
 					if (s.getLocation().equals(worker.getCoordinates())) {
-						found = true;
+						data = s;
 						// For now, each settler is allowed to have only one fielddataset per coordinate
 						break;
 					}
 				}
-				if (!found) {
-					data = createNewFieldDataSet(worker, workTime, quality);
-					
+				if (data == null) {
+					data = createNewFieldDataSet(worker, workTime, quality);					
 					list.add(data);
-					dataSetMap.put(worker.getIdentifier(), list);
 				}
 			}
 			else {
@@ -179,10 +161,8 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 			}
 		}
 
-		// Write onto the global data manager
-		writeToDataManager(data);
 		// Fire the data update
-		data.fireUpdate(null);
+		data.fireUpdate(FieldDataSet.UPDATE);
 	}
 	
 	
@@ -201,29 +181,10 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 				masterClock.getMarsTime(), 
 				initialQuality);
 		data.addWorkTime(workTime);
+
+		settlement.getFieldDataManager().addFieldData(data);
+
 		return data;
-	}
-	
-	/**
-	 * Writes the data onto the data manager.
-	 * 
-	 * @param data
-	 */
-	private void writeToDataManager(FieldDataSet data) {
-		var dataManager = Simulation.instance().getDataManager();
-		
-		List<FieldDataSet> existingList = dataManager.getDataArchive().get(settlement);
-		if (existingList == null) {
-			existingList = new ArrayList<>();
-		}
-		
-		// existingList doesn't have this dataset yet
-		if (!existingList.contains(data)) {
-			// Add the dataset
-			existingList.add(data);
-			// Add listener
-			dataManager.addListener(data);
-		}
 	}
 	
 	/**

@@ -7,7 +7,6 @@
 package com.mars_sim.core.data.collection;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.EntityEvent;
@@ -18,13 +17,14 @@ import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
 public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	
 	private static final long serialVersionUID = 1L;
+
+    public static final String UPDATE = "FieldDataSet Update";
 
 	private static int currentIdentifier;
 
@@ -34,17 +34,13 @@ public abstract class FieldDataSet implements SurfacePOI, MonitorableEntity {
 	private final double initialQuality;
 	/** What is the quality of the data. from 0 to 100. */
 	private double quality = -1;
-	/** How difficult is it in processing the data. from 0 to 100. */
-	private int difficultyLevel;
 	/** researchTime in millisols. */
 	private double researchTime; 
 	/** workTime in millisols. */
 	private double workTime;
 	
 	private DataType dataType;
-	
-	private Map<ScienceType, Integer> scienceTypes;
-	
+		
 	private Worker owner;
 	
 	private Settlement owningSettlement;

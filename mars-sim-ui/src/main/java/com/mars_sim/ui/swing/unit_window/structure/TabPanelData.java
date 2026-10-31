@@ -7,15 +7,10 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.util.Collections;
-import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.table.TableColumnModel;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.data.collection.DataManager;
-import com.mars_sim.core.data.collection.FieldDataSet;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
@@ -25,7 +20,7 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.tool.monitor.DataTableModel;
+import com.mars_sim.ui.swing.utils.model.BaseDataModel;
 
 
 /**
@@ -35,7 +30,6 @@ class TabPanelData extends EntityTableTabPanel<Settlement> implements TemporalCo
 
 	private static final String DATA_ICON = "data";
 
-	private static final String ALL = "All";
 
 	// Data cache
 	private JIntegerLabel numLocalLabel;
@@ -45,7 +39,6 @@ class TabPanelData extends EntityTableTabPanel<Settlement> implements TemporalCo
 	private TableModel tableModel;
 
 	private Settlement settlement;
-	private DataManager manager;
 
 	/**
 	 * Constructor.
@@ -70,8 +63,6 @@ class TabPanelData extends EntityTableTabPanel<Settlement> implements TemporalCo
 	@Override
 	protected JPanel createInfoPanel() {
 
-		manager = Simulation.instance().getDataManager();
-
 		JPanel topContentPanel = new JPanel(new BorderLayout());
 
 		// Prepare spring layout power info panel.
@@ -91,7 +82,6 @@ class TabPanelData extends EntityTableTabPanel<Settlement> implements TemporalCo
 	protected TableModel createModel() {
 		// Prepare data table model.
 		tableModel = new TableModel();
-		setSelection(ALL);
 		return tableModel;
 	}
 
@@ -101,33 +91,6 @@ class TabPanelData extends EntityTableTabPanel<Settlement> implements TemporalCo
 	@Override
 	protected void setColumnDetails(TableColumnModel columnModel) {
 		columnModel.getColumn(0).setPreferredWidth(5);
-//		columnModel.getColumn(0).setCellRenderer(new PowerModeCellRenderer());
-	}
-
-	private void setSelection(String selected) {
-		List<FieldDataSet> oldList = getFieldDataList(); 
-		
-		if (oldList == null) {
-			oldList = Collections.emptyList();
-		}
-		
-//		List<FieldDataSet> lists = switch(selected) {
-//		
-////			case SETTLEMENT -> ...);
-//		
-//			default -> Collections.emptyList();
-//		};
-		
-		tableModel.setEntities(oldList);
-	}
-
-	/**
-	 * Gets a list of settlement's field data.
-	 *
-	 * @return list of field data
-	 */
-	private List<FieldDataSet> getFieldDataList() {
-		return manager.getDataArchive().get(settlement);
 	}
 
 	/**
@@ -149,54 +112,16 @@ class TabPanelData extends EntityTableTabPanel<Settlement> implements TemporalCo
 	 * Internal class used as model for the power table.
 	 */
 	@SuppressWarnings("serial")
-	private class TableModel extends DataTableModel {
-		
+	private class TableModel extends BaseDataModel {
+				
 		private TableModel() {
-			super(manager);
-		}
+			super(ID, TYPE, TIME, QUALITY, OWNER, WORKTIME, COORD);
 
-		@Override
-		protected Object getEntityValue(FieldDataSet entity, int valueIndex) {
-			 
-			return switch (valueIndex) {
-
-			default -> super.getEntityValue(entity, valueIndex);
-			};
-		}
-
-		/**
-		 * Gets tooltip for status column to show the power mode name.
-		 */
-		@Override
-		protected String getEntityDescription(FieldDataSet entity, int valueIndex) {
-//			if (valueIndex == QUALITY_VAL) {
-//				return "The quality of this dataset";
-//			}
-			
-			return super.getEntityDescription(entity, valueIndex);
+			setEntities(settlement.getFieldDataManager().getDataArchive());
 		}
 
 		public void update() {
-			setSelection(ALL);
-			
-			if (getRowCount() == 0)
-				return;
-			
-			fireTableRowsUpdated(0, getRowCount() - 1);
+			setEntities(settlement.getFieldDataManager().getDataArchive());
 		}
 	}
-	
-	/**
-	 * Remove the listener for new ScientificStudies when the panel is destroyed.
-	 */
-	@Override
-	public void destroy() {
-//		getContext().getSimulation().getDataManager().removeListener(this);
-
-		if (tableModel != null) {
-			tableModel.release();
-		}
-		super.destroy();
-	}
-
 }

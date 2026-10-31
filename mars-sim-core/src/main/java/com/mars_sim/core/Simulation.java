@@ -43,7 +43,6 @@ import com.mars_sim.core.building.utility.power.PowerSource;
 import com.mars_sim.core.data.DataLogger;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.UnitSet;
-import com.mars_sim.core.data.collection.DataManager;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.OuterSpace;
@@ -158,7 +157,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 	private MalfunctionFactory malfunctionFactory;
 	private UnitManager unitManager;
 	private MedicalManager medicalManager;
-	private DataManager dataManager;
 	private MasterClock masterClock;
 	private ScientificStudyManager scientificStudyManager;
 	private TransportManager transportManager;
@@ -330,8 +328,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		GoodsManager.initializeInstances(sim.masterClock, sim.unitManager, sim.marketManager);
 					
 		sim.medicalManager = new MedicalManager();
-	
-		sim.dataManager = new DataManager();
 
 		sim.malfunctionFactory = new MalfunctionFactory();
 		
@@ -411,9 +407,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
 		// Initialize MedicalManager instance
 		medicalManager = new MedicalManager();
-		// Initialize DataManager instance
-		dataManager = new DataManager();
-		
+
 		// Initialize UnitManager instance		
 		eventManager = new HistoricalEventManager(masterClock);
 		// Initialize TransportManager instance		
@@ -716,7 +710,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 			weather = (Weather) ois.readObject();
 			surfaceFeatures = (SurfaceFeatures) ois.readObject();
 			medicalManager = (MedicalManager) ois.readObject();
-			dataManager = (DataManager) ois.readObject();
 			scientificStudyManager = (ScientificStudyManager) ois.readObject();
 			eventManager = (HistoricalEventManager) ois.readObject();
 			transportManager = (TransportManager) ois.readObject();
@@ -1001,7 +994,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 			oos.writeObject(weather);
 			oos.writeObject(surfaceFeatures);		
 			oos.writeObject(medicalManager);
-			oos.writeObject(dataManager);
 			oos.writeObject(scientificStudyManager);
 			oos.writeObject(eventManager);
 			oos.writeObject(transportManager);
@@ -1050,7 +1042,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 				weather,
 				surfaceFeatures,
 				medicalManager,
-				dataManager,
 				scientificStudyManager,
 				transportManager,
 				marketManager,
@@ -1269,14 +1260,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 	}
 
 	/**
-	 * Gets the data manager.
-	 * 
-	 * @return
-	 */
-	public DataManager getDataManager() {
-		return dataManager;
-	}
-	/**
 	 * Gets the scientific study manager.
 	 *
 	 * @return scientific study manager.
@@ -1414,7 +1397,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		lunarColonyManager = null;
 		orbitInfo = null;
 		medicalManager = null;
-		dataManager = null;
 		marketManager = null;
 		eventManager = null;
 
