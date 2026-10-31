@@ -230,7 +230,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 			double freq = value * numberMalfunctions * MalfunctionManager.PARTS_NUMBER_MODIFIER;
 			int number = (int) Math.round(freq);
 			if (number > 0) {
-				manifest.addItem(id, number, false);
+				manifest.setMinItem(id, number, false);
 			}
 		}
 	}

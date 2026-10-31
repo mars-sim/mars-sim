@@ -159,8 +159,8 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	@Test
 	 void testLoadRequiredItemResources() {
 		var manifest = new SuppliesManifest();
-		manifest.addItem(fireExtinguisherID, 1, true);
-		manifest.addItem(smallHammerID, 2, true);
+		manifest.setMinItem(fireExtinguisherID, 1, true);
+		manifest.setMinItem(smallHammerID, 2, true);
 
 		// Load the manifest
 		testLoading(100, manifest);
@@ -172,10 +172,10 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	@Test
 	void testLoadOptionalItemResources() {
 		var manifest = new SuppliesManifest();
-		manifest.addItem(fireExtinguisherID, 1, true);
-		manifest.addItem(smallHammerID, 2, true);
+		manifest.setMinItem(fireExtinguisherID, 1, true);
+		manifest.setMinItem(smallHammerID, 2, true);
 
-		manifest.addItem(pipeWrenchID, 10, false);
+		manifest.setMinItem(pipeWrenchID, 10, false);
 
 		// Load the manifest
 		testLoading(100,manifest);
@@ -187,10 +187,10 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	@Test
 	void testLoadMissingOptionalItemResources() {
 		var manifest = new SuppliesManifest();
-		manifest.addItem(fireExtinguisherID, 1, true);
-		manifest.addItem(smallHammerID, 2, true);
+		manifest.setMinItem(fireExtinguisherID, 1, true);
+		manifest.setMinItem(smallHammerID, 2, true);
 
-		manifest.addItem(pipeWrenchID, 10, false);
+		manifest.setMinItem(pipeWrenchID, 10, false);
 
 		testLoadOptionalResources(100, manifest,
 								  ItemResourceUtil.SLS_3D_PRINTER_ID);
@@ -277,11 +277,11 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		manifest.setMinEquipment(EquipmentType.getResourceID(EquipmentType.GAS_CANISTER), 5, false);
 
 		manifest.addAmount(ResourceUtil.FOOD_ID, 100D, true);
-		manifest.addItem(fireExtinguisherID, 1, true);
-		manifest.addItem(smallHammerID, 2, true);
+		manifest.setMinItem(fireExtinguisherID, 1, true);
+		manifest.setMinItem(smallHammerID, 2, true);
 
 		manifest.addAmount(ResourceUtil.CO2_ID, 4D, false);
-		manifest.addItem(pipeWrenchID, 5, false);
+		manifest.setMinItem(pipeWrenchID, 5, false);
 
 		// Load the manifest
 		testLoading(200, manifest);
