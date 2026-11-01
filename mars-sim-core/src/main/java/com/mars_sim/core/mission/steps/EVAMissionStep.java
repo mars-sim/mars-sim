@@ -14,6 +14,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 
@@ -58,8 +59,11 @@ public abstract class EVAMissionStep extends MissionStep {
         var numSuits = getMission().getMembers().size();
         resources.addAmount(ResourceUtil.OXYGEN_ID, 3D * numSuits, true);
         resources.addAmount(ResourceUtil.WATER_ID, 3D * numSuits, true);
-
         resources.setMinEquipment(EquipmentType.EVA_SUIT.getResourceID(), numSuits, true);
+
+        // Add garments and pressure suits
+        resources.setMinItem(ItemResourceUtil.GARMENT_ID, numSuits, false);
+        resources.setMinItem(ItemResourceUtil.PRESSURE_SUIT_ID, numSuits, false);
     }
 
     /**
@@ -123,7 +127,7 @@ public abstract class EVAMissionStep extends MissionStep {
 
             // Check EVAOperation for this crew member; do not use inVehicle 
             // because it does not catch edge case of someone egressing via an airlock
-            if (task instanceof EVAOperation eo && !eo.isDone()) {
+            if (task instanceof EVAOperation eo && !eo.isDone() && !eo.isEndEVAActive()) {
                 allOnBoard = false;
                 logger.info(member, "Ordered to end EVA for " + getMission().getName());
                 eo.requestEndEVA();

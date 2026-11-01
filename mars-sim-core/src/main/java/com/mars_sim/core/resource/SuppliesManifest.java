@@ -93,16 +93,16 @@ public class SuppliesManifest {
     }
 
     /**
-     * Sets the number of an part to load. This is an absolute value and if it is already defined
+     * Sets the minimum number of a part to load. This is an absolute value and if it is already defined
      * then it will take the maximum.
      * 
-     * @param resourceId ID of the item added
+     * @param itemId ID of the item added
      * @param count Number of items to load
      * @param mandatory Is it mandatory
      */
-    public void addItem(int itemId, int count, boolean mandatory) {
+    public void setMinItem(int itemId, int count, boolean mandatory) {
         Map<Integer, Integer> selected = (mandatory ? mandatoryItem : optionalItem);
-        selected.merge(itemId, count, (v1,v2) -> v1.intValue() + v2.intValue());
+        selected.merge(itemId, count, (v1,v2) -> Math.max(v1.intValue(), v2.intValue()));
     }
 
     /**

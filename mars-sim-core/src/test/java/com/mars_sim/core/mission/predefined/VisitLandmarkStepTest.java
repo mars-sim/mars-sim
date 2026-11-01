@@ -61,7 +61,7 @@ class VisitLandmarkStepTest extends MarsSimUnitTest{
         // Leader cannot execute because out of time
         assertFalse(project.execute(l), "Leader should have nothing to do after EVA complete");
         assertFalse(st.isCompleted(), "Step need everyone back on board");
-        assertTrue(((EVAOperation)task).isRequestEndEVATrue(), "Worker recalled to rover after EVA");
+        assertTrue(((EVAOperation)task).isEndEVAActive(), "Worker recalled to rover after EVA");
 
         // Simulate end of EVA
         w.transfer(roster.vehicle());

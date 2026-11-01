@@ -41,9 +41,9 @@ class SuppliesManifestTest {
         final int MAND = 4;
         var manifest = new SuppliesManifest();
 
-        manifest.addItem(ItemResourceUtil.BACKHOE_ID, MAND, true);
-        manifest.addItem(ItemResourceUtil.SLS_3D_PRINTER_ID, MAND, true);
-        manifest.addItem(ItemResourceUtil.PNEUMATIC_DRILL_ID, OPT, false);
+        manifest.setMinItem(ItemResourceUtil.BACKHOE_ID, MAND, true);
+        manifest.setMinItem(ItemResourceUtil.SLS_3D_PRINTER_ID, MAND, true);
+        manifest.setMinItem(ItemResourceUtil.PNEUMATIC_DRILL_ID, OPT, false);
 
         var mand = manifest.getItems(true);
         assertEquals(2, mand.size(), "Mandatory Items");

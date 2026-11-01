@@ -239,7 +239,7 @@ public abstract class EVAOperation extends Task {
 	/**
 	 * Is ending the current EVA in effect ?
 	 */
-	public boolean isRequestEndEVATrue() {
+	public boolean isEndEVAActive() {
 		return endEVARequested;
 	}
 	
