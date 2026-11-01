@@ -14,7 +14,6 @@ import java.util.Set;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager;
-import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
@@ -210,8 +209,8 @@ public final class ManufactureUtil {
 			} break;
 
 			case ItemType.VEHICLE: {
-				int id = GoodsUtil.getVehicleGoodID(item.getName());
-				result = manager.getGoodValuePoint(id) * item.getAmount();
+				var type = VehicleType.convertID2Type(item.getId());
+				result = manager.getGoodValuePoint(type.getResourceID()) * item.getAmount();
 				if (isOutput)
 					result *= VEHICLE_VALUE;
 			} break;

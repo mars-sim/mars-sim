@@ -119,14 +119,14 @@ public class FoodProductionConfig {
 			Element inputs = processElement.getChild(INPUTS);
 			List<ProcessItem> inputList = new ArrayList<>();
 			inputList.addAll(ConfigHelper.parseInputResources(inputs.getChildren(RESOURCE), alternateResourceMap));
-			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.PART, inputs.getChildren(PART)));
-			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.EQUIPMENT, inputs.getChildren(EQUIPMENT)));
+			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.PART, inputs.getChildren(PART), null));
+			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.EQUIPMENT, inputs.getChildren(EQUIPMENT), null));
 
 			Element outputs = processElement.getChild(OUTPUTS);
 			List<ProcessItem> outputList = new ArrayList<>();
-			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.AMOUNT_RESOURCE, outputs.getChildren(RESOURCE)));
-			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.PART, outputs.getChildren(PART)));
-			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.EQUIPMENT, outputs.getChildren(EQUIPMENT)));
+			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.AMOUNT_RESOURCE, outputs.getChildren(RESOURCE), null));
+			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.PART, outputs.getChildren(PART), null));
+			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.EQUIPMENT, outputs.getChildren(EQUIPMENT), null));
 
 			// Add primary process to newList.
 			var process = new FoodProductionProcessInfo(name, description,

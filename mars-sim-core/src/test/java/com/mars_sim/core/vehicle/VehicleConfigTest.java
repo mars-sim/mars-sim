@@ -2,6 +2,7 @@ package com.mars_sim.core.vehicle;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,7 +13,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class VehicleConfigTest {
+class VehicleConfigTest {
 
     private SimulationConfig config;
 
@@ -46,11 +47,11 @@ public class VehicleConfigTest {
 
         assertEquals(40D, found.getBaseSpeed());
         assertEquals(90D, found.getBasePower(), "Base power");
-        // Note: Still fine-tuning the mass of various manufacturing processes
-        //       The empty mass will change in near future
-        
-//        System.out.println("mass: " + found.getEmptyMass());
-//        assertEquals(842.04, found.getEmptyMass(), "Configured empty mass");
+
+        // Check the associated Vehicle Spec has derived properties
+        assertTrue(!found.getParts().isEmpty(), "Explorer rover should have parts after assembly");
+        assertNotEquals(VehicleFactory.getUsualMass(found.getType()),
+                found.getEmptyMass(), "Explorer rover mass should change after assembly");
 
         assertEquals(1, found.getLabTechLevel(), "Lab level");
         assertEquals(2, found.getLabCapacity(), "Lab Capacity");

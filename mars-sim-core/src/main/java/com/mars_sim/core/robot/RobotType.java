@@ -37,10 +37,19 @@ public enum RobotType {
 	}
 
 	/**
+	 * Get the global Resource ID for this robot type.
+	 * @return The global Resource ID for this robot type.
+	 */
+	public int getResourceID() {
+		return ordinal() + ResourceType.FIRST_ROBOT_RESOURCE_ID;
+	}
+
+	/**
 	 * Convert an robot type to the associated resourceID.
+	 * Use the RobotType.getResourceID() method to get the resource ID for a specific robot type.
 	 */
 	public static int getResourceID(RobotType type) {
-		return type.ordinal() + ResourceType.FIRST_ROBOT_RESOURCE_ID;
+		return type.getResourceID();
 	}
 
 	/**

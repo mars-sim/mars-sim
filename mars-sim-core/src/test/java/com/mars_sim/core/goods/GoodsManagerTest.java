@@ -4,28 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.mars_sim.core.TestEntityListener;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
 class GoodsManagerTest extends MarsSimUnitTest {
 	
-    private Settlement s = null;
-    private GoodsManager gm = null;
-    
-	@BeforeEach
-    void setUp() {
-        s = buildSettlement("mock", true);
-        gm = new GoodsManager(s);
-	}
-	
     @Test
-    public void testResetCommerceFactor() {
+    void testResetCommerceFactor() {
+            var s = buildSettlement("mock", true);
+        var gm = new GoodsManager(s);
 
         double newValue = 1.5D;
         gm.setCommerceFactor(CommerceType.BUILDING, newValue);
@@ -36,13 +28,15 @@ class GoodsManagerTest extends MarsSimUnitTest {
     }
     
     @Test
-    public void testPartGoodDemand() {
+    void testPartGoodDemand() {
         Part sheet = (Part) ItemResourceUtil.findItemResource("Steel sheet");
 
         int previousNum = 1;
        
         int needNum = 2;
-        
+        var s = buildSettlement("mock", true);
+        var gm = new GoodsManager(s);
+
         s.getEquipmentInventory().storeItemResource(sheet.getID(), previousNum);
         
         PartGood pg = new PartGood(sheet);
@@ -73,7 +67,10 @@ class GoodsManagerTest extends MarsSimUnitTest {
     }
     
     @Test
-    public void testGetResourceReviewDue() {
+    void testGetResourceReviewDue() {
+        var s = buildSettlement("mock", true);
+        var gm = new GoodsManager(s);
+
         // Build a settlement with some people to generate demand
         buildPerson("P1", s);
         buildPerson("P2", s);
@@ -98,5 +95,21 @@ class GoodsManagerTest extends MarsSimUnitTest {
         else
         	assertNotEquals(initialDemand, newDemand, "Demand has changed after budget review");
         
+    }
+
+    @Test 
+    void testGoodsUpdate() {
+        var s = buildSettlement("mock", true);
+
+        var listener = new TestEntityListener();
+        s.addEntityListener(listener);
+
+        var gm = new GoodsManager(s);
+
+        // Perform some update operations on goods manager
+        gm.updatedMetrics();
+
+        assertTrue(listener.getEventsReceived() > 0, "Listener should have been notified after goods update");
+
     }
 }

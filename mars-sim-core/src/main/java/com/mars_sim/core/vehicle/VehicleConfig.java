@@ -17,7 +17,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.mars_sim.core.configuration.ConfigHelper;
-import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
@@ -81,10 +80,9 @@ public class VehicleConfig {
 	 * Constructor.
 	 * 
 	 * @param vehicleDoc {@link Document} DOM document with vehicle configuration.
-	 * @param manuCon Use to calculate vehcile construction details
 	 */
-	public VehicleConfig(Document vehicleDoc, ManufactureConfig manuConfig) {
-		loadVehicleSpecs(vehicleDoc, manuConfig);
+	public VehicleConfig(Document vehicleDoc) {
+		loadVehicleSpecs(vehicleDoc);
 	}
 
 	/**
@@ -93,7 +91,7 @@ public class VehicleConfig {
 	 * @param vehicleDoc
 	 * @param manuConfig 
 	 */
-	private synchronized void loadVehicleSpecs(Document vehicleDoc, ManufactureConfig manuConfig) {
+	private synchronized void loadVehicleSpecs(Document vehicleDoc) {
 		if (vehicleSpecMap != null) {
 			// just in case if another thread is being created
 			return;
@@ -105,7 +103,7 @@ public class VehicleConfig {
 		Element root = vehicleDoc.getRootElement();
 		List<Element> vehicleNodes = root.getChildren(VEHICLE);
 		for (Element vehicleElement : vehicleNodes) {
-			var vSpec = parseVehicleSpec(vehicleElement, manuConfig);
+			var vSpec = parseVehicleSpec(vehicleElement);
 
 			// Keep results for later use
 			newMap.put(vSpec.getName().toLowerCase(), vSpec);
@@ -114,7 +112,7 @@ public class VehicleConfig {
 		vehicleSpecMap = Collections.unmodifiableMap(newMap);
 	}
 
-	private static VehicleSpec parseVehicleSpec(Element vehicleElement, ManufactureConfig manuConfig) {
+	private static VehicleSpec parseVehicleSpec(Element vehicleElement) {
 		String name = vehicleElement.getAttributeValue(NAME);
 		String model = vehicleElement.getAttributeValue(MODEL);
 		VehicleType type = ConfigHelper.getEnum(VehicleType.class, vehicleElement.getAttributeValue(TYPE));
@@ -177,9 +175,6 @@ public class VehicleConfig {
 			vSpec.setCargoCapacity(totalCapacity, cargoCapacityMap);
 		}
 
-		// Use the cargo capacity for performance analysis
-		vSpec.calculateDetails(manuConfig);
-		
 		// sickbay
 		Element sickbayElement = vehicleElement.getChild(SICKBAY);
 		if (sickbayElement != null) {

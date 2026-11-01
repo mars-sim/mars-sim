@@ -14,10 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.building.utility.power.PowerSourceType;
-import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScienceType;
@@ -345,6 +343,10 @@ public class VehicleSpec implements Serializable {
 		this.type = type;
 		this.description = description;
 		this.baseImage = baseImage;
+
+		// These are default unless a Manfucaturing process is attached later
+		this.partIDs = Collections.emptySet();
+		this.emptyMass = VehicleFactory.getUsualMass(type);
 		
 		if (VehicleType.isRover(type)) {
 			// Add crew cabin as a system scope
@@ -430,42 +432,16 @@ public class VehicleSpec implements Serializable {
 	 * Initializes the specifications.
 	 * Note: Called by VehicleConfig to update the cargo capacity.
 	 * 
-	 * @param manuConfig 
+	 * @param vehicleBuildProcess The manufacturing process used to build this vehicle type.
 	 */
-	void calculateDetails(ManufactureConfig manuConfig) {
+	public void calculateDetails(ManufactureProcessInfo vehicleBuildProcess) {
 		
-		loadBuildParts(manuConfig);
+		partIDs = vehicleBuildProcess.getInputPartIDs();
+		emptyMass = vehicleBuildProcess.calculateTotalInputMass();
 		
 		defineVehiclePerformance();
 	}
 
-	/**
-	 * Loads the part IDs used to build this type of vehicle, if a manufacturing process exists.
-	 */
-	private void loadBuildParts(ManufactureConfig manuConfig) {
-		if (manuConfig == null) {
-			partIDs = Collections.emptySet();
-			return;
-		}
-
-		var vehicleBuildProcess = findBuildProcess(manuConfig);
-		if (vehicleBuildProcess == null) {
-			partIDs = Collections.emptySet();
-			emptyMass = VehicleFactory.getUsualMass(type);
-			return;
-		}
-		partIDs = vehicleBuildProcess.getInputPartIDs();
-		emptyMass = vehicleBuildProcess.calculateTotalInputMass();
-	}
-
-	private ManufactureProcessInfo findBuildProcess(ManufactureConfig manuConfig) {
-		return manuConfig.getManufactureProcessList().stream()
-					.filter(info -> info.getOutputList().stream()
-							.anyMatch(item -> (item.getType() == ItemType.VEHICLE)
-									&& item.getName().equalsIgnoreCase(name)))
-					.findFirst().orElse(null);
-	}
-	
 	/**
 	 * Defines the vehicle performance specifications.
 	 * 

@@ -28,6 +28,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.vehicle.VehicleType;
 
 public class ManufactureConfigTest {
 
@@ -50,11 +51,12 @@ public class ManufactureConfigTest {
     private static final int FERTILIZER_ALT_INPUTS = FERTILIZER_ALT_NAMES.length;
     
     private ManufactureConfig manuConfig;
+    private SimulationConfig config;
 
 
     @BeforeEach
     void setup() {
-        var config = SimulationConfig.loadConfig();
+        config = SimulationConfig.loadConfig();
         manuConfig = config.getManufactureConfiguration();
     }
 
@@ -185,10 +187,12 @@ public class ManufactureConfigTest {
         assertNotNull(process, "Manufacturng processes defined");
         assertEquals("Lifting", process.getTooling().name());
 
+        var vs = config.getVehicleConfiguration().getVehicleSpec("passenger drone");
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
-        expectedOutputs.add(createVehicle("passenger drone", 1));
+        expectedOutputs.add(createVehicle(vs.getType(), vs.getName(), 1));
         assertEquals(expectedOutputs, process.getOutputList(), "passenger drone expected output");
+
     }
     
     
@@ -203,7 +207,7 @@ public class ManufactureConfigTest {
         return new ProcessItem(id, name, ItemType.AMOUNT_RESOURCE, amount);
     }
     
-    public static ProcessItem createVehicle(String name, double number) {
-        return new ProcessItem(-1, name, ItemType.VEHICLE, number);
+    public static ProcessItem createVehicle(VehicleType vType, String name, double number) {
+        return new ProcessItem(vType.getResourceID(), name.toLowerCase(), ItemType.VEHICLE, number);
     }
 }
