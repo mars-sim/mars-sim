@@ -52,7 +52,7 @@ public class ResourceUtil {
 	public static final int AKAGANEITE_ID = ALLOPHANE_ID + 1;
 	public static final int BASSANITE_ID = AKAGANEITE_ID + 1;
 	
-	// 11 types of Mineral concentrations :
+	// 12 types of Mineral concentrations :
 	public static final int CHALCOPYRITE_ID = BASSANITE_ID + 1;
 	public static final int GEOTHITE_ID = CHALCOPYRITE_ID + 1;
 	public static final int HEMATITE_ID = GEOTHITE_ID + 1;

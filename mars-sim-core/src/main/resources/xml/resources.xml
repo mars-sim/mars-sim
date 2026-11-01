@@ -52,7 +52,7 @@
 	<resource name="Carbon monoxide" type="compound" phase="gas" demand="1.0" />
 	<resource name="Chlorine" type="element" phase="gas"/>
 	
-	<resource name="Fluorine" type="chemical" phase="gas" demand="1.5">
+	<resource name="Fluorine" type="element" phase="gas" demand="1.5">
 		Fluorine is essential in modern display liquid crystals. It makes the LC Electrically Switchable.
 	</resource> 
 	
@@ -384,7 +384,27 @@
 		industrial chemical. Its formulae is C2H4O2. Since ancient times, 
 		it has been used as a medicine to reduce headaches and act 
 		as a weak blood thinner.</resource>
+		
+	<resource name="Sulphuric acid" type="chemical" phase="solid">
+		Sulfuric acid (also spelled sulphuric acid), with the chemical formula H₂SO₄, 
+		is the most produced industrial chemical globally, primarily used in 
+		fertilizer manufacturing, petroleum refining, and lead-acid batteries. 
+		 It is a colorless, odorless, viscous, and highly corrosive mineral 
+		 acid that acts as a strong dehydrating and oxidizing agent.</resource>
 
+	<resource name="Phosphoric acid" type="chemical" phase="solid">
+		H₃PO₄ is phosphoric acid (also called orthophosphoric acid) — an inorganic mineral acid
+		with a molar mass of 97.99 g/mol. Melting point	42 °C (108 °F). 
+		Colorless crystalline solid (pure); colorless viscous syrup (85% aq.).
+		On Earth, ~90% of H₃PO₄ production goes to phosphate fertilizers (DAP, MAP, TSP).</resource>
+		 
+	<resource name="Hydrogen fluoride" type="chemical" phase="solid">
+		Hydrogen fluoride (HF) is a diatomic molecule of hydrogen and fluorine with a 
+		molar mass of 20.01 g/mol. Boiling point is 19.5 °C (67 °F). It's Colorless, 
+		corrosive gas at room temperature. It's the critical intermediate — 
+		the only practical way to bridge solid fluoride minerals to elemental 
+		fluorine gas.</resource>
+		
 	<resource name="Acetylene" type="chemical" phase="gas" demand="1.2" >
 		Acetylene is a colorless gas that has a strong garlic-like odor. When 
 		combined with oxygen, it becomes very hot and is classified as the 
@@ -842,7 +862,7 @@
 	 with a related structure (the olivine group)—which includes tephroite (Mn2SiO4),
 	 monticellite (CaMgSiO4) and kirschsteinite (CaFeSiO4).</resource>
 	 
-	  <resource name="Plagioclase Feldspar" type="mineral" phase="solid">Plagioclase feldspars 
+	  <resource name="Plagioclase feldspar" type="mineral" phase="solid">Plagioclase feldspars 
 	  (sodium–calcium solid solution): ranging from Albite (NaAlSi₃O₈) to Anorthite (CaAl₂Si₂O₈) 
 	  
 	  Feldspars occur in all major rock types (igneous, metamorphic, and sedimentary) and are the 
@@ -887,6 +907,17 @@
 	<resource name="Cross bedding" type="rock" phase="solid">.</resource>
 	<resource name="Meteorite" type="rock" phase="solid">.</resource>
 	<resource name="Scoria" type="rock" phase="solid">.</resource>
+
+<!-- Rock derived minerals -->
+
+
+	<resource name="Fluorite" type="mineral" phase="solid">
+		Best estimate for local regolith: ~2–4 wt% in F-rich units.
+		Bulk crust: much less than 0.1 wt% (trace). </resource>
+	<resource name="Fluorapatite" type="mineral" phase="solid">
+		Best estimate for local regolith: ~1–2 wt% in sedimentary mudstones; less than 1 vol% in igneous.
+		Bulk crust: ~0.1–0.3 wt% (order-of-magnitude)
+. </resource>
 
 <!-- Elements
 

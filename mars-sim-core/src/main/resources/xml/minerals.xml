@@ -11,7 +11,7 @@
 	<!ATTLIST locale name (volcanic|sedimentary|plutonic|aeolian|tectonic|crater) #REQUIRED>
 ]>
 
-<!-- List of all 11 mineral concentrations that can be mined. -->
+<!-- List of all 12 mineral concentrations that can be mined. -->
 <mineral-concentrations>
 
 	<!-- 

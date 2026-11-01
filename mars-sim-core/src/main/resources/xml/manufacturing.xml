@@ -364,7 +364,62 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 				
-				
+	<process name="Obtain Flourine from Fluorite"
+			tech="1" skill="2"
+			work-time="10"
+			process-time="10" tooling="chemical"
+			power-required=".1">
+		<description> 
+			From fluorite (the dominant F-phase in sandstone veins)
+			Use Acid Leaching
+		</description>
+		<inputs>
+			<resource name="Fluorite" amount="7.808" />	
+			<resource name="Sulphuric acid" amount="9.808" />	
+		</inputs>
+		<outputs>
+			<resource name="Hydrogen fluoride" amount="4.002" />	
+			<resource name="Calcium sulfate" amount="13.614" />
+		</outputs>
+	</process>
+		
+	<process name="Obtain Flourine from Fluorapatite"
+			tech="1" skill="2"
+			work-time="10"
+			process-time="10" tooling="chemical"
+			power-required=".1">
+		<description> 
+			From fluorite (the dominant F-phase in sandstone veins)
+			Use Acid Leaching
+		</description>
+		<inputs>
+			<resource name="Fluorapatite" amount="5.0431" />	
+			<resource name="Sulphuric acid" amount="4.904" />	
+		</inputs>
+		<outputs>
+			<resource name="Phosphoric acid" amount="2.9397" />	
+			<resource name="Calcium sulfate" amount="6.807" />
+			<resource name="Hydrogen fluoride" amount="0.2001" />
+		</outputs>
+	</process>
+	
+	<process name="Electrolyze Hydrogen fluoride"
+			tech="1" skill="2"
+			work-time="10"
+			process-time="10" tooling="chemical"
+			power-required="0.1">
+		<description> 
+			Obtain elemental fluorine gas
+		</description>
+		<inputs>
+			<resource name="Hydrogen fluoride" amount="4.002" />
+		</inputs>
+		<outputs>
+			<resource name="Hydrogen" amount="0.202" />	
+			<resource name="Fluorine" amount="3.8" />
+		</outputs>
+	</process>
+					
 	<process name="Make crop fertilizers"
 			tech="1" skill="1"
 			work-time="2"
@@ -383,18 +438,18 @@ Note: 1 kg of H2 is 14.13 liter
 			D. Of occasional significance are silicon (Si), cobalt (Co), and vanadium (V).
 		</description> 	
 		<inputs>
-			<resource name="Sand" amount="1.5" >
-				<alternative name="Sandstone" amount="1.5" />
-				<alternative name="Rock samples" amount="1.5" />
+			<resource name="Phosphoric acid" amount="10.0" />		
+			<resource name="Sand" amount="0.5" >
+				<alternative name="Sandstone" amount="0.5" />
+				<alternative name="Rock samples" amount="0.5" />
 			</resource>	
-			<resource name="Soil" amount="1.0" >
-				<alternative name="Carbon" amount="1.0" />
-			</resource>	
-			<resource name="Compost" amount="0.1" >
-				<alternative name="Crop Waste" amount="0.1" />
+			<resource name="Soil" amount="0.5" >
+				<alternative name="Carbon" amount="0.5" />
 			</resource>	
 			<resource name="Food Waste" amount="1.0">
 				<alternative name="Food" amount="1.0" />
+				<alternative name="Crop Waste" amount="1.0" />
+				<alternative name="Compost" amount="1.0" />
 			</resource>			
 			<resource name="Nitrate" amount="0.5" >
 				<alternative name="Nitrite" amount="0.5" />
@@ -421,13 +476,14 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Sulfur" amount="0.02" >
 				<alternative name="Oxygen" amount="0.02" />
 			</resource>
-			<resource name="Phosphorus" amount="0.5" >
+			<resource name="Phosphorus" amount="0.05" >
 				<alternative name="Chromium" amount="0.05" />
+				<alternative name="Carbon" amount="0.05" />
 			</resource>		
 
 		</inputs>
 		<outputs>
-			<resource name="Fertilizer" amount="4.78" />
+			<resource name="Fertilizer" amount="13.27" />
 		</outputs>
 	</process>
 

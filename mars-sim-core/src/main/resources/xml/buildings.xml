@@ -2134,6 +2134,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Separate Gypsum with Carbon Monoxide" number-modules="10"/>
 				<process-engine name="Separate Gypsum with Hydrogen" number-modules="10"/>
 				
+				<process-engine name="Separate Mudstone" number-modules="10"/>
+				<process-engine name="Separate Sandstone" number-modules="10"/>
+				
 				<process-engine name="Make Gypsum Plaster via Calcination" number-modules="15"/>							
 			</resource-processing>
 

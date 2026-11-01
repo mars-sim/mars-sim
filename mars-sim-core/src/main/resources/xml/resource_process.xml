@@ -1114,19 +1114,27 @@
 		<output resource="zinc" rate="1" core="true"/>
 		<output resource="aluminum oxide" rate="8" core="true"/>	
 
-		<output resource="Chalcopyrite" rate="10.0" core="true" />
-		<output resource="Goethite" rate="10.0" core="true" />
-		<output resource="Hematite" rate="10.0" core="true" />	
-		<output resource="Kamacite" rate="10.0" core="true" />	
+		<!-- Arbitraraily produce mineral here until the mining missions are 
+		     optimized for producing enough minerals -->
+		<output resource="Chalcopyrite" rate="8.0" core="true" />
+		<output resource="Goethite" rate="8.0" core="true" />
+		<output resource="Hematite" rate="8.0" core="true" />	
+		<output resource="Kamacite" rate="8.0" core="true" />	
 		
-		<output resource="Magnesite" rate="10.0" core="true" />
-		<output resource="Magnetite" rate="10.0" core="true" />	
-		<output resource="Malachite" rate="10.0" core="true" />	
-		<output resource="Olivine" rate="10.0" core="true" />
+		<output resource="Magnesite" rate="5.0" core="true" />
+		<output resource="Magnetite" rate="5.0" core="true" />	
+		<output resource="Malachite" rate="8.0" core="true" />	
 		
-		<output resource="Taenite" rate="10.0" core="true" />	
-		<output resource="Sylvite" rate="10.0" core="true" />	
+		<output resource="Olivine" rate="12.0" core="true" />
 
+		<output resource="Plagioclase feldspar" rate="12.0" core="true" />
+		<output resource="Pyroxene" rate="12.0" core="true" />
+		
+		<output resource="Taenite" rate="12.0" core="true" />	
+		<output resource="Sylvite" rate="12.0" core="true" />	
+
+		<output resource="Fluorite" rate="5.0" core="true" />	
+		<output resource="Fluorapatite" rate="5.0" core="true" />	
 								
 	</process>
 
@@ -1439,7 +1447,7 @@
 		<input resource="bassanite" rate="50.0" />
 			
 		<output resource="gypsum" rate="45.0" />
-		<output resource="calcium sulfate" rate="3.0" />
+		<output resource="Calcium sulfate" rate="3.0" />
 		<output resource="brine water" rate="2.0" />
 	</process>
 
@@ -1465,6 +1473,37 @@
 		<output resource="brine water" rate="5.2" />
 	</process-->
 
+	<process name="Separate Sandstone" kW-required="0.03" >
+		<description>
+			Process for reducing sandstone to CaF2 (Fluorite or fluorspar) and Ca₅(PO₄)₃F (Fluorapatite)
+			(mass are arbitrary below)
+		</description>
+		<input resource="Sandstone" rate="40.0" />
+		<input resource="Carbon monoxide" rate="10.0" />
+		
+		<output resource="Fluorite" rate="30.0" />
+		<output resource="Fluorapatite" rate="10.0" />
+		<output resource="Calcium sulfate" rate="4.0" />
+		<output resource="Calcium carbonate" rate="4.0" />
+		<output resource="Carbon dioxide" rate="2.0" waste="false" />
+	</process>
+
+	<process name="Separate Mudstone" kW-required="0.03" >
+		<description>
+			Process for reducing mudstone to CaF2 (Fluorite or fluorspar) and Ca₅(PO₄)₃F (Fluorapatite)
+			(mass are arbitrary below)
+		</description>
+		<input resource="Sandstone" rate="40.0" />
+		<input resource="Carbon monoxide" rate="10.0" />
+		
+		<output resource="Fluorite" rate="10.0" />
+		<output resource="Fluorapatite" rate="20.0" />
+		<output resource="Calcium sulfate" rate="4.0" />
+		<output resource="Calcium carbonate" rate="4.0" />
+		<output resource="Carbon dioxide" rate="2.0" waste="false" />
+	</process>
+	
+
 	<process name="Separate Gypsum with Carbon Monoxide" kW-required="0.03" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using carbon monoxide.
@@ -1478,7 +1517,7 @@
 		
 		<output resource="lime" rate="2.0" />
 		<output resource="sulfur" rate="1.0" />
-		<output resource="calcium sulfate" rate="2.0" />
+		<output resource="Calcium sulfate" rate="2.0" />
 		<output resource="Calcium carbonate" rate="24.0" />
 		<output resource="Carbon dioxide" rate="38.1" waste="false" />
 		<output resource="brine water" rate="5.2" />
@@ -1498,7 +1537,7 @@
 
 		<output resource="lime" rate="2.0" />
 		<output resource="sulfur" rate="1.0" />
-		<output resource="calcium sulfate" rate="2.0" />					
+		<output resource="Calcium sulfate" rate="2.0" />					
 		<output resource="Calcium carbonate" rate="24.0" />
 		<output resource="brine water" rate="26.0" />
 	</process>
