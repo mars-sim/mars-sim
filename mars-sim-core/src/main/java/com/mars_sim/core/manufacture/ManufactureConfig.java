@@ -200,11 +200,9 @@ public class ManufactureConfig {
 			newList.add(process);
 
 			// Any special outputs
-			if (!buildVehicles.isEmpty()) {
-				for (var vehicleItem : buildVehicles) {
-					var attached = vehicleConfig.getVehicleSpec(vehicleItem.getName());
-					attached.calculateDetails(process);
-				}
+			for (var vehicleItem : buildVehicles) {
+				var attached = vehicleConfig.getVehicleSpec(vehicleItem.getName());
+				attached.calculateDetails(process);
 			}
 		
 			if (!alternateResourceMap.isEmpty()) {

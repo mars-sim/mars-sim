@@ -344,7 +344,7 @@ public class VehicleSpec implements Serializable {
 		this.description = description;
 		this.baseImage = baseImage;
 
-		// These are default unless a Manfucaturing process is attached later
+		// These are default unless a Manufacturing process is attached later
 		this.partIDs = Collections.emptySet();
 		this.emptyMass = VehicleFactory.getUsualMass(type);
 		

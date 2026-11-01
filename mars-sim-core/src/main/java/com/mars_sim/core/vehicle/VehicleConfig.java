@@ -89,7 +89,6 @@ public class VehicleConfig {
 	 * Parses only once. Stores resulting data for later use.
 	 * 
 	 * @param vehicleDoc
-	 * @param manuConfig 
 	 */
 	private synchronized void loadVehicleSpecs(Document vehicleDoc) {
 		if (vehicleSpecMap != null) {
@@ -199,13 +198,13 @@ public class VehicleConfig {
 
 		// attachments
 		if (!vehicleElement.getChildren(PART_ATTACHMENT).isEmpty()) {
-			List<Part> attachableParts = new ArrayList<>();
 			Element attachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
 			int attachmentSlots = ConfigHelper.getAttributeInt(attachmentElement, NUMBER_SLOTS);
-			for (Element part : attachmentElement.getChildren(PART)) {
-				attachableParts.add((Part) ItemResourceUtil
-						.findItemResource(((part.getAttributeValue(NAME)).toLowerCase())));
-			}
+
+			var attachableParts = attachmentElement.getChildren(PART).stream()
+				.map(part -> (Part) ItemResourceUtil.findItemResource(part.getAttributeValue(NAME).toLowerCase()))
+				.toList();
+
 			vSpec.setAttachments(attachmentSlots, attachableParts);
 		}
 

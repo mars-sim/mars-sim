@@ -58,8 +58,7 @@ class TestGoodsUtil {
 	@Test
 	void testGoodsListContainsExplorerRover() {
 		// Must be a valid Vehcile Spec but NOT a Vehicle Type
-        String typeName = "Long Explorer Rover";
 		Good explorerRoverGood = GoodsUtil.getVehicleGood(VehicleType.TRANSPORT_ROVER);
-		assertNotNull(explorerRoverGood, "Found good vehicleType " +  typeName);
+		assertNotNull(explorerRoverGood, "Found good vehicleType Transport rover");
 	}
 }

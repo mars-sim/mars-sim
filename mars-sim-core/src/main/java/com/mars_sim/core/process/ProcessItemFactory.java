@@ -94,7 +94,7 @@ public final class ProcessItemFactory {
 		var vc = SimulationConfig.instance().getVehicleConfiguration();
 		var spec = vc.getVehicleSpec(item.getName());
 		if (spec == null) {
-			throw new IllegalStateException("Vehicle Spec not found for process item" + item.getName());
+			throw new IllegalStateException("Vehicle Spec not found for process item " + item.getName());
 		}
 		return spec;
 	}
