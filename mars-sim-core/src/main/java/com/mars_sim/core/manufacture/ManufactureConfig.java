@@ -22,6 +22,7 @@ import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.process.ProcessItemFactory;
 import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.vehicle.VehicleConfig;
 
 
 public class ManufactureConfig {
@@ -68,13 +69,14 @@ public class ManufactureConfig {
 	 * 
 	 * @param manufactureDoc DOM document containing manufacture process
 	 *                       configuration.
+	 * @param vehicleConfig 
 	 */
-	public ManufactureConfig(Document manufactureDoc) {
+	public ManufactureConfig(Document manufactureDoc, VehicleConfig vehicleConfig) {
 		Element root = manufactureDoc.getRootElement();
 
 		loadTooling(root);
-		loadManufactureProcessList(root);
-		loadSalvageList(root);
+		loadManufactureProcessList(root, vehicleConfig);
+		loadSalvageList(root, vehicleConfig);
 	}
 
 	/**
@@ -116,7 +118,6 @@ public class ManufactureConfig {
 	 *
 	 * @param techLevel the tech level.
 	 * @return list of processes.
-	 * @throws Exception if error getting processes.
 	 */
 	public List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(int techLevel) {
 		if (techLevel < 0) {
@@ -129,11 +130,11 @@ public class ManufactureConfig {
 	/**
 	 * Gets a list of manufacturing process information.
 	 * 
-	 * @param root
+	 * @param root Root element of the manufacturing configuration.
+	 * @param vehicleConfig Vehicle configuration information.
 	 * @return list of manufacturing process information.
-	 * @throws Exception if error getting info.
 	 */
-	private synchronized void loadManufactureProcessList(Element root) {
+	private synchronized void loadManufactureProcessList(Element root, VehicleConfig vehicleConfig) {
 		if (manuProcessInfoList != null) {
 			// just in case if another thread is being created
 			return;
@@ -176,19 +177,20 @@ public class ManufactureConfig {
 			Element inputs = processElement.getChild(INPUTS);
 			List<ProcessItem> inputList = new ArrayList<>();
 			inputList.addAll(ConfigHelper.parseInputResources(inputs.getChildren(RESOURCE), alternateResourceMap));
-			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.PART, inputs.getChildren(PART)));
-			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.EQUIPMENT, inputs.getChildren(EQUIPMENT)));
-			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.BIN, inputs.getChildren(BIN)));
-			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.VEHICLE, inputs.getChildren(VEHICLE)));
+			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.PART, inputs.getChildren(PART), null));
+			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.EQUIPMENT, inputs.getChildren(EQUIPMENT), null));
+			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.BIN, inputs.getChildren(BIN), null));
+			inputList.addAll(ConfigHelper.parseProcessItems(ItemType.VEHICLE, inputs.getChildren(VEHICLE), vehicleConfig));
 
 			Element outputs = processElement.getChild(OUTPUTS);
 			List<ProcessItem> outputList = new ArrayList<>();
-			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.AMOUNT_RESOURCE, outputs.getChildren(RESOURCE)));
-			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.PART, outputs.getChildren(PART)));
-			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.EQUIPMENT, outputs.getChildren(EQUIPMENT)));
-			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.BIN, outputs.getChildren(BIN)));
-			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.VEHICLE, outputs.getChildren(VEHICLE)));
-			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.ROBOT, outputs.getChildren(ROBOT)));
+			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.AMOUNT_RESOURCE, outputs.getChildren(RESOURCE), null));
+			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.PART, outputs.getChildren(PART), null));
+			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.EQUIPMENT, outputs.getChildren(EQUIPMENT), null));
+			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.BIN, outputs.getChildren(BIN), null));
+			var buildVehicles = ConfigHelper.parseProcessItems(ItemType.VEHICLE, outputs.getChildren(VEHICLE), vehicleConfig);
+			outputList.addAll(buildVehicles);
+			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.ROBOT, outputs.getChildren(ROBOT), null));
 
 			// Add process to newList.
 			ManufactureProcessInfo process = new ManufactureProcessInfo(name, description,
@@ -196,6 +198,12 @@ public class ManufactureConfig {
 						inputList, outputList, effort);
 			
 			newList.add(process);
+
+			// Any special outputs
+			for (var vehicleItem : buildVehicles) {
+				var attached = vehicleConfig.getVehicleSpec(vehicleItem.getName());
+				attached.calculateDetails(process);
+			}
 		
 			if (!alternateResourceMap.isEmpty()) {
 				// Create a list for the original resources from alternateResourceMap
@@ -274,11 +282,12 @@ public class ManufactureConfig {
 		
 	/**
 	 * Gets a list of salvage process information.
+	 * @param root Root element of the manufacturing configuration.
+	 * @param vehicleConfig Vehicle configuration information.
 	 * 
 	 * @return list of salvage process information.
-	 * @throws Exception if error getting info.
 	 */
-	private synchronized void loadSalvageList(Element root) {
+	private synchronized void loadSalvageList(Element root, VehicleConfig vehicleConfig) {
 		if (salvageInfoList != null) {
 			// just in case if another thread is being created
 			return;
@@ -291,14 +300,14 @@ public class ManufactureConfig {
 			String itemName = salvageElement.getAttributeValue(ITEM_NAME);
 			ItemType itemT = ItemType.valueOf(ConfigHelper.convertToEnumName(
 									salvageElement.getAttributeValue(TYPE)));
-			ProcessItem salvaged = ProcessItemFactory.createByName(itemName, itemT, 1);
+			ProcessItem salvaged = ProcessItemFactory.createByName(vehicleConfig, itemName, itemT, 1);
 
 			int techLevel = ConfigHelper.getAttributeInt(salvageElement, TECH);
 			int skill = ConfigHelper.getAttributeInt(salvageElement, SKILL);
 			double workTime = ConfigHelper.getAttributeDouble(salvageElement, WORK_TIME);
 
 			List<Element> partSalvageNodes = salvageElement.getChildren(PART_SALVAGE);
-			var outputs = ConfigHelper.parseProcessItems(ItemType.PART, partSalvageNodes);
+			var outputs = ConfigHelper.parseProcessItems(ItemType.PART, partSalvageNodes, null);
 
 			Tooling tool = null;
 			if (itemT == ItemType.VEHICLE) {

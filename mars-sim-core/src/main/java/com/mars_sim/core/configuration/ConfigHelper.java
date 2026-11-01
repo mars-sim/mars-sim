@@ -28,6 +28,7 @@ import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.process.ProcessItemFactory;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.time.EventSchedule;
+import com.mars_sim.core.vehicle.VehicleConfig;
 
 /**
  * Provides methods applicable to all Config classes.
@@ -281,12 +282,12 @@ public class ConfigHelper {
 		List<ProcessItem> list = new ArrayList<>();
 
 		for (Element resourceElement : resourceNodes) {
-			ProcessItem primaryItem = parseProcessItem(resourceElement, ItemType.AMOUNT_RESOURCE);
+			ProcessItem primaryItem = parseProcessItem(resourceElement, ItemType.AMOUNT_RESOURCE, null);
 			list.add(primaryItem);
 
 			var alternatives = resourceElement.getChildren(ALTERNATIVE);
 			if (!alternatives.isEmpty()) {
-				var altItems = parseProcessItems(ItemType.AMOUNT_RESOURCE, alternatives);
+				var altItems = parseProcessItems(ItemType.AMOUNT_RESOURCE, alternatives, null);
 				altItems.forEach(i -> alternateResourceMap.put(i, primaryItem.getName()));
 			}		
 		}
@@ -300,25 +301,27 @@ public class ConfigHelper {
 	 * 
 	 * @param resourceElement
 	 * @param type
+	 * @param vc 
 	 * @return
 	 */
-	public static ProcessItem parseProcessItem(Element resourceElement, ItemType type) {
+	public static ProcessItem parseProcessItem(Element resourceElement, ItemType type, VehicleConfig vc) {
 		String name = resourceElement.getAttributeValue(NAME);
 		String sizeAttr = (type == ItemType.AMOUNT_RESOURCE ? AMOUNT : NUMBER);
 		double amount = ConfigHelper.getAttributeDouble(resourceElement, sizeAttr);
-		return ProcessItemFactory.createByName(name, type, amount);
+		return ProcessItemFactory.createByName(vc, name, type, amount);
 	}
 
 	/**
 	 * Parses the output amount resource elements in a node list.
 	 * 
+	 * @param type the type of process item.
 	 * @param resourceNodes the node list.
-	 * @return 
-	 * @throws Exception if error parsing resources.
+	 * @param vc the vehicle configuration context.
+	 * @return list of process items.
 	 */
-	public static List<ProcessItem> parseProcessItems(ItemType type, List<Element> resourceNodes) {
+	public static List<ProcessItem> parseProcessItems(ItemType type, List<Element> resourceNodes, VehicleConfig vc) {
 		return resourceNodes.stream()
-					.map(i -> parseProcessItem(i, type))
+					.map(i -> parseProcessItem(i, type, vc))
 					.toList();
 	}
 

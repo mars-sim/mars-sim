@@ -17,6 +17,9 @@ import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.vehicle.VehicleConfig;
+import com.mars_sim.core.vehicle.VehicleSpec;
 
 /**
  * Factory class to create ProcessItem objects
@@ -37,34 +40,63 @@ public final class ProcessItemFactory {
      * @param amount The amount of the item
      * @return
      */
-    public static ProcessItem createByName(String name, ItemType type, double amount) {
-		int id = -1;
-		switch(type) {
+    public static ProcessItem createByName(VehicleConfig vc, String name, ItemType type, double amount) {
+		int id = switch(type) {
 			case AMOUNT_RESOURCE:
 				AmountResource ar = ResourceUtil.findAmountResource(name);
 				if (ar  == null) {
 					throw new IllegalArgumentException(name + " is not a known Resource");
 				}
-				id = ar.getID();
-				break;
+				yield ar.getID();
 			case PART:
 				var p = ItemResourceUtil.findItemResource(name);
 				if (p == null) {
 					throw new IllegalArgumentException(name + " is not a known Part");	
 				}
-				id = p.getID();
-				break;
+				yield p.getID();
 			case BIN:
 				BinType.valueOf(ConfigHelper.convertToEnumName(name));
-				id = BinType.convertName2ID(name);
-				break;
+				yield BinType.convertName2ID(name);
 			case EQUIPMENT:
-				id = EquipmentType.valueOf(ConfigHelper.convertToEnumName(name)).getResourceID();
-				break;
+				yield EquipmentType.valueOf(ConfigHelper.convertToEnumName(name)).getResourceID();
+			case VEHICLE: {
+					var spec = vc.getVehicleSpec(name);
+					if (spec == null) {
+						throw new IllegalArgumentException(name + " is not a known Vehicle Spec");
+					}
+					yield spec.getType().getResourceID();
+				}
+			case ROBOT: {
+				// Robot uses the type-model naming convention
+				String[] parts = name.split("-");
+				if (parts.length != 2) {
+					throw new IllegalArgumentException(name + " is not a valid Robot name");
+				}
+				yield RobotType.valueOf(parts[0].toUpperCase()).getResourceID();
+			}
 			default:
-		}
+				yield -1; // Unknown type
+		};
 
         return new ProcessItem(id, name, type, amount);
+	}
+
+	/**
+	 * Get the associated VehicleSpec for a process item that represents a vehicle.
+	 * @param item Item must be of type VEHICLE
+	 * @return The associated VehicleSpec for the process item
+	 */
+	public static VehicleSpec getVehicleSpec(ProcessItem item) {
+		if (item.getType() != ItemType.VEHICLE) {
+			throw new IllegalArgumentException(item.getName() + " is not a vehicle");
+		}
+
+		var vc = SimulationConfig.instance().getVehicleConfiguration();
+		var spec = vc.getVehicleSpec(item.getName());
+		if (spec == null) {
+			throw new IllegalStateException("Vehicle Spec not found for process item " + item.getName());
+		}
+		return spec;
 	}
 
 	/**
@@ -79,15 +111,7 @@ public final class ProcessItemFactory {
 			case PART -> ItemResourceUtil.findItemResource(item.getId()).getMassPerItem();
 			case BIN -> BinFactory.getUsualMass(BinType.convertID2Type(item.getId()));
 			case EQUIPMENT -> EquipmentFactory.getUsualMass(EquipmentType.convertID2Type(item.getId()));
-			case VEHICLE -> {
-				var vc = SimulationConfig.instance().getVehicleConfiguration();
-				var spec = vc.getVehicleSpec(item.getName());
-				if (spec == null) {
-					logger.warning("Vehicle spec not found for " + item.getName());
-					yield 1000D;
-				}
-				yield spec.getEmptyMass();
-			}
+			case VEHICLE -> getVehicleSpec(item).getEmptyMass();
 			default -> throw new IllegalArgumentException(item.getName() + " is not a known type");
 		};
 	}

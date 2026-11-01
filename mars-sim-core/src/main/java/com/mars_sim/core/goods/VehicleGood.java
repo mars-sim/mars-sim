@@ -69,7 +69,7 @@ class VehicleGood extends Good {
 	private transient Map<MissionType, Double> missionCapacities = new EnumMap<>(MissionType.class);
 
     public VehicleGood(VehicleSpec vs) {
-        super(vs.getName(), VehicleType.getVehicleID(vs.getType()));
+        super(vs.getName(), vs.getType().getResourceID());
 
         this.vs = vs;
         this.vehicleType = vs.getType();

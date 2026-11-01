@@ -11,7 +11,7 @@ class VehicleTypeTest {
     @ParameterizedTest
     @EnumSource(VehicleType.class)
     void testGetName(VehicleType type) {
-        int calcId = VehicleType.getVehicleID(type);
+        int calcId = type.getResourceID();
         var calcType = VehicleType.convertID2Type(calcId);
         assertEquals(type, calcType, "Conversion of " + type);
     }
@@ -29,5 +29,4 @@ class VehicleTypeTest {
         assertFalse(VehicleType.isDrone(type), "Is Not Drone " + type);
         assertTrue(VehicleType.isRover(type), "Is Rover " + type);
     }
-
 }

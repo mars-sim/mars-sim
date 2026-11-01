@@ -35,6 +35,15 @@ public enum VehicleType implements Named {
 	}
 
 	/**
+	 * Gets the unique resource id for this VehicleType.
+	 * The resource id is used to reference the VehicleType in the Inventory.
+	 */
+	public int getResourceID() {
+		return this.ordinal() + ResourceType.FIRST_VEHICLE_RESOURCE_ID;
+	}
+
+
+	/**
 	 * Converts vehicle name to vehicle type.
 	 * 
 	 * @param name
@@ -52,23 +61,6 @@ public enum VehicleType implements Named {
 	}
 	
 	/**
-	 * Converts vehicle name to vehicle id.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public static int convertName2ID(String name) {
-		if (name != null) {
-	    	for (VehicleType e : VehicleType.values()) {
-	    		if (name.equalsIgnoreCase(e.name)) {
-	    			return getVehicleID(e);
-	    		}
-	    	}
-		}
-		return -1;
-	}
-	
-	/**
 	 * Converts vehicle id to vehicle type.
 	 * 
 	 * @param id
@@ -76,16 +68,6 @@ public enum VehicleType implements Named {
 	 */
 	public static VehicleType convertID2Type(int id) {
 		return VehicleType.values()[id - ResourceType.FIRST_VEHICLE_RESOURCE_ID];
-	}
-	
-	/**
-	 * Converts vehicle type to id.
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static int getVehicleID(VehicleType type) {
-		return ResourceType.FIRST_VEHICLE_RESOURCE_ID + type.ordinal();
 	}
 		
 	/**

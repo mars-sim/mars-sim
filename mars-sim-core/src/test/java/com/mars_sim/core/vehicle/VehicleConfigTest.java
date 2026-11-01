@@ -2,6 +2,8 @@ package com.mars_sim.core.vehicle;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -10,19 +12,20 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.utility.power.PowerSourceType;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class VehicleConfigTest {
+class VehicleConfigTest {
 
     private SimulationConfig config;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         config = SimulationConfig.loadConfig();
     }
 
     @Test
-    void testGetVehicleSpec() {
+    void testExploreRoverSpec() {
         var vConfig = config.getVehicleConfiguration();
 
         var found = vConfig.getVehicleSpec("Explorer Rover");
@@ -46,17 +49,45 @@ public class VehicleConfigTest {
 
         assertEquals(40D, found.getBaseSpeed());
         assertEquals(90D, found.getBasePower(), "Base power");
-        // Note: Still fine-tuning the mass of various manufacturing processes
-        //       The empty mass will change in near future
-        
-//        System.out.println("mass: " + found.getEmptyMass());
-//        assertEquals(842.04, found.getEmptyMass(), "Configured empty mass");
+
+        // Check the associated Vehicle Spec has derived properties
+        assertTrue(!found.getParts().isEmpty(), "Explorer rover should have parts after assembly");
+        assertNotEquals(VehicleFactory.getUsualMass(found.getType()),
+                found.getEmptyMass(), "Explorer rover mass should change after assembly");
 
         assertEquals(1, found.getLabTechLevel(), "Lab level");
         assertEquals(2, found.getLabCapacity(), "Lab Capacity");
         assertEquals(4, found.getLabTechSpecialties().size(),"Lab Speciality");
 
         assertEquals(3, found.getPassengerActivitySpots().size(), "Passenger Activity Spots");
+    }
+
+    @Test
+    void testLUVSpec() {
+        var vConfig = config.getVehicleConfiguration();
+
+        var found = vConfig.getVehicleSpec("Light Utility Vehicle");
+        
+        assertNotNull(found);
+        
+        assertEquals(VehicleType.LUV, found.getType());
+
+        var attachments = found.getAttachableParts();
+        assertFalse(attachments.isEmpty(), "LUV should have attachable parts list");
+
+        var drill = ItemResourceUtil.findItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID);
+        var backhoe = ItemResourceUtil.findItemResource(ItemResourceUtil.BACKHOE_ID);
+        assertTrue(attachments.contains(backhoe), "Should contain backhoe");
+        assertTrue(attachments.contains(drill), "Should contain pneumatic drill");
+
+        assertEquals(3, found.getAttachmentSlots(), "LUV should have attachable slots");
+
+
+        // Check the associated Vehicle Spec has derived properties
+        assertTrue(!found.getParts().isEmpty(), "LUV should have parts after assembly");
+        assertNotEquals(VehicleFactory.getUsualMass(found.getType()),
+                found.getEmptyMass(), "LUV mass should change after assembly");
+
     }
 
     @Test

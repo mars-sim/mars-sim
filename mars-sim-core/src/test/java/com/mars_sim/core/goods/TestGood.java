@@ -46,28 +46,28 @@ class TestGood {
 
 	@Test
 	void testBarrelGood() {
-		Good g = GoodsUtil.getGood(EquipmentType.getResourceID(EquipmentType.BARREL));
+		Good g = GoodsUtil.getGood(EquipmentType.BARREL.getResourceID());
 		
 		testGoodsBasics(g, GoodCategory.CONTAINER);
 	}
 
 	@Test
 	void testRoverGood() {
-		Good g = GoodsUtil.getGood(VehicleType.getVehicleID(VehicleType.CARGO_ROVER));
+		Good g = GoodsUtil.getGood(VehicleType.CARGO_ROVER.getResourceID());
 		
 		testGoodsBasics(g, GoodCategory.VEHICLE);
 	}
 
 	@Test
 	void testEVAGood() {
-		Good g = GoodsUtil.getGood(EquipmentType.getResourceID(EquipmentType.EVA_SUIT));
+		Good g = GoodsUtil.getGood(EquipmentType.EVA_SUIT.getResourceID());
 		
 		testGoodsBasics(g, GoodCategory.EQUIPMENT);
 	}
 
 	@Test
 	void testDataRecorderGood() {
-		Good g = GoodsUtil.getGood(EquipmentType.getResourceID(EquipmentType.DATA_RECORDER));
+		Good g = GoodsUtil.getGood(EquipmentType.DATA_RECORDER.getResourceID());
 		
 		testGoodsBasics(g, GoodCategory.EQUIPMENT);
 	}

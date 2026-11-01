@@ -23,7 +23,6 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleFactory;
-import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * A Process input or output item.
@@ -46,6 +45,10 @@ public class ProcessItem implements Serializable {
 		this.name = Objects.requireNonNull(name, "Name cannot be null");
 		this.type = Objects.requireNonNull(type, "Type cannot be null");
         this.amount = amount;
+
+		if (id <= 0) {
+			throw new IllegalArgumentException("ID must be positive");
+		}
         this.id = id;
     }
 
@@ -135,7 +138,7 @@ public class ProcessItem implements Serializable {
 				for (int x = 0; x < number; x++) {
 					Vehicle v = VehicleFactory.createVehicle(unitMgr, settlement, name);
 					settlement.addOwnedVehicle(v);
-					outputId = VehicleType.getVehicleID(v.getVehicleType());
+					outputId = v.getVehicleType().getResourceID();
 				}
 			} break;
 		default:
