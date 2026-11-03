@@ -134,11 +134,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 		<!-- Base speed of rover [km/hr](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<base-speed value="40.0" />
+		<base-speed value="35.0" />
 		
 		<!-- Average power exerted when operating at base speed under normal condition [kW](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<base-power value="90.0" />
+		<base-power value="20.0" />
 		
 		<!-- How well does this vehicle handle terrain -->
 		<terrain-handling value="6.0"/>
@@ -248,8 +248,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<energy-per-module value="15" />		
 		<fuel-cell-stack number="4" />
 		<drivetrain-efficiency value=".85" />
-		<base-speed value="40.0" />
-		<base-power value="90" />
+		<base-speed value="35.0" />
+		<base-power value="20.0" />
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
 		<cargo total-capacity="2400.0">
@@ -306,8 +306,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<energy-per-module value="15" />
 		<fuel-cell-stack number="5" />			
 		<drivetrain-efficiency value=".85" />
-		<base-speed value="30.0" />
-		<base-power value="150" />
+		<base-speed value="25.0" />
+		<base-power value="15.0" />
 		<terrain-handling value="3.0"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
@@ -356,8 +356,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<energy-per-module value="15" />
 		<fuel-cell-stack number="6" />
 		<drivetrain-efficiency value=".9" />
-		<base-speed value="30.0" />
-		<base-power value="150" />		
+		<base-speed value="25.0" />
+		<base-power value="15.0" />		
 		<terrain-handling value="2"/>
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
@@ -403,7 +403,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".9" />
 		<base-speed value="30.0" />
-		<base-power value="20" />		
+		<base-power value="20.0" />		
 		<terrain-handling value="10.0"/>
 		<crew-size value="1" />
 		<cargo total-capacity="300.0">
@@ -426,7 +426,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<!-- Delivery Drone -->
 	<vehicle name="Delivery Drone" type="DELIVERY_DRONE" model="A" width="1.75" length="1.75">
 		<description>The Delivery Drone is an unmanned aerial vehicle used for dropping off light cargo at nearby depots and settlements.</description>
-		<power-source type="FUEL_POWER_SOURCE" fuel="METHANOL" value="2.0"/>
+		<power-source type="FUEL_POWER_SOURCE" fuel="METHANE" value="2.0"/>
 		<battery-module number="1" />
 		<energy-per-module value="15" />
 		<fuel-cell-stack number="1" />
@@ -434,10 +434,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<base-speed value="40.0" />
 		<base-power value ="40.0" />		
 		<crew-size value="0" />
-		<cargo total-capacity="1000.0">
-			<capacity type="methanol" amount="150.0" />
-			<capacity type="oxygen" amount="225.0" />
-			<capacity type="water" amount="300.0" />			
+		<cargo total-capacity="800.0">
+			<capacity type="methane" amount="100.0" />
+			<capacity type="oxygen" amount="100.0" />
+			<capacity type="water" amount="200.0" />			
 		</cargo>
 	</vehicle>
 	

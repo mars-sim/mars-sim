@@ -443,8 +443,8 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="Sandstone" amount="0.5" />
 				<alternative name="Rock samples" amount="0.5" />
 			</resource>	
-			<resource name="Soil" amount="0.5" >
-				<alternative name="Carbon" amount="0.5" />
+			<resource name="Soil" amount="0.59" >
+				<alternative name="Carbon" amount="0.59" />
 			</resource>	
 			<resource name="Food Waste" amount="1.0">
 				<alternative name="Food" amount="1.0" />
@@ -1935,18 +1935,133 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
-	<process name="Manufacture fuel tank" tech="2" skill="1" work-time="50" process-time="200"
+	<process name="Manufacture large methane fuel tank" tech="2" skill="1" work-time="50" process-time="200"
 			tooling="metalwork" power-required=".3">
 		<inputs>
-			<resource name="acetylene" amount="0.1" />	
-			<part name="Steel sheet" number="4" />
+			<resource name="Acetylene" amount="0.1" />
+			<resource name="Polyethylene" amount="20.0" />
+			<resource name="Kevlar" amount="10.0" />
+			<resource name="Epoxy resin" amount="12.75" />
+			<part name="Aerogel tile" number="25" />	
+			<part name="Steel sheet" number="10" />
 			<part name="valve" number="1" />
 			<part name="gasket" number="1" />
 			<part name="Gas tubing" number="1" />
 			<part name="plastic bottle" number="1" />
+			<part name="Insulation board" number="10" />
 		</inputs>
 		<outputs>
-			<part name="fuel tank" number="1" />
+			<!-- fuel tank large methane is 180 kg -->
+			<part name="fuel tank large methane" number="1" />
+		</outputs>
+	</process>
+
+	
+	<process name="Manufacture medium methane fuel tank" tech="2" skill="1" work-time="50" process-time="100"
+			tooling="metalwork" power-required=".3">
+		<inputs>
+			<resource name="acetylene" amount="0.1" />	
+			<resource name="Polyethylene" amount="15.0" />
+			<resource name="Kevlar" amount="5.0" />
+			<resource name="Epoxy resin" amount="7.55" />
+			<part name="Aerogel tile" number="15" />		
+			<part name="Steel sheet" number="6" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="1" />
+			<part name="Gas tubing" number="1" />
+			<part name="plastic bottle" number="1" />
+			<part name="Insulation board" number="6" />
+		</inputs>
+		<outputs>
+			<!-- fuel tank large methane is 110 kg -->
+			<part name="fuel tank medium methane" number="1" />
+		</outputs>
+	</process>
+	
+		
+	<process name="Manufacture small methane fuel tank" tech="2" skill="1" work-time="50" process-time="50"
+			tooling="metalwork" power-required=".3">
+		<inputs>
+			<resource name="acetylene" amount="0.1" />	
+			<resource name="Polyethylene" amount="5.0" />
+			<resource name="Kevlar" amount="3.0" />
+			<resource name="Epoxy resin" amount="3.65" />
+			<part name="Aerogel tile" number="5" />	
+			<part name="Steel sheet" number="2" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="1" />
+			<part name="Gas tubing" number="1" />
+			<part name="plastic bottle" number="1" />
+			<part name="Insulation board" number="2" />
+		</inputs>
+		<outputs>
+			<!-- fuel tank large methane is 40 kg -->
+			<part name="fuel tank small methane" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="Manufacture large methanol fuel tank" tech="2" skill="1" work-time="50" process-time="200"
+			tooling="metalwork" power-required=".3">
+		<inputs>
+			<resource name="acetylene" amount="0.1" />	
+			<resource name="Polyethylene" amount="3.0" />
+			<resource name="Kevlar" amount="1.0" />
+			<resource name="Epoxy resin" amount="1.35" />
+			<part name="Aerogel tile" number="25" />	
+			<part name="Steel sheet" number="5" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="1" />
+			<part name="Gas tubing" number="1" />
+			<part name="plastic bottle" number="1" />
+			<part name="Insulation board" number="5" />
+		</inputs>
+		<outputs>
+			<!-- fuel tank large methane is 25 kg -->
+			<part name="fuel tank large methanol" number="1" />
+		</outputs>
+	</process>
+
+	
+	<process name="Manufacture medium methanol fuel tank" tech="2" skill="1" work-time="50" process-time="100"
+			tooling="metalwork" power-required=".3">
+		<inputs>
+			<resource name="acetylene" amount="0.1" />	
+			<resource name="Polyethylene" amount="1.5" />
+			<resource name="Kevlar" amount="0.5" />
+			<resource name="Epoxy resin" amount="0.6" />
+			<part name="Aerogel tile" number="15" />	
+			<part name="Steel sheet" number="3" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="1" />
+			<part name="Gas tubing" number="1" />
+			<part name="plastic bottle" number="1" />
+			<part name="Insulation board" number="3" />
+		</inputs>
+		<outputs>
+			<!-- fuel tank large methane is 15 kg -->
+			<part name="fuel tank medium methanol" number="1" />
+		</outputs>
+	</process>
+	
+		
+	<process name="Manufacture small methanol fuel tank" tech="2" skill="1" work-time="50" process-time="50"
+			tooling="metalwork" power-required=".3">
+		<inputs>
+			<resource name="acetylene" amount="0.1" />	
+			<resource name="Polyethylene" amount="0.75" />
+			<resource name="Kevlar" amount="0.25" />
+			<resource name="Epoxy resin" amount="0.3" />
+			<part name="Aerogel tile" number="5" />	
+			<part name="Steel sheet" number="1" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="1" />
+			<part name="Gas tubing" number="1" />
+			<part name="plastic bottle" number="1" />
+			<part name="Insulation board" number="1" />
+		</inputs>
+		<outputs>
+			<!-- fuel tank large methane is 6 kg -->
+			<part name="fuel tank small methanol" number="1" />
 		</outputs>
 	</process>
 
@@ -3505,7 +3620,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make methane solid oxide fuel cells" tech="3" skill="3" work-time="200" process-time="50"
 			tooling="chemical" power-required="1">
 		<description>
-			Each methane solid oxide fuel cell (SOFC) can generate 200W. Each fuel cell weighs 0.2 kg.
+			Each methane advanced, thin-film, solid oxide fuel cell (SOFC) can generate 200W. Each fuel cell weighs 0.1 kg.
 		</description>
 		<inputs>
 			<resource name="sodium carbonate" amount=".25" />
@@ -3524,7 +3639,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- manufacturing methanol fuel cell. -->
-	<process name="Make methanol fuel cells" tech="3" skill="4" work-time="200" process-time="50"
+	<process name="Make methanol fuel cells" tech="3" skill="4" work-time="50" process-time="25"
 			tooling="chemical" power-required="1">
 		<description>
 			Each methanol fuel cell (SOFC) can generate 200W. Each fuel cell weighs 0.2 kg.
@@ -3541,7 +3656,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="ceramic electrolyte" amount=".6" />
 		</inputs>
 		<outputs>
-			<part name="methane fuel cell" number="10" />
+			<part name="methanol fuel cell" number="2" />
 		</outputs>
 	</process>
 	
@@ -4283,9 +4398,11 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="2" />
 			<part name="gas tank" number="1" />	
-			<part name="fuel tank" number="1" />
+			<part name="fuel tank large methane" number="3" />
 			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
+			<part name="Oxygen pump" number="1" />
+			<part name="Heat pump" number="1" />
 			<part name="propeller" number="4" />	
 			<part name="CMOS sensor" number="8" />						
 		</inputs>
@@ -4314,9 +4431,10 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="2" />
 			<part name="gas tank" number="1" />	
-			<part name="fuel tank" number="1" />
+			<part name="fuel tank large methane" number="3" />
 			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
+			<part name="Oxygen pump" number="1" />
 			<part name="propeller" number="4" />	
 			<part name="CMOS sensor" number="8" />						
 		</inputs>
@@ -4336,7 +4454,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="2" />
 			<part name="drone chassis panel" number="2" />
 			<part name="Motor 10 kW" number="4" />
-			<part name="methanol fuel cell stack" number="1" />
+			<part name="methane fuel cell stack" number="1" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -4345,9 +4463,10 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="2" />
 			<part name="gas tank" number="1" />	
-			<part name="fuel tank" number="1" />
+			<part name="fuel tank large methane" number="1" />
 			<part name="water tank" number="1" />	
 			<part name="fuel pump" number="1" />
+			<part name="Oxygen pump" number="1" />
 			<part name="propeller" number="4" />	
 			<part name="CMOS sensor" number="8" />
 		</inputs>
@@ -4379,10 +4498,10 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="4" />
 			<part name="gas tank" number="1" />	
-			<part name="fuel tank" number="1" />
+			<part name="fuel tank small methanol" number="1" />
 			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
-			<part name="oxygen pump" number="1" />	
+			<part name="Oxygen pump" number="1" />	
 			<part name="CMOS sensor" number="4" />						
 		</inputs>
 		<outputs>
@@ -4406,10 +4525,12 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="methanol fuel cell stack" number="4" />
 			<part name="battery module" number="2" />
 			<part name="gas tank" number="2" />	
-			<part name="fuel tank" number="2" />
+			<part name="fuel tank small methanol" number="1" />
+			<part name="fuel tank large methanol" number="1" />
 			<part name="water tank" number="2" />
-			<part name="fuel pump" number="2" />
-			<part name="oxygen pump" number="2" />
+			<part name="Fuel pump" number="2" />
+			<part name="Oxygen pump" number="2" />
+			<part name="Heat pump" number="1" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
@@ -4444,10 +4565,13 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="methanol fuel cell stack" number="4" />
 			<part name="battery module" number="3" />
 			<part name="gas tank" number="3" />	
-			<part name="fuel tank" number="3" />
+			<part name="fuel tank small methanol" number="1" />
+			<part name="fuel tank medium methanol" number="1" />
+			<part name="fuel tank large methanol" number="1" />
 			<part name="water tank" number="2" />
-			<part name="fuel pump" number="2" />
-			<part name="oxygen pump" number="2" />
+			<part name="Fuel pump" number="2" />
+			<part name="Oxygen pump" number="2" />
+			<part name="Heat pump" number="1" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
@@ -4482,10 +4606,12 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="methanol fuel cell stack" number="5" />
 			<part name="battery module" number="4" />
 			<part name="gas tank" number="4" />
-			<part name="fuel tank" number="4" />
+			<part name="fuel tank large methanol" number="3" />
+			<part name="fuel tank small methanol" number="1" />
 			<part name="water tank" number="4" />
-			<part name="fuel pump" number="2" />
-			<part name="oxygen pump" number="2" />
+			<part name="Fuel pump" number="2" />
+			<part name="Heat pump" number="1" />
+			<part name="Oxygen pump" number="2" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
@@ -4520,10 +4646,11 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="methanol fuel cell stack" number="6" />
 			<part name="battery module" number="5" />
 			<part name="gas tank" number="4" />
-			<part name="fuel tank" number="4" />
+			<part name="fuel tank large methanol" number="4" />
 			<part name="water tank" number="4" />
-			<part name="fuel pump" number="2" />
-			<part name="oxygen pump" number="2" />
+			<part name="Fuel pump" number="2" />
+			<part name="Oxygen pump" number="2" />
+			<part name="Heat pump" number="1" />
 			<part name="satellite dish" number="1" />
 			<part name="radio antenna" number="1" />
 			<part name="electrical wire" number="20" />
@@ -4579,61 +4706,12 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="biosensor" number="6" />		
 	</salvage>
 
-	<salvage item-name="Cargo Drone" type="vehicle" tech="2" skill="1" work-time="400">				
-		<part-salvage name="navigation circuit board" number="1" />
-		<part-salvage name="communications circuit board" number="1" />
-		<part-salvage name="Optical lens" number="2" />
-		<part-salvage name="vehicle frame small" number="1" />
-		<part-salvage name="aluminum sheet" number="3" />
-		<part-salvage name="drone chassis panel" number="3" />
-		<part-salvage name="Motor 10 kW" number="4" />
-		<part-salvage name="methane fuel cell stack" number="1" />
-		<part-salvage name="battery module" number="1" />
-		<part-salvage name="electrical wire" number="10" />
-		<part-salvage name="wire connector" number="10" />
-		<part-salvage name="Gas tubing" number="2" />
-		<part-salvage name="plastic pipe" number="1" />
-		<part-salvage name="radio antenna" number="1" />
-		<part-salvage name="optical cable" number="2" />
-		<part-salvage name="gas tank" number="1" />	
-		<part-salvage name="fuel tank" number="1" />
-		<part-salvage name="water tank" number="1" />
-		<part-salvage name="fuel pump" number="1" />
-		<part-salvage name="propeller" number="4" />	
-		<part-salvage name="CMOS sensor" number="8" />						
-	</salvage>
-
-
-	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="1" work-time="300">			
-		<part-salvage name="navigation circuit board" number="1" />
-		<part-salvage name="communications circuit board" number="1" />
-		<part-salvage name="Optical lens" number="2" />
-		<part-salvage name="vehicle frame small" number="1" />
-		<part-salvage name="aluminum sheet" number="2" />
-		<part-salvage name="drone chassis panel" number="2" />
-		<part-salvage name="Motor 10 kW" number="4" />
-		<part-salvage name="methanol fuel cell stack" number="1" />
-		<part-salvage name="battery module" number="1" />
-		<part-salvage name="electrical wire" number="10" />
-		<part-salvage name="wire connector" number="10" />
-		<part-salvage name="Gas tubing" number="2" />
-		<part-salvage name="plastic pipe" number="1" />
-		<part-salvage name="radio antenna" number="1" />
-		<part-salvage name="optical cable" number="2" />
-		<part-salvage name="gas tank" number="1" />	
-		<part-salvage name="fuel tank" number="1" />
-		<part-salvage name="water tank" number="1" />
-		<part-salvage name="fuel pump" number="1" />
-		<part-salvage name="propeller" number="4" />	
-		<part-salvage name="CMOS sensor" number="8" />						
-	</salvage>
-
 	<!-- Salvage process for a light utility vehicle (LUV) -->
 	<salvage item-name="light utility vehicle" type="vehicle" tech="2" skill="1" work-time="500">
 		<part-salvage name="vehicle frame small" number="1" />
 		<part-salvage name="Motor 10 kW" number="2" />
 		<part-salvage name="battery module" number="1" />
-		<part-salvage name="methane fuel cell stack" number="1" />		
+		<part-salvage name="methanol fuel cell stack" number="1" />		
 		<part-salvage name="utility vehicle control panel" number="1" />
 		<part-salvage name="electrical wire" number="10" />
 		<part-salvage name="wire connector" number="10" />
@@ -4658,7 +4736,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="Motor 30 kW" number="3" />
 		<part-salvage name="battery module" number="2" />
 		<part-salvage name="rover control panel" number="1" />		
-		<part-salvage name="fuel tank" number="2" />
+		<part-salvage name="fuel tank large methanol" number="1" />
+		<part-salvage name="fuel tank small methanol" number="1" />
 		<part-salvage name="gas tank" number="2" />
 		<part-salvage name="water tank" number="2" />
 		<part-salvage name="fuel pump" number="2" />
@@ -4690,7 +4769,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="Motor 30 kW" number="5" />
 		<part-salvage name="battery module" number="4" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="fuel tank" number="4" />
+		<part-salvage name="fuel tank large methanol" number="3" />
+		<part-salvage name="fuel tank small methanol" number="1" />
 		<part-salvage name="gas tank" number="4" />
 		<part-salvage name="water tank" number="4" />
 		<part-salvage name="fuel pump" number="2" />
@@ -4722,7 +4802,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="Motor 30 kW" number="5" />
 		<part-salvage name="battery module" number="5" />
 		<part-salvage name="rover control panel" number="1" />
-		<part-salvage name="fuel tank" number="4" />
+		<part-salvage name="fuel tank large methanol" number="4" />
 		<part-salvage name="gas tank" number="4" />
 		<part-salvage name="water tank" number="4" />
 		<part-salvage name="fuel pump" number="2" />
@@ -4743,6 +4823,79 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="CMOS sensor" number="8" />		
 	</salvage>
 
+
+	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="1" work-time="300">			
+		<part-salvage name="navigation circuit board" number="1" />
+		<part-salvage name="communications circuit board" number="1" />
+		<part-salvage name="Optical lens" number="2" />
+		<part-salvage name="vehicle frame small" number="1" />
+		<part-salvage name="aluminum sheet" number="2" />
+		<part-salvage name="drone chassis panel" number="2" />
+		<part-salvage name="Motor 10 kW" number="4" />
+		<part-salvage name="methane fuel cell stack" number="1" />
+		<part-salvage name="battery module" number="1" />
+		<part-salvage name="electrical wire" number="10" />
+		<part-salvage name="wire connector" number="10" />
+		<part-salvage name="Gas tubing" number="2" />
+		<part-salvage name="plastic pipe" number="1" />
+		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="optical cable" number="2" />
+		<part-salvage name="gas tank" number="1" />	
+		<part-salvage name="fuel tank large methane" number="1" />
+		<part-salvage name="water tank" number="1" />
+		<part-salvage name="fuel pump" number="1" />
+		<part-salvage name="propeller" number="4" />	
+		<part-salvage name="CMOS sensor" number="8" />						
+	</salvage>
+	
+	<salvage item-name="Cargo Drone" type="vehicle" tech="2" skill="1" work-time="400">				
+		<part-salvage name="navigation circuit board" number="1" />
+		<part-salvage name="communications circuit board" number="1" />
+		<part-salvage name="Optical lens" number="2" />
+		<part-salvage name="vehicle frame small" number="1" />
+		<part-salvage name="aluminum sheet" number="3" />
+		<part-salvage name="drone chassis panel" number="3" />
+		<part-salvage name="Motor 10 kW" number="4" />
+		<part-salvage name="methane fuel cell stack" number="1" />
+		<part-salvage name="battery module" number="1" />
+		<part-salvage name="electrical wire" number="10" />
+		<part-salvage name="wire connector" number="10" />
+		<part-salvage name="Gas tubing" number="2" />
+		<part-salvage name="plastic pipe" number="1" />
+		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="optical cable" number="2" />
+		<part-salvage name="gas tank" number="1" />	
+		<part-salvage name="fuel tank large methane" number="3" />
+		<part-salvage name="water tank" number="1" />
+		<part-salvage name="fuel pump" number="1" />
+		<part-salvage name="propeller" number="4" />	
+		<part-salvage name="CMOS sensor" number="8" />						
+	</salvage>
+	
+	<salvage item-name="Passenger Drone" type="vehicle" tech="2" skill="1" work-time="500">	
+			<part-salvage name="navigation circuit board" number="1" />
+			<part-salvage name="communications circuit board" number="1" />
+			<part-salvage name="Optical lens" number="2" />
+			<part-salvage name="vehicle frame small" number="1" />
+			<part-salvage name="aluminum sheet" number="3" />
+			<part-salvage name="drone chassis panel" number="3" />
+			<part-salvage name="Motor 10 kW" number="4" />
+			<part-salvage name="methane fuel cell stack" number="2" />
+			<part-salvage name="battery module" number="2" />
+			<part-salvage name="electrical wire" number="10" />
+			<part-salvage name="wire connector" number="10" />
+			<part-salvage name="Gas tubing" number="2" />
+			<part-salvage name="plastic pipe" number="1" />
+			<part-salvage name="radio antenna" number="1" />
+			<part-salvage name="optical cable" number="2" />
+			<part-salvage name="gas tank" number="1" />	
+			<part-salvage name="fuel tank large methane" number="3" />
+			<part-salvage name="water tank" number="1" />
+			<part-salvage name="fuel pump" number="1" />
+			<part-salvage name="propeller" number="4" />
+			<part-salvage name="CMOS sensor" number="8" />
+	</salvage>
+	
 	<!-- Salvage process for a gas canister. -->
 	<salvage item-name="gas canister" type="equipment" tech="1" skill="0" work-time="10">
 		<part-salvage name="steel canister" number="1" />

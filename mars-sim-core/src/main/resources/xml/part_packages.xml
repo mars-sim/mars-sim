@@ -238,7 +238,6 @@
 		<part type="propeller" number="4"/>
 		<part type="vehicle chassis panel" number="4" />
 		<part type="rover control panel" number="2" />
-		<part type="fuel tank" number="20" />
 		<part type="gas tank" number="20" />
 		<part type="water tank" number="20" />
 		<part type="heating element" number="26" />

@@ -204,7 +204,7 @@
 			<part name="valve" number="1" repair-probability="15" />
 			<part name="plastic bottle" number="1" repair-probability="15" />
 			<part name="gas tubing" number="1" repair-probability="15" />
-			<part name="fuel tank" number="1" repair-probability="10" />
+			<part name="fuel tank large methane" number="1" repair-probability="10" />
 			<part name="work glove" number="1" repair-probability="10" />
 			<part name="decontamination kit" number="1" repair-probability="30" />
 		</repair-parts-list>
@@ -225,8 +225,6 @@
 			<part name="oxygen pump" number="1" repair-probability="5" />
 			<part name="fuel pump" number="1" repair-probability="5" />
 			<part name="heating element" number="1" repair-probability="5" />
-			<part name="gas tank" number="1" repair-probability="5" />
-			<part name="fuel tank" number="1" repair-probability="5" />
 			<part name="valve" number="2" repair-probability="5" />
 			<part name="electrical wire" number="2" repair-probability="5" />
 			<part name="wire connector" number="2" repair-probability="5" />
@@ -251,8 +249,6 @@
 			<part name="oxygen pump" number="1" repair-probability="5" />
 			<part name="fuel pump" number="1" repair-probability="5" />
 			<part name="heating element" number="1" repair-probability="5" />
-			<part name="gas tank" number="1" repair-probability="5" />
-			<part name="fuel tank" number="1" repair-probability="5" />
 			<part name="valve" number="2" repair-probability="5" />
 			<part name="electrical wire" number="2" repair-probability="5" />
 			<part name="wire connector" number="2" repair-probability="5" />
@@ -309,7 +305,7 @@
 		<repair-parts-list>
 			<part name="fire extinguisher" number="2" repair-probability="45" />
 			<part name="gas tank" number="1" repair-probability="5" />
-			<part name="fuel tank" number="1" repair-probability="10" />
+			<part name="fuel tank large methanol" number="1" repair-probability="10" />
 			<part name="methanol fuel cell" number="1" repair-probability="5" />
 			<part name="methanol fuel cell stack" number="1" repair-probability="1" />
 			<part name="aluminum sheet" number="1" repair-probability="5" />
@@ -344,7 +340,7 @@
 		<repair-parts-list>
 			<part name="fire extinguisher" number="2" repair-probability="45" />
 			<part name="gas tank" number="1" repair-probability="5" />
-			<part name="fuel tank" number="1" repair-probability="10" />
+			<part name="fuel tank large methane" number="1" repair-probability="10" />
 			<part name="methane fuel cell" number="1" repair-probability="5" />
 			<part name="methane fuel cell stack" number="1" repair-probability="1" />
 			<part name="aluminum sheet" number="1" repair-probability="5" />
@@ -452,7 +448,6 @@
 			<part name="oven" number="1" repair-probability="5" />
 			<part name="electrical wire" number="4" repair-probability="5" />
 			<part name="wire connector" number="4" repair-probability="5" />
-			<part name="fuel tank" number="1" repair-probability="5" />
 			<part name="work glove" number="1" repair-probability="10" />
 			<part name="decontamination kit" number="1" repair-probability="15" />
 		</repair-parts-list>

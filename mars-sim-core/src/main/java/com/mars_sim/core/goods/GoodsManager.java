@@ -761,7 +761,7 @@ public class GoodsManager implements Serializable {
 		if (goodsValues.containsKey(id))
 			return goodsValues.get(id);
 		else
-			logger.severe(settlement, " - Good Value of " + id + " not valid.");
+			logger.severe(settlement, "Good Value of " + id + " not valid.");
 		return 0;
 	}
 

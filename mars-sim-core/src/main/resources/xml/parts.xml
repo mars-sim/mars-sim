@@ -693,16 +693,92 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Fuel tank" type="utility" mass="10.0" >
-	<description>for storing methane</description>
+	<part name="Fuel tank large methane" type="utility" mass="180.0" >
+	<description>
+			Can store 100 kg L (200 bar) methane. 
+			Type 4 (plastic liner + carbon fiber).	0.3 kg/L
+			Empty tank mass: 180 kg.
+			Tank-to-Gas Mass Ratio is 2:1.
+			At 15 kW with ~40% system efficiency (reformer + stack), 
+			methane consumption is roughly 0.7–0.8 kg/hour at full load.</description>
 		<maintenance-entity-list>
-			<entity name="vehicle" probability=".5" max-number="1" />
+			<entity name="drone" probability=".5" max-number="1" />
 			<entity name="life support" probability=".1" max-number="1" />
 			<entity name="fuel heating source" probability=".5" max-number="1" />
 			<entity name="cooking" probability=".5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-
+	
+	<part name="Fuel tank medium methane" type="utility" mass="110.0" >
+	<description>
+			Can store 60 kg L (200 bar) methane. 
+			Type 4 (plastic liner + carbon fiber).	0.3 kg/L
+			Empty tank mass: 110 kg.
+			Tank-to-Gas Mass Ratio is 2:1.
+			At 15 kW with ~40% system efficiency (reformer + stack), 
+			methane consumption is roughly 0.7–0.8 kg/hour at full load.</description>
+		<maintenance-entity-list>
+			<entity name="drone" probability=".5" max-number="1" />
+			<entity name="life support" probability=".1" max-number="1" />
+			<entity name="fuel heating source" probability=".5" max-number="1" />
+			<entity name="cooking" probability=".5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="Fuel tank small methane" type="utility" mass="40.0" >
+	<description>For storing 20 kg / 100 L (200 bar) methane. 
+			Empty tank mass: 40 kg.
+			Tank Type 4 (plastic liner + carbon fiber).	
+			Tank-to-Gas Mass Ratio is 2:1.
+			At 15 kW with ~40% system efficiency (reformer + stack), 
+			methane consumption is roughly 0.7–0.8 kg/hour at full load.</description>
+		<maintenance-entity-list>
+			<entity name="drone" probability=".5" max-number="1" />
+			<entity name="life support" probability=".1" max-number="1" />
+			<entity name="fuel heating source" probability=".5" max-number="1" />
+			<entity name="cooking" probability=".5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	
+	<part name="Fuel tank large methanol" type="utility" mass="25.0" >
+	<description> 
+		15 kW, ~235 kWh. ~200 mi range. 
+		Can store 100 kg (or 120L) methanol.
+		empty tank mass: 15 kg.
+		need 5 kg aerogel or foam for insulation to prevent ice/freeze on exterior.
+		need a 5 kg fuel pre-heater to bring -40C to 200 C for RMFC. 
+		IRMFC Consumption: ~0.8–0.9 L/(kW·h) → ~12–13.5 L/hour (or ~10–11 kg/hour).
+	</description>
+		<maintenance-entity-list>
+			<entity name="rover" probability=".5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+	
+	<part name="Fuel tank medium methanol" type="utility" mass="15.0" >
+	<description> 
+		Can store 60 kg (or 72L) methanol.
+		Empty tank mass: 10 kg.
+		need 2.5 kg aerogel or foam for insulation to prevent ice/freeze on exterior.
+		need a 2.5 kg fuel pre-heater to bring -40C to 200 C for RMFC. 
+	</description>
+		<maintenance-entity-list>
+			<entity name="rover" probability=".5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+		
+	<part name="Fuel tank small methanol" type="utility" mass="6.0" >
+	<description> 
+		Can store 20 kg (or 24 L) methanol.
+		Empty tank mass: 4 kg.	
+		need 1 kg aerogel or foam for insulation to prevent ice/freeze on exterior.
+		need a 1 kg fuel pre-heater to bring -40C to 200 C for RMFC. 
+	</description>
+		<maintenance-entity-list>
+			<entity name="rover" probability=".5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+			
 	<part name="Heating element" type="electrical" mass="1.0" >
 		<description>The heating element is a thermofoil conductive
 		electrical element embedded in a thin Kapton substrate.</description>
@@ -1006,51 +1082,58 @@
 		</maintenance-entity-list>			
 	</part>
 
-	<part name="Methane fuel cell" type="electronic" mass=".2">
-		<description>Assume each solid oxide fuel cell (SOFC) can generate 200W
-		with the achievement of 1kWh/kg. Weight: 200W * 1kWh/kg = 0.2 kg
+	<part name="Methane fuel cell" type="electrical" mass=".1">
+		<description>Assume each advanced, thin-film, solid oxide fuel cell (SOFC) can generate 200W
+		Assume achieving 2kW/kg. Weight: 200W / 2kW/kg = 0.1 kg
 		</description>
 		<maintenance-entity-list>
-			<entity name="fuel heating source" probability="1" max-number="3" />
-			<entity name="fuel power source" probability="1" max-number="3" />	
-			<entity name="cargo drone" probability="1" max-number="2" />			
+			<entity name="fuel heating source" probability="1" max-number="2" />
+			<entity name="fuel power source" probability="1" max-number="2" />	
+			<entity name="drone" probability="1" max-number="2" />			
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Methane fuel cell stack" type="electronic" mass="15">
+	<part name="Methane fuel cell stack" type="electrical" mass="7.5">
 		<description>A 15 kW Solid Oxide Fuel Cell (SOFC) stack comprises 
 		    75 fuel cells, furnished with valves, coolant and pump, filter, sensors,
 		    cold plate and heat pipes. 
 		</description>
 	    <maintenance-entity-list>
-			<entity name="fuel heating source" probability="1" max-number="1" />
-			<entity name="fuel power source" probability="1" max-number="1" />
-			<entity name="cargo drone" probability="1" max-number="1" />
+			<entity name="fuel heating source" probability=".5" max-number="1" />
+			<entity name="fuel power source" probability=".5" max-number="1" />
+			<entity name="drone" probability=".5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="Methanol fuel cell" type="electronic" mass=".2">
+	<part name="Methanol fuel cell" type="electrical" mass="1.0">
 		<description>Assume each methanol fuel cell can generate 200W
-		continuous power.
+		continuous power. Assume achieving 200W/kg.
 		</description>
 	    <maintenance-entity-list>
-			<entity name="rover" probability="2" max-number="6" />
-			<entity name="light utility vehicle" probability="2" max-number="2" />
-			<entity name="delivery drone" probability="2" max-number="2" />			
+			<entity name="rover" probability="1" max-number="2" />
+			<entity name="light utility vehicle" probability="1" max-number="2" />	
 		</maintenance-entity-list>		
 	</part>
 	
-	<part name="Methanol fuel cell stack" type="electronic" mass="15">
-		<description>A 15 kW Reformed Methanol Fuel Cell (RMFC) stack comprises 
+	<part name="Methanol fuel cell stack" type="electrical" mass="75">
+		<description>A 15 kW Indrect Reformed Methanol Fuel Cell (IRMFC) stack comprises 
 		   75 fuel cells and heat exchanger, radiator and supporting structure.
 		</description>		
 	    <maintenance-entity-list>
-			<entity name="rover" probability="2" max-number="2" />
-			<entity name="light utility vehicle" probability="2" max-number="1" />
-			<entity name="delivery drone" probability="2" max-number="1" />			
+			<entity name="rover" probability=".5" max-number="1" />
+			<entity name="light utility vehicle" probability=".5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
+	<part name="Radiator" type="electrical" mass="2.0">
+		<description>The radiator serves to dissipate heat.
+		</description>
+		<maintenance-entity-list>
+			<entity name="vehicle" probability="2" max-number="1" />
+			<entity name="power generation" probability="2" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+		
 	<part name="Telescoping antenna" type="instrument" mass="2.0">
 		<description>This long transmitting antenna serves to transmit telemetry data for a portable science station in the field.
 		</description>

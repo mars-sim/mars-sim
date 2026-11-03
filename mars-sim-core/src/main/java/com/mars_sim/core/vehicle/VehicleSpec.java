@@ -478,14 +478,16 @@ public class VehicleSpec implements Serializable {
 		double roadLoadPowerFactor = 0.2;
 		// Assume an average percent of energy to be consumed by onboard power usage 
 		double onboardUsedFraction = onboardEnergyPercent / 100;
-	
+		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+		peakPower = numBatteryModule * 5 + numFuelCellStack * 15;
+		
 		switch (type) {
 			// See https://droneii.com/drone-energy-sources
 			case DELIVERY_DRONE: {
 				
 				roadLoadPowerFactor = 0.7;
-				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
+//				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+//				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
 				// Accounts for the fuel (methanol and oxygen) and the traded goods
 				additionalBeginningMass = 400;
 				// Accounts for water and the traded goods
@@ -495,8 +497,8 @@ public class VehicleSpec implements Serializable {
 			case CARGO_DRONE: {
 				
 				roadLoadPowerFactor = 0.7;
-				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
+//				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+//				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
 				// Accounts for the fuel (methanol and oxygen) and the traded goods
 				additionalBeginningMass = 400;
 				// Accounts for water and the traded goods
@@ -506,8 +508,8 @@ public class VehicleSpec implements Serializable {
 			case LUV: {
 				
 				roadLoadPowerFactor = 0.1;
-				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
+//				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+//				peakPower = basePower * Math.log10(10.0 + numBatteryModule * 3 + numFuelCellStack * 2) * 1.25;
 				// Accounts for the occupant weight
 				additionalBeginningMass = estimatedTotalCrewWeight;
 				// Accounts for the occupant weight
@@ -517,8 +519,8 @@ public class VehicleSpec implements Serializable {
 			case EXPLORER_ROVER: {
 				
 				roadLoadPowerFactor = 0.4;
-				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 3 + numFuelCellStack * 2);
+//				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+//				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 3 + numFuelCellStack * 2);
 				// Accounts for the occupants and their consumables
 				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 60;
 				// Accounts for the occupant and rock sample, ice or regolith collected
@@ -528,8 +530,8 @@ public class VehicleSpec implements Serializable {
 			case CARGO_ROVER: {
 				
 				roadLoadPowerFactor = 0.3;
-				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
+//				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+//				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and traded goods 
 				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 80;
 				// Accounts for the occupants and traded goods
@@ -539,8 +541,8 @@ public class VehicleSpec implements Serializable {
 			case TRANSPORT_ROVER: {
 				
 				roadLoadPowerFactor = 0.3;
-				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
+//				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+//				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and personal possession
 				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 100;
 				// Accounts for the occupants and their personal possession
@@ -550,8 +552,8 @@ public class VehicleSpec implements Serializable {
 			case PASSENGER_DRONE: {
 				
 				roadLoadPowerFactor = 0.3;
-				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
+//				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
+//				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and traded goods 
 				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 80;
 				// Accounts for the occupants and traded goods
@@ -568,7 +570,7 @@ public class VehicleSpec implements Serializable {
 		// Gets the estimated energy available to be consumed for the trip [in kWh]
 		double baseEnergyConsumed = drivetrainEnergy;
 		// Gets the estimated average road load power (including coasting)
-		double baseRoadLoadPower = roadLoadPowerFactor * (.3 * peakPower + .7 * basePower);
+		double baseRoadLoadPower = roadLoadPowerFactor * (.2 * peakPower + .8 * basePower);
 		// Gets the estimated average road speed (including coasting) [m/s]
 		double baseRoadSpeedMPerSec = .9 * baseSpeed / 3.6;
 		// Gets the maximum total # of hours the vehicle is capable of operating
@@ -781,6 +783,8 @@ public class VehicleSpec implements Serializable {
 	
 	/** 
 	 * Returns the peak power output of the vehicle [in kW].
+	 * 
+	 * @return the peakPower 
 	 */
 	public final double getPeakPower() {
 		return peakPower;

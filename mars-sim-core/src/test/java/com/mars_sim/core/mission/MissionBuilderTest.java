@@ -199,7 +199,7 @@ class MissionBuilderTest extends MarsSimUnitTest {
         var secondVehicle = builder.selectBestVehicle();
 
         assertEquals(cargo, firstVehicle, "Should choose the best rover available at the leader's settlement");
-        assertEquals(longExplorer, secondVehicle, "Should skip the reserved explorer and choose the next best rover");
+        assertEquals(transport, secondVehicle, "Should skip the reserved explorer and choose the next best rover");
     }
 
     @DisplayName("Test ice collection mission can be created")

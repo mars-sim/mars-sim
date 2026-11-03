@@ -47,8 +47,8 @@ class VehicleConfigTest {
 
         assertEquals(PowerSourceType.FUEL_POWER, found.getPowerSourceType());
 
-        assertEquals(40D, found.getBaseSpeed());
-        assertEquals(90D, found.getBasePower(), "Base power");
+        assertEquals(35D, found.getBaseSpeed());
+        assertEquals(20D, found.getBasePower(), "Base power");
 
         // Check the associated Vehicle Spec has derived properties
         assertTrue(!found.getParts().isEmpty(), "Explorer rover should have parts after assembly");
