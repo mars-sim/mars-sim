@@ -164,7 +164,8 @@ public class VehicleSpec implements Serializable {
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
 	// DOE 2010 Targe : Specific power = 650 W_e/L; Power Density = 650 W_e/kg
 	// Toyota Mirai Fuel cell - 90 kW
-	
+	/** The total motor power output of the vehicle. (kW). */
+	private double totalMotorPower = 0;
 	/** The base average power output of the vehicle. (kW). */
 	private double basePower = 0;
 	/** The peak rated power output of the vehicle. (kW). */
@@ -336,13 +337,14 @@ public class VehicleSpec implements Serializable {
 			String powerSourceStr, String fuelTypeStr, double powerPercent,
 			int batteryModule, double energyPerModule, int fuelCellStack,
 			double drivetrainEff, 
-			double baseSpeed, double basePower,
+			double baseSpeed, double totalMotorPower,
 			int crewSize) {
 		this.name = name;
 		this.modelName = model;
 		this.type = type;
 		this.description = description;
 		this.baseImage = baseImage;
+		this.totalMotorPower = totalMotorPower;
 
 		// These are default unless a Manufacturing process is attached later
 		this.partIDs = Collections.emptySet();
@@ -402,8 +404,6 @@ public class VehicleSpec implements Serializable {
 		
 		// Set base speed.
 		this.baseSpeed = baseSpeed;
-		// Set base average power when operating the vehicle at average speed.
-		this.basePower = basePower;
 		// Get the crew capacity
 		this.crewSize = crewSize;
 	
@@ -478,8 +478,10 @@ public class VehicleSpec implements Serializable {
 		double roadLoadPowerFactor = 0.2;
 		// Assume an average percent of energy to be consumed by onboard power usage 
 		double onboardUsedFraction = onboardEnergyPercent / 100;
-		// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
-		peakPower = numBatteryModule * 5 + numFuelCellStack * 15;
+		// Assume the peak power is related to the minimum of the total motor power, and numbers of fuel cell stack.
+		peakPower = Math.min(totalMotorPower, numFuelCellStack * 15);
+		
+		basePower = peakPower / 5;
 		
 		switch (type) {
 			// See https://droneii.com/drone-energy-sources

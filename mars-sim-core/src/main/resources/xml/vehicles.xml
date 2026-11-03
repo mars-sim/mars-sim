@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE vehicle-configuration [
 	<!ELEMENT vehicle-configuration (vehicle*)>
-	<!ELEMENT vehicle (description?, power-source, battery-module, energy-per-module, fuel-cell-stack, drivetrain-efficiency, base-speed, base-power,
+	<!ELEMENT vehicle (description?, power-source, battery-module, energy-per-module, fuel-cell-stack, drivetrain-efficiency, base-speed, total-motor-power,
 	terrain-handling?, crew-size?, cargo?, part-attachment?, sickbay?, lab?,
 	airlock?, activity?)>
 	<!-- These are aligned with VehicleType enum-->
@@ -31,8 +31,8 @@
 	<!ATTLIST drivetrain-efficiency value CDATA #REQUIRED>
 	<!ELEMENT base-speed EMPTY>
 	<!ATTLIST base-speed value CDATA #REQUIRED>
-	<!ELEMENT base-power EMPTY>
-	<!ATTLIST base-power value CDATA #REQUIRED>
+	<!ELEMENT total-motor-power EMPTY>
+	<!ATTLIST total-motor-power value CDATA #REQUIRED>
 	<!ELEMENT crew-size EMPTY>
 	<!ATTLIST crew-size value CDATA #REQUIRED>
 	<!ELEMENT terrain-handling EMPTY>
@@ -136,9 +136,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- Default: varies according to the type of vehicle -->
 		<base-speed value="35.0" />
 		
-		<!-- Average power exerted when operating at base speed under normal condition [kW](required) -->
+		<!-- The total motor power of this vehicle [kW](required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<base-power value="20.0" />
+		<total-motor-power value="90.0" />
 		
 		<!-- How well does this vehicle handle terrain -->
 		<terrain-handling value="6.0"/>
@@ -249,7 +249,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<fuel-cell-stack number="4" />
 		<drivetrain-efficiency value=".85" />
 		<base-speed value="35.0" />
-		<base-power value="20.0" />
+		<total-motor-power value="90.0" />
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
 		<cargo total-capacity="2400.0">
@@ -306,8 +306,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<energy-per-module value="15" />
 		<fuel-cell-stack number="5" />			
 		<drivetrain-efficiency value=".85" />
-		<base-speed value="25.0" />
-		<base-power value="15.0" />
+		<base-speed value="30.0" />
+		<total-motor-power value="150.0" />
 		<terrain-handling value="3.0"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
@@ -356,8 +356,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<energy-per-module value="15" />
 		<fuel-cell-stack number="6" />
 		<drivetrain-efficiency value=".9" />
-		<base-speed value="25.0" />
-		<base-power value="15.0" />		
+		<base-speed value="30.0" />
+		<total-motor-power value="150.0" />		
 		<terrain-handling value="2"/>
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
@@ -403,7 +403,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".9" />
 		<base-speed value="30.0" />
-		<base-power value="20.0" />		
+		<total-motor-power value="20.0" />		
 		<terrain-handling value="10.0"/>
 		<crew-size value="1" />
 		<cargo total-capacity="300.0">
@@ -429,10 +429,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANE" value="2.0"/>
 		<battery-module number="1" />
 		<energy-per-module value="15" />
-		<fuel-cell-stack number="1" />
+		<fuel-cell-stack number="2" />
 		<drivetrain-efficiency value=".95" />
 		<base-speed value="40.0" />
-		<base-power value ="40.0" />		
+		<total-motor-power value ="20.0" />		
 		<crew-size value="0" />
 		<cargo total-capacity="800.0">
 			<capacity type="methane" amount="100.0" />
@@ -446,10 +446,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANE" value="2.0"/>
 		<battery-module number="1" />
 		<energy-per-module value="15" />
-		<fuel-cell-stack number="2" />
+		<fuel-cell-stack number="3" />
 		<drivetrain-efficiency value=".95" />
 		<base-speed value="40.0" />
-		<base-power value ="40.0" />		
+		<total-motor-power value ="40.0" />		
 		<crew-size value="0" />
 		<cargo total-capacity="1500.0">
 			<capacity type="methane" amount="300.0" />
@@ -463,10 +463,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<power-source type="FUEL_POWER_SOURCE" fuel="METHANE" value="2.0"/>
 		<battery-module number="2" />
 		<energy-per-module value="15" />
-		<fuel-cell-stack number="2" />
+		<fuel-cell-stack number="3" />
 		<drivetrain-efficiency value=".95" />
 		<base-speed value="40.0" />
-		<base-power value ="40.0" />		
+		<total-motor-power value ="40.0" />		
 		<crew-size value="0" />
 		<cargo total-capacity="500.0">
 			<capacity type="methane" amount="300.0" />
