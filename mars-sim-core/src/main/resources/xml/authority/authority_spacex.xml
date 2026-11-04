@@ -15,7 +15,12 @@
 			<settlement-name name="Hawthorne" />
 			<settlement-name name="XAE" />
 			<settlement-name name="New Vegas" />
-			<settlement-name name="Brownsville" />			
+			<settlement-name name="new Brownsville" />			
+			<settlement-name name="Solar City" />
+			<settlement-name name="New Vegas" />
+			<settlement-name name="Macro Base" />	
+			<settlement-name name="New McGregor" />
+			<settlement-name name="New Cape" />	
 			<rover-name name="Genesis" />
 			<rover-name name="Vega" />
 			<rover-name name="Raptor" />
@@ -30,5 +35,17 @@
 			<rover-name name="Princess" />
 			<rover-name name="Serenity" />
 			<rover-name name="Ironman" />
-			<rover-name name="Mariner" />			
+			<rover-name name="Mariner" />
+			<rover-name name="Cybertruck" />
+			<rover-name name="Cybercab" />
+			<rover-name name="Hawthorne" />
+			<rover-name name="TeslaTruck" />
+			<rover-name name="Ironman" />
+			<rover-name name="Vandenberg" />
+			<rover-name name="Pecan" />
+			<rover-name name="Polar" />
+			<rover-name name="Boca" />
+			<rover-name name="Chica" />
+			<rover-name name="Boring" />
+			<rover-name name="Giga" />
 		</authority>

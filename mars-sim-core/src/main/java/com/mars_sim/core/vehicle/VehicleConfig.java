@@ -138,7 +138,7 @@ public class VehicleConfig {
 													NUMBER);
 		double energyPerModule = ConfigHelper.getAttributeDouble(vehicleElement.getChild(ENERGY_PER_MODULE),
 												VALUE);
-		int fuelCell = ConfigHelper.getAttributeInt(vehicleElement.getChild(FUEL_CELL_STACK), NUMBER);
+		int fuelCellkW = ConfigHelper.getAttributeInt(vehicleElement.getChild(FUEL_CELL_STACK), VALUE);
 		
 		double drivetrainEff = ConfigHelper.getAttributeDouble(vehicleElement.getChild(DRIVETRAIN_EFFICIENCY),
 												VALUE);
@@ -149,7 +149,7 @@ public class VehicleConfig {
 
 		VehicleSpec vSpec = new VehicleSpec(name, type, model, description, baseImage, 
 				powerSourceType, fuelTypeStr, powerValue,
-				battery, energyPerModule, fuelCell, 
+				battery, energyPerModule, fuelCellkW, 
 				drivetrainEff, baseSpeed, motorPower,
 				crewSize);
 		

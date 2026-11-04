@@ -190,7 +190,7 @@ public abstract class OperateVehicle extends Task {
     @Override
     protected double performMappedPhase(double time) {
     	if (getPhase() == null) {
-    	    logger.warning(worker, 20_000, "No longer piloting " + getVehicle() + ".");
+    	    logger.warning(worker, 5_000, "No longer piloting " + getVehicle() + ".");
     	    return time;
     	}
     	else if (MOBILIZE.equals(getPhase())) {
@@ -316,7 +316,7 @@ public abstract class OperateVehicle extends Task {
         	// Note: must be larger than LOW_SPEED, or else it stays at obstacle phase
         	vehicle.setSpeed(LOW_SPEED * 1.1);
         	
-        	logger.info(vehicle, 30_000, "Resetting the speed to " + Math.round(vehicle.getSpeed() * 10.0)/10.0 + " kph.");
+        	logger.info(vehicle, 5_000, "Resetting the speed to " + Math.round(vehicle.getSpeed() * 10.0)/10.0 + " kph.");
         }
         	
         // Mobilize vehicle
@@ -373,7 +373,7 @@ public abstract class OperateVehicle extends Task {
 	private boolean checkQualification(double time) {
 		if (worker.getUnitType() == UnitType.ROBOT
 	        	&& ((Robot)worker).getSystemCondition().isLowPower()) {
-	        	logger.log(worker, Level.WARNING, 20_000,
+	        	logger.log(worker, Level.WARNING, 5_000,
 	        			". Unable to pilot " + getVehicle() + " due to low power.");
 		        endTask();
 		        return false;
@@ -382,7 +382,7 @@ public abstract class OperateVehicle extends Task {
             	&& ((Person)worker).isSuperUnfit()){
   
         	// For humans
-        	logger.log(worker, Level.WARNING, 20_000,
+        	logger.log(worker, Level.WARNING, 5_000,
         			". Super unfit to pilot " + getVehicle() + ".");
 	        endTask();
 	        
@@ -391,7 +391,7 @@ public abstract class OperateVehicle extends Task {
         }
         
 		if (time < 0) {
-			logger.severe(vehicle, 20_000, "Negative time: " + time);
+			logger.severe(vehicle, 5_000, "Negative time: " + time);
         	return false;
 		}
        	  
@@ -428,14 +428,14 @@ public abstract class OperateVehicle extends Task {
         	remainingFuel = vehRH.getSpecificAmountResourceStored(fuelTypeID);
 	
 	    	if (remainingFuel < LEAST_AMOUNT) {
-	    		logger.log(vehicle, Level.SEVERE, 20_000, 
+	    		logger.log(vehicle, Level.SEVERE, 5_000, 
 						"Case 0a1: Ran out of fuel.");
 	    		// Turn on emergency beacon
 	    		turnOnBeacon(ResourceUtil.METHANOL_ID);
 				vehicle.addSecondaryStatus(StatusType.OUT_OF_FUEL);
 				
 		    	if (batteryEnergy < LEAST_AMOUNT) {
-		    		logger.log(vehicle, Level.SEVERE, 20_000, 
+		    		logger.log(vehicle, Level.SEVERE, 5_000, 
 							"Case 0a2: Ran out of fuel and out of battery power. Cannot continue.");
 		    		// Turn on emergency beacon
 			    	turnOnBeacon("No battery power");
@@ -451,14 +451,14 @@ public abstract class OperateVehicle extends Task {
 	        remainingOxidizer = vehRH.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 	
 	    	if (remainingOxidizer < LEAST_AMOUNT * RATIO_OXIDIZER_FUEL) {
-	    		logger.log(vehicle, Level.SEVERE, 20_000, 
+	    		logger.log(vehicle, Level.SEVERE, 5_000, 
 						"Case 0b1: Ran out of fuel oxidizer.");
 	    		// Turn on emergency beacon
 		    	turnOnBeacon(ResourceUtil.OXYGEN_ID);
 				vehicle.addSecondaryStatus(StatusType.OUT_OF_OXIDIZER);
 	        	
 		    	if (batteryEnergy < LEAST_AMOUNT) {
-		    		logger.log(vehicle, Level.SEVERE, 20_000, 
+		    		logger.log(vehicle, Level.SEVERE, 5_000, 
 							"Case 0b2: Ran out of fuel and out of battery power. Cannot continue.");
 		    		// Turn on emergency beacon
 			    	turnOnBeacon("No battery power");
@@ -473,7 +473,7 @@ public abstract class OperateVehicle extends Task {
         }
         
         else if (batteryEnergy < LEAST_AMOUNT){
-        	logger.log(vehicle, Level.SEVERE, 20_000, 
+        	logger.log(vehicle, Level.SEVERE, 5_000, 
 					"Case 0c: Out of battery. Cannot drive.");
     		// Turn on emergency beacon
 	    	turnOnBeacon("No battery power");
@@ -488,7 +488,7 @@ public abstract class OperateVehicle extends Task {
         double speedFactor = 1;
         
         if (Double.isNaN(dist2Dest)) {
-    		logger.log(vehicle, Level.SEVERE, 20_000, "Case 0d: Invalid distance.");
+    		logger.log(vehicle, Level.SEVERE, 5_000, "Case 0d: Invalid distance.");
     		
         	endTask();
         	
@@ -528,7 +528,7 @@ public abstract class OperateVehicle extends Task {
         // Case 0e: Arriving if within 1 km
         if (batteryOnly) {
         	// No more fuel but still have battery
-        	logger.log(vehicle, Level.INFO,  20_000, "Case 0e: Battery only (Out of fuel or oxidizer). Heading " 
+        	logger.log(vehicle, Level.INFO,  5_000, "Case 0e: Battery only (Out of fuel or oxidizer). Heading " 
         			+ getNavpointName()
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
 
@@ -543,7 +543,7 @@ public abstract class OperateVehicle extends Task {
 
         // Case Ia: Just arrived if within 200 m
         if (dist2Dest <= DISTANCE_BUFFER_ARRIVED) {
-        	logger.log(vehicle, Level.INFO, 20_000, "Case Ia: Arrived at " + getNavpointName()
+        	logger.log(vehicle, Level.INFO, 5_000, "Case Ia: Arrived at " + getNavpointName()
         			+ " (dist: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + " km).");
         	
         	lastDist = dist2Dest;
@@ -657,7 +657,7 @@ public abstract class OperateVehicle extends Task {
     			}
         	}	
     		
-          	logger.log(vehicle, Level.INFO, 20_000,  
+          	logger.log(vehicle, Level.INFO, 5_000,  
           		"Case II: Slowing down. Arrive soon at " + getNavpointName() 
 	       		+ ". dist2Dest: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + KM
 	       		+ "dist2Cover: " + Math.round(dist2Cover * 1_000.0)/1_000.0 + KM
@@ -682,7 +682,7 @@ public abstract class OperateVehicle extends Task {
         else {
         	// Case III: May speed up or slow down to get there, depending on terrain and sunlight
      	
-          	logger.log(vehicle, Level.INFO, 20_000,  
+          	logger.log(vehicle, Level.INFO, 5_000,  
           		"Case III: Proceeding to " + getNavpointName() 
 	       		+ ". dist2Dest: " + Math.round(dist2Dest * 1_000.0)/1_000.0 + KM
 	       		+ "distanceToCover: " + Math.round(dist2Cover * 1_000.0)/1_000.0 + KM

@@ -41,7 +41,7 @@ public final class VehicleFactory {
         VehicleSpec spec = vehicleConfig.getVehicleSpec(specName);
         VehicleType type = spec.getType();
      
-		String name = generateName(unitMgr, type, sponsor);
+		String name = generateName(unitMgr, specName, type, sponsor);
 
 		Vehicle vehicle = switch(spec.getType()) {
 			case LUV -> new LightUtilityVehicle(name, spec, owner);
@@ -55,14 +55,16 @@ public final class VehicleFactory {
     }
 
 	/**
-	 * Generates a new name for the Vehicle; potentially this may be a preconfigured name.
-	 * 
+	 * Generates a new name for the Vehicle; potentially this may be a preconfigured name
 	 * or an auto-generated one.
+	 * 
+	 * @param unitMgr
+	 * @param specName
 	 * @param type
-	 * @param sponsor Sponsor.
+	 * @param sponsor
 	 * @return
 	 */
-	private static String generateName(UnitManager unitMgr, VehicleType type, Authority sponsor) {
+	private static String generateName(UnitManager unitMgr, String specName, VehicleType type, Authority sponsor) {
 		String result = null;
 		String baseName = null;
 
@@ -80,6 +82,18 @@ public final class VehicleFactory {
   		}
 
 		if (result == null) {
+			switch (type) {
+				case VehicleType.EXPLORER_ROVER -> {
+					if (specName.equalsIgnoreCase("Explorer Rover"))
+						baseName = "E-Rover";
+					else if (specName.equalsIgnoreCase("Long Range Explorer"))
+						baseName = "E-Rover-LR";
+				}
+				case VehicleType.TRANSPORT_ROVER -> baseName = "T-Rover";
+				case VehicleType.CARGO_ROVER -> baseName = "C-Rover";
+				default -> {}
+			}
+			
 			int number = unitMgr.incrementTypeCount(type.name());
 			result = String.format(VEHICLE_TAG_NAME, baseName, number);
 		}

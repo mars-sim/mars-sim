@@ -10,7 +10,6 @@ package com.mars_sim.core.equipment;
 import java.io.Serializable;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
@@ -24,7 +23,7 @@ public class Battery implements Serializable {
     private static final long serialVersionUID = 1L;
     
     /** Default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(Battery.class.getName());
+	// May add back: private static final SimLogger logger = SimLogger.getLogger(Battery.class.getName())
 	
 	public static final String BATTERY_EVENT = "battery event";
 

@@ -55,6 +55,7 @@ public abstract class Propulsion implements Serializable {
     public static final DecimalFormat DECIMAL2_S = new DecimalFormat("#,##0.00 secs");
     public static final DecimalFormat DECIMAL3_M_S = new DecimalFormat("#,##0.000 m/s");
     public static final DecimalFormat DECIMAL3_W = new DecimalFormat("#,##0.000 W");
+	protected static final DecimalFormat DECIMAL2_KW = new DecimalFormat("#,##0.00 kW");
     public static final DecimalFormat DECIMAL2_W = new DecimalFormat("#,##0.00 W");
     public static final DecimalFormat DECIMAL1_W = new DecimalFormat("#,##0.0 W");
     public static final DecimalFormat DECIMAL3_J = new DecimalFormat("#,##0.000 J");

@@ -142,8 +142,8 @@ public class VehicleSpec implements Serializable {
 	private int numBatteryModule;
 	/** The fuel type ID of the vehicle.  */
 	private int fuelTypeID;
-	/** The # of fuel cell stacks of the vehicle.  */
-	private int numFuelCellStack;
+	/** The total kW of the fuel cell stacks of the vehicle.  */
+	private int fuelCellkW;
 	 /** The onboard vehicle power usage in kW (other than for drivetrain). */
 	private double onboardEnergyPercent;
     /** The maximum energy capacity of a standard battery module in kWh. */
@@ -327,7 +327,7 @@ public class VehicleSpec implements Serializable {
 	 * @param powerPercent
 	 * @param batteryModule
 	 * @param energyPerModule
-	 * @param fuelCellStack
+	 * @param fuelCellkW
 	 * @param drivetrainEff
 	 * @param baseSpeed
 	 * @param basePower
@@ -335,7 +335,7 @@ public class VehicleSpec implements Serializable {
 	 */
 	public VehicleSpec(String name, VehicleType type, String model, String description, String baseImage,
 			String powerSourceStr, String fuelTypeStr, double powerPercent,
-			int batteryModule, double energyPerModule, int fuelCellStack,
+			int batteryModule, double energyPerModule, int fuelCellkW,
 			double drivetrainEff, 
 			double baseSpeed, double totalMotorPower,
 			int crewSize) {
@@ -398,7 +398,7 @@ public class VehicleSpec implements Serializable {
 		// Set the energy kWh per battery module of the vehicle.		
 		this.energyCapacityPerModule = energyPerModule;
 		// Set the # of fuel cell stacks of the vehicle.
-		this.numFuelCellStack = fuelCellStack;
+		this.fuelCellkW = fuelCellkW;
 		// Set the drivetrain efficiency [dimension-less] of the vehicle.
 		this.drivetrainFuelEfficiency = drivetrainEff;
 		
@@ -479,7 +479,7 @@ public class VehicleSpec implements Serializable {
 		// Assume an average percent of energy to be consumed by onboard power usage 
 		double onboardUsedFraction = onboardEnergyPercent / 100;
 		// Assume the peak power is related to the minimum of the total motor power, and numbers of fuel cell stack.
-		peakPower = Math.min(totalMotorPower, numFuelCellStack * 15);
+		peakPower = Math.min(totalMotorPower, fuelCellkW + batteryCapacity / 3);
 		
 		basePower = peakPower / 5;
 		
@@ -747,12 +747,12 @@ public class VehicleSpec implements Serializable {
 	}
 	
 	/**
-	 * Gets the number of fuel cell stacks.
+	 * Gets total kW of the fuel cell stacks.
 	 * 
 	 * @return
 	 */
 	public int getFuelCellStack() {
-		return numFuelCellStack;
+		return fuelCellkW;
 	}
 	
 	/**

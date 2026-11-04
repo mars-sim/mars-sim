@@ -68,6 +68,7 @@ import com.mars_sim.core.tool.RandomUtil;
 	 private static final DecimalFormat DECIMAL3_N = new DecimalFormat("#,##0.000 N");
 	 private static final DecimalFormat DECIMAL2_N = new DecimalFormat("#,##0.00 N");
 	 private static final DecimalFormat DECIMAL2_W = new DecimalFormat("#,##0.00 W");
+	 private static final DecimalFormat DECIMAL2_KW = new DecimalFormat("#,##0.00 kW");
 	 private static final DecimalFormat DECIMAL2_J = new DecimalFormat("#,##0.00 J");
 	 private static final DecimalFormat DECIMAL3_M_S = new DecimalFormat("#,##0.000 m/s");
 	 private static final DecimalFormat DECIMAL3_M_S2 = new DecimalFormat("#,##0.000 m/s2");
@@ -148,14 +149,14 @@ import com.mars_sim.core.tool.RandomUtil;
 		 double vMS = vKPH / KPH_CONV;
 	  
 		 if (vKPH < 0 || vMS < 0) {
-			 logger.log(vehicle, Level.INFO, 10_000, "Final speed -ve (" 
+			 logger.log(vehicle, Level.INFO, 5_000, "Final speed -ve (" 
 					 +  Math.round(vKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 vKPH = 0;
 			 vMS = 0;
 		 }
 			
 		 if (uKPH < 0 || uMS < 0) {
-			 logger.log(vehicle, Level.INFO, 10_000, "Initial speed -ve (" 
+			 logger.log(vehicle, Level.INFO, 5_000, "Initial speed -ve (" 
 					 +  Math.round(uKPH * 1000.0)/1000.0 + " kph). Reset back to zero.");
 			 uKPH = 0;
 			 uMS = 0;
@@ -173,8 +174,8 @@ import com.mars_sim.core.tool.RandomUtil;
 		 double fGravity = 0;      
 		 // 1 N = (1 kg) (1 m/s2)	 
 		 double accelSpeedUp = 0;
-		 
-		 double powerConstantSpeed  = 0;
+		 // powerConstantSpeed is for rovers only. Not for drones
+		 double powerConstantSpeed = 0;
 		 
 		 double fuelNeeded = 0;
 		 // Get energy [in Wh] from the fuel
@@ -187,15 +188,15 @@ import com.mars_sim.core.tool.RandomUtil;
 		 double avePower = 0;
 		 
 		 double aveForce = 0;
-		  
+		 // powerThrustDrone is for rovers only. Not for drones
 		 double powerThrustDrone = 0;
 		 //  g/m3 -> kg /m3;  14.76 g/m3 / 1000 -> kg /m3
 		 double airDensity = getWeather().getAirDensity(vehicle.getCoordinates()) / 1000;
 			
-		 if (VehicleType.isRover(vehicle.getVehicleType())) {
+		 if (vehicle instanceof Rover) {
 			 // Calculates forces and power
 			 
-			 double []drive = propulsion.driveOnGround(weight, vMS, averageSpeed, fGravity, airDensity);
+			 double[] drive = propulsion.driveOnGround(weight, vMS, averageSpeed, fGravity, airDensity);
 			 
 //			 double forceConstantSpeed = drive[0];
 			 powerConstantSpeed = drive[1];
@@ -295,13 +296,23 @@ import com.mars_sim.core.tool.RandomUtil;
 		 if (vMS > 0)
 			 aveForce = avePower / vMS;
 		 
-		 logger.log(vehicle, Level.INFO, 10_000,  
-				 "accelSpeedUp: " + DECIMAL3_M_S2.format(accelSpeedUp) + TWO_WHITESPACES
-				 + "aveForce: " + DECIMAL2_N.format(aveForce) + TWO_WHITESPACES
-				 + "avePower: " + DECIMAL2_W.format(avePower) + TWO_WHITESPACES
-				 + "powerConstantSpeed: " + DECIMAL2_W.format(powerConstantSpeed) + TWO_WHITESPACES
-				 + "powerSpeedUp: " + DECIMAL2_W.format(powerSpeedUp) + TWO_WHITESPACES
-				 + "powerDrone: " + DECIMAL2_W.format(powerThrustDrone));	
+		 if (vehicle instanceof Rover) {
+			 logger.log(vehicle, Level.INFO, 5_000,  
+					 "accelSpeedUp: " + DECIMAL3_M_S2.format(accelSpeedUp) + TWO_WHITESPACES
+					 + "aveForce: " + DECIMAL2_N.format(aveForce) + TWO_WHITESPACES
+					 + "avePower: " + DECIMAL2_KW.format(avePower/1000.0) + TWO_WHITESPACES
+					 + "powerConstantSpeed: " + DECIMAL2_KW.format(powerConstantSpeed/1000.0) + TWO_WHITESPACES
+					 + "powerSpeedUp: " + DECIMAL2_KW.format(powerSpeedUp/1000.0));	
+		 }
+
+		 else if (vehicle instanceof Drone) {
+			 logger.log(vehicle, Level.INFO, 5_000,  
+					 "accelSpeedUp: " + DECIMAL3_M_S2.format(accelSpeedUp) + TWO_WHITESPACES
+					 + "aveForce: " + DECIMAL2_N.format(aveForce) + TWO_WHITESPACES
+					 + "avePower: " + DECIMAL2_KW.format(avePower/1000.0) + TWO_WHITESPACES
+					 + "powerSpeedUp: " + DECIMAL2_KW.format(powerSpeedUp/1000.0) + TWO_WHITESPACES
+					 + "powerDrone: " + DECIMAL2_KW.format(powerThrustDrone/1000.0));
+		 }
 		 
 		 if (avePower < 0) {
 			 // Scenario 0: regen mode
@@ -314,9 +325,9 @@ import com.mars_sim.core.tool.RandomUtil;
 			 double newVKPH = newVMS * KPH_CONV;		 
 			 double newDistanceTravelled = uMS + newVMS * secs;
 			 
-			 logger.log(vehicle, Level.INFO, 10_000, "Scenario 0: Regen mode - "
-					 + "avePower: " 
-					 	+ DECIMAL3_N.format(avePower) + " -> " + DECIMAL3_N.format(newAvePower) + TWO_WHITESPACES
+			 logger.log(vehicle, Level.INFO, 5_000, "Scenario 0: Regen mode - "
+					 + "avePower: " + DECIMAL2_KW.format(avePower/1000.0) 
+					 + " -> " + DECIMAL2_KW.format(newAvePower/1000.0) + TWO_WHITESPACES
 					 + "seconds: " 	+ DECIMAL3_SEC.format(secs) + TWO_WHITESPACES
 					 + "oldVKPH: " 	+ DECIMAL3_KPH.format(vKPH) + TWO_WHITESPACES
 					 + "u -> v: " 	+ DECIMAL3_KPH.format(uKPH) 
@@ -330,8 +341,88 @@ import com.mars_sim.core.tool.RandomUtil;
 			 distanceTravelled = newDistanceTravelled;
 		 }
 		 
-		 else if (avePower > 0.0 || aveForce > 0.0) { 
+		 else if (avePower > 0.0 || aveForce > 0.0) {
 			 // Scenario 1
+			 
+			 double peakPower = vehicle.getVehicleSpec().getPeakPower() * 1_000;
+			 
+			 if (avePower > peakPower) {
+				 // Not enough power to support move forward, slowing down
+				 
+				 double deltaPower = avePower - peakPower;
+				 // Save this figure
+				 double oldAvePower = avePower;
+
+				 // Revise avePower
+				 avePower = peakPower;
+ 
+				 if (vehicle instanceof Rover) {
+					 
+					 // In [W], not [kW]
+					 //avePower = powerConstantSpeed + powerSpeedUp + powerThrustDrone;
+					 
+					 // Note: for now, will only consider reducing powerSpeedUp
+					 // no need to recompute powerConstantSpeed 
+					 
+					 // Revise powerSpeedUp
+					 powerSpeedUp = powerSpeedUp - deltaPower;
+					 	 
+					 // Note: if accelSpeedUp is +ve, speed up
+					 //       if accelSpeedUp is -ve, powerSpeedUp is -ve
+					 //  	  there's a chance regen can occur
+					 
+					 // Save this figure
+					 double oldAccelSpeedUp = accelSpeedUp;
+					 // Reivse accelSpeedUp
+					 accelSpeedUp = powerSpeedUp / mass / vMS ; //(vMS - uMS) / secs;
+					 
+					 // Save this figure
+					 double oldvMS = vMS;
+					 // Revise vMS
+					 vMS = accelSpeedUp * secs + uMS;	
+					 
+					 logger.log(vehicle, Level.INFO, 5_000, "Scenario 1A0: Not enough peak power - "
+							 + "old avePower -> new avePower: " + DECIMAL2_KW.format(oldAvePower/1000.0) 
+							 	+ " -> " + DECIMAL2_KW.format(avePower/1000.0) + TWO_WHITESPACES 
+							 + "old vMS -> new vMS: " + DECIMAL3_KPH.format(oldvMS) 
+							 	+ " -> " + DECIMAL3_KPH.format(vMS) + TWO_WHITESPACES 
+							 + "old accelSpeedUp -> new accelSpeedUp: " + DECIMAL3_M_S2.format(oldAccelSpeedUp) 
+							 	+ " -> " + DECIMAL3_M_S2.format(accelSpeedUp) + TWO_WHITESPACES);
+				 }
+				 else {
+					 // In [W], not [kW]
+					 //avePower = powerConstantSpeed + powerSpeedUp + powerThrustDrone;
+					 
+					 // Note: for now, will only consider reducing powerSpeedUp
+					 // no need to recompute powerThrustDrone 
+					 
+					 // Revise powerSpeedUp
+					 powerSpeedUp = powerSpeedUp - deltaPower;
+					 	 
+					 // Note: if accelSpeedUp is +ve, speed up
+					 //       if accelSpeedUp is -ve, powerSpeedUp is -ve
+					 //  	  there's a chance regen can occur
+					 
+					 // Save this figure
+					 double oldAccelSpeedUp = accelSpeedUp;
+					 // Reivse accelSpeedUp
+					 accelSpeedUp = powerSpeedUp / mass / vMS ; //(vMS - uMS) / secs;
+					 
+					 // Save this figure
+					 double oldvMS = vMS;
+					 // Revise vMS
+					 vMS = accelSpeedUp * secs + uMS;	
+					 
+					 logger.log(vehicle, Level.INFO, 5_000, "Scenario 1A0: Not enough peak power - "
+							 + "old avePower -> new avePower: " + DECIMAL2_KW.format(oldAvePower/1000.0) 
+							 	+ " -> " + DECIMAL2_KW.format(avePower/1000.0) + TWO_WHITESPACES 
+							 + "old vMS -> new vMS: " + DECIMAL3_KPH.format(oldvMS) 
+							 	+ " -> " + DECIMAL3_KPH.format(vMS) + TWO_WHITESPACES 
+							 + "old accelSpeedUp -> new accelSpeedUp: " + DECIMAL3_M_S2.format(oldAccelSpeedUp) 
+							 	+ " -> " + DECIMAL3_M_S2.format(accelSpeedUp) + TWO_WHITESPACES);
+				 }
+				
+			 }
 			 
 			 // if u == v, u < v, u > v, or accelSpeedUp > 0 or accelSpeedUp < 0
 
@@ -370,7 +461,7 @@ import com.mars_sim.core.tool.RandomUtil;
 				 
 				 // Future: Will need to continue to model how nuclear-powered engine would work 
 				 
-				 logger.log(vehicle, Level.INFO, 10_000,  "Scenario 1A1: Nuclear powered or solar powered - " 
+				 logger.log(vehicle, Level.INFO, 5_000,  "Scenario 1A1: Nuclear powered or solar powered - " 
 						 + "u -> v: " 			+ DECIMAL3_KPH.format(uKPH) + " -> "
 	 						+ DECIMAL3_KPH.format(vKPH) + TWO_WHITESPACES   
 						 + "energyByBattery: " + DECIMAL3_WH.format(energyByBattery) + TWO_WHITESPACES				
@@ -378,9 +469,11 @@ import com.mars_sim.core.tool.RandomUtil;
 						 + "seconds: " + DECIMAL3_SEC.format(secs) + TWO_WHITESPACES);	
 			 }
 			 
-			 else if (!byBatteryOnly && remainingFuel > 0 && fuelNeeded <= remainingFuel) {
+			 else if (!byBatteryOnly && remainingFuel > 0) { // && fuelNeeded <= remainingFuel) {
 				 // Scenario 1A2: fuel can fulfill all energy expenditure 
 
+				 // Future: check for the limit due to the power output of fuel cell stack
+					 
 				 // if fuelNeeded is smaller than remainingFuel, then fuel is sufficient.
 				// Convert the total energy [in Wh]. Need to convert from J to Wh
 				 overallEnergyUsed = avePower * secs / JOULES_PER_WH ; // [in Wh]
@@ -393,7 +486,7 @@ import com.mars_sim.core.tool.RandomUtil;
 				 * NOTE: May comment off the logging codes below once debugging is done. But DO NOT 
 				 * delete any of them. Needed for testing when new features are added in future. Thanks !
 				 */
-				 logger.log(vehicle, Level.INFO, 10_000,  
+				 logger.log(vehicle, Level.INFO, 5_000,  
 						 "Scenario 1A2: Enough fuel - " 
 								 + "fuelNeeded: " +  DECIMAL3_KG.format(fuelNeeded)  + TWO_WHITESPACES	
 								 + "u -> v: " 			+ DECIMAL3_KPH.format(uKPH) + " -> "
@@ -405,7 +498,7 @@ import com.mars_sim.core.tool.RandomUtil;
 								 + "seconds: " + DECIMAL3_SEC.format(secs) + TWO_WHITESPACES);	
 			 }
 			 
-			 else {			
+			 else {		
 				 // Scenario 1B: fuel can fulfill some energy expenditure but not all
 
 				 if (byBatteryOnly) {
@@ -425,20 +518,20 @@ import com.mars_sim.core.tool.RandomUtil;
 					 energyByBattery = overallEnergyUsed - energyByFuel;
 				 }
 				 
-				 // Calculate energy that can be delivered by battery 
-				 double energySuppliedByBattery = battery.consumeEnergy(energyByBattery / 1000, hrsTime) * 1000;
-				 
+				 // Calculate energy [in Wh] that can be delivered by battery 
+				 double energySuppliedByBattery = battery.consumeEnergy(energyByBattery / 1000, hrsTime) * 1000 ;
+						 
 				 double batteryEnergyDeficit = energyByBattery - energySuppliedByBattery;
 				 
 				 if (byBatteryOnly || remainingFuel <= LEAST_AMOUNT) {
 					 // Scenario 1B1: Ran out of fuel or switch to battery power.
 					 
-						logger.log(vehicle, Level.INFO, 10_000,  
+						logger.log(vehicle, Level.INFO, 5_000,  
 								"Scenario 1B1: No fuel. Battery only - " 				
 								+ "energyByBattery -> energySuppliedByBattery: " 
 									+ DECIMAL3_WH.format(energyByBattery) + " -> "
 									+ DECIMAL3_WH.format(energySuppliedByBattery) + TWO_WHITESPACES
-								+ "Battery: " + DECIMAL3_KWH.format(battery.getStoredEnergy()));
+								+ "Stored energy in Battery: " + DECIMAL3_KWH.format(battery.getStoredEnergy()));
 						
 					 double[] result = propulsion.propelBatteryOnly("Scenario 1B1: Battery only.  ",
 							 aveForce, energySuppliedByBattery, secs, uMS, mass);
@@ -628,7 +721,7 @@ import com.mars_sim.core.tool.RandomUtil;
 		// -ve = -ve + +ve
 		 double newForce = aveForce + oppositeForce;
 		  
-		 logger.log(vehicle, Level.INFO, 10_000,  
+		 logger.log(vehicle, Level.INFO, 5_000,  
 				 "Scenario 0: regen mode - "
 				 + "oldAccel: " + DECIMAL3_M_S2.format(oldAccel) + TWO_WHITESPACES
 				 + "regenDecel: " + DECIMAL3_M_S2.format(regenDecel) + TWO_WHITESPACES

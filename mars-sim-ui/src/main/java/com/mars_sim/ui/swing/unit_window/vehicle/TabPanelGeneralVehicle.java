@@ -115,7 +115,7 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 		
 		infoPanel.addTextField("Fuel Cap", StyleManager.DECIMAL_KG.format(fuelCap), null);
 		
-		infoPanel.addTextField("Cell Stack", vehicleSpec.getFuelCellStack() + "", null);	
+		infoPanel.addTextField("Fuel Cell Stacks", vehicleSpec.getFuelCellStack() + " kW", null);	
 		infoPanel.addTextField("Battery Module", vehicleSpec.getBatteryModule() + "", null);	
 		batteryPercentLabel = infoPanel.addTextField("Battery Percent", 
 				StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()), null);

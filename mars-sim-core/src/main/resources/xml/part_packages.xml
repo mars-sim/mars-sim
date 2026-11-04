@@ -53,8 +53,9 @@
 		<part type="methane fuel cell" number="100"/>
 		<part type="methane fuel cell stack" number="2"/>
 		<part type="methanol fuel cell" number="100"/>
-		<part type="methanol fuel cell stack" number="2"/>		
-
+		<part type="methanol fuel cell stack medium" number="2"/>
+		<part type="methanol fuel cell stack large" number="2"/>
+		
 		<part type="battery module" number="2" />
 		
 		<part type="SLS 3D Printer" number="2"/>
@@ -108,8 +109,9 @@
 		<part type="methane fuel cell" number="200"/>
 		<part type="methane fuel cell stack" number="4"/>
 		<part type="methanol fuel cell" number="200"/>
-		<part type="methanol fuel cell stack" number="4"/>		
-
+		<part type="methanol fuel cell stack medium" number="4"/>
+		<part type="methanol fuel cell stack large" number="4"/>
+	
 		<part type="battery module" number="4" />
 		
 		<part type="SLS 3D Printer" number="4"/>
@@ -153,7 +155,9 @@
 		<part type="methane fuel cell" number="200"/>
 		<part type="methane fuel cell stack" number="4"/>
 		<part type="methanol fuel cell" number="200"/>
-		<part type="methanol fuel cell stack" number="4"/>		
+		<part type="methanol fuel cell stack large" number="4"/>		
+		<part type="methanol fuel cell stack medium" number="4"/>	
+				
 		<part type="polycarbonate panel" number="10"/>
 
 		<part type="pathogen filter" number="3"/>

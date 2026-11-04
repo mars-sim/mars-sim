@@ -82,7 +82,6 @@ public class ProcessItem implements Serializable {
 		
 		switch(type) {
 			case AMOUNT_RESOURCE: {
-
 				// Produce amount resources.
 				outputId = id;
 				double capacity = rh.getRemainingCombinedCapacity(outputId);

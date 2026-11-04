@@ -43,19 +43,21 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 	 * @param averageSpeed
 	 * @param fGravity
 	 * @param airDensity
-	 * @return
+	 * 
+	 * @return double[] {totalForce, powerConstantSpeed}
 	 */
 	public double[] driveOnGround(double weight, double vMS, double averageSpeed, double fGravity, double airDensity) {
 		// Gets the terrain angle in radians
 		double angle = vehicle.getTerrainGrade();
 
+		double fNormal = weight * Math.cos(angle);
 		// Assume road rolling resistance coeff of 0.075 on roads with pebbles/potholes
 		// on Mars (typically 0.015 on paved roads on Earth)
 		// See https://x-engineer.org/rolling-resistance/
 		// The ratio between distance and wheel radius is the rolling resistance
 		// coefficient
 		// Calculate the force on rolling resistance
-		double fRolling = 0.075 * weight * Math.cos(angle);
+		double fRolling = 0.075 * fNormal;
 
 		// See https://x-engineer.org/road-slope-gradient-force/
 		// Calculate the gradient resistance or road slope force
@@ -68,10 +70,11 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 		// Assume staticFriction is inversely proportionally to current average speed 
 		
 		// Note: On Mars surface, there is no paved road. Friction Coeff are very high
-		double kineticFrictionCoeff = 75 / vehicle.getVehicleSpec().getBasePower();
-		double staticFrictionCoeff = kineticFrictionCoeff * 1.0 / (0.5 + averageSpeed);
+		double kineticFrictionCoeff = 0.597;// 75 / vehicle.getVehicleSpec().getBasePower();
+		
+		double staticFrictionCoeff = 0.757; // kineticFrictionCoeff * 1.0 / (0.5 + averageSpeed);
 
-		double fInitialFriction = weight * (staticFrictionCoeff + kineticFrictionCoeff);
+		double fInitialFriction = fNormal * (staticFrictionCoeff + kineticFrictionCoeff);
 
 		double frontalArea = vehicle.getWidth() * vehicle.getWidth() * .8;
 		// https://x-engineer.org/aerodynamic-drag
@@ -90,8 +93,12 @@ public class GroundPropulsion extends Propulsion implements Serializable {
 		double powerConstantSpeed = totalForce * vMS / TRANSMISSION_EFFICIENCY;
 		
 		logger.log(vehicle, Level.INFO, 10_000, "driveOnGround:: "
+				+ "angle: " + Math.round(angle * 180/Math.PI * 10.0)/10.0 + TWO_WHITESPACES
+				+ "powerConstantSpeed: " + DECIMAL2_KW.format(powerConstantSpeed/1000.0) + TWO_WHITESPACES
 				+ "totalForce: " + DECIMAL1_N.format(totalForce) + TWO_WHITESPACES
-				+ "powerConstantSpeed: " + DECIMAL1_W.format(powerConstantSpeed) + TWO_WHITESPACES
+				+ "fNormal: " + DECIMAL1_N.format(fNormal) + TWO_WHITESPACES 
+				+ "fRolling: " + DECIMAL1_N.format(fRolling) + TWO_WHITESPACES 
+				+ "fRoadSlope: " + DECIMAL1_N.format(fRoadSlope) + TWO_WHITESPACES 
 				+ "fInitialFriction: " + DECIMAL1_N.format(fInitialFriction) + TWO_WHITESPACES 
 				+ "fAeroDrag: " + DECIMAL1_N.format(fAeroDrag) + TWO_WHITESPACES 
 				+ "airDensity: " +  DECIMAL3_KG_M3.format(airDensity) + TWO_WHITESPACES

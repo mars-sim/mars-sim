@@ -36,9 +36,10 @@ public class ItemResourceUtil {
 	public static final int METHANE_FUEL_CELL_ID = WORK_GLOVES_ID + 1;
 	public static final int METHANOL_FUEL_CELL_ID = METHANE_FUEL_CELL_ID + 1;
 	public static final int METHANE_FUEL_CELL_STACK_ID = METHANOL_FUEL_CELL_ID + 1;
-	public static final int METHANOL_FUEL_CELL_STACK_ID = METHANE_FUEL_CELL_STACK_ID + 1;
+	public static final int METHANOL_FUEL_CELL_STACK_MEDIUM_ID = METHANE_FUEL_CELL_STACK_ID + 1;
+	public static final int METHANOL_FUEL_CELL_STACK_LARGE_ID = METHANOL_FUEL_CELL_STACK_MEDIUM_ID + 1;
 	
-	public static final int PRESSURE_SUIT_ID = METHANOL_FUEL_CELL_STACK_ID + 1;
+	public static final int PRESSURE_SUIT_ID = METHANOL_FUEL_CELL_STACK_LARGE_ID + 1;
 	public static final int ROVER_WHEEL_ID = PRESSURE_SUIT_ID + 1;
 	public static final int SLS_3D_PRINTER_ID = ROVER_WHEEL_ID + 1;
 	
@@ -137,7 +138,8 @@ public class ItemResourceUtil {
 		fixedItemResources.put("methane fuel cell", METHANE_FUEL_CELL_ID);
 		fixedItemResources.put("methanol fuel cell", METHANOL_FUEL_CELL_ID);
 		fixedItemResources.put("methane fuel cell stack", METHANE_FUEL_CELL_STACK_ID);
-		fixedItemResources.put("methanol fuel cell stack", METHANOL_FUEL_CELL_STACK_ID);
+		fixedItemResources.put("methanol fuel cell stack large", METHANOL_FUEL_CELL_STACK_LARGE_ID);
+		fixedItemResources.put("methanol fuel cell stack medium", METHANOL_FUEL_CELL_STACK_MEDIUM_ID);
 		
 		// This check will only fail if a new resource has not been added correctly
 		int expectedSize = FIRST_FREE_ITEM_RESOURCE_ID - ResourceType.FIRST_ITEM_RESOURCE_ID;

@@ -949,7 +949,8 @@ public class PartGood extends Good {
 			return FUEL_CELL_DEMAND;
 		}
 		if (id == ItemResourceUtil.METHANE_FUEL_CELL_STACK_ID
-				|| id == ItemResourceUtil.METHANOL_FUEL_CELL_STACK_ID) {
+				|| id == ItemResourceUtil.METHANOL_FUEL_CELL_STACK_MEDIUM_ID
+				|| id == ItemResourceUtil.METHANOL_FUEL_CELL_STACK_LARGE_ID) {
 			return FUEL_CELL_STACK_DEMAND; 
 		}
 

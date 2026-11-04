@@ -3683,7 +3683,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="ceramic electrolyte" amount=".6" />
 		</inputs>
 		<outputs>
-			<part name="methanol fuel cell" number="2" />
+			<part name="methanol fuel cell" number="5" />
 		</outputs>
 	</process>
 	
@@ -3721,10 +3721,43 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
-	<process name="Make methanol fuel cell stack" tech="3" skill="4" work-time="400" process-time="100"
-			tooling="Fabrication" power-required="2">
+	<process name="Make large methanol fuel cell stack" tech="3" skill="4" work-time="300" process-time="100"
+			tooling="Fabrication" power-required="2.0">
 		<description>
-			Each fuel cell stack comprises 75 solid oxide fuel cells at 15 kW.
+			Each fuel cell stack comprises 300 solid oxide fuel cells at 60 kW.
+			
+			For Direct methanol fuel cells (DMFCs),
+			1. Anode reaction: CH3OH + H2O → 6H+ + 6e- + CO2
+			2. Cathode reaction: 3/2O2 + 6H+ + 6e- → 3H2O
+			3. Overall reaction: CH3OH + 3/2O2 → 2H2O + CO2
+
+			For indirect methanol fuel cells,
+			a. Entity 1: Steam Reforming Reaction
+				Chemical Formula: CH₃OH + H₂O → CO + 3H₂
+			b. Entity 2: Fuel Cell Reaction
+				Overall Reaction: 3H₂ + CO₂ → 3H₂O + electrical energy
+				
+		</description>
+		<inputs>
+			<part name="Steel sheet" number="2" />
+			<part name="Polyethylene HDPE sheet" number="2" />
+			<part name="electrical wire" number="40" />
+			<part name="wire connector" number="10" />
+			<part name="steel pipe" number="2" />
+			<part name="methanol fuel cell" number="300" />
+			<part name="logic board" number="1" />
+			<part name="Methanol reformer large" number="1" />
+		</inputs>
+		<outputs>
+			<!-- "methanol fuel cell stack" is 150 kg . Note: "Methanol reformer" is 90 kg -->
+			<part name="methanol fuel cell stack large" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="Make medium methanol fuel cell stack" tech="3" skill="4" work-time="400" process-time="100"
+			tooling="Fabrication" power-required="3.0">
+		<description>
+			Each fuel cell stack comprises 150 solid oxide fuel cells at 30 kW.
 			
 			For Direct methanol fuel cells (DMFCs),
 			1. Anode reaction: CH3OH + H2O → 6H+ + 6e- + CO2
@@ -3744,14 +3777,16 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="5" />
 			<part name="steel pipe" number="2" />
-			<part name="methanol fuel cell" number="75" />
+			<part name="methanol fuel cell" number="150" />
 			<part name="logic board" number="1" />
+			<part name="Methanol reformer medium" number="1" />
 		</inputs>
 		<outputs>
-			<part name="methanol fuel cell stack" number="1" />
+			<!-- "methanol fuel cell stack" is 90 kg . Note: "Methanol reformer" is 60 kg -->
+			<part name="methanol fuel cell stack medium" number="1" />
 		</outputs>
 	</process>
-	
+		
 		<!-- 2016-05-08 Added turbopump manufacturing -->
 	<process name="Manufacture turbopump" tech="3" skill="4" work-time="200" process-time="50"
 			tooling="Soldering" power-required="1">
@@ -4511,9 +4546,10 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="utility vehicle control panel" number="1" />		
 			<part name="vehicle frame small" number="2" />
 			<part name="vehicle chassis panel" number="3" />
-			<part name="aluminum sheet" number="5" />			
+			<part name="aluminum sheet" number="5" />
+			<part name="Motor 5 kW" number="2" />
 			<part name="Motor 10 kW" number="2" />
-			<part name="methanol fuel cell stack" number="2" />
+			<part name="methane fuel cell stack" number="2" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -4525,7 +4561,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="4" />
 			<part name="gas tank" number="1" />	
-			<part name="fuel tank small methanol" number="1" />
+			<part name="fuel tank small methane" number="1" />
 			<part name="water tank" number="1" />
 			<part name="fuel pump" number="1" />
 			<part name="Oxygen pump" number="1" />	
@@ -4549,7 +4585,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="window" number="2" />
 			<part name="winch" number="1" />
 			<part name="Motor 30 kW" number="3" />			
-			<part name="methanol fuel cell stack" number="4" />
+			<part name="methanol fuel cell stack medium" number="1" />
+			<part name="methanol fuel cell stack large" number="1" />
 			<part name="battery module" number="2" />
 			<part name="gas tank" number="2" />	
 			<part name="fuel tank small methanol" number="1" />
@@ -4588,8 +4625,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="rover windshield" number="2" />
 			<part name="window" number="2" />
 			<part name="winch" number="1" />
-			<part name="Motor 30 kW" number="3" />			
-			<part name="methanol fuel cell stack" number="4" />
+			<part name="Motor 30 kW" number="3" />
+			<part name="methanol fuel cell stack large" number="2" />
 			<part name="battery module" number="3" />
 			<part name="gas tank" number="3" />	
 			<part name="fuel tank small methanol" number="1" />
@@ -4630,7 +4667,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="window" number="5" />
 			<part name="winch" number="1" />
 			<part name="Motor 30 kW" number="5" />			
-			<part name="methanol fuel cell stack" number="5" />
+			<part name="methanol fuel cell stack medium" number="1" />
+			<part name="methanol fuel cell stack large" number="2" />
 			<part name="battery module" number="4" />
 			<part name="gas tank" number="4" />
 			<part name="fuel tank large methanol" number="3" />
@@ -4670,7 +4708,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="window" number="2" />
 			<part name="winch" number="1" />
 			<part name="Motor 30 kW" number="5" />			
-			<part name="methanol fuel cell stack" number="6" />
+			<part name="methanol fuel cell stack large" number="3" />
 			<part name="battery module" number="5" />
 			<part name="gas tank" number="4" />
 			<part name="fuel tank large methanol" number="4" />
@@ -4738,7 +4776,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="vehicle frame small" number="1" />
 		<part-salvage name="Motor 10 kW" number="2" />
 		<part-salvage name="battery module" number="1" />
-		<part-salvage name="methanol fuel cell stack" number="1" />		
+		<part-salvage name="methane fuel cell stack" number="1" />		
 		<part-salvage name="utility vehicle control panel" number="1" />
 		<part-salvage name="electrical wire" number="10" />
 		<part-salvage name="wire connector" number="10" />
@@ -4759,7 +4797,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="window" number="2" />
 		<part-salvage name="winch" number="1" />
-		<part-salvage name="methanol fuel cell stack" number="4" />		
+		<part-salvage name="methanol fuel cell stack large" number="1" />		
+		<part-salvage name="methanol fuel cell stack medium" number="1" />	
 		<part-salvage name="Motor 30 kW" number="3" />
 		<part-salvage name="battery module" number="2" />
 		<part-salvage name="rover control panel" number="1" />		
@@ -4792,7 +4831,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="window" number="4" />
 		<part-salvage name="winch" number="1" />
-		<part-salvage name="methanol fuel cell stack" number="5" />
+		<part-salvage name="methanol fuel cell stack large" number="2" />
+		<part-salvage name="methanol fuel cell stack medium" number="1" />	
 		<part-salvage name="Motor 30 kW" number="5" />
 		<part-salvage name="battery module" number="4" />
 		<part-salvage name="rover control panel" number="1" />
@@ -4825,7 +4865,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="rover windshield" number="1" />
 		<part-salvage name="window" number="2" />
 		<part-salvage name="winch" number="1" />
-		<part-salvage name="methanol fuel cell stack" number="6" />
+		<part-salvage name="methanol fuel cell stack large" number="3" />
 		<part-salvage name="Motor 30 kW" number="5" />
 		<part-salvage name="battery module" number="5" />
 		<part-salvage name="rover control panel" number="1" />

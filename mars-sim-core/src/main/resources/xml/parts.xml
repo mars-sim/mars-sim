@@ -1105,9 +1105,9 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="Methanol fuel cell" type="electrical" mass="1.0">
+	<part name="Methanol fuel cell" type="electrical" mass="0.2">
 		<description>Assume each methanol fuel cell can generate 200W
-		continuous power. Assume achieving 200W/kg.
+		continuous power. Assume achieving 1.0 kg/kW.
 		</description>
 	    <maintenance-entity-list>
 			<entity name="rover" probability="1" max-number="2" />
@@ -1115,9 +1115,9 @@
 		</maintenance-entity-list>		
 	</part>
 	
-	<part name="Methanol fuel cell stack" type="electrical" mass="75">
+	<part name="Methanol fuel cell stack large" type="electrical" mass="150.0">
 		<description>A 15 kW Indrect Reformed Methanol Fuel Cell (IRMFC) stack comprises 
-		   75 fuel cells and heat exchanger, radiator and supporting structure.
+		   300 fuel cells and heat exchanger, radiator and supporting structure.
 		</description>		
 	    <maintenance-entity-list>
 			<entity name="rover" probability=".5" max-number="1" />
@@ -1125,6 +1125,26 @@
 		</maintenance-entity-list>
 	</part>
 
+	<part name="Methanol fuel cell stack medium" type="electrical" mass="90.0">
+		<description>A 15 kW Indrect Reformed Methanol Fuel Cell (IRMFC) stack comprises 
+		   150 fuel cells and heat exchanger, radiator and supporting structure.
+		</description>		
+	    <maintenance-entity-list>
+			<entity name="rover" probability=".5" max-number="1" />
+			<entity name="light utility vehicle" probability=".5" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="Methanol reformer large" type="electrical" mass="90.0">
+		<description>The large methanol reformer with heat exchanger is the dominant mass contributor of a methanol fuel cell stack.
+		</description>
+	</part>
+		
+	<part name="Methanol reformer medium" type="electrical" mass="60.0">
+		<description>The medium methanol reformer with heat exchanger is the dominant mass contributor of a methanol fuel cell stack.
+		</description>
+	</part>
+	
 	<part name="Radiator" type="electrical" mass="2.0">
 		<description>The radiator serves to dissipate heat.
 		</description>
