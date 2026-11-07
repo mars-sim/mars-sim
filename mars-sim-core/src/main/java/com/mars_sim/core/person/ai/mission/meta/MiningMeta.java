@@ -65,8 +65,8 @@ public class MiningMeta extends AbstractMetaMission {
 	}
 
     @Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
-		return new Mining(crew, needsReview);
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
+		return new Mining(crew, parameters.needsReview());
     }
 
 	public Mission constructInstance(Collection<Worker> members, MineralSite site,

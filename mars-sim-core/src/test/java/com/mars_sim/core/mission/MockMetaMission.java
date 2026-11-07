@@ -21,7 +21,7 @@ class MockMetaMission extends AbstractMetaMission {
     }
 
     @Override
-    public Mission constructInstance(Roster crew, boolean needsReview) {
+    public Mission constructInstance(Roster crew, CreateParameters parameters) {
         throw new UnsupportedOperationException("Unimplemented method 'constructInstance'");
     }
 }

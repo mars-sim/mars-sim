@@ -31,8 +31,8 @@ public class BiologyFieldStudyMeta extends FieldStudyMeta {
 	}
 
     @Override
-    public Mission constructInstance(Roster crew, boolean needsReview) {
-        return new BiologyFieldStudy(crew, needsReview);
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
+		return new BiologyFieldStudy(crew, parameters.needsReview());
     }
 
 	public Mission constructInstance(List<Worker> members, ScientificStudy study,

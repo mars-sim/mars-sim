@@ -55,7 +55,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	 * @return mission instance.
 	 */
 	@Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
         return new ConstructionMission(crew);
     }
 

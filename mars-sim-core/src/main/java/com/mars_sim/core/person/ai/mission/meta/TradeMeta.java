@@ -62,8 +62,8 @@ public class TradeMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
-		return new Trade(crew, needsReview);
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
+		return new Trade(crew, parameters.needsReview());
 	}
 
 	public Mission constructInstance(List<Worker> members, Settlement destination,

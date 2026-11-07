@@ -72,17 +72,17 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 	}
 
     @Override
-    public Mission constructInstance(Roster crew, boolean needsReview) throws MissionCreationException {
+		public Mission constructInstance(Roster crew, CreateParameters parameters) throws MissionCreationException {
         // Find a random destination settlement for the mission.
         var destination = getRandomDestinationSettlement(crew);
         if (destination == null) {
             throw new MissionCreationException("mission.travelsettlement.dest");
         }
-		return constructInstance(crew, destination, needsReview);
+		return constructInstance(crew, destination, parameters);
     }
 
-	public Mission constructInstance(Roster crew, Settlement destination, boolean needsReview) {
-		return new TravelToSettlement(crew, destination, needsReview);
+	public Mission constructInstance(Roster crew, Settlement destination, CreateParameters parameters) {
+		return new TravelToSettlement(crew, destination, parameters.needsReview());
 	}
 
     /**

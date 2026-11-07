@@ -41,11 +41,11 @@ public class TestDriveMetaMission extends AbstractMetaMission {
 	 * Constructs an instance of the Test drive
 	 * 
 	 * @param crew the roster of crew members to perform the mission.
-	 * @param needsReview Mission must be reviewed
+     * @param parameters mission creation parameters.
 	 * @return mission instance.
 	 */
     @Override
-    public Mission constructInstance(Roster crew, boolean needsReview) {
+    public Mission constructInstance(Roster crew, CreateParameters parameters) {
 
 		var mission = new MissionVehicleProject(null, MissionType.TEST_DRIVE, 10, crew);
 

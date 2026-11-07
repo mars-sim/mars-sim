@@ -89,11 +89,11 @@ public class ExplorationMeta extends AbstractMetaMission {
 	/**
 	 * Constructs a new instance of the Exploration mission with the given crew and review status.
 	 * @param crew the roster of crew members for the mission.
-	 * @param needsReview whether the mission requires review before execution.
+	 * @param parameters mission creation parameters.
 	 * @return a new instance of the Exploration mission.
 	 */
 	@Override
-	public Mission constructInstance(Roster crew, boolean needsReview) throws MissionCreationException{
+	public Mission constructInstance(Roster crew, CreateParameters parameters) throws MissionCreationException {
 
 		var numSites = getExpectedSites(crew.leader().getAssociatedSettlement());
 		List<MineralSite> sites = determineExplorationSites(crew, numSites);
@@ -102,7 +102,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 			throw new MissionCreationException("mission.exploration.nosites");
 		}
 			
-		return constructInstance(crew, needsReview, sites);
+		return constructInstance(crew, parameters, sites);
 	}
 
 	/**
@@ -245,11 +245,11 @@ public class ExplorationMeta extends AbstractMetaMission {
 	/**
 	 * Constructs a new instance of the Exploration mission with the given crew and exploration sites.
 	 * @param crew the roster of crew members for the mission.
-	 * @param needsReview whether the mission requires review before execution.
+	 * @param parameters mission creation parameters.
 	 * @param sites the list of mineral sites to be explored during the mission.
 	 * @return a new instance of the Exploration mission.
 	 */
-	public Mission constructInstance(Roster crew, boolean needsReview, List<MineralSite> sites) {
+	public Mission constructInstance(Roster crew, CreateParameters parameters, List<MineralSite> sites) {
         Settlement base = crew.leader().getAssociatedSettlement();
         Coordinates lastLocation = base.getCoordinates();
 

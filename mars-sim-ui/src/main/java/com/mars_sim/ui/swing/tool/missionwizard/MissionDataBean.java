@@ -88,6 +88,7 @@ class MissionDataBean {
 		// Create the mission roster;this is for the new single constructor per Mission pattern
 		var roster = new MetaMission.Roster(getLeader(), getWorkerMembers(), rover);
 		boolean needsReview = false;  // This could be user selected in the future
+		var createParameters = new MetaMission.CreateParameters(needsReview);
 		Mission mission = switch (meta) {
 			case AreologyFieldStudyMeta m -> m
 					.constructInstance(roster, study, routePoints.get(0));
@@ -103,14 +104,14 @@ class MissionDataBean {
 					.constructInstance(mixedMembers, destination, (Drone) rover, sellGoods, buyGoods);
 			case EmergencySupplyMeta m -> m
 					.constructInstance(roster, destination, sellGoods);
-			case ExplorationMeta m -> m.constructInstance(roster, needsReview, exploration);
+			case ExplorationMeta m -> m.constructInstance(roster, createParameters, exploration);
 			case MiningMeta m -> m.constructInstance(roster, miningSite, luv);
 			case RescueSalvageVehicleMeta m -> m.constructInstance(roster, rescueVehicle);
 			case TradeMeta m -> m
 					.constructInstance(roster, destination, sellGoods, buyGoods);
-			case TravelToSettlementMeta m -> m.constructInstance(roster, destination, needsReview);
-			case TestDriveMetaMission m -> m.constructInstance(roster, needsReview);
-			case LandmarkMetaMission m -> m.constructInstance(roster, landmark, needsReview);
+			case TravelToSettlementMeta m -> m.constructInstance(roster, destination, createParameters);
+			case TestDriveMetaMission m -> m.constructInstance(roster, createParameters);
+			case LandmarkMetaMission m -> m.constructInstance(roster, landmark, createParameters);
 			default -> throw new IllegalStateException("Mission type: " + type + " unknown");
 		};
 

@@ -218,7 +218,7 @@ public class MissionBuilder {
 
 		var crew = new MetaMission.Roster(startingMember, members, vehicle);
 		try {
-			Mission newMission = mission.constructInstance(crew, needsReview);
+			Mission newMission = mission.constructInstance(crew, new MetaMission.CreateParameters(needsReview));
 			startingMember.getAssociatedSettlement().getMissionControl().addMission(newMission);
 			return newMission;
 

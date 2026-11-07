@@ -43,7 +43,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission{
      * Throws UnsupportedOperationException if called.
      */
     @Override
-    public Mission constructInstance(Roster crew, boolean needsReview) {
+    public Mission constructInstance(Roster crew, CreateParameters parameters) {
         throw new UnsupportedOperationException("Unimplemented method 'constructInstance'");
     }
 

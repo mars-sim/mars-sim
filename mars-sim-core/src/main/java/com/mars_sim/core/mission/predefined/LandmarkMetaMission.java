@@ -47,12 +47,12 @@ public class LandmarkMetaMission extends AbstractMetaMission {
 	 * Constructs an instance of the Landmark visit. This will select a suitable Landmark.
 	 * 
 	 * @param crew the roster of crew members to perform the mission.
-	 * @param needsReview Mission must be reviewed
+     * @param parameters Mission creation parameters
 	 * @return mission instance.
 	 * @throws MissionCreationException If no landmark can be found
 	 */
     @Override
-    public Mission constructInstance(Roster crew, boolean needsReview) throws MissionCreationException {
+    public Mission constructInstance(Roster crew, CreateParameters parameters) throws MissionCreationException {
 		Settlement base = crew.leader().getAssociatedSettlement();
         Coordinates startingPlace = base.getCoordinates();
 
@@ -65,17 +65,17 @@ public class LandmarkMetaMission extends AbstractMetaMission {
                 .findFirst()
                 .orElseThrow(() -> new MissionCreationException("mission.landmark.noneinrange"));
 
-        return constructInstance(crew, selected, needsReview);
+        return constructInstance(crew, selected, parameters);
     }
     
     /**
      * Factory method to create a mission that visits a Landmark with the specified roster.
      * @param roster Roster of members and vehicle
      * @param landmark Landmark to visit
-     * @param needsReview Does it need a review
+	 * @param parameters Mission creation parameters
      * @return
      */
-    public Mission constructInstance(Roster roster, Landmark landmark, boolean needsReview) {
+    public Mission constructInstance(Roster roster, Landmark landmark, CreateParameters parameters) {
         Settlement base = roster.leader().getAssociatedSettlement();
         Coordinates startingPlace = base.getCoordinates();
 

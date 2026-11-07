@@ -54,12 +54,12 @@ public class CollectIceMeta extends AbstractMetaMission {
 	 * Constructs a new instance of the CollectIce mission with the given crew and review status.
 	 * 
 	 * @param crew the roster of crew members for the mission.
-	 * @param needsReview whether the mission requires review before execution.
+	 * @param parameters mission creation parameters.
 	 * @return a new instance of the CollectIce mission.
 	 */
 	@Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
-		return new CollectIce(crew, needsReview);
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
+		return new CollectIce(crew, parameters.needsReview());
 	}
 
 	public Mission constructInstance(Collection<Worker> members, List<Coordinates> sites, Rover rover) {
