@@ -22,7 +22,7 @@ public class ManufactureWorkTaskTest extends MarsSimUnitTest {
     @Test
     public void testBuildNitrates() {
         ManufactureProcessInfo processInfo = getConfig().getManufactureConfiguration().getManufactureProcessList().stream()
-                            .filter(p -> p.getName().equals("Make Nitrites"))
+                            .filter(p -> p.getName().equalsIgnoreCase("Make Nitrites"))
                             .findAny().get();
         assertTrue(processInfo.getProcessTimeRequired() > 0, "Process has processing time");
         
@@ -64,7 +64,7 @@ public class ManufactureWorkTaskTest extends MarsSimUnitTest {
     @Test
     public void testSalvageCanister() {
         SalvageProcessInfo processInfo = getConfig().getManufactureConfiguration().getSalvageInfoList().stream()
-                            .filter(p -> p.getName().equals(SalvageProcessInfo.NAME_PREFIX + "gas canister"))
+                            .filter(p -> p.getName().equalsIgnoreCase(SalvageProcessInfo.NAME_PREFIX + "gas canister"))
                             .findAny().get();
         assertEquals(0D, processInfo.getProcessTimeRequired(), "Process has no process time");
         
@@ -107,7 +107,7 @@ public class ManufactureWorkTaskTest extends MarsSimUnitTest {
     @Test
     public void testSalvageCanisterAutoSelect() {
         SalvageProcessInfo processInfo = getConfig().getManufactureConfiguration().getSalvageInfoList().stream()
-                            .filter(p -> p.getName().equals(SalvageProcessInfo.NAME_PREFIX + "gas canister"))
+                            .filter(p -> p.getName().equalsIgnoreCase(SalvageProcessInfo.NAME_PREFIX + "gas canister"))
                             .findAny().get();
         assertEquals(0D, processInfo.getProcessTimeRequired(), "Process has no process time");
         

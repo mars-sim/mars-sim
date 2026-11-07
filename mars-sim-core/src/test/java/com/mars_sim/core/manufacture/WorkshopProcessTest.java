@@ -80,7 +80,7 @@ class WorkshopProcessTest extends MarsSimUnitTest {
     @Test
     void testSalvProcess() {
         SalvageProcessInfo processInfo = getConfig().getManufactureConfiguration().getSalvageInfoList().stream()
-                            .filter(p -> p.getName().equals(SalvageProcessInfo.NAME_PREFIX + "gas canister"))
+                            .filter(p -> p.getName().equalsIgnoreCase(SalvageProcessInfo.NAME_PREFIX + "gas canister"))
                             .findAny().get();
         assertEquals(0D, processInfo.getProcessTimeRequired(), "Process has no process time");
         
