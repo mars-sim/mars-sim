@@ -409,6 +409,9 @@
 		</maintenance-entity-list>
 	</part>
 
+	<part name="Radio" type="electronic" mass="0.25" />
+	<part name="Loudspeaker" type="electronic" mass="1.0" />
+		
 	<part name="EVA battery" type="EVA" mass="1.28" >
 		<description>
 		 (As of 27 Sep 2025 The highest energy density achieved in a practical, rechargeable 

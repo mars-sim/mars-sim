@@ -1332,9 +1332,10 @@
 			<input resource="Plagioclase Feldspar" rate="50.0" />
 		
 			<output resource="Silica" rate="22.4" />	
-			<output resource="Aluminum oxide" rate="17.6" />		
-					
-			<output resource="Calcium" rate="4.8" />
+			<output resource="Aluminum oxide" rate="17.3" />		
+			<output resource="Strontium" rate="0.3" />
+			<output resource="Strontium carbonate" rate="0.3" />
+			<output resource="Calcium" rate="4.5" />
 
 			<output resource="Sodium oxide" rate="4.2" />				
 			<output resource="Sylvite" rate="1.0" />
@@ -1390,11 +1391,15 @@
 			<output resource="magnesium" rate="6.0" />
 			<output resource="manganese" rate="2.0" />						
 			<output resource="sodium oxide" rate="5.0" />
-			<output resource="potassium" rate="3.0" />
-			<output resource="titanium" rate="3.0" />
+			<output resource="potassium" rate="2.8" />
+			<output resource="titanium" rate="2.5" />
 			<output resource="iron oxide" rate="3.0" />
+			<output resource="Barium" rate="0.5" />
+			<output resource="Barium carbonate" rate="0.5" />
+			<output resource="Strontium" rate="0.2" />
+			<output resource="Strontium carbonate" rate="0.2" />			
 			<output resource="nickel" rate="2.0" />
-			<output resource="sand" rate="5.0" />
+			<output resource="sand" rate="4.3" />
 			<output resource="brine water" rate="10.0" />
 	</process>
 

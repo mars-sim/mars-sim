@@ -3278,6 +3278,125 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Manufacture eva radio" tech="2" skill="2" work-time="50" process-time="20"
+			tooling="Soldering" power-required="0.1">
+		<inputs>
+			<part name="loudspeaker" number="1" />	
+			<part name="radio" number="1" />
+		</inputs>
+		<outputs>
+			<part name="Eva radio" number="2" />
+		</outputs>
+	</process>
+
+	<process name="Manufacture radio" tech="4" skill="4" work-time="100" process-time="50"
+			tooling="Fabrication" power-required="0.5">
+		<inputs>
+			<resource name="Epoxy resin" amount="0.1"/>
+			<resource name="Fiberglass-epoxy composite" amount="0.2" />
+			<part name="power transistor" number="2" />
+			<part name="resistor" number="4" />	
+			<part name="capacitor" number="2" />
+			<part name="logic board" number="1" />	
+			<part name="capacitor" number="1" />
+			<part name="wire connector" number="10" />			
+			<part name="Memory module" number="1" />
+			<part name="microcontroller" number="1" />
+		</inputs>
+		<outputs>
+			<part name="Radio" number="2" />
+		</outputs>
+	</process>
+	
+	<process name="Manufacture loudspeaker" tech="2" skill="2" work-time="50" process-time="50"
+			tooling="Soldering" power-required="0.5">
+		<inputs>
+			<resource name="Epoxy resin" amount="0.1"/>
+			<resource name="Fiberglass-epoxy composite" amount="0.1" />
+			<resource name="Ferrite magnet" amount="3.0" />
+			<part name="power transistor" number="2" />
+			<part name="resistor" number="4" />	
+			<part name="capacitor" number="2" />
+		</inputs>
+		<outputs>
+			<part name="loudspeaker" number="2" />
+		</outputs>
+	</process>
+	
+	<process name="Produce ferrite with barium" tech="4" skill="4" work-time="100" process-time="300"
+			tooling="chemical" power-required="1.0">
+	<description> If BaO is available directly, step 1 is skipped and the equation simplifies to BaO + 6 Fe₂O₃ → BaFe₁₂O₁₉.
+		The entire process is a single high-temperature firing — no solvents, no acids, no multi-stage extraction. 
+		Ferrite is realistically manufacturable in-situ.
+		
+		Produce Barium Hexaferrite
+		</description>
+		<inputs>
+			<resource name="Barium carbonate" amount="1.9734"/>
+			<resource name="Iron oxide" amount="9.5819" />
+		</inputs>
+		<outputs>
+			<resource name="Barium hexaferrite" amount="11.1152"/>
+			<resource name="Carbon dioxide" amount="0.4401" />
+		</outputs>
+	</process>
+
+	<process name="Produce ferrite with strontium" tech="4" skill="4" work-time="100" process-time="300"
+			tooling="chemical" power-required="1.0">
+	<description> Produce Strontium Hexaferrite. For every kilogram of ferrite produced, you need ~0.86 kg of 
+		Fe₂O₃ (hematite) and ~0.18 kg of BaCO₃ (or ~0.13 kg of SrCO₃). 
+		The hematite is trivially available; the carbonate is the limiting input.
+		</description>
+		<inputs>
+			<resource name="Strontium carbonate" amount="1.4763"/>
+			<resource name="Iron oxide" amount="9.5819" />
+		</inputs>
+		<outputs>
+			<resource name="Strontium hexaferrite" amount="10.6181"/>
+			<resource name="Carbon dioxide" amount="0.4401" />
+		</outputs>
+	</process>
+		
+	<process name="Make ferrite magnet" tech="4" skill="4" work-time="100" process-time="300"
+			tooling="chemical" power-required="1.0">
+	<description> With calcined ceramic from the previous step, the remaining process 
+		is a powder metallurgy route : 
+		1. Secondary milling
+		2. Pressing (forming)
+			Wet pressing (slurry + external B-field of 7–15 kOe) → anisotropic magnet (strong, directional). 
+			Dry pressing (no field) → isotropic magnet (weaker, magnetizable in any direction). 
+			Typical compaction: 0.3–0.6 kg/cm²
+		3. Sintering
+		4. Machining (optional)
+		5. Magnetization
+	
+		 Mars-specific notes :
+				- Sintering requires a kiln at ~1,200 °C — feasible with electric resistance heating 
+				  (Mars has solar + nuclear power options).
+				- Magnetizer is the chicken-and-egg problem: you need a strong electromagnet to 
+				  magnetize the first ferrite magnet. 
+				- Solution: a superconducting coil (if you can produce one) or a capacitor bank, 
+				  plus air-core coil powered by the settlement's electrical grid. 
+				  Even a modest 1 T pulse is enough.
+				- Diamond machining requires diamond tooling, which must either be imported or 
+				  synthesized from Martian carbon (diamond anvil press from CO₂-derived carbon 
+				  is theoretically possible but not trivial). Alternatively, design the green 
+				  body to be the final shape and skip machining.
+				  
+		The mass of the finished magnet equals the mass of the sintered ferrite ceramic — 
+		there is no mass loss during pressing, sintering, or magnetization (only volume 
+		shrinkage of 10–20 % from porosity reduction).
+		</description>
+		<inputs>
+			<resource name="Barium hexaferrite" amount="3.0" >
+				<alternative name="Strontium hexaferrite" amount="3.0"/>
+			</resource>
+		</inputs>
+		<outputs>
+			<resource name="Ferrite magnet" amount="3.0"/>
+		</outputs>
+	</process>
+			
 	<!-- 2015-05-19 Added manufacturing LED kit assembly. -->
 	<process name="Make light emitting diode kit" tech="3" skill="2" work-time="100" process-time="50"
 			tooling="Fabrication" power-required="0.2">
@@ -4754,7 +4873,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 
 	<!-- Salvage process for an EVA suit. -->
-	<salvage item-name="EVA suit" type="equipment" tech="2" skill="1" work-time="200">
+	<salvage item-name="EVA Suit" type="equipment" tech="2" skill="1" work-time="200">
 		<part-salvage name="EVA helmet" number="1" />
 		<part-salvage name="helmet visor" number="1" />
 		<part-salvage name="pressure suit" number="1" />
@@ -4772,7 +4891,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
-	<salvage item-name="light utility vehicle" type="vehicle" tech="2" skill="1" work-time="500">
+	<salvage item-name="Light Utility Vehicle" type="vehicle" tech="2" skill="1" work-time="500">
 		<part-salvage name="vehicle frame small" number="1" />
 		<part-salvage name="Motor 10 kW" number="2" />
 		<part-salvage name="battery module" number="1" />
@@ -4791,7 +4910,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 	<!-- Salvage process for an explorer rover. -->
-	<salvage item-name="explorer rover" type="vehicle" tech="2" skill="1" work-time="750">
+	<salvage item-name="Explorer Rover" type="vehicle" tech="2" skill="1" work-time="750">
 		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -4825,7 +4944,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 	<!-- Salvage process for a transport rover. -->
-	<salvage item-name="transport rover" type="vehicle" tech="2" skill="1" work-time="1000">
+	<salvage item-name="Transport Rover" type="vehicle" tech="2" skill="1" work-time="1000">
 		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -4859,7 +4978,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 	<!-- Salvage process for a cargo rover. -->
-	<salvage item-name="cargo rover" type="vehicle" tech="2" skill="1" work-time="1000">
+	<salvage item-name="Cargo Rover" type="vehicle" tech="2" skill="1" work-time="1000">
 		<part-salvage name="vehicle frame large" number="1" />
 		<part-salvage name="vehicle chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -4891,7 +5010,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 
 
-	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="1" work-time="300">			
+	<salvage item-name="Delivery Drone" type="vehicle" tech="2" skill="1" work-time="300">
 		<part-salvage name="navigation circuit board" number="1" />
 		<part-salvage name="communications circuit board" number="1" />
 		<part-salvage name="Optical lens" number="2" />
@@ -4899,7 +5018,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<part-salvage name="aluminum sheet" number="2" />
 		<part-salvage name="drone chassis panel" number="2" />
 		<part-salvage name="Motor 10 kW" number="4" />
-		<part-salvage name="methane fuel cell stack" number="1" />
+		<part-salvage name="methane fuel cell stack" number="2" />
 		<part-salvage name="battery module" number="1" />
 		<part-salvage name="electrical wire" number="10" />
 		<part-salvage name="wire connector" number="10" />
@@ -4964,7 +5083,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</salvage>
 	
 	<!-- Salvage process for a gas canister. -->
-	<salvage item-name="gas canister" type="equipment" tech="1" skill="0" work-time="10">
+	<salvage item-name="Gas Canister" type="equipment" tech="1" skill="0" work-time="10">
 		<part-salvage name="steel canister" number="1" />
 		<part-salvage name="valve" number="2" />
 		<part-salvage name="gasket" number="1" />

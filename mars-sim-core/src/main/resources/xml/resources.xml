@@ -645,6 +645,8 @@
 <!-- Assorted mineral compounds -->
 	<resource name="Aluminum oxide" type="compound" phase="solid" demand=".5" />
 	<resource name="Ammonia" type="compound" phase="solid"> NH3+ is an essential nutrient for plants</resource>
+	<resource name="Barium carbonate" type="compound" phase="solid">BaCO₃ would need to be produced from barite (BaSO₄) via reduction or from barium in basalt.</resource>
+	<resource name="Barium hexaferrite" type="compound" phase="solid">This calcined ceramic ferrite is essentially trivially available on Mars (Note: neodymium is extremely difficult)</resource>
 	<resource name="Calcium carbonate" type="compound" phase="solid" demand="1.2" />
 	<resource name="Calcium sulfate" type="compound" phase="solid">
 		CaSO4 has a molecular weight of 136.14 g/mol. Derived from limestone, it 
@@ -690,7 +692,7 @@
 		(5). Fire protection : as a fire-proofing material, hard wall plaster provides passive fire protection 
 		     for interior surfaces. 
 	</resource>
-	<resource name="Iron oxide" type="compound" phase="solid"> oxide mineral such as Fe2O3</resource>
+	<resource name="Iron oxide" type="compound" phase="solid">Fe₂O₃ is literally the dominant surface mineral (hematite) — no processing needed beyond crushing.</resource>
 	<resource name="Iron chloride" type="compound" phase="solid"> Iron(III) chloride, also called ferric chloride,
 	is an industrial scale commodity chemical compound, with the formula FeCl3 and with
 	iron in the +3 oxidation state. When dissolved in water, iron(III) chloride undergoes
@@ -721,10 +723,11 @@
 	 of sand. </resource>
 	
 	<resource name="Sodium oxide" type="compound" phase="solid"> extracted from regolith.</resource>
-			 
 	<resource name="Sodium carbonate" type="compound" phase="solid">Na2CO3, also called washing soda,
 		soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
 	</resource>
+	<resource name="Strontium carbonate" type="compound" phase="solid">This ceramic is for making magnets.</resource>	
+	<resource name="Strontium hexaferrite" type="compound" phase="solid">This calcined ceramic ferrite is for making magnets.</resource>	
 
 <!-- Utility items derived from crop harvest -->
 	<resource name="Fiber cloth" type="utility" phase="solid" >Cloth made from soy fiber and cane fiber.</resource>
@@ -751,7 +754,16 @@
 	 barrier that reflects radiant heat and thermal radiation. It shields Space Stations against the 
 	 thermal radiation of the sun and the bitter cold of space. See 'Efficiency of aluminized mylar 
 	 insulation at cryogenic temperatures' by James B. Heaney </resource>
-		 
+	
+	<resource name="Ferrite magnet" type="utility" phase="solid"> 
+	  Magnet shape includes
+	     Magnet shape				Dimensions					Volume (sintered)
+		1.	Disc (tweeter)			25 mm ⌀ × 5 mm				~2.45 cm³
+		2. Block (midrange)			20 × 10 × 8 mm				1.6 cm³
+		3. Ring (speaker motor) 	OD 40 mm, ID 20 mm × 8 mm	~3.8 cm³
+		
+		Sintered BaFe₁₂O₁₉ density ≈ 5.0 g/cm³, so 10 g ≈ 2 cm³ of solid ceramic. </resource>
+	 
 	<resource name="Nylon" type="utility" phase="solid"> Nylon 6,6 has the formula of C12H22N2O2 
 	    with molar mass of 226.32 g/mol. It came from DuPont’s work in 
 		their high pressure ammonia laboratory. The innermost layer of the EVA suit is made up of a 
@@ -909,14 +921,13 @@
 	<resource name="Scoria" type="rock" phase="solid">.</resource>
 
 <!-- Rock derived minerals -->
-
-
 	<resource name="Fluorite" type="mineral" phase="solid">
 		Best estimate for local regolith: ~2–4 wt% in F-rich units.
 		Bulk crust: much less than 0.1 wt% (trace). </resource>
 	<resource name="Fluorapatite" type="mineral" phase="solid">
 		Best estimate for local regolith: ~1–2 wt% in sedimentary mudstones; less than 1 vol% in igneous.
 		Bulk crust: ~0.1–0.3 wt% (order-of-magnitude)
+		
 . </resource>
 
 <!-- Elements
@@ -934,6 +945,7 @@
     1. https://en.wikipedia.org/wiki/Ore_resources_on_Mars
 -->
 	<resource name="Aluminum" type="element" phase="solid" demand="1.1" >An element.</resource>
+	<resource name="Barium" type="element" phase="solid" demand="1.5" >An element.</resource>
 	<resource name="Calcium" type="element" phase="solid">An element.</resource>
 	<resource name="Carbon" type="element" phase="solid" demand="1.2" >Carbon powder</resource>
 	<resource name="Chromium" type="element" phase="solid">An element.</resource>
@@ -977,6 +989,7 @@
 	<resource name="Scandium" type="element" phase="solid">An element.</resource>
 	<resource name="Silicon" type="element" phase="solid" demand="0.75" >An element.</resource>
 	<resource name="Silver" type="element" phase="solid">An element.</resource>
+	<resource name="Strontium" type="element" phase="solid" demand="1.5" >An element.</resource>
 	<resource name="Sulfur" type="element" phase="solid">An element.</resource>
 	<resource name="Tin" type="element" phase="solid">An element.</resource>
 	<resource name="Titanium" type="element" phase="solid">An element.</resource>
