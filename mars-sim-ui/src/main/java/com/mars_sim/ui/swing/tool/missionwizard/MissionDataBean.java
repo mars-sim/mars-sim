@@ -15,6 +15,7 @@ import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MetaMissionRegistry;
 import com.mars_sim.core.mission.predefined.ExplorationMeta;
@@ -74,6 +75,7 @@ class MissionDataBean {
 
 	private Landmark landmark;
 	private List<MineralSite> exploration;
+	private CreateParameters createParameters;
 	    
 	/**
 	 * Creates a mission from the mission data.
@@ -87,8 +89,6 @@ class MissionDataBean {
 
 		// Create the mission roster;this is for the new single constructor per Mission pattern
 		var roster = new MetaMission.Roster(getLeader(), getWorkerMembers(), rover);
-		boolean needsReview = false;  // This could be user selected in the future
-		var createParameters = new MetaMission.CreateParameters(needsReview);
 		Mission mission = switch (meta) {
 			case AreologyFieldStudyMeta m -> m
 					.constructInstance(roster, study, routePoints.get(0));
@@ -136,13 +136,15 @@ class MissionDataBean {
 	 * Sets the mission type enum.
 	 * 
 	 * @param missionType the mission type enum.
+	 * @param createParameters the create parameters for the mission.
 	 */
-    public void setMissionType(MissionType missionType) {
+    public void setMissionType(MissionType missionType, CreateParameters createParameters) {
 		this.meta = MetaMissionRegistry.getMetaMission(missionType);
 		if (this.meta == null) {
 			// This should never happen
 			throw new IllegalArgumentException("No meta mission found for mission type: " + missionType);
 		}
+		this.createParameters = createParameters;
     }
 	
     public Settlement getStartingSettlement() {

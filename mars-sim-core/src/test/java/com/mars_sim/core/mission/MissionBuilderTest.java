@@ -69,7 +69,7 @@ class MissionBuilderTest extends MarsSimUnitTest {
 
         var meta = new VehicleMetaMission(2, 3, Set.of(JobType.TRADER), Set.of(JobType.PILOT), VehicleType.ROVER_TYPES);
         var recruitment = new MissionBuilder(meta, l);
-        var mission = recruitment.buildMission(false);
+        var mission = recruitment.buildMission(new CreateParameters(false));
 
         assertNull(mission, "Should not build a mission with too few vehicles");
 
@@ -87,7 +87,7 @@ class MissionBuilderTest extends MarsSimUnitTest {
 
         var meta = new MockMetaMission(2, 2, Set.of(JobType.TRADER), Set.of(JobType.PILOT));
         var recruitment = new MissionBuilder(meta, l);
-        var mission = recruitment.buildMission(false);
+        var mission = recruitment.buildMission(new CreateParameters(false));
 
         assertNull(mission, "Should not build a mission with too few members");
 
@@ -220,7 +220,7 @@ class MissionBuilderTest extends MarsSimUnitTest {
 
         // Enable ice collection mission
         MissionBuilder builder = new MissionBuilder(meta, leader);
-        mission = builder.buildMission(false);
+        mission = builder.buildMission(new CreateParameters(false));
         Vehicle vehicle = null;
         if (mission instanceof AbstractVehicleMission avm) {
         	vehicle = avm.getVehicle();

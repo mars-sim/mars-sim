@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.MeteorologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.Mission;

@@ -1,4 +1,4 @@
-/*
+/**
  * Mars Simulation Project
  * MissionVehicleProject.java
  * @date 2023-06-03
@@ -211,13 +211,14 @@ public class MissionVehicleProject extends MissionProject
 
 
     /**
-     * Extracts the Navpoints and calculates the proposed. This will extract the NavPoints for the Route.
+     * Defines the key steps of the mission as a plan.
+     * This will extract the Navpoints and calculates the proposed distance. It will also add the basic vehicle-related steps to the mission plan.
+     * according to the mission parameters.
      * 
-     * It will also select a Vehicle based on the steps.
      * @param plan Steps for the mission
+     * @param params Parameters for mission creation
      */
-    @Override
-    public void setSteps(List<MissionStep> plan) {
+    public void setMissionSteps(List<MissionStep> plan, CreateParameters params) {
         route = plan.stream()
                         .filter(MissionTravelStep.class::isInstance)
                         .map (sc -> ((MissionTravelStep) sc).getDestination())
@@ -228,13 +229,25 @@ public class MissionVehicleProject extends MissionProject
 
         // Add in the basic steps needs in a Vehicle Mission
         List<MissionStep> fullPlan = new ArrayList<>();
+
+        if (params.needsReview()) {
+            //fullPlan.add(new MissionReviewStep(this));
+        }
+
+        // Add prep steps
         fullPlan.add(new MissionLoadVehicleStep(this));
         fullPlan.add(new MissionBoardVehicleStep(this));
+
+        // Add actual mission plan
         fullPlan.addAll(plan);
+
+        // Add post-mission steps
         fullPlan.add(new MissionDisembarkStep(this));
 
         super.setSteps(fullPlan);
     }
+
+    
 
     /**
      * Gets the estimated travel time take for this Mission to cover a distance.

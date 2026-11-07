@@ -16,6 +16,7 @@ import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.environment.LandmarkConfig;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MissionCreationException;
 import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.mission.MissionVehicleProject;
@@ -89,7 +90,7 @@ public class LandmarkMetaMission extends AbstractMetaMission {
         plan.add(new VisitLandmarkStep(mission, landmark));
         plan.add(new MissionTravelStep(mission, new NavPoint(base, turningPoint)));           
 
-        mission.setSteps(plan);  
+        mission.setMissionSteps(plan, parameters);  
 
         return mission;
     }

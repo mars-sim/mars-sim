@@ -277,7 +277,7 @@ public class MissionControl implements ScheduledEventHandler {
 
 		// Construct and return the mission
 		var builder = new MissionBuilder(selectedMission.getMeta(), person);
-		Mission mission = builder.buildMission(true);
+		Mission mission = builder.buildMission(new CreateParameters(true));
 		person.getMind().getTaskManager().setMissionRatings(potentialMissions, selectedMission);
 
 		return mission;

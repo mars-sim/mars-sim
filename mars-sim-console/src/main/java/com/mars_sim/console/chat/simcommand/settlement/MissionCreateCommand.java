@@ -13,6 +13,7 @@ import java.util.List;
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MetaMissionRegistry;
 import com.mars_sim.core.mission.MissionBuilder;
@@ -53,7 +54,7 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 			var doReview = (reviewChoice == CommandHelper.YES);
 
 			var builder = new MissionBuilder(choosen, leader);
-			Mission newMission = builder.buildMission(doReview);
+			Mission newMission = builder.buildMission(new CreateParameters(doReview));
 			if (newMission == null) {
 				context.println("Mission failed to start:");
 				builder.getMessages().forEach(m -> context.println(m.getMessage()));

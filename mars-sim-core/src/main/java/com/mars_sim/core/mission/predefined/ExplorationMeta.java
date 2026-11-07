@@ -19,6 +19,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MissionCreationException;
 import com.mars_sim.core.mission.MissionStep;
@@ -268,7 +269,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 
 		// Return home
 		plan.add(new MissionTravelStep(mission, new NavPoint(base, lastLocation)));
-        mission.setSteps(plan);  
+        mission.setMissionSteps(plan, parameters);  
 
         return mission;
 	}

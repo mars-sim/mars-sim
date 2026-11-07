@@ -13,6 +13,7 @@ import java.util.Set;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.mission.steps.MissionTravelStep;
@@ -58,7 +59,7 @@ public class TestDriveMetaMission extends AbstractMetaMission {
                                                             startingPlace)));
         plan.add(new MissionTravelStep(mission, new NavPoint(base, turningPoint)));           
 
-        mission.setSteps(plan);  
+        mission.setMissionSteps(plan, parameters);  
 
         return mission;
     }

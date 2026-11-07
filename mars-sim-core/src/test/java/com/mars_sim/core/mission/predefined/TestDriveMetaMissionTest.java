@@ -19,6 +19,7 @@ import java.util.Map;
 
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MetaMissionRegistry;
 import com.mars_sim.core.mission.MissionCreationException;
@@ -50,7 +51,7 @@ class TestDriveMetaMissionTest extends MarsSimUnitTest {
         }
 
         var roster = new MetaMission.Roster(leader, recruits, rover);
-        MissionVehicleProject mp = (MissionVehicleProject) meta.constructInstance(roster, new MetaMission.CreateParameters(false));
+        MissionVehicleProject mp = (MissionVehicleProject) meta.constructInstance(roster, new CreateParameters(false));
 
         // Check vehicle details
         assertFalse(mp.isDone(), "Mission active");

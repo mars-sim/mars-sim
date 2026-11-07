@@ -32,9 +32,6 @@ public interface MetaMission {
 	// The roster for a potential mission
 	record Roster(Person leader, List<? extends Worker> members, Vehicle vehicle) {}
 
-	// Parameters controlling mission construction behavior.
-	record CreateParameters(boolean needsReview) {}
-	
 	/**
 	 * Type of Mission created by this Meta object
 	 */

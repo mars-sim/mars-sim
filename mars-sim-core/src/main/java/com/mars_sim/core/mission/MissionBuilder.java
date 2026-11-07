@@ -182,10 +182,10 @@ public class MissionBuilder {
 	/**
 	 * Finally builds the mission according to the parameters.
 	 * 
-	 * @param needsReview whether the mission requires a review.
+	 * @param parameters mission creation parameters.
 	 * @return the constructed mission instance, or null if construction failed.
 	 */
-	public Mission buildMission(boolean needsReview) {
+	public Mission buildMission(CreateParameters parameters) {
 		messages = new ArrayList<>();
 
 		// Pick the vehicle first if the mission requires one.
@@ -218,7 +218,7 @@ public class MissionBuilder {
 
 		var crew = new MetaMission.Roster(startingMember, members, vehicle);
 		try {
-			Mission newMission = mission.constructInstance(crew, new MetaMission.CreateParameters(needsReview));
+			Mission newMission = mission.constructInstance(crew, parameters);
 			startingMember.getAssociatedSettlement().getMissionControl().addMission(newMission);
 			return newMission;
 
