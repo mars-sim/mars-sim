@@ -3,12 +3,12 @@
    style="enable-background:new"
    version="1.0"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   sodipodi:docname="lander_hab 1.1.svg"
+   sodipodi:docname="lander_hab.svg"
    inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    sodipodi:version="0.32"
    id="svg2396"
-   height="900cm"
-   width="900cm"
+   height="900"
+   width="900"
    viewBox="0 0 900 900"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -383,17 +383,17 @@
      inkscape:guide-bbox="true"
      showguides="true"
      inkscape:snap-to-guides="false"
-     inkscape:window-y="139"
-     inkscape:window-x="2628"
+     inkscape:window-y="61"
+     inkscape:window-x="2937"
      inkscape:window-height="956"
      inkscape:window-width="2276"
      inkscape:snap-global="false"
      showgrid="true"
      inkscape:current-layer="g35"
      inkscape:document-units="cm"
-     inkscape:cy="18649.941"
-     inkscape:cx="19463.114"
-     inkscape:zoom="0.028284271"
+     inkscape:cy="480.46875"
+     inkscape:cx="642.96875"
+     inkscape:zoom="0.64"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      objecttolerance="10"
@@ -411,7 +411,7 @@
        spacingy="1"
        spacingx="1"
        originy="450"
-       originx="450"
+       originx="450.00293"
        snapvisiblegridlinesonly="true"
        empspacing="5"
        enabled="true"
@@ -421,31 +421,31 @@
        units="px" />
     <sodipodi:guide
        id="guide2842"
-       position="449.91661,459.51044"
+       position="449.91953,459.51036"
        orientation="1,0"
        inkscape:locked="false" />
     <sodipodi:guide
        id="guide2844"
-       position="-78.125985,450.0057"
+       position="-78.123036,450.00562"
        orientation="0,1"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="0,900.01137"
+       position="0.0029442371,900.01127"
        orientation="0,900"
        id="guide64"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="900.01137,900.01137"
+       position="900.01426,900.01127"
        orientation="900,0"
        id="guide65"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="900.01137,2.2737655e-13"
+       position="900.01426,-5.1354437e-05"
        orientation="0,-900"
        id="guide66"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="0,2.2737655e-13"
+       position="0.0029442371,-5.1354437e-05"
        orientation="-900,0"
        id="guide67"
        inkscape:locked="false" />
@@ -462,7 +462,7 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(-286.65646,-81.067762)"
+     transform="translate(-286.65352,-81.067762)"
      style="display:inline;enable-background:new"
      id="layer1"
      inkscape:groupmode="layer"
@@ -502,7 +502,7 @@
      inkscape:label="background"
      id="layer3"
      inkscape:groupmode="layer"
-     transform="matrix(0.99995516,0,0,0.99999996,0.04024632,-7.8403246e-8)"
+     transform="matrix(0.99995516,0,0,0.99999996,0.04319056,0)"
      sodipodi:insensitive="true">
     <rect
        ry="2.1610661"
@@ -522,7 +522,7 @@
   </g>
   <g
      inkscape:label="frame"
-     transform="matrix(0.99995516,0,0,0.99995516,-286.60336,-81.064126)"
+     transform="matrix(0.99995516,0,0,0.99995516,-286.60042,-81.064126)"
      style="display:inline;enable-background:new"
      id="layer2"
      inkscape:groupmode="layer"
@@ -557,7 +557,7 @@
      inkscape:groupmode="layer"
      id="layer7"
      inkscape:label="sector carpet"
-     transform="matrix(0.99995516,0,0,0.99995516,0.04024604,0)"
+     transform="matrix(0.99995516,0,0,0.99995516,0.04319028,8.490643e-8)"
      sodipodi:insensitive="true"
      style="enable-background:new">
     <path
@@ -584,7 +584,7 @@
        inkscape:label="living sector" />
   </g>
   <g
-     transform="matrix(0.99995516,0,0,0.99995516,0.03530337,1.7946648)"
+     transform="matrix(0.99995516,0,0,0.99995516,0.03824761,1.7946649)"
      style="display:inline;opacity:0.5;filter:url(#filter3702);enable-background:new"
      inkscape:label="interior wall"
      id="layer6"
@@ -627,7 +627,7 @@
        inkscape:label="partition 1" />
   </g>
   <g
-     transform="matrix(0.99995516,0,0,0.99995516,4.4545226,10.633103)"
+     transform="matrix(0.99995516,0,0,0.99995516,4.4574668,10.633103)"
      style="display:inline;opacity:0.838;enable-background:new"
      inkscape:label="central ladder"
      id="layer4"
@@ -725,7 +725,7 @@
      inkscape:label="Furniture"
      inkscape:groupmode="layer"
      style="enable-background:new"
-     transform="matrix(0.99995516,0,0,0.99995516,0.04024604,0)"
+     transform="matrix(0.99995516,0,0,0.99995516,0.04319028,8.490643e-8)"
      sodipodi:insensitive="true">
     <g
        id="g75"
@@ -2254,11 +2254,11 @@
            id="polygon1-3" />
         <polygon
            style="fill:#c4d3d9"
-           points="39.385,101.275 39.385,512 393.846,512 438.857,473.419 438.857,78.769 "
+           points="438.857,78.769 39.385,101.275 39.385,512 393.846,512 438.857,473.419 "
            id="polygon2-7" />
         <polygon
            style="fill:#748993"
-           points="438.857,444.484 416.352,478.242 438.857,512 472.615,512 472.615,444.484 "
+           points="472.615,444.484 438.857,444.484 416.352,478.242 438.857,512 472.615,512 "
            id="polygon3" />
         <rect
            x="393.84601"
@@ -2269,15 +2269,15 @@
            id="rect3-2" />
         <polygon
            style="fill:#57676e"
-           points="438.857,0 416.352,50.637 438.857,101.275 472.615,101.275 472.615,0 "
+           points="472.615,0 438.857,0 416.352,50.637 438.857,101.275 472.615,101.275 "
            id="polygon4" />
         <polygon
            style="fill:#748993"
-           points="174.418,0 151.912,50.637 174.418,101.275 438.857,101.275 438.857,0 "
+           points="438.857,0 174.418,0 151.912,50.637 174.418,101.275 438.857,101.275 "
            id="polygon5-3" />
         <polygon
            style="fill:#a2b1b7"
-           points="39.385,101.275 174.418,101.275 174.418,33.758 106.901,22.505 39.385,33.758 "
+           points="39.385,33.758 39.385,101.275 174.418,101.275 174.418,33.758 106.901,22.505 "
            id="polygon6-8" />
         <rect
            x="39.384998"
@@ -4310,7 +4310,7 @@
            id="path10-32" />
         <polygon
            style="fill:#e5a030"
-           points="214.91,246.229 194.24,312.492 194.24,313.492 20,313.492 20,172.002 194.24,172.002 194.24,174.492 "
+           points="20,313.492 20,172.002 194.24,172.002 194.24,174.492 214.91,246.229 194.24,312.492 194.24,313.492 "
            id="polygon10-6" />
         <polyline
            style="fill:#b76b2c"
@@ -4516,7 +4516,7 @@
                d="m 360.24,23.9 v 120.354 h -99.158 l -109.323,94.8 V 23.9 H 136.09 v 464.31 h 15.669 V 271.692 h 120.353 v -63.719 h 88.129 V 488.21 H 375.91 V 23.9 Z M 156.107,256.023 256.443,169.016 v 87.007 z m 116.005,-63.719 v -32.382 h 88.129 v 8.357 h -7.696 v 15.669 h 7.696 v 8.357 h -88.129 z"
                id="path9-58-4"
                inkscape:label="bed frame"
-               style="enable-background:new;fill:#6b7e87;fill-opacity:1"
+               style="fill:#6b7e87;fill-opacity:1;enable-background:new"
                transform="translate(3.5323844e-5,-2.2862967e-5)" />
             <g
                id="g11"
@@ -4588,7 +4588,7 @@
                  points="143.629,264.38 263.755,264.38 263.755,152.611 "
                  id="polyline4-9" />
               <polygon
-                 style="enable-background:new;fill:#bdccd4"
+                 style="fill:#bdccd4;enable-background:new"
                  points="368.074,200.018 368.074,504.221 143.926,504.221 143.926,264.06 264.008,264.06 264.006,200.018 "
                  id="polygon6-6-7"
                  inkscape:label="bed bottom"
@@ -4645,7 +4645,7 @@
                style="fill:#6b7e87;fill-opacity:1" />
             <polygon
                style="fill:#fcc062"
-               points="143.858,7.889 368.074,7.889 368.212,152.088 264.277,152.611 143.926,256.055 "
+               points="143.926,256.055 143.858,7.889 368.074,7.889 368.212,152.088 264.277,152.611 "
                id="polygon4-2-5"
                inkscape:label="bed top" />
             <g
