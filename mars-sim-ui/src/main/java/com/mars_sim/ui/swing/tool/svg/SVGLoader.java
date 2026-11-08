@@ -53,35 +53,38 @@ public class SVGLoader {
 		if (svgCache == null) 
 			svgCache = new HashMap<>();
 
-		GraphicsNode found = svgCache.get(name);
-		
-		if (found == null) {
-			
-			String subPath = prefix.replace(DOT, SLASH);
-			String fileName = SVG_DIR + subPath + SLASH + name;
-			URL resource = SVGLoader.class.getResource(fileName);
-			if (resource == null) {
-				logger.severe("No image found called " + fileName);
-				return null;
-			}
-
-			var f = getSVGFactory();
-			
-			try {
-				var doc = f.createDocument(resource.toString(), resource.openStream());
-				
-				UserAgent userAgent = new UserAgentAdapter();
-				DocumentLoader loader = new DocumentLoader(userAgent);
-				var bridgeContext = new BridgeContext(userAgent, loader);
-				bridgeContext.setDynamic(true);
-
-				found = new GVTBuilder().build(bridgeContext, doc);
-				svgCache.put(name, found);
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, "getSVGImage error: " + e.getMessage() + ", fileName: '" + fileName + "', resource: '"
-								+ resource + "'");
-			}
+		if (svgCache.containsKey(name)) {
+			return svgCache.get(name);
 		}
+
+		GraphicsNode found = null;
+		
+		String subPath = prefix.replace(DOT, SLASH);
+		String fileName = SVG_DIR + subPath + SLASH + name;
+		URL resource = SVGLoader.class.getResource(fileName);
+		if (resource == null) {
+			logger.severe("No image found called " + fileName);
+			return null;
+		}
+
+		var f = getSVGFactory();
+		
+		try {
+			var doc = f.createDocument(resource.toString(), resource.openStream());
+			
+			UserAgent userAgent = new UserAgentAdapter();
+			DocumentLoader loader = new DocumentLoader(userAgent);
+			var bridgeContext = new BridgeContext(userAgent, loader);
+			bridgeContext.setDynamic(true);
+
+			found = new GVTBuilder().build(bridgeContext, doc);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "getSVGImage error: " + e.getMessage() + ", fileName: '" + fileName + "', resource: '"
+							+ resource + "'");
+		}
+
+		// Note in error a null is deliberately cached to avoid repeated attempts to load the same missing resource.
+		svgCache.put(name, found);
 
 		return found;
 	}
