@@ -6,13 +6,13 @@
  */
 package com.mars_sim.ui.swing.tool.svg;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.batik.anim.dom.SAXSVGDocumentFactory; 
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
@@ -35,6 +35,7 @@ public class SVGLoader {
 	public static final String DOT = ".";
 	
 	private static Map<String, GraphicsNode> svgCache;
+	private static SAXSVGDocumentFactory svgFactory;
 	
 	/**
 	 * Private constructor for utility class.
@@ -63,22 +64,33 @@ public class SVGLoader {
 				logger.severe("No image found called " + fileName);
 				return null;
 			}
-			
-			String parser = XMLResourceDescriptor.getXMLParserClassName();
-			SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-			UserAgent userAgent = new UserAgentAdapter();
-			DocumentLoader loader = new DocumentLoader(userAgent);
-			BridgeContext bridgeContext = new BridgeContext(userAgent, loader);
-			bridgeContext.setDynamic(true);
+
+			var f = getSVGFactory();
 			
 			try {
-				found = new GVTBuilder().build(bridgeContext, f.createDocument(resource.toString()));
+				var doc = f.createDocument(resource.toString(), resource.openStream());
+				
+				UserAgent userAgent = new UserAgentAdapter();
+				DocumentLoader loader = new DocumentLoader(userAgent);
+				var bridgeContext = new BridgeContext(userAgent, loader);
+				bridgeContext.setDynamic(true);
+
+				found = new GVTBuilder().build(bridgeContext, doc);
 				svgCache.put(name, found);
-			} catch (IOException e) {
-				logger.severe("getSVGImage error. fileName: " + fileName);
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "getSVGImage error: " + e.getMessage() + ", fileName: '" + fileName + "', resource: '"
+								+ resource + "'");
 			}
 		}
 
 		return found;
+	}
+
+	private static SAXSVGDocumentFactory getSVGFactory() {
+		if (svgFactory == null) {
+			String parser = XMLResourceDescriptor.getXMLParserClassName();
+			svgFactory = new SAXSVGDocumentFactory(parser);
+		}
+		return svgFactory;
 	}
 }
