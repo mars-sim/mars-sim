@@ -91,7 +91,7 @@ class AmountResourceGood extends Good {
 	private static final double METHANOL_FLATTENING_FACTOR = 1.1;
 	private static final double METHANE_FLATTENING_FACTOR = 1.1;
 	private static final double HYDROGEN_FLATTENING_FACTOR = 0.7;
-	private static final double OXYGEN_FLATTENING_FACTOR = 0.7;	
+	private static final double OXYGEN_FLATTENING_FACTOR = 0.6;	
 	
 
 	// Note1: must keep Carbon Monoxide demand high enough so as to start 

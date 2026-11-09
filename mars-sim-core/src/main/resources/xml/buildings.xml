@@ -224,7 +224,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<activity>
 					<!-- The left and right seats of the west dining table -->
 					<activity-spot xloc="3.47" yloc="-1.39" />
-					<activity-spot xloc="2.06" yloc="-1.39" />
+					<activity-spot xloc="2.10" yloc="-1.39" />
 				</activity>
 			</communication>
 
@@ -292,17 +292,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 					<!-- Clockwise from right most room to the left most room -->
 					<!-- Room 1 -->
-					<activity-spot xloc="0.45" yloc="3.85"/>
-					<activity-spot xloc="1.25" yloc="3.3"/>					
+					<activity-spot xloc="0.39" yloc="3.85"/>
+					<activity-spot xloc="1.78" yloc="3.45"/>					
 					<!-- Room 2 -->
-					<activity-spot xloc="-0.45" yloc="3.85"/>
-					<activity-spot xloc="-1.25" yloc="3.3"/>
+					<activity-spot xloc="-0.39" yloc="3.85"/>
+					<activity-spot xloc="-1.76" yloc="3.45"/>
 					<!-- Room 3 -->
-					<activity-spot xloc="-3.85" yloc="0.45"/>
-					<activity-spot xloc="-3.3" yloc="1.4"/>
+					<activity-spot xloc="-3.85" yloc="0.42"/>
+					<activity-spot xloc="-3.45" yloc="1.78"/>
 					<!-- Room 4 -->
-					<activity-spot xloc="-2.77" yloc="-0.45"/>
-					<activity-spot xloc="-3.3" yloc="-1.4"/>
+					<activity-spot xloc="-3.85" yloc="-0.42"/>
+					<activity-spot xloc="-3.47" yloc="-1.77"/>
 					
 				</activity>
 			</living-accommodation>
@@ -334,10 +334,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- beds: the number of patients the infirmary can support. -->
 			<medical-care tech-level="4" bed="2">
 				<activity>
-					<activity-spot xloc="2.2" yloc="1.63" name="Physician 1"  />
-					<activity-spot xloc="2.65" yloc="1.97" name="Physician 2" />
-					<activity-spot xloc="3.44" yloc="1.81" />
-					<activity-spot xloc="2.49" yloc="2.96" />
+					<activity-spot xloc="2.21" yloc="1.68" name="Physician 1"  />
+					<activity-spot xloc="2.68" yloc="2.07" name="Physician 2" />
+					<activity-spot xloc="3.48" yloc="1.70" />
+					<activity-spot xloc="2.47" yloc="2.98" />
 				</activity>
 			</medical-care>
 			
