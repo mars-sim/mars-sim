@@ -158,7 +158,8 @@
 	    
 	    <!-- Utility Resources -->
 	    <resource type="iron powder" amount="10.0" />  
-	
+	    <resource type="Zeolite" amount="10.0" />
+	    
 		<!-- Bio-Organisms -->
 		<resource type="Acetic acid bacteria" amount="1.0" />
 		<resource type="Nitrospira SPP" amount="1.0" />

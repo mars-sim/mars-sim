@@ -1138,12 +1138,12 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Methanol reformer large" type="electrical" mass="90.0">
+	<part name="Methanol reformer large" type="electrical" mass="76.82">
 		<description>The large methanol reformer with heat exchanger is the dominant mass contributor of a methanol fuel cell stack.
 		</description>
 	</part>
 		
-	<part name="Methanol reformer medium" type="electrical" mass="60.0">
+	<part name="Methanol reformer medium" type="electrical" mass="47.976">
 		<description>The medium methanol reformer with heat exchanger is the dominant mass contributor of a methanol fuel cell stack.
 		</description>
 	</part>

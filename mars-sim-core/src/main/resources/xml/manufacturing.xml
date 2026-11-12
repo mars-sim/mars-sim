@@ -262,6 +262,7 @@ Note: 1 kg of H2 is 14.13 liter
 			process-time="50" tooling="chemical"
 			power-required=".1">
 		<inputs>
+			<resource name="Zeolite" amount="0.5" />
 			<resource name="Acetic acid" amount="4.5" >
 				<alternative name="Baking soda" amount="4.5" />
 				<alternative name="Perchlorate" amount="4.5" />
@@ -276,7 +277,7 @@ Note: 1 kg of H2 is 14.13 liter
 			</resource>	
 		</inputs>
 		<outputs>
-			<resource name="Cleaning agent" amount="5.0" />
+			<resource name="Cleaning agent" amount="5.5" />
 		</outputs>
 	</process>
 	
@@ -400,6 +401,21 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Phosphoric acid" amount="2.9397" />	
 			<resource name="Calcium sulfate" amount="6.807" />
 			<resource name="Hydrogen fluoride" amount="0.2001" />
+		</outputs>
+	</process>
+	
+	<process name="Make Sulphuric acid"
+			tech="1" skill="1"
+			work-time="5"
+			process-time="5" tooling="chemical"
+			power-required="0.0">
+		<inputs>
+			<resource name="Hydrogen" amount="0.2" />	
+			<resource name="Sulfur" amount="3.2" />	
+			<resource name="Oxygen" amount="6.4" />	
+		</inputs>
+		<outputs>
+			<resource name="Sulphuric acid" amount="9.8" />	
 		</outputs>
 	</process>
 	
@@ -2691,11 +2707,12 @@ Note: 1 kg of H2 is 14.13 liter
 		 or 160 Ah kg-1. At 3.8V, 3.8V * 160 mAh g-1 = 608 Wh kg-1. Content is 1.6447 kg/kWh.
 		</description> 	
 		<inputs>
+			<resource name="Zeolite" amount="0.63" />
 			<resource name="nickel" amount="0.25" />
 			<resource name="lithium" amount=".05" />		
 			<resource name="potash lye" amount="0.5" />
-			<resource name="Polyethylene" amount="5.63" >
-				<alternative name="Polypropylene" amount="5.63" />
+			<resource name="Polyethylene" amount="5.00" >
+				<alternative name="Polypropylene" amount="5.00" />
 			</resource>
 			<part name="iron sheet" number="1" /> 
 			<!-- one iron sheet is 7.85 kg -->
@@ -3777,7 +3794,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="lithium" amount=".025" />
 			<resource name="iron powder" amount=".5" />
 			<resource name="Glass" amount=".1" />
-			<resource name="ceramic electrolyte" amount=".6" />			
+			<resource name="ceramic electrolyte" amount=".3" />	
+			<resource name="Graphite anode" amount=".3" />
 		</inputs>
 		<outputs>
 			<part name="methane fuel cell" number="10" /> 
@@ -3799,7 +3817,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="lithium" amount=".025" />
 			<resource name="iron powder" amount=".5" />
 			<resource name="Glass" amount=".1" />
-			<resource name="ceramic electrolyte" amount=".6" />
+			<resource name="ceramic electrolyte" amount=".3" />
+			<resource name="Graphite anode" amount=".3" />
 		</inputs>
 		<outputs>
 			<part name="methanol fuel cell" number="5" />
@@ -3905,7 +3924,73 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="methanol fuel cell stack medium" number="1" />
 		</outputs>
 	</process>
+	
+	<process name="Manufacture Methanol reformer medium" tech="3" skill="4" work-time="100" process-time="30"
+			tooling="Soldering" power-required="1">
+		<inputs>
+			<resource name="Carbon" amount="17" />
+			<resource name="Copper" amount="4" />
+			<resource name="Zinc" amount="2" />
+			<resource name="Oxygen" amount="4" />
+			<resource name="Aluminum" amount="4" />
+			<resource name="Platinum" amount="0.5" />
+			<resource name="Paper" amount="2.0" />
+			<resource name="Graphite plate" amount="3.0" />
+			<part name="Steel sheet" number="1" />
+			<part name="plastic pipe" number="2" />
+			<part name="electrical wire" number="4" />
+			<part name="wire connector" number="6" />
+			<part name="steel pipe" number="3" />
+		</inputs>
+		<outputs>
+		    <!-- "Methanol reformer medium" is 47.976 kg -->
+			<part name="Methanol reformer medium" number="1" />
+		</outputs>
+	</process>
+
+	<process name="Manufacture Methanol reformer large" tech="3" skill="4" work-time="150" process-time="30"
+			tooling="Soldering" power-required="1">
+		<inputs>
+			<resource name="Carbon" amount="24" />
+			<resource name="Copper" amount="6" />
+			<resource name="Zinc" amount="3" />
+			<resource name="Oxygen" amount="6" />
+			<resource name="Aluminum" amount="6" />
+			<resource name="Platinum" amount="0.75" />
+			<resource name="Paper" amount="3.0" />
+			<resource name="Graphite plate" amount="6.0" />
+			<part name="Steel sheet" number="2" />
+			<part name="plastic pipe" number="4" />
+			<part name="electrical wire" number="8" />
+			<part name="wire connector" number="12" />
+			<part name="steel pipe" number="5" />
+		</inputs>
+		<outputs>
+		    <!-- "Methanol reformer medium" is 76.82 kg -->
+			<part name="Methanol reformer large" number="1" />
+		</outputs>
+	</process>
 		
+	<process name="Make Graphite anode" tech="1" skill="1" work-time="5" process-time="10"
+			tooling="Soldering" power-required="1">
+		<inputs>
+			<resource name="Carbon" amount="5" />
+		</inputs>
+		<outputs>
+			<resource name="Graphite anode" amount="5" />
+		</outputs>
+	</process>
+
+	<process name="Make Graphite plate" tech="1" skill="1" work-time="20" process-time="10"
+			tooling="Soldering" power-required="1">
+		<inputs>
+			<resource name="Carbon" amount="5" />
+		</inputs>
+		<outputs>
+			<resource name="Graphite plate" amount="5" />
+		</outputs>
+	</process>
+			
 		<!-- 2016-05-08 Added turbopump manufacturing -->
 	<process name="Manufacture turbopump" tech="3" skill="4" work-time="200" process-time="50"
 			tooling="Soldering" power-required="1">

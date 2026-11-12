@@ -195,7 +195,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</description>
 		<!-- A list of explicit system scopes based on the building type are defined here. At the same time, 
 		     implicit system scopes are defined internally by BuildingSpecs, FunctionSpecs, 
-      		 VehicleSpecs, etc.
+      		 vehiclespecsvehiclespecsvehiclespecsvehiclespecs, etc.
       		 name: the name of the system scope -->
 		<scopes>
 			<scope name="life support"/>
@@ -536,6 +536,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial type="fertilizer" amount="50.0" />
 				<resource-initial type="soil" amount="50.0" />
 
+				<!-- Others:  -->
+				<resource-initial type="Zeolite" amount="5.0" />
+				
 				<!-- Mars Direct Mission Plan :
 
 				(1). ERV -
@@ -2080,6 +2083,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial type="methanol" amount="4200.0" />
 				<resource-initial type="hydrogen" amount="4200.0" />
 				<resource-initial type="water" amount="9450.0" />
+				
+				<!-- Others:  -->
+				<resource-initial type="Zeolite" amount="5.0" />
+				
 			</storage>
 		</functions>
 	</building>
@@ -2320,6 +2327,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<!-- Produced on Mars -->
 				<resource-initial type="hydrogen" amount="5000.0" />
+				
 			</storage>
 
 			<waste-processing low-power-level="0.25">
@@ -2479,6 +2487,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="ice" amount="5000.0" />
 				<resource-capacity type="grey water" amount="3000.0" />				
 				<resource-capacity type="rock salt" amount="500.0" />
+				
+				<!-- Others:  -->
+				<resource-initial type="Zeolite" amount="5.0" />
+				
 			</storage>		
 		</functions>
 	</building>
@@ -2510,6 +2522,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="hydrogen" amount="20000.0" />
 				<resource-capacity type="methanol" amount="15000.0" />
 				<resource-capacity type="water" amount="10000.0" />
+				
+				<!-- Others:  -->
+				<resource-initial type="Zeolite" amount="5.0" />
 			</storage>
 				
 		</functions>
@@ -4638,6 +4653,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial type="fertilizer" amount="50.0" />
 				<resource-initial type="soil" amount="50.0" />
 
+				<!-- Others:  -->
+				<resource-initial type="Zeolite" amount="5.0" />
+				
 			</storage>
 			
 			<thermal-generation>

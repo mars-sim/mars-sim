@@ -442,8 +442,7 @@
 		This chemical, also called BHET, is used for making polyester resin (PET) </resource>
 
 	<resource name="Ceramic electrolyte" type="chemical" phase="solid"> 
-		The ceramic electrolyte 
-		is highly ion-conductive and chemically stable for making batteries and fuel cells. 
+		The ceramic electrolyte is highly ion-conductive and chemically stable for making batteries and fuel cells. 
 		This solid metal oxide is an insulator that will not conduct electricity. However, it 
 		is capable of conducting oxygen ions and suitable for cell reactions. </resource>
 
@@ -743,6 +742,8 @@
 	<resource name="Toilet tissue" type="utility" phase="solid" />
 
 <!-- Utility items derived from compound -->
+	<resource name="Graphite anode" type="utility" phase="solid" />
+	<resource name="Graphite plate" type="utility" phase="solid" />
 	<resource name="Mylar" type="utility" phase="solid"> Mylar is paper that is coated with or made
 	 from a polyester film BoPET material. BoPET (biaxially-oriented polyethylene terephthalate) is 
 	 a polyester film made from stretched polyethylene terephthalate (PET). Mylar has a high tensile 
