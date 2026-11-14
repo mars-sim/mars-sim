@@ -109,6 +109,20 @@ implements Serializable {
     }
 
     /**
+     * Get the final destination of the walking steps.
+     * @return the description of the final destination. Returns "Unknown" if not available.
+     */
+    public String getFinalDestination() {
+        if (walkingStepList != null && !walkingStepList.isEmpty()) {
+            WalkStep lastStep = walkingStepList.get(walkingStepList.size() - 1);
+            if (lastStep != null) {
+                return lastStep.getDestinationDescription();
+            }
+        }
+        return "Unknown";
+    }
+
+    /**
      * Determines the person's initial walk state.
      *
      * @param worker the worker walking.
@@ -1374,7 +1388,20 @@ implements Serializable {
             this.stepType = stepType;
         }
 
-    	public void destroy() {
+    	public String getDestinationDescription() {
+            if (airlock != null) {
+                return "Airlock: " + airlock.getEntityName();
+            }
+            if (building != null) {
+                return "Building: " + building.getName();
+            }
+            if (rover != null) {
+                return "Rover: " + rover.getName();
+            }
+            return "Unknown Destination";
+        }
+
+        public void destroy() {
             building = null;
             rover = null;
             airlock = null;
