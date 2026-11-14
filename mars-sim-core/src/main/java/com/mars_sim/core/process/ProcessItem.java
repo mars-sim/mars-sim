@@ -46,11 +46,11 @@ public class ProcessItem implements Serializable {
 		this(id, name, type, amount, false);
 	}
 
-	public ProcessItem(int id, String name, ItemType type, double amount, boolean consumerable) {
+	public ProcessItem(int id, String name, ItemType type, double amount, boolean consumable) {
 		this.name = Objects.requireNonNull(name, "Name cannot be null");
 		this.type = Objects.requireNonNull(type, "Type cannot be null");
         this.amount = amount;
-		this.consumable = consumerable;
+		this.consumable = consumable;
 
 		if (id <= 0) {
 			throw new IllegalArgumentException("ID must be positive");

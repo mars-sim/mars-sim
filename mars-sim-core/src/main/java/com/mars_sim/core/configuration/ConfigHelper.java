@@ -309,8 +309,8 @@ public class ConfigHelper {
 		String name = resourceElement.getAttributeValue(NAME);
 		String sizeAttr = (type == ItemType.AMOUNT_RESOURCE ? AMOUNT : NUMBER);
 		double amount = ConfigHelper.getAttributeDouble(resourceElement, sizeAttr);
-		boolean consumerable = ConfigHelper.getOptionalAttributeBool(resourceElement, CONSUMABLE, false);
-		return ProcessItemFactory.createByName(vc, name, type, amount, consumerable);
+		boolean consumable = ConfigHelper.getOptionalAttributeBool(resourceElement, CONSUMABLE, false);
+		return ProcessItemFactory.createByName(vc, name, type, amount, consumable);
 	}
 
 	/**

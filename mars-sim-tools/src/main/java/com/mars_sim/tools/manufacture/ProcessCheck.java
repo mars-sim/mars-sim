@@ -76,6 +76,7 @@ public final class ProcessCheck {
 
 		// Decide which checks to perform based on the provided check type argument
 		if (line.hasOption(CREATE_ARG)) {
+			createResourceCheck.report(out, outputPath);
 		}
 		else if (line.hasOption(MASS_ARG)) {
 			var name = line.getOptionValue(MASS_ARG);

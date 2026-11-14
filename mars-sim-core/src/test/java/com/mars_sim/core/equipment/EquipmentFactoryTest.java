@@ -24,7 +24,7 @@ class EquipmentFactoryTest extends MarsSimUnitTest {
 
     @ParameterizedTest
     @EnumSource(EquipmentType.class)
-    void getValueForAMonth_IsAlwaysBetweenOneAndTwelve(EquipmentType et) {
+    void testEquipmentTypeHasMass(EquipmentType et) {
         var m = EquipmentFactory.getUsualMass(et);
         assertNotEquals(0D, m, et.name() + " valid mass");
     }

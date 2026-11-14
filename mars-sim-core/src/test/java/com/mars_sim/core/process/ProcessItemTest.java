@@ -10,7 +10,7 @@ import com.mars_sim.core.resource.ItemType;
 class ProcessItemTest {
 
     @Test
-    void testConsumerablePropertyDefaultsFalse() {
+    void testConsumablePropertyDefaultsFalse() {
         ProcessItem item = new ProcessItem(1, "water", ItemType.AMOUNT_RESOURCE, 1.0D);
 
         assertFalse(item.isConsumable());

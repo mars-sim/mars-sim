@@ -252,7 +252,7 @@ public class MassCheck {
 		List<String> warnings = new ArrayList<>();
 
 		for (var item : items) {
-			// Consumerable items are ignored for mass calculation
+			// Consumable items are ignored for mass calculation
 			if (!item.isConsumable()) {
 				MassValue massValue = massForItem(item, config);
 				if (massValue.massKg != null) {

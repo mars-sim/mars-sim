@@ -1,7 +1,7 @@
 # ProcessCheck
 
 ProcessCheck validates process definitions.
-It scans the configured manufacture, food production, and salvage processes and flags any process where total output mass is acceptable compated to the total input mass. Acceptable is the input mass cannot be less than the output or more than 20%.
+It scans the configured manufacture, food production, and salvage processes and flags any process where total output mass is acceptable compared to the total input mass. Acceptable is the input mass cannot be less than the output or more than 20%.
 The report is grouped by process type.
 The second check is reports how Resources are created either from a Food, Manufacturing or Resource Process.
 
