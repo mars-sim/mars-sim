@@ -42,6 +42,10 @@ class ConfirmationPanel extends WizardStep<MissionDataBean>  {
                 .collect(Collectors.joining(", "));
         attrs.addTextField(Msg.getString("mission.members"), names, null);
 
+        // Create parameters
+        var createParams = state.getParameters();
+        attrs.addTextField("Needs Review", createParams.needsReview() ? "Yes" : "No", null);
+
         // How getting there
         if (state.getVehicle() != null) {
             attrs.addLabelledItem(Msg.getString("vehicle.singular"), new EntityLabel(state.getVehicle(), context), null);

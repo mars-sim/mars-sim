@@ -50,7 +50,6 @@ import com.mars_sim.core.vehicle.Vehicle;
 class MissionDataBean {
 	
 	private MetaMission meta;
-	private String type = "";
 	
 	private Settlement startingSettlement;
 	private Settlement destination;
@@ -112,7 +111,7 @@ class MissionDataBean {
 			case TravelToSettlementMeta m -> m.constructInstance(roster, destination, createParameters);
 			case TestDriveMetaMission m -> m.constructInstance(roster, createParameters);
 			case LandmarkMetaMission m -> m.constructInstance(roster, landmark, createParameters);
-			default -> throw new IllegalStateException("Mission type: " + type + " unknown");
+			default -> throw new IllegalStateException("Mission type: " + meta.getName() + " cannot be created");
 		};
 
 		if (mission != null) {
@@ -274,4 +273,8 @@ class MissionDataBean {
 	public Landmark getLandmark() {
 		return landmark;	
 	}
+
+    public CreateParameters getParameters() {
+        return createParameters;
+    }
 }

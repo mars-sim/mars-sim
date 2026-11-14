@@ -209,17 +209,17 @@ public class MissionVehicleProject extends MissionProject
 		}
     }
 
-
     /**
-     * Defines the key steps of the mission as a plan.
-     * This will extract the Navpoints and calculates the proposed distance. It will also add the basic vehicle-related steps to the mission plan.
-     * according to the mission parameters.
+     * Defines the key steps of the vehicle mission plan,
+     * This will extract the Navpoints and calculates the proposed distance.
+     * It will also add the basic vehicle-related steps to the mission plan.
      * 
-     * @param plan Steps for the mission
+     * @param workPlan Steps for the mission
      * @param params Parameters for mission creation
      */
-    public void setMissionSteps(List<MissionStep> plan, CreateParameters params) {
-        route = plan.stream()
+    @Override
+	public void setMissionSteps(List<MissionStep> workPlan, CreateParameters params) {
+        route = workPlan.stream()
                         .filter(MissionTravelStep.class::isInstance)
                         .map (sc -> ((MissionTravelStep) sc).getDestination())
                         .toList();
@@ -228,23 +228,19 @@ public class MissionVehicleProject extends MissionProject
                             .sum();
 
         // Add in the basic steps needs in a Vehicle Mission
-        List<MissionStep> fullPlan = new ArrayList<>();
-
-        if (params.needsReview()) {
-            //fullPlan.add(new MissionReviewStep(this));
-        }
+        List<MissionStep> travelPlan = new ArrayList<>();
 
         // Add prep steps
-        fullPlan.add(new MissionLoadVehicleStep(this));
-        fullPlan.add(new MissionBoardVehicleStep(this));
+        travelPlan.add(new MissionLoadVehicleStep(this));
+        travelPlan.add(new MissionBoardVehicleStep(this));
 
         // Add actual mission plan
-        fullPlan.addAll(plan);
+        travelPlan.addAll(workPlan);
 
         // Add post-mission steps
-        fullPlan.add(new MissionDisembarkStep(this));
+        travelPlan.add(new MissionDisembarkStep(this));
 
-        super.setSteps(fullPlan);
+        super.setMissionSteps(travelPlan, params);
     }
 
     
