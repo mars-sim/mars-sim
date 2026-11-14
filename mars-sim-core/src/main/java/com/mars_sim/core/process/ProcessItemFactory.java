@@ -12,7 +12,6 @@ import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
@@ -25,7 +24,6 @@ import com.mars_sim.core.vehicle.VehicleSpec;
  * Factory class to create ProcessItem objects
  */
 public final class ProcessItemFactory {
-    private static final SimLogger logger = SimLogger.getLogger(ProcessItemFactory.class);
 
     private ProcessItemFactory() {
         // Blocks instantiation
@@ -38,9 +36,11 @@ public final class ProcessItemFactory {
      * @param name Name of the item
      * @param type Type of the item
      * @param amount The amount of the item
+	 * @param consumable Indicates if the item is consumable
      * @return
      */
-    public static ProcessItem createByName(VehicleConfig vc, String name, ItemType type, double amount) {
+	public static ProcessItem createByName(VehicleConfig vc, String name, ItemType type, double amount,
+			boolean consumable) {
 		int id = switch(type) {
 			case AMOUNT_RESOURCE:
 				AmountResource ar = ResourceUtil.findAmountResource(name);
@@ -78,7 +78,7 @@ public final class ProcessItemFactory {
 				yield -1; // Unknown type
 		};
 
-        return new ProcessItem(id, name, type, amount);
+        return new ProcessItem(id, name, type, amount, consumable);
 	}
 
 	/**

@@ -28,18 +28,6 @@ public final class EquipmentFactory {
 	
 	// Base masses (kg) aligned with current manufacturing input-mass/output-quantity calculations.
 	private static final EnumMap<EquipmentType, Double> massMap = new EnumMap<>(EquipmentType.class);
-	
-//	static {
-//		massMap.put(EquipmentType.DATA_RECORDER, 0.699);
-//		massMap.put(EquipmentType.EVA_SUIT, 15.285);
-//		massMap.put(EquipmentType.BAG, 0.10);
-//		massMap.put(EquipmentType.BARREL, 1.30);
-//		massMap.put(EquipmentType.GAS_CANISTER, 4.60);
-//		massMap.put(EquipmentType.LARGE_BAG, 0.20);
-//		massMap.put(EquipmentType.SPECIMEN_BOX, 0.65);
-//		massMap.put(EquipmentType.THERMAL_BOTTLE, 0.50);
-//		massMap.put(EquipmentType.WHEELBARROW, 12.16);
-//	}
 
 	private static ManufactureConfig manufactureConfig;
 	
@@ -84,23 +72,7 @@ public final class EquipmentFactory {
 			break;
 		}
 
-    	double usualMass = 0; 
-    	
-    	if ((massMap.isEmpty() || !massMap.containsKey(type))) {
-    		
-    		if (type == EquipmentType.EVA_SUIT) {
-    			usualMass = EVASuit.getUsualMass();
-    		}
-    		else {
-	    		usualMass = calculateUsualMass(type, "Manufacture " + type.getName(), type.getName());
-    		}
-    		
-    		massMap.put(type, usualMass);
-    	}
-    	else {
-    		usualMass = massMap.get(type);
-    	}
-    	
+    	double usualMass = getUsualMass(type);
     	if (newEqm instanceof AbstractMobileUnit amu) {
     		amu.setBaseMass(usualMass);
     	}
@@ -134,10 +106,10 @@ public final class EquipmentFactory {
 	 * @param productName
 	 * @return
 	 */
-    public static double calculateUsualMass(EquipmentType type, String processName, String productName) {	
+    private static double calculateUsualMass(EquipmentType type, String processName, String productName) {	
 		double massPerItem = 0;
 		
-		if (massMap.isEmpty() || !massMap.containsKey(type)) {
+		if (!massMap.containsKey(type)) {
 
 			double mass = 0;
 			double quantity = 0;
@@ -162,12 +134,14 @@ public final class EquipmentFactory {
 				
 				// mass/quantity is mass per unit e.g. need 7.8 kg of polyethylene in order to make 12 baskets 
 				massPerItem = mass/quantity;
-				// Save the key value pair onto the weights Map
-				massMap.put(type, massPerItem);
+
 	    	}
 	    	else {
 	    		logger.severe("manufactureProcessInfo is not ready.");
 	    	}
+
+			// Save the key value pair onto the weights Map
+			massMap.put(type, massPerItem);
 		}
 
 		return massPerItem;
@@ -183,7 +157,16 @@ public final class EquipmentFactory {
 	public static double getUsualMass(EquipmentType type) {
 		if (massMap.containsKey(type))
 			return massMap.get(type);
-		return DEFAULT_MASS;
+
+		double newMass;
+		if (type == EquipmentType.EVA_SUIT) {
+			newMass = EVASuit.getUsualMass();
+    		massMap.put(type, newMass);
+    	}
+		else {
+			newMass = calculateUsualMass(type, "Manufacture " + type.getName(), type.getName());
+		}
+		return newMass;
 	}
 	
 	/**

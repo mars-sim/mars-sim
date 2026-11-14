@@ -1,7 +1,7 @@
 # ProcessCheck
 
 ProcessCheck validates process definitions.
-It scans the configured manufacture, food production, and salvage processes and flags any process where total output mass is greater than total input mass.
+It scans the configured manufacture, food production, and salvage processes and flags any process where total output mass is acceptable compared to the total input mass. Acceptable is the input mass cannot be less than the output or more than 20%.
 The report is grouped by process type.
 The second check is reports how Resources are created either from a Food, Manufacturing or Resource Process.
 
@@ -20,7 +20,8 @@ The detailed report file is written as:
 - `-help` : show usage help.
 - `-configdir <dir>` : use an alternative simulation data directory.
 - `-output <dir>` : directory where the detailed report file is written.
-- `-check <mass|resource|all>` : Run the check
+- `-create` : Check all the resources can be created by a process.
+- `-mass <process name>` : Check the input/output mass of all process or a single named one.
 
 If `-output` is not provided, the report is written to the current working directory.
 
@@ -47,5 +48,5 @@ Example that check only the process masses:
 ```bash
 mvn -pl mars-sim-tools -am -DskipTests exec:java \
   -Dexec.mainClass=com.mars_sim.tools.manufacture.ProcessCheck \
-  -Dexec.args="-check mass -output C:/path/to/reports"
+  -Dexec.args="-mass -output C:/path/to/reports"
 ```
