@@ -33,7 +33,8 @@ public final class ProcessCheck {
 
 	private static final String CONFIG_ARG = "configdir";
 	private static final String OUTPUT_ARG = "output";
-	private static final String CHECK_ARG = "check";
+	private static final String MASS_ARG = "mass";
+	private static final String CREATE_ARG = "create";
 	private static final String HELP_ARG = "help";
 	private static final String USAGE = "ProcessCheck [options]";
 
@@ -65,37 +66,29 @@ public final class ProcessCheck {
 			SimulationRuntime.setDataDir(line.getOptionValue(CONFIG_ARG));
 		}
 
-		var checkType = line.getOptionValue(CHECK_ARG);
-		boolean doMass = false;
-		boolean doResource = false;
-		if (checkType == null || "all".equalsIgnoreCase(checkType)) {
-			doMass = true;
-			doResource = true;
-		}
-		else if ("mass".equalsIgnoreCase(checkType)) {
-			doMass = true;
-		}
-		else if ("resource".equalsIgnoreCase(checkType)) {
-			doResource = true;
-		}
-		else {
-			printUsage(System.err, options, "Unknown check type: " + checkType);
-			return;
-		}
-
+		// Build checkers
 		SimulationConfig config = SimulationConfig.loadConfig();
 		var outputPath = Path.of(line.getOptionValue(OUTPUT_ARG, "."));
-		
-		// Check mass balance for the specified process types
-		if (doMass) {
-			var mass = new MassCheck(config);
-			mass.report(System.out, outputPath);
+		var mass = new MassCheck(config);
+		var createResourceCheck = new ResourceCheck(config);
+
+		var out = System.out;
+
+		// Decide which checks to perform based on the provided check type argument
+		if (line.hasOption(CREATE_ARG)) {
 		}
-		
-		// Check that the various resources have a valid process
-		if (doResource) {
-			var createResourceCheck = new ResourceCheck(config);
-			createResourceCheck.report(System.out, outputPath);
+		else if (line.hasOption(MASS_ARG)) {
+			var name = line.getOptionValue(MASS_ARG);
+			if (name == null) {
+				mass.reportAll(out, outputPath);
+			}
+			else {
+				mass.reportDetailed(out, name);
+			}
+		}
+		else {
+			createResourceCheck.report(out, outputPath);
+			mass.reportAll(out, outputPath);
 		}
 	}
 
@@ -114,10 +107,14 @@ public final class ProcessCheck {
 				.hasArg()
 				.desc("Directory for detailed failed-process report file")
 				.get());
-		options.addOption(Option.builder(CHECK_ARG)
-				.argName("check")
-				.hasArg()
-				.desc("Check to execute: mass, resource or all (default)")
+		options.addOption(Option.builder(CREATE_ARG)
+				.hasArg(false)
+				.desc("Perform create resource check")
+				.get());
+		options.addOption(Option.builder(MASS_ARG)
+				.optionalArg(true)
+				.argName("process name")
+				.desc("Perform mass check for the specified process type, or all if not specified")
 				.get());
 		return options;
 	}

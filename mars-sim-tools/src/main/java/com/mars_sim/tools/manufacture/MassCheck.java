@@ -37,15 +37,14 @@ import com.mars_sim.core.vehicle.VehicleSpec;
 public class MassCheck {
 
     private static final String DETAILS_FILENAME = "process-check-details.txt";
-	private static final double MASS_EPSILON = 1e-6D;
 
 	private record MassValue(Double massKg, String warning) { }
 
 	private record MassBreakdown(double totalMass, List<String> lines, List<String> warnings) { }
 
-	private record CategoryReport(ProcessCategory category, int checkedCount, List<FailedProcess> failures) { }
+	private record CategoryReport(ProcessCategory category, int checkedCount, List<ProcessBreakdown> failures) { }
 
-	private record FailedProcess(String name, MassBreakdown inputs, MassBreakdown outputs) { }
+	private record ProcessBreakdown(String name, MassBreakdown inputs, MassBreakdown outputs, double ratio) {}
 
 	private static class ProcessCategory {
 
@@ -87,7 +86,36 @@ public class MassCheck {
         this.config = config;
     }
 
-    public void report(PrintStream out, Path outputPath) {
+	/**
+	 * Report detailed mass check information for a specific process.
+	 * @param out Destination of report
+	 * @param processName Name of the process for which to report detailed mass check information
+	 */
+	public void reportDetailed(PrintStream out, String processName) {
+		List<ProcessCategory> categories = List.of(MANUFACTURE, FOOD, SALVAGE);
+
+
+		var foundProcess = categories.stream()
+				.flatMap(category -> category.getProcesses(config).stream())
+				.filter(p -> p.getName().equals(processName))
+				.findFirst()
+				.orElse(null);
+		if (foundProcess == null) {
+			out.println("Process not found: " + processName);
+			return;
+		}
+
+		var processReport = createProcessBreakdown(foundProcess, config);
+
+		out.println(toString(processReport));
+	}
+
+	/**
+	 * Report mass check results for all process categories. Summaries are printed to the provided PrintStream, and detailed information is written to a file in the specified output path.
+	 * @param out the PrintStream to which summary information will be printed
+	 * @param outputPath the path where the detailed report file will be written
+	 */
+    public void reportAll(PrintStream out, Path outputPath) {
 	    List<ProcessCategory> categories = List.of(MANUFACTURE, FOOD, SALVAGE);
 		
         List<CategoryReport> reports = categories.stream()
@@ -116,18 +144,29 @@ public class MassCheck {
 		var processes = category.getProcesses(config).stream()
 				.sorted(Comparator.comparing(p -> String.valueOf(p.getName()), String.CASE_INSENSITIVE_ORDER))
 				.toList();
-		List<FailedProcess> failures = new ArrayList<>();
 
-		for (var process : processes) {
-			MassBreakdown inputs = calculateMass(process.getInputList(), config);
-			MassBreakdown outputs = calculateMass(process.getOutputList(), config);
-
-			if ((outputs.totalMass - inputs.totalMass) > MASS_EPSILON) {
-				failures.add(new FailedProcess(process.getName(), inputs, outputs));
-			}
-		}
+		List<ProcessBreakdown> failures = processes.stream()
+				.map(p -> createProcessBreakdown(p, config))
+				.filter(b -> 
+					// Check if input mass is more than 20% greater than output mass or if output mass exceeds input mass
+					(b.ratio > 102D) || (b.ratio < 100D)
+				)
+				.toList();
 
 		return new CategoryReport(category, processes.size(), failures);
+	}
+
+	private static ProcessBreakdown createProcessBreakdown(ProcessInfo process, SimulationConfig config) {
+		MassBreakdown inputs = calculateMass(process.getInputList(), config);
+		MassBreakdown outputs = calculateMass(process.getOutputList(), config);
+
+		var ratio = 0D;
+		if (outputs.totalMass() > 0D) {
+			ratio = (inputs.totalMass() * 100D) / outputs.totalMass();
+			ratio = Math.round(ratio * 1_00D) / 1_00D;
+		}
+
+		return new ProcessBreakdown(process.getName(), inputs, outputs, ratio);
 	}
 
 	private static void printCategoryReport(PrintStream out, CategoryReport report) {
@@ -146,14 +185,18 @@ public class MassCheck {
 				f.name(), f.inputs().totalMass, f.outputs().totalMass));
 	}
 
-	private static String buildIssueDetails(String processName, MassBreakdown inputs, MassBreakdown outputs) {
-		double delta = outputs.totalMass - inputs.totalMass;
+	private static String toString(ProcessBreakdown processDetails) {
+		String processName = processDetails.name();
+		MassBreakdown inputs = processDetails.inputs();
+		MassBreakdown outputs = processDetails.outputs();
+		double delta = inputs.totalMass - outputs.totalMass;
+		double ratio = processDetails.ratio();
 		StringBuilder text = new StringBuilder();
 
-		text.append(String.format(Locale.ROOT, "Process in error: %s%n", processName));
+		text.append(String.format(Locale.ROOT, "Process: %s%n", processName));
 		text.append(String.format(Locale.ROOT, "Input total: %.3f kg%n", inputs.totalMass));
 		text.append(String.format(Locale.ROOT, "Output total: %.3f kg%n", outputs.totalMass));
-		text.append(String.format(Locale.ROOT, "Delta: %.3f kg%n", delta));
+		text.append(String.format(Locale.ROOT, "Input2Output: %.3f kg (%.2f%%)%n", delta, ratio));
 		text.append("Input composition:\n");
 		inputs.lines.forEach(line -> text.append("  ").append(line).append(System.lineSeparator()));
 		text.append("Output composition:\n");
@@ -187,7 +230,7 @@ public class MassCheck {
 					}
 					else {
 						for (var failure : report.failures()) {
-							writer.write(buildIssueDetails(failure.name(), failure.inputs(), failure.outputs()));
+							writer.write(toString(failure));
 						}
 					}
 
@@ -225,6 +268,7 @@ public class MassCheck {
 			}
 		}
 		
+		// The mass has to be rounded to a reasonable precision for reporting
 		return new MassBreakdown(totalMass, lines, warnings);
 	}
     
