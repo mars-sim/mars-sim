@@ -164,6 +164,9 @@ public class VehicleSpec implements Serializable {
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
 	// DOE 2010 Targe : Specific power = 650 W_e/L; Power Density = 650 W_e/kg
 	// Toyota Mirai Fuel cell - 90 kW
+	// Tesla Cybercab - 47.kWh battery pack. 165 Wh/mile (102.53 Wh/km) or 6.18 miles/kWh (9.95 km/kWh)
+	// https://home.hasslers.net/ev/convert/
+	
 	/** The total motor power output of the vehicle. (kW). */
 	private double totalMotorPower = 0;
 	/** The base average power output of the vehicle. (kW). */

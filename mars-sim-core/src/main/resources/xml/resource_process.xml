@@ -527,7 +527,10 @@
 		</description> 
 		<input resource="methane" rate="32.0" />
 		<input resource="ethylene" rate="84.0" />
+		<input resource="Zeolite" rate="0.25" />
 		
+		<!-- Zeolite membranes is used for hydrogen purification and CO₂ capture -->
+		<output resource="Zeolite" rate="0.24" />
 		<output resource="hydrogen" rate="6.0" core="true" />
 		<output resource="acetylene" rate="26.0" />
 		<output resource="propylene" rate="84.0" />
@@ -737,7 +740,10 @@
 		<!-- Note: this process is quite unprofitable since it uses both methane and water -->
 		<input resource="Methane" rate="160.0" />
 		<input resource="Water" rate="360.0" />
+		<input resource="Zeolite" rate="0.25" />
 		
+		<!-- Zeolite membranes is used for hydrogen purification and CO₂ capture -->
+		<output resource="Zeolite" rate="0.24" />
 		<output resource="Carbon dioxide" rate="440.0" waste="false" />
 		<output resource="Hydrogen" rate="60.0" core="true"  />
 	</process> <!-- "Steam Methane Reforming (SMR)" -->
@@ -756,7 +762,10 @@
 	</description>
 		<input resource="Methane" rate="160.0" />
 		<input resource="Carbon dioxide" rate="440.0" ambient="true" />
+		<input resource="Zeolite" rate="0.25" />
 		
+		<!-- Zeolite membranes is used for hydrogen purification and CO₂ capture -->
+		<output resource="Zeolite" rate="0.24" />
 		<output resource="Carbon monoxide" rate="560.0" />
 		<output resource="Hydrogen" rate="40.0" core="true" />
 	</process> <!-- "Dry Methane Reforming (DMR)" -->
@@ -782,6 +791,9 @@
 
 		<input resource="Carbon monoxide" rate="280.0" />
 		<input resource="water" rate="180.0" />
+		<input resource="Zeolite" rate="0.25" />
+		<!-- Zeolite membranes is used for hydrogen purification and CO₂ capture -->
+		<output resource="Zeolite" rate="0.24" />
 		
 		<output resource="Carbon dioxide" rate="440.0" waste="true" />
 		<output resource="hydrogen" rate="20.0" core="true" />
@@ -876,7 +888,10 @@
 		5. https://www.researchgate.net/publication/265608781_Decoupled_catalytic_hydrogen_evolution_from_a_molecular_metal_oxide_redox_mediator_in_water_splitting
 	</description> 
 		<input resource="water" rate="288" />
+		<input resource="Zeolite" rate="0.25" />
+		<!-- Zeolite membranes is used for hydrogen purification and CO₂ capture -->
 		
+		<output resource="Zeolite" rate="0.24" />
 		<output resource="hydrogen" rate="32" core="true" />
 		<output resource="oxygen" rate="256" core="true" />
 	</process> <!-- Oxygen Generator System (OGS) -->
@@ -1239,8 +1254,9 @@
 			<!-- According to http://canada.marssociety.org/winnipeg/soil.html
 			regolith is estimated to contain 11.3% sodium bicarbonate (baking
 			soda) and 1.15% of sodium chloride (table salt) -->
-			<output resource="baking soda" rate="4.0" />
+			<output resource="baking soda" rate="3.5" />
 			<output resource="table salt" rate="0.4" />
+			<output resource="Zeolite" rate="0.5" />
 	</process>
 
 <!-- 11 types of Mineral concentrations below. -->
@@ -1369,7 +1385,8 @@
 			<input resource="sylvite" rate="50.0" />
 			
 			<output resource="potassium" rate="26.2" />
-			<output resource="chlorine" rate="23.8" />
+			<output resource="chlorine" rate="20.0" />
+			<output resource="Iodine" rate="3.8" />
 	</process>
 
 	<process name="Smelt Taenite" kW-required="0.1" >
@@ -1388,7 +1405,7 @@
 			<input resource="basaltic" rate="50.0" />
 			
 			<output resource="aluminum oxide" rate="6.0" />
-			<output resource="magnesium" rate="6.0" />
+			<output resource="magnesium" rate="5.5" />
 			<output resource="manganese" rate="2.0" />						
 			<output resource="sodium oxide" rate="5.0" />
 			<output resource="potassium" rate="2.8" />
@@ -1401,6 +1418,7 @@
 			<output resource="nickel" rate="2.0" />
 			<output resource="sand" rate="4.3" />
 			<output resource="brine water" rate="10.0" />
+			<output resource="Zeolite" rate="0.5" />			
 	</process>
 
 	<process name="Separate Smectite deposits" kW-required="0.1" >
