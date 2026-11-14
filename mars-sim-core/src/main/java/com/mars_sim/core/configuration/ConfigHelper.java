@@ -35,6 +35,7 @@ import com.mars_sim.core.vehicle.VehicleConfig;
  */
 public class ConfigHelper {
 
+	private static final String CONSUMABLE = "consumable";
 	private static final String MALE_AGE = "median-age-male";
 	private static final String FEMALE_AGE = "median-age-female";
 	private static final String MALE_HEIGHT = "average-male-height";
@@ -308,7 +309,8 @@ public class ConfigHelper {
 		String name = resourceElement.getAttributeValue(NAME);
 		String sizeAttr = (type == ItemType.AMOUNT_RESOURCE ? AMOUNT : NUMBER);
 		double amount = ConfigHelper.getAttributeDouble(resourceElement, sizeAttr);
-		return ProcessItemFactory.createByName(vc, name, type, amount);
+		boolean consumerable = ConfigHelper.getOptionalAttributeBool(resourceElement, CONSUMABLE, false);
+		return ProcessItemFactory.createByName(vc, name, type, amount, consumerable);
 	}
 
 	/**

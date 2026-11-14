@@ -39,12 +39,18 @@ public class ProcessItem implements Serializable {
 	private final String name;
 	private final ItemType type;
 	private final double amount;
+	private final boolean consumable;
     private final int id;
 
 	public ProcessItem(int id, String name, ItemType type, double amount) {
+		this(id, name, type, amount, false);
+	}
+
+	public ProcessItem(int id, String name, ItemType type, double amount, boolean consumerable) {
 		this.name = Objects.requireNonNull(name, "Name cannot be null");
 		this.type = Objects.requireNonNull(type, "Type cannot be null");
         this.amount = amount;
+		this.consumable = consumerable;
 
 		if (id <= 0) {
 			throw new IllegalArgumentException("ID must be positive");
@@ -66,6 +72,10 @@ public class ProcessItem implements Serializable {
 
 	public double getAmount() {
 		return amount;
+	}
+
+	public boolean isConsumable() {
+		return consumable;
 	}
 
     /**
@@ -163,7 +173,8 @@ public class ProcessItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ProcessItem [id=" + id + ", name=" + name + ", type=" + type + ", amount=" + amount + "]";
+		return "ProcessItem [id=" + id + ", name=" + name + ", type=" + type + ", amount=" + amount
+				+ ", consumerable=" + consumable + "]";
 	}
 
     /**
@@ -175,7 +186,8 @@ public class ProcessItem implements Serializable {
         if (object instanceof ProcessItem item) {
             result = type.equals(item.type)
 					&& name.equals(item.name)
-                    && (amount == item.amount);
+                    && (amount == item.amount)
+					&& (consumable == item.consumable);
         }
 
         return result;
@@ -188,6 +200,6 @@ public class ProcessItem implements Serializable {
      */
 	@Override 
     public int hashCode() {
-        return name.hashCode();
+        return Objects.hash(name, type, amount, consumable);
     }
 }

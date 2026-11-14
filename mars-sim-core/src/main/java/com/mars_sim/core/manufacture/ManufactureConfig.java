@@ -300,7 +300,7 @@ public class ManufactureConfig {
 			String itemName = salvageElement.getAttributeValue(ITEM_NAME);
 			ItemType itemT = ItemType.valueOf(ConfigHelper.convertToEnumName(
 									salvageElement.getAttributeValue(TYPE)));
-			ProcessItem salvaged = ProcessItemFactory.createByName(vehicleConfig, itemName, itemT, 1);
+			ProcessItem salvaged = ProcessItemFactory.createByName(vehicleConfig, itemName, itemT, 1, false);
 
 			int techLevel = ConfigHelper.getAttributeInt(salvageElement, TECH);
 			int skill = ConfigHelper.getAttributeInt(salvageElement, SKILL);

@@ -252,19 +252,22 @@ public class MassCheck {
 		List<String> warnings = new ArrayList<>();
 
 		for (var item : items) {
-			MassValue massValue = massForItem(item, config);
-			if (massValue.massKg != null) {
-				totalMass += massValue.massKg.doubleValue();
-				lines.add(String.format(Locale.ROOT, "%s | amount=%.3f | mass=%.3f kg",
-						buildItemLabel(item), item.getAmount(), massValue.massKg.doubleValue()));
-			}
-			else {
-				lines.add(String.format(Locale.ROOT, "%s | amount=%.3f | mass=unknown",
-						buildItemLabel(item), item.getAmount()));
-			}
-			
-			if (massValue.warning != null) {
-				warnings.add(massValue.warning);
+			// Consumerable items are ignored for mass calculation
+			if (!item.isConsumable()) {
+				MassValue massValue = massForItem(item, config);
+				if (massValue.massKg != null) {
+					totalMass += massValue.massKg.doubleValue();
+					lines.add(String.format(Locale.ROOT, "%s | amount=%.3f | mass=%.3f kg",
+							buildItemLabel(item), item.getAmount(), massValue.massKg.doubleValue()));
+				}
+				else {
+					lines.add(String.format(Locale.ROOT, "%s | amount=%.3f | mass=unknown",
+							buildItemLabel(item), item.getAmount()));
+				}
+				
+				if (massValue.warning != null) {
+					warnings.add(massValue.warning);
+				}
 			}
 		}
 		

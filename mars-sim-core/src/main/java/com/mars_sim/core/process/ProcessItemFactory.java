@@ -38,9 +38,11 @@ public final class ProcessItemFactory {
      * @param name Name of the item
      * @param type Type of the item
      * @param amount The amount of the item
+	 * @param consumerable Indicates if the item is consumerable
      * @return
      */
-    public static ProcessItem createByName(VehicleConfig vc, String name, ItemType type, double amount) {
+	public static ProcessItem createByName(VehicleConfig vc, String name, ItemType type, double amount,
+			boolean consumerable) {
 		int id = switch(type) {
 			case AMOUNT_RESOURCE:
 				AmountResource ar = ResourceUtil.findAmountResource(name);
@@ -78,7 +80,7 @@ public final class ProcessItemFactory {
 				yield -1; // Unknown type
 		};
 
-        return new ProcessItem(id, name, type, amount);
+        return new ProcessItem(id, name, type, amount, consumerable);
 	}
 
 	/**
