@@ -87,7 +87,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
 				}
 			}
-			else if (!checkNeeds(person)) {
+			else if (!isNeedsMet(person)) {
 	    		// Unable to operate the vehicle
 	    		return result;	
 			}

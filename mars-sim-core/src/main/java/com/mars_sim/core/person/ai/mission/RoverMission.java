@@ -467,22 +467,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	
 		double timeLeft = DEPARTURE_DURATION - getPhaseTimeElapsed();
 		
-		// Initially set the members' work shift to on-call to get ready. 
-		if (getPhaseTimeElapsed() == 0D) {
-			callMembersToMission((int)timeLeft);	
-		}
-		
-		if (timeLeft < -100) {
-
-			logger.info(v, 10_000L, getName() + " Timeout. Time left: " + Math.round(timeLeft * 10.0) / 10.0);
-
-			logger.info(member, 10_000, getName() + " on " + v + ". Cancelling departing " 
-					+ settlement.getName() + " in " + Math.round(getPhaseTimeElapsed() * 10.0)/10.0 + ".");
-			
-			abortMission(TIMEOUT, member);
-			
-			return;
-		}
+		// Call the members' work shift to on-call to get ready. 
+		callMembersToMission((int)timeLeft);	
 		
 		// Gets a random location within rover.
 		LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
@@ -568,6 +554,17 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				
 				depart(v, settlement);		
 			}
+		}
+
+		// If cannot depart and time has expired.
+		if (!canDepart && timeLeft < -100) {
+
+			logger.info(v, 10_000L, getName() + " Timeout. Time left: " + Math.round(timeLeft * 10.0) / 10.0);
+
+			logger.info(member, 10_000, getName() + " on " + v + ". Cancelling departing " 
+					+ settlement.getName() + " in " + Math.round(getPhaseTimeElapsed() * 10.0)/10.0 + ".");
+			
+			abortMission(TIMEOUT, member);
 		}
 	}
 
@@ -700,9 +697,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				
 				return walkToBoardVehicle(person, v, adjustedLoc);
 			}
+			else if (person.getVehicle() != null) {
+	        	return isNeedsMet(person);
+			}
 			else {
-	        	return !checkNeeds(person);
-	        	// Question: should it return true or false and would it help ?
+				// Unfit
+	        	return false;
 			}
 		}
 		
@@ -1353,7 +1353,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
 				}
 			}
-			else if (!checkNeeds(person)) {
+			else if (!isNeedsMet(person)) {
         		// Unable to operate the vehicle
         		return result;	
 			}

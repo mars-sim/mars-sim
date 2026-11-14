@@ -160,6 +160,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private List<Coordinates> trail = new ArrayList<>();
 	/** List of navpoints for the mission. */
 	private List<NavPoint> navPoints = new ArrayList<>();
+
+	private boolean calledMembers = false;
 		
 	/**
 	 * Creates a Vehicle mission.
@@ -853,17 +855,27 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param deadline How many mSols to they have to join; could be zero if no deadline
 	 */
 	protected void callMembersToMission(int deadline) {
-	
+		if (calledMembers) {
+			// Members already called, no need to call again.
+			return;
+		}
+		calledMembers = true;
+
+		// Alarm time has to allow time for Person to reach Vehicle and not negative
+		int alarmTime = Math.max((deadline - 100), 1);
+
 		// Set the members' work shift to on-call to get ready
 		for (Worker m : getMembers()) {
-			if (m instanceof Person person
+			if (m instanceof Person person) {
 				// If first time this person has been called and there is a limit interrupt them
-				&& !person.getShiftSlot().setOnCall(true) && (deadline > 0)) {
-				// First call so 
-				Task active = person.getTaskManager().getTask();
-				if (active instanceof Sleep sp) {
-					// Not create but the only way
-					sp.setAlarm(deadline);
+				person.getShiftSlot().setOnCall(true);
+				
+				if (alarmTime >= 0) {
+					Task active = person.getTaskManager().getTask();
+					if (active instanceof Sleep sp) {
+						// Not create but the only way
+						sp.setAlarm(alarmTime);
+					}
 				}
 			}
 		}
@@ -2052,12 +2064,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	
 	
 	/**
-	 * Check needs.
+	 * Checks if the person's needs are met before performing the mission.
 	 * 
 	 * @param person
 	 * @return false if needs are not met
 	 */
-	public boolean checkNeeds(Person person) {
+	public boolean isNeedsMet(Person person) {
 		
 		PhysicalCondition pc = person.getPhysicalCondition();
 		var persRH = person.getEquipmentInventory();
