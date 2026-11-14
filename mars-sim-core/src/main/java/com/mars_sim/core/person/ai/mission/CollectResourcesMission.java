@@ -328,7 +328,7 @@ public abstract class CollectResourcesMission extends EVAMission
 			
 			// Note: How to take care of the person if he does not have high fatigue but other health issues ?
 		}
-		else if (!checkNeeds(person)) {
+		else if (!isNeedsMet(person)) {
 			// If there are needs, unable to perform EVA
 			logger.info(person, 4_000, "Needs were not met.");
 		}

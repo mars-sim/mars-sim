@@ -68,7 +68,7 @@ public class Walk extends Task {
 	public static final String SIMPLE_NAME = Walk.class.getSimpleName();
 
 	/** Task name */
-	public static final String NAME = Msg.getString("Task.description.walk"); //$NON-NLS-1$
+	private static final String NAME = Msg.getString("Task.description.walk"); //$NON-NLS-1$
 	
 	private static final String ARRIVED_AIRLOCK = Msg.getString("Task.description.walk.arrivedAirlock"); //$NON-NLS-1$
 
@@ -212,6 +212,7 @@ public class Walk extends Task {
 			return;
 		}
 
+		setName(NAME + " to " + walkingSteps.getFinalDestination());
 		setupWalk();
 	}
 
@@ -223,7 +224,8 @@ public class Walk extends Task {
 	 * @param walkingSteps	 Precalculated and verified walking steps
 	 */
 	public Walk(Worker worker, WalkingSteps walkingSteps) {
-		super(NAME, worker, false, false, 0D, null, 100D);
+		var name = NAME + " to " + walkingSteps.getFinalDestination();
+		super(name, worker, false, false, 0D, null, 100D);
 
 		this.walkingSteps = walkingSteps;
 		
