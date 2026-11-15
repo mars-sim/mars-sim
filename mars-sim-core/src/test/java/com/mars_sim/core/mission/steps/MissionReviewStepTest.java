@@ -29,7 +29,7 @@ class MissionReviewStepTest extends MarsSimUnitTest {
         var testStep = new TestMissionStep(project, 10);
         List<MissionStep> steps = List.of(testStep);
 
-        var param = new CreateParameters(true);
+        var param = new CreateParameters(true, false);
         project.setMissionSteps(steps, param);
 
         var plan = project.getPlan();
@@ -65,7 +65,7 @@ class MissionReviewStepTest extends MarsSimUnitTest {
 
         List<MissionStep> steps = List.of(new TestMissionStep(project, 10));
 
-        var param = new CreateParameters(false);
+        var param = new CreateParameters(false, false);
         project.setMissionSteps(steps, param);
 
         var plan = project.getPlan();

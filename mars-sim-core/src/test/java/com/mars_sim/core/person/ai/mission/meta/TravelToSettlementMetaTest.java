@@ -26,7 +26,7 @@ class TravelToSettlementMetaTest extends MarsSimUnitTest{
 
         var meta = new TravelToSettlementMeta();
         var e = assertThrowsExactly(MissionCreationException.class,
-                () -> meta.constructInstance(crew, new CreateParameters(false)));
+                () -> meta.constructInstance(crew, new CreateParameters()));
 
         assertEquals("mission.travelsettlement.dest", e.getContext().key(), "Message key should be correct");
     }
@@ -44,7 +44,7 @@ class TravelToSettlementMetaTest extends MarsSimUnitTest{
         buildAccommodation(end.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         var meta = new TravelToSettlementMeta();
-        var m = (TravelToSettlement) meta.constructInstance(crew, new CreateParameters(false));
+        var m = (TravelToSettlement) meta.constructInstance(crew, new CreateParameters());
 
         assertEquals(end, m.getDestinationSettlement(), "Destination should be correct");
     }
@@ -62,7 +62,7 @@ class TravelToSettlementMetaTest extends MarsSimUnitTest{
         buildAccommodation(end.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         var meta = new TravelToSettlementMeta();
-        var m = (TravelToSettlement) meta.constructInstance(crew, new CreateParameters(false));
+        var m = (TravelToSettlement) meta.constructInstance(crew, new CreateParameters());
 
         assertEquals(end, m.getDestinationSettlement(), "Destination should be correct");
     }

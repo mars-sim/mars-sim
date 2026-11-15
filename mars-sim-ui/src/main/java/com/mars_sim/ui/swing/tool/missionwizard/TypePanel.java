@@ -39,10 +39,11 @@ class TypePanel extends WizardStep<MissionDataBean> implements ItemListener {
 	public static final String ID = "Type";
 
     // Private members.
-	private JComboBox<MissionType> typeSelect;
-	private JCheckBox needsReviewCB;
+	private final JComboBox<MissionType> typeSelect;
+	private final JCheckBox needsReviewCB;
+	private final JCheckBox daylightStartCB;
 
-	private JLabel descriptionTF;
+	private final JLabel descriptionTF;
 	
 	/**
 	 * Constructor.
@@ -88,7 +89,12 @@ class TypePanel extends WizardStep<MissionDataBean> implements ItemListener {
 		needsReviewCB = new JCheckBox("Requires review");
 		needsReviewCB.setSelected(false);
 		parameterPane.add(needsReviewCB);
-		parameterPane.setMaximumSize(new Dimension(Short.MAX_VALUE, needsReviewCB.getPreferredSize().height));
+		
+		daylightStartCB = new JCheckBox("Daylight start");
+		daylightStartCB.setSelected(false);
+		parameterPane.add(daylightStartCB);
+		
+		//parameterPane.setMaximumSize(new Dimension(Short.MAX_VALUE, needsReviewCB.getPreferredSize().height));
 
 		// Add a vertical strut to separate the display.
 		add(Box.createVerticalStrut(10));
@@ -131,7 +137,8 @@ class TypePanel extends WizardStep<MissionDataBean> implements ItemListener {
 
 	@Override
 	public void updateState(MissionDataBean state) {
-		var params = new CreateParameters(needsReviewCB.isSelected());
+		var params = new CreateParameters(needsReviewCB.isSelected(),
+				daylightStartCB.isSelected());
 
 		var type = (MissionType)typeSelect.getSelectedItem();
 		state.setMissionType(type, params);

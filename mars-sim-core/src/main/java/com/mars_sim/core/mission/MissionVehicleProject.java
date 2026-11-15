@@ -15,6 +15,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MetaMission.Roster;
 import com.mars_sim.core.mission.steps.MissionBoardVehicleStep;
 import com.mars_sim.core.mission.steps.MissionCloseStep;
+import com.mars_sim.core.mission.steps.MissionDaylightStep;
 import com.mars_sim.core.mission.steps.MissionDisembarkStep;
 import com.mars_sim.core.mission.steps.MissionLoadVehicleStep;
 import com.mars_sim.core.mission.steps.MissionTravelStep;
@@ -232,6 +233,12 @@ public class MissionVehicleProject extends MissionProject
 
         // Add prep steps
         travelPlan.add(new MissionLoadVehicleStep(this));
+
+        // If daylight step is required, add it before boarding the vehicle
+        if (params.daylightStart()) {
+            travelPlan.add(new MissionDaylightStep(this));
+        }
+
         travelPlan.add(new MissionBoardVehicleStep(this));
 
         // Add actual mission plan

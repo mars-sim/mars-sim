@@ -54,7 +54,7 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 			var doReview = (reviewChoice == CommandHelper.YES);
 
 			var builder = new MissionBuilder(choosen, leader);
-			Mission newMission = builder.buildMission(new CreateParameters(doReview));
+			Mission newMission = builder.buildMission(new CreateParameters(doReview, false));
 			if (newMission == null) {
 				context.println("Mission failed to start:");
 				builder.getMessages().forEach(m -> context.println(m.getMessage()));

@@ -51,7 +51,7 @@ class TestDriveMetaMissionTest extends MarsSimUnitTest {
         }
 
         var roster = new MetaMission.Roster(leader, recruits, rover);
-        MissionVehicleProject mp = (MissionVehicleProject) meta.constructInstance(roster, new CreateParameters(false));
+        MissionVehicleProject mp = (MissionVehicleProject) meta.constructInstance(roster, new CreateParameters());
 
         // Check vehicle details
         assertFalse(mp.isDone(), "Mission active");
