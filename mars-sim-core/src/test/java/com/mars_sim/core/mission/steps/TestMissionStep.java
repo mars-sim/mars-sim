@@ -24,8 +24,8 @@ public class TestMissionStep extends MissionStep {
     @Override
     protected boolean execute(Worker worker) {
         expectedCalls--;
-        if (expectedCalls > 0) {
-            complete(); // Mark the step as complete if maxCalls is still greater than 0
+        if (expectedCalls <= 0) {
+            complete(); // Mark the step as complete once the expected number of calls has been reached
         }
         return false;
     }

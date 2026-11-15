@@ -67,7 +67,7 @@ public class MissionDaylightStep extends MissionStep
     /**
      * Checks if the current time is within the valid daylight period.
      * 
-     * @return true if the current time is within the daylight period, false otherwise.`
+     * @return true if the current time is within the daylight period, false otherwise.
      */
     public boolean isTimeValid() {
         return timeValid;

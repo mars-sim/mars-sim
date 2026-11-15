@@ -11,7 +11,7 @@ import java.io.Serializable;
 /**
  * Represents a time window on Mars, defined by start and end times in MSol.
  * It assumes the start & end mSol are based in MCT (Mars Coordinated Time).
- * The logic can accomodate the time window spanning a Sol boundary, i.e. end < start
+ * The logic can accommodate the time window spanning a Sol boundary, i.e. end < start
  * 
  * @param startMSol Start of the time window in MSol
  * @param endMSol End of the time window in MSol
