@@ -31,7 +31,7 @@ public interface MetaMission {
 
 	// The roster for a potential mission
 	record Roster(Person leader, List<? extends Worker> members, Vehicle vehicle) {}
-	
+
 	/**
 	 * Type of Mission created by this Meta object
 	 */
@@ -75,11 +75,11 @@ public interface MetaMission {
 	 * Constructs an instance of the associated mission.
 	 * 
 	 * @param crew The crew for the mission, including leader and members
-	 * @param needsReview Mission must be reviewed
+	 * @param parameters Mission creation parameters
 	 * @return mission instance.
 	 * @throws MissionCreationException If there is a problem creating the mission.
 	 */
-	Mission constructInstance(Roster crew, boolean needsReview) throws MissionCreationException;
+	Mission constructInstance(Roster crew, CreateParameters parameters) throws MissionCreationException;
 
 	/**
 	 * Gets the weighted probability value that the person might perform this

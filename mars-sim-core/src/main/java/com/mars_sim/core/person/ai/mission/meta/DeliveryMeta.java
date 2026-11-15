@@ -18,6 +18,7 @@ import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -72,12 +73,12 @@ public class DeliveryMeta extends AbstractMetaMission {
 	/**
 	 * Constructs a new instance of the Delivery mission with the given crew and review status.
 	 * @param crew the roster of crew members for the mission.
-	 * @param needsReview whether the mission requires review before execution.
+	 * @param parameters mission creation parameters.
 	 * @return a new instance of the Delivery mission.
 	 */
 	@Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
-		return new Delivery(crew, needsReview);
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
+		return new Delivery(crew, parameters.needsReview());
 	}
 
 	public Mission constructInstance(List<Worker> members, Settlement destination,

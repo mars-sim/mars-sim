@@ -13,6 +13,7 @@ import java.util.Set;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.mission.steps.MissionTravelStep;
@@ -41,11 +42,11 @@ public class TestDriveMetaMission extends AbstractMetaMission {
 	 * Constructs an instance of the Test drive
 	 * 
 	 * @param crew the roster of crew members to perform the mission.
-	 * @param needsReview Mission must be reviewed
+     * @param parameters mission creation parameters.
 	 * @return mission instance.
 	 */
     @Override
-    public Mission constructInstance(Roster crew, boolean needsReview) {
+    public Mission constructInstance(Roster crew, CreateParameters parameters) {
 
 		var mission = new MissionVehicleProject(null, MissionType.TEST_DRIVE, 10, crew);
 
@@ -58,7 +59,7 @@ public class TestDriveMetaMission extends AbstractMetaMission {
                                                             startingPlace)));
         plan.add(new MissionTravelStep(mission, new NavPoint(base, turningPoint)));           
 
-        mission.setSteps(plan);  
+        mission.setMissionSteps(plan, parameters);  
 
         return mission;
     }

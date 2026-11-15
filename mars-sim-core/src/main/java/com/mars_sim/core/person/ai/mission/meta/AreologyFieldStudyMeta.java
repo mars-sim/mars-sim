@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -32,8 +33,8 @@ public class AreologyFieldStudyMeta extends FieldStudyMeta {
 	}
 
     @Override
-    public Mission constructInstance(Roster crew, boolean needsReview) {
-        return new AreologyFieldStudy(crew, needsReview);
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
+		return new AreologyFieldStudy(crew, parameters.needsReview());
     }
 
 	public Mission constructInstance(List<Worker> members, ScientificStudy study,

@@ -18,6 +18,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.CollectRegolith;
@@ -51,8 +52,8 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
-		return new CollectRegolith(crew, needsReview);
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
+		return new CollectRegolith(crew, parameters.needsReview());
 	}
 
 	public Mission constructInstance(Collection<Worker> members, List<Coordinates> sites, Rover rover) {

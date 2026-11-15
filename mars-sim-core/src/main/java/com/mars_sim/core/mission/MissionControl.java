@@ -53,9 +53,9 @@ public class MissionControl implements ScheduledEventHandler {
     private static final SimLogger logger = SimLogger.getLogger(MissionControl.class.getName());
 
 	private double minimumPassingScore = INITIAL_MISSION_PASSING_SCORE;
-    private List<Double> missionScores = new ArrayList<>();
-	private Set<Mission> allMissions = new CopyOnWriteArraySet<>();
-	private Settlement owner;
+    private final List<Double> missionScores = new ArrayList<>();
+	private final Set<Mission> allMissions = new CopyOnWriteArraySet<>();
+	private final Settlement owner;
 	private int id = 1;
 	
 	private static final MetricCategory MISSION_CAT = new MetricCategory("Missions");
@@ -64,7 +64,7 @@ public class MissionControl implements ScheduledEventHandler {
 	public static final String MISSION_ADD = "mission add";
 	public static final String MISSION_REMOVED = "mission removed";
 
-	private MetricGroup metrics = new MetricGroup(MISSION_CAT);
+	private final MetricGroup metrics = new MetricGroup(MISSION_CAT);
 
     public MissionControl(Settlement settlement) {
 		this.owner = settlement;
@@ -277,7 +277,7 @@ public class MissionControl implements ScheduledEventHandler {
 
 		// Construct and return the mission
 		var builder = new MissionBuilder(selectedMission.getMeta(), person);
-		Mission mission = builder.buildMission(true);
+		Mission mission = builder.buildMission(new CreateParameters(true, true));
 		person.getMind().getTaskManager().setMissionRatings(potentialMissions, selectedMission);
 
 		return mission;

@@ -18,6 +18,7 @@ import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mining;
@@ -65,8 +66,8 @@ public class MiningMeta extends AbstractMetaMission {
 	}
 
     @Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
-		return new Mining(crew, needsReview);
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
+		return new Mining(crew, parameters.needsReview());
     }
 
 	public Mission constructInstance(Collection<Worker> members, MineralSite site,

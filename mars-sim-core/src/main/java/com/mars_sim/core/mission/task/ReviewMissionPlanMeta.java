@@ -35,7 +35,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 
 		private static final long serialVersionUID = 1L;
 
-        private MissionPlanning plan;
+        private final MissionPlanning plan;
 
 		public ReviewMissionPlanJob(SettlementMetaTask ownerTask, Settlement owner, MissionPlanning plan, RatingScore score) {
 			super(ownerTask, owner, "Review Mission", plan.getMission(), score);

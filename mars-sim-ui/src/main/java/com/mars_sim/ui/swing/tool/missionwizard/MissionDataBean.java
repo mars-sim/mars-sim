@@ -15,6 +15,7 @@ import com.mars_sim.core.environment.Landmark;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MetaMissionRegistry;
 import com.mars_sim.core.mission.predefined.ExplorationMeta;
@@ -49,7 +50,6 @@ import com.mars_sim.core.vehicle.Vehicle;
 class MissionDataBean {
 	
 	private MetaMission meta;
-	private String type = "";
 	
 	private Settlement startingSettlement;
 	private Settlement destination;
@@ -74,6 +74,7 @@ class MissionDataBean {
 
 	private Landmark landmark;
 	private List<MineralSite> exploration;
+	private CreateParameters createParameters;
 	    
 	/**
 	 * Creates a mission from the mission data.
@@ -87,7 +88,6 @@ class MissionDataBean {
 
 		// Create the mission roster;this is for the new single constructor per Mission pattern
 		var roster = new MetaMission.Roster(getLeader(), getWorkerMembers(), rover);
-		boolean needsReview = false;  // This could be user selected in the future
 		Mission mission = switch (meta) {
 			case AreologyFieldStudyMeta m -> m
 					.constructInstance(roster, study, routePoints.get(0));
@@ -103,15 +103,15 @@ class MissionDataBean {
 					.constructInstance(mixedMembers, destination, (Drone) rover, sellGoods, buyGoods);
 			case EmergencySupplyMeta m -> m
 					.constructInstance(roster, destination, sellGoods);
-			case ExplorationMeta m -> m.constructInstance(roster, needsReview, exploration);
+			case ExplorationMeta m -> m.constructInstance(roster, createParameters, exploration);
 			case MiningMeta m -> m.constructInstance(roster, miningSite, luv);
 			case RescueSalvageVehicleMeta m -> m.constructInstance(roster, rescueVehicle);
 			case TradeMeta m -> m
 					.constructInstance(roster, destination, sellGoods, buyGoods);
-			case TravelToSettlementMeta m -> m.constructInstance(roster, destination, needsReview);
-			case TestDriveMetaMission m -> m.constructInstance(roster, needsReview);
-			case LandmarkMetaMission m -> m.constructInstance(roster, landmark, needsReview);
-			default -> throw new IllegalStateException("Mission type: " + type + " unknown");
+			case TravelToSettlementMeta m -> m.constructInstance(roster, destination, createParameters);
+			case TestDriveMetaMission m -> m.constructInstance(roster, createParameters);
+			case LandmarkMetaMission m -> m.constructInstance(roster, landmark, createParameters);
+			default -> throw new IllegalStateException("Mission type: " + meta.getName() + " cannot be created");
 		};
 
 		if (mission != null) {
@@ -135,13 +135,15 @@ class MissionDataBean {
 	 * Sets the mission type enum.
 	 * 
 	 * @param missionType the mission type enum.
+	 * @param createParameters the create parameters for the mission.
 	 */
-    public void setMissionType(MissionType missionType) {
+    public void setMissionType(MissionType missionType, CreateParameters createParameters) {
 		this.meta = MetaMissionRegistry.getMetaMission(missionType);
 		if (this.meta == null) {
 			// This should never happen
 			throw new IllegalArgumentException("No meta mission found for mission type: " + missionType);
 		}
+		this.createParameters = createParameters;
     }
 	
     public Settlement getStartingSettlement() {
@@ -271,4 +273,8 @@ class MissionDataBean {
 	public Landmark getLandmark() {
 		return landmark;	
 	}
+
+    public CreateParameters getParameters() {
+        return createParameters;
+    }
 }
