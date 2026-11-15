@@ -60,9 +60,9 @@ public class ShiftManager implements Serializable {
      */
     public static final int ROTATION_LEAVE = 1000;   
 
-    private String name;
-    private List<Shift> shifts = new ArrayList<>();
-    private Settlement settlement;
+    private final String name;
+    private final List<Shift> shifts = new ArrayList<>();
+    private final Settlement settlement;
     private int leavePercentage = 0;
     private int rotationSols = 0;
 
@@ -79,18 +79,18 @@ public class ShiftManager implements Serializable {
         this.leavePercentage = shiftDefinition.getLeavePercentage();
         this.rotationSols = shiftDefinition.getRotationSols();
 
-        var offset = settlement.getTimeZone().getMSolOffset();
+        var zone = settlement.getTimeZone();
 
         // Create future event to rotate shifts
         ScheduledEventManager futures = settlement.getFutureManager();
-        futures.addEvent((rotationSols * 1000) + offset, new RotationHandler());
+        futures.addEvent((rotationSols * 1000) + zone.getMSolOffset(), new RotationHandler());
 
         if (shiftDefinition.getShifts().isEmpty()) {
             throw new  IllegalArgumentException("No shift defined in " + shiftDefinition.getName());
         }
         
         for (ShiftSpec ss : shiftDefinition.getShifts()) {
-            Shift s = new Shift(ss, offset);
+            Shift s = new Shift(ss, zone);
             shifts.add(s);
 
             // Create future event for shift change

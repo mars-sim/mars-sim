@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.mars_sim.core.time.MarsZone;
+
 public class ShiftTest {
     @Test
     void testShiftCompletedSameSol() {
         ShiftSpec spec = new ShiftSpec("SameDay", 400, 900, 0);
-        Shift shift = new Shift(spec, 0);
+        Shift shift = new Shift(spec, MarsZone.MCT);
         
         // Check time outside shift pattern
         assertEquals(0D, shift.getShiftCompleted(0), "No shift start of day");
@@ -25,7 +27,7 @@ public class ShiftTest {
     @Test
     void testShiftCompletedDifferentSol() {
         ShiftSpec spec = new ShiftSpec("TwoDay", 800, 300, 0);
-        Shift shift = new Shift(spec, 0);
+        Shift shift = new Shift(spec, MarsZone.MCT);
         
         // Check time outside shift pattern
         assertEquals(0D, shift.getShiftCompleted(350), "No shift start of day");

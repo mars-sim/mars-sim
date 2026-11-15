@@ -22,11 +22,13 @@ public class MarsZone implements Serializable {
      */
     public static final int NUM_ZONES = 20;
 
+    public static final MarsZone MCT = new MarsZone(0);
+
     // The millisols per zone
     public static final int MSOLS_PER_ZONE = 1000/20;
 
-    private String id;
-    private int offset;
+    private final String id;
+    private final int offset;
 
     /**
      * Private constructor only used by factory method.
@@ -77,6 +79,16 @@ public class MarsZone implements Serializable {
         int zoneid = (int) Math.floor(NUM_ZONES * fraction);
 		return new MarsZone(zoneid);
 	}
+
+    /**
+     * Gets the Mars time zone for a given zone id.
+     * 
+     * @param zoneid the id of the Mars time zone
+     * @return the Mars time zone corresponding to the given zone id
+     */
+    public static MarsZone getMarsZone(int zoneid) {
+        return new MarsZone(zoneid);
+    }
 
     @Override
     public int hashCode() {
