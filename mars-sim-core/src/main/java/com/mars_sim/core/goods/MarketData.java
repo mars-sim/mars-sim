@@ -34,13 +34,19 @@ public class MarketData implements Serializable {
 	 * @return
 	 */
 	private static double smoothValue(double newValue, double oldValue) {
-		if (!Double.isNaN(oldValue) && !Double.isNaN(newValue)) {
-			newValue = (LIMIT * oldValue + DELTA * newValue);
+		double result = 0;
+		
+		if (Double.isNaN(oldValue)) {
+			result = newValue;
+		}
+		else if (Double.isNaN(newValue)) {
+			result = oldValue;
 		}
 		else {
-			newValue = 1.0;
+			result = (LIMIT * oldValue + DELTA * newValue);
 		}
-		return newValue;
+
+		return result;
 	}
 
 	/**

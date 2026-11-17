@@ -84,8 +84,8 @@ class AmountResourceGood extends Good {
 	private static final double LIFE_SUPPORT_COST = 0.5;
 	
 	// Water related flattening factors
-	private static final double ICE_FLATTENING_FACTOR = 1.25;
-	private static final double WATER_FLATTENING_FACTOR = 0.6;
+	private static final double ICE_FLATTENING_FACTOR = 2.5;
+	private static final double WATER_FLATTENING_FACTOR = 0.2;
 	
 	// Gases flattening factors
 	private static final double METHANOL_FLATTENING_FACTOR = 1.1;
@@ -157,9 +157,9 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_VALUE_MODIFIER = 0.02;
 	
 	// Demand Modifiers
-    private static final double ICE_VALUE_MODIFIER = 0.7;
-	private static final double WATER_VALUE_MODIFIER = 0.1;
-	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
+    private static final double ICE_VALUE_MODIFIER = 1.25;
+	private static final double WATER_VALUE_MODIFIER = 0.5;
+	private static final double BRINE_WATER_VALUE_MODIFIER  = 1.25;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
 	private static final double SAND_VALUE_MODIFIER = 2.5;
@@ -178,10 +178,10 @@ class AmountResourceGood extends Good {
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = 0.75;
+	private static final double OXYGEN_VALUE_MODIFIER = 0.5;
 	private static final double METHANE_VALUE_MODIFIER = 1.45;
 	private static final double HYDROGEN_VALUE_MODIFIER = 1.25;
-	private static final double METHANOL_VALUE_MODIFIER = 1.55;
+	private static final double METHANOL_VALUE_MODIFIER = 1.75;
 	
 	// Chemicals
 	private static final int CLEANING_AGENT_MODIFIER = 1;
@@ -834,6 +834,12 @@ class AmountResourceGood extends Good {
 		// Add trade value. Cache is always false if this method is called
 		double tradeDemand = owner.determineTradeDemand(this);
 
+		if (tradeDemand > projected) {
+			// Limit the trade demand to the max of projected since the neighbors need
+			// should not overwhelming upset the balance 
+			tradeDemand = projected;
+		}
+		
 		owner.setTradeDemandScore(this, tradeDemand);
 		
 		double totalDemand = previousDemand;
@@ -1605,8 +1611,9 @@ class AmountResourceGood extends Good {
 		if (resourceID == ResourceUtil.ICE_ID) {
 			double ice = 1 + owner.getDemandScoreWithID(resourceID);
 			double water = 1 + owner.getDemandScoreWithID(ResourceUtil.WATER_ID);
+			double brineWater = 1 + owner.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
-			return  (.25 * water + .75 * ice)
+			return  (.7 * water + .1 * brineWater + .2 * ice)
 					* ICE_VALUE_MODIFIER;
 		}
 		else if (resourceID == ResourceUtil.BRINE_WATER_ID) {
@@ -1614,7 +1621,7 @@ class AmountResourceGood extends Good {
 			double water = 1 + owner.getDemandScoreWithID(ResourceUtil.WATER_ID);
 			double brineWater = 1 + owner.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
-			return  (.3 * water + .3 * ice + .4 * brineWater)
+			return  (.7 * water + .1 * ice + .42* brineWater)
 					* BRINE_WATER_VALUE_MODIFIER;
 		}
 

@@ -307,13 +307,12 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Gets the average supply from the stored.
 	 *
-	 * @param resource`
 	 * @param supplyStored
-	 * @param solElapsed
 	 * @return
 	 */
 	public double getAverageSupply(double supplyStored) {
-		return MathUtils.between(Math.log(MIN_SUPPLY + supplyStored) / 2, MIN_SUPPLY, MAX_SUPPLY);
+//		return MathUtils.between(supplyStored, MIN_SUPPLY, MAX_SUPPLY);
+		return MathUtils.between(Math.log(1 + supplyStored) * 2, MIN_SUPPLY, MAX_SUPPLY);
 	}
 	
     
@@ -613,7 +612,7 @@ public class GoodsManager implements Serializable {
 		}
 		
 		if (num > 1)
-			effectiveTradeValue = effectiveTradeValue / num;
+			effectiveTradeValue = effectiveTradeValue / num / 2;
 		
 		double previousValue = getTradeDemandScore(good);
 				

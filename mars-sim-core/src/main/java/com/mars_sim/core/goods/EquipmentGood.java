@@ -254,6 +254,12 @@ public class EquipmentGood extends Good {
 		// This method is not using cache
 		double tradeDemand = owner.determineTradeDemand(this);
 
+		if (tradeDemand > projected) {
+			// Limit the trade demand to the max of projected since the neighbors need
+			// should not overwhelming upset the balance 
+			tradeDemand = projected;
+		}
+		
 		owner.setTradeDemandScore(this, tradeDemand);
 		
 		// Gets the repair demand

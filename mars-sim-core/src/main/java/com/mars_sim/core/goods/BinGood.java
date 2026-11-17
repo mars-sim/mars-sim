@@ -133,6 +133,12 @@ public class BinGood extends Good {
 		// This method is not using cache
 		double tradeDemand = owner.determineTradeDemand(this);
 		
+		if (tradeDemand > average) {
+			// Limit the trade demand to the max of projected since the neighbors need
+			// should not overwhelming upset the balance 
+			tradeDemand = average;
+		}
+		
 		owner.setTradeDemandScore(this, tradeDemand);
 		
 		double ceiling = average + tradeDemand;

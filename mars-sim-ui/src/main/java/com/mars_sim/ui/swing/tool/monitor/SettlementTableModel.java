@@ -24,7 +24,7 @@ public class SettlementTableModel extends BaseSettlementModel implements Monitor
 	
 	private static final String SETTLEMENTS = Msg.getString("settlement.plural");
 	
-	private static final List<Integer> RESOURCES = List.of(
+	static final List<Integer> RESOURCES = List.of(
 			ResourceUtil.OXYGEN_ID, ResourceUtil.HYDROGEN_ID, ResourceUtil.METHANE_ID,
 							ResourceUtil.METHANOL_ID, ResourceUtil.WATER_ID, ResourceUtil.BRINE_WATER_ID, ResourceUtil.ICE_ID, ResourceUtil.REGOLITH_ID);
 

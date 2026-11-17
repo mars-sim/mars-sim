@@ -105,7 +105,7 @@ class TradeTableModel extends CategoryTableModel<Good> implements FilteredTableM
 		
 		this.marketManager = marketManager;
 
-		Set<Integer> resources = SimulationConfig.instance().getSettlementConfiguration().getEssentialResources().keySet();
+		List<Integer> resources = SettlementTableModel.RESOURCES;
 		for (int resource: resources) {
 			Good g = GoodsUtil.getGood(resource);
 			lifeResources.add(g);
