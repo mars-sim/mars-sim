@@ -124,18 +124,18 @@ public class ManufactureConfigTest {
         var process = processByName.get("Cast iron ingot");
         assertNotNull(process, "Manufacturng processes defined");
         assertEquals(process.getTooling().name(), "Furnace", "Tool");
-        assertEquals(25D, process.getWorkTimeRequired(), 0D, "Work time");
-        assertEquals(75D, process.getProcessTimeRequired(), 0D, "Process time");
+        assertEquals(10D, process.getWorkTimeRequired(), 0D, "Work time");
+        assertEquals(30D, process.getProcessTimeRequired(), 0D, "Process time");
         assertEquals(2, process.getSkillLevelRequired(), "Skill");
         assertEquals(1, process.getTechLevelRequired(), "Tech");
 
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
-        expectedInputs.add(createAmount("iron powder", 35D));
+        expectedInputs.add(createAmount("Iron powder", 7.0));
         assertEquals(expectedInputs, process.getInputList(), "Iron ingot expected inputs");
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
-        expectedOutputs.add(createPart("iron ingot", 5D));
+        expectedOutputs.add(createPart("Iron ingot", 1));
         assertEquals(expectedOutputs, process.getOutputList(), "Iron ingot expected outputs");
     }
 

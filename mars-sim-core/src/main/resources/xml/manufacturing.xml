@@ -594,10 +594,10 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 		
-	<process name="Make iron ingot" tech="0" skill="2" work-time="10" process-time="30"
+	<process name="Cast iron ingot" tech="1" skill="2" work-time="10" process-time="30"
 			tooling="furnace" power-required="1.0">
 		<inputs>
-			<resource name="Iron powder" amount="7" />
+			<resource name="Iron powder" amount="7.0" />
 		</inputs>
 		<outputs>
 			<part name="Iron ingot" number="1" />
@@ -641,18 +641,6 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<!-- one iron sheet is 7.85 kg -->
 			<part name="Iron sheet" number="2" />
-		</outputs>
-	</process>
-
-	<!-- Produces 1m x 1m x 1mm (7.85kg) sheet of iron. -->
-	<process name="Roll iron sheet" tech="1" skill="2" work-time="15" process-time="50" tooling="metalwork"
-			power-required=".5">
-		<inputs>
-			<part name="Iron ingot" number="8" />
-		</inputs>
-		<outputs>
-			<resource name="Iron scrap" amount="1.05" />		
-			<part name="Iron sheet" number="7" />	
 		</outputs>
 	</process>
 

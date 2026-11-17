@@ -143,7 +143,7 @@
 
 		</inputs>
 		<outputs>
-			<resource name="French Fries" amount="10.0" />
+			<resource name="French Fries" amount="10.5" />
 		</outputs>
 	</process>
 
@@ -213,7 +213,7 @@
 			<part name="stove" number="1" />
 			<resource name="grey water" amount="1.9" />
 			<resource name="okara" amount="1.045" />
-			<resource name="soymilk" amount="5" />
+			<resource name="soymilk" amount="8.0" />
 		</outputs>
 	</process>
 
@@ -767,11 +767,12 @@
 			power-required="1.0">
 		<description> Create Defatted Soy Proteins from Soy Flour by Alkaline extraction, Centrifugation, Acid Precipitation of Proteins, Centrifugation, Washing,  Spry Drying and Isolation of Proteins   </description>
 		<inputs>
-			<resource name="soy flour" amount="1.0" />
-			<resource name="water" amount="3.0" />
+			<resource name="Soy flour" amount="1.0" />
+			<resource name="Water" amount="3.0" />
 		</inputs>
 		<outputs>
-			<resource name="soy Protein" amount="1.0" />
+			<resource name="Soy Protein" amount="1.0" />
+			<resource name="Grey water" amount="3.0" />
 		</outputs>
 	</process>
 
@@ -948,7 +949,7 @@
 		<description>Bake Wheat Burger Bun from Wheat Flour </description>
 		<inputs>
 			<part name="oven" number="1" />
-			<resource name="Wheat flour" amount="0.95" />
+			<resource name="Wheat flour" amount="0.94" />
 			<resource name="water" amount="1" />
 			<resource name="yeast" amount="0.01" />
 			<resource name="Sesame Seed" amount="0.05" />
@@ -956,6 +957,7 @@
 		<outputs>
 			<part name="oven" number="1" />
 			<resource name="Wheat Bun" amount="1.0" />
+			<resource name="Grey water" amount="1" />
 		</outputs>
 	</process>
 
@@ -965,7 +967,7 @@
 		<description>Bake Wheat Bread from Wheat Flour </description>
 		<inputs>
 			<part name="oven" number="1" />
-			<resource name="Wheat flour" amount="1.0" />
+			<resource name="Wheat flour" amount="0.66" />
 			<resource name="water" amount="0.33" />
 			<resource name="yeast" amount="0.01" />
 		</inputs>
@@ -982,12 +984,13 @@
 		 cut sheet into different thickness.  </description>
 		<inputs>
 			<resource name="Wheat flour" amount="1.0" />
-			<resource name="water" amount="1" />
+			<resource name="Water" amount="1.0" />
 			<resource name="Baking soda" amount="0.02" />
-			<resource name="soy Protein" amount="0.08" />
+			<resource name="Soy Protein" amount="0.08" />
 		</inputs>
 		<outputs>
 			<resource name="Wheat Noodle" amount="1.0" />
+			<resource name="Grey water" amount="1.0" />
 		</outputs>
 	</process>
 
@@ -998,13 +1001,14 @@
 		<description> Mix flour with water and knead to form dough. Heat paste into flat sheet.
 		 cut sheet into different thickness.</description>
 		<inputs>
-			<resource name="rice flour" amount="1.0" />
-			<resource name="water" amount="1" />
+			<resource name="Rice flour" amount="1.0" />
+			<resource name="Water" amount="1.0" />
 			<resource name="Baking soda" amount="0.02" />
-			<resource name="soy Protein" amount="0.08" />
+			<resource name="Soy protein" amount="0.08" />
 		</inputs>
 		<outputs>
-			<resource name="rice Noodle" amount="1.0" />
+			<resource name="Rice noodle" amount="1.0" />
+			<resource name="Grey water" amount="1.0" />
 		</outputs>
 	</process>
 
@@ -1068,7 +1072,7 @@
 		<outputs>
 			<part name="plastic bottle" number="2" />
 			<part name="stove" number="1" />
-			<resource name="Ketchup" amount="5.0" />
+			<resource name="Ketchup" amount="5.619" />
 		</outputs>
 	</process>
 		
@@ -1167,10 +1171,16 @@
 			<resource name="soybean ash" amount="1" />
 		</inputs>
 		<outputs>
-			<resource name="Potassium" amount=".018" />
-			<resource name="Calcium" amount=".028" />
-			<resource name="Magnesium" amount=".028" />
-			<resource name="Phosphorus" amount=".07" />
+			<resource name="Lime" amount=".1578" />
+			<resource name="Potassium" amount=".2096" />
+			<resource name="Magnesium" amount=".083" />
+			<resource name="Phosphorus" amount=".0372" />
+			<resource name="Silica" amount=".326" />
+			<resource name="Aluminum oxide" amount=".0458" />
+			<resource name="Iron oxide" amount=".014" />
+			<resource name="Sodium oxide" amount=".0085" />
+			<resource name="Sulfur" amount=".0047" />
+			<resource name="Chlorine" amount=".00127" />
 		</outputs>
 	</process>
 <!-- http://www.soya.be/nutritional-values-of-soybeans.php -->
@@ -1183,9 +1193,9 @@
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
 			<resource name="glucose" amount="0.2" />
-			<resource name="table salt" amount="0.1" />
-			<resource name="water" amount="2.0" />
-			<resource name="honey" amount="0.1">
+			<resource name="Table salt" amount="0.1" />
+			<resource name="Water" amount="2.0" />
+			<resource name="Honey" amount="0.1">
 				<alternative name="sugarcane juice" amount="0.1" />
 				<alternative name="glucose" amount="0.1" />
 			</resource>
@@ -1194,6 +1204,7 @@
 		</inputs>
 		<outputs>
 			<resource name="Blueberry Muffin" amount="2.0" />
+			<resource name="Grey water" amount="2.0" />
 		</outputs>
 	</process>
 
@@ -1278,7 +1289,7 @@
 			<resource name="cane fiber" amount=".1" />
 		</inputs>
 		<outputs>
-			<resource name="Immune Booster" amount=".2" />
+			<resource name="Immune Booster" amount=".274" />
 		</outputs>
 
 	</process>
