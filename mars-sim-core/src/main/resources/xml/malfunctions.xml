@@ -380,7 +380,7 @@
 			<part name="electrical wire" number="5" repair-probability="10" />
 			<part name="wire connector" number="5" repair-probability="20" />
 			<part name="work glove" number="1" repair-probability="10" />
-			<part name="transformer" number="1" repair-probability="1" />			
+			<part name="transformer large" number="1" repair-probability="1" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -988,23 +988,37 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- 2014-11-19 Added Carbon Dioxide Pump Failure. -->
-	<malfunction name="Carbon Dioxide Pump Failure">
+	<malfunction name="Carbon Dioxide Small Pump Failure">
 		<severity value="15" />
-		<malfunction-probability value="2.0" />
-		<repair-inside time="80.0" />
+		<malfunction-probability value="1.0" />
+		<repair-inside time="40.0" />
+		<system-list>
+			<system name="rover" />
+		</system-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="2" repair-probability="10" />
+			<part name="wire connector" number="2" repair-probability="10" />
+			<part name="carbon dioxide small pump" number="1" repair-probability="70" />
+			<part name="lubricant bottle" number="1" repair-probability="10" />
+		</repair-parts-list>
+	</malfunction>
+
+	<malfunction name="Carbon Dioxide Large Pump Failure">
+		<severity value="15" />
+		<malfunction-probability value="1.0" />
+		<repair-inside time="120.0" />
 		<system-list>
 			<system name="living accommodation" />
 			<system name="farming" />
 		</system-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" repair-probability="10" />
-			<part name="wire connector" number="2" repair-probability="10" />
-			<part name="carbon dioxide pump" number="1" repair-probability="70" />
+			<part name="electrical wire" number="5" repair-probability="10" />
+			<part name="wire connector" number="5" repair-probability="10" />
+			<part name="carbon dioxide large pump" number="1" repair-probability="70" />
 			<part name="lubricant bottle" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
-
+	
 	<!-- 2014-11-19 Added Kitchen Oven Failure. -->
 	<malfunction name="Kitchen Oven Failure">
 		<severity value="35" />
@@ -1113,7 +1127,7 @@
 			<part name="wire connector" number="5" repair-probability="30" />
 			<part name="microcontroller" number="1" repair-probability="1" />
 			<part name="logic board" number="1" repair-probability="1" />
-			<part name="transformer" number="1" repair-probability="1" />
+			<part name="transformer small" number="1" repair-probability="1" />
 			<part name="power transistor" number="1" repair-probability="3" />
 			<part name="microwave" number="1" repair-probability="1" />
 		</repair-parts-list>
@@ -1168,7 +1182,6 @@
 		</system-list>
 		<repair-parts-list>
 			<part name="oxygen pump" number="3" repair-probability="5" />
-			<part name="carbon dioxide pump" number="3" repair-probability="5" />
 			<part name="water pump small" number="3" repair-probability="10" />
 			<part name="heating element" number="3" repair-probability="10" />
 			<part name="electrical wire" number="3" repair-probability="20" />

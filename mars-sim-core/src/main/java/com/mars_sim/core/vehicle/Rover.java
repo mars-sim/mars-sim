@@ -717,7 +717,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	public void plugInAirPressure(double time) {
 		// Future: need to draw the the hose connecting between the vehicle and the settlement to supply resources
 		if (isPluggedIn() && (airPressure > NORMAL_AIR_PRESSURE * 1.15 || airPressure < NORMAL_AIR_PRESSURE * 0.85)) {
-			// Internal heat pump of a rover maintains the air pressure
+			// Internal heat exchanger of a rover maintains the air pressure
 			// Future: need to model the power usage
 
 			double p = 0;

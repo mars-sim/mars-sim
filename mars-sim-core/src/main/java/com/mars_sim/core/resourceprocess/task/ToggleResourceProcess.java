@@ -67,7 +67,8 @@ public class ToggleResourceProcess extends Task {
 	public ToggleResourceProcess(Worker worker, Settlement settlement, ResourceProcess process) {
 		super(NAME, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 20D);
 		if (!worker.isInSettlement()) {
-			clearTask("Not in Settlement.");
+			endTask();
+//			clearTask("Not in Settlement.");
 			return;
 		}
 
@@ -86,14 +87,17 @@ public class ToggleResourceProcess extends Task {
 	public ToggleResourceProcess(Worker worker, boolean useWaste, ResourceProcessSpec spec) {
 		super(NAME, worker, true, false, STRESS_MODIFIER, SkillType.MECHANICS, 100D, 20D);
 		if (!worker.isInSettlement()) {
-			clearTask("Not in Settlement.");
+			endTask();
+//			clearTask("Not in Settlement.");
 			return;
 		}
 
 		if (!selectResourceProcess(worker.getSettlement(), useWaste, spec)) {
-			clearTask("No process to toggle on.");
+			endTask();
+//			clearTask("No process to toggle on.");
 			return;
 		}
+		
 		prepResourceProcess();
 	}
 
@@ -155,9 +159,11 @@ public class ToggleResourceProcess extends Task {
 		
 		var selected = RandomUtil.getWeightedRandomObject(scoreMap);
 		if (selected == null) {
-			clearTask("No process to toggle on.");
+			endTask();
+//			clearTask("No process to toggle on.");
 			return false;
 		}
+		
 		this.process = selected.process;
 		this.settlement = selected.settlement;
 

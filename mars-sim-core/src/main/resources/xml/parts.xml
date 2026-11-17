@@ -15,12 +15,12 @@
 ]>
 
 <part-list>
-	<part name="Airleak patch" type="utility" mass=".2">
+	<part name="Airleak patch" type="utility" mass="1.0">
 		<!--  Note: mass in kg can be a decimal number. -->
 		<description>Plastic and adhesive patch for airleak.</description>
 	</part> 
 	
-	<part name="Fire extinguisher" type="utility" mass="3" />
+	<part name="Fire extinguisher" type="utility" mass="5.45" />
 
 	<part name="Gasket" type="utility" mass=".3">
 		<description>Gasket is a sealing component, typically made from high-quality rubber, 
@@ -117,14 +117,14 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Communications circuit board" type="electronic" mass=".5">
+	<part name="Communications circuit board" type="electronic" mass=".689">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="communication" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Navigation circuit board" type="electronic" mass=".5">
+	<part name="Navigation circuit board" type="electronic" mass="0.689">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="communication" probability="5" max-number="1" />			
@@ -138,18 +138,21 @@
 	
 	<part name="Rope" type="utility" mass="2" />
 
+	<part name="Aluminum ingot" type="metallic" mass="5.0" />
+
 	<part name="Iron ingot" type="metallic" mass="7.0" />
 
 	<part name="Steel ingot" type="metallic" mass="5.0" />
 
-	<part name="Aluminum ingot" type="metallic" mass="5.0" />
-
-	<part name="Steel sheet" type="construction" mass="7.8" >
-		<description>A density of 7.8 g/cm3. 1m x 1m x 1mm sheet of steel</description>
+	<part name="Steel truss" type="construction" mass="50.0">
+		<description>The steel trusses are typically composed of three main parts, 
+		the top chord, bottom chord, and web members that connect the chords. 
+		A steel truss refers to a triangular design that sustains vertical, 
+		horizontal, and inclined loads.</description>
 	</part>
 
-	<part name="Iron sheet" type="metallic" mass="7.85" >
-		<description>A density of 7.85 g/cm3. 1m x 1m x 1mm sheet of iron</description>
+	<part name="Steel post" type="construction" mass="5.0">
+		<description>A small, light steel bar used for construction.</description>
 	</part>
 
 	<!-- based on https://www.gigacalculator.com/calculators/metal-weight-calculator.php  -->
@@ -160,12 +163,14 @@
 	<part name="Copper sheet" type="metallic" mass="8.94">
 		<description>A density of 8.94 g/cm3. 1m x 1m x 1mm sheet of copper</description>
 	</part>
+	
+	<part name="Iron sheet" type="metallic" mass="7.85" >
+		<description>A density of 7.85 g/cm3. 1m x 1m x 1mm sheet of iron</description>
+	</part>
 
-	<!-- a small spool of thin copper wire -->
-	<part name="Copper wire" type="electrical" mass="0.496667" />
-
-	<!-- a small spool of thick steel wire -->
-	<part name="Steel wire" type="electrical" mass="0.52" />
+	<part name="Steel sheet" type="construction" mass="7.8" >
+		<description>A density of 7.8 g/cm3. 1m x 1m x 1mm sheet of steel</description>
+	</part>
 
 	<!-- a small spool of thin aluminum wire -->
 	<part name="Aluminum wire" type="electrical" mass="0.544" />
@@ -183,12 +188,17 @@
 			<entity name="robot" probability=".5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
+	
+	<!-- a small spool of thin copper wire -->
+	<part name="Copper wire" type="electrical" mass="0.496667" />
+
+	<!-- a small spool of thick steel wire -->
+	<part name="Steel wire" type="electrical" mass="0.52" />
 
 	<!-- Composed of 20 electrical wires braided together -->
 	<part name="Steel cable" type="construction" mass="1" />
 
-	<!-- Composed of 20 electrical wires braided together -->
-	<part name="Power cable" type="electrical" mass="1">
+	<part name="Power cable" type="electrical" mass="5">
 		<maintenance-entity-list>
 			<entity name="vehicle maintenance" probability=".1" max-number="1" />
 			<entity name="vehicle" probability=".1" max-number="1" />
@@ -199,6 +209,8 @@
 		</maintenance-entity-list>
 	</part>
 
+	<part name="Power supply" type="electrical" mass="0.75"/>
+	
 	<part name="Wire connector" type="electrical" mass=".005">
 		<maintenance-entity-list>
 			<entity name="building" probability=".5" max-number="4" />
@@ -213,14 +225,14 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Steel pipe" type="construction" mass="0.882">
-	<description>A density of 7.8 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
+	<part name="Copper pipe" type="metallic" mass="	1.011">
+		<description>A density of 8.94 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
 		<maintenance-entity-list>
-			<entity name="farming" probability=".1" max-number="2" />
-			<entity name="manufacture" probability=".1" max-number="2" />
-			<entity name="rover" probability=".1" max-number="1" />
-			<entity name="resource processing" probability=".1" max-number="2" />
-			<entity name="waste processing" probability=".1" max-number="2" />			
+			<entity name="living accommodation" probability=".2" max-number="1" />
+			<entity name="farming" probability="2." max-number="2" />
+			<entity name="manufacture" probability=".2" max-number="2" />
+			<entity name="resource processing" probability=".5" max-number="3" />
+			<entity name="waste processing" probability=".5" max-number="3" />				
 		</maintenance-entity-list>
 	</part>
 
@@ -232,17 +244,6 @@
 			<entity name="rover" probability=".1" max-number="1" />
 			<entity name="resource processing" probability=".5" max-number="3" />
 			<entity name="waste processing" probability=".5" max-number="3" />			
-		</maintenance-entity-list>
-	</part>
-
-	<part name="Copper pipe" type="metallic" mass="	1.011">
-		<description>A density of 8.94 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
-		<maintenance-entity-list>
-			<entity name="living accommodation" probability=".2" max-number="1" />
-			<entity name="farming" probability="2." max-number="2" />
-			<entity name="manufacture" probability=".2" max-number="2" />
-			<entity name="resource processing" probability=".5" max-number="3" />
-			<entity name="waste processing" probability=".5" max-number="3" />				
 		</maintenance-entity-list>
 	</part>
 
@@ -264,6 +265,17 @@
 		</maintenance-entity-list>
 	</part>
 
+	<part name="Steel pipe" type="construction" mass="0.882">
+	<description>A density of 7.8 g/cm3. length of 1m. Thickness of 2mm. Diameter of 20mm</description>
+		<maintenance-entity-list>
+			<entity name="farming" probability=".1" max-number="2" />
+			<entity name="manufacture" probability=".1" max-number="2" />
+			<entity name="rover" probability=".1" max-number="1" />
+			<entity name="resource processing" probability=".1" max-number="2" />
+			<entity name="waste processing" probability=".1" max-number="2" />			
+		</maintenance-entity-list>
+	</part>
+	
 	<!-- 1kg spool of thin fiberglass -->
 	<part name="Fiberglass" type="utility" mass="1.0" />
 
@@ -296,7 +308,7 @@
 	<!-- 1m x 1m x .5cm square of standard glass is 12.5 kg  -->
 	<part name="Glass sheet" type="utility" mass="12.5" />
 
-	<part name="Garment" type="utility" mass="0.5" >
+	<part name="Garment" type="utility" mass="0.25" >
 		<description>a standard set of clothing for indoor use.</description>
 	</part>
 		
@@ -361,7 +373,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Suit heating unit" type="EVA" mass="0.25">
+	<part name="Suit heating unit" type="EVA" mass="0.365">
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="1" max-number="1" />
 		</maintenance-entity-list>
@@ -381,13 +393,13 @@
 	</part>
 
 	<part name="EVA pad" type="EVA" mass="0.5" >
-		<description>steel plate with fiberglass insulation.</description>
+		<description>Aluminum plate with fiberglass insulation.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="EVA backpack" type="EVA" mass="5.0" >
+	<part name="EVA backpack" type="EVA" mass="6.0" >
 		<description>The backpack is the most crucial part of the Portable Life-Support System (PLSS).
 		It is made with polyethylene and a steel frame.</description>
 		<maintenance-entity-list>
@@ -395,7 +407,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="EVA antenna" type="EVA" mass=".05" >
+	<part name="EVA antenna" type="EVA" mass=".3" >
 		<maintenance-entity-list>
 			<entity name="robot" probability="5" max-number="1" />
 			<entity name="eva suit" probability="2" max-number="1" />
@@ -410,8 +422,11 @@
 	</part>
 
 	<part name="Radio" type="electronic" mass="0.25" />
+	
 	<part name="Loudspeaker" type="electronic" mass="1.0" />
 		
+	<part name="Headset" type="electronic" mass="0.2" />
+	
 	<part name="EVA battery" type="EVA" mass="1.28" >
 		<description>
 		 (As of 27 Sep 2025 The highest energy density achieved in a practical, rechargeable 
@@ -502,7 +517,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Rover windshield" type="vehicle" mass="20.84" >
+	<part name="Rover windshield" type="vehicle" mass="20.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability=".5" max-number="1" />
 		</maintenance-entity-list>
@@ -586,10 +601,15 @@
 		</maintenance-entity-list>
 	</part>
 	
+	<part name="Stator small" type="electrical" mass="0.25" />
 	
-	<part name="Servo motor" type="robot" mass="0.3">
+	<part name="Servo rotor" type="electrical" mass="0.25" />
+
+	<part name="Stepper rotor" type="electrical" mass="0.5" />
+	
+	<part name="Servo motor" type="robot" mass="1.2">
 		<description>A servo motor is used in applications where precise angular
-		control is needed, such as in robotics and RC vehicles, where they can 
+?		control is needed, such as in robotics and RC vehicles, where they can 
 		move to a specific position and hold it. Additionally, servo motors 
 		typically offer higher speed and better torque at higher speeds 
 		compared to stepper motors.
@@ -609,7 +629,7 @@
 		</description>
 	</part>
 	
-	<part name="Gearbox" type="electrical" mass="0.1">
+	<part name="Gearbox" type="electrical" mass="0.5">
 		<description>A gearbox ensure smooth motion, high torque, and energy 
 		efficiency, making them essential in robotic systems. Among the most 
 		popular types of gearboxes are planetary gearboxes, strain wave gearboxes 
@@ -621,7 +641,7 @@
 		</maintenance-entity-list>
 	</part>
 		
-	<part name="Stepper motor" type="electrical" mass="1">
+	<part name="Stepper motor" type="electrical" mass="1.5">
 		<description>A 24 V precision motor provides precise positioning, 
 		such as 3D printers and CNC machines, where they can move in small, 
 		controlled increments.
@@ -634,13 +654,22 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="Motor 5 kW" type="electrical" mass="5.0" >
-		<description>A motor with 5 kW power output can be used in hybrid models and 
+	<part name="Motor 1 kW" type="electrical" mass="3.0" >
+		<description>3,000–3,500 RPM, ~3–5 Nm	3.3–4.2 kg (7.3–9.2 lb)
+			As a rule of thumb: higher speed → lighter motor (less copper, smaller frame); higher torque → heavier motor (larger magnets, more windings).
+		</description>
+	</part>
+	
+	<part name="Motor 5 kW" type="electrical" mass="10.0" >
+		<description>
+		A motor with 5 kW power output can be used in hybrid models and 
 		automotive accessories such as power windows, seats, and windshield wipers, 
 		where moderate power is needed. Additionally, 5 kW electric motors are used in 
 		home appliances like refrigerators, air conditioners, and washing machines, 
 		offering good energy efficiency and performance balance. In the case of golf carts,
-		a 5 kW motor can provide sufficient power for the vehicle's operation,
+		a 5 kW motor can provide sufficient power for the vehicle's operation.
+		
+		Specialized high-power-density motor (e.g., aircraft-grade): Can be as light as ~5–12 kg (11–26 lbs).
 		</description>
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
@@ -649,17 +678,16 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Motor 10 kW" type="vehicle" mass="10.0" >
+	<part name="Motor 10 kW" type="vehicle" mass="30.0" >
 		<description>An induction motor with 10 kW power output for LUV and drones.</description>
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability="1" max-number="2" />
-			<entity name="cargo drone" probability="1" max-number="4" />
 			<entity name="drone" probability="1" max-number="4" />	
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Motor 30 kW" type="vehicle" mass="30.0" >
-		<description>An induction motor with 30 kW power output.</description>
+	<part name="Motor 30 kW" type="vehicle" mass="100.0" >
+		<description>An induction motor with 30 kW power output. Siemens aluminium frame, 4-pole → 173 kg (381 lb)</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="fuel power source" probability="1" max-number="1" />
@@ -782,7 +810,7 @@
 		</maintenance-entity-list>
 	</part>
 			
-	<part name="Heating element" type="electrical" mass="1.0" >
+	<part name="Heating element" type="electrical" mass="0.25" >
 		<description>The heating element is a thermofoil conductive
 		electrical element embedded in a thin Kapton substrate.</description>
 		<maintenance-entity-list>
@@ -796,7 +824,7 @@
 		<description>Attachment part for LUV. A pneumatic rock drill is used for breaking, drilling, or cutting through hard ground.</description>
 	</part>
 
-	<part name="Backhoe" type="attachment" mass="13.43" >
+	<part name="Backhoe" type="attachment" mass="15.63" >
 		<description>Attachment part for LUV. An excavating equipment with a digging bucket on the end of a two-part articulated arm.</description>
 	</part>
 
@@ -808,7 +836,7 @@
 		<description>Attachment part for LUV. A drum roller that applied stress to a soil.</description>
 	</part>
 
-	<part name="Crane boom" type="attachment" mass="38.91">
+	<part name="Crane boom" type="attachment" mass="36.11">
 		<description>Attachment part for LUV. A long, telescopic or fixed arm for moving objects.</description>
 	</part>
 
@@ -837,14 +865,6 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Steel truss" type="construction" mass="50.0">
-		<description>Large steel bar used for construction.</description>
-	</part>
-
-	<part name="Steel post" type="construction" mass="5.0">
-		<description>A small, light steel bar used for construction.</description>
-	</part>
-
 	<part name="Turbine blade" type="electrical" mass="66.0" >
 		<description>Blade for a wind turbine. 
 			Rule of thumb: roughly 8–13 kg of blade material per kW of rated power for modern turbines.
@@ -860,7 +880,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Turbine generator" type="electrical" mass="50.0" >
+	<part name="Turbine generator" type="electrical" mass="45.64" >
 		<description>Turbine power generator.</description>
 		<maintenance-entity-list>
 			<entity name="wind power source" probability=".5" max-number="1" />
@@ -900,18 +920,6 @@
 		<description>Construction brick (215mm x 102.5mm x 65mm) 2.86kg</description>
 	</part>
 
-	<part name="Iron scrap" type="metallic" mass="1.0">
-		<description>A 1 kg piece of salvaged steel scrap.</description>
-	</part>
-	
-	<part name="Steel scrap" type="metallic" mass="1.0">
-		<description>A 1 kg piece of salvaged steel scrap.</description>
-	</part>
-
-	<part name="Aluminum scrap" type="metallic" mass="1.0">
-		<description>A 1 kg piece of salvaged aluminum scrap.</description>
-	</part>
-
 	<part name="Bore drill bit" type="tool" mass="25.0">
 		<description>A steel drill bit for drilling bore holes.</description>
 	</part>
@@ -920,7 +928,7 @@
 		<description>A steel pipe for drilling and lining bore holes.</description>
 	</part>
 
-	<part name="Drilling rig" type="tool" mass="135.0">
+	<part name="Drilling rig" type="tool" mass="195.5">
 		<description>
 			An attachment for luv. A motor platform for supporting drilling (used in conjunction with the crane boom)
 		</description>
@@ -934,7 +942,7 @@
 	</part>
 
 	<!-- 2014-11-19 Added an air compressor. -->
-	<part name="Air compressor" type="electrical" mass="2.0" >
+	<part name="Air compressor" type="electrical" mass="10.609" >
 	 	<maintenance-entity-list>
 			<entity name="farming" probability="5" max-number="2" />
 			<entity name="fishery" probability="5" max-number="2" />			
@@ -951,8 +959,10 @@
 	</part>
 	-->
 
+	<part name="Transformer small" type="electrical" mass="1." />
+	
 	<!-- 2014-11-19 Added transformer. -->
-	<part name="Transformer" type="electrical" mass="5.0" >
+	<part name="Transformer large" type="electrical" mass="36.195" >
 		<maintenance-entity-list>
 		<entity name="farming" probability="3" max-number="1" />
 		<entity name="vehicle" probability="3" max-number="1" />
@@ -965,13 +975,13 @@
 	</part>
 
 	<!-- 2014-11-19 Added 7 kitchen equipment below -->
-	<part name="Blender" type="kitchen" mass="2.0">
+	<part name="Blender" type="kitchen" mass="3.28">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Oven" type="kitchen" mass="10.0">
+	<part name="Oven" type="kitchen" mass="6.0">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
@@ -983,7 +993,15 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Ventilation fan" type="electrical" mass="0.2">
+	<part name="Ventilation fan" type="electrical" mass="2.5">
+		<description>
+		Fan type							Weight
+		Basic 50 CFM (fan only)				~4–5 lb
+		Standard 80–110 CFM (fan only)		~5–9 lb
+		80–110 CFM with LED light			~7–10 lb
+		High-CFM (140+ CFM)					~13–14 lb
+		Fan + heater combo 					~16–17 lb
+		</description>
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 			<entity name="farming" probability="3" max-number="3" />
@@ -993,19 +1011,19 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Stove" type="kitchen" mass="20.0">
+	<part name="Stove" type="kitchen" mass="13.268" >
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Refrigerator" type="kitchen" mass="29.428">
+	<part name="Refrigerator" type="kitchen" mass="41.378">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Autoclave" type="kitchen" mass="20.0">
+	<part name="Autoclave" type="kitchen" mass="19.712">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="3" max-number="1" />
 		</maintenance-entity-list>
@@ -1035,7 +1053,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Mushroom containment kit" type="tool" mass="1.0">
+	<part name="Mushroom containment kit" type="tool" mass="9.01">
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="1" />
 		</maintenance-entity-list>
@@ -1045,33 +1063,39 @@
 			
 	<part name="Semiconductor wafer" type="electronic" mass=".2"/>
 
-	<part name="SLS 3D Printer" type="electronic" mass="50.0">
+	<part name="SLS 3D Printer" type="electronic" mass="57.0">
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="3" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Carbon dioxide laser" type="electronic" mass="5.0">
-		<maintenance-entity-list>
-			<entity name="manufacture" probability="3" max-number="1" />
-		</maintenance-entity-list>
+	<part name="Carbon dioxide laser" type="electronic" mass="3.667">
 	</part>
 	
-	<part name="Helium neon laser" type="electronic" mass="1.0">
-		<maintenance-entity-list>
-			<entity name="manufacture" probability="3" max-number="1" />
-		</maintenance-entity-list>
+	<part name="Helium neon laser" type="electronic" mass="3.0">
 	</part>
+
+	<part name="Optical encoder" type="electronic" mass=".24" />
 	
+	<part name="Photodetector" type="electronic" mass=".062" />
+	<part name="Photodiode" type="electronic" mass=".062" > 
+		<description>photodiode is a sensor array that detects the 
+		light pulses interrupted by the code wheel/scale and converts them into electrical signals. 
+		</description>
+	</part>
+	<part name="Code wheel" type="electronic" mass=".02" />
+	<part name="Signal processing chip" type="electronic" mass=".062" />
+		  		
+		
 	<part name="Optical lens" type="electronic" mass=".2" >
-			<maintenance-entity-list>
+		<maintenance-entity-list>
 			<entity name="communication" probability="2" max-number="2" />
-			<entity name="manufacture" probability="3" max-number="1" />			
+			<entity name="manufacture" probability="3" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="Optical prism" type="electronic" mass=".3">
-			<maintenance-entity-list>
+		<maintenance-entity-list>
 			<entity name="communication" probability="2" max-number="2" />
 			<entity name="manufacture" probability="3" max-number="1" />			
 		</maintenance-entity-list>
@@ -1096,7 +1120,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Methane fuel cell stack" type="electrical" mass="7.5">
+	<part name="Methane fuel cell stack" type="electrical" mass="15.0">
 		<description>A 15 kW Solid Oxide Fuel Cell (SOFC) stack comprises 
 		    75 fuel cells, furnished with valves, coolant and pump, filter, sensors,
 		    cold plate and heat pipes. 
@@ -1346,14 +1370,23 @@
 		</maintenance-entity-list>
 	</part>
 
-	<!-- 2014-11-19 Added carbon dioxide pump for greenhouse. -->
-	<part name="Carbon dioxide pump" type="utility" mass="1.0" >
+	<part name="Carbon dioxide small pump" type="utility" mass="10.0" >
+		<description> A 4-HP diaphragm pump / micro-compressor (for closed-loop or Mars greenhouse)
+			sufficient for less than 10 psi differential.</description>
 		<maintenance-entity-list>
-			<entity name="farming" probability="3" max-number="5" />
 			<entity name="resource processing" probability="3" max-number="2" />
 		</maintenance-entity-list>
 	</part>
 
+	<part name="Carbon dioxide large pump" type="utility" mass="100.0" >
+		<description> A compressor to pressurize from ~6–7 mbar (Martian surface) to ~1 atm: 
+		a multi-stage rotary-screw or centrifugal unit, likely ~100–300 lb (45–135 kg) 
+		depending on flow rate (a few hundred lb/hr of CO₂ for a 4-crew greenhouse)..</description>
+		<maintenance-entity-list>
+			<entity name="farming" probability="3" max-number="5" />
+		</maintenance-entity-list>
+	</part>
+	
 	<part name="Fuel pump" type="utility" mass="5.0" >
 		<maintenance-entity-list>
 			<entity name="rover" probability="3" max-number="1" />
@@ -1372,7 +1405,13 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Heat pump" type="utility" mass="1.0">
+	<part name="Heat Exchanger" type="utility" mass="20.0">
+	<description>A general spacecraft TCS rule of thumb from NASA is ~2 lb/kW_th (~0.9 kg/kW) 
+	    for pumped-loop heat exchangers. At ~2 kW thermal, that puts each HX panel in the range 
+	    of roughly ~2–5 kg (~4–11 lb), or ~4–10 kg total for both panels.
+		A 2024 optimized forced-convection HX for a 100 kW Mars power cycle is 27 kg (60 lb) 
+		with 3.9 m² frontal area — about 1 kg/kW_th, much lighter per watt because the 
+		design is scaled and optimized specifically for Mars' thin CO₂ atmosphere.</description>
 		<maintenance-entity-list>
 			<entity name="Areothermal Power Source" probability="3" max-number="2" />
 			<entity name="computation" probability="3" max-number="2" />
@@ -1385,7 +1424,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Heat pipe" type="utility" mass="0.2">
+	<part name="Heat pipe" type="utility" mass="0.1">
 		<description>Heat pipe is a passive heat transfer device with an extremely
 		effective thermal conductivity. Its two-phase heat transfer mechanism
 		results in heat transfer capabilities from one hundred to several thousand
@@ -1430,10 +1469,14 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Decontamination kit" type="utility" mass="0.2">
+	<part name="Decontamination kit" type="utility" mass="2.5">
 		<description>Useful for cleaning up a chemical spill.</description>
 	</part>
 
+	<part name="Heat sink" type="electronic" mass="0.25">
+		<description>a basic electrical component.</description>
+	</part>
+	
 	<part name="Resistor" type="electronic" mass="0.001">
 		<description>a basic electrical component.</description>
 	</part>
@@ -1445,12 +1488,30 @@
 	<part name="Diode" type="electronic" mass="0.005">
 		<description>a basic electrical component.</description>
 	</part>
-
-	<part name="Memory module" type="electronic" mass="0.1">
-		<description>For storing data.</description>
+	
+	<!-- Add power transistor, replacing the use of heavy, bulky magnetron tube used in microwave oven.
+	see http://www.nxp.com/products/rf/rf-power-transistors/rf-cooking:RF-COOKING?cof=0&am=0   -->
+	<part name="Power transistor" type="electronic" mass="0.01" >
+		<maintenance-entity-list>
+		<entity name="farming" probability="1" max-number="2" />
+		<entity name="vehicle" probability="1" max-number="2" />
+		<entity name="astronomical observation" probability="1" max-number="1" />			
+		<entity name="communication" probability="1" max-number="1" />		
+		<entity name="manufacture" probability="1" max-number="2" />
+		<entity name="living accommodation" probability="1" max-number="1" />
+		</maintenance-entity-list>
 	</part>
 	
-	<part name="Logic board" type="electronic" mass="0.1">
+	<part name="Fuse" type="electronic" mass="0.01">
+		<description>a basic electrical component.</description>
+	</part>
+	
+	
+	<part name="Memory module" type="electronic" mass="0.05">
+		<description>Desktop DIMM with a heatsink cooling.</description>
+	</part>   
+	
+	<part name="Logic board" type="electronic" mass="0.104">
 		<description>a printed circuit board (PCB) that
 		mechanically supports and electrically connects electronic components
 		using conductive tracks, pads and other features etched from copper
@@ -1461,19 +1522,6 @@
 			<entity name="manufacture" probability="5" max-number="1" />
 			<entity name="computation" probability="5" max-number="1" />
 			<entity name="research" probability="5" max-number="1" />
-		</maintenance-entity-list>
-	</part>
-
-	<!-- Add power transistor, replacaing the use of heavy, bulky magnetron tube used in microwave oven.
-	see http://www.nxp.com/products/rf/rf-power-transistors/rf-cooking:RF-COOKING?cof=0&am=0   -->
-	<part name="Power transistor" type="electronic" mass="0.01" >
-		<maintenance-entity-list>
-		<entity name="farming" probability="1" max-number="2" />
-		<entity name="vehicle" probability="1" max-number="2" />
-		<entity name="astronomical observation" probability="1" max-number="1" />			
-		<entity name="communication" probability="1" max-number="1" />		
-		<entity name="manufacture" probability="1" max-number="2" />
-		<entity name="living accommodation" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -1492,7 +1540,7 @@
 	</part>
 
 
-	<part name="Work glove" type="utility" mass="0.05">
+	<part name="Work glove" type="utility" mass="0.1">
 		<description>a pair of utility work glove for medium to heavy use.</description>
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="10" max-number="1" />
@@ -1512,7 +1560,7 @@
 		<description>a small dish shaped like a cylinder for growing cells. Made of polystyrene.</description>
 	</part>
 
-	<part name="Plasma cutter" type="utility" mass="14.61">
+	<part name="Plasma cutter" type="utility" mass="10.11">
 		<description> Plasma is electrified gas. a plasma cutter will cut any material 
 			that conducts electricity. Aluminum, steel, stainless, brass, copper, etc.
 		</description>
@@ -1526,7 +1574,7 @@
 		<description>A 1.37m (or 54 inch) pry bar, 5 kg or 11 lb</description>
 	</part>
 	
-	<part name="Floodlight" type="electrical" mass="3">
+	<part name="Floodlight" type="electrical" mass="4">
 		<description>a LED outdoor weather-proof, adjustable floodlight with tripod stand</description>
 	</part>
 
@@ -1607,17 +1655,17 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="Surge protector" type="electrical" mass="1">
+	<part name="Surge protector" type="electrical" mass=".6">
 		<maintenance-entity-list>
 			<entity name="building" probability=".5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
-	<part name="Metal oxide varistor" type="electronic" mass="0.3" />				
+	<part name="Metal oxide varistor" type="electronic" mass="0.1" />				
 	
 	<!-- For cleaning the air -->
 	
-	<part name="Pathogen filter" type="utility" mass="3.0">
+	<part name="Pathogen filter" type="utility" mass="1.925" >
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="2" />
 			<entity name="dining" probability="2" max-number="2" />
@@ -1645,7 +1693,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Electrostatic precipitator" type="utility" mass=".7">
+	<part name="Electrostatic precipitator" type="utility" mass="11.882" >
 		<description>A filterless device that removes fine particles,
 			like dust and smoke, from a flowing gas using the force of
 			an induced electrostatic charge minimally impeding the
@@ -1662,7 +1710,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Air duct" type="utility" mass=".3">
+	<part name="Air duct" type="utility" mass=".4">
 		<maintenance-entity-list>
 			<entity name="cooking" probability="2" max-number="2" />
 			<entity name="farming" probability="2" max-number="2" />
@@ -1697,13 +1745,16 @@
 		<description>A medium-size brush for vehicle cleaning.</description>
 	</part>
 
-	
-	<part name="Pressure washer" type="utility" mass="8.0" >
+	<part name="Pressure washer" type="utility" mass="13.924" >
 		<description>A electric pressure washer provides 2.5 GPM. consumes 1.5 kW</description>
 	</part>
 	
 	<part name="Flexible water hose" type="utility" mass="2.0" >
 		<description>Flexible water hose for channeling water to clean parts, vehicles, buildings, etc.</description>
+	</part>
+	
+	<part name="Pressure washer nozzle" type="utility" mass="0.2" >
+		<description>A high pressure nozzle for pressure washer</description>
 	</part>
 	
 	<part name="Vacuum cleaner" type="utility" mass="2.0" />				

@@ -36,24 +36,25 @@ public enum GoodType {
 	WASTE		("Waste"),
 	
 	// For amount resources
+	CHEMICAL		(FoodType.CHEMICAL.getName()),
     COMPOUND		("Compound"),
+    ELEMENT			("Element"),
+    RAW				("Raw"),
     
 	// For Parts
 	ATTACHMENT		("Attachment"),
     CONSTRUCTION	("Construction"),
     ELECTRICAL		("Electrical"),
-    ELECTRONIC		("Electronic"),
-    KITCHEN			("Kitchen"),
     INSTRUMENT		("Instrument"),
-    METALLIC		("Metallic"),
-    RAW				("Raw"),
+    KITCHEN			("Kitchen"),
     TOOL			("Tool"),
     VEHICLE			("Vehicle"),
     
-	// For both Amount Resources or Parts
-	CHEMICAL		(FoodType.CHEMICAL.getName()),
-    ELEMENT			("Element"),
+	// For both Amount Resources and Parts
+    ELECTRONIC		("Electronic"),
+    METALLIC		("Metallic"),
     UTILITY			("Utility"),
+
     
     // For containers
     CONTAINER		("Container"),

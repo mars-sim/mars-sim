@@ -139,6 +139,7 @@ class AmountResourceGood extends Good {
 	
 	private static final int UTILITY_FLATTENING_FACTOR = 4;
 
+	private static final int METALLIC_FLATTENING_FACTOR = 2;
 	private static final int INSECT_FLATTENING_FACTOR = 5;
 	private static final int ORGANISM_FLATTENING_FACTOR = 2;
 	private static final double SOYBASED_FLATTENING_FACTOR = 0.5;
@@ -304,12 +305,10 @@ class AmountResourceGood extends Good {
 					) {
 				mod *= PLASTIC_RELATED_FLATTENING_FACTOR;
 			}
-			else if (id == ResourceUtil.ETHYLENE_GLYCOL_ID) {
-				mod *= ETHYLENE_GLYCOL_FLATTENING_FACTOR;
-			}
 			
 			mod *= switch(id) {
 				case ResourceUtil.ETHYLENE_ID ->  ETHYLENE_FLATTENING_FACTOR;
+				case ResourceUtil.ETHYLENE_GLYCOL_ID ->  ETHYLENE_GLYCOL_FLATTENING_FACTOR;
 				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
 				case ResourceUtil.POLYESTER_FIBER_ID -> POLYESTER_FIBER_FLATTENING_FACTOR;
 				case ResourceUtil.POLYURETHANE_ID -> POLYURETHANE_FLATTENING_FACTOR;
@@ -323,26 +322,26 @@ class AmountResourceGood extends Good {
 			mod = COMPOUND_FLATTENING_FACTOR;
 	
 			mod *= switch(id) {
-				case ResourceUtil.ACETYLENE_ID -> ACETYLENE_FLATTENING_FACTOR;
-				case ResourceUtil.SAND_ID -> SAND_FLATTENING_FACTOR;
 				case ResourceUtil.ICE_ID -> ICE_FLATTENING_FACTOR;
 				case ResourceUtil.CO_ID -> CO_FLATTENING_FACTOR;
 				case ResourceUtil.CO2_ID -> CO2_FLATTENING_FACTOR;
 				case ResourceUtil.METHANE_ID -> METHANE_FLATTENING_FACTOR;
 				case ResourceUtil.METHANOL_ID -> METHANOL_FLATTENING_FACTOR;
+				case ResourceUtil.NA2CO3_ID -> NA2CO3_FLATTENING_FACTOR;
 				case ResourceUtil.WATER_ID -> WATER_FLATTENING_FACTOR;
 				default -> 1D;
 			};
-			
-			// Special case for NA2CO3
-			if (id == ResourceUtil.NA2CO3_ID) 
-				mod *= NA2CO3_FLATTENING_FACTOR;
 			
 			break;
 	
 		case CONSTRUCTION:
 			mod = CONSTRUCTION_FLATTENING_FACTOR;
 			
+			mod *= switch(id) {
+				case ResourceUtil.ACETYLENE_ID -> ACETYLENE_FLATTENING_FACTOR;
+				default -> 1D;
+			};
+		
 			break;
 			
 		case CROP:
@@ -363,17 +362,13 @@ class AmountResourceGood extends Good {
 		case ELEMENT:
 			mod = ELEMENT_FLATTENING_FACTOR;
 			
-			if (id == ResourceUtil.HYDROGEN_ID)
-				mod *= HYDROGEN_FLATTENING_FACTOR;
-			
-			else if (id == ResourceUtil.OXYGEN_ID)
-				mod *= OXYGEN_FLATTENING_FACTOR;
-					
-			else if (id == ResourceUtil.IRON_POWDER_ID)
-				mod *= IRON_POWDER_FLATTENING_FACTOR;
-			
-			else if (id == ResourceUtil.SILICON_ID)
-				mod *= SILICON_FLATTENING_FACTOR;
+			mod *= switch(id) {
+				case ResourceUtil.HYDROGEN_ID -> HYDROGEN_FLATTENING_FACTOR;
+				case ResourceUtil.IRON_POWDER_ID -> IRON_POWDER_FLATTENING_FACTOR;
+				case ResourceUtil.OXYGEN_ID -> OXYGEN_FLATTENING_FACTOR;
+				case ResourceUtil.SILICON_ID -> SILICON_FLATTENING_FACTOR;
+				default -> 1D;
+			};
 					
 			break;
 			
@@ -387,6 +382,11 @@ class AmountResourceGood extends Good {
 			
 			break;
 
+		case METALLIC:
+			mod = METALLIC_FLATTENING_FACTOR;
+			
+			break;
+			
 		case MINERAL:
 			mod = MINERAL_FLATTENING_FACTOR;
 			
@@ -407,11 +407,14 @@ class AmountResourceGood extends Good {
 			
 			break;
 
-		case REGOLITH:
+		case RAW:
 			mod = REGOLITH_FLATTENING_FACTOR;
 			
+			if (id == ResourceUtil.SAND_ID)
+				mod *= SAND_FLATTENING_FACTOR;
+			
 			break;
-				
+			
 		case ROCK:
 			mod = ROCK_FLATTENING_FACTOR;
 			

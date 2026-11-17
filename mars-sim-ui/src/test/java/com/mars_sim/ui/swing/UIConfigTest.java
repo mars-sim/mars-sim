@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;

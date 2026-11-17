@@ -36,7 +36,6 @@ public class PartGood extends Good {
 	private static final SimLogger logger = SimLogger.getLogger(PartGood.class.getName());
 
 	private static final String FIBERGLASS = "fiberglass";
-	private static final String SCRAP = "scrap";
 	private static final String INGOT = "ingot";
 	private static final String STEEL_INGOT = "Steel ingot";
 	private static final String IRON_INGOT = "iron ingot";
@@ -534,11 +533,6 @@ public class PartGood extends Good {
 		// Reduce the demand on the steel/aluminum scrap metal
 		// since they can only be produced by salvaging a vehicle
 		// therefore it's not reasonable to have high VP
-
-		if (name.contains(SCRAP))
-			return base * SCRAP_METAL_DEMAND;
-		// May recycle the steel/AL scrap back to ingot
-		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
 
 		if (name.equalsIgnoreCase(STEEL_INGOT))
 			return base * STEEL_INGOT_DEMAND;

@@ -1108,23 +1108,26 @@
 		<output resource="sulfur" rate="8" core="true" />	
 		
 		<output resource="calcium" rate="7" core="true" />			
-		<output resource="Calcium carbonate" rate="15" core="true" />
+		<output resource="Calcium carbonate" rate="13" core="true" />
 				
 		<output resource="iron chloride" rate="1" core="true" />
-		<output resource="magnesium" rate="9" core="true" />	
+		<output resource="magnesium" rate="8" core="true" />	
 		
 		<output resource="manganese" rate="1" core="true" />	
 		<output resource="copper" rate="1" core="true"/>	
 		<output resource="gold" rate="1" core="true" />	
-		<output resource="platinum" rate="1" core="true"/>	
-		<output resource="chromium" rate="1" core="true"/>	
+		<output resource="platinum" rate="1" core="true"/>
+		
+		<output resource="Chromium" rate="1" core="true"/>	
+		<output resource="Bismuth" rate="1" core="true"/>	
+		<output resource="Antimony" rate="1" core="true"/>	
 		
 		<output resource="scandium" rate="1" core="true" />	
 		<output resource="aluminum" rate="1" core="true"/>	
 		<output resource="silver" rate="1" core="true"/>	
 		<output resource="tin" rate="1" core="true"/>	
 		<output resource="titanium" rate="1" core="true"/>	
-		
+		<output resource="lead" rate="1" core="true"/>	
 		<output resource="vanadium" rate="1" core="true"/>	
 		<output resource="zinc" rate="1" core="true"/>
 		<output resource="aluminum oxide" rate="8" core="true"/>	
@@ -1874,12 +1877,12 @@
 
 	<process name="Produce Polystyrene from Styrene" kW-required=".01" >
 		<input resource="styrene" rate="50" />
-		<output resource="polystyrene" rate="45" />
+		<output resource="polystyrene" rate="50" />
 	</process>
 
 	<process name="Produce Polypropylene from Propylene" kW-required=".01" >
 		<input resource="Propylene" rate="50" />
-		<output resource="Polypropylene" rate="45" />
+		<output resource="Polypropylene" rate="50" />
 	</process>
 	
 	<process name="Methanol-to-olefin (MTO) process" kW-required=".05" >

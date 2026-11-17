@@ -68,7 +68,8 @@
 		<part type="light emitting diode kit" number="10" />
 		<part type="light emitting diode bulb" number="25" />
 
-		<part type="transformer" number="2" />
+		<part type="transformer small" number="2" />
+		<part type="transformer large" number="2" />
 		<part type="power transistor" number="30" />
 
 		<part type="radio antenna" number="4" />
@@ -124,7 +125,8 @@
 		<part type="light emitting diode kit" number="20" />
 		<part type="light emitting diode bulb" number="50" />
 
-		<part type="transformer" number="5" />
+		<part type="transformer small" number="5" />
+		<part type="transformer large" number="2" />
 		<part type="power transistor" number="60" />
 
 		<part type="radio antenna" number="8" />
@@ -168,7 +170,7 @@
 		<part type="liquid tubing" number="10"/>
 
 		<part type="SLS 3D Printer" number="4"/>
-		<part type="heat pump" number="2"/>
+		<part type="Heat exchanger" number="2"/>
 		<part type="carbon dioxide laser" number="5"/>
 		<part type="helium neon laser" number="5"/>
 		<part type="optical lens" number="20"/>
@@ -183,8 +185,11 @@
 		<part type="water tank" number="5" />
 		<part type="water pump small" number="3" />
 		<part type="water pump large" number="1" />
-		<part type="carbon dioxide pump" number="3" />
-		<part type="transformer" number="5" />
+		<part type="carbon dioxide small pump" number="3" />
+		
+		<part type="transformer small" number="5" />
+		<part type="transformer large" number="1" />
+		
 		<part type="power transistor" number="60" />
 		<part type="autoclave" number="3" />
 		<part type="blender" number="3" />

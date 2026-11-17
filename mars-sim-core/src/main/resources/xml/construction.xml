@@ -703,7 +703,7 @@
 			<part type="glass tube" number="6" />
 			<part type="steel pipe" number="10" />
 			<part type="Stepper Motor" number="4" />
-			<part type="heat pump" number="1" />
+			<part type="Heat exchanger" number="1" />
 			<part type="water pump large" number="2" />
 			<part type="electrical wire" number="20" />
 			<part type="wire connector" number="20" />

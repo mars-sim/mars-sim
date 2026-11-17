@@ -766,6 +766,7 @@ public class Settlement extends Unit implements Temporal,
 
 	/**
 	 * Adds an entry to the vehicle's history.
+	 * 
 	 * @param entry history entry.
 	 */
 	@Override 

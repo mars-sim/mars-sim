@@ -405,7 +405,7 @@
 		the only practical way to bridge solid fluoride minerals to elemental 
 		fluorine gas.</resource>
 		
-	<resource name="Acetylene" type="chemical" phase="gas" demand="1.2" >
+	<resource name="Acetylene" type="construction" phase="gas" demand="0.8" >
 		Acetylene is a colorless gas that has a strong garlic-like odor. When 
 		combined with oxygen, it becomes very hot and is classified as the 
 		hottest fuel gas. 
@@ -435,8 +435,7 @@
 	 	organic synthesis.</resource>
 	
 	<resource name="Bisphenol-a" type="chemical" phase="solid"> 
-		The chemical used for reinforcing
-		plastic and for making polycarbonate</resource>
+		The chemical used for reinforcing plastic and for making polycarbonate</resource>
 
 	<resource name="Bis(2-hydroxyethyl) terephthalate" type="chemical" phase="solid"> 
 		This chemical, also called BHET, is used for making polyester resin (PET) </resource>
@@ -525,6 +524,24 @@
 	 	PET’s non-reactance with many foods makes it an ideal packaging material. Because 
 	 	of its easy application and durability, polyester resin is also applied to patch cracks 
 	 	and holes that need to remain watertight.
+	 	
+	 	In short: In everyday language, "polyester" often just means PET (clothing fiber, bottles). 
+	 	
+	 	In the composites/marine industry, "polyester resin" almost always means unsaturated 
+	 	polyester resin (UPR) — a completely different thermosetting material that 
+	 	cannot be remelted once cured.
+	</resource> 
+	
+		<resource name="Polyethylene terephthalate (PET)" type="chemical" phase="liquid" demand="1.5">
+		The most common industrial polyester is polyethylene terephthalate (PET), made by 
+		condensation polymerization of a diol and a diacid.
+	</resource> 
+	
+	<resource name="Polyvinyl chloride resin" type="chemical" phase="liquid" demand="1.5">
+		Why PVC Resin Is Chosen :
+		1. Rigid (uPVC): corrosion resistance, weatherability, flame retardancy, low maintenance — replaces metal/wood in pipes and profiles
+		2. Flexible (plasticized): softness, chemical resistance, biocompatibility (medical grade), cost-effectiveness
+		3. Paste (emulsion) resin: fine particles for coatings, artificial leather, and glove surfaces 
 	</resource> 
 
 	<resource name="Polyethylene" type="chemical" phase="solid" demand="1.5">
@@ -602,20 +619,21 @@
 	</resource>
 
 	
-<!-- Regolith and its directly derived ore deposits
+<!-- Raw materials and regolith
      https://en.wikipedia.org/wiki/Martian_soil
      https://www.pnas.org/content/117/50/31685
      https://scholarworks.wm.edu/cgi/viewcontent.cgi?article=6537&context=etd
 -->
-	<resource name="Regolith-B" type="regolith" phase="solid"> 
+	<resource name="Regolith-B" type="raw" phase="solid"> 
 		Type B Martian soil rich in poly-hydrated sulfate. 40% gypsum.</resource>
-	<resource name="Regolith-C" type="regolith" phase="solid"> 
+	<resource name="Regolith-C" type="raw" phase="solid"> 
 		Type C Martian soil rich in phyllo-silicate. 40% smectite.</resource>
-	<resource name="Regolith-D" type="regolith" phase="solid"> 
+	<resource name="Regolith-D" type="raw" phase="solid"> 
 		Type D Martian soil 23.5% basaltic.</resource>
-	<resource name="Regolith" type="regolith" phase="solid"> 
+	<resource name="Regolith" type="raw" phase="solid"> 
 		Unspecified type of Martian soil.</resource>
 
+	<resource name="Sand" type="raw" phase="solid"> Soil with iron oxide removed. Used for making glass.</resource>
 
 <!-- 6 types of Ores -->
 	<resource name="Gypsum" type="ore" phase="solid"> 
@@ -714,7 +732,7 @@
 		Pure K₂O is a laboratory curiosity at scale; in glass, cement, and fertilizer it exists only 
 		as a bookkeeping convention for the potassium content. 
 		</resource>
-	<resource name="Sand" type="compound" phase="solid"> Soil with iron oxide removed. Used for making glass.</resource>
+
 	<resource name="Silica" type="compound" phase="solid"> The word Silica came from the Latin silex. 
 	 Also known as silicon dioxide, silica is an oxide of silicon with the chemical formula
 	 SiO2, most commonly found in nature as quartz and in various living
@@ -778,6 +796,37 @@
 		link to two aromatic rings. Kevlar is prone to soaking up water in composite applications 
 		and it’s not ideal in compression, so fiberglass and carbon fiber are used in composites 
 		rather than Kevlar in those situations.</resource>
+
+	<resource name="Kapton tape" type="utility" phase="solid">Kapton tape with epoxy is good for quick patches. 
+		For temporary/field repairs on the ISS, the go-to materials are Kapton 
+		(polyimide) tape and epoxy resin (often applied over gauze or cloth). 
+		Kapton tape withstands extreme temperatures and is the most commonly used quick-fix 
+		tape aboard the station — it sealed a 2 mm Soyuz puncture in 2018 and a crack in 
+		the Zvezda module in 2020. The Russian segment relies on Germetall-1, a two-component 
+		epoxy sealant, for repeated patching of micro-cracks in the PrK transfer tunnel. </resource>
+	
+	<resource name="Lexan disk" type="utility" phase="solid"> Lexan with epoxy is good for structural patches.
+		For structural/permanent repairs, NASA's hull-puncture repair kit uses a Lexan (polycarbonate) disk 
+		bolted over the damage with a strong epoxy adhesive pumped in via an injector, forming 
+		a cast plug that cures over 2–7 days. </resource>
+			
+	<resource name="Vectran" type="utility" phase="solid"> Vectran is a fabric used in inflatable 
+		habitat pressure shells (Lockheed Martin). It's 5 times stronger than steel by weight, and is 
+		radiation-resistant. Vectran's polymer chain is a copolyester of two aromatic monomer units 
+		in a 73:27 molar ratio (HBA:HNA).</resource>
+	
+	<resource name="Self-healing resin" type="utility" phase="solid"> Self-healing resin (thiol-ene-trialkylborane) 
+		is a liquid resin sandwiched between polymer panels that hardens in milliseconds when punctured, 
+		plugging the breach automatically (University of Michigan / NASA research).</resource>
+	
+	<resource name="Acrylonitrile-Butadiene-Styrene (ABS)" type="utility" phase="solid">
+		A polymer for enclosure and other purposes. 
+		ABS is a terpolymer of three monomers:
+		Monomer	Role
+		Acrylonitrile (15–35%)	Chemical and heat resistance
+		Butadiene (5–30%)	Toughness / impact resistance
+		Styrene (40–60%)	Rigidity, flowability, processability
+	</resource>
 		
 	<resource name="Paraffin composites" type="utility" phase="solid"> Paraffin is a phase change 
 		materials (PCMs) and is a mixture of straight-chain n-alkanes with the general formula 
@@ -945,8 +994,10 @@
 	Reference : 
     1. https://en.wikipedia.org/wiki/Ore_resources_on_Mars
 -->
+	<resource name="Antimony" type="element" phase="solid" demand="1.5" >An element.</resource>
 	<resource name="Aluminum" type="element" phase="solid" demand="1.1" >An element.</resource>
 	<resource name="Barium" type="element" phase="solid" demand="1.5" >An element.</resource>
+	<resource name="Bismuth" type="element" phase="solid" demand="1.5" >An element.</resource>
 	<resource name="Calcium" type="element" phase="solid">An element.</resource>
 	<resource name="Carbon" type="element" phase="solid" demand="1.2" >Carbon powder</resource>
 	<resource name="Chromium" type="element" phase="solid">An element.</resource>
@@ -995,8 +1046,8 @@
 	<resource name="Tin" type="element" phase="solid">An element.</resource>
 	<resource name="Titanium" type="element" phase="solid">An element.</resource>
 	<resource name="Vanadium" type="element" phase="solid">An element.</resource>
-	<resource name="Zinc" type="element" phase="solid" demand="0.5" >An element.</resource>
-
+	<resource name="Zinc" type="element" phase="solid" demand="1.5" >An element.</resource>
+	<resource name="Lead" type="element" phase="solid" demand="1.5" >An element.</resource>
 
 <!-- Building Material -->
 	<resource name="Cement" type="construction" phase="solid" >A Building Material.</resource>
@@ -1005,10 +1056,26 @@
 <!-- Drugs and Supplements -->
 	<resource name="Immune booster" type="medical" phase="solid" >A Drug.</resource>
 
-
+	<resource name="Polyamide" type="utility" phase="solid"> The term "polyamine" in epoxy curing covers 
+		several distinct compounds. Here's the elemental breakdown for the most common ones:
+		
+		Simple aliphatic polyamines (well-defined molecules)
+		Compound	Formula	MW (g/mol)	C	H	N	O
+		DETA (diethylenetriamine)	C₄H₁₃N₃	103.17	46.6%	12.7%	40.7%	0%
+		TETA (triethylenetetramine)	C₆H₁₉N₄	147.25	48.9%	13.0%	38.1%	0%
+		TEPA (tetraethylenepentamine)	C₈H₂₅N₅	191.33	50.2%	13.1%	36.6%	0%
+		
+		These contain no oxygen — they're pure C, H, N.
+		</resource>
+		
 <!-- Misc. -->
+	<resource name="Brass" type="metallic" phase="solid" demand="1.5" >Brass is one of the most versatile metal alloys, used across many industries.</resource>
 	<resource name="Glass" type="gemstone" phase="solid" demand="0.5" >For making vessels</resource>
 	<resource name="Quartz" type="gemstone" phase="solid" demand="5" >Quartz is crystalline silica (SiO2). For making electronic components.</resource>
+
+	<resource name="Iron scrap" type="metallic" phase="solid" />
+	<resource name="Steel scrap" type="metallic" phase="solid" />
+	<resource name="Aluminum scrap" type="metallic" phase="solid" />
 
 <!-- Electronic -->
 	<resource name="Fiberglass-epoxy composite" type="electronic" phase="solid" >FR-4 is the standard substrate for virtually all rigid PCBs.</resource>
