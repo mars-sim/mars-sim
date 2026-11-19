@@ -231,7 +231,7 @@ public class VehicleMaintenance extends Function {
 		
 		double newFacing = getBuilding().getFacing();
 		
-		newVehicle.updateCrewLocation(location.getPosition(), newFacing);
+		newVehicle.updatePositionNCrew(location.getPosition(), newFacing);
 
 		// Directly update the states
 		newVehicle.setContainerUnit(newVehicle.getSettlement());

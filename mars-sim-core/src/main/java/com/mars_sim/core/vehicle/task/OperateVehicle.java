@@ -752,7 +752,7 @@ public abstract class OperateVehicle extends Task {
         LocalPosition parkingPlace = LocalPosition.DEFAULT_POSITION.getPosition(200D, vehicle.getDirection().getDirection() + Math.PI);
         double degDir = vehicle.getDirection().getDirection() * 180D / Math.PI;
 	    
-        vehicle.updateCrewLocation(parkingPlace, degDir);
+        vehicle.updatePositionNCrew(parkingPlace, degDir);
 	}
 	
 	/**

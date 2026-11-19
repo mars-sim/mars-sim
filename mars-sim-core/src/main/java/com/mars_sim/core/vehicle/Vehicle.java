@@ -445,16 +445,20 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
-	 * Sets the location and facing of the vehicle when parked at a settlement.
+	 * Sets the location and facing of the vehicle when parked at a settlement and the crew.
 	 *
 	 * @param position  Position of the parking relative to the Settlement
 	 * @param facing    (degrees from North clockwise).
 	 */
-	public void updateCrewLocation(LocalPosition position, double facing) {
+	public void updatePositionNCrew(LocalPosition position, double facing) {
 		// Set new parked location for the vehicle.
 		setPosition(position);
 		
-		this.facingParked = facing;
+		if (this instanceof LightUtilityVehicle) {
+			this.facingParked = facing + 90;
+		}
+		else
+			this.facingParked = facing + 180;
 		
 		// Get current human crew positions relative to the vehicle.
 		Map<Person, LocalPosition> currentCrewPositions = getCurrentCrewPositions();
@@ -1654,10 +1658,10 @@ public abstract class Vehicle extends AbstractMobileUnit
 				
 				newLoc = centerLoc.getPosition(distance, radianDirection);
 				
-				if (numGarages > 0) {
-					newFacing = newFacing + 90 * RandomUtil.getRandomInt(0, 3);
-				}
-				else
+//				if (numGarages > 0) {
+//					newFacing = newFacing + 90 * RandomUtil.getRandomInt(0, 3);
+//				}
+//				else
 					newFacing = RandomUtil.getRandomInt(0, 359);
 
 				// Check if new vehicle location collides with anything.
@@ -1672,7 +1676,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		}
 
 		if (foundGoodLocation) {
-			updateCrewLocation(newLoc, newFacing);
+			updatePositionNCrew(newLoc, newFacing);
 		}
 	}
 

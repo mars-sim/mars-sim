@@ -179,7 +179,7 @@ public abstract class MarsSimUnitTest {
 								settlement);
 		if (parked != null) {			
 			// Note: since settlement.addOwnedVehicle(this) was called in Vehicle's constructor
-			luv.updateCrewLocation(parked, 0D);
+			luv.updatePositionNCrew(parked, 0D);
 		}
 		
 	    getSim().getUnitManager().addUnit(luv);

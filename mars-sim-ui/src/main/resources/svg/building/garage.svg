@@ -6,7 +6,7 @@
    height="1600"
    id="svg2832"
    version="1.1"
-   inkscape:version="1.4.2 (ebf0e940, 2025-05-08)"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    sodipodi:docname="garage.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -75,17 +75,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="503.46003"
-     inkscape:cy="440.52753"
+     inkscape:zoom="0.5"
+     inkscape:cx="401"
+     inkscape:cy="1087"
      inkscape:document-units="px"
-     inkscape:current-layer="layer5"
+     inkscape:current-layer="layer4"
      showgrid="true"
      showguides="true"
-     inkscape:window-width="1264"
+     inkscape:window-width="1349"
      inkscape:window-height="954"
      inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:snap-global="false"
      inkscape:guide-bbox="true"
@@ -146,11 +146,11 @@
      inkscape:label="internal"
      style="display:inline;opacity:0.6">
     <rect
-       style="display:inline;fill:#979897;fill-opacity:1;fill-rule:evenodd;stroke:#949494;stroke-opacity:1;opacity:0.6"
+       style="display:inline;opacity:0.6;fill:#979897;fill-opacity:1;fill-rule:evenodd;stroke:#949494;stroke-opacity:1"
        id="rect3659"
        width="960"
        height="1360"
-       x="118.20108"
+       x="116.78687"
        y="120"
        inkscape:label="transparent ceiling " />
     <rect
@@ -199,10 +199,10 @@
        width="200"
        height="640"
        x="228"
-       y="170.5"
+       y="240.5"
        inkscape:label="vehicle border left" />
     <rect
-       y="170.5"
+       y="240.5"
        x="768"
        height="640"
        width="200"
@@ -247,10 +247,10 @@
        width="280"
        height="40"
        x="188"
-       y="690.5"
+       y="750.5"
        inkscape:label="crane 2 back" />
     <rect
-       y="250.5"
+       y="310.5"
        x="188"
        height="40"
        width="280"
@@ -263,10 +263,10 @@
        width="280"
        height="40"
        x="728"
-       y="250.5"
+       y="310.5"
        inkscape:label="crane 1 front" />
     <rect
-       y="690.5"
+       y="750.5"
        x="728"
        height="40"
        width="280"
@@ -445,17 +445,19 @@
        id="rect8078-8-0"
        width="163.26927"
        height="248.26923"
-       x="20.865349"
-       y="920.86536"
-       inkscape:label="drone border 1" />
+       x="1007.206"
+       y="-274.13458"
+       inkscape:label="drone border 1"
+       transform="rotate(90)" />
     <rect
        style="display:inline;opacity:1;fill:none;stroke:#007aff;stroke-width:11.7307;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:46.9227, 11.7307;stroke-dashoffset:0;stroke-opacity:1"
        id="rect8078-8-0-1"
        width="163.26927"
        height="248.26923"
-       x="1018.3654"
-       y="920.86536"
-       inkscape:label="drone border 1" />
+       x="-1170.4752"
+       y="925.86536"
+       inkscape:label="drone border 1"
+       transform="rotate(-90)" />
   </g>
   <g
      inkscape:label="frame"

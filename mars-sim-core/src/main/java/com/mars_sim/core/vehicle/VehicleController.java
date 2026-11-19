@@ -53,9 +53,9 @@ import com.mars_sim.core.tool.RandomUtil;
 	 private static final double RATIO_OXIDIZER_HYDROGEN = Propulsion.MASS_RATIO_OXIDIZER_TO_HYDROGEN;
 
 	 /** The factor for estimating the adjusted fuel economy [km/kg]. */
-	 public static final double FUEL_ECONOMY_FACTOR = .85;
+	 public static final double FUEL_ECONOMY_FACTOR = .95;
 	 /** The factor for estimating the adjusted fuel consumption [Wh/km]. */
-	 public static final double FUEL_CONSUMPTION_FACTOR = 1.2; 
+	 public static final double FUEL_CONSUMPTION_FACTOR = 1.05; 
 	 /** Mars surface gravity is 3.72 m/s2. */
 	 public static final double GRAVITY = 3.72;
 	 /** Conversion factor : 1 Wh = 3.6 kilo Joules */

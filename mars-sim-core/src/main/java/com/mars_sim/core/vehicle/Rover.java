@@ -964,8 +964,8 @@ public class Rover extends GroundVehicle implements Crewable,
 	}
 
 	@Override
-	public void updateCrewLocation(LocalPosition position, double facing) {
-		super.updateCrewLocation(position, facing);
+	public void updatePositionNCrew(LocalPosition position, double facing) {
+		super.updatePositionNCrew(position, facing);
 
 		// Update towed vehicle locations.
 		updatedTowedVehicleSettlementLocation();
@@ -983,14 +983,14 @@ public class Rover extends GroundVehicle implements Crewable,
 				double distance = (getLength() + towedVehicle.getLength()) / 2D;
 				LocalPosition towingPosition = new LocalPosition(0D, - distance);
 				LocalPosition towedLoc = LocalAreaUtil.convert2SettlementPos(towingPosition, this);
-				towedVehicle.updateCrewLocation(towedLoc, getFacing());
+				towedVehicle.updatePositionNCrew(towedLoc, getFacing());
 			} else if (towedVehicle instanceof LightUtilityVehicle) {
 				// Towed light utility vehicles should be attached to back of the rover
 				// sideways and facing to the right.
 				double distance = (getLength() + towedVehicle.getWidth()) / 2D;
 				LocalPosition towingPosition = new LocalPosition(0D, - distance);
 				LocalPosition towedLoc = LocalAreaUtil.convert2SettlementPos(towingPosition, this);
-				towedVehicle.updateCrewLocation(towedLoc, getFacing() + 90D);
+				towedVehicle.updatePositionNCrew(towedLoc, getFacing() + 90D);
 			}
 		}
 	}
