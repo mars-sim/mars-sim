@@ -42,8 +42,8 @@ class VehicleConfigTest {
 
         assertEquals(2000D, found.getTotalCapacity());
         assertEquals(120D, found.getCargoCapacity(ResourceUtil.METHANOL_ID));
-        assertEquals(180D, found.getCargoCapacity(ResourceUtil.OXYGEN_ID));
-        assertEquals(200D, found.getCargoCapacity(ResourceUtil.WATER_ID));
+        assertEquals(210D, found.getCargoCapacity(ResourceUtil.OXYGEN_ID));
+        assertEquals(120D, found.getCargoCapacity(ResourceUtil.WATER_ID));
 
         assertEquals(PowerSourceType.FUEL_POWER, found.getPowerSourceType());
 
