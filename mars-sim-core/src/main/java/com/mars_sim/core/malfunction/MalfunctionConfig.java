@@ -122,7 +122,8 @@ public class MalfunctionConfig {
 		knownSystems.add(VehicleSpec.CREW_CABIN);
 		knownSystems.add(VehicleSpec.BATTERY);
 		knownSystems.add(VehicleSpec.METHANOL_FUEL);
-		knownSystems.add(VehicleSpec.METHAE_FUEL);
+		knownSystems.add(VehicleSpec.METHANE_FUEL);
+		knownSystems.add(VehicleSpec.HYDROGEN_FUEL);
 		
 		return knownSystems;
 	}

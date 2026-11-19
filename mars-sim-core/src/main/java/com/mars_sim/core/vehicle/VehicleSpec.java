@@ -69,11 +69,36 @@ public class VehicleSpec implements Serializable {
 	 * Methanol's volumetric energy density [in kWh/L].
 	 */
 	public static final double METHANOL_VOLUMETRIC_ENERGY_DENSITY = 4.33D;
+	
 	/**
 	 * Methanol's gravimetric energy density [in kWh/L].
 	 */
 	public static final double METHANOL_GRAVIMETRIC_ENERGY_DENSITY = 5.53D;
 	
+	/**
+	 * Hydrogen's Specific Energy is 
+	 * 1. LHV (Lower Heating Value)	 :	120 MJ/kg (33.3 kWh/kg)
+	 * 2. HHV (Higher Heating Value) :	142 MJ/kg (39.4 kWh/kg)
+	 * 
+	 * The ~18% gap between LHV and HHV comes from the latent heat of the water vapor produced.
+	 */
+	public static final double HYDROGEN_SPECIFIC_ENERGY = 33.3D; // [in kWh/kg]
+	
+	/**
+	 * Hydrogen's volumetric energy density is [in kWh/L]
+	 * 
+	 * LHV (120 MJ/kg): 1.56 kWh/L (or 5.6 MJ/L) in Compressed gas at 700 bar
+
+	 * 1. LHV (Lower Heating Value)	at 120 MJ/kg  : 4.8 MJ/L (1.33 kWh/L)
+	 * 2. HHV (Higher Heating Value) at 142 MJ/kg : 5.6 MJ/L (1.56 kWh/L)
+
+	Temp			ρ (kg/m³)	MJ/L (LHV)	kWh/L (LHV)	 MJ/L (HHV)		kWh/L (HHV)
+	0 °C (273 K)	42.9		5.15		1.43		 6.09			1.69
+	−40 °C (233 K)	~50			~6.0		~1.68		 ~7.1			~1.98
+
+	 */
+	public static final double HYDROGEN_VOLUMETRIC_ENERGY_DENSITY = 1.68D; 
+
 	
 	/**
 	 * Uranium oxide's specific energy [in kWh/kg].
@@ -87,7 +112,7 @@ public class VehicleSpec implements Serializable {
 	
 	/**
 	 * The Solid Oxide Fuel Cell (SOFC) Conversion Efficiency for using 
-	 * methane is dimension-less. Assume methane can be internally 
+	 * methane and hydrogen is dimension-less. Assume methane and hydrogen can be internally 
 	 * reformed within the anode of the fuel cells.
 	 */
 	public static final double SOFC_CONVERSION_EFFICIENCY = .65D;
@@ -110,6 +135,12 @@ public class VehicleSpec implements Serializable {
 	public static final double METHANOL_WH_PER_KG = 1000.0D / METHANOL_KG_PER_KWH; 
 
 	
+	/** The kWh-to-Kg conversion factor for our fuel-cell vehicles using hydrogen. */
+	public static final double HYDROGEN_KG_PER_KWH = 1.0D / SOFC_CONVERSION_EFFICIENCY / HYDROGEN_SPECIFIC_ENERGY; 
+	/** The kg-to-Wh conversion factor for our fuel-cell vehicles using hydrogen. */	
+	public static final double HYDROGEN_WH_PER_KG = 1000.0D / HYDROGEN_KG_PER_KWH; 
+	
+	
 	/** The kWh-to-Kg conversion factor for our nuclear-powered vehicles using uranium oxide. */
 	public static final double URANIUM_OXIDE_KG_PER_KWH = 1.0D / STIRLING_CONVERSION_EFFICIENCY / URANIUM_OXIDE_SPECIFIC_ENERGY; 
 	/** The kg-to-Wh conversion factor for our nuclear-powered vehicles using uranium oxide. */	
@@ -120,7 +151,8 @@ public class VehicleSpec implements Serializable {
 	public static final String BATTERY = "battery";
 	public static final String FUEL = " fuel";
 	public static final String METHANOL_FUEL = "methanol" + FUEL;
-	public static final String METHAE_FUEL = "methane" + FUEL;
+	public static final String METHANE_FUEL = "methane" + FUEL;
+	public static final String HYDROGEN_FUEL = "hydrogen" + FUEL;
 	
 	
 	/** Estimated Number of hours traveled each day. **/
@@ -469,7 +501,14 @@ public class VehicleSpec implements Serializable {
 			// Gets the conversion factor for a specific vehicle [Wh/kg]
 			fuel2DriveEnergy =  METHANE_WH_PER_KG * drivetrainFuelEfficiency;
 		}
-		
+
+    	else if (fuelTypeID == ResourceUtil.HYDROGEN_ID) {
+			// Gets the energy capacity [kWh] based on a full tank of hydrogen
+			fullTankFuelEnergyCapacity = fuelCapacity / HYDROGEN_KG_PER_KWH;
+			// Gets the conversion factor for a specific vehicle [Wh/kg]
+			fuel2DriveEnergy =  HYDROGEN_WH_PER_KG * drivetrainFuelEfficiency;
+		}
+    	
 		// Not sure this case is possible
     	else if (fuelTypeStr.equalsIgnoreCase("NUCLEAR_TYPE")) {
 			// Gets the energy capacity [kWh] based on a full tank of methanol

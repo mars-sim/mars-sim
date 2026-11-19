@@ -1693,7 +1693,7 @@ class AmountResourceGood extends Good {
 
 		switch(getID()) {
 			case ResourceUtil.METHANOL_ID: {
-				for(Vehicle v: settlement.getAllAssociatedVehicles()) {
+				for (Vehicle v: settlement.getAllAssociatedVehicles()) {
 					double fuelDemand = v.getEquipmentInventory().getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
@@ -1701,7 +1701,7 @@ class AmountResourceGood extends Good {
 			} break;
 		
 			case ResourceUtil.METHANE_ID: {
-				for(Vehicle v: settlement.getAllAssociatedVehicles()) {
+				for (Vehicle v: settlement.getAllAssociatedVehicles()) {
 					double fuelDemand = v.getEquipmentInventory().getSpecificCapacity(getID());
 					demand += fuelDemand;
 				}
@@ -1709,6 +1709,10 @@ class AmountResourceGood extends Good {
 			} break;
 
 			case ResourceUtil.HYDROGEN_ID: {
+				for (Vehicle v: settlement.getAllAssociatedVehicles()) {
+					double fuelDemand = v.getEquipmentInventory().getSpecificCapacity(getID());
+					demand += fuelDemand;
+				}
 				demand =  transFactor * HYDROGEN_VALUE_MODIFIER * popFactor;
 			} break;
 		}

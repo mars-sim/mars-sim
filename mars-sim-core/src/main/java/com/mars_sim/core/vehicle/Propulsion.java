@@ -26,19 +26,24 @@ public abstract class Propulsion implements Serializable {
 	/** Conversion factor : 1 m/s = 3.6 km/h (or kph) */
 	protected static final double KPH_CONV = 3.6;
 	 
-	/** The ratio of the amount of oxidizer to methane fuel. */
-	public static final double RATIO_OXIDIZER_METHANE = 1;
+	/** The ratio of the amount of oxidizer to hydrogen fuel. */
+	public static final double MASS_RATIO_OXIDIZER_TO_HYDROGEN = 7.94;
 	/** The ratio of the amount of oxidizer to methanol fuel. */
-	public static final double RATIO_OXIDIZER_METHANOL = 1.5;
-	 
+	public static final double MASS_RATIO_OXIDIZER_TO_METHANOL = 1.498;
+	/** The ratio of the amount of oxidizer to methane fuel. */
+	public static final double MASS_RATIO_OXIDIZER_TO_METHANE = 3.989;
+
+
+	/** The ratio of water produced for every methane consumed. */
+	private static final double RATIO_WATER_HYDROGEN = 1.0/8.9285;
 	// Water Ratio is 2 for direct methanol fuel cell (DMFC). 
 	// Water Ratio varies for indirect methanol fuel cell (DMFC). say 1.125;
 	/** The ratio of water produced for every methanol consumed. */
-	private static final double RATIO_WATER_METHANOL = 2; 
-
+	private static final double RATIO_WATER_METHANOL = 1.0/1.1235; 
 	/** The ratio of water produced for every methane consumed. */
-	private static final double RATIO_WATER_METHANE = 2.25;
-	 
+	private static final double RATIO_WATER_METHANE = 1.0/2.244;
+
+	
 	public static final String TWO_WHITESPACES = "  ";
 	
     public static final DecimalFormat DECIMAL2 = new DecimalFormat("#,##0.00");
@@ -89,7 +94,7 @@ public abstract class Propulsion implements Serializable {
 				 // Retrieve the fuel needed for the distance traveled
 				 vehRH.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume oxygen as fuel oxidizer
-				 vehRH.retrieveAmountResource(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANOL * fuelNeeded);
+				 vehRH.retrieveAmountResource(ResourceUtil.OXYGEN_ID, MASS_RATIO_OXIDIZER_TO_METHANOL * fuelNeeded);
 				 // Generate  water from the fuel cells
 				 vehRH.storeAmountResource(ResourceUtil.WATER_ID, RATIO_WATER_METHANOL * fuelNeeded);
 			 }
@@ -98,10 +103,19 @@ public abstract class Propulsion implements Serializable {
 				 // Retrieve the fuel needed for the distance traveled
 				 vehRH.retrieveAmountResource(fuelTypeID, fuelNeeded);
 				 // Assume oxygen as fuel oxidizer
-				 vehRH.retrieveAmountResource(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANE * fuelNeeded);
+				 vehRH.retrieveAmountResource(ResourceUtil.OXYGEN_ID, MASS_RATIO_OXIDIZER_TO_METHANE * fuelNeeded);
 				 // Generate the water from the fuel cells
 				 vehRH.storeAmountResource(ResourceUtil.WATER_ID, RATIO_WATER_METHANE * fuelNeeded);
-			 }				 
+			 }
+			 
+			 else if (fuelTypeID == ResourceUtil.HYDROGEN_ID) {
+				 // Retrieve the fuel needed for the distance traveled
+				 vehRH.retrieveAmountResource(fuelTypeID, fuelNeeded);
+				 // Assume oxygen as fuel oxidizer
+				 vehRH.retrieveAmountResource(ResourceUtil.HYDROGEN_ID, MASS_RATIO_OXIDIZER_TO_HYDROGEN * fuelNeeded);
+				 // Generate the water from the fuel cells
+				 vehRH.storeAmountResource(ResourceUtil.WATER_ID, RATIO_WATER_HYDROGEN * fuelNeeded);
+			 }		
 		 }
 	}
 	

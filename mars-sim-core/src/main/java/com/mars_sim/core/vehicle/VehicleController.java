@@ -46,9 +46,11 @@ import com.mars_sim.core.tool.RandomUtil;
 	 /** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
 	 private static final double LEAST_AMOUNT = GroundVehicle.LEAST_AMOUNT;
 	 /** The ratio of the amount of oxidizer to methane fuel. */
-	 private static final double RATIO_OXIDIZER_METHANE = 1;
+	 private static final double RATIO_OXIDIZER_METHANE = Propulsion.MASS_RATIO_OXIDIZER_TO_METHANE;
 	 /** The ratio of the amount of oxidizer to methanol fuel. */
-	 private static final double RATIO_OXIDIZER_METHANOL = 1.5;
+	 private static final double RATIO_OXIDIZER_METHANOL = Propulsion.MASS_RATIO_OXIDIZER_TO_METHANOL;
+	 /** The ratio of the amount of oxidizer to hydrogen fuel. */
+	 private static final double RATIO_OXIDIZER_HYDROGEN = Propulsion.MASS_RATIO_OXIDIZER_TO_HYDROGEN;
 
 	 /** The factor for estimating the adjusted fuel economy [km/kg]. */
 	 public static final double FUEL_ECONOMY_FACTOR = .85;
@@ -779,6 +781,8 @@ import com.mars_sim.core.tool.RandomUtil;
 					fuelNeeded.put(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANOL * amountFuel);
 			case ResourceUtil.METHANE_ID ->
 					fuelNeeded.put(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_METHANE * amountFuel);
+			case ResourceUtil.HYDROGEN_ID ->
+					fuelNeeded.put(ResourceUtil.OXYGEN_ID, RATIO_OXIDIZER_HYDROGEN * amountFuel);
 			default -> {}
 		}
 			

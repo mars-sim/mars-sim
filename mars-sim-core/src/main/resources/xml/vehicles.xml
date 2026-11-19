@@ -172,7 +172,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<!-- ratio of oxidizer to fuel is 1.5:1. Thus 300 kg methanol needs 450 kg oxygen -->
 			<!-- Assuming totalTripHours is 45 hrs, each person consumes .8 kg / 24.66 hrs * totalTripHours -> 1.65 kg -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity type="oxygen" amount="180.0" />
+			<capacity type="oxygen" amount="210.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity type="nitrogen" amount="1.0" />
@@ -254,7 +254,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="4" />
 		<cargo total-capacity="2400.0">
 			<capacity type="methanol" amount="180.0" />
-			<capacity type="oxygen" amount="250.0" />
+			<capacity type="oxygen" amount="315.0" />
 			
 			<capacity type="nitrogen" amount="2.0" />
 			<capacity type="carbon dioxide" amount="20.0" />
@@ -312,7 +312,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
 			<capacity type="methanol" amount="320.0" />
-			<capacity type="oxygen" amount="480.0" />
+			<capacity type="oxygen" amount="640.0" />
 			
 			<capacity type="nitrogen" amount="16.0" />
 			<capacity type="carbon dioxide" amount="80.0" />
@@ -362,7 +362,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="2" />
 		<cargo total-capacity="6000.0">
 			<capacity type="methanol" amount="400.0" />
-			<capacity type="oxygen" amount="650.0" />
+			<capacity type="oxygen" amount="700.0" />
 			
 			<capacity type="nitrogen" amount="16.0" />
 			<capacity type="carbon dioxide" amount="20.0" />
@@ -407,8 +407,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="10.0"/>
 		<crew-size value="1" />
 		<cargo total-capacity="300.0">
-			<capacity type="methane" amount="20.0" />
-			<capacity type="oxygen" amount="20.0" />		
+			<capacity type="methane" amount="10.0" />
+			<capacity type="oxygen" amount="40.0" />		
 		</cargo>
 		<part-attachment number-slots="3">
             <part name="bulldozer blade" />
@@ -436,8 +436,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="0" />
 		<cargo total-capacity="800.0">
 			<capacity type="methane" amount="100.0" />
-			<capacity type="oxygen" amount="100.0" />
-			<capacity type="water" amount="200.0" />			
+			<capacity type="oxygen" amount="400.0" />
+			<capacity type="water" amount="100.0" />			
 		</cargo>
 	</vehicle>
 	
@@ -452,9 +452,9 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<total-motor-power value ="40.0" />		
 		<crew-size value="0" />
 		<cargo total-capacity="1500.0">
-			<capacity type="methane" amount="300.0" />
-			<capacity type="oxygen" amount="300.0" />
-			<capacity type="water" amount="600.0" />			
+			<capacity type="methane" amount="250.0" />
+			<capacity type="oxygen" amount="1000.0" />
+			<capacity type="water" amount="250.0" />			
 		</cargo>
 	</vehicle>
 	
@@ -468,10 +468,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<base-speed value="40.0" />
 		<total-motor-power value ="40.0" />		
 		<crew-size value="0" />
-		<cargo total-capacity="500.0">
-			<capacity type="methane" amount="300.0" />
-			<capacity type="oxygen" amount="300.0" />
-			<capacity type="water" amount="600.0" />			
+		<cargo total-capacity="1500.0">
+			<capacity type="methane" amount="250.0" />
+			<capacity type="oxygen" amount="1000.0" />
+			<capacity type="water" amount="250.0" />			
 		</cargo>
 	</vehicle>
 	

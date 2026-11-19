@@ -65,10 +65,11 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 	private static final ColumnSpec FOOD = new ColumnSpec(5, "Food", Double.class, ColumnSpec.STYLE_DIGIT1);
 	private static final ColumnSpec METHANE = new ColumnSpec(6, "Methane", Double.class, ColumnSpec.STYLE_DIGIT1);
 	private static final ColumnSpec METHANOL = new ColumnSpec(7, "Methanol", Double.class, ColumnSpec.STYLE_DIGIT1);
-	private static final ColumnSpec EVA_SUITS = new ColumnSpec(8, "EVA Suits", Integer.class, ColumnSpec.STYLE_DEFAULT);
+	private static final ColumnSpec HYDROGEN = new ColumnSpec(8, "Hydrogen", Double.class, ColumnSpec.STYLE_DIGIT1);
+	private static final ColumnSpec EVA_SUITS = new ColumnSpec(9, "EVA Suits", Integer.class, ColumnSpec.STYLE_DEFAULT);
 	private static final ColumnSpec LUV = new ColumnSpec(10, Msg.getString("lightutilityvehicle.plural"), Integer.class, ColumnSpec.STYLE_DEFAULT);
 
-	private static final List<ColumnSpec> BASE_COLS = List.of(NAME, POP, ROVERS, OXYGEN, WATER, FOOD, METHANE, METHANOL, EVA_SUITS);
+	private static final List<ColumnSpec> BASE_COLS = List.of(NAME, POP, ROVERS, OXYGEN, WATER, FOOD, METHANE, METHANOL, HYDROGEN, EVA_SUITS);
 
 	private static SettlementTableModel createModel(MissionDataBean state) {
 		List<ColumnSpec> cols;
@@ -153,12 +154,13 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 				case 5 -> eo.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 				case 6 -> eo.getSpecificAmountResourceStored(ResourceUtil.METHANE_ID);
 				case 7 -> eo.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID);
-				case 8 -> eo.getSuitSet().size();
-				case 9 -> eo.findNumContainersOfType(containerType);
-				case 10 ->settlement.findNumVehiclesOfType(VehicleType.LUV);
-				case 11 -> eo.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID);
-				case 12 -> eo.getItemResourceStored(ItemResourceUtil.BACKHOE_ID);
-				case 13 ->settlement.getConstructionManager().getConstructionSites().size();
+				case 8 -> eo.getSpecificAmountResourceStored(ResourceUtil.HYDROGEN_ID);
+				case 9 -> eo.getSuitSet().size();
+				case 10 -> eo.findNumContainersOfType(containerType);
+				case 11 ->settlement.findNumVehiclesOfType(VehicleType.LUV);
+				case 12 -> eo.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID);
+				case 13 -> eo.getItemResourceStored(ItemResourceUtil.BACKHOE_ID);
+				case 14 ->settlement.getConstructionManager().getConstructionSites().size();
 				default -> null;
 			};
 		}
@@ -178,13 +180,14 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 				case 5 -> checkResources(eo, ResourceUtil.FOOD_ID, 100D);
 				case 6 -> checkResources(eo, ResourceUtil.METHANE_ID, 100D);
 				case 7 -> checkResources(eo, ResourceUtil.METHANOL_ID, 100D);
-				case 8 -> eo.getSuitSet().isEmpty() ? NONE_AVAILABLE: null;
-				case 9 -> eo.findNumContainersOfType(containerType) < containerMin
+				case 8 -> checkResources(eo, ResourceUtil.HYDROGEN_ID, 100D);
+				case 9 -> eo.getSuitSet().isEmpty() ? NONE_AVAILABLE: null;
+				case 10 -> eo.findNumContainersOfType(containerType) < containerMin
 										? "Insufficient containers : " + containerMin : null;
-				case 10 -> settlement.findNumVehiclesOfType(VehicleType.LUV) == 0 ? NONE_AVAILABLE : null;
-				case 11 -> !eo.hasItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID) ? NONE_AVAILABLE : null;
-				case 12 -> !eo.hasItemResource(ItemResourceUtil.BACKHOE_ID) ? NONE_AVAILABLE : null;
-				case 13 -> settlement.getConstructionManager().getConstructionSites().isEmpty() ? NONE_AVAILABLE : null;
+				case 11 -> settlement.findNumVehiclesOfType(VehicleType.LUV) == 0 ? NONE_AVAILABLE : null;
+				case 12 -> !eo.hasItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID) ? NONE_AVAILABLE : null;
+				case 13 -> !eo.hasItemResource(ItemResourceUtil.BACKHOE_ID) ? NONE_AVAILABLE : null;
+				case 14 -> settlement.getConstructionManager().getConstructionSites().isEmpty() ? NONE_AVAILABLE : null;
 				default -> null;
 			};
 		}
