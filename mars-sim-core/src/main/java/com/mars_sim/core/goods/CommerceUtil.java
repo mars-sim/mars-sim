@@ -13,8 +13,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
+import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -92,7 +92,8 @@ public final class CommerceUtil {
 										Vehicle delivery) {
 		double possibleRange = delivery.getEstimatedRange() * .8D;
 
-		if (!startingSettlement.equals(tradingSettlement) && tradingSettlement.getMissionControl().isMissionEnable(commerceType)) {
+		if (!startingSettlement.equals(tradingSettlement)
+					&& tradingSettlement.getMissionControl().isMissionEnable(commerceType)) {
 
 			boolean hasCurrentCommerce = hasCurrentCommerceMission(startingSettlement, tradingSettlement);
 
@@ -258,33 +259,22 @@ public final class CommerceUtil {
 
 			int amountToTrade = Math.min(buy.quantity(), sell.quantity());
 
-			boolean isAmountResource = good.getCategory() == GoodCategory.AMOUNT_RESOURCE;
-
 			double extraMass = 0D;
 			// Calculate the Value of this item to the seller
-			if (isAmountResource) {
+			if (good.getCategory() == GoodCategory.AMOUNT_RESOURCE) {
 				AmountResource resource = ResourceUtil.findAmountResource(good.getID());
-				Container container = getAvailableContainerForResource(resource,
-						sellingSettlement, tradeList);
-				if (container != null) {
-					Good containerGood = GoodsUtil.getEquipmentGood(container.getEquipmentType());
+				EquipmentType containerType = ContainerUtil.getEquipmentTypeNeeded(resource.getPhase());
 
-					// Trade 1 containers worth
-					amountToTrade = (int)getContainerCapacity(resource);
-					extraMass = container.getBaseMass() + (amountToTrade * good.getMassPerItem());
-					
-					// Add the new container to the load
-					int existingContainers = 0;
-					if (tradeList.containsKey(containerGood))
-						existingContainers = tradeList.get(containerGood);
-					tradeList.put(containerGood, (1 + existingContainers));
-				}
-				else
-					logger.warning(sellingSettlement, "Container for " + resource.getName() + " not available.");
+				Good containerGood = GoodsUtil.getEquipmentGood(containerType);
+
+				// Trade 1 containers worth
+				amountToTrade = (int)getContainerCapacity(resource);
+				extraMass = EquipmentFactory.getUsualMass(containerType) + (amountToTrade * good.getMassPerItem());
+				
+				// Add the new container to the load
+				tradeList.merge(containerGood, 1, Integer::sum);
 			}
-		
-			// Add good. mass
-			if (good.getCategory() == GoodCategory.VEHICLE) {
+			else if (good.getCategory() == GoodCategory.VEHICLE) {
 				// Lets skip vehicles for now
 				continue;
 			}
@@ -380,36 +370,6 @@ public final class CommerceUtil {
 			default:
 				return 0D;
 		}
-	}
-
-	/**
-	 * Gets an available container for a given resource.
-	 * 
-	 * @param resource    the resource to check.
-	 * @param settlement  the settlement to check for containers.
-	 * @param tradedGoods the list of goods traded so far.
-	 * @return container for the resource or null if none.
-	 * @throws Exception if error.
-	 */
-	private static Container getAvailableContainerForResource(AmountResource resource, Settlement settlement,
-			Map<Good, Integer> tradedGoods) {
-
-		Container result = null;
-
-		EquipmentType containerType = ContainerUtil.getEquipmentTypeNeeded(resource.getPhase());
-
-		var eo = settlement.getEquipmentInventory();
-		int containersStored = eo.findNumEmptyContainersOfType(containerType, false);
-
-		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
-		int containersTraded = 0;
-		if (tradedGoods.containsKey(containerGood))
-			containersTraded = tradedGoods.get(containerGood);
-
-		if (containersStored > containersTraded)
-			result = eo.findContainer(containerType, true, resource.getID());
-
-		return result;
 	}
 
 	/**
