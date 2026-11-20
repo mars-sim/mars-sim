@@ -139,7 +139,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //	private static final double OVERWHELMING = 768;
 //	private static final double EXCEEDING = 512;	
 	private static final double SUPREME = 256;	
-//	private static final double TRENDY = 192;	
+	private static final double TRENDY = 192;	
 	private static final double EXTREME = 128;
 	private static final double MEGA = 64;
 	private static final double GREAT = 48;
@@ -496,15 +496,15 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 				
 				if (ResourceUtil.isHydrogen(resource)) { 					// hydrogen	
-					score += value * SUPER * 1.2;
+					score += value * SUPER * 1.4;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
-					score += value * EXTREME * 1.2;
+					score += value * TRENDY;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
-					score += value * MEGA * 1.3;
+					score += value * SUPREME;
 				} else if (ResourceUtil.isOxygen(resource)) {  				// oxygen
-					score += value;
+					score += value / 3;
 				} else if (ResourceUtil.isWater(resource)) { 				// water
-					score -= value * 4;
+					score += value / 4;
 				} else if (ResourceUtil.isTier1Resource(resource)) { 		// ice, brine water, rock salt
 					score -= value * SUPER;
 				} else if (ResourceUtil.isRawMaterial(resource)) {   				// all ores, all minerals, sand)
@@ -561,7 +561,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 //					|| ResourceUtil.isConstructionResource(resource)) {	// cement, concrete, lime, brick, gypsum plaster			
 //					score += value * MEGA;					
 				if (ResourceUtil.isTier1Resource(resource)) { 			// ice, brine water, rock salt	
-					score += value * EXTREME;	
+					score += value * SUPREME;	
 //				} else if (ResourceUtil.isInSitu(resource)) {			// all regolith types
 //					score += value * SIGNIFICANT;	
 //				} else if (ResourceUtil.isWasteProduct(resource)) {		// Nitrogen, CO, grey/black water, compost, all waste, carbon monoxide			

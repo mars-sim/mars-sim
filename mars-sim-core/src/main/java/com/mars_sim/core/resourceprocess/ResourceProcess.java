@@ -652,17 +652,17 @@ public class ResourceProcess implements ScheduledEventHandler {
 			logger.info(settlement, 10_000, "Case 1. " + getProcessName() + " - # of modules : " + modules + " -> " + ++modules);
 		}
 		else if (modules > 1
-				&& (overallScore <= max / 4 
-				 || outputScore <= max / 8)) {
+				&& (overallScore < max / 7 
+				 || outputScore < max / 14)) {
 //			logger.info(settlement, " - " + this + ". rand: " + rand);
-			int rand = RandomUtil.getRandomInt(max / 4);
+			int rand = RandomUtil.getRandomInt(max / 7);
 			if (overallScore / 2 < rand || outputScore < rand) {
 				logger.info(settlement, 10_000, "Case 2. " + getProcessName() + " - # of modules : " + modules + " -> " + --modules);
 			}
 		}
 		else if (modules < maxModules
-				&& (overallScore > max 
-				|| outputScore > max / 2)) {
+				&& (overallScore > max / 1.3 
+				|| outputScore > max / 2.3)) {
 			int rand = RandomUtil.getRandomInt(max);
 //			logger.info(settlement, " - " + this + ". rand: " + rand);
 			if (overallScore / 2 > rand || outputScore > rand) {

@@ -16,6 +16,7 @@ import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.MarsTime;
 
 /**
  * Models the composition of air within a containment. Holds the specific gas composition and pressure.
@@ -86,7 +87,9 @@ public class AirComposition implements Serializable {
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
 
 	public static final double C_TO_K = 273.15;
-
+	// Assume the designed leak rate wiht 0.008 mm orifice, thus alpha is 10e-9
+	public static final double ALPHA = 10e-9;
+	
     private static double o2Consumed;
 	private static double cO2Expelled;
 	private static double moistureExpelled;
@@ -96,6 +99,8 @@ public class AirComposition implements Serializable {
 	private double totalMass; // in kg
 	private double totalNumMoles; // in mol
 
+	private double dM; // the mass flow rate per millisol
+	
 	private double accumulatedTime;
 	
 	private Map<Integer, GasDetails> gases = new HashMap<>();
@@ -117,6 +122,9 @@ public class AirComposition implements Serializable {
 		
 		// Part 2 : calculate total # of moles, total mass and total pressure
 		fixedVolume = vol;
+		
+		// When a building is added, update fixedVolume
+		
 		for(Entry<Integer, GasDetails> g : gases.entrySet()) {
 			int gasId = g.getKey();
 			double molecularMass = getMolecularMass(gasId);
@@ -133,6 +141,14 @@ public class AirComposition implements Serializable {
 			totalMass += m;
 			totalPressure += p;
 		}
+		
+		// Use choked flow model
+		// double pressureRatio = 0.00602 / totalPressure = 610 / 34000 = 0.018 < 0.528
+		
+		// Calculate the rate is in kg per second
+		double massFlowRate = 0.61 * fixedVolume / 2.5 * ALPHA * 34000 * 0.002362;
+		// Convert to the mass flow rate per millisol
+		dM = massFlowRate / MarsTime.SECONDS_PER_MILLISOL;
 		
 		// Part 3 : calculate for each building the percent composition
 		updateGasPercentage();
@@ -169,6 +185,9 @@ public class AirComposition implements Serializable {
 		double tt = building.getCurrentTemperature();
 		boolean isTempUnsafe = tt > -40 && tt < 40;
 
+		// TODO: If temperature is outside the range, 
+		// enact emergency measures ?!
+		
 		if (isTempUnsafe) {
 			double t = AirComposition.C_TO_K + tt;
 
@@ -182,7 +201,7 @@ public class AirComposition implements Serializable {
 				
 				int numPeople = building.getNumPeople();
 
-				calcPersonImpact(t, numPeople,  accumulatedTime);
+				calculateImpact(t, numPeople,  accumulatedTime);
 			}
 
 			if (pulse.isNewIntMillisol()
@@ -193,13 +212,13 @@ public class AirComposition implements Serializable {
 	}
 
 	/**
-	 * Updates each gas for occupants.
+	 * Updates each gas due to occupants breathing and leakage.
 	 * 
 	 * @param t Current temperature
 	 * @param numPeople Number of people in using air
 	 * @param time The time span of the gas consumption
 	 */
-	private void calcPersonImpact(double t, int numPeople, double time) {
+	private void calculateImpact(double t, int numPeople, double time) {
 		
 		totalPressure = 0;
 		totalMass = 0;
@@ -218,6 +237,9 @@ public class AirComposition implements Serializable {
 				m += numPeople * moistureExpelled * time;
 			}
 
+			// Account for the gas leakage
+			m -= dM * gas.percent / 100 * time;
+			
 			// Divide by molecular mass to convert mass to # of moles
 			// note the kg/mole are as indicated as each gas have different amu
 			double mm = getMolecularMass(gasId);
