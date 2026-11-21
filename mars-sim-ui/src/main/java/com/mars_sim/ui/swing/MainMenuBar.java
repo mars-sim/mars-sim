@@ -55,14 +55,15 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	private static final String LOOK_AND_FEEL_ICON = "action/theme";
 	private static final String WINDOW_UI = "window_ui";
 
-	private UIContext context;
+	private final UIContext context;
 
-	private ContentManager manager;
+	private final ContentManager manager;
 
 	/**
-	 * Constructor.
+	 * Construct a main menu bar that provides the common actions as menu items for the Mars Simulation.
 	 *
 	 * @param context The UI hosting the menu bar.
+	 * @param manager The top level content manager.
 	 * @param audioPlayer The audio player to control.
 	 */
 	public MainMenuBar(ContentManager manager, UIContext context, AudioPlayer audioPlayer) {
@@ -381,10 +382,10 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 				SaveDialog.createEndSimulation(context.getSimulation(), manager);
 				break;
 			case SAVE:
-				SaveDialog.create(top, context.getSimulation(),true);
+				SaveDialog.create(top, context.getSimulation(),true, manager);
 				break;
 			case SAVE_AS:
-				SaveDialog.create(top, context.getSimulation(),false);
+				SaveDialog.create(top, context.getSimulation(),false, manager);
 				break;
 			case ABOUT:
 				newGuideURL = Msg.getString("doc.about"); //$NON-NLS-1$

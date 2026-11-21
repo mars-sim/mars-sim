@@ -15,6 +15,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +32,7 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 import org.jdom2.Attribute;
+import org.jdom2.Comment;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -90,8 +94,8 @@ public class UIConfig {
 	private static final String TOOL_PROPS_PREFIX = "tool-window:";
 
 	private final String storageDir;
-	private Map<String,WindowSpec> loadedSpecs = new HashMap<>();
-	private Map<String,Properties> propSets = new HashMap<>();
+	private final Map<String,WindowSpec> loadedSpecs = new HashMap<>();
+	private final Map<String,Properties> propSets = new HashMap<>();
 
 	private Point mainWindowPosn = new Point(0,0);
 	private Dimension mainWindowSize = new Dimension(1024, 720);
@@ -228,6 +232,9 @@ public class UIConfig {
 		Element uiElement = new Element(UI);
 		outputDoc.setRootElement(uiElement);
 
+		uiElement.addContent(new Comment("Saved on "
+				+ DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(LocalDateTime.now())));
+
 		uiElement.setAttribute(USE_DEFAULT, "false");
 		uiElement.setAttribute(USE_DOCKING, Boolean.toString(useDockingUI));
 
@@ -235,7 +242,6 @@ public class UIConfig {
 		
 		Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
 		uiElement.addContent(internalWindowsElement);
-
 		var contentSpecs = mainWindow.getContentSpecs();
 
 		// Add all internal windows.
@@ -451,7 +457,7 @@ public class UIConfig {
 			try {
     			result = Double.parseDouble(settings.getProperty(name));
 			}
-			catch(NumberFormatException nfe) {
+			catch(NumberFormatException _) {
 				logger.warning("Cannot parse double property of " + name + ", value=" + settings.getProperty(name));
 			}
     	}

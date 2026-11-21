@@ -35,8 +35,9 @@ public class SaveDialog {
 	 * @param defaultFile is the default.sim file be used
      * @param frame Parent frame for any dialogs
      * @param sim Simulation to be saved
+     * @param mainWindow Main window of the application.
 	 */
-	public static void create(JFrame frame, Simulation sim,boolean defaultFile) {
+	public static void create(JFrame frame, Simulation sim, boolean defaultFile, ContentManager mainWindow) {
 		File fileLocn = null;
 		if (!defaultFile) {
 			JFileChooser chooser = new JFileChooser(SimulationRuntime.getSaveDir());
@@ -47,6 +48,8 @@ public class SaveDialog {
 				return;
 			}
 		}
+
+		mainWindow.getConfig().saveFile(mainWindow);
 
 		// Request the save
 		sim.requestSave(fileLocn, null);
