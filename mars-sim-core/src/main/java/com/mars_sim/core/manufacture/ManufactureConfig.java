@@ -21,6 +21,7 @@ import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.process.ProcessItemFactory;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.vehicle.VehicleConfig;
 
@@ -62,7 +63,7 @@ public class ManufactureConfig {
 	private List<ManufactureProcessInfo> manuProcessInfoList;
 	private List<SalvageProcessInfo> salvageInfoList;
 
-	private Map<String, Tooling> tools = new HashMap<>();
+	private final Map<String, Tooling> tools = new HashMap<>();
 	
 	/**
 	 * Constructor.
@@ -77,6 +78,9 @@ public class ManufactureConfig {
 		loadTooling(root);
 		loadManufactureProcessList(root, vehicleConfig);
 		loadSalvageList(root, vehicleConfig);
+
+		// Load in the specific manufactured parts needed for special items
+		ItemResourceUtil.discoverManufacturedParts(this);
 	}
 
 	/**
@@ -323,4 +327,18 @@ public class ManufactureConfig {
 		salvageInfoList = Collections.unmodifiableList(newList);
 		salvageByTechLevel = createListByTech(salvageInfoList);
 	}
+
+	/**
+	 * Find the first manufacture process that produces the specified output item.
+	 * @param outputName The name of the output item.
+	 * @return The first manufacture process that produces the specified output item, or null if none found.
+	 */
+    public ManufactureProcessInfo getProcessByOutput(String outputName) {
+        for (var info : manuProcessInfoList) {
+			if (!info.getOutputItemsByName(outputName).isEmpty()) {
+				return info;
+			}
+		}
+		return null;
+    }
 }

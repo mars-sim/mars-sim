@@ -24,7 +24,6 @@ import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.MalfunctionManager.MaintenanceParameters;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -49,20 +48,15 @@ public class DataRecorder extends Equipment implements Malfunctionable, Temporal
 	
 	/** String name. */	
 	public static final String TYPE = SystemType.DATA_RECORDER.getName();
+
+	private final Map<Integer, List<FieldDataSet>> dataSetMap = new HashMap<>();
 	
-	static {
-		// Initialize the parts
-		ItemResourceUtil.initDataRecorder();
-	}
-	
-	private Map<Integer, List<FieldDataSet>> dataSetMap = new HashMap<>();
-	
-	private Settlement settlement;
+	private final Settlement settlement;
 	
 	/** The equipment's malfunction manager. */
-	private MalfunctionManager malfunctionManager;
+	private final MalfunctionManager malfunctionManager;
 	/** The recorder's event history. */
-	private History<MsgContext> eventHistory = new History<>(28);
+	private final History<MsgContext> eventHistory = new History<>(28);
 		
 	/**
 	 * Constructor 1.

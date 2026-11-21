@@ -597,8 +597,9 @@ public class PartGood extends Good {
 	 * @param part the part.
 	 * @return demand
 	 */
-	private double getEVASuitPartsDemand(GoodsManager owner) {		
-		if (ItemResourceUtil.evaSuitPartIDs != null && ItemResourceUtil.evaSuitPartIDs.contains(getID())) {
+	private double getEVASuitPartsDemand(GoodsManager owner) {
+		var evaSuitPartIDs = ItemResourceUtil.getEVASuitParts();
+		if (evaSuitPartIDs != null && evaSuitPartIDs.contains(getID())) {
 			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandScore(this);
 		}
 		return 0;
@@ -610,8 +611,9 @@ public class PartGood extends Good {
 	 * @param part the part.
 	 * @return demand
 	 */
-	private double getBotPartsDemand(GoodsManager owner) {		
-		if (ItemResourceUtil.botPartIDs != null && ItemResourceUtil.botPartIDs.contains(getID())) {
+	private double getBotPartsDemand(GoodsManager owner) {
+		var botPartIDs = ItemResourceUtil.getBotParts();
+		if (botPartIDs != null && botPartIDs.contains(getID())) {
 			return owner.getBotMod() * ROBOT_VALUE * owner.getDemandScore(this) / 3;
 		}
 		return 0;

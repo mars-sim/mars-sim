@@ -14,10 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
-import com.mars_sim.core.process.ProcessItem;
+import com.mars_sim.core.manufacture.ManufactureConfig;
 
 public class ItemResourceUtil {
 
@@ -71,27 +69,18 @@ public class ItemResourceUtil {
 	// Must be one after the last fixed resource
 	public static final int FIRST_FREE_ITEM_RESOURCE_ID = STEEL_PIPE_ID + 1;
 	
-	/** String name of the manufacturing process of producing a data recorder. */	
-	private static final String MANUFACTURE_DATA_RECORDER = "Manufacture Data Recorder";
-	
-	/** String name of the manufacturing process of producing an EVA suit. */	
-	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
-	
-	/** 
-	 * The String name of the manufacturing process of producing a repair bot.
-	  */	
-	public static final String ASSEMBLE_REPARTBOT = "Assemble repairBot";
-	
 	private static Map<String, Part> itemResourceByName;
 	private static Map<Integer, Part> itemResourceByID;
 	private static Set<Part> partSet;
 	
-	public static Set<Integer> evaSuitPartIDs;
-	public static Set<Integer> botPartIDs;
-	public static Set<Integer> dataRecordIDs;
+	private static Set<Integer> evaSuitPartIDs;
+	private static Set<Integer> botPartIDs;
+	private static Set<Integer> dataRecordIDs;
 	
 	/** A set of common parts that will be consumed during a malfunction repair. */
-	public static Set<Integer> consumablePartIDs;
+	public static final Set<Integer> CONSUMABLE_PARTS = Set.of(FIRE_EXTINGUISHER_ID,
+										AIRLEAK_PATCH_ID,
+										WORK_GLOVES_ID);
 
 	private static final Map<String, Integer> fixedItemResources = new HashMap<>();
 
@@ -205,97 +194,45 @@ public class ItemResourceUtil {
 		return fixedItemResources.getOrDefault(resourceName.toLowerCase(), -1);
 	}
 	
-	
 	/**
-	 * Initializes the consumable parts for use during malfunction.
+	 * Load the manufactured parts needed for certain special items
+	 * @param config Manufacture configuration containing the manufacturing process information.
 	 */
-	public static void initConsumableParts() {
-		if (consumablePartIDs == null) {
-			consumablePartIDs = Set.of(FIRE_EXTINGUISHER_ID,
-										AIRLEAK_PATCH_ID,
-										WORK_GLOVES_ID);
-		}
+	public static void discoverManufacturedParts(ManufactureConfig config) {
+		evaSuitPartIDs = findInputParts(config, "EVA Suit");
+		dataRecordIDs = findInputParts(config, "Data Recorder");
+
+		// Standard repair bot used as the benchmark for bot parts
+		botPartIDs = findInputParts(config, "RepairBot-standard");
 	}
-	
-	/**
-	 * Initializes the EVA suit parts.
-	 * 
-	 * @return mass
-	 */
-	public static double initEVASuit() {
-		if (evaSuitPartIDs == null || evaSuitPartIDs.isEmpty()) {
-			
-			double usualMass = 0;
 
-			ManufactureProcessInfo manufactureProcessInfo = null;
-			
-			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
-			
-			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
-				if (info.getName().equalsIgnoreCase(ASSEMBLE_EVA_SUIT)) {
-		        	manufactureProcessInfo = info;
-					evaSuitPartIDs = info.getInputPartIDs();
-					usualMass = info.calculateTotalInputMass();
-		        	break;
-				}
-			}
-
-			if (manufactureProcessInfo == null)
-				logger.config("Unable to find EVA suit part IDs.");
-			else {
-				return usualMass;
-			}
-		}
-		
-		return 0;
+	public static Set<Integer> getEVASuitParts() {
+		return evaSuitPartIDs;
 	}
-	
-	/**
-	 * Initializes the data recorder parts.
-	 */
-	public static void initDataRecorder() {
-		if (dataRecordIDs == null || dataRecordIDs.isEmpty()) {
 
-			ManufactureProcessInfo manufactureProcessInfo = null;
-			
-			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
-			
-			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
-				if (info.getName().equalsIgnoreCase(MANUFACTURE_DATA_RECORDER)) {
-		        	manufactureProcessInfo = info;
-		        	dataRecordIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
-		        	break;
-				}
-			}
-
-			if (manufactureProcessInfo == null)
-				logger.config("Unable to find data recorder part IDs.");
-		}
+	public static Set<Integer> getDataRecordParts() {
+		return dataRecordIDs;
 	}
-	
-	
-	
+
+	public static Set<Integer> getBotParts() {
+		return botPartIDs;
+	}
+
 	/**
-	 * Initializes the bot parts.
+	 * Lookup a manufactured part's input parts by its output name.
+	 * @param config Config object containing manufacture process information.
+	 * @param outputName The name of the manufactured part's output item.
+	 * @return A set of input part IDs required to manufacture the specified output item.
 	 */
-	public static void initBotParts() {
-		if (botPartIDs == null || botPartIDs.isEmpty()) {
-
-			ManufactureProcessInfo manufactureProcessInfo = null;
-			
-			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
-			
-			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
-				if (info.getName().equalsIgnoreCase(ASSEMBLE_REPARTBOT)) {
-		        	manufactureProcessInfo = info;
-		        	botPartIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
-		        	break;
-				}
-			}
-
-			if (manufactureProcessInfo == null)
-				logger.config("Unable to find bot part IDs.");
+	private static Set<Integer> findInputParts(ManufactureConfig config, String outputName) {
+		var info = config.getProcessByOutput(outputName);
+		if (info != null) {
+			return info.getInputPartIDs();
 		}
+
+		logger.config("Unable to find part IDs for " + outputName);
+
+		return Collections.emptySet();
 	}
 	
 	/**
@@ -321,7 +258,6 @@ public class ItemResourceUtil {
 	 *
 	 * @param name the name of the resource.
 	 * @return resource
-	 * @throws ResourceException if resource could not be found.
 	 */
 	public static ItemResource findItemResource(String name) {
 		Part ir = itemResourceByName.get(name.toLowerCase());
@@ -337,7 +273,6 @@ public class ItemResourceUtil {
 	 *
 	 * @param id the resource's id.
 	 * @return resource
-	 * @throws ResourceException if resource could not be found.
 	 */
 	public static Part findItemResource(int id) {
 		Part ir = itemResourceByID.get(id);

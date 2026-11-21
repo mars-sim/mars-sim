@@ -1,6 +1,7 @@
 package com.mars_sim.core.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.goods.GoodType;
 
-public class TestItemResource {
+public class ItemResourceUtilTest {
 
 	private static final double MASS = 7.8;
     @BeforeEach
@@ -19,7 +20,7 @@ public class TestItemResource {
     }
 
     @Test
-    public void testFindByName() {
+    void testFindByName() {
         var sheetName = "Steel sheet";
         var sheet = ItemResourceUtil.findItemResource(sheetName);
 
@@ -30,7 +31,7 @@ public class TestItemResource {
     }
     
     @Test
-    public void testFindItemResourceNegative() {
+    void testFindItemResourceNegative() {
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
         	ItemResourceUtil.findItemResource("test");
         });
@@ -39,7 +40,7 @@ public class TestItemResource {
     }
 
     @Test
-    public void testGetById() {
+    void testGetById() {
         
         // initialize
        var found = ItemResourceUtil.findItemResource(ItemResourceUtil.BACKHOE_ID);
@@ -47,5 +48,23 @@ public class TestItemResource {
        assertNotNull(found);
        assertEquals(ItemResourceUtil.BACKHOE_ID, found.getID());
 
+    }
+
+    @Test
+    void testGetEVASuitParts() {
+        assertNotNull(ItemResourceUtil.getEVASuitParts());
+        assertFalse(ItemResourceUtil.getEVASuitParts().isEmpty(), "EVA suit parts should be discovered");
+    }
+
+    @Test
+    void testGetDataRecordParts() {
+        assertNotNull(ItemResourceUtil.getDataRecordParts());
+        assertFalse(ItemResourceUtil.getDataRecordParts().isEmpty(), "Data recorder parts should be discovered");
+    }
+
+    @Test
+    void testGetBotParts() {
+        assertNotNull(ItemResourceUtil.getBotParts());
+        assertFalse(ItemResourceUtil.getBotParts().isEmpty(), "Repair bot parts should be discovered");
     }
 }

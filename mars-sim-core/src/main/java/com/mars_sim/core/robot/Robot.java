@@ -47,7 +47,6 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.robot.ai.BotMind;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -101,18 +100,18 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	/** The age of this robot. */
 	private int age;
 	/** The height of the robot (in cm). */
-	private int height;
+	private final int height;
 	/** The carrying capacity of the robot. */
 	private int carryingCapacity;
 
-	private double rate;
+	private final double rate;
 	
-	private String model;
+	private final String model;
 	
 	/** The Robot status mode. */
 	private BotMode primaryMode; 
 	/** The Robot Type. */
-	private RobotType robotType;
+	private final RobotType robotType;
 	
 	/** The spot assigned to the Robot */
 	private AllocatedSpot spot;
@@ -130,21 +129,15 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	/** The SalvageInfo instance. */
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
-	private MalfunctionManager malfunctionManager;
+	private final MalfunctionManager malfunctionManager;
 	/** The EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
 	/** The robot's event history. */
-	private History<MsgContext> eventHistory = new History<>(28);
+	private final History<MsgContext> eventHistory = new History<>(28);
 
 	/** List of status modes. */
-	private Set<BotMode> botModes = new HashSet<>();
+	private final Set<BotMode> botModes = new HashSet<>();
 	
-	
-	static {
-		// Initialize the parts
-		ItemResourceUtil.initBotParts();
-	}
-
 	/**
 	 * Constructor 1.
 	 * 
