@@ -76,6 +76,7 @@ public class BuildingUnitWindow extends EntityContentPanel<Building> {
     				addTabPanel( new BuildingPanelVehicleMaintenance(building.getVehicleMaintenance(), context));
     				break;
     			case LIFE_SUPPORT:
+    				addTabPanel( new BuildingPanelAir(building.getLifeSupport().getAir(), context));
     				addTabPanel( new BuildingPanelInhabitable(building.getLifeSupport(), context));
     				break;
     	     	case LIVING_ACCOMMODATION:

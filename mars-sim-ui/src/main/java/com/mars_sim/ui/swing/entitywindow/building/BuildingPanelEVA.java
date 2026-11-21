@@ -25,7 +25,6 @@ import com.mars_sim.ui.swing.utils.AirlockPanel;
  * The BuildingPanelEVA class presents the EVA activities
  * of a building.
  */
-@SuppressWarnings("serial")
 class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalComponent {
 	
 	private static final String SUIT_ICON = "eva";

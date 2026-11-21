@@ -28,7 +28,7 @@ public record ColumnSpec (int id, String name, Class<?> type, int style) {
     public ColumnSpec(int id, String name, Class<?> type) {
         this(id, name, type, STYLE_DEFAULT);
     }
-
+    
     public ColumnSpec(String name, Class<?> type, int style) {
         this(-1, name, type, style);
     }

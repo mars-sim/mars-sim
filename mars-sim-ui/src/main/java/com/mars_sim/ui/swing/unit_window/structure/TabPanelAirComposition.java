@@ -267,12 +267,12 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 		private static final int CO2_VAL = 105;	
 		private static final int AR_VAL = 106;
 
-		private static final EntityColumnSpec TOTAL = new EntityColumnSpec(new ColumnSpec(TOTAL_VAL, Msg.getString("TabPanelAirComposition.column.total"), Double.class), null);
-		private static final EntityColumnSpec O2 = new EntityColumnSpec(new ColumnSpec(O2_VAL, O2_NAME, Double.class), null);
-		private static final EntityColumnSpec H2O = new EntityColumnSpec(new ColumnSpec(H2O_VAL, H2O_NAME, Double.class), null);
-		private static final EntityColumnSpec N2 = new EntityColumnSpec(new ColumnSpec(N2_VAL, N2_NAME, Double.class), null);
-		private static final EntityColumnSpec CO2 = new EntityColumnSpec(new ColumnSpec(CO2_VAL, CO2_NAME, Double.class), null);	
-		private static final EntityColumnSpec AR = new EntityColumnSpec(new ColumnSpec(AR_VAL, AR_NAME, Double.class), null);	
+		private static final EntityColumnSpec TOTAL = new EntityColumnSpec(new ColumnSpec(TOTAL_VAL, Msg.getString("TabPanelAirComposition.column.total"), Double.class,  ColumnSpec.STYLE_DIGIT2), null);
+		private static final EntityColumnSpec O2 = new EntityColumnSpec(new ColumnSpec(O2_VAL, O2_NAME, Double.class, ColumnSpec.STYLE_DIGIT2), null);
+		private static final EntityColumnSpec H2O = new EntityColumnSpec(new ColumnSpec(H2O_VAL, H2O_NAME, Double.class, ColumnSpec.STYLE_DIGIT2), null);
+		private static final EntityColumnSpec N2 = new EntityColumnSpec(new ColumnSpec(N2_VAL, N2_NAME, Double.class, ColumnSpec.STYLE_DIGIT2), null);
+		private static final EntityColumnSpec CO2 = new EntityColumnSpec(new ColumnSpec(CO2_VAL, CO2_NAME, Double.class,  ColumnSpec.STYLE_DIGIT2), null);	
+		private static final EntityColumnSpec AR = new EntityColumnSpec(new ColumnSpec(AR_VAL, AR_NAME, Double.class,  ColumnSpec.STYLE_DIGIT2), null);	
 
 		private BuildingManager manager;
 

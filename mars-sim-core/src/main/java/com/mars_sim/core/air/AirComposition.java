@@ -99,19 +99,24 @@ public class AirComposition implements Serializable {
 	private double totalMass; // in kg
 	private double totalNumMoles; // in mol
 
-	private double dM; // the mass flow rate per millisol
+	private double massLeakageFlowRate; // the mass flow rate [kg per millisol]
+	
+	private double airLeakageMass; // the mass flow rate [kg]
+	private double cumulativeAirLeakageMass; // the mass flow rate [kg]
 	
 	private double accumulatedTime;
 	
 	private Map<Integer, GasDetails> gases = new HashMap<>();
 
+	private Building building;
+	
 	/**
 	 * Constructor.
 	 * 
 	 * @param t
 	 * @param vol
 	 */
-	public AirComposition(double t, double vol) {
+	public AirComposition(Building building, double t, double vol) {
 
 		// Part 1 : set up initial conditions at the start of sim
 		initialiseGas(ResourceUtil.CO2_ID);
@@ -145,10 +150,10 @@ public class AirComposition implements Serializable {
 		// Use choked flow model
 		// double pressureRatio = 0.00602 / totalPressure = 610 / 34000 = 0.018 < 0.528
 		
-		// Calculate the rate is in kg per second
-		double massFlowRate = 0.61 * fixedVolume / 2.5 * ALPHA * 34000 * 0.002362;
-		// Convert to the mass flow rate per millisol
-		dM = massFlowRate / MarsTime.SECONDS_PER_MILLISOL;
+		// Calculate the rate [kg per second]
+		double massFlowRate = 0.61 * building.getFloorArea() * ALPHA * 34000 * 0.002362;
+		// Convert to the mass flow rate [kg per millisol]
+		massLeakageFlowRate = massFlowRate * MarsTime.SECONDS_PER_MILLISOL;
 		
 		// Part 3 : calculate for each building the percent composition
 		updateGasPercentage();
@@ -238,7 +243,12 @@ public class AirComposition implements Serializable {
 			}
 
 			// Account for the gas leakage
-			m -= dM * gas.percent / 100 * time;
+			// Calculate the instantaneous air leaking mass [kg]
+			airLeakageMass = massLeakageFlowRate * gas.percent / 100 * time;
+			
+			cumulativeAirLeakageMass += airLeakageMass;
+			
+			m -= airLeakageMass;
 			
 			// Divide by molecular mass to convert mass to # of moles
 			// note the kg/mole are as indicated as each gas have different amu
@@ -272,6 +282,15 @@ public class AirComposition implements Serializable {
 		updateGasPercentage();
 	}
 
+	public double getMassLeakageFlowRate() {
+		return massLeakageFlowRate;
+	}
+	
+	public double getCumulativeAirLeakageMass() {
+		return cumulativeAirLeakageMass;
+	}
+	
+	
 	/**
 	 * Monitors the gases exchanges to a Resource Holder.
 	 * 
@@ -407,6 +426,9 @@ public class AirComposition implements Serializable {
         return gases.get(gasId);
     }
 
+    public Building getBuilding() {
+    	return building;
+    }
 	
     /**
      * Initializes constants.
