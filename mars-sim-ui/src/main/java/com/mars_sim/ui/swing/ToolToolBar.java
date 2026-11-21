@@ -74,7 +74,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final Font FONT_MONOSPACED = new Font(Font.MONOSPACED, Font.ROMAN_BASELINE, 12);
 	private static final Font FONT_SANS_SERIF = new Font(Font.SANS_SERIF, Font.BOLD, 12);
 
-	private UIContext context;
+	private final UIContext context;
 
 	private MarsCalendarDisplay calendarDisplay; 
 	
@@ -85,13 +85,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private JLabel marsTime;
 	
 	private JPanel calendarPane;
-	private MasterClock masterClock;
+	private final MasterClock masterClock;
 
-	private AudioPlayer audioPlayer;
+	private final AudioPlayer audioPlayer;
 
-	private ContentManager manager;
+	private final ContentManager manager;
 
-	private Dimension dim = new Dimension(HEIGHT, HEIGHT);
+	private static final Dimension dim = new Dimension(HEIGHT, HEIGHT);
 
 	/**
 	 * Constructs a ToolToolBar object.
@@ -338,11 +338,11 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		switch(event.getActionCommand()) {
 			case SAVE:
-				SaveDialog.create(context.getTopFrame(), context.getSimulation(), true);
+				SaveDialog.create(context.getTopFrame(), context.getSimulation(), true, manager);
 				break;
 
 			case SAVEAS:
-				SaveDialog.create(context.getTopFrame(), context.getSimulation(), false);
+				SaveDialog.create(context.getTopFrame(), context.getSimulation(), false, manager);
 				break;
 
 			case EXIT:
