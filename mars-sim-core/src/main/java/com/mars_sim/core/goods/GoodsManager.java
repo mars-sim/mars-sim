@@ -19,7 +19,6 @@ import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
@@ -73,8 +72,7 @@ public class GoodsManager implements Serializable {
 	// Fixed weights to apply to updates to commerce factors.
 	private static final Map<CommerceType, Double> FACTOR_WEIGHTS = Map.of(CommerceType.RESEARCH, 1.5D);
 
-	private static Map<Integer, ResourceLimits> resLimits = SimulationConfig.instance().getSettlementConfiguration().getEssentialResources();
-
+	private static Map<Integer, ResourceLimits> resLimits = null;
 	/** A standard list of resources to be excluded in buying negotiation. */
 	private static Set<Good> unsellableGoods = null;
 
@@ -953,15 +951,6 @@ public class GoodsManager implements Serializable {
 		return resLimits.size() - reviewedEssentials.size();
 	}
 	
-	/**
-	 * Gets the number of resources already reviewed.
-	 * 
-	 * @return
-	 */
-	public int numReviewed() {
-		return reviewedEssentials.size();
-	}
-	
 	/*
 	 * Gets the life resources.*
 	 */
@@ -977,19 +966,6 @@ public class GoodsManager implements Serializable {
 	 */
 	public double getReserveLimit(int id) {
 		return resLimits.get(id).reserve();
-	}
-	
-	/**
-	 * 
-	 * Gets the unreviewed resources for a review.
-	 * 
-	 * @return
-	 */
-	private Set<Integer> getResourceForReview() {
-		Set<Integer> unreviewed = new HashSet<>(resLimits.keySet());
-		unreviewed.removeAll(reviewedEssentials);
-
-		return unreviewed;
 	}
 
 	/**
@@ -1277,18 +1253,15 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
-	 * Reloads instances after loading from a saved sim.
-	 *
-	 * @param ms {@link MasterClock}
-	 * @param sim  {@link Simulation}
-	 * @param u  {@link UnitManager}
-	 * @param mm  {@link MarketManager}
+	 * Reloads instances after a simulation is started
 	 */
-	public static void initializeInstances(MasterClock ms, UnitManager u, MarketManager mm) {
+	public static void initializeInstances(SimulationConfig config, MasterClock ms, UnitManager u, MarketManager mm) {
+		resLimits = config.getSettlementConfiguration().getEssentialResources();
+
 		unitManager = u;
 		masterClock = ms;
 		marketManager = mm;
-		Good.initializeInstances(u);
+		Good.initializeInstances(config, u);
 		CommerceUtil.initializeInstances(u);
 	}
 

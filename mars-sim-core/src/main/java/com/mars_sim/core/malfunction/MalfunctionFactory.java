@@ -21,9 +21,7 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
@@ -48,18 +46,7 @@ public final class MalfunctionFactory implements Serializable {
 	// Data members
 	private int newIncidentNum = 0;
 
-	public static SimulationConfig simulationConfig = SimulationConfig.instance();
-	public static MalfunctionConfig mc = simulationConfig.getMalfunctionConfiguration();
-	public transient PartConfig partConfig = simulationConfig.getPartConfiguration();
-
-	/**
-	 * Constructs a MalfunctionFactory object.
-	 *
-	 * @param malfunctionConfig malfunction configuration DOM document.
-	 * @throws Exception when malfunction list could not be found.
-	 */
-	public MalfunctionFactory() {
-	}
+	private static MalfunctionConfig mc = SimulationConfig.instance().getMalfunctionConfiguration();
 
 	/**
 	 * Picks a malfunction from a given unit scope.
@@ -109,40 +96,6 @@ public final class MalfunctionFactory implements Serializable {
 		}
 
 		return choosenMalfunction;
-	}
-
-	/**
-	 * Gets a collection of malfunctionable entities local to the given worker.
-	 * NOTE: DO NOT DELTE. RETAIN THIS METHOD FOR FUTURE USE.
-	 * 
-	 * @param worker
-	 * @return collection collection of malfunctionables.
-	 */
-	private static Collection<Malfunctionable> getLocalMalfunctionables(Worker worker) {
-
-		Collection<Malfunctionable> entities = new ArrayList<>();
-
-		if (worker.isInSettlement()) {
-			entities = getBuildingMalfunctionables(worker.getSettlement());
-		}
-
-		if (worker.isInVehicle()) {
-			entities.addAll(getMalfunctionables((Malfunctionable) worker.getVehicle()));
-		}
-
-		Collection<? extends Unit> inventoryUnits = null;
-
-		inventoryUnits = worker.getEquipmentInventory().getEquipmentSet();
-
-		if (inventoryUnits != null && !inventoryUnits.isEmpty()) {
-			for (Unit unit : inventoryUnits) {
-				if (unit instanceof Malfunctionable u && !entities.contains(u)) {
-					entities.add(u);
-				}
-			}
-		}
-
-		return entities;
 	}
 
 	/**
@@ -224,12 +177,6 @@ public final class MalfunctionFactory implements Serializable {
 		}
 
 		// Get entities carried by people on EVA.
-		// for (Person person : settlement.getAllAssociatedPeople()) {
-		// 	if (person.isOutside())
-		// 		entities.addAll(getLocalMalfunctionables(person));
-		// }
-
-		// Get entities carried by people on EVA.
 		for (Equipment e: settlement.getEquipmentInventory().getSuitSet()) {
 			EVASuit suit = (EVASuit)e;
 			if (suit.getMalfunctionManager().hasMalfunction())
@@ -269,32 +216,6 @@ public final class MalfunctionFactory implements Serializable {
 		}
 		return repairPartProbabilities;
 	}
-
-//	/**
-//	 * Gets the probabilities of parts per maintenance for a set of entity scope
-//	 * strings.
-//	 *
-//	 * @param scope a collection of entity scope strings.
-//	 * @return map of maintenance parts and probable number of parts needed per
-//	 *         maintenance.
-//	 * @throws Exception if error finding maintenance part probabilities.
-//	 */
-//	static Map<Integer, Double> getMaintenancePartProbabilities(Set<String> scope) {
-//		Map<Integer, Double> maintenancePartProbabilities = new HashMap<>();	
-//		for (MaintenanceScope maintenance : partConfig.getMaintenanceScopeList(scope)) {
-//			double prob = maintenance.getProbability() / 100D;
-//			int partNumber = maintenance.getMaxNumber();
-//			double averageNumber = RandomUtil.getIntegerAverageValue(partNumber);
-//			double totalNumber = averageNumber * prob;
-//
-//			Integer id = maintenance.getPart().getID();
-//			if (maintenancePartProbabilities.containsKey(id))
-//				totalNumber += maintenancePartProbabilities.get(id);
-//			maintenancePartProbabilities.put(id, totalNumber);
-//		}
-//
-//		return maintenancePartProbabilities;
-//	}
 
 	/**
 	 * Obtains the malfunction representing the specified name.

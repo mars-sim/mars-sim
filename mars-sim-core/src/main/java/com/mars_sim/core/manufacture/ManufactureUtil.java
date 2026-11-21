@@ -32,8 +32,7 @@ public final class ManufactureUtil {
 	private static final int BIN_VALUE = 30;
 	private static final int VEHICLE_VALUE = 60;
 	
-	private static final SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static final ManufactureConfig manufactureConfig = simulationConfig.getManufactureConfiguration();
+	private static final ManufactureConfig manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 	
 	/** Constructor. */
 	private ManufactureUtil() {

@@ -18,7 +18,6 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
-import com.mars_sim.core.building.construction.ConstructionUtil;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.food.FoodProductionUtil;
@@ -48,11 +47,10 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private static final double SKILL_FACTOR = 1D;
 	private static final double TECH_FACTOR = 2D;
 
-	protected static SimulationConfig simConfig = SimulationConfig.instance();
-    protected static VehicleConfig vehicleConfig = simConfig.getVehicleConfiguration();
-	protected static PersonConfig personConfig = simConfig.getPersonConfig();
-	protected static CropConfig cropConfig = simConfig.getCropConfiguration();
-	protected static BuildingConfig buildingConfig = simConfig.getBuildingConfiguration();
+    protected static VehicleConfig vehicleConfig;
+	protected static PersonConfig personConfig;
+	protected static CropConfig cropConfig;
+	private static BuildingConfig buildingConfig;
 	
 	protected static UnitManager unitManager;
 	
@@ -355,12 +353,12 @@ public abstract class Good implements Serializable, Comparable<Good> {
 					if (frameStage.isConstructable() && foundationStage.isConstructable()) {
 						return true;
 					} else {
+						var config = SimulationConfig.instance().getConstructionConfiguration();
 						// Check if any existing buildings have same frame stage and can be refit or
 						// refurbished
 						// into new building.
 						for (String type: buildingConfig.getBuildingTypes()) {
-							ConstructionStageInfo tempBuildingStage = ConstructionUtil
-									.getConstructionStageInfo(type);
+							ConstructionStageInfo tempBuildingStage = config.getConstructionStageInfoByName(type);
 							if (tempBuildingStage != null) {
 								ConstructionStageInfo tempFrameStage = tempBuildingStage.getPrerequisiteStage();
 								if (frameStage.equals(tempFrameStage)) {
@@ -551,7 +549,11 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * 
 	 * @param m
 	 */
-	static void initializeInstances( UnitManager u) {
+	static void initializeInstances(SimulationConfig c, UnitManager u) {
+		vehicleConfig = c.getVehicleConfiguration();
+		personConfig = c.getPersonConfig();
+		cropConfig = c.getCropConfiguration();
+		buildingConfig = c.getBuildingConfiguration();
 		unitManager = u;
 	}
 }

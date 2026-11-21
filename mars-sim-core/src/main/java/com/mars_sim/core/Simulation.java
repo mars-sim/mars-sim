@@ -325,7 +325,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		
 		MetaTaskUtil.initializeMetaTasks();
 		
-		GoodsManager.initializeInstances(sim.masterClock, sim.unitManager, sim.marketManager);
+		GoodsManager.initializeInstances(sim.simulationConfig, sim.masterClock, sim.unitManager, sim.marketManager);
 					
 		sim.medicalManager = new MedicalManager();
 
@@ -341,7 +341,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Initialize ScientificStudyUtil
 		ScientificStudyUtil.initializeInstances(sim.unitManager);
 
-		Unit.initializeInstances(sim.masterClock, sim.unitManager, sim.weather);
+		Unit.initializeInstances(sim.simulationConfig,sim.masterClock, sim.unitManager, sim.weather);
 		
 		LocalAreaUtil.initializeInstances(sim.unitManager, sim.masterClock);
 
@@ -436,7 +436,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		marketManager = new MarketManager();
 
 		// Initialize Unit
-		Unit.initializeInstances(masterClock, unitManager, weather);
+		Unit.initializeInstances(simulationConfig, masterClock, unitManager, weather);
 		
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 										simulationConfig.getPersonConfig(), eventManager);
@@ -488,7 +488,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		Relation.initializeInstances(unitManager);
 				
-		GoodsManager.initializeInstances(masterClock, unitManager, marketManager);
+		GoodsManager.initializeInstances(simulationConfig, masterClock, unitManager, marketManager);
 		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -550,7 +550,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		MarsSurface marsSurface = unitManager.getMarsSurface();
 			
 		// Re-initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, unitManager, weather);
+		Unit.initializeInstances(simulationConfig, masterClock, unitManager, weather);
 		
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 								simulationConfig.getPersonConfig(), eventManager);
@@ -597,7 +597,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 	
 		Relation.initializeInstances(unitManager);
 				
-		GoodsManager.initializeInstances(masterClock, unitManager, marketManager);
+		GoodsManager.initializeInstances(simulationConfig, masterClock, unitManager, marketManager);
 				
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);

@@ -22,7 +22,6 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.RobotType;
-import com.mars_sim.core.vehicle.VehicleConfig;
 import com.mars_sim.core.vehicle.VehicleSpec;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -37,8 +36,6 @@ public class GoodsUtil {
     // Data members
     private static Map<Integer, Good> goodsMap = null;
     private static List<Good> goodsList = null;
-
-    private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 
     /**
      * Private constructor for utility class.
@@ -223,6 +220,8 @@ public class GoodsUtil {
      */
     private static void populateVehicles(Map<Integer, Good> newMap) {
         Set<VehicleType> done = new HashSet<>();  // Only add one per Vehicle Type
+        
+        var vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
         for(VehicleSpec vs : vehicleConfig.getVehicleSpecs()) {
             if (!done.contains(vs.getType())) {
                 Good newGood = new VehicleGood(vs);

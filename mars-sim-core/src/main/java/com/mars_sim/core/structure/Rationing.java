@@ -23,9 +23,7 @@ public class Rationing implements Serializable {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Rationing.class.getName());
-	
-	private static final double WASH_WATER_USAGE = SimulationConfig.instance().getPersonConfig().getWaterUsageRate();
-	
+		
 	public enum EmergencyLevel {
 		NONE (0),
 		ALPHA (1),
@@ -74,13 +72,8 @@ public class Rationing implements Serializable {
 	/** The newly recommended level just being computed. */
 	private int recommendedLevel;
 	
-	private double totalWaterUsage;
-	
-	/** The player adjustable rationing level that would trigger the state of emergency for the settlement. */
-//	private EmergencyLevel emergencyLevel = EmergencyLevel.NONE;
-	
-	/** The associated settlement. */
-	private Settlement settlement;
+	private final double totalWaterUsage;
+	private final Settlement settlement;
 	
 	
 	// Future: as soon as we apply rationing to other resources,
@@ -94,7 +87,8 @@ public class Rationing implements Serializable {
 		
 		// Assuming a 90-day supply of this resource and including industrial usage 
 		// of WASH_WATER_USAGE
-		double reserve1 = 90 * (5 * WASH_WATER_USAGE + settlement.getWaterConsumptionRate());
+		var washWaterUsage = SimulationConfig.instance().getPersonConfig().getWaterUsageRate();
+		double reserve1 = 90 * (5 * washWaterUsage + settlement.getWaterConsumptionRate());
 		
 		totalWaterUsage = reserve0 + reserve1;	
 	}
@@ -105,11 +99,7 @@ public class Rationing implements Serializable {
 	 * @return
 	 */
 	public boolean isAboveEmergency40() {
-		if (currentLevel <= 40) {
-			// 40 is in between BRAVO and CHARLIE
-			return false;
-		}
-		return true;
+		return (currentLevel > 40);
 	}
 	
 	/**

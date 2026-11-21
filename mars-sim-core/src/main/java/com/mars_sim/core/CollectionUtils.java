@@ -20,32 +20,17 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 
 /**
  * This class provides general collection manipulation convenience methods.
  */
 public class CollectionUtils {
 
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 
 	private CollectionUtils() {
 		// nothing
 	}
 
-	/**
-	 * Gets the base mass of a vehicle type.
-	 * 
-	 * @param vehicleType
-	 * @return
-	 */
-	public static double getVehicleTypeBaseMass(VehicleType vehicleType) {
-		if (simulationConfig == null)
-			simulationConfig = SimulationConfig.instance();
-		
-		return simulationConfig.getVehicleConfiguration().getVehicleSpec(vehicleType.getName()).getEmptyMass();
-	}
-	
 	/**
 	 * Finds a nearby vehicle based on its coordinates.
 	 *
