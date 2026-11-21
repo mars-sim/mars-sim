@@ -13,7 +13,7 @@ import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.ai.MBTIPersonality;
+import com.mars_sim.core.person.ai.MBTIType;
 
 /** 
  * 
@@ -42,8 +42,8 @@ public class ProfileCommand extends AbstractPersonCommand {
 		response.appendLabeledString("Fatigue", condition.getFatigueLevel().getName());
 		response.appendLabeledString("Performance", condition.getPerformanceLevel().getName());
 		response.appendLabeledString("Stress", condition.getStressLevel().getName());
-		MBTIPersonality mbti = person.getMind().getMBTI();
-		response.appendLabeledString("Personality", mbti.getDescriptor() + " (" + mbti.getTypeString() + ')');
+		MBTIType mbti = person.getMind().getMBTI().getType();
+		response.appendLabeledString("Personality", mbti.name() + " (" + mbti.getName() + ')');
 
 		response.appendBlankLine();
 		response.appendLabeledString("Country", person.getCountry());

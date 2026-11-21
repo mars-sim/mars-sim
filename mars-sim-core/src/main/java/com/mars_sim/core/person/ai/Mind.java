@@ -562,9 +562,6 @@ public class Mind implements Serializable, Temporal {
 		taskManager.destroy();
 		mission = null;
 		jobType = null;
-		if (mbti != null)
-			mbti.destroy();
-		mbti = null;
 		
 		emotionMgr.destroy();
 		emotionMgr = null;
