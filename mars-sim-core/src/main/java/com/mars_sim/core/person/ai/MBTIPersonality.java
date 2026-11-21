@@ -10,15 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.tool.RandomUtil;
 
 /*
@@ -52,84 +47,15 @@ public class MBTIPersonality implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public enum MBTIType {
-		ISTP,
-		ISTJ,
-		ISFP,
-		ISFJ, 
-		
-		INTP,
-		INTJ,
-		INFP,
-		INFJ,
-		
-		ESTP,
-		ESTJ,
-		ESFP,
-		ESFJ,
-		
-		ENTP,
-		ENTJ,
-		ENFP,
-		ENFJ
-	}
-	
 	/** The person's MBTI */
-	public MBTIType mbtiType;
-
-	private static EnumMap<MBTIType, String> descriptor;
-	
-	// Add four MBTI scores
-	public static final int INTROVERSION_EXTRAVERSION = 0;
-	public static final int INTUITION_SENSATION = 1;
-	public static final int FEELING_THINKING = 2;
-	public static final int JUDGING_PERCEIVING = 3;
+	private MBTIType mbtiType;
+	/** The person's score map */
+	private final int[] scores = new int[4];
 
 	// The solitude stress modifier per millisol.
 	private static final double BASE_SOLITUDE_STRESS_MODIFIER = .1D;
 	// The company stress modifier per millisol.
 	private static final double BASE_COMPANY_STRESS_MODIFIER = .1D;
-
-	private static final String FUNCTION_LENS = "Function Lens";
-	private static final String CULTURE_LENS = "Culture Lens";
-	private static final String TEMP_LENS = "Temperament Lens";
-	
-	// Domain members
-	/** The percent Breakdown of MBTI type of a general population, loading from people.xml. */
-	private static Map<String, Double> personalityDistribution = null;
-	/** The person's score map */
-	private Map<Integer, Integer> scores = null;
-	/** The person config instance. */
-	private static PersonConfig config = SimulationConfig.instance().getPersonConfig();
-
-	static {
-		// Load personality type map if necessary.
-		if (personalityDistribution == null)
-			personalityDistribution = config.loadPersonalityDistribution();
-	}
-	
-	static {
-		descriptor = new EnumMap<>(MBTIType.class);
-		descriptor.put(MBTIType.ISTP, "Analyzer");
-		descriptor.put(MBTIType.ISTJ, "Inspector");
-		descriptor.put(MBTIType.ISFP, "Supporter");
-		descriptor.put(MBTIType.ISFJ, "Protector");
-			
-		descriptor.put(MBTIType.INTP, "Architect");
-		descriptor.put(MBTIType.INTJ, "Investigator");
-		descriptor.put(MBTIType.INFP, "Idealist");
-		descriptor.put(MBTIType.INFJ, "Counselor");
-			
-		descriptor.put(MBTIType.ESTP, "Troubleshooter");
-		descriptor.put(MBTIType.ESTJ, "Coordinator");
-		descriptor.put(MBTIType.ESFP, "Energizer");
-		descriptor.put(MBTIType.ESFJ, "Harmonizer");
-			
-		descriptor.put(MBTIType.ENTP, "Catalyst");
-		descriptor.put(MBTIType.ENTJ, "Strategist");
-		descriptor.put(MBTIType.ENFP, "Improviser");
-		descriptor.put(MBTIType.ENFJ, "Mentor");
-	}
 	
 	/**
 	 * Constructor
@@ -144,25 +70,24 @@ public class MBTIPersonality implements Serializable {
 		// Determine personality type.
 		double randValue = RandomUtil.getRandomDouble(100D);
 		
-		List<String> distribution = new ArrayList<>(personalityDistribution.keySet());
+		var personalityDistribution = SimulationConfig.instance().getPersonConfig().loadPersonalityDistribution();
+		List<MBTIType> distribution = new ArrayList<>(personalityDistribution.keySet());
 		Collections.shuffle(distribution);
 		
-		Iterator<String> i = distribution.iterator();
-		String selected = "";
-		
-		while (i.hasNext()) {
-			String type = i.next();
+		MBTIType selected = null;		
+		for(var type : distribution) {
 			double percentage = personalityDistribution.get(type);
 			if (randValue <= percentage) {
 				selected = type;
 				break;
-			} else {
+			}
+			else {
 				randValue -= percentage;
 			}
 		}
 
 		// Set the MBTI string
-		setTypeString(selected);
+		setType(selected);
 	}
 
 	/*
@@ -170,36 +95,17 @@ public class MBTIPersonality implements Serializable {
 	 */
 	public void setScorePairs() {
 
-		// Add computing the scores
-		scores = new HashMap<>(4);
-
 		for (int j = 0; j < 4; j++) {
+			int score = -RandomUtil.getRandomInt(1, 50);
+			int factor = switch(j) {
+				case 0 -> mbtiType.isIntrovert() ? 0 : 50;
+				case 1 -> mbtiType.isIntuitive() ? 0 : 50;
+				case 2 -> mbtiType.isFeeler() ? 0 : 50;
+				case 3 -> mbtiType.isJudger() ? 0 : 50;
+				default -> throw new IllegalArgumentException("Invalid score index: " + j);
+			};
 
-			int score = 0;
-			int rand = -RandomUtil.getRandomInt(1, 50);
-			if (j == 0) {
-				if (isIntrovert())
-					score = rand;
-				else
-					score = rand + 50;
-			} else if (j == 1) {
-				if (isIntuitive())
-					score = rand;
-				else
-					score = rand + 50;
-			} else if (j == 2) {
-				if (isFeeler())
-					score = rand;
-				else
-					score = rand + 50;
-			} else if (j == 3) {
-				if (isJudger())
-					score = rand;
-				else
-					score = rand + 50;
-			}
-
-			scores.put(j, score);
+			scores[j] = score + factor;
 		}
 	}
 
@@ -208,27 +114,8 @@ public class MBTIPersonality implements Serializable {
 	 * 
 	 * @return
 	 */
-	public String getDescriptor() {
-		return getDescriptor(mbtiType);
-	}
-	
-	/**
-	 * 	Gets the one word descriptor of this person's MBTI
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public String getDescriptor(MBTIType type) {
-		return descriptor.get(type);
-	}
-	
-	/**
-	 * Gets the personality type as a four letter code. Ex. "ISTJ"
-	 * 
-	 * @return personality type.
-	 */
-	public String getTypeString() {
-		return mbtiType.toString();
+	public MBTIType getType() {
+		return mbtiType;
 	}
 
 	/**
@@ -236,18 +123,9 @@ public class MBTIPersonality implements Serializable {
 	 * 
 	 * @param newPersonalityType for letter MBTI code.
 	 */
-	public void setTypeString(String selected) {
-		if (personalityDistribution.containsKey(selected)) {
-
-			// Obtain the enum
-			for (MBTIType type: MBTIType.values()) {
-				if (selected.equalsIgnoreCase(type.toString()))
-					mbtiType = type;
-			}
-			
-			setScorePairs();
-		} else
-			throw new IllegalArgumentException("MBTI Personality type '" + selected + "' is invalid in people.xml.");
+	public void setType(MBTIType newPersonalityType) {
+		mbtiType = newPersonalityType;
+		setScorePairs();
 	}
 
 	/**
@@ -256,22 +134,22 @@ public class MBTIPersonality implements Serializable {
 	 * @return the score
 	 */
 	public int getIntrovertExtrovertScore() {
-		return scores.get(0);
+		return scores[0];
 	}
 	
 	/*
 	 * Sync up with the I-E pair score in MBTI
 	 */
 	public void syncUpIntrovertExtravertScore(int value) {
-//		int value = getPerson().getMind().getTraitManager().getPersonalityTraitMap().get(PersonalityTraitType.EXTRAVERSION);
-		scores.put(0, value - 50);
+		scores[0] = value - 50;
 	}
 
 	/**
 	 * Get this object as a string.
 	 */
+	@Override
 	public String toString() {
-		return mbtiType.toString();
+		return mbtiType.name();
 	}
 
 	/**
@@ -280,86 +158,17 @@ public class MBTIPersonality implements Serializable {
 	 * @param otherPersonality the other MBTI personality to check.
 	 * @return total difference in indicators.
 	 */
-	public int getPersonalityDifference(String otherPersonality) {
+	public int getPersonalityDifference(MBTIType otherPersonality) {
 		int diff = 0;
 
-		for (int x = 0; x < 4; x++)
-			if (!mbtiType.toString().substring(x, (x + 1)).equals(otherPersonality.substring(x, (x + 1))))
+		for (int x = 0; x < 4; x++) {
+			var s = mbtiType.name().charAt(x);
+			var s2 = otherPersonality.name().charAt(x);
+
+			if (s != s2)
 				diff++;
-
+		}
 		return diff;
-	}
-
-	/**
-	 * Checks if the personality is introvert.
-	 * 
-	 * @return true if introvert
-	 */
-	public boolean isIntrovert() {
-		return mbtiType.toString().substring(0, 1).equals("I");
-	}
-
-	/**
-	 * Checks if the personality is extrovert.
-	 * 
-	 * @return true if extrovert
-	 */
-	public boolean isExtrovert() {
-		return mbtiType.toString().substring(0, 1).equals("E");
-	}
-
-	/**
-	 * Checks if the personality is sensor.
-	 * 
-	 * @return true if sensor
-	 */
-	public boolean isSensor() {
-		return mbtiType.toString().substring(1, 2).equals("S");
-	}
-
-	/**
-	 * Checks if the personality is intuitive.
-	 * 
-	 * @return true if intuitive
-	 */
-	public boolean isIntuitive() {
-		return mbtiType.toString().substring(1, 2).equals("N");
-	}
-
-	/**
-	 * Checks if the personality is thinker.
-	 * 
-	 * @return true if thinker
-	 */
-	public boolean isThinker() {
-		return mbtiType.toString().substring(2, 3).equals("T");
-	}
-
-	/**
-	 * Checks if the personality is feeler.
-	 * 
-	 * @return true if feeler
-	 */
-	public boolean isFeeler() {
-		return mbtiType.toString().substring(2, 3).equals("F");
-	}
-
-	/**
-	 * Checks if the personality is judger.
-	 * 
-	 * @return true if judger
-	 */
-	public boolean isJudger() {
-		return mbtiType.toString().substring(3, 4).equals("J");
-	}
-
-	/**
-	 * Checks if the personality is perceiver.
-	 * 
-	 * @return true if perceiver
-	 */
-	public boolean isPerceiver() {
-		return mbtiType.toString().substring(3, 4).equals("P");
 	}
 
 	/**
@@ -375,13 +184,13 @@ public class MBTIPersonality implements Serializable {
 		int groupSize = localGroup.size();
 
 		// Introverts reduce stress when alone (just me in group).
-		if (isIntrovert() && (groupSize == 1)) {
+		if (mbtiType.isIntrovert() && (groupSize == 1)) {
 			double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
 			person.getPhysicalCondition().reduceStress(solitudeStressModifier);
 		}
 
-		// Extroverts reduce stress when with company, i.e. mor ethan me
-		if (isExtrovert() && (groupSize > 1)) {
+		// Extroverts reduce stress when with company, i.e. more than me
+		if (mbtiType.isExtrovert() && (groupSize > 1)) {
 			double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;
 			person.getPhysicalCondition().reduceStress(companyStressModifier);
 		}
@@ -389,89 +198,11 @@ public class MBTIPersonality implements Serializable {
 	}
 
 	/**
-	 * Gets the description of lens
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static String interpretLens(String value) {
-		StringBuffer sb = new StringBuffer();
-		
-		// Trait 2 & 3
-		if (value.contains("ST")) {
-			sb.append(FUNCTION_LENS).append(System.lineSeparator())
-			.append(" ST : Prefer to use proven methods of communication.").append(System.lineSeparator());
-		}
-		else if (value.contains("SF")) {
-			sb.append(FUNCTION_LENS).append(System.lineSeparator())
-			.append(" SF : Love to share their experience to help others.").append(System.lineSeparator());
-		}
-		else if (value.contains("NF")) {
-			sb.append(FUNCTION_LENS).append(System.lineSeparator())
-			.append(" NF : Prefer to communicate in creative ways.").append(System.lineSeparator());
-		}
-		else if (value.contains("NT")) {
-			sb.append(FUNCTION_LENS).append(System.lineSeparator())
-			.append(" NT : Love to debate challenging questions.").append(System.lineSeparator());
-		}
-		
-		// Trait 1 & 2
-		if (value.contains("IS")) {
-			sb.append(CULTURE_LENS).append(System.lineSeparator())
-			.append(" IS : Be careful and mindful of details when involved in change.").append(System.lineSeparator());
-		}
-		else if (value.contains("ES")) {
-			sb.append(CULTURE_LENS).append(System.lineSeparator())
-			.append(" ES : Love to see and discuss the practical results of change.").append(System.lineSeparator());
-		}
-		else if (value.contains("IN")) {
-			sb.append(CULTURE_LENS).append(System.lineSeparator())
-			.append(" IN : Reflect and digest ideas and concepts around the change.").append(System.lineSeparator());
-		}
-		else if (value.contains("EN")) {
-			sb.append(CULTURE_LENS).append(System.lineSeparator())
-			.append(" EN : Maximize variety, discuss avenues and implications of change long-term.").append(System.lineSeparator());
-		}
-		
-		// Trait 2 & 4
-		if (value.contains("S") && value.contains("J")) {
-			sb.append(TEMP_LENS).append(System.lineSeparator())
-			.append(" SJ : Value responsibility and loyalty.").append(System.lineSeparator());
-		}
-		else if (value.contains("S") && value.contains("P")) {
-			sb.append(TEMP_LENS).append(System.lineSeparator())
-			.append(" SP : Value cleverness and timeliness.").append(System.lineSeparator());
-		}
-		else if (value.contains("N") && value.contains("P")) {
-			sb.append(TEMP_LENS).append(System.lineSeparator())
-			.append(" NP : Value inspiration and a personal approach.").append(System.lineSeparator());
-		}
-		else if (value.contains("N") && value.contains("J")) {
-			sb.append(TEMP_LENS).append(System.lineSeparator())
-			.append(" NJ : Value ingenuity and logic.").append(System.lineSeparator());
-		}
-		
-		return sb.toString();
-	}
-	
-	/**
 	 * Obtains the scores map
 	 * 
 	 * @return
 	 */
-	public Map<Integer, Integer> getScores() {
+	public int [] getScores() {
 		return scores;
-	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	public void destroy() {
-		if (personalityDistribution != null)
-			personalityDistribution.clear();
-		personalityDistribution = null;
-		mbtiType = null;
-		scores = null;
-		config = null;
 	}
 }

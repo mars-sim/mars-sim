@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.person;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Map;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.person.ai.MBTIType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.training.TrainingType;
 
@@ -87,7 +89,7 @@ public class PersonConfig {
 	private double co2Rate = -1;
 
 	/** The personality distribution map. */
-	private Map<String, Double> personalityDistribution;
+	private Map<MBTIType, Double> personalityDistribution;
 
 	private Commander commander;
 
@@ -327,7 +329,7 @@ public class PersonConfig {
 	 * 
 	 * @param personalityDistribution map
 	 */
-	public Map<String, Double> loadPersonalityDistribution() {
+	public Map<MBTIType, Double> loadPersonalityDistribution() {
 		return personalityDistribution;
 	}
 
@@ -338,7 +340,7 @@ public class PersonConfig {
 	 *                   add up to 100%.
 	 */
 	private void createPersonalityDistribution(Document personDoc) {
-		personalityDistribution = new HashMap<>();
+		personalityDistribution = new EnumMap<>(MBTIType.class);
 
 		double total = 0D;
 
@@ -346,10 +348,10 @@ public class PersonConfig {
 		List<Element> personalityTypes = personalityTypeList.getChildren(MBTI);
 
 		for (Element mbtiElement : personalityTypes) {
-			String type = mbtiElement.getAttributeValue(TYPE);
+			MBTIType mbtiType = ConfigHelper.getEnum(MBTIType.class, mbtiElement.getAttributeValue(TYPE));
 			double result = Double.parseDouble(mbtiElement.getAttributeValue(PERCENTAGE));
 
-			personalityDistribution.put(type, result);
+			personalityDistribution.put(mbtiType, result);
 			total += result;
 		}
 

@@ -338,7 +338,7 @@ public class RelationshipUtil implements Serializable {
 		MBTIPersonality personPersonality = person.getMind().getMBTI();
 		MBTIPersonality localPersonality = localPerson.getMind().getMBTI();
 		double personalityDiffModifier = (2D
-				- personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
+				- personPersonality.getPersonalityDifference(localPersonality.getType())) / 2D;
 		personalityDiffModifier *= PERSONALITY_DIFF_MODIFIER * time;
 		changeAmount += RandomUtil.getRandomDouble(personalityDiffModifier);
 
@@ -527,7 +527,7 @@ public class RelationshipUtil implements Serializable {
 		// Personality diff modifier
 		MBTIPersonality personType = person.getMind().getMBTI();
 		MBTIPersonality targetType = target.getMind().getMBTI();
-		double personalityDiffModifier = (2D - personType.getPersonalityDifference(targetType.getTypeString()))
+		double personalityDiffModifier = (2D - personType.getPersonalityDifference(targetType.getType()))
 				* 50D;
 		result += RandomUtil.getRandomDouble(personalityDiffModifier);
 
