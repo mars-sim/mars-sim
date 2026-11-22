@@ -7,20 +7,18 @@
 package com.mars_sim.core.goods;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.structure.Settlement;
 
 /**
- * The CreditManager class keeps track of all credits/debts between settlements.
+ * The CreditManager class keeps track of all credits/debts between authorities.
  */
 public class CreditManager implements Serializable {
 
@@ -29,105 +27,64 @@ public class CreditManager implements Serializable {
 	
 	private static SimLogger logger = SimLogger.getLogger(CreditManager.class.getName());
 
-	// Domain members
-	private int settlementID;
+	private String ownerName;
 	
 	/** Credit listeners. */
 	private transient List<CreditListener> listeners;
-	/** The map of this settlement's credit/debit with another settlement. */
-	private Map<Integer, Double> creditMap = new HashMap<>();
+	/** The map of this authority's credit/debit with another authority. */
+	private Map<String, Double> creditMap = new ConcurrentHashMap<>();
 
 	/**
-	 * Constructor 2. For maven test only
+	 * Constructor.
 	 * 
-	 * @param settlement
-	 * @param settlements
+	 * @param authority Owning authority
 	 */
-	public CreditManager(Settlement settlement, Collection<Settlement> settlements) {
-		settlementID = settlement.getIdentifier();
-		// Creates credit manager with all settlements in the simulation.
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) {
-			int id = i.next().getIdentifier();
-			if (!creditMap.containsKey(id) && settlementID != id)
-				creditMap.put(id, 0.0);
+	public CreditManager(Authority authority) {
+		if (authority == null) {
+			throw new IllegalArgumentException("Authority is null");
 		}
+		ownerName = authority.getName();
 	}
-	
-	/**
-	 * Constructor 3. For maven test only
-	 * 
-	 * @param settlement
-	 * @param unitManager
-	 */
-	public CreditManager(Settlement settlement, UnitManager unitManager) {
-		settlementID = settlement.getIdentifier();
-		// Creates credit manager with all settlements in the simulation.
-		Iterator<Settlement> i = unitManager.getSettlements().iterator();
-		while (i.hasNext()) {
-			int id = i.next().getIdentifier();
-			if (!creditMap.containsKey(id) && settlementID != id)
-				creditMap.put(id, 0.0);
-		}
-	}
-	
-	
-	/**
-	 * Sets the credit between two settlements.
-	 * 
-	 * @param settlement1 the first settlement.
-	 * @param settlement2 the second settlement.
-	 * @param amount      the credit amount (VP) that the first settlement has with
-	 *                    the second settlement. (negative value if the first
-	 *                    settlement owes the second settlement).
-	 */
-	public static void setCredit(Settlement settlement1, Settlement settlement2, double amount) {
 
-		int id = settlement2.getIdentifier();
-		
-		if (settlement1.getCreditManager().getCreditMap().containsKey(id))
-			settlement1.getCreditManager().getCreditMap().put(id, amount);
-		
-						
-		logger.info(settlement1, "Account ledger updated for " + settlement2.getName()
+	/**
+	 * Sets the credit between this authority and another authority.
+	 * 
+	 * @param otherAuthority Other authority
+	 * @param amount Credit amount (VP)
+	 */
+	public void setCredit(Authority otherAuthority, double amount) {
+		if (otherAuthority == null) {
+			return;
+		}
+		String otherName = otherAuthority.getName();
+		if (ownerName.equals(otherName)) {
+			return;
+		}
+
+		creditMap.put(otherName, amount);
+
+		logger.info("Account ledger updated for " + ownerName + " with " + otherName
 				+ "  Credit: " + Math.round(amount * 10.0)/10.0);
 
 		// Update listeners.
-		synchronized (settlement1.getCreditManager().getListeners()) {
-			Iterator<CreditListener> i = settlement1.getCreditManager().getListeners().iterator();
+		synchronized (getListeners()) {
+			Iterator<CreditListener> i = getListeners().iterator();
 			while (i.hasNext())
-				i.next().creditUpdate(new CreditEvent(settlement1, settlement2, amount));
+				i.next().creditUpdate(new CreditEvent(ownerName, otherName, amount));
 		}
 	}
 
 	/**
-	 * Gets the credit between two settlements.
+	 * Gets the credit between this authority and another authority.
 	 * 
-	 * @param settlement1 the first settlement.
-	 * @param settlement2 the second settlement.
-	 * @return the credit amount (VP) that the first settlement has with the second
-	 *         settlement. (negative value if the first settlement owes the second
-	 *         settlement).
+	 * @param otherAuthority Other authority
+	 * @return the credit amount (VP).
 	 */
-	public static double getCredit(Settlement settlement1, Settlement settlement2) {
-		int id = settlement2.getIdentifier();
-		if (settlement1.getCreditManager().getCreditMap().containsKey(id))
-			return settlement1.getCreditManager().getCreditMap().get(id);
-		return 0;
-	}
-
-	/**
-	 * Adds a new settlement to the credit graph.
-	 * 
-	 * @param newSettlement the new settlement.
-	 */
-	public void addSettlement(Settlement newSettlement) {
-		if (newSettlement == null) {
-			throw new IllegalArgumentException("Settlement is null");
+	public double getCredit(Authority otherAuthority) {
+		if (otherAuthority == null) {
+			return 0D;
 		}
-		int id = newSettlement.getIdentifier();
-		if (!creditMap.containsKey(id) && settlementID != id)
-			creditMap.put(id, 0.0);
+		return creditMap.getOrDefault(otherAuthority.getName(), 0D);
 	}
 
 	/**
@@ -135,7 +92,7 @@ public class CreditManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Map<Integer, Double> getCreditMap() {
+	public Map<String, Double> getCreditMap() {
 		return creditMap;
 	}
 	

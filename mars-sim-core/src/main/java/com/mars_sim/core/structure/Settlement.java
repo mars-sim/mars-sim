@@ -291,8 +291,6 @@ public class Settlement extends Unit implements Temporal,
 	private DustStorm storm;
 	/** The settlement's EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
-	/** The settlement's CreditManager instance manages trade credit between settlements. */
-	private CreditManager creditManager;
 	/** Manages the shifts */
 	private ShiftManager shiftManager;
 	/** The settlement task manager. */
@@ -469,7 +467,6 @@ public class Settlement extends Unit implements Temporal,
 		// Create equipment inventory
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
 		futureEvents = new ScheduledEventManager(masterClock);
-		creditManager = new CreditManager(this, unitManager);
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftByPopulation(10);
@@ -648,9 +645,6 @@ public class Settlement extends Unit implements Temporal,
 		// Initialize shift manager.
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
 										 masterClock.getMarsTime().getMillisolInt());
-		// Initialize credit manager.
-		creditManager = new CreditManager(this, unitManager);
-
 		// Initialize settlement task manager.
 		taskManager = new SettlementTaskManager(this);
 		
@@ -3280,7 +3274,10 @@ public class Settlement extends Unit implements Temporal,
 	 * @return credit manager.
 	 */
 	public CreditManager getCreditManager() {
-		return creditManager;
+		if (sponsor == null) {
+			throw new IllegalStateException("Settlement has no reporting authority");
+		}
+		return sponsor.getCreditManager();
 	}
 	
 	/**
@@ -3289,7 +3286,10 @@ public class Settlement extends Unit implements Temporal,
 	 * @param cm
 	 */
 	public void setCreditManager(CreditManager cm) {
-		creditManager = cm;
+		if (sponsor == null) {
+			throw new IllegalStateException("Settlement has no reporting authority");
+		}
+		sponsor.setCreditManager(cm);
 	}
 	
 	/**
@@ -3555,11 +3555,6 @@ public class Settlement extends Unit implements Temporal,
 		}
 		thermalSystem = null;
 
-		if (creditManager != null) {
-			creditManager.destroy();
-			creditManager = null;
-		}
-		
 		scientificAchievement = null;
 	}
 }
