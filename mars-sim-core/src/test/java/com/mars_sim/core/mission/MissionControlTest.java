@@ -44,6 +44,20 @@ class MissionControlTest extends MarsSimUnitTest{
         var names2 = mc2.generateNames(MissionType.AREOLOGY);
 
         // Only call sign is globally unique
+        assertNotEquals(names1.name(), names2.name(), "Names should be unique");
+    }
+
+    @Test
+    void testGenerateCallSignDiffSettlement() {
+        var s1 = buildSettlement("Test1");
+        var mc1 = new MissionControl(s1);
+        var names1 = mc1.generateNames(MissionType.AREOLOGY);
+
+        var s2 = buildSettlement("Test2");
+        var mc2 = new MissionControl(s2);
+        var names2 = mc2.generateNames(MissionType.AREOLOGY);
+
+        // Only call sign is globally unique
         assertNotEquals(names1.callSign(), names2.callSign(), "Call signs should be unique");
     }
 
