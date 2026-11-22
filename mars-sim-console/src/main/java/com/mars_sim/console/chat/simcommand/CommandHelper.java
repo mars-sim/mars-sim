@@ -17,14 +17,13 @@ import java.util.stream.Collectors;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.function.ResourceProcessor;
-import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.Malfunction.Repairer;
+import com.mars_sim.core.malfunction.MalfunctionRepairWork;
+import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.CoordinatesException;
 import com.mars_sim.core.map.location.CoordinatesFormat;
-import com.mars_sim.core.malfunction.MalfunctionRepairWork;
-import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionLog;
@@ -35,15 +34,15 @@ import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.task.LoadingController.LoadItem;
 
 /**
  * Helper class with common formatting methods.
@@ -411,80 +410,36 @@ public class CommandHelper {
 		var lp = v.getLoadingPlan();
 		if ((lp != null) && !lp.isCompleted()) {
 			response.appendText("Loading from " + lp.getSettlement().getName() + " :");
-			outputAmounts("Amount Resources", response, lp.getAmountManifest(true));	
-			outputAmounts("Optional Amounts", response, lp.getAmountManifest(false));
-			outputItems("Items", response, lp.getItemManifest(true));	
-			outputItems("Optional Items", response, lp.getItemManifest(false));	
-			outputEquipment("Equipment", response, lp.getEquipmentManifest(true));	
-			outputEquipment("Optional Equipment", response, lp.getEquipmentManifest(false));
+
+			var toLoad = lp.getToLoad();
+			if (!toLoad.isEmpty()) {
+				response.appendHeading("Items to Load");
+				outputQuantityItems(toLoad, response, false);
+			}
+
+			var loaded = lp.getLoaded();
+			if (!loaded.isEmpty()) {
+				response.appendHeading("Already Loaded");
+				outputQuantityItems(loaded, response, true);
+			}
 		}
 	}
 
-	/**
-	 * Outputs the equipment in use.
-	 * 
-	 * @param title
-	 * @param response
-	 * @param manifest
-	 */
-	private static void outputEquipment(String title, StructuredResponse response,
-			Map<Integer, Integer> manifest) {
-		if (!manifest.isEmpty()) {
-			response.appendText(title);
-			response.appendTableHeading(ITEM, 22, ITEM);
-			
-			for(Entry<Integer, Integer> item : manifest.entrySet()) {
-				response.appendTableRow(EquipmentType.convertID2Type(item.getKey()).getName(),
-						Integer.toString(item.getValue().intValue()));
-			}
-			response.appendBlankLine();
+	private static void outputQuantityItems(List<LoadItem> items, StructuredResponse response, boolean showFailure) {
+		if (showFailure)
+			response.appendTableHeading(ITEM, 30, "Required", 10, "Loaded", 10, "Man,.", 5, "Status");
+		else
+			response.appendTableHeading(ITEM, 30, "Required", 10, "Loaded", 10, "Man.,", 5);
+		
+		for (LoadItem item : items) {
+			String status = showFailure && item.isFailed() ? "Failed" : "OK";
+			String name = ResourceType.getName(item.getResourceID());
+			if (showFailure)
+				response.appendTableRow(name, item.getRequired(), item.getLoaded(), item.isMandatory(), status);
+			else
+				response.appendTableRow(name, item.getRequired(), item.getLoaded(), item.isMandatory());
 		}
-	}
-
-	/**
-	 * Outputs the amount resources in use.
-	 * 
-	 * @param title
-	 * @param response
-	 * @param resourcesManifest
-	 */
-	private static void outputAmounts(String title, StructuredResponse response,
-			Map<Integer, Double> resourcesManifest) {
-		if (!resourcesManifest.isEmpty()) {
-			response.appendText(title);
-			response.appendTableHeading(ITEM, 30, ITEM);
-			
-			for(Entry<Integer, Double> item : resourcesManifest.entrySet()) {
-				int id = item.getKey();
-				var name = ResourceUtil.findAmountResourceName(id);
-				var quantity = String.format(KG_FORMAT, item.getValue());
-				response.appendTableRow(name, quantity);
-			}
-			response.appendBlankLine();
-		}
-	}
-
-	/**
-	 * Outputs the items in use.
-	 * 
-	 * @param title
-	 * @param response
-	 * @param resourcesManifest
-	 */
-	private static void outputItems(String title, StructuredResponse response,
-			Map<Integer, Integer> resourcesManifest) {
-		if (!resourcesManifest.isEmpty()) {
-			response.appendText(title);
-			response.appendTableHeading(ITEM, 30, ITEM);
-			
-			for(Entry<Integer, Integer> item : resourcesManifest.entrySet()) {
-				int id = item.getKey();
-				var name = ItemResourceUtil.findItemResource(id).getName();
-				var quantity = Integer.toString(item.getValue().intValue());	
-				response.appendTableRow(name, quantity);
-			}
-			response.appendBlankLine();
-		}
+		response.appendBlankLine();
 	}
 
 	/**

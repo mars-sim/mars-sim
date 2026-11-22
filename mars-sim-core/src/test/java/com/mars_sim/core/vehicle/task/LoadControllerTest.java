@@ -8,9 +8,11 @@
 package com.mars_sim.core.vehicle.task;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -33,6 +35,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
+import com.mars_sim.core.vehicle.task.LoadingController.LoadItem;
 
 
 
@@ -104,7 +107,8 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		manifest.setMinEquipment(EquipmentType.EVA_SUIT.getResourceID(), 2, true);
 
 		// Load the manifest
-		testLoading(100, manifest);
+		var controller = testLoading(100, manifest);
+		checkLoadedItems(controller.getLoaded(), manifest);
 	}
 
 	/*
@@ -138,7 +142,20 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		var expanded = new SuppliesManifest(manifest);
 		expanded.setMinEquipment(missingId, 10, false);
 
-		loadIt(100, expanded);
+		var controller = loadIt(100, expanded);
+
+		// Check the failed item presence
+		var failed = controller.getLoaded().stream()
+				.filter(item -> item.isFailed())
+				.findFirst()
+				.orElse(null);
+		assertNotNull(failed, "Failed item should be present");
+		assertEquals(missingId, failed.getResourceID(), "Failed item should be the missing one");
+
+		var valid = controller.getLoaded().stream()
+				.filter(item -> !item.isFailed())
+				.toList();
+		checkLoadedItems(valid, manifest);
 
 		// Check Equipment that was present in settlement
 		var vechEO = vehicle.getEquipmentInventory();
@@ -163,7 +180,9 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		manifest.setMinItem(smallHammerID, 2, true);
 
 		// Load the manifest
-		testLoading(100, manifest);
+		var controller = testLoading(100, manifest);
+		checkLoadedItems(controller.getLoaded(), manifest);
+
 	}
 
 	/*
@@ -206,7 +225,9 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		manifest.addAmount(ResourceUtil.WATER_ID, 10D, true);
 
 		// Load the manifest
-		testLoading(200, manifest);
+		var controller = testLoading(200, manifest);
+		checkLoadedItems(controller.getLoaded(), manifest);
+
 	}
 
 
@@ -220,13 +241,6 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		requiredResourcesMap.addAmount(ResourceUtil.FOOD_ID, 50D, true);
 
 		LoadingController controller = vehicle.setLoading(requiredResourcesMap);
-
-		// Run the loader but do not load an resources into the settlement
-		for(int i = 0 ; i < (LoadingController.MAX_SETTLEMENT_ATTEMPTS - 1); i++) {
-			controller.load(person, 1D);
-			assertFalse(controller.isCompleted(), "Load completed #" + i);
-			assertFalse(controller.isFailure(), "Load failed #" + i);
-		}
 
 		// Do the last load and it should fail
 		controller.load(person, 1D);
@@ -284,13 +298,14 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		manifest.setMinItem(pipeWrenchID, 5, false);
 
 		// Load the manifest
-		testLoading(200, manifest);
+		var controller = testLoading(200, manifest);
+		checkLoadedItems(controller.getLoaded(), manifest);
 	}
 
 	/*
 	 * Executes a loading for a manifest and a batch of tests.
 	 */
-	private void testLoading(int maxCycles, SuppliesManifest manifest) {
+	private LoadingController testLoading(int maxCycles, SuppliesManifest manifest) {
 
 		// Add resources to Settlement
 		loadSettlement(settlement, manifest);
@@ -301,11 +316,13 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		setVehicleCapacity(vechEO, manifest);
 
 		// Load the manifest
-		loadIt(maxCycles, manifest);
+		var controller = loadIt(maxCycles, manifest);
 		checkVehicleInventory(vechEO, manifest);
 
 		// Reload the same manifest which should complete immediately
 		reload(manifest);
+
+		return controller;
 	}
 
 	private void checkVehicleInventory(EquipmentOwner v, SuppliesManifest manifest) {
@@ -393,7 +410,6 @@ public class LoadControllerTest extends MarsSimUnitTest {
 	 */
 	private LoadingController loadIt(int maxCycles, SuppliesManifest manifest) {
 
-
 		LoadingController controller = vehicle.setLoading(manifest);
 		assertTrue(vehicle.haveStatusType(StatusType.LOADING), "Vehicle has of LOADING");
 		assertEquals(vehicle, controller.getVehicle(), "Vehicle of the controller");
@@ -411,6 +427,36 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		assertFalse(vehicle.haveStatusType(StatusType.LOADING), "Vehicle clear of LOADING");
 
 		return controller;
+	}
+
+	private void checkLoadedItems(List<LoadItem> loadedItems, SuppliesManifest manifest) {
+		// Check the loaded items in the controller
+		var totalItems = manifest.getAmounts(true).size() + manifest.getAmounts(false).size() +
+				manifest.getEquipment(true).size() + manifest.getEquipment(false).size() +
+				manifest.getItems(true).size() + manifest.getItems(false).size();
+		assertEquals(totalItems, loadedItems.size(), "Total loaded items match expected");
+
+		checkLoaded(manifest.getAmounts(true), true, loadedItems);
+		checkLoaded(manifest.getAmounts(false), false, loadedItems);
+		checkLoaded(manifest.getEquipment(true), true, loadedItems);
+		checkLoaded(manifest.getEquipment(false), false, loadedItems);
+		checkLoaded(manifest.getItems(true), true, loadedItems);
+		checkLoaded(manifest.getItems(false), false, loadedItems);
+	}
+
+	private void checkLoaded(Map<Integer,? extends Number> items, boolean mandatory, List<LoadItem> loadedItems) {
+		for(var entry : items.entrySet()) {
+			int resourceId = entry.getKey();
+			double requiredAmount = entry.getValue().doubleValue();
+			var loaded = loadedItems.stream()
+					.filter(li -> li.getResourceID() == resourceId)
+					.findFirst().orElse(null);
+
+			assertEquals(requiredAmount, loaded.getLoaded(), LoadingController.SMALLEST_RESOURCE_LOAD, "Loaded amount for resource " + resourceId);
+			assertEquals(requiredAmount, loaded.getRequired(), "Requiredamount for resource " + resourceId);
+			assertFalse(loaded.isFailed(), "Load item not failed for resource " + resourceId);
+			assertEquals(mandatory, loaded.isMandatory(), "Mandatory for resource " + resourceId);
+		}
 	}
 
 	/**

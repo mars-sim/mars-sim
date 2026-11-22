@@ -73,8 +73,12 @@ class TestDriveMetaMissionTest extends MarsSimUnitTest {
         // Check the plan has content
         LoadingController plan = assigned.getLoadingPlan();
         assertNotNull(plan, "Loading plan created");
-        Map<Integer, Double> resources = plan.getAmountManifest(true);
-        assertTrue(resources.get(ResourceUtil.OXYGEN_ID).doubleValue() > 0D, "Plan has Oxygen");
+        var oxyItem = plan.getToLoad().stream()
+                        .filter(item -> item.getResourceID() == ResourceUtil.OXYGEN_ID)
+                        .findFirst()
+                        .orElse(null);
+        assertNotNull(oxyItem, "Plan has Oxygen item");
+        assertTrue(oxyItem.isMandatory(), "Oxygen is mandatory");
     }
 
     /**
