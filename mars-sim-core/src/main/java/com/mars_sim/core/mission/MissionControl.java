@@ -89,17 +89,10 @@ public class MissionControl implements ScheduledEventHandler {
 	public synchronized MissionNaming generateNames(MissionType type) {
 		int missionSol = getMarsTime().getMissionSol();
 
-		String sortieString = missionSol + "-" + id;
-
-		StringBuilder buffer = new StringBuilder();
-		buffer.append(type.getShortCode())
-			  .append("-")
-			  .append(owner.getSettlementCode())
-			  .append("-")
-			  .append(sortieString);
+		String sortieString = owner.getSettlementCode() + "-" + missionSol + "-" + id;
 		id++;
 
-		return new MissionNaming(type.getName() + " " + sortieString, buffer.toString());
+		return new MissionNaming(type.getName() + " " + sortieString, type.getShortCode() + "-" + sortieString);
 	}
 
     /**
