@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @date 2021-10-20
+ * @date 2026-11-22
  * @author Scott Davis
  */
 
@@ -25,14 +25,15 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
-//   Current Definition :
-//1. 'Rescue' a vehicle -- if crew members are inside the vehicle and the 
+//   Current Definitions :
+//   (1). 'Rescue' a vehicle -- if crew members are inside the vehicle and the 
 //   towing vehicle will supply and transfer the needed life support
 //   resources or broken parts to the vehicle. It may involve towing the 
 //   vehicle back to the settlement.
-//2. 'Salvage' a vehicle -- if crew members are absent from the vehicle.
+//   (2). 'Salvage' a vehicle -- if crew members are absent from the vehicle.
 //   It always involves towing the vehicle back to the settlement. 
 //   For now, it can NOT break down the broken vehicle to salvage 
 //   its parts. On the other hand, it will wait for the broken parts to 
@@ -40,11 +41,12 @@ import com.mars_sim.core.vehicle.Vehicle;
 //   again.
    
 /**
- * The RescueSalvageVehicle class serves the purpose of (1) rescuing the crew of
- * a vehicle that has an emergency beacon on due to medical issues or lack of
- * resources, (2) supplying life support resources into the vehicle, (3) towing
- * the vehicle back if the crew is disable or dead and (4) salvaging the vehicle
- * if it's beyond repair.
+ * This class serves the purpose of 
+ * (1) rescuing the crew of a vehicle that has an emergency beacon 
+ *     on due to medical issues or lack of resources, 
+ * (2) supplying life support resources into the vehicle, 
+ * (3) towing the vehicle back if the crew is disable or dead and 
+ * (4) salvaging the vehicle if it's beyond repair.
  */
 public class RescueSalvageVehicle extends RoverMission {
 
@@ -302,7 +304,12 @@ public class RescueSalvageVehicle extends RoverMission {
 
 		// Find all available vehicles.
 		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
-			if (vehicle.isBeaconOn() && (getRescueingVehicle(vehicle) == null)) {
+			if (!vehicle.isInSettlement()
+					&& (vehicle.isBeaconOn() 
+						&& vehicle.haveStatusType(StatusType.OUT_OF_BATTERY_POWER)
+						&& vehicle.haveStatusType(StatusType.OUT_OF_FUEL)
+						&& vehicle.haveStatusType(StatusType.OUT_OF_OXIDIZER))
+					&& (getRescueingVehicle(vehicle) == null)) {
 				if (vehicle instanceof Crewable crew
 						&& (crew.getCrewNum() > 0 || crew.getRobotCrewNum() > 0)) {
 					// Has crew needing rescue, so add to front of list.
@@ -315,7 +322,7 @@ public class RescueSalvageVehicle extends RoverMission {
 			}
 		}
 
-		// Check vehciles in order they were added
+		// Check vehicles in order they were added
 		for(var potentialVehicle : vehiclesNeedingRescue) {
 			double vehicleRange = settlement.getCoordinates().getDistance(potentialVehicle.getCoordinates());
 			if (vehicleRange <= halfRange) {

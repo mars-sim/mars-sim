@@ -196,7 +196,7 @@ class AmountResourceGood extends Good {
 	private static final int POLYESTER_RESIN_MODIFIER = 3;
 	private static final int ACETYLENE_MODIFIER = 3;
 	private static final int FIBER_MODIFIER = 2;
-	private static final int TEREPHTHALIC_ACID_MODIFIER = 20;
+	private static final int TEREPHTHALIC_ACID_MODIFIER = 15;
 	
 	private static final int QUARTZ_MODIFIER = 5;
 	
