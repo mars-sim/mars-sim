@@ -30,14 +30,20 @@ class TestCreditManager {
 	                    MockSettlement.DEFAULT_COORDINATES, authority1);
 	    Settlement settlement2 = new MockSettlement("S2", false,
 	                    MockSettlement.DEFAULT_COORDINATES, authority2);
+	    Settlement settlement3 = new MockSettlement("S3", false,
+	                    MockSettlement.DEFAULT_COORDINATES, authority1);
 
-	    settlement1.getCreditManager().setCredit(authority2, 100D);
-	    assertEquals(100D, settlement1.getCreditManager().getCredit(authority2));
+	    authority1.getCreditManager().setCredit(authority2, 100D);
+	    assertEquals(100D, authority1.getCreditManager().getCredit(authority2));
+	    assertEquals(authority1.getCreditManager(),
+	                    settlement1.getReportingAuthority().getCreditManager());
+	    assertEquals(authority1.getCreditManager(),
+	                    settlement3.getReportingAuthority().getCreditManager());
 
-	    settlement1.getCreditManager().setCredit(authority2, -100D);
-	    assertEquals(-100D, settlement1.getCreditManager().getCredit(authority2));
+	    authority1.getCreditManager().setCredit(authority2, -100D);
+	    assertEquals(-100D, authority1.getCreditManager().getCredit(authority2));
 
-	    settlement2.getCreditManager().setCredit(authority1, 100D);
-	    assertEquals(-100D, settlement1.getCreditManager().getCredit(authority2));
+	    authority2.getCreditManager().setCredit(authority1, 100D);
+	    assertEquals(-100D, authority1.getCreditManager().getCredit(authority2));
 	}
 }

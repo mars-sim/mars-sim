@@ -53,7 +53,6 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.ScheduledEventManager;
-import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
@@ -3268,30 +3267,6 @@ public class Settlement extends Unit implements Temporal,
         return taskManager;
     }
 
-	/**
-	 * Gets the credit manager.
-	 *
-	 * @return credit manager.
-	 */
-	public CreditManager getCreditManager() {
-		if (sponsor == null) {
-			throw new IllegalStateException("Settlement has no reporting authority");
-		}
-		return sponsor.getCreditManager();
-	}
-	
-	/**
-	 * Sets the credit manager.
-	 * 
-	 * @param cm
-	 */
-	public void setCreditManager(CreditManager cm) {
-		if (sponsor == null) {
-			throw new IllegalStateException("Settlement has no reporting authority");
-		}
-		sponsor.setCreditManager(cm);
-	}
-	
 	/**
 	 * Gets the manager of future scheduled events for this settlement.
 	 */
