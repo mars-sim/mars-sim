@@ -64,6 +64,12 @@
 		<part type="helium neon laser" number="2"/>
 		<part type="optical lens" number="10"/>
 		<part type="optical prism" number="10"/>
+		<part type="Photodiode" number="10"/>
+		<part type="Photodetector" number="10"/>
+		
+		<part type="Radio" number="5"/>
+		<part type="Radio antenna" number="5"/>
+		<part type="EVA antenna" number="5"/>
 		
 		<part type="light emitting diode kit" number="10" />
 		<part type="light emitting diode bulb" number="25" />
@@ -75,13 +81,14 @@
 		<part type="radio antenna" number="4" />
 		<part type="satellite dish" number="2" />
 
-		<part type="Stepper Motor" number="4"/>
+		<part type="Stepper Motor" number="8"/>
+		<part type="Servo Motor" number="8"/>
+		<part type="Motor 1 kW" number="6" />
 		<part type="Motor 5 kW" number="3" />
 		<part type="Motor 10 kW" number="2" />
 		<part type="Motor 30 kW" number="1" />
+		
 		<part type="propeller" number="2"/>
-
-		<part type="Servo motor" number="8" />
 		<part type="Actuator" number="14" />
 		<part type="Gearbox" number="6" />
 		
@@ -121,6 +128,12 @@
 		<part type="helium neon laser" number="5"/>
 		<part type="optical lens" number="20"/>
 		<part type="optical prism" number="20"/>
+		<part type="Photodiode" number="20"/>
+		<part type="Photodetector" number="20"/>
+		
+		<part type="Radio" number="5"/>
+		<part type="Radio antenna" number="5"/>
+		<part type="EVA antenna" number="5"/>
 		
 		<part type="light emitting diode kit" number="20" />
 		<part type="light emitting diode bulb" number="50" />
@@ -133,12 +146,13 @@
 		<part type="satellite dish" number="4" />
 
 		<part type="Stepper Motor" number="8"/>
+		<part type="Servo Motor" number="8"/>
+		<part type="Motor 1 kW" number="6" />
 		<part type="Motor 5 kW" number="6" />
 		<part type="Motor 10 kW" number="4" />
 		<part type="Motor 30 kW" number="2" />
+		
 		<part type="propeller" number="4"/>
-
-		<part type="Servo motor" number="16" />
 		<part type="Actuator" number="28" />
 		<part type="Gearbox" number="12" />
 		
@@ -173,9 +187,16 @@
 		<part type="Heat exchanger" number="2"/>
 		<part type="carbon dioxide laser" number="5"/>
 		<part type="helium neon laser" number="5"/>
-		<part type="optical lens" number="20"/>
-		<part type="optical prism" number="20"/>
-
+		<part type="optical lens" number="10"/>
+		<part type="optical prism" number="10"/>
+		<part type="Photodiode" number="10"/>
+		<part type="Photodetector" number="10"/>
+		
+		<part type="Radio" number="5"/>
+		<part type="Radio antenna" number="5"/>
+		<part type="EVA antenna" number="5"/>
+		<part type="Headset" number="5"/>
+	
 		<part type="light emitting diode kit" number="20" />
 		<part type="light emitting diode bulb" number="50" />
 		<part type="mushroom containment kit" number="5" />
@@ -240,10 +261,14 @@
 		<part type="rover windshield" number="2" />
 		<part type="window" number="4" />
 		<part type="winch" number="2" />
-		<part type="Stepper Motor" number="8"/>
+		
+		<part type="Stepper motor" number="8"/>
+		<part type="Servo motor" number="8"/>
+		<part type="Motor 1 kW" number="8" />
 		<part type="Motor 5 kW" number="6" />
 		<part type="Motor 10 kW" number="4" />
 		<part type="Motor 30 kW" number="2" />
+		
 		<part type="propeller" number="4"/>
 		<part type="vehicle chassis panel" number="4" />
 		<part type="rover control panel" number="2" />

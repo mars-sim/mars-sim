@@ -1107,8 +1107,8 @@
 		
 		<output resource="sulfur" rate="8" core="true" />	
 		
-		<output resource="calcium" rate="7" core="true" />			
-		<output resource="Calcium carbonate" rate="13" core="true" />
+		<output resource="Calcium" rate="7" core="true" />			
+		<output resource="Calcium carbonate" rate="12" core="true" />
 				
 		<output resource="iron chloride" rate="1" core="true" />
 		<output resource="magnesium" rate="8" core="true" />	
@@ -1124,14 +1124,18 @@
 		
 		<output resource="scandium" rate="1" core="true" />	
 		<output resource="aluminum" rate="1" core="true"/>	
+		<output resource="aluminum oxide" rate="8" core="true"/>	
+				
 		<output resource="silver" rate="1" core="true"/>	
 		<output resource="tin" rate="1" core="true"/>	
 		<output resource="titanium" rate="1" core="true"/>	
 		<output resource="lead" rate="1" core="true"/>	
 		<output resource="vanadium" rate="1" core="true"/>	
 		<output resource="zinc" rate="1" core="true"/>
-		<output resource="aluminum oxide" rate="8" core="true"/>	
 
+		<output resource="Iodine" rate="1" core="true"/>	
+		
+		
 		<!-- Arbitraraily produce mineral here until the mining missions are 
 		     optimized for producing enough minerals -->
 		<output resource="Chalcopyrite" rate="8.0" core="true" />

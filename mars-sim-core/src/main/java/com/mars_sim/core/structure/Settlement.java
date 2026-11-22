@@ -235,7 +235,7 @@ public class Settlement extends Unit implements Temporal,
 	/** A factor due to the population. */
 	private double sqrtPopFactor = 1;
 	/** A factor due to the population. The minimum is 1. */
-	private double logPopFactor = 1;
+	private double log10PopFactor = 1;
 	/** A factor due to the population. The minimum is 1. */
 	private double logEPopFactor = 1;
 	/** The average areothermal potential at this location. */
@@ -1938,16 +1938,16 @@ public class Settlement extends Unit implements Temporal,
 	}
 	
 	/**
-	 * Gets a factor due to the size of the of population.
+	 * Gets a factor due to the size of the population.
 	 * 
 	 * @return
 	 */
-	public double getLogPopFactor() {
-		return logPopFactor;
+	public double getLog10PopFactor() {
+		return log10PopFactor;
 	}
 
 	/**
-	 * Gets a factor due to the size of the of population.
+	 * Gets a factor due to the size of the population.
 	 * 
 	 * @return
 	 */
@@ -2112,7 +2112,7 @@ public class Settlement extends Unit implements Temporal,
 			// Update the sqrt pop factor
 			sqrtPopFactor = Math.sqrt(numCitizens);
 			// Update the log10 pop factor
-			logPopFactor = Math.max(1, Math.log10(numCitizens));
+			log10PopFactor = Math.max(1, Math.log10(numCitizens));
 			// Update the logE pop factor
 			logEPopFactor = Math.max(1, Math.log(numCitizens));
 			// Add this person indoor map of the settlement
@@ -2171,7 +2171,7 @@ public class Settlement extends Unit implements Temporal,
 			// Update the sqrt pop factor
 			sqrtPopFactor = Math.sqrt(numCitizens);
 			// Update the log10 pop factor
-			logPopFactor = Math.max(1, Math.log10(numCitizens));
+			log10PopFactor = Math.max(1, Math.log10(numCitizens));
 			// Update the logE pop factor
 			logEPopFactor = Math.max(1, Math.log(numCitizens));
 			// Fire unit update

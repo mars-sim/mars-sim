@@ -42,10 +42,10 @@ class TestManufactureProcessInfo {
 		
 		// [eva helmet, helmet visor, pressure suit, coverall, Liquid Cooling Garment, 
 		// eva glove, eva boot, eva pad, eva backpack, eva antenna, 
-		// eva radio, eva battery, suit heating unit, electrical wire, wire connector, 
+		// eva radio, eva battery, headset, suit heating unit, electrical wire, wire connector, 
 		// biosensor, power supply]
 
-		assertEquals(17, inputList.size());
+		assertEquals(18, inputList.size());
     }
     
     @Test

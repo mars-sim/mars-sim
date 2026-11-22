@@ -354,7 +354,7 @@ public class EquipmentGood extends Good {
 			}
 		}
 
-		baseDemand += totalPhaseOverfill * containerCapacity / settlement.getLogPopFactor();
+		baseDemand += totalPhaseOverfill * containerCapacity / settlement.getLogEPopFactor();
 
 		double ratio = computeUsageFactor(settlement);
 

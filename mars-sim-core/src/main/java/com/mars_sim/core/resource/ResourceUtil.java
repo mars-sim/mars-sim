@@ -84,7 +84,10 @@ public class ResourceUtil {
 	public static final int SOIL_ID = SCORIAL_ID + 1;
 	public static final int SAND_ID = SOIL_ID + 1;
 	public static final int SILICON_ID = SAND_ID + 1;
-	public static final int BLACK_WATER_ID = SILICON_ID + 1;
+
+	public static final int QUARTZ_ID = SILICON_ID + 1;
+	
+	public static final int BLACK_WATER_ID = QUARTZ_ID + 1;
 	public static final int GREY_WATER_ID = BLACK_WATER_ID + 1;
 	public static final int BRINE_WATER_ID = GREY_WATER_ID + 1;
 	
@@ -133,8 +136,8 @@ public class ResourceUtil {
 	public static final int POLYURETHANE_ID = POLYSTYRENE_ID + 1;
 	public static final int STYRENE_ID = POLYURETHANE_ID + 1;
 	public static final int TEREPHTHALIC_ACID_ID = STYRENE_ID + 1;
-	
-	public static final int IRON_POWDER_ID = TEREPHTHALIC_ACID_ID + 1;
+	public static final int DIMETHYL_TERE_ID = TEREPHTHALIC_ACID_ID + 1;
+	public static final int IRON_POWDER_ID = DIMETHYL_TERE_ID + 1;
 	public static final int IRON_OXIDE_ID = IRON_POWDER_ID + 1;
 	public static final int GLASS_ID = IRON_OXIDE_ID + 1;
 	public static final int MYLAR_ID = GLASS_ID + 1;
@@ -203,6 +206,7 @@ public class ResourceUtil {
 		fixedResources.put("conglomerate", CONGLOMERATE_ID);
 		fixedResources.put("crop waste", CROP_WASTE_ID);
 		fixedResources.put("cross bedding", CROSSBEDDING_ID);
+		fixedResources.put("dimethyl terephthalate", DIMETHYL_TERE_ID);
 		fixedResources.put("electronic waste", E_WASTE_ID);
 		fixedResources.put("epsom salt", EPSOM_SALT_ID);
 		fixedResources.put("epoxy resin", EPOXY_RESIN_ID);
@@ -253,6 +257,8 @@ public class ResourceUtil {
 		fixedResources.put("polyurethane", POLYURETHANE_ID);
 		fixedResources.put("propylene", PROPYLENE_ID);
 		fixedResources.put("pyroxene", PYROXENE_ID);
+		
+		fixedResources.put("quartz", QUARTZ_ID);
 	
 		fixedResources.put("regolith", REGOLITH_ID);
 		fixedResources.put("regolith-b", REGOLITHB_ID);

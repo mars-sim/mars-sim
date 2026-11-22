@@ -39,7 +39,7 @@ class VehicleGood extends Good {
 	private static final double DRONE_FACTOR = 3;
     private static final double TRANSPORT_VEHICLE_FACTOR = .4;
 	private static final double CARGO_VEHICLE_FACTOR = .3;
-	private static final double EXPLORER_VEHICLE_FACTOR = .3;
+	private static final double EXPLORER_VEHICLE_FACTOR = .5;
 
     private static final double INITIAL_VEHICLE_DEMAND = 1;
 	private static final double INITIAL_VEHICLE_SUPPLY = 1;
@@ -325,7 +325,8 @@ class VehicleGood extends Good {
 		    case DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE -> DRONE_FACTOR;
 		    case LUV -> LUV_FACTOR;
         };
-		return demand * (1.5 + owner.getCommerceFactor(CommerceType.TRADE)) * typeModifier;
+        
+		return demand * (1.1 + owner.getCommerceFactor(CommerceType.TRADE)) * typeModifier;
 	}
 
 	/**
@@ -364,7 +365,7 @@ class VehicleGood extends Good {
 		if (supply < 1)
 			supply = 1;
 		
-		return settlement.getNumCitizens() / numJobs / supply * DRONE_FACTOR;
+		return settlement.getNumCitizens() / (numJobs + supply) * DRONE_FACTOR;
 	}
 
 	/**
@@ -393,7 +394,7 @@ class VehicleGood extends Good {
 		if (supply < 1)
 			supply = 1;
 	
-		return settlement.getNumCitizens() / numJobs / supply * LUV_FACTOR;
+		return settlement.getNumCitizens() / (numJobs + supply) * LUV_FACTOR;
 	}
 
 	/**
@@ -450,32 +451,32 @@ class VehicleGood extends Good {
 	 */
 	private double determineMissionJob(GoodsManager owner, Settlement settlement, MissionType missionType) {
 		
-		double demand = settlement.getLogPopFactor();
+		double demand = settlement.getLogEPopFactor();
 		
 		switch(missionType) {
-		case CONSTRUCTION ->
-			demand /= 1 + JobUtil.numJobs(JobType.ARCHITECT, settlement);
-		
-		case TRAVEL_TO_SETTLEMENT, RESCUE_SALVAGE_VEHICLE ->
-			demand /= 1 + JobUtil.numJobs(JobType.PILOT, settlement);
-
-		case COLLECT_ICE ->
-			demand /= MathUtils.between(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.ICE_ID)), 1, 100);
-		
-		case TRADE, DELIVERY ->
-			demand /= 1 + JobUtil.numJobs(JobType.TRADER, settlement);
-		
-		case COLLECT_REGOLITH ->
-			demand /= MathUtils.between(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.REGOLITH_ID)), 1, 100);
-		
-		case MINING, AREOLOGY, EXPLORATION ->
-			demand /= 1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement);
-		
-		case BIOLOGY ->
-			demand /= 1 + JobUtil.numJobs(JobType.ASTROBIOLOGIST, settlement);
-		
-		case METEOROLOGY ->
-			demand /= 1 + JobUtil.numJobs(JobType.METEOROLOGIST, settlement);
+			case CONSTRUCTION ->
+				demand /= 1 + JobUtil.numJobs(JobType.ARCHITECT, settlement);
+			
+			case TRAVEL_TO_SETTLEMENT, RESCUE_SALVAGE_VEHICLE ->
+				demand /= 1 + JobUtil.numJobs(JobType.PILOT, settlement);
+	
+			case COLLECT_ICE ->
+				demand /= MathUtils.between(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.ICE_ID)), 1, 100);
+			
+			case TRADE, DELIVERY ->
+				demand /= 1 + JobUtil.numJobs(JobType.TRADER, settlement);
+			
+			case COLLECT_REGOLITH ->
+				demand /= MathUtils.between(owner.getDemandScore(GoodsUtil.getGood(ResourceUtil.REGOLITH_ID)), 1, 100);
+			
+			case MINING, AREOLOGY, EXPLORATION ->
+				demand /= 1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement);
+			
+			case BIOLOGY ->
+				demand /= 1 + JobUtil.numJobs(JobType.ASTROBIOLOGIST, settlement);
+			
+			case METEOROLOGY ->
+				demand /= 1 + JobUtil.numJobs(JobType.METEOROLOGIST, settlement);
 			default -> { // Nothing to do 
 				}
 		}

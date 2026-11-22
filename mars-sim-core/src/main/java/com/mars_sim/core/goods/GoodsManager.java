@@ -1013,7 +1013,7 @@ public class GoodsManager implements Serializable {
     		var limits = resLimits.get(resourceID);
     		int reservePerPop = limits.reserve();
 
-    		double popFactor = settlement.getLogPopFactor();
+    		double popFactor = settlement.getLog10PopFactor();
     		
     		double reserve = reservePerPop / popFactor;
     		
@@ -1060,7 +1060,7 @@ public class GoodsManager implements Serializable {
 		int reservePerPop = limits.reserve();
 //		int optimalPerPop = limits.optimal();
 		
-		double popFactor = settlement.getLogPopFactor();
+		double popFactor = settlement.getLog10PopFactor();
   		
 		double reserve = reservePerPop / popFactor;
 //		double optimal = optimalPerPop / popFactor;

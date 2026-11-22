@@ -8,11 +8,9 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentFactory;

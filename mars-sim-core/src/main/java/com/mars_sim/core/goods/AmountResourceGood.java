@@ -148,7 +148,7 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_FLATTENING_FACTOR = 1.25;
 	private static final double TISSUE_FLATTENING_FACTOR = 0.95;
 
-	private static final int PLASTIC_RELATED_FLATTENING_FACTOR = 3;
+	private static final int PLASTIC_RELATED_FLATTENING_FACTOR = 5;
 	private static final double ETHYLENE_GLYCOL_FLATTENING_FACTOR = 1.5;
 	
 	private static final double LEAVES_VALUE_MODIFIER = 1.5;
@@ -196,6 +196,10 @@ class AmountResourceGood extends Good {
 	private static final int POLYESTER_RESIN_MODIFIER = 3;
 	private static final int ACETYLENE_MODIFIER = 3;
 	private static final int FIBER_MODIFIER = 2;
+	private static final int TEREPHTHALIC_ACID_MODIFIER = 20;
+	
+	private static final int QUARTZ_MODIFIER = 5;
+	
 	private static final int LIME_MODIFIER = 6;
 	
 	// gases
@@ -225,9 +229,10 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_BASE_DEMAND = 40;
 	
 	// Base factors
-	private static final double BASE_MINERAL_ORE = 5;
-	private static final double BASE_CHEMICAL_DEMAND = 5;
-	private static final double BASE_METAL_DEMAND = 5;
+	private static final int BASE_MINERAL_ORE = 5;
+	private static final int BASE_CHEMICAL_DEMAND = 5;
+	private static final int BASE_METAL_DEMAND = 5;
+	private static final int BASE_FABRICATION_DEMAND = 5;
 
 	// Multipliers
 	private static final double MANUFACTURING_DEMAND_MULTIPLIER = 0.5;
@@ -301,7 +306,8 @@ class AmountResourceGood extends Good {
 			
 			if (name.equalsIgnoreCase(DIMETHYL_TER)
 				|| name.equalsIgnoreCase(SILICONE_E)
-				|| name.equalsIgnoreCase(THERMOPLASTIC_EL)	
+				|| name.equalsIgnoreCase(THERMOPLASTIC_EL)
+				
 					) {
 				mod *= PLASTIC_RELATED_FLATTENING_FACTOR;
 			}
@@ -312,7 +318,7 @@ class AmountResourceGood extends Good {
 				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
 				case ResourceUtil.POLYESTER_FIBER_ID -> POLYESTER_FIBER_FLATTENING_FACTOR;
 				case ResourceUtil.POLYURETHANE_ID -> POLYURETHANE_FLATTENING_FACTOR;
-				case ResourceUtil.TEREPHTHALIC_ACID_ID -> PLASTIC_RELATED_FLATTENING_FACTOR;
+				case ResourceUtil.TEREPHTHALIC_ACID_ID -> PLASTIC_RELATED_FLATTENING_FACTOR / 2;
 				default -> 1D;
 			};
 	
@@ -780,9 +786,9 @@ class AmountResourceGood extends Good {
 			// The constant resource processing need of this resource
 			+ this.constantResourceProcessInputNeed
 			// The constant life support need of this resource
-			+ this.constantLifeSupportNeed * settlement.getLogPopFactor()
+			+ this.constantLifeSupportNeed * settlement.getLog10PopFactor()
 			// The constant meal ingredient need of this resource
-			+ this.constantMealIngredientNeed * settlement.getLogPopFactor()
+			+ this.constantMealIngredientNeed * settlement.getLog10PopFactor()
 			// The constant farming need of this resource
 			+ this.constantFarmingNeed
 			// Tune ice demand.
@@ -806,8 +812,10 @@ class AmountResourceGood extends Good {
 			// Get the metal demand.
 			+ getMetalDemand(owner, settlement)
 			// Get the chemical demand.
-			+ getChemicalDemand(owner, settlement);
-				
+			+ getChemicalDemand(owner, settlement)
+			// Get the fabrication demand.
+			+ getFabricationDemand(owner, settlement);
+					
 		double projectedCache = owner.getProjectedDemandScore(this);
 		
 		if (newProjDemand == Double.NaN) {
@@ -1554,6 +1562,28 @@ class AmountResourceGood extends Good {
 				return base * STYRENE_MODIFIER;
 			case ResourceUtil.LIME_ID:
 				return base * LIME_MODIFIER;
+			case ResourceUtil.TEREPHTHALIC_ACID_ID:
+				return base * TEREPHTHALIC_ACID_MODIFIER;
+		}
+		
+		return 0;
+	}
+	
+	
+	
+	/**
+	 * Gets the fabrication demand.
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @return demand
+	 */
+	private double getFabricationDemand(GoodsManager owner, Settlement settlement) {
+		double base = BASE_FABRICATION_DEMAND;
+		int resourceID = getID();
+		switch(resourceID) {
+			case ResourceUtil.QUARTZ_ID:
+				return base * QUARTZ_MODIFIER;
 		}
 		
 		return 0;
@@ -1689,7 +1719,7 @@ class AmountResourceGood extends Good {
 	private double getVehicleFuelDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
 		double transFactor = owner.getCommerceFactor(CommerceType.TRANSPORT) * VEHICLE_FUEL_FACTOR;
-		double popFactor = settlement.getLogPopFactor();
+		double popFactor = settlement.getLog10PopFactor();
 
 		switch(getID()) {
 			case ResourceUtil.METHANOL_ID: {

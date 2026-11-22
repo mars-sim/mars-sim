@@ -151,7 +151,7 @@ public abstract class GatherDataMeta extends MetaTask
 //        	return Collections.emptyList();
 //        }
         
-        double popfactor = settlement.getLogPopFactor();
+        double popfactor = settlement.getLog10PopFactor();
         
         Map<Integer, Integer> instrumentAvailability = new HashMap<>();
         

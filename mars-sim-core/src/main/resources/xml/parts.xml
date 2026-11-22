@@ -942,7 +942,7 @@
 	</part>
 
 	<!-- 2014-11-19 Added an air compressor. -->
-	<part name="Air compressor" type="electrical" mass="10.609" >
+	<part name="Air compressor" type="electrical" mass="7.609" >
 	 	<maintenance-entity-list>
 			<entity name="farming" probability="5" max-number="2" />
 			<entity name="fishery" probability="5" max-number="2" />			
