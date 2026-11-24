@@ -307,8 +307,7 @@ public class RescueSalvageVehicle extends RoverMission {
 			if (!vehicle.isInSettlement()
 					&& (vehicle.isBeaconOn() 
 						&& vehicle.haveStatusType(StatusType.OUT_OF_BATTERY_POWER)
-						&& vehicle.haveStatusType(StatusType.OUT_OF_FUEL)
-						&& vehicle.haveStatusType(StatusType.OUT_OF_OXIDIZER))
+						&& vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
 					&& (getRescueingVehicle(vehicle) == null)) {
 				if (vehicle instanceof Crewable crew
 						&& (crew.getCrewNum() > 0 || crew.getRobotCrewNum() > 0)) {
