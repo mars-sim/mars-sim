@@ -8,6 +8,7 @@
 package com.mars_sim.core.equipment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -19,15 +20,14 @@ class EVASuitTest extends MarsSimUnitTest {
     @Test
     void testEVASuitMass() {
     	var s = buildSettlement("Test");
-//        var a = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
-//        var r = buildRobot("Bunny Bear", s, RobotType.GARDENBOT, a, null);
+
         var p = buildPerson("Fixed", s);
         var suit00 = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
         var suit01 = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
         int id = EquipmentType.convertName2ID(EVASuit.TYPE);
         EquipmentType suitType = EquipmentType.convertID2Type(id);
         
-        assertEquals(suitType, EquipmentType.EVA_SUIT, "EVA Suit equipment type");
+        assertEquals(EquipmentType.EVA_SUIT, suitType, "EVA Suit equipment type");
         
         EVASuit suit02 = EVASuitUtil.findRegisteredOrGoodEVASuit(p);
 
@@ -46,6 +46,8 @@ class EVASuitTest extends MarsSimUnitTest {
         assertEquals(suit03, suit01, "Found the EVA Suit that the person has registered with.");
         
         double usualMass = EVASuit.getUsualMass();
+        assertNotEquals(0D, usualMass, "Usual mass should not be zero.");
+        
         // Note: for now, do not use base mass
 		double baseMass = Math.round(suit00.getBaseMass() * 1000D)/1000D;
 

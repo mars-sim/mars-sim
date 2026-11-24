@@ -19,10 +19,10 @@ class TestGoodsUtil {
 
 	@BeforeEach
     void setUp() {
-        SimulationConfig.loadConfig();
+        var c = SimulationConfig.loadConfig();
   
         // Don't need a full GoodsManager initialisation
-        GoodsManager.initializeInstances(null, null, null);
+        GoodsManager.initializeInstances(c, null, null, null);
     }
 
 	@Test

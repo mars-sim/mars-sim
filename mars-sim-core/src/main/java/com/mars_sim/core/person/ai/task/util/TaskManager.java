@@ -756,7 +756,7 @@ public abstract class TaskManager implements Serializable {
 	public static void initializeInstances(Simulation sim) {
 		SimulationConfig conf = sim.getConfig();
 		MetaTaskUtil.initialiseInstances(sim);
-		Task.initializeInstances(sim, conf.getPersonConfig());
+		Task.initializeInstances(sim, conf);
 		RespondToStudyInvitation.initialiseInstances(conf.getScienceConfig());
 		master = sim.getMasterClock();
 	}

@@ -27,7 +27,6 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -126,7 +125,7 @@ public class EVASuit extends Equipment
 	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
 	private static double massO2MinimumLimit;
 
-	private static double usualMass = 0;
+	private static double usualMass = -1;
 
 	// Data members
 	/** The equipment's malfunction manager. */
@@ -136,12 +135,9 @@ public class EVASuit extends Equipment
 	
 	private History<String> locnHistory;
 	/** The suit's malfunction event history. */
-	private History<MsgContext> eventHistory = new History<>(28);
+	private final History<MsgContext> eventHistory = new History<>(28);
 	
 	static {
-
-		// Initialize the usual/empty mass based on the mass of all parts
-		usualMass = ItemResourceUtil.initEVASuit();
 		
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		
@@ -244,9 +240,6 @@ public class EVASuit extends Equipment
 					Map.of(ResourceUtil.OXYGEN_ID, OXYGEN_CAPACITY,
 													ResourceUtil.WATER_ID, WATER_CAPACITY,
 													ResourceUtil.CO2_ID, CO2_CAPACITY));
-		
-//		// Sets the base mass of the bag.
-//		setBaseMass(getUsualMass());
 	}
 
 	/**
@@ -255,6 +248,17 @@ public class EVASuit extends Equipment
 	 * @return
 	 */
 	public static double getUsualMass() {
+		if (usualMass < 0) {
+			var makeProcess = SimulationConfig.instance().getManufactureConfiguration().getProcessByOutput("EVA Suit");
+			if (makeProcess != null) {
+				usualMass = makeProcess.calculateTotalInputMass();
+			}
+			else {
+				logger.warning("Manufacture process for EVA Suit not found.");
+				usualMass = 0;
+			}
+
+		}
 		return usualMass;
 	}
 	

@@ -21,7 +21,6 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.construction.ConstructionConfig;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Management;
@@ -136,14 +135,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static SurfaceFeatures surfaceFeatures;
 	/** The static instance of the OrbitInfo */
 	protected static OrbitInfo orbitInfo;
-	/** The static instance of the SimulationConfig */
-	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
 	/** The static instance of the personConfig */
-	protected static PersonConfig personConfig = simulationConfig.getPersonConfig();
+	protected static PersonConfig personConfig;
 	/** The static instance of the personConfig */
-	protected static CropConfig cropConfig = simulationConfig.getCropConfiguration();
-	/** The static instance of the constructionConfig */
-	protected static ConstructionConfig constructionConfig = simulationConfig.getConstructionConfiguration();
+	protected static CropConfig cropConfig;
 
 	protected static Simulation sim;
 	
@@ -1524,10 +1519,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Reloads instances after loading from a saved sim.
 	 * 
-	 * @param s
-	 * @param pc  {@link PersonConfig}
 	 */
-	static void initializeInstances(Simulation s, PersonConfig pc) {
+	static void initializeInstances(Simulation s, SimulationConfig sc) {
 		sim = s;
 		masterClock = s.getMasterClock();
 				
@@ -1538,7 +1531,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		scientificStudyManager = s.getScientificStudyManager();
 		surfaceFeatures = s.getSurfaceFeatures();
 		orbitInfo = s.getOrbitInfo();
-		personConfig = pc;
+		personConfig = sc.getPersonConfig();
+		cropConfig = sc.getCropConfiguration();
 	}
 	
 	public void destroy() {

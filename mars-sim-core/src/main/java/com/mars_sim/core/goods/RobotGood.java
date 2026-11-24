@@ -280,14 +280,14 @@ class RobotGood extends Good {
 	 */
 	private static double getWholeBotDemand(GoodsManager owner) {
 		double demand = 0;
-	
-		if (ItemResourceUtil.botPartIDs != null && !ItemResourceUtil.botPartIDs.isEmpty()) {
-			for (int id : ItemResourceUtil.botPartIDs) {
+		var botPartIDs = ItemResourceUtil.getBotParts();
+		if (botPartIDs != null && !botPartIDs.isEmpty()) {
+			for (int id : botPartIDs) {
 				demand += owner.getDemandScoreWithID(id);
 			}
 		}
 		return demand;
-	}	
+	}
 	
 	/**
 	 * Is this object the same as another object ?

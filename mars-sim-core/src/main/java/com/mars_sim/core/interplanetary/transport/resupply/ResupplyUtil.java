@@ -22,9 +22,6 @@ import com.mars_sim.core.time.MarsTime;
  */
 public final class ResupplyUtil {
 	
-    // Average transit time for resupply missions from Earth to Mars [in sols]
-    private static int averageTransitTime = SimulationConfig.instance().getAverageTransitTime();
-
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -33,7 +30,7 @@ public final class ResupplyUtil {
 	}
 
 	public static int getAverageTransitTime() {
-		return averageTransitTime;
+		return SimulationConfig.instance().getAverageTransitTime();
 	}
 	
 

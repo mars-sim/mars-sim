@@ -444,9 +444,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param malfunction
 	 */
 	public void calculateNewReliability(Malfunction malfunction) {
-		
-		ItemResourceUtil.initConsumableParts();
-		
+				
 		// Register the failure of the Parts involved
 		for (Entry<MaintenanceScope, Integer> p : malfunction.getRepairParts().entrySet()) {	
 			MaintenanceScope ms = p.getKey();
@@ -454,7 +452,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			Part part = ms.getPart();
 			String partName = part.getName();
 
-			if (ItemResourceUtil.consumablePartIDs.contains(part.getID())) {
+			if (ItemResourceUtil.CONSUMABLE_PARTS.contains(part.getID())) {
 				// No need to calculate the consumable parts since they are tools needed 
 				// for repairing malfunctions and are not broken
 				return;
