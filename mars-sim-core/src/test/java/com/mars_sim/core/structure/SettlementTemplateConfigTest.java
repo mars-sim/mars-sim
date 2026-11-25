@@ -87,7 +87,7 @@ public class SettlementTemplateConfigTest {
             "specimen box", 240,
             "thermal bottle", 64,
             "wheelbarrow", 48,
-            "eva suit", 60,
+            "eva suit", 64, 
       	    "data recorder", 40
         );
         assertEquals(expectedEquipment, supplies.getEquipment(), "Equipment");
