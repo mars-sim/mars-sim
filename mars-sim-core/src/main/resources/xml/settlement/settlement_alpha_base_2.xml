@@ -298,7 +298,7 @@
 	    <robot type="RepairBot-Standard" number="2"/>
 	  
 		<!-- Equipment -->
-	    <equipment type="EVA Suit" number="36" />
+	    <equipment type="EVA Suit" number="52" />
 	   	<equipment type="Data Recorder" number="24" />
 	   	
 	    <!-- Containers-->

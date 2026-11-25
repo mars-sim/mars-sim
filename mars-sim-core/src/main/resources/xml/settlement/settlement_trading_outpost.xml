@@ -155,7 +155,7 @@
 	    <robot type="RepairBot-Standard" number="1"/>
 	    <robot type="DeliveryBot-Standard" number="1"/>
 	
-	    <equipment type="EVA Suit" number="8" />
+	    <equipment type="EVA Suit" number="12" />
    	    <equipment type="Data Recorder" number="4" />
    	    
 	    <!-- Containers-->

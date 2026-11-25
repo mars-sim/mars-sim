@@ -172,7 +172,7 @@
 	    <robot type="MedicBot-Advanced" number="1"/>
 	    <robot type="RepairBot-Standard" number="2"/>
 	    
-	    <equipment type="EVA Suit" number="16" />
+	    <equipment type="EVA Suit" number="20" />
    	    <equipment type="Data Recorder" number="8" />
    	    
 	    <!-- Containers-->

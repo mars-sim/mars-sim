@@ -17,6 +17,8 @@ import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.ManufactureUtil;
+import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ItemType;
@@ -24,6 +26,7 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.MathUtils;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /*
  * This class is the representation of a Part instance as a Good that is tradable.
@@ -80,7 +83,7 @@ public class PartGood extends Good {
 	private static final int CIRCUIT_COMPONENT_DEMAND = 4;
 	
 	private static final double ROBOT_VALUE = .25;
-	private static final double EVA_PARTS_VALUE = .25;
+	private static final double EVA_PARTS_VALUE = .4;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 0.1;
 	
 	private static final double RAW_BASE_DEMAND = 1D;
@@ -598,7 +601,21 @@ public class PartGood extends Good {
 	 */
 	private double getEVASuitPartsDemand(GoodsManager owner) {		
 		if (ItemResourceUtil.evaSuitPartIDs != null && ItemResourceUtil.evaSuitPartIDs.contains(getID())) {
-			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandScore(this);
+			
+			Set<Mission> missions = owner.getSettlement().getMissionControl().getActiveMissions();
+			
+			int totalMembers = 1;
+			
+			for (Mission m: missions) {
+				if (m instanceof VehicleMission vm) {
+					Vehicle v = vm.getVehicle();
+					if (!v.isInSettlement()) {
+						totalMembers += vm.getMembers().size();
+					}
+				}
+			}
+			
+			return totalMembers * owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandScore(this);
 		}
 		return 0;
 	}

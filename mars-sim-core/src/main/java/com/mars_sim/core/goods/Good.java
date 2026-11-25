@@ -511,7 +511,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
     }
     
     /**
-     * Gets a stream of Person on EVA at the Settlement.
+     * Gets a stream of Person on EVA.
      * 
      * @param settlement
      * @return

@@ -682,7 +682,7 @@
 	    <robot type="MedicBot-Advanced" number="1"/>
 	    <robot type="RepairBot-Advanced" number="3"/>
 	
-	    <equipment type="EVA Suit" number="156" />
+	    <equipment type="EVA Suit" number="216" />
    	    <equipment type="Data Recorder" number="120" />
 	
 	    <!-- Containers-->

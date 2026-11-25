@@ -396,7 +396,7 @@
         <robot type="RepairBot-Standard" number="5"/>
 
 	    <!-- Equipment -->
-        <equipment type="EVA Suit" number="60" />
+        <equipment type="EVA Suit" number="64" />
    	    <equipment type="Data Recorder" number="40" />
    	    
         <!-- Containers-->
