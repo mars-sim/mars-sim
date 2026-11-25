@@ -64,7 +64,7 @@ public abstract class GatherDataMeta extends MetaTask
         }
     }
 
-    private static final int BASE = 50;
+    private static final int BASE = 5;
 	private static final int MAX_BASE = 1_000;
 	private static final int DEFAULT_EVA_NUM = 5;
 	
@@ -135,7 +135,7 @@ public abstract class GatherDataMeta extends MetaTask
         	return Collections.emptyList();
         }
         
-        double base = RandomUtil.getRandomDouble(collectionProbability / 3, collectionProbability);
+        double base = RandomUtil.getRandomDouble(collectionProbability / 8, collectionProbability / 2);
         if (base <= 0.00) {
             return Collections.emptyList();
         }
@@ -170,9 +170,9 @@ public abstract class GatherDataMeta extends MetaTask
         }
         
         // If one of the instrument is not available, the score would be lower.
-        instrumentAverageScore = (availableSize / maxPossibleNum) / popfactor * BASE;
+        instrumentAverageScore = (availableSize / (maxPossibleNum + 1)) / (popfactor + 1) * BASE;
 
-        score.addModifier("instruments", 1 + instrumentAverageScore);
+        score.addModifier("instruments", .25 + instrumentAverageScore);
 
         List<SettlementTask> resultList = new ArrayList<>();
         resultList.add(new GatherDataTaskJob(this, settlement, score, maxEVA));
