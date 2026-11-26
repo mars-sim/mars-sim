@@ -1,23 +1,23 @@
-	/*
-	* Mars Simulation Project
-	* TabPanelPersonality.java
-	* @date 2025-08-12
-	* @author Manny Kung
-	*/
-	package com.mars_sim.ui.swing.unit_window.person;
+/*
+* Mars Simulation Project
+* TabPanelPersonality.java
+* @date 2025-08-12
+* @author Manny Kung
+*/
+package com.mars_sim.ui.swing.unit_window.person;
 
-	import java.awt.BorderLayout;
-	import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 
-	import javax.swing.JPanel;
+import javax.swing.JPanel;
 
-	import com.mars_sim.core.person.Person;
-	import com.mars_sim.core.person.ai.MBTIPersonality;
-	import com.mars_sim.core.person.ai.PersonalityTraitManager;
-	import com.mars_sim.core.person.ai.PersonalityTraitType;
-	import com.mars_sim.core.tool.Msg;
-	import com.mars_sim.ui.swing.ImageLoader;
-	import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.MBTIPersonality;
+import com.mars_sim.core.person.ai.PersonalityTraitManager;
+import com.mars_sim.core.person.ai.PersonalityTraitType;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -72,10 +72,11 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 		 */
 		private JPanel createMBTI(Person person) {
 			MBTIPersonality p = person.getMind().getMBTI();
-			int ie = p.getIntrovertExtrovertScore();
-			int ns = p.getScores().get(1);
-			int ft = p.getScores().get(2);
-			int jp = p.getScores().get(3);
+			var scores = p.getScores(); 
+			int ie = scores[0];
+			int ns = scores[1];
+			int ft = scores[2];
+			int jp = scores[3];
 			
 			TraitScore[] traits = new TraitScore[4];
 
@@ -97,10 +98,8 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 				attributePanel.addTextField(t.traitName(), Math.round(t.score() * 10.0)/10.0 + " %", tip);
 			}
 			
-			String type = p.getTypeString();
-			String descriptor = p.getDescriptor();
-			
-			attributePanel.addTextField(type, descriptor, Msg.getString("TabPanelPersonality.mbti.descriptor.tip"));
+			var type = p.getType();			
+			attributePanel.addTextField(type.name(), type.getName(), Msg.getString("TabPanelPersonality.mbti.descriptor.tip"));
 			
 			return attributePanel;
 		}

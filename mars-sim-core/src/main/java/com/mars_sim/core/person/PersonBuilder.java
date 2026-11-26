@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.NationSpec;
+import com.mars_sim.core.person.ai.MBTIType;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
 import com.mars_sim.core.person.ai.SkillManager;
@@ -28,7 +29,7 @@ public class PersonBuilder {
 	private Settlement settlement;
 	private GenderType gender;
 	private Map<String, Integer> personality;
-	private String mbti;
+	private MBTIType mbti;
 	private NationSpec country;
 	private Authority sponsor;
 	private Map<NaturalAttributeType, Integer> attributeMap;
@@ -170,7 +171,7 @@ public class PersonBuilder {
 	 */
 	public PersonBuilder setPersonality(Map<String, Integer> personality, String mbti) {
 		this.personality = personality;
-		this.mbti = mbti;
+		this.mbti = MBTIType.valueOf(mbti);
 
 		return this;
 	}
@@ -201,7 +202,7 @@ public class PersonBuilder {
 			mind.getMBTI().setRandomMBTI();
 		}
 		else {
-			mind.getMBTI().setTypeString(mbti);
+			mind.getMBTI().setType(mbti);
 		}
 		
 		scoreFromMBTI = mind.getMBTI().getIntrovertExtrovertScore();
