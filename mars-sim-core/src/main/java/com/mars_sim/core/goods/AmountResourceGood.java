@@ -84,8 +84,8 @@ class AmountResourceGood extends Good {
 	private static final double LIFE_SUPPORT_COST = 0.5;
 	
 	// Water related flattening factors
-	private static final double ICE_FLATTENING_FACTOR = 2.5;
-	private static final double WATER_FLATTENING_FACTOR = 0.2;
+	private static final double ICE_FLATTENING_FACTOR = 0.5;
+	private static final double WATER_FLATTENING_FACTOR = 0.3;
 	
 	// Gases flattening factors
 	private static final double METHANOL_FLATTENING_FACTOR = 1.1;
@@ -157,9 +157,9 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_VALUE_MODIFIER = 0.02;
 	
 	// Demand Modifiers
-    private static final double ICE_VALUE_MODIFIER = 1.25;
+    private static final double ICE_VALUE_MODIFIER = 1.0;
 	private static final double WATER_VALUE_MODIFIER = 0.5;
-	private static final double BRINE_WATER_VALUE_MODIFIER  = 1.25;
+	private static final double BRINE_WATER_VALUE_MODIFIER  = 1.5;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
 	private static final double SAND_VALUE_MODIFIER = 2.5;
@@ -1651,7 +1651,7 @@ class AmountResourceGood extends Good {
 			double water = 1 + owner.getDemandScoreWithID(ResourceUtil.WATER_ID);
 			double brineWater = 1 + owner.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
 			// Use the water's VP and existing iceSupply to compute the ice demand
-			return  (.7 * water + .1 * ice + .42* brineWater)
+			return  (.7 * water + .1 * ice + .42 * brineWater)
 					* BRINE_WATER_VALUE_MODIFIER;
 		}
 

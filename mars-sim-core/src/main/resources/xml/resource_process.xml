@@ -302,9 +302,7 @@
 	</process> <!--"Enzymatic Dehydrogenation"-->
 	
 	<process name="Oxidation of Methane into Methanol by Methanotrophs" kW-required="0.0" >
-		<description>
-
-		 Naturally occurring methane-oxidizing microorganisms are known as 
+		<description>Naturally occurring methane-oxidizing microorganisms are known as 
 		 methanotrophs. 
 		 
 		 Methanotrophs can be either bacteria or archaea. Which methanotroph species is 
@@ -334,7 +332,7 @@
 		 3. https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2021.678057/full
 		 
 		</description>						
-		<input resource="Methane" rate="48.0" />
+		<input resource="Methane" rate="48.0" ambient="false" />
 		<input resource="Carbon dioxide" rate="44.0" />
 		<input resource="Water" rate="36.0" />
 		
@@ -401,11 +399,9 @@
 	</process> <!-- "Sabatier RWGS Reactor" -->
 
 	<process name="CO Methanation" kW-required="0.0" >
-		<description> 
+		<description> A related variant is CO methanation, which proceeds according to:
 	
-		A related variant is CO methanation, which proceeds according to:
-	
-		CO + 3H2 -> CH4 + 2H2O, exothermic heat = -165 kJ/mol
+		CO + 3H2 -> CH4 + 2H2O; exothermic heat = -165 kJ/mol
 
 		CO : 28 g/mol
 		3H2 : 6 g/mol
@@ -413,8 +409,8 @@
 		H2O : 18 g/mol
 
 		</description>
-		<input resource="Carbon monoxide" rate="140" />
-		<input resource="hydrogen" rate="30" />
+		<input resource="Carbon monoxide" rate="140" ambient="false" />
+		<input resource="hydrogen" rate="30" ambient="false" />
 		
 		<output resource="methane" rate="80" core="true" />
 		<output resource="water" rate="90" core="true" />
@@ -469,7 +465,7 @@
 		<input resource="Carbon dioxide" rate="44.0" />
 		<input resource="hydrogen" rate="4.0" ambient="false" />
 		
-		<output resource="water" rate="36.0" core="true" />
+		<output resource="water" rate="36.0" />
 		<output resource="carbon" rate="12.0"  />
 		
 	</process> <!-- "Continuous Bosch Reactor (C-Bosch)" -->
@@ -636,7 +632,7 @@
 
 		
 		</description> 
-		<input resource="methane" rate="64"  />
+		<input resource="methane" rate="64" ambient="false" />
 		<input resource="oxygen" rate="64"  />
 		
 		<output resource="methanol" rate="128" core="true" />
@@ -935,7 +931,7 @@
 		</description>
 		<input resource="Carbon dioxide" rate="880.0" ambient="true" />
 		
-		<output resource="Carbon monoxide" rate="560.0" core="true" />
+		<output resource="Carbon monoxide" rate="560.0" />
 		<output resource="oxygen" rate="320.0" core="true" />
 	</process> <!-- "Low Temperature Plasma CO2 Decomposition" -->
 	

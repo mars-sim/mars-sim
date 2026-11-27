@@ -87,8 +87,8 @@ public class AirComposition implements Serializable {
 	private static final double GAS_CAPTURE_EFFICIENCY = .95D;
 
 	public static final double C_TO_K = 273.15;
-	// Assume the designed leak rate wiht 0.008 mm orifice, thus alpha is 10e-9
-	public static final double ALPHA = 10e-9;
+	// Assume the designed leak rate with 0.008 mm orifice, thus alpha is 10e-9
+	public static final double ALPHA = .5 * 10e-8;
 	
     private static double o2Consumed;
 	private static double cO2Expelled;

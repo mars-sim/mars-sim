@@ -406,7 +406,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Electrochemical reduction of CO2" number-modules="8"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="16"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="12"/>
 				<process-engine name="CO2 Electroreduction from H2O to Ethylene and O2" number-modules="6"/>
 			
 				<!--For producing Hydrogen -->
@@ -881,7 +881,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Electrochemical reduction of CO2" number-modules="16"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="12"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="32"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
 				<process-engine name="CO2 Electroreduction from H2O to Ethylene and O2" number-modules="12"/>
 			
 				<!--For producing Hydrogen -->
@@ -2471,7 +2471,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Electrochemical reduction of CO2" number-modules="32"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="24"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="64"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="48"/>
 			</resource-processing> 
 
 			<storage stock-capacity="100000">
@@ -4539,7 +4539,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Electrochemical reduction of CO2" number-modules="8"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="6"/>		
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="16"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="12"/>
 				<process-engine name="CO2 Electroreduction from H2O to Ethylene and O2" number-modules="6"/>				
 								
 				<!--For producing Hydrogen -->

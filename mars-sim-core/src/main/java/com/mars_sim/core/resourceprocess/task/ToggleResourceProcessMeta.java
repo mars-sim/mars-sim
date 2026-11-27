@@ -496,7 +496,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				}
 				
 				if (ResourceUtil.isHydrogen(resource)) { 					// hydrogen	
-					score += value * SUPER * 1.4;
+					score += value * MEGA * 1.15;
 				} else if (ResourceUtil.isMethane(resource)) { 				// methane
 					score += value * TRENDY;
 				} else if (ResourceUtil.isMethanol(resource)) { 			// methanol
