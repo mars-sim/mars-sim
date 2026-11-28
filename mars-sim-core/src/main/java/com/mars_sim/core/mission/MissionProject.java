@@ -25,6 +25,7 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.steps.MissionCloseStep;
+import com.mars_sim.core.mission.steps.MissionReviewStep;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionLog;
@@ -56,19 +57,21 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
 	/** Entity listeners. */
 	private transient EntityListenerManager listeners;
 	
-    private int priority;
+    private final int priority;
     
-    private String missionCallSign;
+    private final String missionCallSign;
     
-    private MissionType type;
+    private final MissionType type;
 
-    private MissionLog log;
-    private Person leader;
+    private final MissionLog log;
+    private final Person leader;
     private MarsTime stepStarted;
 
-    private Set<Worker> members = new UnitSet<>();
-    private Set<Worker> signedUp = new UnitSet<>();
-    private Set<MissionStatus> status = new HashSet<>();
+    private final Set<Worker> members = new UnitSet<>();
+    private final Set<Worker> signedUp = new UnitSet<>();
+    private final Set<MissionStatus> status = new HashSet<>();
+
+    private MissionPlanning plan;
 
     /**
      * Creates a new MissionProject with the given parameters.
@@ -263,7 +266,7 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
 
     @Override
     public MissionPlanning getPlan() {
-        return null;
+        return plan;
     }
 
     @Override
@@ -436,4 +439,24 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
             }
         }
     }
+
+    /**
+     * Defines the key steps of the mission as a plan.
+     * This will add in a review step if the mission needs review.
+     * 
+     * @param workPlan Steps for the mission
+     * @param params Parameters for mission creation
+     */
+	public void setMissionSteps(List<MissionStep> workPlan, CreateParameters params) {
+
+        List<MissionStep> fullPlan = new ArrayList<>();
+
+        if (params.needsReview()) {
+            var review = new MissionReviewStep(this);
+            fullPlan.add(review);
+            plan = review.getPlan();
+        }
+        fullPlan.addAll(workPlan);
+        setSteps(fullPlan);
+	}
 }

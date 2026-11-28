@@ -18,6 +18,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.CollectIce;
@@ -54,12 +55,12 @@ public class CollectIceMeta extends AbstractMetaMission {
 	 * Constructs a new instance of the CollectIce mission with the given crew and review status.
 	 * 
 	 * @param crew the roster of crew members for the mission.
-	 * @param needsReview whether the mission requires review before execution.
+	 * @param parameters mission creation parameters.
 	 * @return a new instance of the CollectIce mission.
 	 */
 	@Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
-		return new CollectIce(crew, needsReview);
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
+		return new CollectIce(crew, parameters.needsReview());
 	}
 
 	public Mission constructInstance(Collection<Worker> members, List<Coordinates> sites, Rover rover) {

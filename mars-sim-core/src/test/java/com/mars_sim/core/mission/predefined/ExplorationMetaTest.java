@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.mineral.RandomMineralFactory;
-import com.mars_sim.core.mission.MissionCreationException;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MissionTestHelper;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.structure.Settlement;
@@ -30,7 +30,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
         var crew = MissionTestHelper.buildEVACrew(getContext(), s, 1, false, EquipmentType.SPECIMEN_BOX, 10, EXPLORER_ROVER);
 
         List<MineralSite> sites = buildSites(s, 2);
-        var m = (VehicleMission) mt.constructInstance(crew, false, sites);
+        var m = (VehicleMission) mt.constructInstance(crew, new CreateParameters(), sites);
 
         assertNotNull(m, "Exploration mission instance should not be null");
         assertFalse(m.isDone(), "Exploration mission should not be done upon construction");
@@ -47,7 +47,7 @@ class ExplorationMetaTest extends MarsSimUnitTest {
 
     
     @Test
-    void testConstructSearch() throws MissionCreationException {
+    void testConstructSearch() {
         var mt = new ExplorationMeta();
 
         var s = buildSettlement("Test");
@@ -56,12 +56,12 @@ class ExplorationMetaTest extends MarsSimUnitTest {
 
         var sites = buildSites(s, mt.getExpectedSites(s) + 1);
 
-        var m = (VehicleMission) mt.constructInstance(crew, false);
+        var m = (VehicleMission) mt.constructInstance(crew, new CreateParameters(), sites);
 
         assertNotNull(m, "Exploration mission instance should not be null");
         assertFalse(m.isDone(), "Exploration mission should not be done upon construction");
         var waypoints = m.getNavpoints();
-        assertEquals(mt.getExpectedSites(s) + 1, waypoints.size(), "Exploration mission should have waypoints for each site plus the settlement");
+        assertEquals(sites.size() + 1, waypoints.size(), "Exploration mission should have waypoints for each site plus the settlement");
    
         assertEquals(s.getCoordinates(), waypoints.get(waypoints.size() - 1).getCoordinates(), "Last waypoint should be the settlement coordinates");
 

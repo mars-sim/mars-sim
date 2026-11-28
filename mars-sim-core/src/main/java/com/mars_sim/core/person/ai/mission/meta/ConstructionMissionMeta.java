@@ -14,6 +14,7 @@ import java.util.Set;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -55,7 +56,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	 * @return mission instance.
 	 */
 	@Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
         return new ConstructionMission(crew);
     }
 

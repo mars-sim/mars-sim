@@ -14,6 +14,7 @@ import java.util.Set;
 
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -43,7 +44,7 @@ public class EmergencySupplyMeta extends AbstractMetaMission{
      * Throws UnsupportedOperationException if called.
      */
     @Override
-    public Mission constructInstance(Roster crew, boolean needsReview) {
+    public Mission constructInstance(Roster crew, CreateParameters parameters) {
         throw new UnsupportedOperationException("Unimplemented method 'constructInstance'");
     }
 

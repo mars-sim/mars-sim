@@ -18,6 +18,7 @@ import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -62,8 +63,8 @@ public class TradeMeta extends AbstractMetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Roster crew, boolean needsReview) {
-		return new Trade(crew, needsReview);
+	public Mission constructInstance(Roster crew, CreateParameters parameters) {
+		return new Trade(crew, parameters.needsReview());
 	}
 
 	public Mission constructInstance(List<Worker> members, Settlement destination,

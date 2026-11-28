@@ -1,4 +1,4 @@
-/*
+/**
  * Mars Simulation Project
  * MissionVehicleProject.java
  * @date 2023-06-03
@@ -15,6 +15,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MetaMission.Roster;
 import com.mars_sim.core.mission.steps.MissionBoardVehicleStep;
 import com.mars_sim.core.mission.steps.MissionCloseStep;
+import com.mars_sim.core.mission.steps.MissionDaylightStep;
 import com.mars_sim.core.mission.steps.MissionDisembarkStep;
 import com.mars_sim.core.mission.steps.MissionLoadVehicleStep;
 import com.mars_sim.core.mission.steps.MissionTravelStep;
@@ -209,16 +210,17 @@ public class MissionVehicleProject extends MissionProject
 		}
     }
 
-
     /**
-     * Extracts the Navpoints and calculates the proposed. This will extract the NavPoints for the Route.
+     * Defines the key steps of the vehicle mission plan,
+     * This will extract the Navpoints and calculates the proposed distance.
+     * It will also add the basic vehicle-related steps to the mission plan.
      * 
-     * It will also select a Vehicle based on the steps.
-     * @param plan Steps for the mission
+     * @param workPlan Steps for the mission
+     * @param params Parameters for mission creation
      */
     @Override
-    public void setSteps(List<MissionStep> plan) {
-        route = plan.stream()
+	public void setMissionSteps(List<MissionStep> workPlan, CreateParameters params) {
+        route = workPlan.stream()
                         .filter(MissionTravelStep.class::isInstance)
                         .map (sc -> ((MissionTravelStep) sc).getDestination())
                         .toList();
@@ -227,14 +229,28 @@ public class MissionVehicleProject extends MissionProject
                             .sum();
 
         // Add in the basic steps needs in a Vehicle Mission
-        List<MissionStep> fullPlan = new ArrayList<>();
-        fullPlan.add(new MissionLoadVehicleStep(this));
-        fullPlan.add(new MissionBoardVehicleStep(this));
-        fullPlan.addAll(plan);
-        fullPlan.add(new MissionDisembarkStep(this));
+        List<MissionStep> travelPlan = new ArrayList<>();
 
-        super.setSteps(fullPlan);
+        // Add prep steps
+        travelPlan.add(new MissionLoadVehicleStep(this));
+
+        // If daylight step is required, add it before boarding the vehicle
+        if (params.daylightStart()) {
+            travelPlan.add(new MissionDaylightStep(this));
+        }
+
+        travelPlan.add(new MissionBoardVehicleStep(this));
+
+        // Add actual mission plan
+        travelPlan.addAll(workPlan);
+
+        // Add post-mission steps
+        travelPlan.add(new MissionDisembarkStep(this));
+
+        super.setMissionSteps(travelPlan, params);
     }
+
+    
 
     /**
      * Gets the estimated travel time take for this Mission to cover a distance.

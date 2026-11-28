@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MetaMission;
 import com.mars_sim.core.mission.MissionCreationException;
 import com.mars_sim.core.person.Person;
@@ -24,7 +25,8 @@ class TravelToSettlementMetaTest extends MarsSimUnitTest{
         var crew = createPreReqs(start);
 
         var meta = new TravelToSettlementMeta();
-        var e = assertThrowsExactly(MissionCreationException.class, () -> meta.constructInstance(crew, false));
+        var e = assertThrowsExactly(MissionCreationException.class,
+                () -> meta.constructInstance(crew, new CreateParameters()));
 
         assertEquals("mission.travelsettlement.dest", e.getContext().key(), "Message key should be correct");
     }
@@ -42,7 +44,7 @@ class TravelToSettlementMetaTest extends MarsSimUnitTest{
         buildAccommodation(end.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         var meta = new TravelToSettlementMeta();
-        var m = (TravelToSettlement) meta.constructInstance(crew, false);
+        var m = (TravelToSettlement) meta.constructInstance(crew, new CreateParameters());
 
         assertEquals(end, m.getDestinationSettlement(), "Destination should be correct");
     }
@@ -60,7 +62,7 @@ class TravelToSettlementMetaTest extends MarsSimUnitTest{
         buildAccommodation(end.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         var meta = new TravelToSettlementMeta();
-        var m = (TravelToSettlement) meta.constructInstance(crew, false);
+        var m = (TravelToSettlement) meta.constructInstance(crew, new CreateParameters());
 
         assertEquals(end, m.getDestinationSettlement(), "Destination should be correct");
     }

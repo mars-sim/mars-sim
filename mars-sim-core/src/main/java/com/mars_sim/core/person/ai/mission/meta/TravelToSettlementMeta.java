@@ -20,6 +20,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.mission.AbstractMetaMission;
+import com.mars_sim.core.mission.CreateParameters;
 import com.mars_sim.core.mission.MissionCreationException;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -72,17 +73,17 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 	}
 
     @Override
-    public Mission constructInstance(Roster crew, boolean needsReview) throws MissionCreationException {
+		public Mission constructInstance(Roster crew, CreateParameters parameters) throws MissionCreationException {
         // Find a random destination settlement for the mission.
         var destination = getRandomDestinationSettlement(crew);
         if (destination == null) {
             throw new MissionCreationException("mission.travelsettlement.dest");
         }
-		return constructInstance(crew, destination, needsReview);
+		return constructInstance(crew, destination, parameters);
     }
 
-	public Mission constructInstance(Roster crew, Settlement destination, boolean needsReview) {
-		return new TravelToSettlement(crew, destination, needsReview);
+	public Mission constructInstance(Roster crew, Settlement destination, CreateParameters parameters) {
+		return new TravelToSettlement(crew, destination, parameters.needsReview());
 	}
 
     /**
