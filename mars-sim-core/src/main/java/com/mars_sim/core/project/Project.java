@@ -27,7 +27,7 @@ public class Project<T extends ProjectStep> implements Serializable {
     private int currentStepIdx = -1; // Hold the index to make it easier
     private T currentStep = null;
     private boolean isDone = false;
-    private boolean isAborted = false;
+    private String abortReason = null;
 
     public Project(String name) {
         this.name = name;
@@ -59,7 +59,7 @@ public class Project<T extends ProjectStep> implements Serializable {
         if (isDone) {
             stage = Stage.DONE;
         }
-        else if (isAborted) {
+        else if (abortReason != null) {
             stage = Stage.ABORTED;
         }
         else if (currentStep != null) {
@@ -127,7 +127,8 @@ public class Project<T extends ProjectStep> implements Serializable {
      * @param reason Reason for aborting
      */
     public void abort(String reason) {
-        isAborted = true;
+        // There should always be a reason
+        abortReason = (reason == null ? "No reason" : reason);
 
         if ((currentStep != null) && !currentStep.isCompleted()) {
             currentStep.complete();
@@ -199,7 +200,15 @@ public class Project<T extends ProjectStep> implements Serializable {
      * @return Finished
      */
     public boolean isDone() {
-        return (isDone || isAborted);
+        return (isDone || (abortReason != null));
+    }
+
+    /**
+     * Reason the project was aborted
+     * @return Description of the abort reason
+     */
+    public String getAbortReason() {
+        return abortReason;
     }
 
     /**
@@ -229,7 +238,7 @@ public class Project<T extends ProjectStep> implements Serializable {
         stepCompleted(completedStep); // Notify
 
         // Check not abnormal shutdown of the project
-        if (!isAborted) {
+        if (abortReason == null) {
             advanceStep();
         }
     }

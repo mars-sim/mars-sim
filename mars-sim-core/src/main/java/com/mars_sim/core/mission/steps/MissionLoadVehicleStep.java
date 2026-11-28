@@ -16,6 +16,7 @@ import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadVehicleEVA;
 import com.mars_sim.core.vehicle.task.LoadVehicleGarage;
@@ -27,8 +28,8 @@ import com.mars_sim.core.vehicle.task.LoadingController;
  */
 public class MissionLoadVehicleStep extends MissionStep {
 
+    private static final String DESCRIPTION = "Load Vehicle";
     private static final long serialVersionUID = 1L;
-	private static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("mission.status.loadResources");
     private LoadingController loadingPlan;
 
     /**
@@ -37,7 +38,21 @@ public class MissionLoadVehicleStep extends MissionStep {
      * @param parent Parent mission
      */
     public MissionLoadVehicleStep(MissionVehicleProject parent) {
-        super(parent, Stage.PREPARATION, "Load Vehicle");
+        super(parent, Stage.PREPARATION, DESCRIPTION);
+    }
+
+    /**
+     * Gets the description of the loading. This is dynamic and contains the loading progress
+     */
+    @Override 
+    public String getDescription() {
+        int progress = loadingPlan == null ? 0 : loadingPlan.getProgress();
+
+        // A fudge so the first call does not have 0% displayed
+        if (progress > 0) {
+            return DESCRIPTION + ": " + progress + "%";
+        }
+        return DESCRIPTION;
     }
 
     /**
@@ -67,8 +82,11 @@ public class MissionLoadVehicleStep extends MissionStep {
     protected boolean execute(Worker worker) {
         // Loading still active
         boolean workOn = false;
-        if (loadingPlan.isFailure()) {
-            getMission().abortMission(CANNOT_LOAD_RESOURCES, getLeader());
+        int missingRes = loadingPlan.getFailedResource();
+        if (missingRes >= 0) {
+            Vehicle vehicle = loadingPlan.getVehicle();
+            vehicle.removeSecondaryStatus(StatusType.LOADING);
+            getMission().abortMission(MissionStatus.createResourceStatus(missingRes), getLeader());
         }
         else if (!loadingPlan.isCompleted()) {
 			// Load vehicle if not fully loaded.

@@ -23,6 +23,7 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.Settlement;
@@ -67,17 +68,22 @@ public class LoadingController implements Serializable {
 	// The number of times a settlement can not have the resources
 	private int retryAttempts = MAX_SETTLEMENT_ATTEMPTS;
 
-	private Map<Integer, Double> amountManifest;
-	private Map<Integer, Double> optionalAmountManifest;
-	private Map<Integer, Integer> equipmentManifest;
-	private Map<Integer, Integer> optionalEquipmentManifest;
-	private Map<Integer, Integer> itemManifest;
-	private Map<Integer, Integer> optionalItemManifest;
+	private final Map<Integer, Double> amountManifest;
+	private final Map<Integer, Double> optionalAmountManifest;
+	private final Map<Integer, Integer> equipmentManifest;
+	private final Map<Integer, Integer> optionalEquipmentManifest;
+	private final Map<Integer, Integer> itemManifest;
+	private final Map<Integer, Integer> optionalItemManifest;
 	
-	private EquipmentOwner stores;
-	private EquipmentOwner vehicleStores;
-	private Settlement settlement;
-	private Vehicle vehicle;
+	private final EquipmentOwner stores;
+	private final EquipmentOwner vehicleStores;
+	private final Settlement settlement;
+	private final Vehicle vehicle;
+
+	private int loadedItems;
+	private final int totalItems;
+
+	private int failedResourceId = -1;
 
 
 	/**
@@ -109,6 +115,11 @@ public class LoadingController implements Serializable {
 		removeVehicleEquipment(optionalEquipmentManifest);
 		removeVehicleItems(itemManifest);
 		removeVehicleItems(optionalItemManifest);
+
+		// Only count the total after removing what is already in the vehicle
+		totalItems = amountManifest.size() + optionalAmountManifest.size() +
+					equipmentManifest.size() + optionalEquipmentManifest.size() +
+					itemManifest.size() + optionalItemManifest.size();
 	}
 
 	private List<Equipment> getEquipmentSet(EquipmentOwner source, EquipmentType eType) {
@@ -116,7 +127,8 @@ public class LoadingController implements Serializable {
 				.filter(e -> e.getEquipmentType() == eType)
 				.toList();
 	}
-	/*
+
+	/**
 	 * Remove any equipment the Vehicle has from the manifest. Equipment completely loaded
 	 * in the vehicle will be removed from the manifest.
 	 * 
@@ -139,7 +151,7 @@ public class LoadingController implements Serializable {
 		}
 	}
 
-	/*
+	/**
 	 * Remove any amount resources the Vehicle has from the manifest. Resource completely loaded
 	 * in the vehicle will be removed from the manifest.
 	 * 
@@ -321,6 +333,20 @@ public class LoadingController implements Serializable {
 		return amountLoading;
 	}
 
+	private void logFailedResource(int resourceId, double amountToLoad) {
+		this.retryAttempts--;
+
+		// Note: Added timeBetweenLogs to avoid repetitive warnings
+		logger.warning(vehicle, 10_000, "Not enough available for loading "
+							+ Math.round(amountToLoad * 100D) / 100D
+							+ " of " + ResourceType.getName(resourceId)
+							+ " will try " + retryAttempts + " more times."
+							);
+		if (retryAttempts == 0) {
+			this.failedResourceId = resourceId;
+		}
+	}
+
 	/**
 	 * Loads the vehicle with an amount resource from the settlement.
 	 *
@@ -349,16 +375,7 @@ public class LoadingController implements Serializable {
 			// Does the settlement have enough stored resource ?
 			if (settlementStored < amountToLoad) {
 				if (mandatory) {
-					retryAttempts--;
-					// Note: Added timeBetweenLogs to avoid repetitive warnings
-					logger.warning(vehicle, 10_000, "Not enough available for loading "
-							+ Math.round(amountToLoad * 100D) / 100D
-							+ " kg " + resourceName
-							+ ". Settlement has "
-							+ Math.round(settlementStored * 100D) / 100D
-							+ " kg. "
-//							+ "will try " + retryAttempts + " more times."
-							);
+					logFailedResource(resource, amountToLoad);
 					return amountLoading;
 				}
 				else {
@@ -401,11 +418,13 @@ public class LoadingController implements Serializable {
 		amountNeeded -= amountToLoad;
 		if (amountNeeded <= SMALLEST_RESOURCE_LOAD) {
 			manifest.remove(resource);
+			loadedItems++;
 		}
 		else if (!mandatory && usedSupply) {
 			logger.info(vehicle, 10_000, loader + " could not load " + resourceName
 						+ ", returning " + Math.round(amountNeeded * 100D) / 100D + " kg.");
 			manifest.remove(resource);
+			loadedItems++;
 		}
 		else {
 			manifest.put(resource, amountNeeded);
@@ -445,12 +464,7 @@ public class LoadingController implements Serializable {
 			// Settlement has enough stored resource?
 			if (settlementStored < amountToLoad) {
 				if (mandatory) {
-					retryAttempts--;
-					logger.warning(vehicle, "Not enough available for loading "
-							+ amountToLoad + "x "
-							+ p.getName()
-							+ ". Settlement has "
-							+ settlementStored + " will retry for another " + retryAttempts);
+					logFailedResource(id, amountToLoad);
 				}
 				amountToLoad = settlementStored;
 				usedSupply = true;
@@ -492,12 +506,14 @@ public class LoadingController implements Serializable {
 		if (amountNeeded == 0) {
 			logger.fine(vehicle, loader + " completed loading item " + p.getName());
 			manifest.remove(id);
+			loadedItems++;
 		}
 		// If it's optional and attempted to load something then remove it.
 		else if ((!mandatory && usedSupply) || noCapacity) {
 			logger.warning(vehicle, loader + " item " + p.getName()
 						+ ", " + amountNeeded + " not loaded ");
 			manifest.remove(id);
+			loadedItems++;
 		}
 		else {
 			manifest.put(id, amountNeeded);
@@ -547,18 +563,28 @@ public class LoadingController implements Serializable {
 				}
 			}
 
-			// Update the manifest
+			// If everything needed load 
 			if (amountNeeded == 0) {
 				logger.fine(vehicle, "Completed loading equipment " + equipmentType);
 				manifest.remove(equipmentType);
+				loadedItems++;
 			}
-			else if (!mandatory && (amountLoading > 0D)) {
-				// For optional and still have capacity to load so abort
-				logger.fine(vehicle, "Optional equipment " + equipmentType + " not loaded " + amountNeeded);
-				manifest.remove(equipmentType);
+			else if (amountLoading <= 0) {
+				// Just run out of loading capacity so update and try again later
+				manifest.put(equipmentType, amountNeeded);
 			}
 			else {
-				manifest.put(equipmentType, amountNeeded);
+				// Done with this equipment type
+				if (mandatory) {
+					// Mandatory just log it
+					logFailedResource(equipmentType, amountNeeded);
+				}
+				else {
+					// Move on
+					logger.fine(vehicle, "Skipping loading optionalequipment " + equipmentType);
+					manifest.remove(equipmentType);
+					loadedItems++;
+				}
 			}
 
 			// No more load effort left
@@ -602,12 +628,12 @@ public class LoadingController implements Serializable {
 	}
 
 	/**
-	 * Has the load failed on the mandatory items?
+	 * Get the resource id of the first failed mandatory resource
 	 * 
-	 * @return
+	 * @return Return -1 if no failure has occurred
 	 */
-	public boolean isFailure() {
-		return retryAttempts <= 0;
+	public int getFailedResource() {
+		return failedResourceId;
 	}
 
 	public Map<Integer, Double> getAmountManifest(boolean mandatory) {
@@ -638,5 +664,13 @@ public class LoadingController implements Serializable {
 	 */
     public Vehicle getVehicle() {
 		return vehicle;
+    }
+
+	/**
+	 * Get the percent progress of the loading. The percentage is based on the number of items loaded.
+	 * @return Number between 0 and 100
+	 */
+    public int getProgress() {
+        return (int) (100 * loadedItems) / totalItems;
     }
 }
