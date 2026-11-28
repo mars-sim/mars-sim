@@ -6,12 +6,10 @@
 package com.mars_sim.ui.swing.entitywindow.authority;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.goods.CreditEvent;
 import com.mars_sim.core.goods.CreditListener;
@@ -64,15 +62,9 @@ class TabPanelCredit extends EntityTableTabPanel<Authority> {
 
 		private void refreshAuthorities() {
 			authorities.clear();
-			var authorityFactory = SimulationConfig.instance().getReportingAuthorityFactory();
-			var authorityNames = new ArrayList<>(thisAuthority.getCreditManager().getCreditMap().keySet());
-			Collections.sort(authorityNames);
-			for (String authorityName : authorityNames) {
-				Authority authority = authorityFactory.getItem(authorityName);
-				if (authority != null && !authority.equals(thisAuthority)) {
-					authorities.add(authority);
-				}
-			}
+			authorities.addAll(thisAuthority.getCreditManager().getCreditMap().keySet());
+			authorities.removeIf(thisAuthority::equals);
+			authorities.sort((first, second) -> first.getName().compareTo(second.getName()));
 		}
 
 		@Override

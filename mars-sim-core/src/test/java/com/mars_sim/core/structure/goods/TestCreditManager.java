@@ -35,6 +35,7 @@ class TestCreditManager {
 
 	    authority1.getCreditManager().setCredit(authority2, 100D);
 	    assertEquals(100D, authority1.getCreditManager().getCredit(authority2));
+	    assertEquals(100D, authority1.getCreditManager().getCreditMap().get(authority2));
 	    assertEquals(authority1.getCreditManager(),
 	                    settlement1.getReportingAuthority().getCreditManager());
 	    assertEquals(authority1.getCreditManager(),

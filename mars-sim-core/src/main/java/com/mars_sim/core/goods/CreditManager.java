@@ -32,7 +32,7 @@ public class CreditManager implements Serializable {
 	/** Credit listeners. */
 	private transient List<CreditListener> listeners;
 	/** The map of this authority's credit/debit with another authority. */
-	private Map<String, Double> creditMap = new ConcurrentHashMap<>();
+	private Map<Authority, Double> creditMap = new ConcurrentHashMap<>();
 
 	/**
 	 * Constructor.
@@ -56,21 +56,20 @@ public class CreditManager implements Serializable {
 		if (otherAuthority == null) {
 			return;
 		}
-		String otherName = otherAuthority.getName();
-		if (ownerName.equals(otherName)) {
+		if (ownerName.equals(otherAuthority.getName())) {
 			return;
 		}
 
-		creditMap.put(otherName, amount);
+		creditMap.put(otherAuthority, amount);
 
-		logger.info("Account ledger updated for " + ownerName + " with " + otherName
+		logger.info("Account ledger updated for " + ownerName + " with " + otherAuthority.getName()
 				+ "  Credit: " + Math.round(amount * 10.0)/10.0);
 
 		// Update listeners.
 		synchronized (getListeners()) {
 			Iterator<CreditListener> i = getListeners().iterator();
 			while (i.hasNext())
-				i.next().creditUpdate(new CreditEvent(ownerName, otherName, amount));
+				i.next().creditUpdate(new CreditEvent(ownerName, otherAuthority.getName(), amount));
 		}
 	}
 
@@ -84,7 +83,7 @@ public class CreditManager implements Serializable {
 		if (otherAuthority == null) {
 			return 0D;
 		}
-		return creditMap.getOrDefault(otherAuthority.getName(), 0D);
+		return creditMap.getOrDefault(otherAuthority, 0D);
 	}
 
 	/**
@@ -92,7 +91,7 @@ public class CreditManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Map<String, Double> getCreditMap() {
+	public Map<Authority, Double> getCreditMap() {
 		return creditMap;
 	}
 	
