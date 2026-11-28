@@ -4,7 +4,6 @@
  * @date 2023-01-09
  * @author Scott Davis
  */
-
 package com.mars_sim.ui.swing.unit_window.vehicle;
 
 import java.util.Properties;
@@ -73,6 +72,7 @@ public class VehicleUnitWindow extends EntityContentPanel<Vehicle> {
 		addTabPanel(new TabPanelMission(vehicle, context));	
 		addTabPanel(new NotesTabPanel(vehicle, context));
 		addTabPanel(new TabPanelSpecs(vehicle, context));
+		addTabPanel(new TabPanelLoading(vehicle, context));
 				
 		salvaged = vehicle.isSalvaged();
 		if (salvaged)

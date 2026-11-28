@@ -44,6 +44,8 @@ public class LoadingController implements Serializable {
 	// Avoid transferring micro-small amount
 	protected static final double SMALLEST_RESOURCE_LOAD = 0.01;
 
+	public static final String LOAD_EVENT = "Load Controller";
+
 	/**
 	 * This represents a single item that has to be loaded onto the vehicle.
 	 */
@@ -338,6 +340,8 @@ public class LoadingController implements Serializable {
 
 		if (loadComplete && toLoad.remove(quantity)) {
 			loaded.add(quantity);
+
+			vehicle.fireUnitUpdate(LOAD_EVENT, quantity);
 		}
 	}
 

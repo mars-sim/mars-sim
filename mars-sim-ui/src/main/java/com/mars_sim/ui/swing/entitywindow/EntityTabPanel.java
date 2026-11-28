@@ -39,19 +39,19 @@ public abstract class EntityTabPanel<T extends Entity>  {
 
 	private boolean isUIDone = false;
 	
-	private String tabTitle;
-	private String tabToolTip;
-	private Icon tabIcon;
+	private final String tabTitle;
+	private final String tabToolTip;
+	private final Icon tabIcon;
 	
-	private JPanel mainPanel;
-	private JPanel topContentPanel;
-	private JPanel centerContentPanel;
+	private final JPanel mainPanel;
+	private final JPanel topContentPanel;
+	private final JPanel centerContentPanel;
 
-	private UIContext context;
-    private T entity;
+	private final UIContext context;
+    private final T entity;
 	
 	/**
-	 * Constructor.
+	 * Constructor that provides a scrollable main content panel.
 	 *
 	 * @param tabTitle   the title to be displayed in the tab (may be null).
 	 * @param tabIcon    the icon to be displayed in the tab (may be null).
@@ -59,7 +59,21 @@ public abstract class EntityTabPanel<T extends Entity>  {
 	 * @param context    the UI context.
 	 */
     protected EntityTabPanel(String tabTitle, Icon tabIcon, String tabToolTip, UIContext context, T entity) {
+		this(tabTitle, tabIcon, tabToolTip, context, entity, true);
+	}
 
+	/**
+	 * Constructor with control over the scrolling of the content panel.
+	 *
+	 * @param tabTitle   the title to be displayed in the tab (may be null).
+	 * @param tabIcon    the icon to be displayed in the tab (may be null).
+	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
+	 * @param context    the UI context.
+	 * @param entity     the entity to be displayed in this panel.
+	 * @param scrollContent whether the content panel should be scrollable.
+	 */
+    protected EntityTabPanel(String tabTitle, Icon tabIcon, String tabToolTip, UIContext context, T entity,
+				boolean scrollContent) {
 		// Eventually tabTitle MUST be mandatory once all have been converted to UIContext
 		if (tabTitle == null && tabToolTip == null) {
 			throw new IllegalArgumentException("TabPanel must have either a title or a tool tip");
@@ -83,12 +97,16 @@ public abstract class EntityTabPanel<T extends Entity>  {
 		centerContentPanel.setBorder(new EmptyBorder(2, 2, 4, 2));
 
 		// Create the view panel
-		JScrollPane viewPanel = new JScrollPane();
-		viewPanel.createVerticalScrollBar();
-		viewPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		viewPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		viewPanel.setViewportView(centerContentPanel);
-		mainPanel.add(viewPanel, BorderLayout.CENTER);
+		if (scrollContent) {
+			JScrollPane viewPanel = new JScrollPane();
+			viewPanel.createVerticalScrollBar();
+			viewPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+			viewPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			viewPanel.setViewportView(centerContentPanel);
+			mainPanel.add(viewPanel, BorderLayout.CENTER);
+		} else {
+			mainPanel.add(centerContentPanel, BorderLayout.CENTER);
+		}
 	}
 
     /**
