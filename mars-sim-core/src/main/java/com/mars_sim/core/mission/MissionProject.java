@@ -155,7 +155,12 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
             logger.warning(instigator, "Mission aborted : " + reason.getName());
 
             log.addEntry("Aborted : " + reason.getName(), instigator.getName());
+            log.setDone();
+
             abort(reason.getName());
+
+            // Fire a pseudo phase event to update listeners about the abort
+            fireMissionUpdate(Mission.PHASE_EVENT, null);
         }
     }
 
@@ -242,6 +247,11 @@ public abstract class MissionProject extends Project<MissionStep> implements Mis
     
     @Override
     public String getPhaseDescription() {
+        var aborted = getAbortReason();
+        if (aborted != null) {
+            return "Aborted: " + aborted;
+        }
+
         ProjectStep current = getCurrentStep();
         return (current != null ? current.getDescription() : "");
     }

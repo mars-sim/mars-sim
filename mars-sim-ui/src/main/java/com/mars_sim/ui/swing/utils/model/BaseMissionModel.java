@@ -49,7 +49,8 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
     protected static final EntityColumnSpec NAME = new EntityColumnSpec(new ColumnSpec(NAME_VAL, Msg.getString("entity.name"), String.class),
                                                             null);
     protected static final EntityColumnSpec PHASE = new EntityColumnSpec(new ColumnSpec(PHASE_VAL, Msg.getString("mission.phase"), String.class),
-                                                            Set.of(Mission.PHASE_EVENT, Mission.PHASE_DESCRIPTION_EVENT));
+                                                            Set.of(Mission.PHASE_EVENT, Mission.PHASE_DESCRIPTION_EVENT,
+                                                                    EntityEventType.INVENTORY_RESOURCE_EVENT));
     protected static final EntityColumnSpec DATE_FILED = new EntityColumnSpec(new ColumnSpec(FILED_VAL, Msg.getString("mission.filed"), MarsTime.class),
                                                             Set.of(Mission.PHASE_EVENT));
     protected static final EntityColumnSpec DATE_EMBARKED = new EntityColumnSpec(new ColumnSpec(EMBARKED_VAL, Msg.getString("mission.embarked"), MarsTime.class),
@@ -78,7 +79,7 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
                                                         Double.class, ColumnSpec.STYLE_INTEGER), Set.of(VehicleMission.DISTANCE_EVENT));
     
     // Used to track the associated vehicle for a VehicleMission so that we can listen for distance events 
-    private Map<VehicleMission,Vehicle> missionToVehicle = new HashMap<>();
+    private final Map<VehicleMission,Vehicle> missionToVehicle = new HashMap<>();
 
     /**
      * Create a generic mission model with the specified columns.
@@ -119,18 +120,22 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
     @Override
     public void entityUpdate(EntityEvent event) {
         if (event.getSource() instanceof Vehicle v) {
-            if (event.getType().equals(EntityEventType.COORDINATE_EVENT)) {
-                // Vehicle distance changed, update the associated mission
-                var mission = v.getMission();
-                if (mission != null) {
-                    // Make the model refresh vehicle distances
-                    event = new EntityEvent(mission, VehicleMission.DISTANCE_EVENT, event.getTarget());
-                }
-            }
-            else {
-                // Do not pass other Vehicle event to model
+            // Vehicle events have to be mapped
+            String mappedEvent = switch(event.getType()) {
+                case EntityEventType.COORDINATE_EVENT -> VehicleMission.DISTANCE_EVENT;
+                case EntityEventType.STATUS_EVENT -> EntityEventType.STATUS_EVENT;
+                case EntityEventType.INVENTORY_RESOURCE_EVENT -> EntityEventType.INVENTORY_RESOURCE_EVENT;
+                default -> null;
+            };
+
+            var mission = v.getMission();
+            if ((mappedEvent == null) || (mission == null)) {
                 return;
             }
+
+            // Mapped event is passed to update the associated mission
+            // Make the model refresh vehicle distances
+            event = new EntityEvent(mission, mappedEvent, event.getTarget());         
         }
         else if ((event.getSource() instanceof VehicleMission vm) && event.getType().equals(VehicleMission.VEHICLE_EVENT)) {
             // Mission changed, update the associated vehicle
@@ -170,8 +175,13 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
                     return vm.getTotalDistanceRemaining();
                 case ACTUAL_TRAVELLED_VAL:
                     return vm.getTotalDistanceTravelled();
-                case STATUS_VAL:
-                	return vm.getVehicle().printStatusTypes();
+                case STATUS_VAL: {
+                        var v = vm.getVehicle();
+                        if (vm.equals(v.getMission())) {
+                            return v.printStatusTypes();
+                        }
+                        return null;
+                    }
                 default:
                     break;
             }

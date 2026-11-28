@@ -468,9 +468,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	public final boolean isVehicleLoaded() {
 		if (loadingPlan != null) {
-			if (loadingPlan.isFailure()) {
+			int failedResource = loadingPlan.getFailedResource();
+			if (failedResource >= 0) {
 				logger.warning(vehicle, "Loading has failed.");
-				endMission(CANNOT_LOAD_RESOURCES);
+				endMission(MissionStatus.createResourceStatus(failedResource));
 				return false;
 			}
 			return loadingPlan.isCompleted();

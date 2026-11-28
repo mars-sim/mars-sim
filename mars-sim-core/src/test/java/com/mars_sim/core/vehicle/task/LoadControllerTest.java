@@ -101,7 +101,7 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		var manifest = new SuppliesManifest();
 		manifest.setMinEquipment(EquipmentType.BARREL.getResourceID(), 10, true);
 		manifest.setMinEquipment(EquipmentType.SPECIMEN_BOX.getResourceID(), 5, true);
-		manifest.setMinEquipment(EquipmentType.EVA_SUIT.getResourceID(), 2, true);
+		manifest.setMinEquipment(EquipmentType.EVA_SUIT.getResourceID(), 4, true);
 
 		// Load the manifest
 		testLoading(100, manifest);
@@ -119,6 +119,32 @@ public class LoadControllerTest extends MarsSimUnitTest {
 
 		// Load the manifest
 		testLoading(100, manifest);
+	}
+
+	/*
+	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
+	 */
+	@Test
+	void testLoadFailedEquipment() {
+		var requiredResourcesMap = new SuppliesManifest();
+		requiredResourcesMap.setMinEquipment(EquipmentType.BAG.getResourceID(), 50, true);
+
+		LoadingController controller = vehicle.setLoading(requiredResourcesMap);
+
+		// Run the loader but do not load an resources into the settlement
+		for(int i = 0 ; i < (LoadingController.MAX_SETTLEMENT_ATTEMPTS - 1); i++) {
+			controller.load(person, 1D);
+			assertFalse(controller.isCompleted(), "Load completed #" + i);
+			assertEquals(-1, controller.getFailedResource(), "Load failed #" + i);
+		}
+
+		// Do the last load and it should fail
+		controller.load(person, 1D);
+
+		// Vehicle is not loaded and failed
+		assertEquals(0, controller.getProgress(), "Controller progress");
+		assertFalse(controller.isCompleted(), "Vehicle loaded");
+		assertEquals(EquipmentType.BAG.getResourceID(), controller.getFailedResource(), "Vehicle load did not failed");
 	}
 
 	/*
@@ -209,7 +235,6 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		testLoading(200, manifest);
 	}
 
-
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
@@ -225,7 +250,7 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		for(int i = 0 ; i < (LoadingController.MAX_SETTLEMENT_ATTEMPTS - 1); i++) {
 			controller.load(person, 1D);
 			assertFalse(controller.isCompleted(), "Load completed #" + i);
-			assertFalse(controller.isFailure(), "Load failed #" + i);
+			assertEquals(-1, controller.getFailedResource(), "Load failed #" + i);
 		}
 
 		// Do the last load and it should fail
@@ -233,7 +258,7 @@ public class LoadControllerTest extends MarsSimUnitTest {
 
 		// Vehicle is not loaded and failed
 		assertFalse(controller.isCompleted(), "Vehicle loaded");
-		assertTrue(controller.isFailure(), "Vehicle load did not failed");
+		assertEquals(ResourceUtil.FOOD_ID, controller.getFailedResource(), "Vehicle load did not failed");
 	}
 
 	/*
@@ -406,7 +431,7 @@ public class LoadControllerTest extends MarsSimUnitTest {
 		}
 		assertTrue((loadingCount > 1), "Multiple loadings");
 		assertTrue(loaded, "Load operation stopped on load complete");
-		assertFalse(controller.isFailure(), "Loading controller successful");
+		assertEquals(-1, controller.getFailedResource(), "Loading controller successful");
 		assertTrue(controller.isCompleted(), "Loading controller complete");
 		assertFalse(vehicle.haveStatusType(StatusType.LOADING), "Vehicle clear of LOADING");
 
