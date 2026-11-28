@@ -9,6 +9,8 @@ package com.mars_sim.core.goods;
 
 import java.util.EventObject;
 
+import com.mars_sim.core.authority.Authority;
+
 /**
  * A credit change event.
  */
@@ -17,8 +19,8 @@ public class CreditEvent extends EventObject {
     private static final long serialVersionUID = 2L;
     
 	// Data members
-    private String authority1;
-    private String authority2;
+    private Authority authority1;
+    private Authority authority2;
 	private double credit;
 	
 	/**
@@ -28,7 +30,7 @@ public class CreditEvent extends EventObject {
      * @param authority2 the second authority.
 	 * @param credit the credit amount (VP).
 	 */
-    public CreditEvent(String authority1, String authority2, double credit) {
+    public CreditEvent(Authority authority1, Authority authority2, double credit) {
 		// Use EventObject constructor
     	super(authority1);
 		
@@ -40,18 +42,18 @@ public class CreditEvent extends EventObject {
 	/**
      * Gets the first authority.
 	 * 
-     * @return authority name.
+     * @return first authority.
 	 */
-    public String getAuthority1() {
+    public Authority getAuthority1() {
     	return authority1;
 	}
 	
 	/**
      * Gets the second authority.
 	 * 
-     * @return authority name.
+     * @return second authority.
 	 */
-    public String getAuthority2() {
+    public Authority getAuthority2() {
     	return authority2;
 	}
 	

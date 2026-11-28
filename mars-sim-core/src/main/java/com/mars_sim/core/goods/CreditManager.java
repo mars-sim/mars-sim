@@ -27,7 +27,7 @@ public class CreditManager implements Serializable {
 	
 	private static SimLogger logger = SimLogger.getLogger(CreditManager.class.getName());
 
-	private String ownerName;
+	private Authority owner;
 	
 	/** Credit listeners. */
 	private transient List<CreditListener> listeners;
@@ -43,7 +43,7 @@ public class CreditManager implements Serializable {
 		if (authority == null) {
 			throw new IllegalArgumentException("Authority is null");
 		}
-		ownerName = authority.getName();
+		owner = authority;
 	}
 
 	/**
@@ -56,20 +56,20 @@ public class CreditManager implements Serializable {
 		if (otherAuthority == null) {
 			return;
 		}
-		if (ownerName.equals(otherAuthority.getName())) {
+		if (owner.equals(otherAuthority)) {
 			return;
 		}
 
 		creditMap.put(otherAuthority, amount);
 
-		logger.info("Account ledger updated for " + ownerName + " with " + otherAuthority.getName()
+		logger.info("Account ledger updated for " + owner.getName() + " with " + otherAuthority.getName()
 				+ "  Credit: " + Math.round(amount * 10.0)/10.0);
 
 		// Update listeners.
 		synchronized (getListeners()) {
 			Iterator<CreditListener> i = getListeners().iterator();
 			while (i.hasNext())
-				i.next().creditUpdate(new CreditEvent(ownerName, otherAuthority.getName(), amount));
+				i.next().creditUpdate(new CreditEvent(owner, otherAuthority, amount));
 		}
 	}
 
