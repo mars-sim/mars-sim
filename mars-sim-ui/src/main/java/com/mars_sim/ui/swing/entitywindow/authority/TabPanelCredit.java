@@ -8,10 +8,6 @@ package com.mars_sim.ui.swing.entitywindow.authority;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.SwingConstants;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.SimulationConfig;
@@ -21,7 +17,8 @@ import com.mars_sim.core.goods.CreditListener;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.AbstractEnhancedTableModel;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -46,26 +43,17 @@ class TabPanelCredit extends EntityTableTabPanel<Authority> {
 		return creditTableModel;
 	}
 
-	@Override
-	protected void setColumnDetails(TableColumnModel columnModel) {
-		columnModel.getColumn(0).setPreferredWidth(100);
-		columnModel.getColumn(1).setPreferredWidth(120);
-		columnModel.getColumn(2).setPreferredWidth(50);
-
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		columnModel.getColumn(0).setCellRenderer(renderer);
-		columnModel.getColumn(2).setCellRenderer(renderer);
-		columnModel.getColumn(1).setCellRenderer(new NumberCellRenderer(3));
-	}
-
-	private static class CreditTableModel extends AbstractTableModel
+	private static class CreditTableModel extends AbstractEnhancedTableModel
 						implements CreditListener, EntityModel {
+
+		private static final ColumnSpec AUTHORITY_COL = new ColumnSpec(Msg.getString("authority.singular"), String.class);
+		private static final ColumnSpec CREDIT_COL = new ColumnSpec(Msg.getString("TabPanelCredit.column.credit"), Double.class, ColumnSpec.STYLE_DIGIT2);
 
 		private final List<Authority> authorities = new ArrayList<>();
 		private final Authority thisAuthority;
 
 		private CreditTableModel(Authority thisAuthority) {
+			super(AUTHORITY_COL, CREDIT_COL);
 			this.thisAuthority = thisAuthority;
 
 			for (Authority authority : SimulationConfig.instance()
@@ -84,45 +72,13 @@ class TabPanelCredit extends EntityTableTabPanel<Authority> {
 		}
 
 		@Override
-		public int getColumnCount() {
-			return 3;
-		}
-
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = String.class;
-			else if (columnIndex == 1) dataType = Double.class;
-			else if (columnIndex == 2) dataType = String.class;
-			return dataType;
-		}
-
-		@Override
-		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("authority.singular"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelCredit.column.credit"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelCredit.column.type"); //$NON-NLS-1$
-			else return null;
-		}
-
-		@Override
 		public Object getValueAt(int row, int column) {
-			if (row < getRowCount()) {
-				Authority authority = authorities.get(row);
-				if (column == 0) return authority.getName();
-				else {
-					double credit = thisAuthority.getCreditManager().getCredit(authority);
-
-					if (column == 1) return Math.round(credit * 100.0) / 100.0;
-					else if (column == 2) {
-						if (credit > 0D) return Msg.getString("TabPanelCredit.credit"); //$NON-NLS-1$
-						else if (credit < 0D) return Msg.getString("TabPanelCredit.debt"); //$NON-NLS-1$
-						else return null;
-					}
-					else return null;
-				}
-			}
-			else return null;
+			Authority authority = authorities.get(row);
+			return switch (column) {
+				case 0 -> authority.getName();
+				case 1 -> thisAuthority.getCreditManager().getCredit(authority);
+				default -> null;
+			};
 		}
 
 		@Override
