@@ -6,6 +6,7 @@
 package com.mars_sim.ui.swing.entitywindow.authority;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.table.TableModel;
@@ -56,14 +57,22 @@ class TabPanelCredit extends EntityTableTabPanel<Authority> {
 			super(AUTHORITY_COL, CREDIT_COL);
 			this.thisAuthority = thisAuthority;
 
-			for (Authority authority : SimulationConfig.instance()
-					.getReportingAuthorityFactory().getKnownItems()) {
-				if (!authority.equals(thisAuthority)) {
+			refreshAuthorities();
+
+			thisAuthority.getCreditManager().addListener(this);
+		}
+
+		private void refreshAuthorities() {
+			authorities.clear();
+			var authorityFactory = SimulationConfig.instance().getReportingAuthorityFactory();
+			var authorityNames = new ArrayList<>(thisAuthority.getCreditManager().getCreditMap().keySet());
+			Collections.sort(authorityNames);
+			for (String authorityName : authorityNames) {
+				Authority authority = authorityFactory.getItem(authorityName);
+				if (authority != null && !authority.equals(thisAuthority)) {
 					authorities.add(authority);
 				}
 			}
-
-			thisAuthority.getCreditManager().addListener(this);
 		}
 
 		@Override
@@ -83,13 +92,10 @@ class TabPanelCredit extends EntityTableTabPanel<Authority> {
 
 		@Override
 		public void creditUpdate(CreditEvent event) {
-			String sourceAuthority = thisAuthority.getName();
-			if (sourceAuthority.equals(event.getAuthority1())
-					|| sourceAuthority.equals(event.getAuthority2())) {
-				SwingHelper.runInEDT(
-					CreditTableModel.this::fireTableDataChanged
-				);
-			}
+			SwingHelper.runInEDT(() -> {
+				refreshAuthorities();
+				fireTableDataChanged();
+			});
 		}
 
 		public void destroy() {
