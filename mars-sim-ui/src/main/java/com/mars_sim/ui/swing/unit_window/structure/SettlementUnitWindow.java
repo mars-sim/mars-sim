@@ -48,7 +48,6 @@ public class SettlementUnitWindow extends EntityContentPanel<Settlement> {
 		addTabPanel(new TabPanelComputing(settlement, context));
 		addTabPanel(new TabPanelCooking(settlement, context));
 		addTabPanel(new TabPanelConstruction(settlement, context));
-		addTabPanel(new TabPanelCredit(settlement, context));
 		addTabPanel(new TabPanelData(settlement, context));
 		addTabPanel(new TabPanelFoodProduction(settlement, context));
 		addTabPanel(new TabPanelGroupActivity(settlement, context));

@@ -9,7 +9,7 @@ package com.mars_sim.core.goods;
 
 import java.util.EventObject;
 
-import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.authority.Authority;
 
 /**
  * A credit change event.
@@ -19,42 +19,42 @@ public class CreditEvent extends EventObject {
     private static final long serialVersionUID = 2L;
     
 	// Data members
-	private int settlement1;
-	private int settlement2;
+    private Authority authority1;
+    private Authority authority2;
 	private double credit;
 	
 	/**
 	 * Constructor.
 	 * 
-	 * @param settlement1 the first settlement.
-	 * @param settlement2 the second settlement.
+     * @param authority1 the first authority.
+     * @param authority2 the second authority.
 	 * @param credit the credit amount (VP).
 	 */
-	public CreditEvent(Settlement settlement1, Settlement settlement2, double credit) {
+    public CreditEvent(Authority authority1, Authority authority2, double credit) {
 		// Use EventObject constructor
-		super(settlement1.getCreditManager());
+    	super(authority1);
 		
-		this.settlement1 = settlement1.getIdentifier();
-		this.settlement2 = settlement2.getIdentifier();
+    	this.authority1 = authority1;
+    	this.authority2 = authority2;
 		this.credit = credit;
 	}
 
 	/**
-	 * Gets the first settlement.
+     * Gets the first authority.
 	 * 
-	 * @return settlement.
+     * @return first authority.
 	 */
-	public int getSettlement1() {
-		return settlement1;
+    public Authority getAuthority1() {
+    	return authority1;
 	}
 	
 	/**
-	 * Gets the second settlement.
+     * Gets the second authority.
 	 * 
-	 * @return settlement.
+     * @return second authority.
 	 */
-	public int getSettlement2() {
-		return settlement2;
+    public Authority getAuthority2() {
+    	return authority2;
 	}
 	
 	/**

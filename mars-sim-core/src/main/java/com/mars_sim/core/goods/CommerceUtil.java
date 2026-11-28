@@ -189,7 +189,8 @@ public final class CommerceUtil {
 								Vehicle delivery, Settlement sellingSettlement) {
 		// Get the credit that the starting settlement has with the destination
 		// settlement.
-		double credit = CreditManager.getCredit(buyingSettlement, sellingSettlement);
+		double credit = buyingSettlement.getReportingAuthority().getCreditManager()
+				.getCredit(sellingSettlement.getReportingAuthority());
 
 		Shipment desiredBuyLoad = null;
 		if (credit > (SELL_CREDIT_LIMIT * -1D)) {
@@ -213,7 +214,8 @@ public final class CommerceUtil {
 	 */
 	public static Shipment determineBestSellLoad(Settlement sellingSettlement, Vehicle delivery,
 			Settlement buyingSettlement) {
-		double credit = CreditManager.getCredit(sellingSettlement, buyingSettlement);
+		double credit = sellingSettlement.getReportingAuthority().getCreditManager()
+				.getCredit(buyingSettlement.getReportingAuthority());
 
 		Shipment sellLoad = null;
 		if (credit < SELL_CREDIT_LIMIT) {
@@ -453,9 +455,11 @@ public final class CommerceUtil {
 
 		// Get the credit that the starting settlement has with the destination
 		// settlement.
-		double credit = CreditManager.getCredit(buyingSettlement, sellingSettlement);
+		var buyingAuthority = buyingSettlement.getReportingAuthority();
+		var sellingAuthority = sellingSettlement.getReportingAuthority();
+		double credit = buyingAuthority.getCreditManager().getCredit(sellingAuthority);
 		credit += soldCredit;
-		CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+		buyingAuthority.getCreditManager().setCredit(sellingAuthority, credit);
 
 		Map<Good, Integer> buyLoad = null;
 		// Check if buying settlement owes the selling settlement too much for them to
@@ -472,7 +476,7 @@ public final class CommerceUtil {
 
 				// Update the credit value between the starting and destination settlements.
 				credit -= buyLoadValue;
-				CreditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+				buyingAuthority.getCreditManager().setCredit(sellingAuthority, credit);
 			}
 			else {
 				logger.warning(buyingSettlement, "No trade possible; deal rejected");

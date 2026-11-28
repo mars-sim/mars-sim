@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core.authority;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.configuration.UserConfigurable;
+import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.RandomUtil;
@@ -47,6 +50,7 @@ implements Entity, UserConfigurable {
 	//  Name generators are not serialized and loaded on demand to reduce memory footprint
 	private transient NameGenerator settlementNames;
 	private transient NameGenerator vehicleNames;
+	private CreditManager creditManager;
 
 	/**
 	 * Constructor.
@@ -80,7 +84,27 @@ implements Entity, UserConfigurable {
 			organization = new Corporation(acronym, fullName);
 		else
 			organization = new Agency(acronym, fullName);
+
+		creditManager = new CreditManager(this);
 		
+	}
+
+	public synchronized CreditManager getCreditManager() {
+		if (creditManager == null) {
+			creditManager = new CreditManager(this);
+		}
+		return creditManager;
+	}
+
+	public void setCreditManager(CreditManager cm) {
+		creditManager = cm;
+	}
+
+	private void readObject(ObjectInputStream input) throws IOException, ClassNotFoundException {
+		input.defaultReadObject();
+		if (creditManager != null) {
+			creditManager.restoreOwner(this);
+		}
 	}
 
 	public Organization getOrganization() {

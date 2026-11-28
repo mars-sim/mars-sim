@@ -53,7 +53,6 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.ScheduledEventManager;
-import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
@@ -291,8 +290,6 @@ public class Settlement extends Unit implements Temporal,
 	private DustStorm storm;
 	/** The settlement's EquipmentInventory instance. */
 	private EquipmentInventory eqmInventory;
-	/** The settlement's CreditManager instance manages trade credit between settlements. */
-	private CreditManager creditManager;
 	/** Manages the shifts */
 	private ShiftManager shiftManager;
 	/** The settlement task manager. */
@@ -469,7 +466,6 @@ public class Settlement extends Unit implements Temporal,
 		// Create equipment inventory
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
 		futureEvents = new ScheduledEventManager(masterClock);
-		creditManager = new CreditManager(this, unitManager);
 
 		// Mock use the default shifts
 		ShiftPattern shifts = settlementConfig.getShiftByPopulation(10);
@@ -648,9 +644,6 @@ public class Settlement extends Unit implements Temporal,
 		// Initialize shift manager.
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
 										 masterClock.getMarsTime().getMillisolInt());
-		// Initialize credit manager.
-		creditManager = new CreditManager(this, unitManager);
-
 		// Initialize settlement task manager.
 		taskManager = new SettlementTaskManager(this);
 		
@@ -3275,24 +3268,6 @@ public class Settlement extends Unit implements Temporal,
     }
 
 	/**
-	 * Gets the credit manager.
-	 *
-	 * @return credit manager.
-	 */
-	public CreditManager getCreditManager() {
-		return creditManager;
-	}
-	
-	/**
-	 * Sets the credit manager.
-	 * 
-	 * @param cm
-	 */
-	public void setCreditManager(CreditManager cm) {
-		creditManager = cm;
-	}
-	
-	/**
 	 * Gets the manager of future scheduled events for this settlement.
 	 */
 	public ScheduledEventManager getFutureManager() {
@@ -3555,11 +3530,6 @@ public class Settlement extends Unit implements Temporal,
 		}
 		thermalSystem = null;
 
-		if (creditManager != null) {
-			creditManager.destroy();
-			creditManager = null;
-		}
-		
 		scientificAchievement = null;
 	}
 }
