@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core.authority;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,6 +98,13 @@ implements Entity, UserConfigurable {
 
 	public void setCreditManager(CreditManager cm) {
 		creditManager = cm;
+	}
+
+	private void readObject(ObjectInputStream input) throws IOException, ClassNotFoundException {
+		input.defaultReadObject();
+		if (creditManager != null) {
+			creditManager.restoreOwner(this);
+		}
 	}
 
 	public Organization getOrganization() {

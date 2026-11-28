@@ -82,9 +82,19 @@ class TestCreditManager {
 
 	@Test
 	void testSerializedCreditManagerRetainsOwner() throws Exception {
+	    checkSerializedCreditManager(false);
+	    checkSerializedCreditManager(true);
+	}
+
+	private void checkSerializedCreditManager(boolean legacyOwner) throws Exception {
 	    Authority owner = new Authority("OWNER", "Owner", false, false, 0.5, null, List.of());
 	    Authority other = new Authority("OTHER", "Other", false, false, 0.5, null, List.of());
 	    owner.getCreditManager().setCredit(other, 10D);
+	    if (legacyOwner) {
+	        var ownerField = owner.getCreditManager().getClass().getDeclaredField("owner");
+	        ownerField.setAccessible(true);
+	        ownerField.set(owner.getCreditManager(), null);
+	    }
 	    var bytes = new ByteArrayOutputStream();
 	    try (var output = new ObjectOutputStream(bytes)) {
 	        output.writeObject(owner);

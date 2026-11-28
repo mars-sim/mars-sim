@@ -47,6 +47,16 @@ public class CreditManager implements Serializable {
 	}
 
 	/**
+	 * Restores the owner when loading a manager saved before it held an Authority.
+	 * @param authority the owning authority
+	 */
+	public void restoreOwner(Authority authority) {
+		if (owner == null) {
+			owner = authority;
+		}
+	}
+
+	/**
 	 * Sets the credit between this authority and another authority.
 	 * 
 	 * @param otherAuthority Other authority
